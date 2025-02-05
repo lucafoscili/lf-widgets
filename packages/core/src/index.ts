@@ -1,3 +1,5 @@
+export { getAssetPath, setAssetPath } from "@stencil/core";
+
 import {
   LF_CORE_EVENT_NAME,
   LF_CORE_SYMBOL_ID,

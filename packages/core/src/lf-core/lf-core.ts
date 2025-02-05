@@ -18,7 +18,7 @@ import {
   LfPortalInterface,
   LfThemeInterface,
 } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "@stencil/core";
+import { getAssetPath, setAssetPath } from "../index";
 import { LfColor } from "../lf-color/lf-color";
 import { LfData } from "../lf-data/lf-data";
 import { LfDebug } from "../lf-debug/lf-debug";
