@@ -26,7 +26,7 @@
     "dist/"
   ],
   "peerDependencies": {
-    "@lf-widgets/showcase": "0.0.0",
+    "@lf-widgets/showcase": "^0",
     "@stencil/react-output-target": "^0"
   },
   "scripts": {

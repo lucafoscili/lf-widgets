@@ -31,7 +31,7 @@
     "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\" && node -e \"require('fs').rmSync('.components.ts', { recursive: true, force: true })\" && node -e \"require('fs').rmSync('.components.server.ts', { recursive: true, force: true })\""
   },
   "peerDependencies": {
-    "@lf-widgets/components": "0.0.0",
+    "@lf-widgets/components": "^0",
     "@stencil/react-output-target": "^0"
   },
   "license": "Apache-2.0",
