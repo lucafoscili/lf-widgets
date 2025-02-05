@@ -4,8 +4,4 @@ All notable changes to this project will be documented in this file. See [Conven
 
 ## 0.0.1-rc.1 (2025-02-05)
 
-**Note:** Version bump only for package @lf-widgets/foundations
-
-## 0.0.1-rc.0 (2025-02-05)
-
-**Note:** Version bump only for package @lf-widgets/foundations
+**Note:** Version bump only for package @lf-widgets/hydrate
