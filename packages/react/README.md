@@ -4,19 +4,19 @@
 
 <div align="center">
 
-![Components](https://img.shields.io/badge/dynamic/json?logo=stencil&logoColor=black&labelColor=white&color=black&label=Components&query=components&url=https://raw.githubusercontent.com/lucafoscili/lf-widgets/main/count.json) ![npm Package](https://img.shields.io/npm/v/lf-widgets.svg?logo=npm&logoColor=black&labelColor=white&color=black)
+[![Components](https://img.shields.io/badge/dynamic/json?logo=stencil&logoColor=black&label=Components&labelColor=white&color=black&query=components&url=https://raw.githubusercontent.com/lucafoscili/lf-widgets/main/count.json)](https://github.com/lucafoscili/lf-widgets) [![npm Package](https://img.shields.io/npm/v/@lf-widgets/components.svg?logo=npm&logoColor=black&labelColor=white&color=black)](https://www.npmjs.com/package/@lf-widgets/components)
 
 </div>
 
 <div align="center">
 
-![LF Widgets Logo](https://github.com/lucafoscili/lf-widgets/blob/375581f13119ec393256ac4162212936ecf29d3d/docs/images/Logo.png "LF Widgets logo")
+![LF Widgets Logo](https://github.com/lucafoscili/lf-widgets/blob/main/docs/images/Logo.png "LF Widgets logo")
 
 </div>
 
 <div align="center">
 
-![Development Deployment](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/publish-candidate.yaml?label=Development%20Deployment&logo=github&logoColor=black&labelColor=white&color=black&branch=candidate) ![Production Deployment](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/publish-main.yaml?label=Production%20Deployment&logo=github&logoColor=black&labelColor=white&color=black&branch=main)
+[![Development Deployment](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/publish-candidate.yaml?label=Development%20Deployment&logo=github&logoColor=black&labelColor=white&color=black&branch=candidate)](https://github.com/lucafoscili/lf-widgets/actions?query=workflow%3Apublish-candidate.yaml) [![Production Deployment](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/publish-main.yaml?label=Production%20Deployment&logo=github&logoColor=black&labelColor=white&color=black&branch=main)](https://github.com/lucafoscili/lf-widgets/actions?query=workflow%3Apublish-main.yaml)
 
 </div>
 
