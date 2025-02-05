@@ -1,4 +1,7 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import {
   LF_DRAWER_DISPLAYS,
@@ -9,7 +12,12 @@ import {
 //#region Class
 export interface LfDrawerInterface
   extends LfComponent<"LfDrawer">,
-    LfDrawerPropsInterface {}
+    LfDrawerPropsInterface {
+  close: () => Promise<void>;
+  isOpened: () => Promise<boolean>;
+  open: () => Promise<void>;
+  toggle: () => Promise<void>;
+}
 export interface LfDrawerElement
   extends HTMLStencilElement,
     LfDrawerInterface {}
