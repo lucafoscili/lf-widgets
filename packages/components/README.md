@@ -191,23 +191,18 @@ LF Widgets ships with a small singleton “core” (`LfCore`) that underpins the
 
 Below is the **recommended** pattern, using two exported functions:
 
-- **`initLfCore()`**  
-  Sets up the `LfCore` singleton if it hasn’t been set already. It also handles **client vs. server** logic—using a stubbed approach on the server, and the real DOM-based approach in the browser.
 - **`getLfCore()`**  
-  Asynchronously returns the `LfCore` instance, calling `initLfCore()` if needed. Components can call this on-demand.
+  Returns the LfCore instance, initializing it if necessary.
 
 #### Example
 
 ```ts
 // In your top-level code or a dedicated file
-import { initLfCore, getLfCore } from "lf-widgets";
+import { getLfCore } from "@lf-widgets/core";
 
-// 1. (Optional) Eagerly initialize the core:
-await initLfCore();
-
-// 2. Elsewhere, in a component or function:
-async function doSomething() {
-  const core = await getLfCore();
+// Elsewhere, in a component or function:
+function doSomething() {
+  const core = getLfCore();
   core.assets.set("/my-assets-folder");
   core.theme.set("dark");
   // ...
@@ -216,29 +211,27 @@ async function doSomething() {
 
 #### In Your LF Widgets Components
 
-If you’re using `<lf-button>`, `<lf-chart>`, or any other LF component, you can rely on the fact that **once `initLfCore()` is called**, they’ll be able to access the proper theming and debugging utilities. If you skip the explicit call, any LF Widgets component that needs the core will lazily initialize it when first used.
+If you’re using `<lf-button>`, `<lf-chart>`, or any other LF component, you can rely on the fact that **once `getLfCore()` is called**, they’ll be able to access the proper theming and debugging utilities. If you skip the explicit call, any LF Widgets component that needs the core will lazily initialize it when first used.
 
 A typical pattern in a custom element might look like:
 
 ```ts
-async connectedCallback() {
-  const core = await getLfCore();
-  // For instance:
+connectedCallback() {
+  const core = getLfCore();
   core.theme.register(this);
-  // or
   this.debugInfo = core.debug.info.create();
 }
 ```
 
 #### Why Initialize Early?
 
-- **Consistent Theming**: If you want to avoid a “flash” of unstyled or default theme, you can call `initLfCore()` (and set a theme) **before** rendering components.
-- **Server-Side or Client-Side**: The `initLfCore()` function gracefully handles SSR by skipping DOM operations on the server, then running the real DOM logic in the browser.
+- **Consistent Theming**: If you want to avoid a “flash” of unstyled or default theme, you can call `getLfCore()` (and set a theme) **before** rendering components.
+- **Server-Side or Client-Side**: The `getLfCore()` function gracefully handles SSR by skipping DOM operations on the server, then running the real DOM logic in the browser.
 
 #### Summary
 
-1. **Call `initLfCore()`** in a central place (like your main script or Next.js `_app.tsx`) if you need to set a theme or do immediate setup.
-2. **Use `getLfCore()`** in your components if you prefer lazy initialization—components will load the core only when necessary.
+1. **Call `getLfCore()`** in a central place (like your main script or Next.js `_app.tsx`) if you need to set a theme or do immediate setup.
+2. **Lazy Initialization**: If you don’t call `getLfCore()`, the core will be initialized when the first LF Widgets component is used.
 
 Either way, once `LfCore` is ready, all LF Widgets have access to theming, portals, debug logging, and other shared features.
 
