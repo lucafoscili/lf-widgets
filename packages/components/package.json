@@ -34,8 +34,8 @@
     "prismjs": "^1"
   },
   "peerDependencies": {
-    "@lf-widgets/core": "0.0.0",
-    "@lf-widgets/foundations": "0.0.0"
+    "@lf-widgets/core": "^0",
+    "@lf-widgets/foundations": "^0"
   },
   "files": [
     "dist/"

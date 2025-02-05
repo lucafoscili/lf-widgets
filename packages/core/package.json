@@ -24,7 +24,7 @@
     "dist/"
   ],
   "peerDependencies": {
-    "@lf-widgets/foundations": "0.0.0"
+    "@lf-widgets/foundations": "^0"
   },
   "scripts": {
     "build": "yarn clean && tsc",
