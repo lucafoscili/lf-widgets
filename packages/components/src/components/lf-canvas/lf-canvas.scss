@@ -1,0 +1,61 @@
+$comp: "canvas";
+@include lf-comp-setup($comp, "true");
+
+:host {
+  @include lf-el-stretch;
+  position: relative;
+}
+
+.canvas {
+  & {
+    @include lf-el-stretch;
+    /**
+    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+    *                             Defaults to => auto
+    */
+    margin: var(--lf-#{$comp}-margin, auto);
+    /**
+    * @prop --lf-#{$comp}-max-height: Sets the max height for the #{$comp} component.
+    *                                 Defaults to => max-content
+    */
+    max-height: var(--lf-#{$comp}-max-height, max-content);
+    /**
+    * @prop --lf-#{$comp}-max-width: Sets the max width for the #{$comp} component.
+    *                                Defaults to => max-content
+    */
+    max-width: var(--lf-#{$comp}-max-width, max-content);
+    /**
+    * @prop --lf-#{$comp}-position: Sets the position for the #{$comp} component.
+    *                               Defaults to => relative
+    */
+    position: var(--lf-#{$comp}-position, relative);
+    touch-action: none;
+  }
+
+  &--hidden {
+    cursor: none;
+  }
+
+  &__image {
+    /**
+    * @prop --lf-#{$comp}-object-fit: Sets the object fit for the lf-image subcomponent.
+    *                                 Defaults to => contain
+    */
+    --lf-image-object-fit: var(--lf-#{$comp}-object-fit, contain);
+
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &__board,
+  &__preview {
+    @include lf-el-stretch;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  &__preview {
+    pointer-events: none;
+  }
+}

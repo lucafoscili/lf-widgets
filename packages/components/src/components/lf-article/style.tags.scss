@@ -1,0 +1,132 @@
+h1 {
+  @include lf-el-text("h1");
+  /**
+  * @prop --lf-#{$comp}-color-h1: Sets the h1 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h1, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h1: Sets the h1 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h1, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h1: Sets the h1 font size for the #{$comp} component.
+  *                                   Defaults to => 2em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h1, 2em);
+  margin-top: 0;
+  margin-bottom: 1em;
+  word-break: break-word;
+}
+
+h2 {
+  @include lf-el-text("h2");
+  /**
+  * @prop --lf-#{$comp}-color-h2: Sets the h2 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h2, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h2: Sets the h2 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h2, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h2: Sets the h2 font size for the #{$comp} component.
+  *                                   Defaults to => 1.75em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h2, 1.75em);
+  margin: 1.5em 0 0.5em;
+}
+
+h3 {
+  @include lf-el-text("h3");
+  /**
+  * @prop --lf-#{$comp}-color-h3: Sets the h3 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h3, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h3: Sets the h3 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h3, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h3: Sets the h3 font size for the #{$comp} component.
+  *                                   Defaults to => 1.5em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h3, 1.5em);
+  margin: 1em 0 0.5em;
+}
+
+h4 {
+  @include lf-el-text("h4");
+  /**
+  * @prop --lf-#{$comp}-color-h4: Sets the h4 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h4, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h4: Sets the h4 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h4, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h4: Sets the h4 font size for the #{$comp} component.
+  *                                   Defaults to => 1.25em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h4, 1.25em);
+  margin: 1em 0 0.5em;
+}
+
+h5 {
+  @include lf-el-text("h5");
+  /**
+  * @prop --lf-#{$comp}-color-h5: Sets the h5 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h5, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h5: Sets the h5 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h5, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h5: Sets the h5 font size for the #{$comp} component.
+  *                                   Defaults to => 1.125em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h5, 1.125em);
+  margin: 1em 0 0.5em;
+}
+
+h6 {
+  @include lf-el-text("h6");
+  /**
+  * @prop --lf-#{$comp}-color-h6: Sets the h6 color for the #{$comp} component.
+  *                               Defaults to => var(--lf-color-on-bg)
+  */
+  color: rgb(var(--lf-#{$comp}-color-h6, var(--lf-color-on-bg)));
+  /**
+  * @prop --lf-#{$comp}-font-family-h6: Sets the h6 font family for the #{$comp} component.
+  *                                     Defaults to => var(--lf-font-family-primary)
+  */
+  font-family: var(--lf-#{$comp}-font-family-h6, var(--lf-font-family-primary));
+  /**
+  * @prop --lf-#{$comp}-font-size-h6: Sets the h6 font size for the #{$comp} component.
+  *                                   Defaults to => 1em
+  */
+  font-size: var(--lf-#{$comp}-font-size-h6, 1em);
+  margin: 1em 0 0.5em;
+}
+
+ul,
+ol {
+  @include lf-el-text("list");
+  margin: 1em 0;
+  /**
+  * @prop --lf-#{$comp}-padding-ul: Sets the padding for the ul component.
+  *                                 Defaults to => 1.25em
+  */
+  padding-inline-start: var(--lf-#{$comp}-padding-ul, 1.25em);
+}

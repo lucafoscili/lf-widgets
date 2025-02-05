@@ -1,0 +1,159 @@
+$comp: "tabbar";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  width: 100%;
+}
+
+.tabbar {
+  & {
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 2.25em
+    */
+    height: var(--lf-#{$comp}-height, 2.25em);
+    width: 100%;
+  }
+
+  &__scroll {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+}
+
+.tab {
+  & {
+    @include lf-comp-font($comp, "primary");
+    @include lf-comp-glassmorphize($comp, "bg", "all");
+    @include lf-el-transition("hover-glow");
+    appearance: none;
+    border: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    flex: 1 0 auto;
+    height: 100%;
+    justify-content: center;
+    margin: 0;
+    /**
+    * @prop --lf-#{$comp}-min-width: Sets the min-width for the #{$comp} component.
+    *                                Defaults to => 5em
+    */
+    min-width: var(--lf-#{$comp}-min-width, 5em);
+    outline: none;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0 1.25em
+    */
+    padding: var(--lf-#{$comp}-tab-padding, 0 1.25em);
+    position: relative;
+    text-align: center;
+  }
+
+  &:first-child {
+    @include lf-comp-border($comp, "radius");
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  &:last-child {
+    @include lf-comp-border($comp, "radius");
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+  }
+
+  &:hover {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125);
+  }
+
+  &--active {
+    & {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.225);
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.325);
+    }
+
+    .tab__icon {
+      @include lf-comp-color($comp, "primary", "bg");
+    }
+
+    .tab__label {
+      @include lf-comp-color($comp, "primary", "text", 1, true);
+      font-weight: 600;
+      opacity: 1;
+    }
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, "");
+    @include lf-el-transition("hover-glow");
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    height: inherit;
+    justify-content: center;
+    pointer-events: none;
+    position: relative;
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    opacity: 0.75;
+  }
+
+  &__icon + &__label {
+    padding-left: 0.5em;
+    padding-right: 0;
+  }
+
+  &__indicator {
+    & {
+      @include lf-el-stretch;
+      @include lf-el-transition("hover-glow");
+      display: flex;
+      justify-content: center;
+      left: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+    }
+
+    &--active {
+      .tab__indicator-content {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__indicator-content {
+    & {
+      @include lf-el-transition("elastic-snap");
+      opacity: 0;
+      transform-origin: left center;
+    }
+
+    &--active {
+      align-self: flex-end;
+      /**
+      * @prop --lf-#{$comp}-color-indicator: Sets the color for the #{$comp} component's indicator.
+      *                                      Defaults to => var(--lf-#{$comp}-color-primary)
+      */
+      border-color: rgb(
+        var(--lf-#{$comp}-color-indicator, var(--lf-#{$comp}-color-primary))
+      );
+      border-top-style: solid;
+      border-top-width: 2px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  }
+}

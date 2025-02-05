@@ -1,0 +1,56 @@
+name: Daily Candidate Tests
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  cypress-test:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cypress-daily-${{ github.workflow }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: candidate
+
+      - name: Clear Yarn cache
+        run: yarn cache clean
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.16.0"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build Packages
+        shell: bash
+        run: yarn build
+
+      - name: Start Stencil Development Server
+        run: |
+          yarn workspace @lf-widgets/showcase run dev &
+          n=0
+          until [ $n -ge 10 ]
+          do
+            if curl --silent --fail http://localhost:3333; then
+              echo "Server is ready!"
+              break
+            fi
+            n=$((n+1))
+            echo "Waiting for server to be ready..."
+            sleep 5
+          done
+          if [ $n -ge 10 ]; then
+            echo "Server did not become ready in time" >&2
+            exit 1
+          fi
+
+      - name: Cypress Run
+        run: yarn test

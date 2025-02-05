@@ -1,0 +1,82 @@
+$comp: "spinner";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+#loading-wrapper-master {
+  & {
+    @include lf-el-transition("fade-in-out");
+    background: transparent;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateZ(0);
+  }
+
+  &.spinner-version > #loading-wrapper-master-spinner {
+    & {
+      @include lf-el-stretch;
+      position: relative;
+    }
+
+    div {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+    }
+  }
+
+  :host([lf-active]) & {
+    opacity: 1;
+
+    &.spinner-version > #loading-wrapper-master-spinner {
+      opacity: 1;
+      overflow: hidden;
+    }
+
+    &[lf-bar-variant] > #loading-wrapper-master-bar {
+      opacity: 1;
+
+      div.spinner-bar-v2 {
+        animation: sk-spinner-bar-v2 20s;
+        background-color: rgb(var(--lf-color-on-#{$comp}));
+        left: -1%;
+      }
+    }
+
+    &.loading-wrapper-big-wait {
+      background: rgba(var(--lf-#{comp}-color-bg, var(--lf-color-bg)), 0.25);
+
+      > #loading-wrapper-master-spinner {
+        font-size: 10px;
+      }
+    }
+  }
+
+  :host([lf-full-screen]) & {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    width: 100%;
+    z-index: 9999;
+
+    & div,
+    &.spinner-version #loading-wrapper-master-spinner {
+      position: fixed;
+      transition:
+        opacity 1.25s ease-in,
+        background-color 1s ease-in,
+        top 0.5s ease-in;
+    }
+  }
+}
+
+@import "./style.bars.scss";
+@import "./style.widgets.scss";

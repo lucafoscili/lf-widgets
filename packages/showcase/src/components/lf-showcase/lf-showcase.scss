@@ -1,0 +1,240 @@
+@import "styles/mixins";
+@import "styles/component-template";
+
+$gap: 1.5em;
+
+@include lf-comp-setup("showcase");
+
+:host {
+  @include lf-comp-color("showcase", "bg", "text");
+  @include lf-el-stretch;
+  display: block;
+}
+
+.showcase {
+  & {
+    --lf-showcase-columns: 1;
+
+    @include lf-el-stretch;
+    backface-visibility: hidden;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-areas: "content";
+    grid-template-rows: 1fr;
+  }
+
+  &--has-header {
+    grid-template-areas:
+      "header"
+      "content";
+    grid-template-rows: var(--lf-ui-height-header) 1fr;
+  }
+
+  &__card {
+    & {
+      perspective: 600px;
+    }
+
+    &::part(card) {
+      & {
+        @include lf-fw-tilt;
+      }
+
+      &:after {
+        @include lf-comp-border("", "radius");
+      }
+    }
+  }
+
+  &__cards {
+    & {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: $gap;
+      justify-content: space-evenly;
+      padding: $gap;
+    }
+
+    &--column {
+      flex-direction: column;
+    }
+
+    & ::part(article) {
+      padding: 1.25em;
+    }
+  }
+
+  &__content {
+    grid-area: content;
+    overflow: auto;
+  }
+
+  &__drawer {
+    & {
+      grid-area: drawer;
+    }
+  }
+
+  &__header {
+    & {
+      grid-area: header;
+    }
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &__intro {
+    & {
+      --lf-article-margin: 1em auto;
+      --lf-article-padding: 1.25em 2em;
+
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background: none;
+      box-sizing: border-box;
+    }
+
+    &::part(article) {
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+      background: none;
+    }
+  }
+
+  &__link {
+    padding: 1em;
+  }
+
+  &__links {
+    display: flex;
+    justify-content: center;
+    margin-bottom: calc($gap / 2);
+  }
+
+  &__navigation {
+    & {
+      @include lf-el-transition("bouncy", "height");
+      height: 0;
+      visibility: hidden;
+    }
+
+    &--active {
+      height: calc($gap * 1.75);
+      visibility: visible;
+    }
+  }
+
+  &__scroll-to-top {
+    & {
+      @include lf-el-transition("snappy");
+      bottom: $gap;
+      opacity: 1;
+      position: fixed;
+      right: $gap;
+      visibility: visible;
+      z-index: 1000;
+    }
+
+    &--hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  &__title {
+    @include lf-comp-border("");
+    @include showcase-title;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  &__typewriter {
+    & {
+      width: 100%;
+    }
+
+    &::part(typewriter) {
+      justify-content: center;
+      margin: 0;
+    }
+  }
+}
+
+.actions {
+  & {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: $gap auto;
+  }
+
+  &__button {
+    margin: 0.5em;
+  }
+}
+
+.header {
+  & {
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__left,
+  &__right {
+    @include lf-el-stretch;
+    display: flex;
+  }
+
+  &__right {
+    justify-content: flex-end;
+  }
+}
+
+.drawer {
+  &__logo {
+    --lf-image-aspect-ratio: 1.5;
+
+    box-sizing: border-box;
+    padding: 0 2em;
+  }
+
+  &__slot {
+    @include lf-el-stretch;
+    display: grid;
+    grid-template-rows: 10em 1fr auto;
+  }
+
+  &__tree {
+    --lf-tree-padding: 0;
+    --lf-tree-width-border: 0;
+    overflow: auto;
+  }
+}
+
+@include lf-respond-to-max("md") {
+  .showcase {
+    &__section {
+      @include lf-comp-border("showcase");
+    }
+  }
+}
+
+@include lf-respond-to-min("lg") {
+  .showcase {
+    &--has-drawer {
+      grid-template-areas: "drawer content";
+      grid-template-columns: var(--lf-ui-width-drawer) 1fr;
+    }
+
+    &--full {
+      grid-template-areas:
+        "drawer header"
+        "drawer content";
+    }
+  }
+}

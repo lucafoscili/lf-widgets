@@ -1,0 +1,14 @@
+$comp: "chart";
+@include lf-comp-setup($comp);
+
+:host {
+  height: var(--lf_#{$comp}_height, 100%);
+  min-height: var(--lf_#{$comp}_height, 100%);
+  min-width: var(--lf_#{$comp}_width, 100%);
+  width: var(--lf_#{$comp}_width, 100%);
+}
+
+.chart {
+  @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+  @include lf-el-stretch;
+}

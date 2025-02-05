@@ -1,0 +1,39 @@
+$comp: "button";
+@include lf-comp-setup($comp, "true", "true", "false", "true");
+
+:host {
+  max-width: 100%;
+  overflow: visible;
+}
+
+#lf-component {
+  align-items: center;
+  display: flex;
+}
+
+:host([lf-show-spinner]) {
+  .button {
+    &__icon {
+      visibility: hidden;
+    }
+  }
+}
+
+:host([lf-stretch-x]) {
+  &,
+  #lf-component,
+  .button {
+    width: 100%;
+  }
+}
+
+:host([lf-stretch-y]) {
+  &,
+  #lf-component,
+  .button {
+    height: 100%;
+  }
+}
+
+@import "./style.button.scss";
+@import "./style.icon.scss";

@@ -1,0 +1,46 @@
+$comp: "image";
+@include lf-comp-setup("image", "true", "false", "true");
+
+:host,
+#lf-component,
+.image {
+  height: var(--lf_#{$comp}_height, 0);
+  position: relative;
+  width: var(--lf_#{$comp}_width, 0);
+}
+
+.image {
+  &__icon,
+  &__img {
+    height: var(--lf_#{$comp}_height, 0);
+    /**
+    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+    *                             Defaults to => auto
+    */
+    margin: var(--lf-#{$comp}-margin, auto);
+    width: var(--lf_#{$comp}_width, 0);
+  }
+
+  &__icon {
+    & {
+      @include lf-el-transition;
+      @include lf-comp-glassmorphize("image", "primary", "bg", 0.775);
+      /**
+      * @prop --lf-#{$comp}-aspect-ratio: Sets the aspect ratio for the icons.
+      *                                   Defaults to => 1
+      */
+      aspect-ratio: var(--lf-#{comp}-aspect-ratio, 1);
+      mask: var(--lf_#{$comp}_mask);
+      -webkit-mask: var(--lf_#{$comp}_mask);
+    }
+  }
+
+  &__img {
+    display: block;
+    /**
+    * @prop --lf-#{$comp}-object-fit: Sets the object fit for the image element.
+    *                                 Defaults to => cover
+    */
+    object-fit: var(--lf-#{$comp}-object-fit, cover);
+  }
+}

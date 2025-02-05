@@ -1,0 +1,108 @@
+.item {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-el-text("list");
+    @include lf-el-transition("hover-glow");
+    align-items: center;
+    box-shadow:
+      1px 1px 2px 0px rgba(var(--lf-color-on-surface), 0.25),
+      0 0 1px 0 rgba(var(--lf-color-on-surface), 0.375);
+    box-sizing: border-box;
+    display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-item-height: Sets the height for the items.
+    * Defaults to => 2em
+    */
+    height: var(--lf-#{$comp}-item-height, 2em);
+    /**
+    * @prop --lf-#{$comp}-item-margin: Sets the margin for the items.
+    * Defaults to => 0.25em
+    */
+    margin: var(--lf-#{$comp}-item-margin, 0.25em);
+    /**
+    * @prop --lf-#{$comp}-item-max-width: Sets the max-width for the items.
+    * Defaults to => max-content
+    */
+    max-width: var(--lf-#{$comp}-item-max-width, max-content);
+    /**
+    * @prop --lf-#{$comp}-item-outline: Sets the outline for the items.
+    * Defaults to => none
+    */
+    outline: var(--lf-#{$comp}-item-outline, none);
+    /**
+    * @prop --lf-#{$comp}-item-padding: Sets the padding for the items.
+    * Defaults to => 0 0.75em
+    */
+    padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
+    position: relative;
+    /**
+    * @prop --lf-#{$comp}-item-text-decoration: Sets the text-decoration for the items.
+    * Defaults to => inherit
+    */
+    text-decoration: var(--lf-#{$comp}-item-text-decoration, inherit);
+    /**
+    * @prop --lf-#{$comp}-item-text-transform: Sets the text-transform for the items.
+    * Defaults to => inherit
+    */
+    text-transform: var(--lf-#{$comp}-item-text-transform, inherit);
+  }
+
+  &__icon--leading {
+    &:not(.chip__icon--hidden) {
+      margin-left: -0.25em;
+      margin-right: 0.35em;
+    }
+  }
+
+  &__icon {
+    & {
+      @include lf-comp-icon($comp, "", "surface", 1em);
+      display: block;
+      outline: none;
+    }
+
+    &--leading:not(.chip__icon--hidden) {
+      @include lf-comp-icon($comp, "", "surface", 1.25em);
+    }
+
+    &--trailing {
+      margin-right: -0.25em;
+      margin-left: 0.35em;
+    }
+  }
+
+  &__checkmark-svg {
+    @include lf-el-transition("elastic-snap", "width");
+    width: 0;
+    height: 1.25em;
+  }
+
+  &__checkmark-path {
+    @include lf-el-transition("bouncy", "stroke-dashoffset");
+    stroke-width: 0.15em;
+    stroke-dashoffset: 29.7833385;
+    stroke-dasharray: 29.7833385;
+  }
+
+  svg path {
+    /**
+    * @prop --lf-#{$comp}-color-on-bg: Sets the color for the filter layout checkmark.
+    * Defaults to => var(--lf-color-on-surface)
+    */
+    color: rgb(var(--lf-#{$comp}-color-on-surface, var(--lf-color-on-surface)));
+    stroke: rgb(
+      var(--lf-#{$comp}-color-on-surface, var(--lf-color-on-surface))
+    );
+  }
+
+  &__primary-action {
+    & {
+      outline: none;
+    }
+
+    .item__text {
+      white-space: nowrap;
+    }
+  }
+}

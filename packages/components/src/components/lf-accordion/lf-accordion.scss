@@ -1,0 +1,24 @@
+$comp: "accordion";
+@include lf-comp-setup($comp, "true", "true", "true");
+
+.accordion {
+  @include lf-comp-border($comp);
+  border-left: 0;
+  border-right: 0;
+  @include lf-el-stretch;
+  box-sizing: border-box;
+  display: flex;
+  /**
+  * @prop --lf-#{$comp}-flex-direction: Sets the flex direction for the #{$comp} component.
+  * Defaults to => column
+  */
+  flex-direction: var(--lf-#{$comp}-flex-direction, column);
+  /**
+  * @prop --lf-#{$comp}-flex-wrap: Sets the flex wrap for the #{$comp} component.
+  * Defaults to => nowrap
+  */
+  flex-wrap: var(--lf-#{$comp}-flex-wrap, nowrap);
+  width: 100%;
+}
+
+@import "./style.node.scss";

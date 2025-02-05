@@ -1,0 +1,78 @@
+name: Publish NPM Package (candidate)
+
+on:
+  push:
+    branches:
+      - candidate
+
+jobs:
+  publish-rc:
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Check if Last Commit is Merge from version-bump-rc
+        id: check_merge
+        run: |
+          LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "Last commit message: $LAST_COMMIT_MESSAGE"
+          if [[ "$LAST_COMMIT_MESSAGE" =~ Merge\ pull\ request\ \#.*\ from\ .*/version-bump-rc ]]; then
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stop if Not Merge from version-bump-rc
+        if: steps.check_merge.outputs.should_publish != 'true'
+        run: |
+          echo "This push is not a merge from version-bump-rc. Exiting."
+          exit 0
+
+      - name: Setup and Build
+        if: steps.check_merge.outputs.should_publish == 'true'
+        uses: ./.github/actions/setup
+        with:
+          node-version: "18.x"
+          install-immutable: "true"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build Packages
+        if: steps.check_merge.outputs.should_publish == 'true'
+        run: yarn build
+
+      - name: Discard Uncommitted Changes
+        if: steps.check_merge.outputs.should_publish == 'true'
+        run: git reset --hard HEAD
+
+      - name: Configure Git
+        if: steps.check_merge.outputs.should_publish == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish Packages with Lerna
+        if: steps.check_merge.outputs.should_publish == 'true'
+        id: publish
+        run: |
+          npx lerna publish from-package --yes --dist-tag rc | tee lerna-output.log
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Extract Version from Lerna Output
+        if: steps.check_merge.outputs.should_publish == 'true'
+        id: get_version
+        run: |
+          PUBLISHED_VERSION=$(grep -oP '(?<=lf-widgets@)[^ ]+' lerna-output.log | head -1)
+          echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and Push Tag
+        if: steps.check_merge.outputs.should_publish == 'true'
+        run: |
+          git tag "${{ steps.get_version.outputs.version }}"
+          git push origin --tags

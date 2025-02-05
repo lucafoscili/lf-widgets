@@ -1,0 +1,52 @@
+$comp: "badge";
+@include lf-comp-setup($comp, "true");
+
+:host {
+  position: absolute;
+}
+
+.badge {
+  & {
+    @include lf-comp-color($comp, "primary");
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    /**
+    * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
+    *                                    Defaults to => 50%
+    */
+    border-radius: var(--lf-#{$comp}-border-radius, 50%);
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 1.5em
+    */
+    height: var(--lf-#{$comp}-height, 1.5em);
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0.25em
+    */
+    padding: var(--lf-#{$comp}-padding, 0.25em);
+    /**
+    * @prop --lf-#{$comp}-place-content: Sets the place content for the #{$comp} component.
+    *                                    Defaults to => center
+    */
+    place-content: var(--lf-#{comp}-place-content, center);
+    text-align: center;
+    /**
+    * @prop --lf-#{$comp}-width: Sets the width for the #{$comp} component.
+    *                            Defaults to => 1.5em
+    */
+    width: var(--lf-#{$comp}-width, 1.5em);
+  }
+
+  &__image {
+    --lf-image-color-primary: var(
+      --lf-#{$comp}-color-on-primary,
+      var(--lf-color-on-primary)
+    );
+
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

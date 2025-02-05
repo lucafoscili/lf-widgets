@@ -1,0 +1,102 @@
+$box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
+
+.material-layout {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "bg", "all", 0.25, 4px);
+    @include lf-el-stretch;
+    @include lf-el-transition;
+    box-sizing: border-box;
+    box-shadow:
+      0 2px 1px -1px rgba($box-shadow-color, 0.1),
+      0 1px 1px 0 rgba($box-shadow-color, 0.1),
+      0 1px 3px 0 rgba($box-shadow-color, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    position: relative;
+  }
+
+  &:focus,
+  &:hover {
+    & {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.075);
+      box-shadow:
+        0 2px 4px -1px rgba($box-shadow-color, 0.1),
+        0 4px 5px 0 rgba($box-shadow-color, 0.1),
+        0 1px 10px 0 rgba($box-shadow-color, 0.6);
+    }
+  }
+
+  lf-button {
+    margin-right: 0;
+  }
+
+  img {
+    object-fit: cover;
+  }
+
+  &--has-actions {
+    & {
+      padding-bottom: 52px;
+    }
+
+    .section-2 .sub-2.description {
+      padding-bottom: 0;
+    }
+  }
+
+  &__cover-section {
+    height: 60%;
+    width: 100%;
+  }
+
+  &__text-section {
+    box-sizing: border-box;
+    height: 40%;
+    overflow: auto;
+    padding: 0.75em 1em;
+    width: 100%;
+  }
+
+  &__actions-section {
+    & {
+      align-items: center;
+      bottom: 0;
+      box-sizing: border-box;
+      display: flex;
+      height: 52px;
+      justify-content: flex-end;
+      left: 0;
+      padding: 0 0.5em;
+      position: absolute;
+      text-align: right;
+      width: 100%;
+    }
+
+    lf-button {
+      margin-left: 0.25em;
+    }
+  }
+
+  .text-content {
+    &__title {
+      @include lf-el-ellipsis;
+      @include lf-el-text("title");
+      margin: 0;
+    }
+
+    &__subtitle {
+      @include lf-el-text("subtitle");
+      @include lf-el-ellipsis;
+      opacity: 0.6;
+    }
+
+    &__description {
+      @include lf-el-text("description");
+      opacity: 0.6;
+      padding-top: 0.75em;
+      white-space: pre-wrap;
+    }
+  }
+}

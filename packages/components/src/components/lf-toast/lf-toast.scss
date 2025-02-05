@@ -1,0 +1,142 @@
+$comp: "toast";
+@include lf-comp-setup($comp, "true", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+  animation: slideIn 250ms ease-out;
+  box-sizing: border-box;
+  z-index: var(--lf-ui-zindex-#{$comp}, 998);
+}
+
+.toast {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.675, 12px);
+    @include lf-el-stretch;
+    box-shadow: var(--lf-ui-box-shadow-modal);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+  }
+
+  &__accent {
+    & {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
+      /**
+      * @prop --lf-#{$comp}-accent-height: Sets the height for the #{$comp} accent.
+      *                                    Defaults to => 0.25em
+      */
+      height: var(--lf-#{$comp}-accent-height, 0.25em);
+      width: 100%;
+    }
+
+    &--temporary {
+      animation: reduceWidthToZero linear var(--lf_#{$comp}_timer, 5000ms)
+        forwards;
+    }
+  }
+
+  &__message-wrapper {
+    /**
+    * @prop --lf-#{$comp}-message-align-content: Sets the align-content for the #{$comp} message wrapper.
+    *                                            Defaults to => center
+    */
+    align-content: var(--lf-#{$comp}-message-align-content, center);
+    box-sizing: border-box;
+    display: grid;
+    gap: 1em;
+    grid-template-columns: 1fr;
+    height: 100%;
+    overflow: auto;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} message wrapper.
+    *                              Defaults to => 0.75em
+    */
+    padding: var(--lf-#{$comp}-padding, 0.75em);
+
+    &--has-icon {
+      grid-template-columns: auto 1fr;
+    }
+
+    &--has-actions {
+      grid-template-columns: 1fr auto;
+    }
+
+    &--full {
+      grid-template-columns: auto 1fr auto;
+    }
+  }
+
+  &__icon {
+    & {
+      @include lf-comp-icon(comp);
+      /**
+      * @prop --lf-#{$comp}-icon-margin: Sets the margin for the #{$comp} icon.
+      *                                  Defaults to => auto 0.5em
+      */
+      margin: var(--lf-#{$comp}-icon-margin, auto 0.5em);
+      /**
+      * @prop --lf-#{$comp}-icon-opacity: Sets the opacity for the #{$comp} icon.
+      *                                   Defaults to => 1
+      */
+      opacity: var(--lf-#{$comp}-icon-opacity, 1);
+    }
+
+    &--has-actions {
+      & {
+        @include lf-comp-icon($comp, clear);
+        @include lf-el-transition("hover-glow");
+        cursor: pointer;
+        margin: auto 0.5em auto auto;
+        position: relative;
+      }
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  &__message {
+    @include lf-comp-color($comp, "bg", "text");
+    overflow: auto;
+    /**
+    * @prop --lf-#{$comp}-message-padding: Sets the padding for the #{$comp} message.
+    *                                      Defaults to => 0.75em 0.75em 0.75em 0
+    */
+    padding: var(--lf-#{$comp}-message-padding, 0.75em 0.75em 0.75em 0);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  :host {
+    animation: slideUp 250ms ease-out;
+  }
+}
+
+@keyframes reduceWidthToZero {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: var(--lf-toast-slidein-from, translateX(100%));
+  }
+  100% {
+    transform: var(--lf-toast-slidein-to, translateX(0));
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: var(--lf-toast-slideup-from, translateY(100%));
+  }
+  100% {
+    transform: var(--lf-toast-slideup-to, translateY(0));
+  }
+}

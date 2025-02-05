@@ -1,0 +1,229 @@
+$comp: "progressbar";
+$borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
+@include lf-comp-setup($comp, "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+#lf-component {
+  @include lf-comp-glassmorphize($comp, "surface", "all", 0.225);
+}
+
+.progressbar {
+  & {
+    @include lf-comp-border($comp);
+    box-sizing: border-box;
+    /**
+    * @prop --lf-progressbar-height: Sets the height for the #{$comp} component.
+    *                                Defaults to => 100%
+    */
+    height: var(--lf-progressbar-height, 100%);
+    overflow: hidden;
+    /**
+    * @prop --lf-progressbar-width: Sets the width for the #{$comp} component.
+    *                               Defaults to => 100%
+    */
+    width: var(--lf-progressbar-width, 100%);
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, "", "primary");
+    margin: 0 0.75em;
+  }
+
+  &__label {
+    @include lf-comp-color($comp, "primary", text);
+    @include lf-el-stretch;
+    @include lf-el-text("button");
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    min-width: max-content;
+    position: absolute;
+    top: 0;
+  }
+
+  &__mu {
+    @include lf-el-text("subtitle");
+    font-size: 0.5em;
+  }
+
+  &__percentage {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "primary", "all", 0.775);
+    @include lf-el-transition("bouncy");
+    box-sizing: border-box;
+    height: var(--lf-progressbar-height, 100%);
+    /**
+    * @prop --lf-progressbar-padding: Sets the padding for the #{$comp} component.
+    *                                 Defaults to => 2em 0.5em
+    */
+    padding: var(--lf-#{$comp}-padding, 1em 0.5em);
+    position: relative;
+    text-align: center;
+    width: var(--lf_progressbar_percentage_width);
+  }
+}
+
+:host([lf-centered-label]) {
+  .progressbar {
+    & {
+      position: relative;
+    }
+
+    &__percentage {
+      position: static;
+    }
+  }
+}
+
+:host([lf-is-radial]) {
+  & {
+    box-sizing: border-box;
+    margin: auto;
+  }
+
+  #lf-component {
+    display: flex;
+    font-size: 10em;
+    margin: auto;
+    padding: 0.1em 0;
+  }
+
+  .progressbar {
+    & {
+      background: none;
+      border: none;
+      height: 1em;
+      margin: auto;
+      overflow: visible;
+      position: relative;
+      width: 1em;
+    }
+
+    &:nth-child(3n + 1) {
+      clear: both;
+    }
+
+    &__icon {
+      @include lf-comp-icon($comp, "", "bg", 0.75em);
+      margin: 0 0.15em;
+    }
+
+    &__label {
+      @include lf-comp-color($comp, "bg", text);
+      cursor: default;
+      display: flex;
+      font-size: 0.25em;
+    }
+
+    &__um {
+      @include lf-comp-color($comp, "bg", text);
+      font-size: 0.5em;
+      padding-bottom: 0.75em;
+    }
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+}
+
+:host([lf-animated]) {
+  .progressbar__percentage {
+    animation: running-stripes 2s linear infinite;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(var(--lf-color-surface), 0.125) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(var(--lf-color-surface), 0.125) 50%,
+      rgba(var(--lf-color-surface), 0.125) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 3em 3em;
+  }
+}
+
+.pie {
+  & {
+    clip: rect(0, 1em, 1em, 0.5em);
+    height: 1em;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 1em;
+  }
+
+  &--empty {
+    &__half-circle {
+      &--right {
+        display: none;
+      }
+    }
+  }
+
+  &--full {
+    & {
+      clip: rect(auto, auto, auto, auto);
+    }
+
+    .pie__half-circle {
+      &--right {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &--has-value {
+    .pie__half-circle {
+      & {
+        /**
+        * @prop --lf-#{$comp}-radial-color: Sets the color for the radial variant of the #{$comp} component.
+        *                                   Defaults to => rgb(var(--lf-color-primary))
+        */
+        border-color: var(
+          --lf-#{$comp}-radial-color,
+          rgb(var(--lf-color-primary))
+        );
+      }
+
+      &--left {
+        @include lf-el-transition("elastic-snap");
+        transform: var(--lf_progressbar_transform);
+      }
+    }
+  }
+
+  &__half-circle {
+    height: 1em;
+    width: 1em;
+    border: $borderC;
+    border-radius: 50%;
+    clip: rect(0, 0.5em, 1em, 0);
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  &__track {
+    height: 1em;
+    width: 1em;
+    border: $borderC;
+    border-radius: 50%;
+  }
+}
+
+@keyframes running-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 3em 3em;
+  }
+}

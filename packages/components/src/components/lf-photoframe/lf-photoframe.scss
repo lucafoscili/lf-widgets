@@ -1,0 +1,134 @@
+$comp: "photoframe";
+@include lf-comp-setup($comp);
+
+:host {
+  @include lf-el-stretch;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#lf-component {
+  position: relative;
+}
+
+img {
+  @include lf-el-stretch;
+}
+
+.photoframe {
+  &--landscape {
+    img {
+      width: 100%;
+    }
+  }
+
+  &--portrait {
+    img {
+      height: 100%;
+    }
+  }
+
+  &__image {
+    & {
+      display: none;
+      left: 0;
+      /**
+      * @prop --lf-#{$comp}-image-fit: Sets the object fit for the image of the #{$comp} component.
+      *                                Defaults to => cover
+      */
+      object-fit: var(--lf-#{comp}-image-fit, cover);
+      position: absolute;
+      top: 0;
+      z-index: 0;
+    }
+
+    &--active {
+      display: block;
+      position: relative;
+    }
+  }
+
+  &__placeholder {
+    & {
+      display: none;
+      /**
+      * @prop --lf-#{$comp}-placeholder-fit: Sets the object fit for the placeholder of the #{$comp} component.
+      *                                      Defaults to => cover
+      */
+      object-fit: var(--lf-#{comp}-placeholder-fit, cover);
+      /**
+      * @prop --lf-#{$comp}-fade-out-time: Sets the fade out time for the placeholder of the #{$comp} component.
+      *                                    Defaults to => 1750ms
+      */
+      transition: opacity var(--lf-#{comp}-fade-out-time, 1750ms) ease-out;
+      will-change: opacity;
+      z-index: 1;
+    }
+
+    &--hidden {
+      opacity: 0;
+      position: absolute;
+    }
+
+    &--loaded {
+      display: block;
+    }
+  }
+}
+
+.overlay {
+  & {
+    @include lf-comp-color($comp, "bg", "bg");
+    @include lf-el-stretch;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    top: 0;
+    /**
+    * @prop --lf-#{$comp}-overlay-zindex: Sets the z-index for the overlay of the #{$comp} component.
+    *                                     Defaults to => 2
+    */
+    z-index: var(--lf-#{comp}-overlay-zindex, 2);
+  }
+
+  &--has-actions {
+    & {
+      cursor: pointer;
+    }
+
+    &:hover {
+      .overlay__content {
+        transform: scale(1.5);
+      }
+    }
+  }
+
+  &__content,
+  &__description,
+  &__title {
+    @include lf-comp-color($comp, "bg", "text");
+    text-align: center;
+  }
+
+  &__content {
+    @include lf-el-text("subtitle");
+    @include lf-el-transition("elastic-snap");
+    display: grid;
+    grid-gap: 0.75em;
+    margin: auto;
+    overflow: hidden;
+  }
+
+  &__description {
+    @include lf-el-text("caption");
+  }
+
+  &__title {
+    @include lf-el-text("title");
+  }
+
+  &__icon {
+    margin: auto;
+  }
+}

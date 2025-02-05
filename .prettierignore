@@ -1,0 +1,13 @@
+# Ignore build and dist directories
+build/
+dist/
+
+# Ignore dependencies
+node_modules/
+
+# Ignore specific file patterns
+*.min.js
+*.d.ts
+
+# Ignore specific files (e.g., generated docs)
+packages/lf-widgets/src/components/lf-showcase/assets/doc.ts

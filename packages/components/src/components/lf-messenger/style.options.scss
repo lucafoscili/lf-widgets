@@ -1,0 +1,94 @@
+.options {
+  &__wrapper {
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__cover {
+    @include lf-el-stretch;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__placeholder {
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    padding: 20% 20% 40% 20%;
+  }
+
+  &__placeholder-icon {
+    @include lf-comp-icon($comp, "", "surface", 100%, 0.375);
+  }
+
+  &__blocker {
+    & {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.775);
+      @include lf-el-stretch;
+      @include lf-el-transition("fade-in-out", "opacity");
+      align-content: center;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: grid;
+      grid-template-rows: 50% 1fr;
+      left: 0;
+      opacity: 0;
+      padding: 20% 20% 40% 20%;
+      position: absolute;
+      top: 0;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &--active {
+      opacity: 0.875;
+    }
+  }
+
+  &__blocker-icon {
+    @include lf-comp-icon($comp, "", "surface", 100%, 0.75);
+  }
+
+  &__blocker-label {
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    padding-top: 0.75em;
+    text-align: center;
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    margin-left: 0.5em;
+  }
+
+  &__info {
+    @include lf-comp-icon($comp, "info", "surface", 1em, 0.75);
+    cursor: help;
+    margin-left: 0.275em;
+  }
+
+  &__name {
+    align-items: center;
+    /**
+    * @prop --lf-#{$comp}-name-background-color: Sets the background color for the name of the #{$comp} component's option.
+    *                                            Defaults to => rgb(var(--lf-color-surface))
+    */
+    background: var(
+      --lf-#{$comp}-name-background-color,
+      rgb(var(--lf-color-surface))
+    );
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    overflow: hidden;
+    /**
+    * @prop --lf-#{$comp}-active-options-name-padding: Sets the padding for the name of the active options of the #{$comp} component.
+    *                                                  Defaults to => 0.5em
+    */
+    padding: var(--lf-#{$comp}-active-options-name-padding, 0.5em);
+    position: absolute;
+    width: 100%;
+  }
+}

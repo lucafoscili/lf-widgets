@@ -1,0 +1,126 @@
+$comp: "carousel";
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+  margin: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+:host([lf-lightbox]) {
+  [data-lf="fade-in"] {
+    cursor: pointer;
+  }
+}
+
+.carousel {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-el-stretch;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &:hover {
+    .slide-bar {
+      opacity: 1;
+    }
+
+    .carousel__back,
+    .carousel__forward {
+      opacity: 1;
+    }
+
+    .carousel__back {
+      left: 0.5em;
+    }
+
+    .carousel__forward {
+      right: 0.5em;
+    }
+  }
+
+  &__back,
+  &__forward {
+    @include lf-el-transition("bouncy");
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &__back {
+    left: 0;
+  }
+
+  &__forward {
+    right: 0;
+  }
+
+  &__track {
+    @include lf-el-stretch;
+    @include lf-el-transition("bouncy");
+    display: flex;
+    will-change: transform;
+  }
+
+  &__slide {
+    @include lf-el-stretch;
+    align-items: center;
+    flex-shrink: 0;
+    justify-content: center;
+  }
+}
+
+.slide-bar {
+  & {
+    @include lf-comp-glassmorphize("carousel", "surface", "bg", 0.75);
+    @include lf-el-transition("slide-in-out");
+    align-items: center;
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: nowrap;
+    /**
+    * @prop --lf-#{$comp}-slide-bar-height: Sets the height for the slide bar of the #{$comp} component.
+    *                                       Defaults to => 0.75em
+    */
+    height: var(--lf-#{$comp}-slide-bar-height, 0.75em);
+    left: 0;
+    /**
+    * @prop --lf-#{$comp}-slide-bar-opacity: Sets the opacity for the slide bar of the #{$comp} component.
+    *                                        Defaults to => 0.75
+    */
+    opacity: var(--lf-#{$comp}-slide-bar-opacity, 0.75);
+    position: absolute;
+    width: 100%;
+  }
+
+  &:hover {
+    /**
+    * @prop --lf-#{$comp}-slide-bar-opacity-hover: Sets the opacity for the slide bar of the #{$comp} component when hovered.
+    *                                              Defaults to => 1
+    */
+    opacity: var(--lf-#{$comp}-slide-bar-opacity-hover, 1);
+  }
+
+  &__segment {
+    & {
+      @include lf-comp-color($comp, "surface", "bg");
+      @include lf-el-stretch;
+      @include lf-el-transition("hover-glow");
+      cursor: pointer;
+    }
+
+    &:not(&--active):hover {
+      @include lf-comp-color($comp, "surface", "bg", 0.5, true);
+    }
+
+    &--active {
+      @include lf-comp-color($comp, "surface", "bg", 1, true);
+    }
+  }
+}

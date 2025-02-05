@@ -1,0 +1,65 @@
+$comp: "typewriter";
+@include lf-comp-setup($comp);
+
+:host {
+  @include lf-el-stretch;
+}
+
+.typewriter {
+  & {
+    @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 1em
+    */
+    padding: var(--lf-#{$comp}-padding, 1em);
+  }
+
+  &__text {
+    @include lf-el-stretch;
+    display: inline-block;
+    /**
+    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} text.
+    *                             Defaults to => 0
+    */
+    margin: var(--lf-#{$comp}-margin, 0);
+  }
+
+  &__cursor {
+    @include lf-comp-glassmorphize($comp, "bg", "all", 0.575, 8px, true);
+    /**
+    * @prop --lf-#{$comp}-cursor-height: Sets the height for the #{$comp} cursor.
+    *                                    Defaults to => 1.25em
+    */
+    animation: blink var(--lf-#{$comp}-cursor-height, 800ms) infinite;
+    display: inline-block;
+    height: var(--lf-#{$comp}-cursor-height, 1.25em);
+    /**
+    * @prop --lf-#{$comp}-cursor-margin-left: Sets the left margin for the #{$comp} cursor.
+    *                                         Defaults to => 0.15em
+    */
+    margin-left: var(--lf-#{$comp}-cursor-margin-left, 0.15em);
+    /**
+    * @prop --lf-#{$comp}-cursor-vertical-align: Sets the vertical-align for the #{$comp} cursor.
+    *                                            Defaults to => top
+    */
+    vertical-align: var(--lf-#{$comp}-cursor-vertical-align, top);
+    /**
+    * @prop --lf-#{$comp}-cursor-width: Sets the width for the #{$comp} cursor.
+    *                                   Defaults to => 0.125em
+    */
+    width: var(--lf-#{$comp}-cursor-width, 0.125em);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "paths": {
+      "src/*": ["src/*"],
+      "data/*": ["src/components/lf-showcase/assets/data/*"],
+      "@lf-widgets/foundations/*": ["../foundations/dist/*"]
+    },
+    "types": ["cypress"]
+  },
+  "include": ["**/*.ts", "../foundations/dist/**/*.d.ts"]
+}

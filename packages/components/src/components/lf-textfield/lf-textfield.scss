@@ -1,0 +1,310 @@
+$comp: "textfield";
+$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
+$primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
+@include lf-comp-setup($comp, "true");
+
+:host {
+  width: 100%;
+}
+
+:host([lf-stretch-y]) {
+  &,
+  #lf-component,
+  .textfield {
+    height: 100%;
+  }
+}
+
+:host([lf-trailing-icon]) {
+  #lf-component {
+    .textfield {
+      & {
+        flex-direction: row-reverse;
+      }
+
+      &__icon {
+        padding-left: 0.5em;
+      }
+
+      &__label {
+        left: 1em;
+      }
+    }
+  }
+}
+
+.textfield {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-el-transition("hover-glow");
+    align-items: baseline;
+    box-sizing: border-box;
+    display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 3.5em
+    */
+    height: var(--lf-#{$comp}-height, 3.5em);
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0 1em
+    */
+    padding: var(--lf-#{$comp}-padding, 0 1em);
+    position: relative;
+    width: 100%;
+  }
+
+  &--has-icon {
+    .textfield__label {
+      left: 1.25em;
+    }
+  }
+
+  &--filled,
+  &--focused {
+    .textfield__icon {
+      @include lf-comp-color($comp, "primary", "bg");
+    }
+
+    .textfield__label {
+      @include lf-comp-color($comp, "primary", "text", 1, true);
+    }
+  }
+
+  &--filled,
+  &--focused {
+    .textfield__ripple-surface:after {
+      width: 100%;
+    }
+  }
+
+  &--flat,
+  &--raised {
+    &.textfield--filled,
+    &.textfield--focused {
+      .textfield__label {
+        transform: translateY(-130%) scale(0.75);
+      }
+    }
+
+    &.textfield--has-icon {
+      .textfield__label {
+        left: 3.5em;
+      }
+    }
+
+    .textfield__label {
+      left: 1.25em;
+      right: initial;
+    }
+  }
+
+  &--raised {
+    & {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125);
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.275);
+    }
+
+    &.textfield--focused {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.525);
+    }
+  }
+
+  &--outlined,
+  &--textarea {
+    & {
+      @include lf-comp-border($comp, "border");
+      padding-top: 0;
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.075);
+      border-color: rgba($primaryC, 0.775);
+    }
+
+    &.textfield--focused {
+      border-color: rgb($primaryC);
+      box-shadow: inset 0 0 0 0.15em rgb($primaryC);
+    }
+
+    &.textfield--filled {
+      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175, 15px);
+    }
+  }
+
+  &--textarea {
+    & {
+      align-items: center;
+      flex-direction: column;
+      height: auto;
+      overflow: visible;
+      padding: 0;
+      transition: none;
+    }
+
+    .textfield__input {
+      box-sizing: border-box;
+      flex-grow: 1;
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 1em;
+      resize: none;
+    }
+
+    .textfield__label {
+      left: 0.25em;
+      position: relative;
+      top: 2.75em;
+    }
+  }
+
+  &__input,
+  &__label {
+    box-sizing: border-box;
+  }
+
+  &__icon {
+    & {
+      @include lf-comp-icon($comp);
+      @include lf-el-transition("bouncy");
+      align-self: center;
+      cursor: pointer;
+      outline: none;
+      padding-right: 0.75em;
+    }
+
+    &:hover {
+      opacity: 0.75;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.15em rgb($primaryC);
+    }
+  }
+
+  &__input {
+    & {
+      @include lf-comp-color($comp, "bg", "text");
+      @include lf-comp-font($comp, "primary");
+      @include lf-el-stretch;
+      @include lf-el-text("input");
+      @include lf-el-transition("hover-glow");
+      appearance: none;
+      -webkit-appearance: none;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-sizing: border-box;
+      caret-color: rgba($primaryC, 0.75);
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      min-width: 0;
+      outline: none;
+      padding: 0;
+      text-decoration: inherit;
+      text-transform: inherit;
+    }
+
+    &:placeholder {
+      @include lf-comp-color($comp, "bg", "text", 0.375);
+    }
+  }
+
+  &__label {
+    @include lf-comp-color($comp, "bg", "text");
+    @include lf-el-ellipsis;
+    @include lf-el-text("label");
+    @include lf-el-transition("bouncy");
+    cursor: text;
+    left: 0.25em;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: initial;
+    text-align: left;
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: left top;
+  }
+
+  &__ripple-surface {
+    & {
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    &:before,
+    &:after {
+      border-radius: 2px;
+      bottom: 0;
+      content: "";
+      height: 2px;
+      left: 0;
+      position: absolute;
+    }
+
+    &:before {
+      @include lf-comp-color($comp, "bg", "bg", 0.225, true);
+      width: 100%;
+    }
+
+    &:after {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.775);
+      @include lf-el-transition("slide-in-out", "width");
+      width: 0;
+    }
+  }
+
+  &__resizer {
+    align-self: stretch;
+    display: inline-flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-height: 100%;
+    max-width: 100%;
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component's resizer.
+    *                             Defaults to => 3em
+    */
+    min-height: var(--lf-#{$comp}-height, 3em);
+    min-width: fit-content;
+    min-width: -moz-available;
+    min-width: -webkit-fill-available;
+    overflow: hidden;
+    resize: both;
+    transform: translateX(-1px) translateY(-1px);
+  }
+
+  &__helper-text {
+    & {
+      @include lf-comp-color($comp, "primary", "text", 0.75, true);
+      @include lf-el-text("subtitle");
+      @include lf-el-transition("fade-in-out");
+      line-height: normal;
+      margin: 0;
+      opacity: 0;
+      text-decoration: inherit;
+      text-transform: inherit;
+      will-change: opacity;
+    }
+
+    &--active {
+      opacity: 1;
+      transition: none;
+      will-change: initial;
+    }
+  }
+
+  &__helper-line {
+    border-top: 1px solid rgba(var(--lf-color-border), 0.775);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 1em;
+    padding-left: 1em;
+  }
+}

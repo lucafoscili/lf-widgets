@@ -1,0 +1,166 @@
+$comp: "masonry";
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+:host([lf-selectable]) {
+  lf-image {
+    & {
+      @include lf-el-transition("fade-in-out");
+      box-sizing: border-box;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    &:hover,
+    &[data-selected="true"] {
+      /**
+      * @prop --lf-#{$comp}-selected-filter: Sets the filter for the selected image of the #{$comp} component.
+      *                                      Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      */
+      filter: var(
+        --lf-#{comp}-selected-filter,
+        brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      );
+    }
+
+    &[data-selected="true"] {
+      /**
+      * @prop --lf-#{$comp}-selected-border: Sets the border for the selected image of the #{$comp} component.
+      *                                      Defaults to => 1px solid rgba(var(--lf-color-secondary, 0.875))
+      */
+      border: var(
+        --lf-#{$comp}-selected-border,
+        1px solid rgba(var(--lf-color-secondary, 0.875))
+      );
+    }
+  }
+}
+
+.masonry {
+  & {
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-grid-gap: Sets the gap for the grid of the #{$comp} component.
+    *                               Defaults to => 0.5em
+    */
+    gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    overflow: auto;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the grid of the #{$comp} component.
+    *                              Defaults to => 0.75em
+    */
+    padding: var(--lf-#{$comp}-padding, 0.75em);
+    position: relative;
+  }
+
+  &:not(:hover) {
+    .grid__actions {
+      display: none;
+    }
+  }
+}
+
+.grid {
+  & {
+    @include lf-el-stretch;
+    /**
+    * @prop --lf-#{$comp}-grid-items-alignment: Sets the items alignment for the grid of the #{$comp} component.
+    *                                           Defaults to => start
+    */
+    align-items: var(--lf-#{$comp}-grid-items-alignment, start);
+    column-gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    display: grid;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &--horizontal {
+    & {
+      grid-template-rows: 1fr;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .grid__column {
+      flex-direction: row;
+      height: 100%;
+      min-height: max-content;
+      width: auto;
+    }
+  }
+
+  &--main {
+    & {
+      /**
+      * @prop --lf-#{$comp}-column-size: Sets the column size for the grid of the #{$comp} component.
+      *                                  Defaults to => minmax(0px, 1fr)
+      */
+      grid-template-columns: repeat(
+        var(--lf_#{$comp}_columns),
+        var(--lf-#{$comp}-column-size, minmax(0px, 1fr))
+      );
+    }
+
+    .grid__column {
+      flex-direction: column;
+    }
+  }
+
+  &--vertical {
+    & {
+      grid-template-columns: 1fr;
+    }
+
+    .grid__column {
+      flex-direction: column;
+    }
+  }
+
+  &__column {
+    display: flex;
+    flex: 1;
+    gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    width: 100%;
+  }
+
+  &__actions {
+    /**
+    * @prop --lf-#{$comp}-button-bottom: Sets the bottom for the button of the #{$comp} component.
+    *                                    Defaults to => 1em
+    */
+    bottom: var(--lf-#{$comp}-button-bottom, 1em);
+    display: grid;
+    grid-auto-flow: row;
+    /**
+    * @prop --lf-#{$comp}-grid-gap-actions: Sets the gap for the actions of the #{$comp} component.
+    *                                       Defaults to => 0.5em
+    */
+    grid-gap: var(--lf-#{$comp}-grid-gap-actions, 0.5em);
+    justify-items: center;
+    position: absolute;
+    /**
+    * @prop --lf-#{$comp}-button-right: Sets the right for the button of the #{$comp} component.
+    *                                   Defaults to => 1em
+    */
+    right: var(--lf-#{$comp}-button-right, 1em);
+    /**
+    * @prop --lf-#{$comp}-actions-z-index: Sets the z index for the actions of the #{$comp} component.
+    *                                      Defaults to => 2
+    */
+    z-index: var(--lf-#{$comp}-actions-z-index, 2);
+  }
+
+  &__sub {
+    display: grid;
+    /**
+    * @prop --lf-#{$comp}-grid-gap-actions-sub: Sets the gap for the actions sub of the #{$comp} component.
+    *                                           Defaults to => 0.25em
+    */
+    grid-gap: var(--lf-#{$comp}-grid-gap-actions-sub, 0.25em);
+  }
+}

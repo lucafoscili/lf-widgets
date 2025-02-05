@@ -1,0 +1,205 @@
+$comp: "slider";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+.form-field {
+  & {
+    @include lf-comp-color($comp, "bg", "text");
+    @include lf-el-stretch;
+    @include lf-el-text("label");
+    align-items: center;
+    box-sizing: border-box;
+    display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 2em
+    */
+    padding: var(--lf-#{$comp}-padding, 2em 0.5em);
+    vertical-align: middle;
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+    /**
+    * @prop --lf-#{$comp}-label-min-width: Sets the min-width for the #{$comp} label.
+    *                                      Defaults to => max-content
+    */
+    min-width: var(--lf-#{$comp}-label-min-width, max-content);
+    /**
+    * @prop --lf-#{$comp}-label-padding-left: Sets the left padding for the #{$comp} label.
+    *                                         Defaults to => 1.5em
+    */
+    padding-left: var(--lf-#{$comp}-label-padding-left, 1.5em);
+  }
+
+  &--leading {
+    & .form-field__label {
+      margin-left: auto;
+      margin-right: 0;
+      order: -1;
+      padding-left: 0;
+      /**
+      * @prop --lf-#{$comp}-label-padding-right: Sets the right padding for the #{$comp} label.
+      *                                          Defaults to => 1.5em
+      */
+      padding-right: var(--lf-#{$comp}-label-padding-right, 1.5em);
+    }
+  }
+}
+
+.slider {
+  & {
+    display: block;
+    position: relative;
+    outline: none;
+    /**
+    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+    *                             Defaults to => 0 0.75em
+    */
+    margin: var(--lf-#{$comp}-margin, 0 0.75em);
+    /**
+    * @prop --lf-#{$comp}-min-width: Sets the min-width for the #{$comp} component.
+    *                                Defaults to => 7em
+    */
+    min-width: var(--lf-#{$comp}-min-width, 7em);
+    user-select: none;
+    width: 100%;
+  }
+
+  &--has-value {
+    .slider__track:after {
+      @include lf-comp-border($comp, "radius");
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
+      @include lf-el-transition("springy");
+      position: absolute;
+      content: "";
+      height: 100%;
+      left: 0;
+      top: 0;
+      width: var(--lf_#{$comp}_value);
+    }
+  }
+
+  &__label {
+    cursor: pointer;
+    margin-left: 0;
+    margin-right: auto;
+    /**
+    * @prop --lf-#{$comp}-label-padding-left: Sets the left padding for the #{$comp} label.
+    *                                         Defaults to => 0.5em
+    */
+    padding-left: var(--lf-#{$comp}-label-padding-left, 0.5em);
+    padding-right: 0;
+    user-select: none;
+  }
+
+  &__value {
+    @include lf-comp-color($comp, "bg", "text");
+    @include lf-el-text("button");
+    /**
+    * @prop --lf-#{$comp}-value-bottom-position: Sets the bottom position for the #{$comp} component's value.
+    *                                            Defaults to => -3em
+    */
+    bottom: var(--lf-#{$comp}-value-bottom-position, -3em);
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  &__track {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.25);
+    @include lf-el-transition("springy");
+    /**
+    * @prop --lf-#{$comp}-box-shadow: Sets the box-shadow for the #{$comp} component's track.
+    *                                 Defaults to => 0 0.25em 0.5em rgba(var(--lf-#{comp}-color-on-bg, var(--lf-color-on-bg)), 0.2)
+    */
+    box-shadow: var(
+      --lf-#{$comp}-box-shadow,
+      0 0.25em 0.5em
+        rgba(var(--lf-#{comp}-color-on-bg, var(--lf-color-on-bg)), 0.2)
+    );
+    box-sizing: border-box;
+    /**
+    * @prop --lf-#{$comp}-track-height: Sets the height for the #{$comp} component's track.
+    *                                   Defaults to => 0.5em
+    */
+    height: var(--lf-#{$comp}-track-height, 0.5em);
+    width: 100%;
+  }
+
+  &__thumb-underlay {
+    @include lf-el-transition("springy");
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-thumb-height: Sets the height for the #{$comp} component's thumb.
+    *                                   Defaults to => 1.25em
+    */
+    height: var(--lf-#{$comp}-thumb-height, 1.25em);
+    justify-content: center;
+    left: var(--lf_#{$comp}_value);
+    pointer-events: none;
+    position: absolute;
+    /**
+    * @prop --lf-#{$comp}-thumb-underlay-top: Sets the top position for the #{$comp} component's thumb underlay.
+    *                                         Defaults to => -0.6em
+    */
+    top: var(--lf-#{$comp}-thumb-underlay-top, -0.6em);
+    transform: translateX(-50%);
+    /**
+    * @prop --lf-#{$comp}-thumb-width: Sets the width for the #{$comp} component's thumb.
+    *                                  Defaults to => 1.25em
+    */
+    width: var(--lf-#{$comp}-thumb-width, 1.25em);
+  }
+
+  &__thumb {
+    & {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.6);
+      @include lf-el-transition("springy");
+      border-radius: 50%;
+      /**
+      * @prop --lf-#{$comp}-thumb-box-shadow: Sets the box-shadow for the #{$comp} component's thumb.
+      *                                       Defaults to => 0 0.25em 0.5em rgba(var(--lf-#{comp}-color-on-bg, var(--lf-color-on-bg)), 0.2)
+      */
+      box-shadow: var(
+        --lf-#{$comp}-thumb-box-shadow,
+        0 0.25em 0.5em
+          rgba(var(--lf-#{comp}-color-on-bg, var(--lf-color-on-bg)), 0.2)
+      );
+      cursor: pointer;
+      height: var(--lf-#{$comp}-thumb-height, 1.5em);
+      width: var(--lf-#{$comp}-thumb-width, 1.5em);
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.8);
+      /**
+      * @prop --lf-#{$comp}-thumb-hover-scale: Sets the scale for the #{$comp} component's thumb on hover.
+      *                                        Defaults to => 1.1
+      */
+      transform: scale(var(--lf-#{$comp}-thumb-hover-scale, 1.1));
+    }
+  }
+
+  &__native-control {
+    cursor: pointer;
+    /**
+    * @prop --lf-#{$comp}-input-height: Sets the height for the #{$comp} component's input.
+    *                                   Defaults to => 3em
+    */
+    height: var(--lf-#{$comp}-input-height, 3em);
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: calc(var(--lf-#{$comp}-input-height, 3em) / -2);
+    width: 100%;
+    z-index: 2;
+  }
+}

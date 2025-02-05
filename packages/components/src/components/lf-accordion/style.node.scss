@@ -1,0 +1,130 @@
+.node {
+  & {
+    @include lf-comp-border($comp);
+    @include lf-comp-glassmorphize($comp);
+    border-bottom: 0;
+    border-top: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  &:not(:first-of-type) {
+    @include lf-comp-border($comp, "border");
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  &__content {
+    &,
+    ::slotted(*) {
+      @include lf-comp-border($comp, "radius");
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+
+  &__header {
+    & {
+      @include lf-comp-border($comp, "radius");
+      @include lf-comp-color($comp, "bg", "text");
+      @include lf-el-transition;
+      align-items: center;
+      border: none;
+      box-sizing: border-box;
+      /**
+      * @prop --lf-#{$comp}-cursor: Sets the cursor for the #{$comp} header.
+      *                             Defaults to => pointer
+      */
+      cursor: var(--lf-#{$comp}-cursor, pointer);
+      display: flex;
+      /**
+      * @prop --lf-#{$comp}-line-height: Sets the line height of the #{$comp} header.
+      *                                  Defaults to => 1.75em
+      */
+      line-height: var(--lf-#{$comp}-line-height, 1.75em);
+      outline: none;
+      /**
+      * @prop --lf-#{$comp}-padding: Sets the padding of the #{$comp} header.
+      *                              Defaults to => 1em
+      */
+      padding: var(--lf-#{$comp}-padding, 1em);
+      position: relative;
+      /**
+      * @prop --lf-#{$comp}-text-align: Sets the text alignment of the #{$comp} header.
+      *                                 Defaults to => left
+      */
+      text-align: var(--lf-#{$comp}-text-align, left);
+      width: 100%;
+    }
+
+    &:hover {
+      @include lf-comp-color($comp, "primary", "bg", 0.175);
+    }
+
+    &--expanded {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &--selected {
+      & {
+        @include lf-comp-color($comp, "primary", "bg", 0.375);
+      }
+
+      &:hover {
+        @include lf-comp-color($comp, "primary", "bg", 0.475);
+      }
+    }
+  }
+
+  &__text {
+    & {
+      @include lf-el-ellipsis;
+      @include lf-el-text("title");
+      /**
+      * @prop --lf-#{$comp}-text-margin: Sets the margin of the #{$comp} text.
+      *                                  Defaults to => 0 0.5em 0 0
+      */
+      margin: var(--lf-#{$comp}-text-margin, 0 0.5em 0 0);
+    }
+
+    &--highlighted {
+      @include lf-comp-color($comp, "primary");
+    }
+  }
+
+  &__expand,
+  &__icon {
+    margin: 0;
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp);
+    /**
+    * @prop --lf-#{$comp}-icon-margin: Sets the margin of the #{$comp} icon.
+    *                                  Defaults to => 0 0.5em 0 0
+    */
+    margin: var(--lf-#{$comp}-icon-margin, 0 0.5em 0 0);
+  }
+
+  &__expand {
+    & {
+      @include lf-comp-icon($comp, "dropdown");
+      @include lf-el-transition;
+      /**
+      * @prop --lf-#{$comp}-expand-margin: Sets the margin of the #{$comp} expand icon.
+      *                                    Defaults to => 0 0 0 auto
+      */
+      margin: var(--lf-#{$comp}-expand-margin, 0 0 0 auto);
+    }
+
+    &--expanded {
+      transform: rotate(-180deg);
+    }
+
+    &--placeholder {
+      visibility: hidden;
+    }
+  }
+}

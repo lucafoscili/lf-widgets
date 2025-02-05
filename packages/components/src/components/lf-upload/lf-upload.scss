@@ -1,0 +1,131 @@
+$comp: "upload";
+@include lf-comp-setup($comp, "false", "true", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+.upload {
+  & {
+    @include lf-comp-border($comp);
+    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175);
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 1fr;
+    /**
+    * @prop --lf-#{$comp}-min-height: Sets the min-height for the #{$comp} component.
+    *                                 Defaults to => 8em
+    */
+    min-height: var(--lf-#{$comp}-min-height, 8em);
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 1em
+    */
+    padding: var(--lf-#{$comp}-padding, 1em);
+  }
+
+  &--has-description {
+    & {
+      /**
+      * @prop --lf-#{$comp}-grid-gap: Sets the grid-gap for the #{$comp} component.
+      *                               Defaults to => 1.25em
+      */
+      grid-gap: var(--lf-#{$comp}-grid-gap, 1.25em);
+      /**
+      * @prop --lf-#{$comp}-button-height: Sets the height for the #{$comp} button.
+      *                                    Defaults to => 2.75em
+      */
+      grid-template-rows: var(--lf-#{$comp}-button-height, 2.75em) var(
+          --lf-#{$comp}-info-height,
+          minmax(auto, 25vh)
+        );
+    }
+
+    .file-info {
+      /**
+      * @prop --lf-#{$comp}-item-padding: Sets the padding for the #{$comp} item.
+      *                                   Defaults to => 0.75em
+      */
+      padding: var(--lf-#{$comp}-item-padding, 0.75em);
+    }
+  }
+}
+
+.file-upload {
+  & {
+    @include lf-comp-border($comp);
+    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175);
+    @include lf-el-transition("hover-glow");
+    display: flex;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    @include lf-el-stretch;
+    @include lf-el-text("button");
+    align-content: center;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    text-align: center;
+  }
+
+  &:hover {
+    box-shadow:
+      0 5px 5px -3px rgba(var(--lf-color-on-bg), 0.25),
+      0 8px 10px 1px rgba(var(--lf-color-on-bg), 0.18),
+      0 3px 14px 2px rgba(var(--lf-color-on-bg), 0.15);
+  }
+}
+
+.file-info {
+  & {
+    @include lf-el-transition("hover-glow");
+    max-height: 25dvh;
+    overflow: auto;
+  }
+
+  &__icon {
+    & {
+      @include lf-comp-icon($comp);
+    }
+
+    &--has-actions {
+      & {
+        @include lf-el-transition("hover-glow");
+        cursor: pointer;
+      }
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  &__item {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__name,
+  &__size {
+    @include lf-el-ellipsis;
+    @include lf-el-text("caption");
+    flex-grow: 1;
+  }
+
+  &__name {
+    padding: 0 0.5em;
+    width: 100%;
+  }
+
+  &__size {
+    min-width: max-content;
+    padding: 0 0.5em;
+  }
+}

@@ -1,0 +1,23 @@
+# Yarn
+.yarn/cache
+.yarn/install-state.gz
+
+# Node
+*.log
+.stencil/
+.vscode/
+**/node_modules/
+
+# Output
+**/dist/
+**/downloads/
+**/screenshots/
+**/videos/
+**/www/
+**/components.d.ts
+**/lib/components
+
+packages/components/hydrate-tmp/
+packages/components/doc.json
+
+packages/hydrate/index*

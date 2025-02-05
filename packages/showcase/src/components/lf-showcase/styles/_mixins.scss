@@ -1,0 +1,9 @@
+@mixin showcase-title {
+  @include lf-comp-color("showcase", "bg", "bg", 0.675);
+  @include lf-el-sticky;
+  box-sizing: border-box;
+  margin: 0;
+  text-align: center;
+  text-transform: capitalize;
+  width: 100%;
+}

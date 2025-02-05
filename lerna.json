@@ -1,0 +1,15 @@
+{
+  "npmClient": "yarn",
+  "version": "0.0.0",
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "createRelease": "github",
+      "message": "chore(release): publish",
+      "tagVersionPrefix": ""
+    },
+    "version": {
+      "tagVersionPrefix": ""
+    }
+  }
+}

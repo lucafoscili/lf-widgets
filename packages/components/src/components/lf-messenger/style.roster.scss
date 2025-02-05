@@ -1,0 +1,73 @@
+.roster {
+  & {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+
+  &__image {
+    @include lf-el-stretch;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__portrait {
+    & {
+      --lf-#{$comp}-name-background-color: rgba(var(--lf-color-bg), 0.375);
+      --lf-#{$comp}-portrait-foredrop-color: rgba(var(--lf-color-bg), 0.275);
+
+      cursor: pointer;
+      overflow: auto;
+      position: relative;
+    }
+
+    &:hover {
+      --lf-#{$comp}-name-background-color: rgba(var(--lf-color-bg), 0.775);
+      --lf-#{$comp}-portrait-foredrop-color: rgba(var(--lf-color-bg), 0);
+    }
+
+    &:after {
+      @include lf-el-stretch;
+      @include lf-el-transition("hover-glow");
+      /**
+      * @prop --lf-#{$comp}-portrait-foredrop-color: Sets the color for the foredrop of the portrait.
+      *                                              Defaults to => rgba(var(--lf-color-bg), 0.275)
+      */
+      background: var(--lf-#{$comp}-portrait-foredrop-color);
+      content: "";
+      left: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  &__name {
+    & {
+      @include lf-el-transition("fade-in-out");
+      align-items: center;
+      backdrop-filter: blur(5px);
+      /**
+      * @prop --lf-#{$comp}-name-background-color: Sets the background color for the name of the character.
+      *                                            Defaults to => rgba(var(--lf-color-bg), 0.375)
+      */
+      background-color: var(--lf-#{$comp}-name-background-color);
+      bottom: 0;
+      display: flex;
+      height: var(--lf-#{$comp}-name-height, 2.5em);
+      left: 0;
+      position: absolute;
+      width: 100%;
+    }
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    letter-spacing: 0.225em;
+    text-align: center;
+    width: 100%;
+  }
+}

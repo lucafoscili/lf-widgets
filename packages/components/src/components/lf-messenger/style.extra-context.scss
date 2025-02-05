@@ -1,0 +1,29 @@
+.extra-context {
+  & {
+    @include lf-el-transition("slide-in-out");
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &--collapsed {
+    overflow: hidden;
+    width: 0;
+  }
+
+  &--input {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(2, 50%);
+  }
+
+  &__list {
+    display: grid;
+    overflow: auto;
+  }
+}

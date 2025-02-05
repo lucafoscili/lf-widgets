@@ -1,0 +1,273 @@
+$lf-fonts: (
+  monospace: var(--lf-font-family-monospace),
+  primary: var(--lf-font-family-primary),
+  secondary: var(--lf-font-family-secondary),
+);
+$lf-keyframes: (
+  fade-in: (
+    from: (
+      visibility: hidden,
+      opacity: 0,
+    ),
+    to: (
+      visibility: visible,
+      opacity: 1,
+    ),
+  ),
+  fade-out: (
+    from: (
+      visibility: visible,
+      opacity: 1,
+    ),
+    to: (
+      visibility: hidden,
+      opacity: 0,
+    ),
+  ),
+  pop: (
+    from: (
+      opacity: 0,
+      transform: translate(-50%, -50%) scale(0.8),
+    ),
+    to: (
+      opacity: 1,
+      transform: translate(-50%, -50%) scale(1),
+    ),
+  ),
+  ripple: (
+    from: (
+      transform: scale(0),
+    ),
+    to: (
+      opacity: 0,
+      transform: scale(4),
+    ),
+  ),
+  zoom: (
+    from: (
+      transform: scale(1),
+    ),
+    to: (
+      transform: scale(1.1),
+    ),
+  ),
+  rotation-z: (
+    from: (
+      transform: rotateZ(0deg),
+    ),
+    to: (
+      transform: rotateZ(180deg),
+    ),
+  ),
+);
+$lf-media-breakpoints: (
+  sm: 480px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1536px,
+);
+$lf-sizes: (
+  large: var(--lf-ui-size-large),
+  medium: var(--lf-ui-size-medium),
+  small: var(--lf-ui-size-small),
+  xlarge: var(--lf-ui-size-xlarge),
+  xsmall: var(--lf-ui-size-xsmall),
+  xxlarge: var(--lf-ui-size-xxlarge),
+  xxsmall: var(--lf-ui-size-xxsmall),
+);
+$lf-states-colors: (
+  danger: (
+    primary: --lf-color-danger,
+    on-primary: --lf-color-on-danger,
+  ),
+  disabled: (),
+  info: (
+    primary: --lf-color-info,
+    on-primary: --lf-color-on-info,
+  ),
+  primary: (
+    primary: --lf-color-primary,
+    on-primary: --lf-color-on-primary,
+  ),
+  secondary: (
+    primary: --lf-color-secondary,
+    on-primary: --lf-color-on-secondary,
+  ),
+  success: (
+    primary: --lf-color-success,
+    on-primary: --lf-color-on-success,
+  ),
+  warning: (
+    primary: --lf-color-warning,
+    on-primary: --lf-color-on-warning,
+  ),
+);
+$lf-transitions: (
+  default: (
+    150ms,
+    cubic-bezier(0.42, 0, 0.58, 1),
+  ),
+  bouncy: (
+    250ms,
+    cubic-bezier(0.34, 1.56, 0.64, 1),
+  ),
+  elastic-snap: (
+    400ms,
+    cubic-bezier(0.8, -0.5, 0.2, 1.4),
+  ),
+  fade-in-out: (
+    200ms,
+    cubic-bezier(0.4, 0, 0.6, 1),
+  ),
+  hover-glow: (
+    300ms,
+    cubic-bezier(0.4, 0, 0.2, 1),
+  ),
+  sharp-bounce: (
+    300ms,
+    cubic-bezier(0.68, -0.55, 0.27, 1.55),
+  ),
+  slide-in-out: (
+    300ms,
+    cubic-bezier(0.4, 0, 0.2, 1),
+  ),
+  slow-start: (
+    200ms,
+    cubic-bezier(0.42, 0, 1, 1),
+  ),
+  snappy: (
+    100ms,
+    cubic-bezier(0, 0, 0.58, 1),
+  ),
+  springy: (
+    300ms,
+    cubic-bezier(0.5, 1.7, 0.2, 1),
+  ),
+);
+$lf-typography: (
+  body: (
+    font-size: 1em,
+    font-weight: 400,
+    line-height: 1.6em,
+    letter-spacing: 0em,
+    margin-bottom: 1em,
+  ),
+  button: (
+    font-size: 0.775em,
+    letter-spacing: 0.0892857143em,
+    line-height: inherit,
+    text-transform: uppercase,
+  ),
+  caption: (
+    font-size: 0.875em,
+    font-weight: 400,
+    line-height: 1.25em,
+    letter-spacing: 0.2em,
+  ),
+  code: (
+    font-family: var(--lf-font-family-monospace, monospace),
+    font-size: 0.875em,
+    font-weight: 400,
+    hyphens: none,
+    line-height: 1.5em,
+    letter-spacing: 0.01em,
+    tab-size: 4,
+    text-align: left,
+    white-space: pre,
+    word-break: normal,
+    word-spacing: normal,
+    word-wrap: normal,
+  ),
+  description: (
+    font-size: 0.875em,
+    font-weight: 400,
+    line-height: 1.4em,
+    letter-spacing: 0.02em,
+  ),
+  h1: (
+    font-size: 2em,
+    font-weight: 600,
+    line-height: 1.2em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  h2: (
+    font-size: 1.75em,
+    font-weight: 500,
+    line-height: 1.3em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  h3: (
+    font-size: 1.5em,
+    font-weight: 500,
+    line-height: 1.4em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  h4: (
+    font-size: 1.25em,
+    font-weight: 500,
+    line-height: 1.5em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  h5: (
+    font-size: 1.125em,
+    font-weight: 500,
+    line-height: 1.6em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  h6: (
+    font-size: 1em,
+    font-weight: 500,
+    line-height: 1.5em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+  ),
+  input: (
+    font-size: 1em,
+    font-weight: 400,
+    line-height: 1.5em,
+    letter-spacing: 0em,
+  ),
+  label: (
+    font-size: 0.875em,
+    font-weight: 500,
+    line-height: 1.5em,
+    letter-spacing: 0.01em,
+  ),
+  link: (
+    cursor: pointer,
+    font-size: 1em,
+    font-weight: 400,
+    line-height: 1.5em,
+    letter-spacing: 0em,
+    text-decoration: underline,
+    hover: (
+      text-decoration: none,
+    ),
+  ),
+  list: (
+    font-size: 1em,
+    font-weight: 400,
+    line-height: 1.6em,
+    letter-spacing: 0em,
+    margin-bottom: 0.5em,
+    margin-left: 1.5em,
+  ),
+  subtitle: (
+    font-size: 0.875em,
+    font-weight: 500,
+    line-height: 1.375em,
+    letter-spacing: 0.01em,
+  ),
+  title: (
+    font-size: 1.25em,
+    font-weight: 500,
+    line-height: 1.4em,
+    letter-spacing: 0em,
+  ),
+);
+$lf-ui-colors: ("bg", "border", "link", "surface");

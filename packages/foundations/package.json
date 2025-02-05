@@ -1,0 +1,42 @@
+{
+  "name": "@lf-widgets/foundations",
+  "description": "LF Widgets - Types and constants",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "lf-widgets",
+    "foundations",
+    "types",
+    "constants",
+    "typescript"
+  ],
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "yarn clean && tsc",
+    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucafoscili/lf-widgets.git"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}

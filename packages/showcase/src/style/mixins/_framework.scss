@@ -1,0 +1,196 @@
+/*******************************************
+ * @mixin lf-fw-backdrop
+ * Creates a full-screen backdrop element with a fade-in-out transition.
+ *******************************************/
+@mixin lf-fw-backdrop {
+  [data-lf="backdrop"] {
+    @include lf-el-transition("fade-in-out");
+
+    background: rgba(0, 0, 0, 0.375);
+    height: 100vh;
+    left: 0;
+    opacity: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: var(--lf-ui-zindex-backdrop, 899);
+
+    @include lf-keyframe(lf-fade-in, map-get($lf-keyframes, fade-in));
+  }
+}
+/*******************************************
+ * @mixin lf-fw-fade-in
+ * Applies a fade-in animation to any element with [data-lf="fade-in"].
+ *
+ * @param {String} $display - Which display property to use (e.g. "block", "flex").
+ *                            Defaults to "block".
+ *******************************************/
+@mixin lf-fw-fade-in($display: block) {
+  [data-lf="fade-in"] {
+    display: $display;
+    animation: lf-fade-in-#{$display} 0.25s ease-out forwards;
+    @include lf-keyframe(
+      lf-fade-in-#{$display},
+      map-get($lf-keyframes, fade-in)
+    );
+  }
+}
+/*******************************************
+ * @mixin lf-fw-lightbox
+ * Creates a fixed-position lightbox container for modal content.
+ *******************************************/
+@mixin lf-fw-lightbox {
+  [data-lf="lightbox"] {
+    @include lf-el-transition("fade-in-out");
+    height: 90dvh;
+    left: 5dvw;
+    position: fixed;
+    top: 5dvh;
+    width: 90dvw;
+    z-index: var(--lf-ui-zindex-lightbox, 900);
+  }
+
+  [data-lf="lightbox-content"] {
+    @include lf-el-stretch;
+    border: 1px solid rgba(var(--lf-color-border), 0.375);
+    border-radius: var(--lf-ui-border-radius);
+    box-sizing: border-box;
+    outline: none;
+    z-index: calc(var(--lf-ui-zindex-lightbox, 900) + 1);
+
+    @include lf-keyframe(lf-pop, map-get($lf-keyframes, pop));
+  }
+}
+/*******************************************
+ * @mixin lf-fw-portal
+ * Simple conditional portal display mixin.
+ *
+ * @param {Boolean} $active - If true, displays the portal; if false, hides it (display: none).
+ *******************************************/
+@mixin lf-fw-portal($active: false) {
+  [data-lf="portal"] {
+    display: if($active, block, none);
+
+    @if $active {
+      height: auto;
+      max-height: 45dvh;
+      max-width: 45dvw;
+      min-height: max-content;
+      min-width: max-content;
+      position: fixed;
+      width: auto;
+      z-index: var(--lf-ui-zindex-portal);
+    }
+  }
+}
+/*******************************************
+ * @mixin lf-fw-ripple
+ * Defines a ripple element and its animation for material-style click feedback.
+ *******************************************/
+@mixin lf-fw-ripple {
+  [data-lf="ripple"] {
+    animation-duration: var(--lf-ui-duration-ripple, 675ms);
+    animation-fill-mode: forwards;
+    animation-name: lf-ripple;
+    animation-timing-function: var(--lf-ui-timing-ripple, ease-out);
+    background: var(--lf-ui-ripple-background, var(--lf-color-primary));
+    border-radius: var(--lf-ui-radius-ripple, 50%);
+    height: var(--lf-ui-ripple-height, 100%);
+    left: var(--lf-ui-ripple-x, 50%);
+    opacity: var(--lf-ui-opacity-ripple, 0.5);
+    pointer-events: none;
+    position: absolute;
+    top: var(--lf-ui-ripple-y, 50%);
+    transform: scale(0);
+    width: var(--lf-ui-ripple-width, 100%);
+
+    @include lf-keyframe(lf-ripple, map-get($lf-keyframes, ripple));
+  }
+}
+/*******************************************
+ * @mixin lf-fw-ripple-surface
+ * Defines a container for ripple elements (i.e., the clickable surface).
+ *******************************************/
+@mixin lf-fw-ripple-surface {
+  [data-lf="ripple-surface"] {
+    cursor: pointer;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+/*******************************************
+ * @mixin lf-fw-state-colors
+ * Dynamically sets custom properties for various "states" (hover, active, disabled, etc.)
+ * Each state in $lf-states-colors maps to a base color variable and an optional "rgb" variant.
+ *
+ * @param {String} $comp - Component ID/key (used for namespacing the custom props).
+ *******************************************/
+@mixin lf-fw-state-colors($comp) {
+  @each $state, $colors in $lf-states-colors {
+    [data-lf="#{$state}"] {
+      @if $state != "primary" {
+        @if $state == "disabled" {
+          opacity: var(
+            --lf-#{$comp}-ui-opacity-disabled,
+            var(--lf-ui-opacity-disabled)
+          );
+          pointer-events: none;
+        } @else {
+          @each $key, $base-var in $colors {
+            --lf-#{$comp}-color-#{$key}: var(
+              --lf-#{$comp}-color-#{$state},
+              var(#{$base-var})
+            );
+          }
+        }
+      }
+    }
+  }
+}
+/*******************************************
+ * @mixin lf-fw-tilt
+ * Adds a 3D tilt/hover effect to the element, with a dynamic radial highlight.
+ *
+ * @param {Number} $intensity - (Unused directly here) Potentially used for scaling the tilt.
+ * @param {Time}   $transition - Transition duration (e.g., 275ms).
+ *******************************************/
+@mixin lf-fw-tilt($intensity: 10, $transition: 275ms) {
+  & {
+    transform: rotateX(var(--lf-ui-tilt-y, 0)) rotateY(var(--lf-ui-tilt-x, 0));
+    transition: transform #{$transition} ease-out;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  &::after {
+    @include lf-el-stretch;
+    background: transparent;
+    content: "";
+    left: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transition:
+      background $transition ease-out,
+      box-shadow $transition ease-in;
+  }
+
+  &:hover {
+    & {
+      box-shadow: 0 15px 30px rgba(var(--lf-color-on-bg), 0.375);
+    }
+
+    &::after {
+      background: radial-gradient(
+        circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%),
+        rgba(var(--lf-color-primary), 0.275),
+        transparent
+      );
+    }
+  }
+}

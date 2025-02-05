@@ -1,0 +1,48 @@
+$comp: "header";
+
+@include lf-comp-setup($comp);
+
+:host {
+  @include lf-comp-border($comp, "radius");
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  @include lf-comp-glassmorphize($comp, "header", "all", 0.375, 12px);
+  @include lf-el-transition("slide-in-out");
+  box-shadow:
+    0 2px 4px -1px rgba(var(--lf-color-on-#{$comp}), 0.2),
+    0 4px 5px 0 rgba(var(--lf-color-on-#{$comp}), 0.14),
+    0 1px 10px 0 rgba(var(--lf-color-on-#{$comp}), 0.12);
+  box-sizing: border-box;
+  display: block;
+  height: var(--lf-ui-height-#{$comp});
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: var(--lf-ui-zindex-#{$comp});
+}
+
+.header {
+  & {
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /**
+    * @prop --lf-#{$comp}-justify: Sets the justify for the #{$comp} component.
+    *                              Defaults to => space-between
+    */
+    justify-content: var(--lf-#{$comp}-justify, space-between);
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0.5em 0.75em
+    */
+    padding: var(--lf-#{$comp}-padding, 0.5em 0.75em);
+  }
+
+  &__section {
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: flex;
+    position: relative;
+  }
+}

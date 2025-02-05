@@ -1,0 +1,72 @@
+$comp: "splash";
+@include lf-comp-setup("splash");
+
+:host {
+  margin: 0;
+}
+
+.splash {
+  & {
+    @include lf-comp-color("splash", "bg", "all");
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 100dvh
+    */
+    height: var(--lf-#{$comp}-height, 100dvh);
+    /**
+    * @prop --lf-#{$comp}-left: Sets the left for the #{$comp} component.
+    *                           Defaults to => 0
+    */
+    left: var(--lf-#{$comp}-left, 0);
+    opacity: 1;
+    /**
+    * @prop --lf-#{$comp}-position: Sets the position for the #{$comp} component.
+    *                               Defaults to => fixed
+    */
+    position: var(--lf-#{$comp}-position, fixed);
+    /**
+    * @prop --lf-#{$comp}-top: Sets the top for the #{$comp} component.
+    *                          Defaults to => 0
+    */
+    top: var(--lf-#{$comp}-top, 0);
+    /**
+    * @prop --lf-#{$comp}-width: Sets the width for the #{$comp} component.
+    *                            Defaults to => 100dvw
+    */
+    width: var(--lf-#{$comp}-width, 100dvw);
+    z-index: var(--lf-ui-zindex-#{$comp}, 999);
+  }
+
+  &--active {
+    @include lf-el-transition("fade-in-out", "opacity");
+    opacity: 0;
+  }
+
+  &__content {
+    margin: auto;
+  }
+
+  &__widget {
+    /**
+    * @prop --lf-#{$comp}-widget-height: Sets the height for the #{$comp} widget.
+    *                                    Defaults to => 10em
+    */
+    height: var(--lf-#{$comp}-widget-height, 10em);
+    /**
+    * @prop --lf-#{$comp}-widget-margin: Sets the margin for the #{$comp} widget.
+    *                                    Defaults to => auto
+    */
+    margin: var(--lf-#{$comp}-widget-margin, auto);
+    /**
+    * @prop --lf-#{$comp}-widget-width: Sets the width for the #{$comp} widget.
+    *                                   Defaults to => 10em
+    */
+    width: var(--lf-#{$comp}-widget-width, 10em);
+  }
+
+  &__label {
+    @include lf-el-text("subtitle");
+    text-align: center;
+  }
+}

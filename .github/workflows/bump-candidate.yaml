@@ -1,0 +1,59 @@
+name: Version bump (candidate)
+
+on:
+  push:
+    branches:
+      - candidate
+
+jobs:
+  version-bump:
+    if: "${{ ! contains(github.event.head_commit.message, 'chore: bump versions for release candidate') }}"
+
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Setup and Build
+        uses: ./.github/actions/setup
+        with:
+          node-version: "18.x"
+          install-immutable: "true"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Bump Versions with Lerna
+        run: |
+          npx lerna version --conventional-prerelease --preid=rc --no-push --yes
+
+      - name: Build Packages
+        run: yarn build
+
+      - name: Format Code with Prettier
+        run: yarn format
+
+      - name: Check for Changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+      - name: Create or Update Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "chore: bump versions for release candidate"
+          branch: "version-bump-rc"
+          title: "chore: bump versions for release candidate"
+          body: "This PR bumps package versions for the release candidate."
+          base: "candidate"
+          labels: "automated PR"

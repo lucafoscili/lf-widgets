@@ -1,0 +1,33 @@
+.covers {
+  & {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+  }
+
+  &__title {
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-el-ellipsis;
+    @include lf-el-sticky;
+    @include lf-el-text("button");
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+    /**
+    * @prop --lf-#{$comp}-customization-title-padding: Sets the padding for the title of the customization panel.
+    *                                                  Defaults to => 0.5em
+    */
+    padding: var(--lf-#{$comp}-customization-title-padding, 0.5em);
+  }
+
+  &__images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow: auto;
+    width: 100%;
+  }
+}

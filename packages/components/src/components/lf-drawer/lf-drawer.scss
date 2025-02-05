@@ -1,0 +1,87 @@
+$comp: "drawer";
+$borderC: 1px solid rgba(var(--lf-color-border), 0.75);
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-comp-border($comp, "radius");
+  @include lf-comp-glassmorphize($comp, "drawer", "all", 0.375, 12px);
+  box-sizing: border-box;
+  display: block;
+  height: 100dvh;
+  left: calc(var(--lf-ui-width-#{$comp}) * -1);
+  position: absolute;
+  top: 0;
+  width: var(--lf-ui-width-#{$comp});
+  z-index: var(--lf-ui-zindex-#{$comp});
+}
+
+:host([lf-position="left"]) {
+  @include lf-el-transition("slide-in-out", "left");
+  /**
+  * @prop --lf-#{$comp}-border: Sets the border for the #{$comp} component.
+  *                             Defaults to => 1px solid #{$borderC}
+  */
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-right: var(--lf-#{$comp}-border, $borderC);
+  left: calc(var(--lf-ui-width-#{$comp}) * -1);
+  right: auto;
+}
+
+:host([lf-position="right"]) {
+  @include lf-el-transition("slide-in-out", "right");
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-left: var(--lf-#{$comp}-border, $borderC);
+  left: auto;
+  right: calc(var(--lf-ui-width-#{$comp}) * -1);
+}
+
+:host([lf-display="dock"]) {
+  & {
+    box-shadow: none;
+  }
+
+  &[lf-position="left"] {
+    left: 0;
+  }
+
+  &[lf-position="right"] {
+    right: 0;
+  }
+}
+
+:host([lf-value]) {
+  left: 0;
+}
+
+:host([lf-value][lf-position="left"][lf-display="slide"]) {
+  /**
+  * @prop --lf-#{$comp}-left-box-shadow: Sets the box-shadow for the left side of the #{$comp} component.
+  *                                      Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2), 8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14), 2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
+  */
+  box-shadow: var(
+    --lf-#{$comp}-left-box-shadow,
+    4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2),
+    8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14),
+    2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
+  );
+}
+
+:host([lf-value][lf-position="right"][lf-display="slide"]) {
+  /**
+  * @prop --lf-#{$comp}-right-box-shadow: Sets the box-shadow for the right side of the #{$comp} component.
+  *                                       Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2), -8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14), -2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
+  */
+  box-shadow: var(
+    --lf-#{$comp}-right-box-shadow,
+    -4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2),
+    -8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14),
+    -2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
+  );
+}
+
+.drawer,
+.drawer__content {
+  @include lf-el-stretch;
+}

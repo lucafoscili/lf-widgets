@@ -1,0 +1,60 @@
+$comp: "article";
+@include lf-comp-setup(#{$comp});
+
+:host {
+  @include lf-comp-border($comp, "radius");
+  @include lf-comp-color($comp, "bg", "text");
+}
+
+.article {
+  @include lf-comp-glassmorphize($comp);
+  /**
+  * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+  *                             Defaults to => auto
+  */
+  margin: var(--lf-#{$comp}-margin, auto);
+  /**
+  * @prop --lf-#{$comp}-max-width: Sets the max width for the #{$comp} component.
+  *                                Defaults to => 1200px
+  */
+  max-width: var(--lf-#{$comp}-max-width, 1200px);
+  /**
+  * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+  *                              Defaults to => 2.5em
+  */
+  padding: var(--lf-#{$comp}-padding, 2.5em);
+}
+
+.content {
+  &__body {
+    @include lf-el-text("body");
+    /**
+    * @prop --lf-#{$comp}-font-family-body: Sets the body font family for the #{$comp} component.
+    *                                       Defaults to => var(--lf-font-family-primary)
+    */
+    font-family: var(
+      --lf-#{$comp}-font-family-body,
+      var(--lf-font-family-primary)
+    );
+    /**
+    * @prop --lf-#{$comp}-font-size-body: Sets the body font size for the #{$comp} component.
+    *                                     Defaults to => var(--lf-font-size)
+    */
+    font-size: var(--lf-#{$comp}-font-size-body, var(--lf-font-size));
+  }
+}
+
+.empty-data {
+  @include lf-el-stretch;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+[data-component="LfCode"] {
+  max-width: max-content;
+  margin: auto;
+  padding: 1.75em 0;
+}
+
+@import "./style.tags.scss";

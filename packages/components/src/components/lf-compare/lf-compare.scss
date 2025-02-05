@@ -1,0 +1,169 @@
+$comp: "compare";
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+.compare {
+  & {
+    @include lf-el-stretch;
+  }
+
+  &__grid {
+    @include lf-el-stretch;
+    display: grid;
+    /**
+    * @prop --lf-#{$comp}-grid-template: Sets the grid template for the #{$comp} component.
+    *                                    Defaults to => 0.75em
+    */
+    grid-template-rows: var(--lf-#{comp}-grid-template, 1fr auto);
+    position: relative;
+    user-select: none;
+  }
+}
+
+.toolbar {
+  & {
+    @include lf-comp-border($comp, "radius");
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    @include lf-comp-glassmorphize($comp, "surface", "bg");
+    box-sizing: border-box;
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-toolbar-justify: Sets the justify for the toolbar of the #{$comp} component.
+    *                                      Defaults to => space-between
+    */
+    justify-content: var(--lf-#{$comp}-toolbar-justify, space-between);
+    padding: var(--lf-#{$comp}-toolbar-padding, 0.5em);
+    width: var(--lf-#{$comp}-toolbar-width, 100%);
+  }
+
+  &__panel {
+    & {
+      @include lf-comp-border($comp);
+      @include lf-comp-glassmorphize($comp, "surface");
+      bottom: 0;
+      /**
+      * @prop --lf-#{$comp}-panel-height: Sets the height for the panel of the #{$comp} component.
+      *                                   Defaults to => max-content
+      */
+      height: var(--lf-#{$comp}-panel-height, auto);
+      /**
+      * @prop --lf-#{$comp}-panel-max-height: Sets the max height for the panel of the #{$comp} component.
+      *                                       Defaults to => 50%
+      */
+      max-height: var(--lf-#{$comp}-panel-max-height, 50%);
+      overflow: auto;
+      position: absolute;
+      /**
+      * @prop --lf-#{$comp}-panel-width: Sets the width for the panel of the #{$comp} component.
+      *                                  Defaults to => 50%
+      */
+      width: var(--lf-#{$comp}-panel-width, 50%);
+      /**
+      * @prop --lf-#{$comp}-panel-z-index: Sets the z index for the panel of the #{$comp} component.
+      *                                    Defaults to => var(--lf-ui-zindex-portal)
+      */
+      z-index: var(--lf-#{$comp}-panel-z-index, var(--lf-ui-zindex-portal));
+    }
+
+    &--left {
+      left: 0;
+    }
+
+    &--right {
+      right: 0;
+    }
+  }
+}
+
+.view {
+  & {
+    @include lf-el-stretch;
+    position: relative;
+  }
+
+  &--main {
+    & > :first-child {
+      @include lf-el-stretch;
+      position: relative;
+    }
+
+    & > :last-child {
+      & {
+        @include lf-el-stretch;
+        clip-path: inset(0 var(--lf_#{$comp}_overlay_width, 50%) 0 0);
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+      }
+
+      &:after {
+        @include lf-comp-glassmorphize($comp, "surface", "bg", 0.5);
+        content: "";
+        height: 100%;
+        pointer-events: none;
+        position: absolute;
+        right: var(--lf_#{$comp}_overlay_width, 50%);
+        top: 0;
+        /**
+        * @prop --lf-#{$comp}-slider-thickness: Sets the thickness for the slider of the #{$comp} component.
+        *                                       Defaults to => 3px
+        */
+        width: var(--lf-#{$comp}-slider-thickness, 3px);
+      }
+    }
+  }
+
+  &--split {
+    & {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      overflow: hidden;
+    }
+  }
+
+  &__slider {
+    & {
+      @include lf-el-stretch;
+      left: 0;
+      position: absolute;
+      top: 0;
+      touch-action: pan-y;
+      z-index: 2;
+    }
+  }
+
+  &__input {
+    & {
+      @include lf-el-stretch;
+      appearance: none;
+      background: transparent;
+      cursor: grab;
+      margin: 0;
+      pointer-events: all;
+      z-index: 1;
+    }
+
+    &::-webkit-slider-thumb {
+      @include lf-comp-glassmorphize($comp, "surface", "bg");
+      appearance: none;
+      cursor: ew-resize;
+      height: 100%;
+      margin: 0;
+      width: 10px;
+    }
+
+    &::-moz-slider-thumb {
+      @include lf-comp-glassmorphize($comp, "surface", "bg");
+      appearance: none;
+      cursor: ew-resize;
+      height: 100%;
+      margin: 0;
+      width: 10px;
+    }
+  }
+}

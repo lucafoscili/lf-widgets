@@ -1,0 +1,249 @@
+$box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
+
+.button {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-color($comp, "primary", "text", 1, true);
+    @include lf-comp-font($comp, "primary");
+    @include lf-el-text($comp);
+    @include lf-el-transition;
+    /**
+    * @prop --lf-#{$comp}-align-items: Sets the align items for the #{$comp} component.
+    *                                  Defaults to => center
+    */
+    align-items: var(--lf-#{$comp}-align-items, center);
+    background-color: transparent;
+    border: none;
+    box-sizing: border-box;
+    /**
+    * @prop --lf-#{$comp}-cursor: Sets the cursor for the #{$comp} component.
+    *                             Defaults to => pointer
+    */
+    cursor: var(--lf-#{$comp}-cursor, pointer);
+    display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-font-weight: Sets the font weight for the #{$comp} component.
+    *                                  Defaults to => var(--lf-font-weight-primary)
+    */
+    font-weight: var(--lf-#{$comp}-font-weight);
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 3em
+    */
+    height: var(--lf-#{$comp}-height, 3em);
+    /**
+    * @prop --lf-#{$comp}-justify-content: Sets the justify content for the #{$comp} component.
+    *                                      Defaults to => center
+    */
+    justify-content: var(--lf-#{$comp}-justify-content, center);
+    /**
+    * @prop --lf-#{$comp}-min-width: Sets the min width for the #{$comp} component.
+    *                                Defaults to => 4em
+    */
+    min-width: var(--lf-#{$comp}-min-width, 4em);
+    outline: none;
+    overflow: visible;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0 1.25em
+    */
+    padding: var(--lf-#{$comp}-padding, 0 1.25em);
+    position: relative;
+    /**
+    * @prop --lf-#{$comp}-text-decoration: Sets the text decoration for the #{$comp} component.
+    *                                      Defaults to => none
+    */
+    text-decoration: var(--lf-#{$comp}-text-decoration, none);
+    /**
+    * @prop --lf-#{$comp}-text-transform: Sets the text transform for the #{$comp} component.
+    *                                     Defaults to => uppercase
+    */
+    text-transform: var(--lf-#{$comp}-text-transform, uppercase);
+    user-select: none;
+    vertical-align: middle;
+  }
+
+  &--floating,
+  &--outlined,
+  &--raised {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125, 4px);
+  }
+
+  &:hover {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.25, 4px);
+  }
+
+  &:focus {
+    @include lf-comp-glassmorphize($comp, "primary", "bg");
+  }
+
+  &--floating,
+  &--raised {
+    &:not(.button--disabled) {
+      @include lf-comp-color($comp, "primary", "bg", 0.15);
+    }
+
+    &.button--disabled {
+      box-shadow: none;
+    }
+  }
+
+  &--floating {
+    & {
+      border-radius: 1.5em;
+      box-shadow:
+        0 0.215em 0.35em -1px rgba($box-shadow-color, 0.2),
+        0 0.43em 0.71em 0 rgba($box-shadow-color, 0.14),
+        0 0.07em 1.285em 0 rgba($box-shadow-color, 0.12);
+      font-weight: 500;
+      font-size: 1em;
+      height: 3.4em;
+      width: auto;
+      padding: 0 1.5em;
+    }
+
+    &.button--no-label {
+      border-radius: 50%;
+      height: 4em;
+      padding: 0;
+      width: 4em;
+    }
+
+    &:hover,
+    &:focus {
+      box-shadow:
+        0 5px 5px -3px rgba($box-shadow-color, 0.25),
+        0 8px 10px 1px rgba($box-shadow-color, 0.18),
+        0 3px 14px 2px rgba($box-shadow-color, 0.15);
+    }
+
+    &:active {
+      box-shadow:
+        0 7px 8px -4px rgba($box-shadow-color, 0.2),
+        0 12px 17px 2px rgba($box-shadow-color, 0.14),
+        0 5px 22px 4px rgba($box-shadow-color, 0.12);
+    }
+  }
+
+  &--no-label {
+    & {
+      min-width: unset;
+      padding: 0 0.5em;
+    }
+
+    .button__icon {
+      margin: 0;
+    }
+  }
+
+  &--outlined {
+    & {
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    &:not(.button--disabled) {
+      @include lf-comp-glassmorphize(
+        $comp,
+        "primary",
+        "text",
+        0.125,
+        4px,
+        true
+      );
+      border-color: var(--lf-#{$comp}-color-primary);
+      background-color: transparent;
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.175, 8px, true);
+    }
+
+    &:focus {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.275, 8px, true);
+    }
+  }
+
+  &--raised {
+    box-shadow:
+      0 3px 1px -2px rgba($box-shadow-color, 0.2),
+      0 2px 2px 0 rgba($box-shadow-color, 0.14),
+      0 1px 5px 0 rgba($box-shadow-color, 0.12);
+
+    &:focus,
+    &:hover {
+      box-shadow:
+        0 2px 4px -1px rgba($box-shadow-color, 0.25),
+        0 4px 5px 0 rgba($box-shadow-color, 0.18),
+        0 1px 10px 0 rgba($box-shadow-color, 0.15);
+    }
+
+    &:active {
+      box-shadow:
+        0 5px 5px -3px rgba($box-shadow-color, 0.2),
+        0 8px 10px 1px rgba($box-shadow-color, 0.14),
+        0 3px 14px 2px rgba($box-shadow-color, 0.12);
+    }
+  }
+
+  &--has-spinner {
+    pointer-events: none;
+  }
+
+  &--dropdown {
+    & {
+      max-width: max-content;
+      min-width: unset;
+      padding: 0.5em;
+      position: relative;
+    }
+
+    &:before {
+      @include lf-comp-color($comp, "border", "bg");
+      content: "";
+      height: 100%;
+      left: 0;
+      opacity: 0.75;
+      position: absolute;
+      top: 0;
+      width: 1px;
+    }
+
+    .button__icon {
+      margin: 0;
+    }
+  }
+
+  &__spinner {
+    width: 100%;
+    left: 0;
+    position: absolute;
+  }
+
+  &__icon {
+    & {
+      @include lf-comp-icon($comp, "", "primary", 1.5em, 1, false);
+      margin-left: -0.25em;
+      margin-right: 0.75em;
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__label {
+    & {
+      @include lf-el-ellipsis;
+    }
+
+    & + .button__icon {
+      margin-left: 0.75em;
+      margin-right: -0.25em;
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+}

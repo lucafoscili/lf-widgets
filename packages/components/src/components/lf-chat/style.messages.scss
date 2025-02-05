@@ -1,0 +1,73 @@
+.messages {
+  & {
+    align-content: start;
+    box-sizing: border-box;
+    display: grid;
+    grid-area: messages;
+    /**
+    * @prop --lf-#{$comp}-grid-gap: Sets the grid gap for the messages area.
+    *                               Defaults to => 0.75em
+    */
+    grid-gap: var(--lf-#{$comp}-grid-gap, 0.75em);
+    grid-template-columns: 1fr;
+    /**
+    * @prop --lf-#{$comp}-margin-bottom: Sets the margin bottom for the messages area.
+    *                                    Defaults to => 1em
+    */
+    margin-bottom: var(--lf-#{$comp}-margin-bottom, 1em);
+    /**
+    * @prop --lf-#{$comp}-margin-top: Sets the margin top for the messages area.
+    *                                 Defaults to => 1em
+    */
+    margin-top: var(--lf-#{$comp}-margin-top, 1em);
+    overflow: auto;
+    /**
+    * @prop --lf-#{$comp}-inner-padding: Sets the inner padding for the messages area.
+    *                                    Defaults to => 1em
+    */
+    padding: var(--lf-#{$comp}-inner-padding, 0 1em);
+    white-space: pre-line;
+    width: 100%;
+    word-break: normal;
+  }
+
+  &__container {
+    & {
+      @include lf-comp-border($comp);
+      @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+      @include lf-el-transition("fade-in-out", "background-color");
+      height: max-content;
+      max-width: 80%;
+      position: relative;
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+    }
+
+    &--assistant {
+      justify-self: start;
+    }
+
+    &--user {
+      justify-self: end;
+    }
+  }
+
+  &__empty {
+    font-style: italic;
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  &__content {
+    @include lf-el-text("body");
+    margin: 0;
+    max-width: 100%;
+    padding: 0.75em;
+  }
+
+  &__code {
+    height: auto;
+  }
+}

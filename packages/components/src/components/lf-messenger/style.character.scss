@@ -1,0 +1,76 @@
+.character {
+  & {
+    @include lf-el-transition("slide-in-out");
+    display: grid;
+    grid-template-rows: minmax(auto, 40%) minmax(auto, 1fr);
+    height: 100%;
+    overflow: auto;
+    position: relative;
+  }
+
+  &--collapsed {
+    overflow: hidden;
+    width: 0;
+  }
+
+  &__image {
+    @include lf-el-stretch;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__name {
+    @include lf-comp-color($comp, "surface", "text");
+    align-items: center;
+    display: flex;
+  }
+
+  &__status {
+    & {
+      border-radius: 50%;
+      height: 1em;
+      margin-right: 0.5em;
+      width: 1em;
+    }
+
+    &--offline {
+      @include lf-comp-glassmorphize($comp, "danger", "all", 0.75);
+    }
+
+    &--online {
+      @include lf-comp-glassmorphize($comp, "success", "all", 0.75);
+    }
+  }
+
+  &__name-wrapper {
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-name-height: Sets the height for the name of the character.
+    *                                  Defaults to => 3em
+    */
+    height: var(--lf-#{$comp}-name-height, 3em);
+    justify-content: space-between;
+    left: 0;
+    /**
+    * @prop --lf-#{$comp}-avatar-name-padding: Sets the padding for the name of the character.
+    *                                          Defaults to => 0.5em
+    */
+    padding-left: var(--lf-#{$comp}-avatar-name-padding, 0.5em);
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  &__label {
+    @include lf-el-ellipsis;
+  }
+
+  &__biography {
+    overflow: auto;
+  }
+}

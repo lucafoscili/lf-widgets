@@ -1,0 +1,15 @@
+.keywords-layout {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp);
+    @include lf-el-stretch;
+    display: grid;
+    grid-template-rows: 60% 1fr auto;
+  }
+
+  & ::part(chart) {
+    backdrop-filter: unset;
+    background-color: unset;
+    -webkit-backdrop-filter: unset;
+  }
+}

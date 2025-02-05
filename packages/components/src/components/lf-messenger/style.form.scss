@@ -1,0 +1,28 @@
+.form {
+  &__button {
+    margin: 0 0.25em;
+    padding: 1em 0;
+  }
+
+  &__confirm {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__field {
+    margin: 0.5em 0;
+  }
+
+  &__label {
+    @include lf-comp-glassmorphize($comp, "surface");
+    @include lf-el-ellipsis;
+    @include lf-el-text("button");
+    display: flex;
+    justify-content: center;
+    /**
+    * @prop --lf-#{$comp}-customization-title-padding: Sets the padding for the title of the customization form.
+    *                                                  Defaults to => 0.5em
+    */
+    padding: var(--lf-#{$comp}-customization-title-padding, 0.5em);
+  }
+}

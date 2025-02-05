@@ -1,0 +1,19 @@
+$comp: "card";
+@include lf-comp-setup($comp, "true", "true", "true");
+
+:host {
+  @include lf-comp-color($comp, "bg", "text");
+  height: var(--lf_#{$comp}_height);
+  min-height: var(--lf_#{$comp}_height);
+  min-width: var(--lf_#{$comp}_width);
+  width: var(--lf_#{$comp}_width);
+}
+
+#lf-component {
+  @include lf-comp-border($comp, "radius");
+}
+
+@import "style.debug.scss";
+@import "style.keywords.scss";
+@import "style.material.scss";
+@import "style.upload.scss";

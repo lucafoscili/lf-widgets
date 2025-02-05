@@ -1,0 +1,132 @@
+$comp: "chip";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  @include lf-el-stretch;
+  outline: none;
+}
+
+.chip {
+  & {
+    @include lf-el-stretch;
+    align-content: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.25em;
+  }
+
+  &--choice {
+    .item {
+      & {
+        cursor: pointer;
+      }
+
+      &:hover {
+        & {
+          @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125);
+        }
+      }
+
+      &--selected {
+        & {
+          @include lf-comp-glassmorphize($comp, "primary", "all", 0.875);
+        }
+
+        &:hover {
+          @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
+        }
+
+        & .item__icon--leading:not(.item__icon--hidden) {
+          @include lf-comp-color($comp, "primary", "bg", 1, true);
+        }
+      }
+    }
+  }
+
+  &--filter {
+    .item {
+      & {
+        cursor: pointer;
+      }
+
+      &__icon--leading {
+        & {
+          @include lf-el-transition("fade-in-out", "opacity");
+          opacity: 1;
+        }
+
+        & + .item__checkmark {
+          & {
+            @include lf-el-transition("elastic-snap", "opacity");
+            opacity: 0;
+          }
+
+          .item__checkmark-svg {
+            @include lf-el-transition("default", "width");
+          }
+        }
+
+        &.item__icon--hidden {
+          & {
+            display: none;
+            opacity: 0;
+            width: 0;
+          }
+
+          & + .item__checkmark {
+            height: 1.25em;
+            opacity: 1;
+            width: 1.25em;
+          }
+        }
+      }
+
+      &--selected {
+        .item__icon--leading {
+          opacity: 0;
+        }
+
+        .item__checkmark-path {
+          stroke-dashoffset: 0;
+        }
+
+        .item__checkmark {
+          & {
+            margin-left: -0.25em;
+            margin-right: 0.25em;
+          }
+
+          .item__checkmark-svg {
+            height: 1.25em;
+            width: 1.25em;
+          }
+        }
+      }
+    }
+  }
+
+  &--input {
+    .item__icon {
+      &--trailing {
+        & {
+          cursor: pointer;
+          margin-left: 0.25em;
+          margin-right: -0.25em;
+        }
+
+        &:hover {
+          opacity: 0.75;
+        }
+      }
+
+      &--has-actions {
+        @include lf-comp-icon($comp, delete, "surface");
+      }
+    }
+  }
+}
+
+@import "./style.item.scss";
+@import "./style.wrapper.scss";

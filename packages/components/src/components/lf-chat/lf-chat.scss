@@ -1,0 +1,200 @@
+$comp: "chat";
+@include lf-comp-setup("chat");
+
+:host {
+  @include lf-el-stretch;
+}
+
+#lf-component {
+  position: relative;
+}
+
+.chat {
+  & {
+    @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+    box-sizing: border-box;
+    display: grid;
+    height: 100%;
+    margin: auto;
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 1em
+    */
+    padding: var(--lf-#{$comp}-padding, 1em);
+  }
+
+  &--bottom {
+    align-content: center;
+    /**
+    * @prop --lf-#{$comp}-outer-grid-gap: Sets the outer grid gap for the #{$comp} component.
+    *                                     Defaults to => 0.75em
+    */
+    grid-gap: var(--lf-#{$comp}-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "messages"
+      "spinner"
+      "request";
+    grid-template-rows: 1fr auto auto;
+  }
+
+  &--top {
+    grid-gap: var(--lf-#{$comp}-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "request"
+      "messages"
+      "spinner";
+    grid-template-rows: auto 1fr auto;
+  }
+
+  &--connecting,
+  &--offline {
+    grid-template-areas: none;
+    grid-template-rows: repeat(3, auto);
+  }
+
+  &__configuration {
+    justify-self: center;
+  }
+
+  &__error {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    padding: 2em;
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, "", "bg", 4em, 0.75, true);
+    justify-self: center;
+    margin-bottom: 0.75em;
+  }
+
+  &__spinner {
+    min-height: 3em;
+  }
+
+  &__spinner-bar {
+    bottom: 0;
+    grid-area: spinner;
+    height: 0.25em;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  &__text {
+    @include lf-el-text("subtitle");
+    font-style: italic;
+    opacity: 0.6;
+    text-align: center;
+  }
+
+  &__title {
+    @include lf-el-text("title");
+    text-align: center;
+  }
+}
+
+.request {
+  box-sizing: border-box;
+  grid-area: request;
+  max-width: 100%;
+  /**
+  * @prop --lf-#{$comp}-inner-padding: Sets the inner padding for the #{$comp} component.
+  *                                    Defaults to => 0 1em
+  */
+  padding: var(--lf-#{$comp}-inner-padding, 0 1em);
+  width: 100%;
+}
+
+.commands {
+  & {
+    align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    /**
+    * @prop --lf-#{$comp}-buttons-padding: Sets the padding for the buttons of the #{$comp} component.
+    *                                      Defaults to => 1em 0
+    */
+    padding: var(--lf-#{$comp}-buttons-padding, 1em 0);
+  }
+
+  &__stt {
+    padding: 0 1em;
+  }
+}
+
+.input {
+  & {
+    display: grid;
+    grid-template-areas:
+      "textarea button"
+      "progressbar button";
+    grid-template-columns: 1fr auto;
+  }
+
+  &__button {
+    grid-area: button;
+  }
+
+  &__progressbar {
+    grid-area: progressbar;
+  }
+
+  &__textarea {
+    grid-area: textarea;
+    overflow-x: hidden;
+  }
+}
+
+.settings {
+  & {
+    display: grid;
+    grid-gap: 0.5em;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+  }
+
+  &__configuration {
+    overflow: auto;
+  }
+
+  &__textfield {
+    box-sizing: border-box;
+    padding-top: 0.75em;
+  }
+
+  &__textarea {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-top: 0.75em 0;
+  }
+}
+
+.toolbar {
+  & {
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875);
+    /**
+    * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
+    *                                    Defaults to => var(--lf-ui-border-radius)
+    */
+    border-bottom-left-radius: var(
+      --lf-#{$comp}-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    border-bottom-right-radius: var(
+      --lf-#{$comp}-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5em;
+    width: 100%;
+  }
+
+  &__button {
+    margin: 0 2px;
+  }
+}
+
+@import "./style.messages.scss";

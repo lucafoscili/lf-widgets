@@ -1,0 +1,55 @@
+.button--icon {
+  & {
+    @include lf-comp-color($comp, "primary", "text");
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    box-sizing: border-box;
+    cursor: var(--lf-#{$comp}-cursor, pointer);
+    display: inline-block;
+    font-size: 1em;
+    height: unset;
+    min-width: unset;
+    outline: none;
+    padding: 0.75em;
+    position: relative;
+    text-decoration: var(--lf-#{$comp}-text-decoration, none);
+    user-select: none;
+  }
+
+  &:hover,
+  &:focus {
+    @include lf-comp-color($comp, "primary", "bg", 0.125);
+  }
+
+  &.button--has-spinner {
+    & {
+      pointer-events: none;
+    }
+
+    .button__icon {
+      opacity: 0;
+    }
+
+    .button__spinner {
+      width: 100%;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  & .button__icon {
+    & {
+      display: flex;
+      height: 1.75em;
+      margin: auto;
+      width: 1.75em;
+    }
+
+    &--active {
+      display: none;
+    }
+  }
+}

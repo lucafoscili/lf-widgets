@@ -1,0 +1,136 @@
+.code-word {
+  @include lf-comp-color("", "primary", "text");
+  @include lf-comp-font("", "monospace");
+  @include lf-el-text("code");
+  word-break: break-word;
+}
+
+.component-template {
+  width: 100%;
+}
+
+.example {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    overflow: auto;
+    padding: 0.75em;
+    position: relative;
+    width: 100%;
+  }
+
+  &__component {
+    & {
+      @include lf-comp-border("");
+      @include lf-el-stretch;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      box-sizing: border-box;
+      display: flex;
+      padding: 0.75em;
+    }
+
+    &--expanded {
+      min-height: 10em;
+    }
+
+    & > * {
+      margin: auto;
+      max-height: 80dvh;
+      overflow: auto;
+    }
+
+    & lf-button,
+    & lf-card,
+    & lf-progressbar,
+    & lf-toast {
+      overflow: visible;
+    }
+
+    & lf-carousel {
+      height: 16em;
+    }
+
+    & lf-toast {
+      z-index: 1;
+    }
+  }
+
+  &__description {
+    @include lf-comp-border("", "radius");
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    @include lf-comp-glassmorphize("", "border", "all", 0.75);
+    padding: 12px 0;
+    text-align: center;
+  }
+
+  &__parent {
+    @include lf-comp-border("");
+    @include lf-comp-glassmorphize("", "surface", "all", 0.375);
+    box-sizing: border-box;
+    display: flex;
+    height: 6em;
+    margin: 2em auto;
+    overflow: visible;
+    width: 6em;
+  }
+
+  &__simple-slot {
+    @include lf-comp-font("", "monospace");
+    @include lf-comp-glassmorphize("", "secondary", "bg");
+    @include lf-el-text("code");
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 8em;
+    text-align: center;
+    width: 100%;
+  }
+}
+// data-columns={configuration?.columns || ""}
+.grid {
+  &__examples {
+    & {
+      display: grid;
+      grid-template-columns: repeat(var(--lf-showcase-columns), 1fr);
+      padding: 1em 0;
+      width: 100%;
+    }
+
+    @for $i from 1 through 6 {
+      &[data-columns="#{$i}"] {
+        --lf-showcase-columns: #{$i};
+      }
+    }
+  }
+
+  &__title {
+    & {
+      @include showcase-title;
+      @include lf-comp-glassmorphize("", "secondary", "bg", 0.175);
+      @include lf-el-text("h4");
+      border-top: 1px solid rgb(var(--lf-color-border));
+      padding: 0.5em 0;
+      position: static;
+    }
+  }
+}
+
+@include lf-respond-to-max("md") {
+  .component-template {
+    .grid__examples {
+      --lf-showcase-columns: 2;
+    }
+  }
+}
+
+@include lf-respond-to-max("sm") {
+  .component-template {
+    .grid__examples {
+      --lf-showcase-columns: 1;
+    }
+  }
+}

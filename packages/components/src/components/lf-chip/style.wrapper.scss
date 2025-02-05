@@ -1,0 +1,50 @@
+.wrapper {
+  & {
+    align-items: center;
+    display: flex;
+  }
+
+  &--hidden {
+    .dropdown-icon {
+      transform: unset;
+    }
+  }
+
+  &__indent {
+    /**
+     * @prop --lf-#{$comp}-margin: Sets the margin for the wrapper.
+     * Defaults to => 0.25em
+     */
+    width: calc(
+      var(--lf-#{$comp}-margin, 0.25em) * var(--lf_#{$comp}_indent_offset) *
+        var(--lf-#{$comp}-indent-multiplier, 10)
+    );
+  }
+
+  &__node {
+    & {
+      display: flex;
+      flex-direction: column;
+    }
+
+    & {
+      @include lf-comp-icon($comp, collapsed, "bg");
+      @include lf-el-transition("default", "transform");
+      cursor: pointer;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    &:hover {
+      transform: scale(1.25);
+    }
+
+    &--expanded {
+      @include lf-comp-icon($comp, expanded, "bg");
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+}

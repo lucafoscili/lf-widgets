@@ -1,0 +1,30 @@
+.chat {
+  & {
+    display: grid;
+    grid-template-areas:
+      "nav nav nav"
+      "expander-l chat expander-r";
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &__expander {
+    &--left {
+      grid-area: expander-l;
+    }
+
+    &--right {
+      grid-area: expander-r;
+    }
+  }
+
+  &__navigation {
+    grid-area: nav;
+  }
+
+  &__chat {
+    grid-area: chat;
+  }
+}

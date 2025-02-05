@@ -1,0 +1,38 @@
+//#region Shapes
+export const LF_DATA_SHAPE_MAP = {
+  lfBadge: "badge",
+  lfButton: "button",
+  lfCanvas: "canvas",
+  lfCard: "card",
+  lfChart: "chart",
+  lfChat: "chat",
+  lfChip: "chip",
+  lfCode: "code",
+  lfImage: "image",
+  lfNumber: "number",
+  lfPhotoframe: "photoframe",
+  lfSlot: "slot",
+  lfText: "text",
+  lfToggle: "toggle",
+  lfTypewriter: "typewriter",
+  lfUpload: "upload",
+} as const;
+export const LF_DATA_SHAPES = [
+  "badge",
+  "button",
+  "canvas",
+  "card",
+  "chart",
+  "chat",
+  "chip",
+  "code",
+  "image",
+  "number",
+  "photoframe",
+  "slot",
+  "toggle",
+  "text",
+  "typewriter",
+  "upload",
+] as const;
+//#endregion

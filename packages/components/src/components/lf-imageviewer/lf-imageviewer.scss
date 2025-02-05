@@ -1,0 +1,100 @@
+$comp: "imageviewer";
+$borderC: 1px solid var(--lf-color-border);
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+  @include lf-el-stretch;
+}
+
+.imageviewer {
+  @include lf-el-stretch;
+}
+
+.main-grid {
+  & {
+    @include lf-comp-border($comp);
+    @include lf-el-stretch;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 100% 0;
+    overflow: auto;
+  }
+
+  &--selected {
+    & {
+      grid-template-columns: 30% 70%;
+    }
+
+    .details-grid {
+      display: grid;
+    }
+  }
+}
+
+.navigation-grid {
+  & {
+    @include lf-el-stretch;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    overflow: auto;
+  }
+
+  &__textfield {
+    padding: 0;
+  }
+
+  &__button {
+    padding-bottom: 0.75em;
+  }
+
+  &__masonry {
+    overflow: auto;
+    position: relative;
+  }
+}
+
+.details-grid {
+  & {
+    @include lf-el-stretch;
+    border-left: $borderC;
+    box-sizing: border-box;
+    display: none;
+    grid-template-areas: "image image" "actions actions" "tree settings";
+    grid-template-columns: 40% 1fr;
+    grid-template-rows: 60% auto 1fr;
+    overflow: auto;
+  }
+
+  &__actions {
+    border-left: $borderC;
+    box-sizing: border-box;
+    display: flex;
+    grid-area: actions;
+  }
+
+  &__canvas {
+    border-bottom: $borderC;
+    box-sizing: border-box;
+  }
+
+  &__preview {
+    grid-area: image;
+    position: relative;
+  }
+
+  &__spinner {
+    @include lf-el-stretch;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+  }
+
+  &__tree {
+    border-right: $borderC;
+    box-sizing: border-box;
+    grid-area: tree;
+    overflow: auto;
+  }
+}

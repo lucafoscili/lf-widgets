@@ -1,0 +1,13 @@
+.upload-layout {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp);
+    @include lf-el-stretch;
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  &__section-1 {
+    overflow: hidden;
+  }
+}

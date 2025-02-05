@@ -1,0 +1,43 @@
+$comp: "placeholder";
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+  position: relative;
+}
+
+.placeholder {
+  & {
+    /**
+    * @prop --lf-#{$comp}-ver-alignment: Sets the vertical alignment for the #{$comp} component.
+    *                                    Defaults to => center
+    */
+    align-items: var(--lf-#{$comp}-ver-alignment, center);
+    display: flex;
+    height: var(--lf-#{$comp}-height, 100%);
+    /**
+    * @prop --lf-#{$comp}-hor-alignment: Sets the horizontal alignment for the #{$comp} component.
+    *                                    Defaults to => center
+    */
+    justify-content: var(--lf-#{$comp}-hor-alignment, center);
+    width: var(--lf-#{$comp}-width, 100%);
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, "");
+    @include lf-el-stretch;
+    animation: shine ease 2s infinite;
+  }
+}
+
+@keyframes shine {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}

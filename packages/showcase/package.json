@@ -1,0 +1,55 @@
+{
+  "name": "@lf-widgets/showcase",
+  "description": "LF Widgets - Showcase component and documentation",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "custom elements",
+    "lf widgets",
+    "showcase",
+    "lf nodes",
+    "llm",
+    "monorepo",
+    "scss",
+    "stenciljs",
+    "theming",
+    "typescript",
+    "webcomponents"
+  ],
+  "main": "./dist/index.cjs.js",
+  "module": "dist/index.js",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
+  "unpkg": "dist/@lf-widgets/showcase/lfws.esm.js",
+  "types": "dist/types/index.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "peerDependencies": {
+    "@lf-widgets/components": "0.0.0"
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "yarn clean && npx stencil build --docs",
+    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\"",
+    "dev": "npx stencil build --dev --watch --serve",
+    "doc": "npx stencil doc",
+    "test": "npx cypress run",
+    "test:open": "npx cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucafoscili/lf-widgets.git"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "license": "Apache-2.0"
+}

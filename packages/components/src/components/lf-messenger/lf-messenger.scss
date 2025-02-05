@@ -1,0 +1,37 @@
+$comp: "messenger";
+@include lf-comp-setup($comp, "false", "false", "true");
+
+:host {
+  @include lf-el-stretch;
+  box-sizing: border-box;
+}
+
+.messenger {
+  & {
+    @include lf-el-stretch;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    position: relative;
+  }
+
+  &:has(.character--collapsed) {
+    grid-template-columns: 0 4fr 1fr;
+  }
+
+  &:has(.extra-context--collapsed) {
+    grid-template-columns: 1fr 4fr 0;
+  }
+
+  &:has(.character--collapsed):has(.extra-context--collapsed) {
+    grid-template-columns: 0 1fr 0;
+  }
+}
+
+@import "style.character.scss";
+@import "style.chat.scss";
+@import "style.covers.scss";
+@import "style.extra-context.scss";
+@import "style.form.scss";
+@import "style.list.scss";
+@import "style.options.scss";
+@import "style.roster.scss";

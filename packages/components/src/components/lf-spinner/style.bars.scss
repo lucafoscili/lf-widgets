@@ -1,0 +1,87 @@
+.spinner-bar-v1 {
+  position: absolute;
+  overflow: hidden;
+  transform: translateZ(0);
+  width: 100%;
+  height: 1em;
+
+  &:before {
+    content: "";
+    position: absolute;
+    width: 25%;
+    height: 1em;
+    animation: sk-spinner-bar-v1 5s linear infinite;
+    transform: translateZ(0);
+  }
+}
+
+.spinner-bar-v2 {
+  position: absolute;
+  overflow: hidden;
+  transform: translateZ(0);
+  box-shadow: -1px 0px 2px 2px rgb(var(--lf-color-on-#{$comp}));
+  height: calc(1em - 2px);
+  width: 100%;
+  animation: sk-spinner-bar-v2 5s forwards;
+  animation-timing-function: cubic-bezier(0.19, 0.78, 0.19, 0.78);
+}
+
+.spinner-bar-v3 {
+  & {
+    background-color: rgb(var(--lf-color-#{$comp}));
+    height: calc(1.5em - 2px);
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .progress-bar {
+    animation: sk-spinner-bar-v3 1s infinite ease-in-out;
+    background-color: rgb(var(--lf-color-on-#{$comp}));
+    height: 100%;
+    transition: width 0.1s linear;
+  }
+}
+
+@keyframes sk-spinner-bar-v1 {
+  from {
+    left: -25%;
+    background: linear-gradient(
+      to left,
+      rgb(var(--lf-color-on-#{$comp})) 0,
+      transparent 100%
+    );
+  }
+  50% {
+    left: 100%;
+  }
+  to {
+    left: -25%;
+    background: linear-gradient(
+      to right,
+      var(--lf-color-on-#{$comp}) 0,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes sk-spinner-bar-v2 {
+  from {
+    left: -100%;
+  }
+  to {
+    left: -1%;
+  }
+}
+
+@keyframes sk-spinner-bar-v3 {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}

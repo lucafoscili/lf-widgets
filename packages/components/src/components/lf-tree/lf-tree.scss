@@ -1,0 +1,196 @@
+$comp: "tree";
+@include lf-comp-setup($comp, "false", "true");
+
+:host {
+  @include lf-el-stretch;
+}
+
+:host([lf-accordion-layout]) {
+  .node[data-depth="0"] {
+    & {
+      @include lf-comp-border($comp, "radius");
+      @include lf-comp-glassmorphize($comp, "surface");
+      font-size: 1em;
+      /**
+      * @prop --lf-#{$comp}-accordion-node-height: Sets the height for the #{$comp} accordion node.
+      *                                            Defaults to => 4em
+      */
+      height: var(--lf-#{$comp}-accordion-node-height, 4em);
+    }
+
+    .node__value {
+      @include lf-el-text("button");
+      font-size: 1em;
+    }
+  }
+}
+
+:host([lf-selectable]) {
+  .node {
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "bg", "bg", 0.075, 8px, true);
+    }
+
+    &--selected {
+      & {
+        @include lf-comp-glassmorphize($comp, "bg", "bg", 0.175, 8px, true);
+      }
+
+      &:hover {
+        @include lf-comp-glassmorphize($comp, "bg", "bg", 0.225, 8px, true);
+      }
+    }
+  }
+}
+
+.tree {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "bg", "all", 0.275);
+    /**
+    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+    *                              Defaults to => 0
+    */
+    padding: var(--lf-#{$comp}-padding, 0);
+  }
+
+  &__filter {
+    @include lf-comp-border($comp, "radius");
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875, 15px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.node {
+  & {
+    @include lf-comp-color($comp, "bg", "text");
+    @include lf-el-transition("fade-in-out");
+    box-sizing: border-box;
+    /**
+    * @prop --lf-#{$comp}-node-height: Sets the height for the #{$comp} node.
+    *                                  Defaults to => 2em
+    */
+    height: var(--lf-#{$comp}-node-height, 2em);
+    /**
+    * @prop --lf-#{$comp}-node-padding: Sets the padding for the #{$comp} node.
+    *                                   Defaults to => 0 1em
+    */
+    padding: var(--lf#{$comp}-node-padding, 0 1em);
+    position: relative;
+  }
+
+  &__content {
+    @include lf-el-stretch;
+    align-items: center;
+    display: flex;
+  }
+
+  &__dropdown,
+  &__expand,
+  &__icon {
+    cursor: pointer;
+    margin: 0;
+  }
+
+  &__dropdown,
+  &__expand {
+    & {
+      @include lf-el-transition("fade-in-out");
+      overflow: hidden;
+    }
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  &__dropdown {
+    & {
+      @include lf-comp-icon($comp, dropdown);
+    }
+
+    &--expanded {
+      & {
+        transform: rotate(180deg);
+      }
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__expand {
+    & {
+      @include lf-comp-icon($comp, collapsed);
+    }
+
+    &--expanded {
+      @include lf-comp-icon($comp, expanded);
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp);
+  }
+
+  &__padding {
+    height: 100%;
+    width: calc(1.75em * var(--lf_#{$comp}_padding_multiplier));
+  }
+
+  &__value {
+    @include lf-el-ellipsis;
+    @include lf-el-text("label");
+    margin: 0 0 0 0.5em;
+    width: 100%;
+  }
+}
+
+.no-matches {
+  & {
+    @include lf-comp-color($comp, "bg", "text");
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    padding: 1em;
+    width: 100%;
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, warning);
+    margin-right: 0.375em;
+  }
+
+  &__text {
+    @include lf-el-ellipsis;
+    @include lf-el-text("caption");
+  }
+
+  &__filter {
+    color: var(--lf-primary-color);
+  }
+}
+
+.empty-data {
+  @include lf-el-stretch;
+  @include lf-el-text("body");
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
