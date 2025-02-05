@@ -210,7 +210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lf-widgets/components@npm:^0, @lf-widgets/components@workspace:packages/components":
+"@lf-widgets/components@workspace:packages/components, @lf-widgets/components@workspaces:*":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/components@workspace:packages/components"
   dependencies:
@@ -222,7 +222,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/core@npm:^0, @lf-widgets/core@workspace:packages/core":
+"@lf-widgets/core@workspace:packages/core, @lf-widgets/core@workspaces:*":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/core@workspace:packages/core"
   peerDependencies:
@@ -230,7 +230,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/foundations@npm:^0, @lf-widgets/foundations@workspace:packages/foundations":
+"@lf-widgets/foundations@workspace:packages/foundations, @lf-widgets/foundations@workspaces:*":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/foundations@workspace:packages/foundations"
   languageName: unknown
@@ -264,10 +264,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lf-widgets/root@workspace:."
   dependencies:
-    "@lf-widgets/components": "npm:^0"
-    "@lf-widgets/core": "npm:^0"
-    "@lf-widgets/foundations": "npm:^0"
-    "@lf-widgets/showcase": "npm:^0"
+    "@lf-widgets/components": "workspaces:*"
+    "@lf-widgets/core": "workspaces:*"
+    "@lf-widgets/foundations": "workspaces:*"
+    "@lf-widgets/showcase": "workspaces:*"
     "@stencil/core": "npm:^4"
     "@stencil/react-output-target": "npm:^0"
     "@stencil/sass": "npm:^3"
@@ -297,7 +297,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/showcase@npm:^0, @lf-widgets/showcase@workspace:packages/showcase":
+"@lf-widgets/showcase@workspace:packages/showcase, @lf-widgets/showcase@workspaces:*":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/showcase@workspace:packages/showcase"
   peerDependencies:
