@@ -47,13 +47,14 @@
     "doc": "node ./packages/components/src/scripts/doc.js",
     "format": "prettier --write 'packages/components/src/**/*.{ts,tsx,json,scss}'",
     "lerna": "lerna",
-    "markdown": "node scripts/spreadReadme.js",
+    "markdown": "node scripts/copyReadme.js",
     "mixins": "node ./packages/components/src/scripts/mixins.js",
     "sync:showcase": "yarn doc && yarn mixins",
     "test": "lerna run test --scope @lf-widgets/showcase --stream",
     "test:open": "lerna run test:open --scope @lf-widgets/showcase --stream"
   },
   "workspaces": [
+    "packages/assets",
     "packages/components",
     "packages/core",
     "packages/foundations",

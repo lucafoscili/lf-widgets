@@ -29,8 +29,8 @@ export const getImageFixtures = (
   const icons = Array.from(Object.values(theme.get.icons()));
 
   //#region mock data
-  const image1 = assets.get(`./assets/media/dark.webp`).path;
-  const image2 = assets.get(`./assets/media/light.webp`).path;
+  const image1 = assets.get(`./assets/showcase/dark.webp`).path;
+  const image2 = assets.get(`./assets/showcase/light.webp`).path;
   //#endregion
 
   //#region documentation

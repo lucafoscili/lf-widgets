@@ -42,7 +42,7 @@
   ],
   "scripts": {
     "build": "yarn clean && npx stencil build --docs && yarn hydrate",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\"",
+    "clean": "node ./src/scripts/clean.js",
     "doc": "npx stencil doc",
     "hydrate": "node ./src/scripts/hydrate.js"
   },

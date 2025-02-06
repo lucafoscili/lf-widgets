@@ -16,7 +16,10 @@ export const config: Config = {
     },
     {
       type: "www",
-      copy: [{ src: "assets" }],
+      copy: [
+        { src: "assets" },
+        { src: "../../components/dist/esm", dest: "js/components" },
+      ],
       serviceWorker: null,
     },
     reactOutputTarget({

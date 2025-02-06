@@ -1,4 +1,4 @@
-export { getAssetPath, setAssetPath } from "@stencil/core";
+export { Build, getAssetPath, setAssetPath } from "@stencil/core";
 
 import {
   LF_CORE_EVENT_NAME,
@@ -6,6 +6,7 @@ import {
   type LfCoreEventPayload,
   type LfCoreInterface,
 } from "@lf-widgets/foundations";
+import { Build } from "@stencil/core";
 import { LfCore } from "./lf-core/lf-core";
 
 declare global {
@@ -35,7 +36,7 @@ let lfCore: LfCore | null = null;
  * ```
  */
 export function getLfCore(): LfCore {
-  const isDev = process.env.NODE_ENV === "development";
+  const { isDev } = Build;
 
   if (!lfCore) {
     if (isDev) {
@@ -54,8 +55,9 @@ export function getLfCore(): LfCore {
 
 //#region initLfCore
 function initLfCore() {
-  const isDev = process.env.NODE_ENV === "development";
-  if (isDev) {
+  const { isDev } = Build;
+
+  if (Build.isDev) {
     console.log("Initializing LfCore...");
   }
 

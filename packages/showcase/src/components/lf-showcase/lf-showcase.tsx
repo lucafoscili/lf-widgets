@@ -1,4 +1,4 @@
-import { getLfCore } from "@lf-widgets/components";
+import { getLfCore } from "@lf-widgets/core";
 import {
   LF_WRAPPER_ID,
   LfButtonEventPayload,
@@ -53,7 +53,6 @@ import {
  * @public
  */
 @Component({
-  assetsDirs: ["assets/media"],
   tag: "lf-showcase",
   styleUrl: "lf-showcase.scss",
   shadow: true,

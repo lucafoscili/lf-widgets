@@ -87,7 +87,7 @@ export const getPlaceholderFixtures = (
         threshold: {
           description: "Placeholder component with threshold of 0.75",
           props: {
-            lfProps: { lfValue: get(`./assets/media/dark.webp`).path },
+            lfProps: { lfValue: get(`./assets/showcase/dark.webp`).path },
             lfThreshold: 0.75,
             lfValue: "LfImage",
           },

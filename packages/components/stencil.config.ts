@@ -3,7 +3,7 @@ import { reactOutputTarget } from "@stencil/react-output-target";
 import { sass } from "@stencil/sass";
 
 export const config: Config = {
-  namespace: "lfw",
+  namespace: "lfw",entryComponentsHint
   outputTargets: [
     {
       type: "dist",
@@ -36,7 +36,7 @@ export const config: Config = {
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [
     sass({
-      includePaths: ["./node_modules", "./src/style"],
+      includePaths: ["./src/style"],
       injectGlobalPaths: [
         "src/style/_mixins.scss",
         "src/style/_variables.scss",

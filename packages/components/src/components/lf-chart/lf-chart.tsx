@@ -1,4 +1,4 @@
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 import {
   LF_CHART_BLOCKS,
   LF_CHART_CSS_VARS,

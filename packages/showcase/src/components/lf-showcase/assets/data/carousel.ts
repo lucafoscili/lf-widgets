@@ -112,7 +112,7 @@ export const getCarouselFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/light.webp`).path,
+              value: get(`./assets/showcase/light.webp`).path,
             },
           },
           id: "image_0",
@@ -122,7 +122,7 @@ export const getCarouselFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/dark.webp`).path,
+              value: get(`./assets/showcase/dark.webp`).path,
             },
           },
           id: "image_0",

@@ -1,4 +1,4 @@
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 import {
   LF_ATTRIBUTES,
   LF_DRAWER_BLOCKS,

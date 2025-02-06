@@ -44,7 +44,7 @@ export const getArticleFixtures = (
                     cells: {
                       lfImage: {
                         shape: "image",
-                        value: get(`./assets/media/light.webp`).path,
+                        value: get(`./assets/showcase/light.webp`).path,
                       },
                     },
                     id: "1.1.1.1",
@@ -123,7 +123,7 @@ export const getArticleFixtures = (
                     cells: {
                       lfImage: {
                         shape: "image",
-                        value: get(`./assets/media/dark.webp`).path,
+                        value: get(`./assets/showcase/dark.webp`).path,
                       },
                     },
                     id: "1.3.2.1",

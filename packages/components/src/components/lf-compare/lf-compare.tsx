@@ -37,7 +37,7 @@ import {
   Watch,
 } from "@stencil/core";
 import { createAdapter } from "./lf-compare-adapter";
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 
 /**
  * Represents a comparison component that displays two shapes side by side or

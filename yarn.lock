@@ -210,6 +210,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lf-widgets/assets@workspace:packages/assets":
+  version: 0.0.0-use.local
+  resolution: "@lf-widgets/assets@workspace:packages/assets"
+  languageName: unknown
+  linkType: soft
+
 "@lf-widgets/components@workspace:*, @lf-widgets/components@workspace:packages/components":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/components@workspace:packages/components"
@@ -302,6 +308,8 @@ __metadata:
   resolution: "@lf-widgets/showcase@workspace:packages/showcase"
   peerDependencies:
     "@lf-widgets/components": ^0
+    "@lf-widgets/core": ^0
+    "@lf-widgets/foundations": ^0
   languageName: unknown
   linkType: soft
 

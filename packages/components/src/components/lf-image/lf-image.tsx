@@ -1,4 +1,4 @@
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 import {
   CSS_VAR_PREFIX,
   CY_ATTRIBUTES,

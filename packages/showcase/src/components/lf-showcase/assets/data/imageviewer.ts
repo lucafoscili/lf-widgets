@@ -31,7 +31,7 @@ export const getImageviewerFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/avatar_thor_2.png`).path,
+              value: get(`./assets/showcase/avatar_thor_2.png`).path,
             },
           },
           id: "image_0",
@@ -41,7 +41,7 @@ export const getImageviewerFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/location_forest.png`).path,
+              value: get(`./assets/showcase/location_forest.png`).path,
             },
           },
           id: "image_1",
@@ -51,7 +51,7 @@ export const getImageviewerFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/avatar_freya.png`).path,
+              value: get(`./assets/showcase/avatar_freya.png`).path,
             },
           },
           id: "image_2",

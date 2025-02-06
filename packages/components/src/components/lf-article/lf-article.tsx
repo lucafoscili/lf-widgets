@@ -1,4 +1,4 @@
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 import {
   CY_ATTRIBUTES,
   LF_ARTICLE_BLOCKS,
@@ -58,7 +58,6 @@ import {
  * @fires {CustomEvent} lf-article-event - Emitted for various component events
  */
 @Component({
-  assetsDirs: ["assets/fonts"],
   tag: "lf-article",
   styleUrl: "lf-article.scss",
   shadow: true,

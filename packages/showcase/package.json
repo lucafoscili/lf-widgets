@@ -31,15 +31,18 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "peerDependencies": {
-    "@lf-widgets/components": "^0"
+    "@lf-widgets/components": "^0",
+    "@lf-widgets/core": "^0",
+    "@lf-widgets/foundations": "^0"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
     "build": "yarn clean && npx stencil build --docs",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\"",
-    "dev": "npx stencil build --dev --watch --serve",
+    "clean": "node ./src/scripts/clean.js",
+    "copy": "node ./src/scripts/copyAssets.js",
+    "dev": "yarn copy && npx stencil build --dev --watch --serve",
     "doc": "npx stencil doc",
     "test": "npx cypress run",
     "test:open": "npx cypress open"

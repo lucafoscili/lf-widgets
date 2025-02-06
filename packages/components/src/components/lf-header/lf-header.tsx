@@ -1,4 +1,4 @@
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 import {
   LF_HEADER_BLOCKS,
   LF_HEADER_PARTS,

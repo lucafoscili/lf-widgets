@@ -31,7 +31,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
-import { getLfCore } from "../../index";
+import { getLfCore } from "@lf-widgets/core";
 
 /**
  * Represents an accordion-style component that displays a list of data items,

@@ -24,8 +24,8 @@ export const getPhotoframeFixtures = (
   const icons = Object.values(core.theme.get.icons());
 
   //#region mock data
-  const placeholder = get(`./assets/media/blur_color_splash.jpg`).path;
-  const value = get(`./assets/media/color_splash.jpg`).path;
+  const placeholder = get(`./assets/showcase/blur_color_splash.jpg`).path;
+  const value = get(`./assets/showcase/color_splash.jpg`).path;
   //#endregion
 
   //#region documentation

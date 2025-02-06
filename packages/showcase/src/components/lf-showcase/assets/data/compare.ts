@@ -24,10 +24,10 @@ export const getCompareFixtures = (
 
   //#region mock data
   const images = [
-    get(`./assets/media/dark.webp`).path,
-    get(`./assets/media/light.webp`).path,
-    get(`./assets/media/avatar_thor_2.png`).path,
-    get(`./assets/media/avatar_freya_2.png`).path,
+    get(`./assets/showcase/dark.webp`).path,
+    get(`./assets/showcase/light.webp`).path,
+    get(`./assets/showcase/avatar_thor_2.png`).path,
+    get(`./assets/showcase/avatar_freya_2.png`).path,
   ];
   const lfDataset: Partial<{
     [K in LfComponentName]: LfDataDataset;
