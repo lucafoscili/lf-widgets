@@ -22,7 +22,7 @@
 
 <div align="center">
 
-![GitHub last commit](https://img.shields.io/github/last-commit/lucafoscili/lf-widgets?logo=github&logoColor=black&labelColor=white&color=black) ![GitHub Actions Workflow Status - Cypress Tests](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/cypress-tests.yaml?logo=cypress&logoColor=black&labelColor=white&color=black)
+![GitHub last commit](https://img.shields.io/github/last-commit/lucafoscili/lf-widgets?logo=github&logoColor=black&labelColor=white&color=black) ![GitHub Actions Workflow Status - Cypress Tests](https://img.shields.io/github/actions/workflow/status/lucafoscili/lf-widgets/daily-tests.yaml?logo=cypress&logoColor=black&labelColor=white&color=black)
 
 </div>
 
