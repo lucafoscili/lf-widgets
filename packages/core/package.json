@@ -44,6 +44,7 @@
     "dist/"
   ],
   "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
     "build": "yarn clean && npx stencil build --docs",
     "clean": "node ./src/scripts/clean.js",
     "doc": "npx stencil doc"

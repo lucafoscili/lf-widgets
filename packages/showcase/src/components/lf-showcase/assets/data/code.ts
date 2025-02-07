@@ -4,9 +4,9 @@ import {
   LfCodePropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -101,6 +101,43 @@ export const getCodeFixtures = (
     examples: {
       //#region Uncategorized
       uncategorized: {
+        empty: {
+          description: "Empty Code component",
+          props: {},
+        },
+        noHeader: {
+          description: "Code component without header",
+          props: {
+            lfShowHeader: false,
+            lfValue: snippets.js,
+          },
+        },
+        noCopy: {
+          description: "Code component without copy button",
+          props: {
+            lfShowCopy: false,
+            lfValue: snippets.js,
+          },
+        },
+        format: {
+          description: "Code component without formatting",
+          props: {
+            lfFormat: false,
+            lfValue: snippets.json,
+          },
+        },
+        preserveSpaces: {
+          description: "Code component with preserved spaces",
+          props: {
+            lfPreserveSpaces: true,
+            lfValue: snippets.markdown,
+          },
+        },
+      },
+      //#endregion
+
+      //#region Languages
+      languages: {
         css: {
           description: "Code component with CSS snippet",
           props: {

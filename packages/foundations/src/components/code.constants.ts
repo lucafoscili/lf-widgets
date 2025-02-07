@@ -26,6 +26,7 @@ export const LF_CODE_PROPS = [
   "lfLanguage",
   "lfPreserveSpaces",
   "lfShowCopy",
+  "lfShowHeader",
   "lfStickyHeader",
   "lfStyle",
   "lfUiSize",

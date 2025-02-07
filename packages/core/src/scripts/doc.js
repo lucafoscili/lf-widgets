@@ -2,10 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const prettier = require("prettier");
 
-// Path to the input JSON file
 const inputFilePath = path.join(__dirname, "..", "..", "doc.json");
 
-// Path to the output TypeScript file
 const outputFilePath = path.join(
   __dirname,
   "..",
@@ -19,7 +17,6 @@ const outputFilePath = path.join(
   "doc.ts",
 );
 
-// Read the content of the input file
 fs.readFile(inputFilePath, "utf8", (err, data) => {
   if (err) {
     console.error("Error reading file:", err);
@@ -66,7 +63,6 @@ fs.readFile(inputFilePath, "utf8", (err, data) => {
     });
   });
 
-  // Write the processed data to the output file
   fs.writeFile(
     outputFilePath,
     `import { LfShowcaseDoc } from "../lf-showcase-declarations"; export const LF_DOC : LfShowcaseDoc = ${JSON.stringify(
@@ -81,7 +77,6 @@ fs.readFile(inputFilePath, "utf8", (err, data) => {
       } else {
         console.log("Documentation generated successfully.");
 
-        // Read the newly written file
         fs.readFile(outputFilePath, "utf8", async (readErr, data) => {
           if (readErr) {
             console.error("Error reading file after writing:", readErr);
@@ -89,12 +84,10 @@ fs.readFile(inputFilePath, "utf8", (err, data) => {
           }
 
           try {
-            // Format the file content with Prettier
             const formattedContent = await prettier.format(data, {
               parser: "typescript",
             });
 
-            // Write the formatted content back to the file
             fs.writeFile(
               outputFilePath,
               formattedContent,

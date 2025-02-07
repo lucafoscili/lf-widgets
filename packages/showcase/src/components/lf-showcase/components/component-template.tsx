@@ -130,7 +130,10 @@ const prepExample = <C extends LfComponentTag>(
   manager: LfFrameworkInterface,
   category: string,
 ): VNode => {
-  const { bemClass } = manager.theme;
+  const { bemClass, get } = manager.theme;
+  const { "--lf-icon-copy": copy, "--lf-icon-copy-ok": copyOk } =
+    get.current().variables;
+
   const { description, hasMinHeight, hasParent, props, slots } = example;
   const TagName = component;
   const p = props as LfComponentPropsFor<LfComponentReverseTagMap[C]>;
@@ -142,7 +145,23 @@ const prepExample = <C extends LfComponentTag>(
 
   return (
     <div class={bemClass("example")}>
-      <div class={bemClass("example", "description")}>{description}</div>
+      <div class={bemClass("example", "description")}>
+        <div>{description}</div>
+        <lf-button
+          class={bemClass("example", "copy")}
+          lfIcon={copy}
+          lfStretchY={true}
+          lfStyling="flat"
+          onLf-button-event={(e) => {
+            const { comp, eventType } = e.detail;
+            if (eventType === "click") {
+              navigator.clipboard.writeText(JSON.stringify(p, null, 2));
+              comp.setMessage("", copyOk);
+            }
+          }}
+          title="Copy props"
+        ></lf-button>
+      </div>
       <div
         class={bemClass("example", "component", {
           expanded: hasMinHeight,
