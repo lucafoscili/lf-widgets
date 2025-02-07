@@ -10,9 +10,12 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfDataCell,
   LfDataDataset,
@@ -85,7 +88,7 @@ export interface LfMasonryAdapterGetters
   isMasonry: () => boolean;
   isVertical: () => boolean;
   lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   parts: typeof LF_MASONRY_PARTS;
   shapes: () => LfDataShapesMap;
 }

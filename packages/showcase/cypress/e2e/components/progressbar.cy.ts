@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getProgressbarFixtures } from "../../../src/components/lf-showcase/assets/data/progressbar";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const progressbar = progressbarTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(progressbar).waitForWebComponents([progressbarTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${progressbarTag}> exist.`, () => {
-    const fixtures = getProgressbarFixtures(core);
+    const fixtures = getProgressbarFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(progressbarTag, new Set(keys));
   });

@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfSpinnerPropsInterface,
@@ -21,7 +21,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfSpinner"> = "LfSpinnerEventPayload";
 const TAG_NAME: LfComponentTag<"LfSpinner"> = "lf-spinner";
 
 export const getSpinnerFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-spinner"> => {
   //#region documentation
   const documentation: LfArticleDataset = {

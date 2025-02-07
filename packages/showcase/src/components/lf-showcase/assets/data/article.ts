@@ -4,7 +4,7 @@ import {
   LfArticlePropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -23,9 +23,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfArticle"> = "LfArticleEventPayload";
 const TAG_NAME: LfComponentTag<"LfArticle"> = "lf-article";
 
 export const getArticleFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-article"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const lfDataset: LfArticleDataset = {
@@ -44,7 +44,7 @@ export const getArticleFixtures = (
                     cells: {
                       lfImage: {
                         shape: "image",
-                        value: get(`./assets/media/light.webp`).path,
+                        value: get(`./assets/showcase/light.webp`).path,
                       },
                     },
                     id: "1.1.1.1",
@@ -123,7 +123,7 @@ export const getArticleFixtures = (
                     cells: {
                       lfImage: {
                         shape: "image",
-                        value: get(`./assets/media/dark.webp`).path,
+                        value: get(`./assets/showcase/dark.webp`).path,
                       },
                     },
                     id: "1.3.2.1",

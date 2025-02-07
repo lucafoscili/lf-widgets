@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getCodeFixtures } from "../../../src/components/lf-showcase/assets/data/code";
 import { getExamplesKeys } from "../../support/utils";
@@ -12,17 +12,17 @@ const code = codeTag.replace("lf-", "");
 
 //#region Basic
 describe("Basic", () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(code).waitForWebComponents([codeTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${codeTag}> exist.`, () => {
-    const fixtures = getCodeFixtures(core);
+    const fixtures = getCodeFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(codeTag, new Set(keys));
   });

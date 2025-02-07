@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -32,9 +32,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfTabbar"> = "LfTabbarEventPayload";
 const TAG_NAME: LfComponentTag<"LfTabbar"> = "lf-tabbar";
 
 export const getTabbarFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-tabbar"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region mock data

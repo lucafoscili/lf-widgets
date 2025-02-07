@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -16,7 +16,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfChat"> = "LfChatEventPayload";
 const TAG_NAME: LfComponentTag<"LfChat"> = "lf-chat";
 
 export const getChatFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-chat"> => {
   //#region documentation
   const documentation: LfArticleDataset = {

@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.0.1-rc.5",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "yarn clean && tsc",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\""
+    "clean": "node ./src/scripts/clean.js"
   },
   "repository": {
     "type": "git",

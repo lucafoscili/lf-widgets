@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getChatFixtures } from "../../../src/components/lf-showcase/assets/data/chat";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const chat = chatTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(chat).waitForWebComponents([chatTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${chatTag}> exist.`, () => {
-    const fixtures = getChatFixtures(core);
+    const fixtures = getChatFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(chatTag, new Set(keys));
   });

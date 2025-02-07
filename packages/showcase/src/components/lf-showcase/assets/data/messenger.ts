@@ -2,8 +2,8 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreComputedGetAssetPath,
-  LfCoreInterface,
+  LfFrameworkComputedGetAssetPath,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfMessengerAvatarNode,
@@ -24,9 +24,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfMessenger"> =
 const TAG_NAME: LfComponentTag<"LfMessenger"> = "lf-messenger";
 
 export const getMessengerFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-messenger"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region documentation
   const documentation: LfArticleDataset = {
@@ -142,13 +142,13 @@ Freya embodies the complex nature of feminine power in Norse mythology, combinin
 `;
 
 export const FREYA_AVATARS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerAvatarNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/avatar_freya.png").path,
+        value: get("./assets/showcase/avatar_freya.png").path,
       },
     },
     description: "Freya dressed for war",
@@ -159,7 +159,7 @@ export const FREYA_AVATARS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/avatar_freya_2.png").path,
+        value: get("./assets/showcase/avatar_freya_2.png").path,
       },
     },
     description: "Freya during a ceremony",
@@ -169,13 +169,13 @@ export const FREYA_AVATARS = (
 ];
 
 export const FREYA_LOCATIONS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerLocationNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_lake.png").path,
+        value: get("./assets/showcase/location_lake.png").path,
       },
     },
     description: "Lake at night, the sky feats a beautiful aurora borealis.",
@@ -186,7 +186,7 @@ export const FREYA_LOCATIONS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_armory.png").path,
+        value: get("./assets/showcase/location_armory.png").path,
       },
     },
     description: "Armory of Asgard.",
@@ -196,13 +196,13 @@ export const FREYA_LOCATIONS = (
 ];
 
 export const FREYA_OUTFITS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerOutfitNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/outfit_armor_2.png").path,
+        value: get("./assets/showcase/outfit_armor_2.png").path,
       },
     },
     description: "Regal armor made of gold and engraved.",
@@ -213,7 +213,7 @@ export const FREYA_OUTFITS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/outfit_dress.png").path,
+        value: get("./assets/showcase/outfit_dress.png").path,
       },
     },
     description: "Elegant summer dress fit for a goddess",
@@ -223,13 +223,13 @@ export const FREYA_OUTFITS = (
 ];
 
 export const FREYA_STYLES = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerStyleNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/style_photorealistic.png").path,
+        value: get("./assets/showcase/style_photorealistic.png").path,
       },
     },
     description: "Photorealistic image.",
@@ -240,7 +240,7 @@ export const FREYA_STYLES = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/style_anime.png").path,
+        value: get("./assets/showcase/style_anime.png").path,
       },
     },
     description: "Anime styled image.",
@@ -290,13 +290,13 @@ As one of the most prominent gods in Norse mythology, Thor remains a significant
 `;
 
 export const THOR_AVATARS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerAvatarNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/avatar_thor.png").path,
+        value: get("./assets/showcase/avatar_thor.png").path,
       },
     },
     description: "Thor with Mjollnir",
@@ -307,7 +307,7 @@ export const THOR_AVATARS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/avatar_thor_2.png").path,
+        value: get("./assets/showcase/avatar_thor_2.png").path,
       },
     },
     description: "Thor in the land of fire",
@@ -317,13 +317,13 @@ export const THOR_AVATARS = (
 ];
 
 export const THOR_LOCATIONS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerLocationNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_asgard_halls.png").path,
+        value: get("./assets/showcase/location_asgard_halls.png").path,
       },
     },
     description: "The halls of the Palace of Asgard",
@@ -334,7 +334,7 @@ export const THOR_LOCATIONS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_bifrost_bridge.png").path,
+        value: get("./assets/showcase/location_bifrost_bridge.png").path,
       },
     },
     description: "The portal to other realms.",
@@ -345,7 +345,7 @@ export const THOR_LOCATIONS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_forest.png").path,
+        value: get("./assets/showcase/location_forest.png").path,
       },
     },
     description: "A misteryous forest on Earth.",
@@ -356,7 +356,7 @@ export const THOR_LOCATIONS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/location_armory.png").path,
+        value: get("./assets/showcase/location_armory.png").path,
       },
     },
     description: "Armory of Asgard.",
@@ -366,13 +366,13 @@ export const THOR_LOCATIONS = (
 ];
 
 export const THOR_OUTFITS = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerOutfitNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/outfit_armor.png").path,
+        value: get("./assets/showcase/outfit_armor.png").path,
       },
     },
     description: "Regal armor made of gold and engraved.",
@@ -383,7 +383,7 @@ export const THOR_OUTFITS = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/outfit_armor_3.png").path,
+        value: get("./assets/showcase/outfit_armor_3.png").path,
       },
     },
     description: "Armor made of steel.",
@@ -393,13 +393,13 @@ export const THOR_OUTFITS = (
 ];
 
 export const THOR_STYLES = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerStyleNode[] => [
   {
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/style_comic.png").path,
+        value: get("./assets/showcase/style_comic.png").path,
       },
     },
     description: "Comic image.",
@@ -410,7 +410,7 @@ export const THOR_STYLES = (
     cells: {
       lfImage: {
         shape: "image",
-        value: get("./assets/media/style_painting.png").path,
+        value: get("./assets/showcase/style_painting.png").path,
       },
     },
     description: "Painting styled image.",
@@ -420,7 +420,7 @@ export const THOR_STYLES = (
 ];
 
 export const MESSENGER_LFDATA = (
-  get: LfCoreComputedGetAssetPath,
+  get: LfFrameworkComputedGetAssetPath,
 ): LfMessengerDataset => ({
   nodes: [
     {

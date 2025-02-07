@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfImageviewerEvent,
 } from "@lf-widgets/foundations";
 import { getImageviewerFixtures } from "../../../src/components/lf-showcase/assets/data/imageviewer";
@@ -15,17 +15,17 @@ const imageviewer = imageviewerTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(imageviewer).waitForWebComponents([imageviewerTag, "lf-image"]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${imageviewerTag}> exist.`, () => {
-    const fixtures = getImageviewerFixtures(core);
+    const fixtures = getImageviewerFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(imageviewerTag, new Set(keys));
   });

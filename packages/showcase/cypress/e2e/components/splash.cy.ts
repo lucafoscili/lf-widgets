@@ -73,9 +73,9 @@ describe(CY_CATEGORIES.props, () => {
     cy.get(splashTag)
       .shadow()
       .within(($splash) => {
-        cy.getLfCore()
-          .then((lfCore) => {
-            bemClass = lfCore.theme.bemClass;
+        cy.getLfFramework()
+          .then((lfFramework) => {
+            bemClass = lfFramework.theme.bemClass;
           })
           .then(() => {
             const splash = $splash[0] as HTMLLfSplashElement;

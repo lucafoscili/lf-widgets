@@ -4,7 +4,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -27,9 +27,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfAccordion"> =
 const TAG_NAME: LfComponentTag<"LfAccordion"> = "lf-accordion";
 
 export const getAccordionFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-accordion"> => {
-  const { article, code, id, ikosaedr } = core.theme.get.icons();
+  const { article, code, id, ikosaedr } = framework.theme.get.icons();
 
   //#region mock data
   const lfDataset: LfDataDataset = {
@@ -212,7 +212,7 @@ export const getAccordionFixtures = (
       //#endregion
 
       //#region States
-      states: Object.entries(stateFactory(core.theme)).reduce(
+      states: Object.entries(stateFactory(framework.theme)).reduce(
         (acc, [key, values]) => {
           const state = key as LfThemeUIState;
           const { icon } = values;

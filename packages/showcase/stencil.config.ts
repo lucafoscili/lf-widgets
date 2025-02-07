@@ -3,7 +3,7 @@ import { reactOutputTarget } from "@stencil/react-output-target";
 import { sass } from "@stencil/sass";
 
 export const config: Config = {
-  namespace: "lfws",
+  namespace: "lfw-showcase",
   outputTargets: [
     {
       type: "dist",
@@ -20,7 +20,7 @@ export const config: Config = {
       serviceWorker: null,
     },
     reactOutputTarget({
-      outDir: "../showcase-react/lib/components/stencil-generated/",
+      outDir: "../react-showcase/lib/components/stencil-generated/",
     }),
   ],
   devServer: {

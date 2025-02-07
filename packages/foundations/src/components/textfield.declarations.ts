@@ -1,6 +1,9 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreAllowedKeysMap } from "../framework/core.declarations";
+import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_TEXTFIELD_EVENTS,
@@ -39,7 +42,7 @@ export type LfTextfieldModifiers = (typeof LF_TEXTFIELD_MODIFIERS)[number];
 //#region Props
 export interface LfTextfieldPropsInterface {
   lfHelper?: LfTextfieldHelper;
-  lfHtmlAttributes?: Partial<LfCoreAllowedKeysMap>;
+  lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
   lfIcon?: string;
   lfLabel?: string;
   lfStretchY?: boolean;

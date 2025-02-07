@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -18,9 +18,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCarousel"> = "LfCarouselEventPayload";
 const TAG_NAME: LfComponentTag<"LfCarousel"> = "lf-carousel";
 
 export const getCarouselFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-carousel"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const data: Partial<{
@@ -112,7 +112,7 @@ export const getCarouselFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/light.webp`).path,
+              value: get(`./assets/showcase/light.webp`).path,
             },
           },
           id: "image_0",
@@ -122,7 +122,7 @@ export const getCarouselFixtures = (
           cells: {
             lfImage: {
               shape: "image",
-              value: get(`./assets/media/dark.webp`).path,
+              value: get(`./assets/showcase/dark.webp`).path,
             },
           },
           id: "image_0",

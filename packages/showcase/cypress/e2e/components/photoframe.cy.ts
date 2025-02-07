@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfPhotoframeEvent,
 } from "@lf-widgets/foundations";
 import { getPhotoframeFixtures } from "../../../src/components/lf-showcase/assets/data/photoframe";
@@ -14,17 +14,17 @@ const photoframe = photoframeTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(photoframe).waitForWebComponents([photoframeTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${photoframeTag}> exist.`, () => {
-    const fixtures = getPhotoframeFixtures(core);
+    const fixtures = getPhotoframeFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(photoframeTag, new Set(keys));
   });

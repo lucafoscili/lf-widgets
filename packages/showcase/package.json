@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.0.1-rc.5",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -26,20 +26,22 @@
   "module": "dist/index.js",
   "es2015": "dist/esm/index.js",
   "es2017": "dist/esm/index.js",
-  "unpkg": "dist/@lf-widgets/showcase/lfws.esm.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "peerDependencies": {
-    "@lf-widgets/components": "^0"
+    "@lf-widgets/core": "workspace:*",
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
-    "build": "yarn clean && npx stencil build --docs",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\"",
-    "dev": "npx stencil build --dev --watch --serve",
+    "build": "yarn clean && yarn copy && npx stencil build --docs",
+    "clean": "node ./src/scripts/clean.js",
+    "copy": "node ./src/scripts/copyAssets.js",
+    "dev": "yarn copy && npx stencil build --dev --watch --serve",
     "doc": "npx stencil doc",
     "test": "npx cypress run",
     "test:open": "npx cypress open"

@@ -8,8 +8,8 @@
     />
     <title>LF Widgets - Showcase</title>
     <!-- Load Showcase -->
-    <script type="module" src="/build/lfws.esm.js" defer></script>
-    <script nomodule src="/build/lfws.js" defer></script>
+    <script type="module" src="/build/lfw-showcase.esm.js" defer></script>
+    <script nomodule src="/build/lfw-showcase.js" defer></script>
     <style>
       * {
         box-sizing: border-box;
@@ -41,10 +41,10 @@
         background: rgb(var(--lf-color-spinner-bg)) !important;
       }
       [lf-dark-theme] #bg {
-        background-image: url("./assets/dark.webp");
+        background-image: url("./assets/showcase/dark.webp");
       }
       [lf-light-theme] #bg {
-        background-image: url("./assets/light.webp");
+        background-image: url("./assets/showcase/light.webp");
       }
       [hidden] {
         opacity: 0;
@@ -57,13 +57,17 @@
   <body>
     <script>
       const managerCb = (e) => {
-        const { theme } = e.detail.lfCore;
+        const { assets, theme } = e.detail.lfFramework;
+        const path =
+          window.location.href.split("/").slice(0, -1).join("/") + "/assets";
+        console.log("Setting assets path...", path);
+        assets.set(path);
         requestAnimationFrame(async () => {
           console.log("Setting default theme...");
           theme.set("dark");
         });
         document.removeEventListener("lf-core-event", managerCb);
-        console.log("LfCore ready.");
+        console.log("LfFramework ready.");
       };
       document.addEventListener("lf-core-event", managerCb);
 

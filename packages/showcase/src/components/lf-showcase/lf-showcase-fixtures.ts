@@ -174,13 +174,6 @@ export const LF_SHOWCASE_COMPONENTS = (
         value: "Image viewer",
       },
       {
-        description:
-          "Displays a placeholder until content is ready or enters the viewport.",
-        icon: replace,
-        id: "Placeholder",
-        value: "Placeholder",
-      },
-      {
         description: "A component that displays a list of items.",
         icon: list,
         id: "List",
@@ -206,6 +199,13 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: imageInPicture,
         id: "Photoframe",
         value: "Photoframe",
+      },
+      {
+        description:
+          "Displays a placeholder until content is ready or enters the viewport.",
+        icon: replace,
+        id: "Placeholder",
+        value: "Placeholder",
       },
       {
         description: "Displays the percentage of completion.",
@@ -311,12 +311,6 @@ export const LF_SHOWCASE_FRAMEWORK = (
         value: "Color",
       },
       {
-        description: "Handles various management tasks within the library.",
-        icon: ikosaedr,
-        id: "Core",
-        value: "Core",
-      },
-      {
         description: "Dataset management and manipulation.",
         icon: schema,
         id: "Data",
@@ -339,6 +333,12 @@ export const LF_SHOWCASE_FRAMEWORK = (
         icon: droplet,
         id: "Effects",
         value: "Effects",
+      },
+      {
+        description: "Handles various management tasks within the library.",
+        icon: ikosaedr,
+        id: "Framework",
+        value: "Framework",
       },
       {
         description: "Utility to connect with Open-AI compatible endpoints.",

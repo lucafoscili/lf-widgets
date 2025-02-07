@@ -210,23 +210,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lf-widgets/components@workspace:*, @lf-widgets/components@workspace:packages/components":
+"@lf-widgets/assets@workspace:*, @lf-widgets/assets@workspace:packages/assets":
   version: 0.0.0-use.local
-  resolution: "@lf-widgets/components@workspace:packages/components"
-  dependencies:
-    echarts: "npm:^5"
-    prismjs: "npm:^1"
-  peerDependencies:
-    "@lf-widgets/core": ^0
-    "@lf-widgets/foundations": ^0
+  resolution: "@lf-widgets/assets@workspace:packages/assets"
   languageName: unknown
   linkType: soft
 
 "@lf-widgets/core@workspace:*, @lf-widgets/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/core@workspace:packages/core"
+  dependencies:
+    "@lf-widgets/assets": "workspace:*"
+    echarts: "npm:^5"
+    prismjs: "npm:^1"
   peerDependencies:
-    "@lf-widgets/foundations": ^0
+    "@lf-widgets/foundations": "workspace:*"
+    "@lf-widgets/framework": "workspace:*"
+  dependenciesMeta:
+    "@lf-widgets/assets":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -236,26 +238,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/hydrate@workspace:packages/hydrate":
+"@lf-widgets/framework@workspace:*, @lf-widgets/framework@workspace:packages/framework":
   version: 0.0.0-use.local
-  resolution: "@lf-widgets/hydrate@workspace:packages/hydrate"
+  resolution: "@lf-widgets/framework@workspace:packages/framework"
+  peerDependencies:
+    "@lf-widgets/foundations": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/react-ssr@workspace:packages/react-ssr":
+"@lf-widgets/react-core@workspace:packages/react-core":
   version: 0.0.0-use.local
-  resolution: "@lf-widgets/react-ssr@workspace:packages/react-ssr"
+  resolution: "@lf-widgets/react-core@workspace:packages/react-core"
   peerDependencies:
-    "@lf-widgets/components": ^0
-    "@stencil/react-output-target": ^0
+    "@lf-widgets/core": "workspace:*"
+    "@stencil/react-output-target": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/react@workspace:packages/react":
+"@lf-widgets/react-showcase@workspace:packages/react-showcase":
   version: 0.0.0-use.local
-  resolution: "@lf-widgets/react@workspace:packages/react"
+  resolution: "@lf-widgets/react-showcase@workspace:packages/react-showcase"
   peerDependencies:
-    "@lf-widgets/components": ^0
+    "@lf-widgets/core": "workspace:*"
+    "@lf-widgets/react-core": "workspace:*"
+    "@lf-widgets/showcase": "workspace:*"
     "@stencil/react-output-target": ^0
   languageName: unknown
   linkType: soft
@@ -264,9 +270,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lf-widgets/root@workspace:."
   dependencies:
-    "@lf-widgets/components": "workspace:*"
     "@lf-widgets/core": "workspace:*"
     "@lf-widgets/foundations": "workspace:*"
+    "@lf-widgets/framework": "workspace:*"
     "@lf-widgets/showcase": "workspace:*"
     "@stencil/core": "npm:^4"
     "@stencil/react-output-target": "npm:^0"
@@ -288,20 +294,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lf-widgets/showcase-react@workspace:packages/showcase-react":
-  version: 0.0.0-use.local
-  resolution: "@lf-widgets/showcase-react@workspace:packages/showcase-react"
-  peerDependencies:
-    "@lf-widgets/showcase": ^0
-    "@stencil/react-output-target": ^0
-  languageName: unknown
-  linkType: soft
-
 "@lf-widgets/showcase@workspace:*, @lf-widgets/showcase@workspace:packages/showcase":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/showcase@workspace:packages/showcase"
   peerDependencies:
-    "@lf-widgets/components": ^0
+    "@lf-widgets/core": "workspace:*"
+    "@lf-widgets/foundations": "workspace:*"
+    "@lf-widgets/framework": "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -557,8 +556,8 @@ __metadata:
   linkType: hard
 
 "@nx/devkit@npm:>=17.1.2 < 21":
-  version: 20.4.0
-  resolution: "@nx/devkit@npm:20.4.0"
+  version: 20.4.1
+  resolution: "@nx/devkit@npm:20.4.1"
   dependencies:
     ejs: "npm:^3.1.7"
     enquirer: "npm:~2.3.6"
@@ -570,76 +569,76 @@ __metadata:
     yargs-parser: "npm:21.1.1"
   peerDependencies:
     nx: ">= 19 <= 21"
-  checksum: 10c0/42914d6cae300bd7abde106a1040a61333137d09427732d2e57ae7200ff181d0eb74680a3f1008320d6fbc73440110b23e69405737372298f2e445dd71bc2e52
+  checksum: 10c0/bc2b3c7b76d473b3fea8b0781449893d56816bca1e2614d73945d2779e5de49df1dbf57a5c6c64427971ff54949567c1c4660d2f0c36819fdbd04d72e97442e5
   languageName: node
   linkType: hard
 
-"@nx/nx-darwin-arm64@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-darwin-arm64@npm:20.4.0"
+"@nx/nx-darwin-arm64@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-darwin-arm64@npm:20.4.1"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@nx/nx-darwin-x64@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-darwin-x64@npm:20.4.0"
+"@nx/nx-darwin-x64@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-darwin-x64@npm:20.4.1"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@nx/nx-freebsd-x64@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-freebsd-x64@npm:20.4.0"
+"@nx/nx-freebsd-x64@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-freebsd-x64@npm:20.4.1"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm-gnueabihf@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-linux-arm-gnueabihf@npm:20.4.0"
+"@nx/nx-linux-arm-gnueabihf@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-linux-arm-gnueabihf@npm:20.4.1"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm64-gnu@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-linux-arm64-gnu@npm:20.4.0"
+"@nx/nx-linux-arm64-gnu@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-linux-arm64-gnu@npm:20.4.1"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-arm64-musl@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-linux-arm64-musl@npm:20.4.0"
+"@nx/nx-linux-arm64-musl@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-linux-arm64-musl@npm:20.4.1"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-x64-gnu@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-linux-x64-gnu@npm:20.4.0"
+"@nx/nx-linux-x64-gnu@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-linux-x64-gnu@npm:20.4.1"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@nx/nx-linux-x64-musl@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-linux-x64-musl@npm:20.4.0"
+"@nx/nx-linux-x64-musl@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-linux-x64-musl@npm:20.4.1"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@nx/nx-win32-arm64-msvc@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-win32-arm64-msvc@npm:20.4.0"
+"@nx/nx-win32-arm64-msvc@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-win32-arm64-msvc@npm:20.4.1"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@nx/nx-win32-x64-msvc@npm:20.4.0":
-  version: 20.4.0
-  resolution: "@nx/nx-win32-x64-msvc@npm:20.4.0"
+"@nx/nx-win32-x64-msvc@npm:20.4.1":
+  version: 20.4.1
+  resolution: "@nx/nx-win32-x64-msvc@npm:20.4.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2624,9 +2623,9 @@ __metadata:
   linkType: hard
 
 "exponential-backoff@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "exponential-backoff@npm:3.1.1"
-  checksum: 10c0/160456d2d647e6019640bd07111634d8c353038d9fa40176afb7cd49b0548bdae83b56d05e907c2cce2300b81cae35d800ef92fefb9d0208e190fa3b7d6bb579
+  version: 3.1.2
+  resolution: "exponential-backoff@npm:3.1.2"
+  checksum: 10c0/d9d3e1eafa21b78464297df91f1776f7fbaa3d5e3f7f0995648ca5b89c069d17055033817348d9f4a43d1c20b0eab84f75af6991751e839df53e4dfd6f22e844
   languageName: node
   linkType: hard
 
@@ -4744,20 +4743,20 @@ __metadata:
   linkType: hard
 
 "nx@npm:>=17.1.2 < 21":
-  version: 20.4.0
-  resolution: "nx@npm:20.4.0"
+  version: 20.4.1
+  resolution: "nx@npm:20.4.1"
   dependencies:
     "@napi-rs/wasm-runtime": "npm:0.2.4"
-    "@nx/nx-darwin-arm64": "npm:20.4.0"
-    "@nx/nx-darwin-x64": "npm:20.4.0"
-    "@nx/nx-freebsd-x64": "npm:20.4.0"
-    "@nx/nx-linux-arm-gnueabihf": "npm:20.4.0"
-    "@nx/nx-linux-arm64-gnu": "npm:20.4.0"
-    "@nx/nx-linux-arm64-musl": "npm:20.4.0"
-    "@nx/nx-linux-x64-gnu": "npm:20.4.0"
-    "@nx/nx-linux-x64-musl": "npm:20.4.0"
-    "@nx/nx-win32-arm64-msvc": "npm:20.4.0"
-    "@nx/nx-win32-x64-msvc": "npm:20.4.0"
+    "@nx/nx-darwin-arm64": "npm:20.4.1"
+    "@nx/nx-darwin-x64": "npm:20.4.1"
+    "@nx/nx-freebsd-x64": "npm:20.4.1"
+    "@nx/nx-linux-arm-gnueabihf": "npm:20.4.1"
+    "@nx/nx-linux-arm64-gnu": "npm:20.4.1"
+    "@nx/nx-linux-arm64-musl": "npm:20.4.1"
+    "@nx/nx-linux-x64-gnu": "npm:20.4.1"
+    "@nx/nx-linux-x64-musl": "npm:20.4.1"
+    "@nx/nx-win32-arm64-msvc": "npm:20.4.1"
+    "@nx/nx-win32-x64-msvc": "npm:20.4.1"
     "@yarnpkg/lockfile": "npm:^1.1.0"
     "@yarnpkg/parsers": "npm:3.0.2"
     "@zkochan/js-yaml": "npm:0.0.7"
@@ -4823,7 +4822,7 @@ __metadata:
   bin:
     nx: bin/nx.js
     nx-cloud: bin/nx-cloud.js
-  checksum: 10c0/8d4116e50f2ae1d8f34632df3a2a06483ca82efaac15fe2c4d30e49bc0ca2cdfd4ab9ce06a2564209a7e13f022b020832aaf9f03f12d44cb0e152f49f3e61196
+  checksum: 10c0/3b408d954758dda12dbd95df33619a4763734639ccbea21c3cefd5bb3e48ba3501020f1f13e746f6a4ca3b9507c0455d7f367aee66e15b83487e61e779fe87f5
   languageName: node
   linkType: hard
 

@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfTabbarEvent,
 } from "@lf-widgets/foundations";
 import { getTabbarFixtures } from "../../../src/components/lf-showcase/assets/data/tabbar";
@@ -15,17 +15,17 @@ const tabbar = tabbarTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(tabbar).waitForWebComponents([tabbarTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${tabbarTag}> exist.`, () => {
-    const fixtures = getTabbarFixtures(core);
+    const fixtures = getTabbarFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(tabbarTag, new Set(keys));
   });

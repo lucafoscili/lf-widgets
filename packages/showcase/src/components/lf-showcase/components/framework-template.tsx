@@ -1,17 +1,17 @@
-import { LfCoreInterface } from "@lf-widgets/foundations";
+import { LfFrameworkInterface } from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
-import { getFrameworkFixtures } from "../helpers/doc.fixtures";
+import { getAllFrameworkFixtures } from "../helpers/doc.fixtures";
 import { LfShowcase } from "../lf-showcase";
 
 const fixtureCache = new WeakMap<
   LfShowcase,
-  Map<string, ReturnType<typeof getFrameworkFixtures>>
+  Map<string, ReturnType<typeof getAllFrameworkFixtures>>
 >();
 
 export const FrameworkTemplate: FunctionalComponent<{
   framework: string;
   showcase: LfShowcase;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
 }> = ({ framework, showcase, manager }) => {
   const { bemClass } = manager.theme;
 
@@ -35,7 +35,7 @@ const getCachedFixtures = (framework: string, showcase: LfShowcase) => {
   const managerCache = fixtureCache.get(showcase)!;
 
   if (!managerCache.has(framework)) {
-    managerCache.set(framework, getFrameworkFixtures(framework));
+    managerCache.set(framework, getAllFrameworkFixtures(framework));
   }
 
   return managerCache.get(framework)!;

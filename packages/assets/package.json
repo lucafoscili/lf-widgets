@@ -1,0 +1,28 @@
+{
+  "name": "@lf-widgets/assets",
+  "description": "LF Widgets - Centralized asset repository for SVG, fonts, and example images.",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "lf-widgets",
+    "assets",
+    "icons",
+    "fonts",
+    "webcomponents",
+    "static"
+  ],
+  "files": [
+    "assets/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucafoscili/lf-assets.git"
+  },
+  "license": "Apache-2.0"
+}

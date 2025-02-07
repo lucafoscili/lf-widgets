@@ -5,7 +5,7 @@ import {
   LfCardPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -27,9 +27,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCard"> = "LfCardEventPayload";
 const TAG_NAME: LfComponentTag<"LfCard"> = "lf-card";
 
 export const getCardFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-card"> => {
-  const { assets, theme } = core;
+  const { assets, theme } = framework;
   const { get } = assets;
 
   //#region mock data
@@ -205,7 +205,7 @@ export const getCardFixtures = (
               },
               lfImage: {
                 shape: "image",
-                value: get(`./assets/media/outfit_dress.png`).path,
+                value: get(`./assets/showcase/outfit_dress.png`).path,
               },
             },
             description:
@@ -221,7 +221,7 @@ export const getCardFixtures = (
               1: { value: "Light theme " },
               lfImage: {
                 shape: "image",
-                value: get(`./assets/media/light.webp`).path,
+                value: get(`./assets/showcase/light.webp`).path,
               },
             },
             description: "Material card with title and image",
@@ -237,7 +237,7 @@ export const getCardFixtures = (
               2: { value: "Default" },
               lfImage: {
                 shape: "image",
-                value: get(`./assets/media/dark.webp`).path,
+                value: get(`./assets/showcase/dark.webp`).path,
               },
             },
             description: "Material card with title, subtitle and image",
@@ -257,7 +257,7 @@ export const getCardFixtures = (
               },
               lfImage: {
                 shape: "image",
-                value: get(`./assets/media/avatar_freya.png`).path,
+                value: get(`./assets/showcase/avatar_freya.png`).path,
               },
             },
             description:
@@ -278,7 +278,7 @@ export const getCardFixtures = (
               },
               lfImage: {
                 shape: "image",
-                value: get(`./assets/media/avatar_thor.png`).path,
+                value: get(`./assets/showcase/avatar_thor.png`).path,
               },
             },
             description: "Material card with description and image",

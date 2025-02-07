@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -30,9 +30,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfToggle"> = "LfToggleEventPayload";
 const TAG_NAME: LfComponentTag<"LfToggle"> = "lf-toggle";
 
 export const getToggleFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-toggle"> => {
-  const { theme } = core;
+  const { theme } = framework;
 
   //#region documentation
   const documentation: LfArticleDataset = {

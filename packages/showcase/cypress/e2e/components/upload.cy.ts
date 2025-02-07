@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfUploadEvent,
 } from "@lf-widgets/foundations";
 import { getUploadFixtures } from "../../../src/components/lf-showcase/assets/data/upload";
@@ -15,17 +15,17 @@ const upload = uploadTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(upload).waitForWebComponents([uploadTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${uploadTag}> exist.`, () => {
-    const fixtures = getUploadFixtures(core);
+    const fixtures = getUploadFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(uploadTag, new Set(keys));
   });

@@ -4,7 +4,7 @@ import {
   LfCodePropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -25,9 +25,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCode"> = "LfCodeEventPayload";
 const TAG_NAME: LfComponentTag<"LfCode"> = "lf-code";
 
 export const getCodeFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-code"> => {
-  const { theme } = core;
+  const { theme } = framework;
 
   //#region mock data
   const snippets = {

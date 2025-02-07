@@ -14,9 +14,12 @@ import {
   LfComponentAdapterHandlers,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfDataColumn,
   LfDataDataset,
@@ -97,7 +100,7 @@ export interface LfChartAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChartInterface> {
   compInstance: LfChartInterface;
   columnById: (id: string) => LfDataColumn;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   mappedType: (type: LfChartType) => SeriesOption["type"];
   options: LfChartAdapterOptions;
   seriesColumn: (seriesName: string) => LfDataColumn[];

@@ -1,4 +1,4 @@
-import { LfCoreClickCb } from "./core.declarations";
+import { LfFrameworkClickCb } from "./framework.declarations";
 import { LF_PORTAL_PLACEMENTS } from "./portal.constants";
 
 //#region Class
@@ -20,7 +20,7 @@ export interface LfPortalInterface {
 export type LfPortalAnchor = HTMLElement | LfPortalCoordinates;
 export interface LfPortalState {
   anchor: LfPortalAnchor;
-  dismissCb: LfCoreClickCb;
+  dismissCb: LfFrameworkClickCb;
   margin: number;
   parent: HTMLElement;
   placement: LfPortalPlacements;
