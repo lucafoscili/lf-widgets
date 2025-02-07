@@ -46,7 +46,7 @@ export const prepCharacter = (
       return (
         <lf-code
           lfLanguage="markdown"
-          lfShowCopy={false}
+          lfShowHeader={false}
           lfValue={biography()}
           ref={assignRef(character, "biography")}
         ></lf-code>

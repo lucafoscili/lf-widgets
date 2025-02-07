@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -12,11 +11,12 @@ import {
   LfCodeEventPayload,
   LfCodeInterface,
   LfCodePropsInterface,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
+import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -31,17 +31,17 @@ import {
   Watch,
 } from "@stencil/core";
 import Prism from "prismjs";
-import { LF_CODE_CSS } from "./language.css";
-import { LF_CODE_JAVASCRIPT } from "./language.javascript";
-import { LF_CODE_JSON } from "./language.json";
-import { LF_CODE_JSX } from "./language.jsx";
-import { LF_CODE_MARKDOWN } from "./language.markdown";
-import { LF_CODE_MARKUP } from "./language.markup";
-import { LF_CODE_PYTHON } from "./language.python";
-import { LF_CODE_REGEX } from "./language.regex";
-import { LF_CODE_SCSS } from "./language.scss";
-import { LF_CODE_TSX } from "./language.tsx";
-import { LF_CODE_TYPESCRIPT } from "./language.typescript";
+import { LF_CODE_CSS } from "./prism.css.highlight";
+import { LF_CODE_JAVASCRIPT } from "./prism.javascript.highlight";
+import { LF_CODE_JSON } from "./prism.json.highlight";
+import { LF_CODE_JSX } from "./prism.jsx.highlight.js";
+import { LF_CODE_MARKDOWN } from "./prism.markdown.highlight";
+import { LF_CODE_MARKUP } from "./prism.markup.highlight";
+import { LF_CODE_PYTHON } from "./prism.python.highlight";
+import { LF_CODE_REGEX } from "./prism.regex.highlight";
+import { LF_CODE_SCSS } from "./prism.scss.highlight";
+import { LF_CODE_TSX } from "./prism.tsx.highlight";
+import { LF_CODE_TYPESCRIPT } from "./prism.typescript.highlight";
 
 /**
  * The code component displays a snippet of code in a styled container with
@@ -67,7 +67,6 @@ import { LF_CODE_TYPESCRIPT } from "./language.typescript";
  * @fires {CustomEvent} lf-code-event - Emitted for various component events
  */
 @Component({
-  assetsDirs: ["assets/prism"],
   tag: "lf-code",
   styleUrl: "lf-code.scss",
   shadow: true,
@@ -136,6 +135,19 @@ export class LfCode implements LfCodeInterface {
    * ```
    */
   @Prop({ mutable: true }) lfShowCopy: boolean = true;
+  /**
+   * Whether to show the header or not.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-code lfShowHeader={true} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfShowHeader: boolean = true;
   /**
    * Determines whether the header is sticky or not.
    *
@@ -360,6 +372,57 @@ export class LfCode implements LfCodeInterface {
 
     this.value = lfFormat ? this.#format(lfValue) : lfValue;
   }
+  #prepHeader() {
+    const { bemClass, get } = this.#framework.theme;
+    const {
+      "--lf-icon-copy": copy,
+      "--lf-icon-copy-ok": copyOk,
+      "--lf-icon-warning": warning,
+    } = get.current().variables;
+
+    const { code } = this.#b;
+    const { lfLanguage, lfShowCopy, lfValue } = this;
+
+    return (
+      <div
+        class={bemClass(code._, code.header, {
+          sticky: this.lfStickyHeader,
+        })}
+        data-lf={this.#lf[this.lfUiState]}
+        part={this.#p.header}
+      >
+        <span class={bemClass(code._, code.title)} part={this.#p.title}>
+          {lfLanguage}
+        </span>
+        {lfShowCopy && (
+          <lf-button
+            data-cy={this.#cy.button}
+            lfIcon={copy}
+            lfLabel="Copy"
+            lfStretchY={true}
+            lfStyling="flat"
+            lfUiSize={this.lfUiSize}
+            lfUiState={this.lfUiState}
+            onLf-button-event={(e) => {
+              const { comp, eventType } = e.detail;
+              switch (eventType) {
+                case "click":
+                  try {
+                    navigator.clipboard.writeText(lfValue);
+                    comp.setMessage("Copied!", copyOk);
+                  } catch (error) {
+                    comp.setMessage("Failed...", warning);
+                  }
+
+                  break;
+              }
+            }}
+            part={this.#p.copy}
+          ></lf-button>
+        )}
+      </div>
+    );
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -398,15 +461,10 @@ export class LfCode implements LfCodeInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, get, setLfStyle } = this.#framework.theme;
-    const {
-      "--lf-icon-copy": copy,
-      "--lf-icon-copy-ok": copyOk,
-      "--lf-icon-warning": warning,
-    } = get.current().variables;
+    const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { code } = this.#b;
-    const { lfLanguage, lfPreserveSpaces, lfShowCopy, lfStyle, lfValue } = this;
+    const { lfLanguage, lfPreserveSpaces, lfStyle } = this;
 
     const isPreserveSpaceMissing = !!(
       lfPreserveSpaces !== true && lfPreserveSpaces !== false
@@ -427,44 +485,11 @@ export class LfCode implements LfCodeInterface {
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div class={bemClass(code._)} part={this.#p.code}>
-            <div
-              class={bemClass(code._, code.header, {
-                sticky: this.lfStickyHeader,
-              })}
-              data-lf={this.#lf[this.lfUiState]}
-              part={this.#p.header}
-            >
-              <span class={bemClass(code._, code.title)} part={this.#p.title}>
-                {lfLanguage}
-              </span>
-              {lfShowCopy && (
-                <lf-button
-                  data-cy={this.#cy.button}
-                  lfIcon={copy}
-                  lfLabel="Copy"
-                  lfStretchY={true}
-                  lfStyling="flat"
-                  lfUiSize={this.lfUiSize}
-                  lfUiState={this.lfUiState}
-                  onLf-button-event={(e) => {
-                    const { comp, eventType } = e.detail;
-                    switch (eventType) {
-                      case "click":
-                        try {
-                          navigator.clipboard.writeText(lfValue);
-                          comp.setMessage("Copied!", copyOk);
-                        } catch (error) {
-                          comp.setMessage("Failed...", warning);
-                        }
-
-                        break;
-                    }
-                  }}
-                  part={this.#p.copy}
-                ></lf-button>
-              )}
-            </div>
+          <div
+            class={bemClass(code._, null, { "has-header": this.lfShowHeader })}
+            part={this.#p.code}
+          >
+            {this.lfShowHeader && this.#prepHeader()}
             <TagName
               class={`language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`}
               data-lf={this.#lf.fadeIn}
