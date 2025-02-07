@@ -1,4 +1,4 @@
-import { LfComponentTag, LfCoreInterface } from "@lf-widgets/foundations";
+import { LfComponentTag, LfFrameworkInterface } from "@lf-widgets/foundations";
 import { getAccordionFixtures } from "../assets/data/accordion";
 import { getArticleFixtures } from "../assets/data/article";
 import { getBadgeFixtures } from "../assets/data/badge";
@@ -12,13 +12,13 @@ import { getChipFixtures } from "../assets/data/chip";
 import { getCodeFixtures } from "../assets/data/code";
 import { getColorFixtures } from "../assets/data/color";
 import { getCompareFixtures } from "../assets/data/compare";
-import { getCoreFixtures } from "../assets/data/core";
 import { getDataFixtures } from "../assets/data/data";
 import { getDebugFixtures } from "../assets/data/debug";
 import { getDragFixtures } from "../assets/data/drag";
 import { getDrawerFixtures } from "../assets/data/drawer";
 import { getEffectsFixtures } from "../assets/data/effects";
 import { getHeaderFixtures } from "../assets/data/header";
+import { getFrameworkFixtures } from "../assets/data/framework";
 import { getImageFixtures } from "../assets/data/image";
 import { getImageviewerFixtures } from "../assets/data/imageviewer";
 import { getListFixtures } from "../assets/data/list";
@@ -42,87 +42,87 @@ import { getTypewriterFixtures } from "../assets/data/typewriter";
 import { getUploadFixtures } from "../assets/data/upload";
 import { LfShowcase } from "../lf-showcase";
 
-export const getComponentFixtures = <C extends LfComponentTag>(
+export const getAllComponentFixtures = <C extends LfComponentTag>(
   showcase: LfShowcase,
   component: C,
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ) => {
   switch (component) {
     case "lf-accordion":
-      return getAccordionFixtures(core);
+      return getAccordionFixtures(framework);
     case "lf-article":
-      return getArticleFixtures(core);
+      return getArticleFixtures(framework);
     case "lf-badge":
-      return getBadgeFixtures(core);
+      return getBadgeFixtures(framework);
     case "lf-button":
-      return getButtonFixtures(core);
+      return getButtonFixtures(framework);
     case "lf-canvas":
-      return getCanvasFixtures(core);
+      return getCanvasFixtures(framework);
     case "lf-carousel":
-      return getCarouselFixtures(core);
+      return getCarouselFixtures(framework);
     case "lf-card":
-      return getCardFixtures(core);
+      return getCardFixtures(framework);
     case "lf-chart":
-      return getChartFixtures(core);
+      return getChartFixtures(framework);
     case "lf-chat":
-      return getChatFixtures(core);
+      return getChatFixtures(framework);
     case "lf-chip":
-      return getChipFixtures(core);
+      return getChipFixtures(framework);
     case "lf-code":
-      return getCodeFixtures(core);
+      return getCodeFixtures(framework);
     case "lf-compare":
-      return getCompareFixtures(core);
+      return getCompareFixtures(framework);
     case "lf-drawer":
       return getDrawerFixtures(showcase);
     case "lf-header":
       return getHeaderFixtures(showcase);
     case "lf-image":
-      return getImageFixtures(core);
+      return getImageFixtures(framework);
     case "lf-imageviewer":
-      return getImageviewerFixtures(core);
+      return getImageviewerFixtures(framework);
     case "lf-list":
-      return getListFixtures(core);
+      return getListFixtures(framework);
     case "lf-masonry":
-      return getMasonryFixtures(core);
+      return getMasonryFixtures(framework);
     case "lf-messenger":
-      return getMessengerFixtures(core);
+      return getMessengerFixtures(framework);
     case "lf-photoframe":
-      return getPhotoframeFixtures(core);
+      return getPhotoframeFixtures(framework);
     case "lf-placeholder":
-      return getPlaceholderFixtures(core);
+      return getPlaceholderFixtures(framework);
     case "lf-progressbar":
-      return getProgressbarFixtures(core);
+      return getProgressbarFixtures(framework);
     case "lf-slider":
-      return getSliderFixtures(core);
+      return getSliderFixtures(framework);
     case "lf-spinner":
-      return getSpinnerFixtures(core);
+      return getSpinnerFixtures(framework);
     case "lf-splash":
-      return getSplashFixtures(core);
+      return getSplashFixtures(framework);
     case "lf-tabbar":
-      return getTabbarFixtures(core);
+      return getTabbarFixtures(framework);
     case "lf-textfield":
-      return getTextfieldFixtures(core);
+      return getTextfieldFixtures(framework);
     case "lf-toast":
-      return getToastFixtures(core);
+      return getToastFixtures(framework);
     case "lf-toggle":
-      return getToggleFixtures(core);
+      return getToggleFixtures(framework);
     case "lf-tree":
-      return getTreeFixtures(core);
+      return getTreeFixtures(framework);
     case "lf-typewriter":
-      return getTypewriterFixtures(core);
+      return getTypewriterFixtures(framework);
     case "lf-upload":
-      return getUploadFixtures(core);
+      return getUploadFixtures(framework);
   }
 
   return null;
 };
 
-export const getFrameworkFixtures = (framework: string) => {
+export const getAllFrameworkFixtures = (framework: string) => {
   switch (framework.toLowerCase()) {
     case "color":
       return getColorFixtures();
     case "core":
-      return getCoreFixtures();
+      return getFrameworkFixtures();
     case "data":
       return getDataFixtures();
     case "debug":

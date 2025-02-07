@@ -3,9 +3,9 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfSliderPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
@@ -25,9 +25,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfSlider"> = "LfSliderEventPayload";
 const TAG_NAME: LfComponentTag<"LfSlider"> = "lf-slider";
 
 export const getSliderFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-slider"> => {
-  const { theme } = core;
+  const { theme } = framework;
 
   //#region documentation
   const documentation: LfArticleDataset = {

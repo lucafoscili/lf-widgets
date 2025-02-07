@@ -1,11 +1,11 @@
 {
   "name": "@lf-widgets/assets",
-  "version": "0.0.1-rc.3",
   "description": "LF Widgets - Centralized asset repository for SVG, fonts, and example images.",
   "author": {
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },

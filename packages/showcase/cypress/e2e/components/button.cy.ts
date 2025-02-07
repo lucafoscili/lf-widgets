@@ -5,7 +5,7 @@ import {
   LfButtonStyling,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getButtonFixtures } from "../../../src/components/lf-showcase/assets/data/button";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -17,16 +17,16 @@ const button = buttonTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(button).waitForWebComponents([buttonTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it(`Should check that all <${buttonTag}> exist.`, () => {
-    const fixtures = getButtonFixtures(core);
+    const fixtures = getButtonFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(buttonTag, new Set(keys));
   });
@@ -108,14 +108,14 @@ describe(CY_CATEGORIES.methods, () => {
 
 //#region Props
 describe(CY_CATEGORIES.props, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
   const { dropdownButton, maskedSvg, rippleSurface } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(button);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it("lfDataset: should check that a button with lfDataset correctly renders a dropdown button.", () => {
@@ -196,7 +196,9 @@ describe(CY_CATEGORIES.props, () => {
         });
       })
       .within(() => {
-        cy.get(`.${core.theme.bemClass("button", "label")}`).should("exist");
+        cy.get(`.${framework.theme.bemClass("button", "label")}`).should(
+          "exist",
+        );
       });
   });
   it("lfRipple: should check for the presence of a ripple element.", () => {
@@ -213,7 +215,9 @@ describe(CY_CATEGORIES.props, () => {
         });
       })
       .within(() => {
-        cy.get(`.${core.theme.bemClass("button", "spinner")}`).should("exist");
+        cy.get(`.${framework.theme.bemClass("button", "spinner")}`).should(
+          "exist",
+        );
       });
   });
   it("lfStyle: Should check for the presence of a <style> element with id lf-style.", () => {
@@ -235,7 +239,7 @@ describe(CY_CATEGORIES.props, () => {
         .find(`lf-button[id*="${STYLING}-"]`)
         .first()
         .then(() => {
-          const selector = `.${core.theme.bemClass("button", null, { [STYLING]: true })}`;
+          const selector = `.${framework.theme.bemClass("button", null, { [STYLING]: true })}`;
 
           expect(selector).to.exist;
         });
@@ -292,8 +296,12 @@ describe(CY_CATEGORIES.props, () => {
           .then((children) => {
             const [rpl, label, icon] = children.toArray();
             expect(rpl).to.have.attr("data-cy", rippleSurface);
-            expect(label).to.have.class(core.theme.bemClass("button", "label"));
-            expect(icon).to.have.class(core.theme.bemClass("button", "icon"));
+            expect(label).to.have.class(
+              framework.theme.bemClass("button", "label"),
+            );
+            expect(icon).to.have.class(
+              framework.theme.bemClass("button", "icon"),
+            );
           });
       });
 
@@ -316,8 +324,12 @@ describe(CY_CATEGORIES.props, () => {
           .then((children) => {
             const [rpl, icon, label] = children.toArray();
             expect(rpl).to.have.attr("data-cy", rippleSurface);
-            expect(icon).to.have.class(core.theme.bemClass("button", "icon"));
-            expect(label).to.have.class(core.theme.bemClass("button", "label"));
+            expect(icon).to.have.class(
+              framework.theme.bemClass("button", "icon"),
+            );
+            expect(label).to.have.class(
+              framework.theme.bemClass("button", "label"),
+            );
           });
       });
   });

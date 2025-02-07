@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -17,7 +17,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfUpload"> = "LfUploadEventPayload";
 const TAG_NAME: LfComponentTag<"LfUpload"> = "lf-upload";
 
 export const getUploadFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-upload"> => {
   //#region documentation
   const documentation: LfArticleDataset = {

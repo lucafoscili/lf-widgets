@@ -3,7 +3,7 @@ import {
   LfChipEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getChipFixtures } from "../../../src/components/lf-showcase/assets/data/chip";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -15,17 +15,17 @@ const chip = chipTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(chip).waitForWebComponents([chipTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${chipTag}> exist.`, () => {
-    const fixtures = getChipFixtures(core);
+    const fixtures = getChipFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(chipTag, new Set(keys));
   });

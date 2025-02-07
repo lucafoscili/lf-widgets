@@ -3,7 +3,7 @@ import {
   LfBadgeEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfImagePropsInterface,
 } from "@lf-widgets/foundations";
 import { getBadgeFixtures } from "../../../src/components/lf-showcase/assets/data/badge";
@@ -16,16 +16,16 @@ const badge = badgeTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(badge).waitForWebComponents([badgeTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it(`Should check that all <${badgeTag}> exist.`, () => {
-    const fixtures = getBadgeFixtures(core);
+    const fixtures = getBadgeFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(badgeTag, new Set(keys));
   });

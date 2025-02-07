@@ -6,10 +6,10 @@ const dist = path.resolve(__dirname, "../dist");
 function clean() {
   if (fs.existsSync(dist)) {
     fs.rmSync(dist, { recursive: true, force: true });
-    console.log("✅ Cleaned Core dist");
+    console.log("✅ Cleaned Components dist");
   }
 
-  console.log("✨ Core successfully cleaned!");
+  console.log("✨ Components successfully cleaned!");
 }
 
 clean();

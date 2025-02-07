@@ -4,7 +4,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfTextfieldPropsInterface,
@@ -32,9 +32,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfSpinner"> = "LfSpinnerEventPayload";
 const TAG_NAME: LfComponentTag<"LfTextfield"> = "lf-textfield";
 
 export const getTextfieldFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-textfield"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region documentation

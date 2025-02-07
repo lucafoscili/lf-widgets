@@ -11,9 +11,12 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfDataCell,
   LfDataDataset,
@@ -78,7 +81,7 @@ export interface LfCompareAdapterControllerGetters
   cyAttributes: typeof CY_ATTRIBUTES;
   defaults: LfCompareAdapterDefaults;
   lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   isOverlay: () => boolean;
   parts: typeof LF_COMPARE_PARTS;
   shapes: () => LfDataShapesMap[LfDataShapes];

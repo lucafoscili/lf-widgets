@@ -3,7 +3,7 @@ import {
   LfAccordionEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getAccordionFixtures } from "../../../src/components/lf-showcase/assets/data/accordion";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -15,16 +15,16 @@ const accordion = accordionTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(accordion).waitForWebComponents([accordionTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it(`Should check that all <${accordionTag}> exist.`, () => {
-    const fixtures = getAccordionFixtures(core);
+    const fixtures = getAccordionFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(accordionTag, new Set(keys));
   });
@@ -146,15 +146,15 @@ describe(CY_CATEGORIES.props, () => {
 
 //#region e2e
 describe(CY_CATEGORIES.e2e, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
   const { node } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(accordion);
 
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it("Should check that when an expandable item is clicked, the content is displayed.", () => {
@@ -165,7 +165,7 @@ describe(CY_CATEGORIES.e2e, () => {
       .within(() => {
         cy.getCyElement(node).first().should("exist").click();
 
-        cy.get(`.${core.theme.bemClass("node", "content")}`)
+        cy.get(`.${framework.theme.bemClass("node", "content")}`)
           .should("exist")
           .and("not.be.empty");
       });
@@ -186,7 +186,7 @@ describe(CY_CATEGORIES.e2e, () => {
       })
       .within(() => {
         cy.getCyElement(node).first().click({ force: true });
-        cy.get(`.${core.theme.bemClass("node", "content")}`).should(
+        cy.get(`.${framework.theme.bemClass("node", "content")}`).should(
           "not.exist",
         );
       });

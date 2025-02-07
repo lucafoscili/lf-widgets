@@ -5,7 +5,7 @@ import {
   LfBadgePropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -26,9 +26,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfBadge"> = "LfBadgeEventPayload";
 const TAG_NAME: LfComponentTag<"LfBadge"> = "lf-badge";
 
 export const getBadgeFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-badge"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const { bellRinging } = theme.get.icons();
 
   const documentation: LfArticleDataset = {

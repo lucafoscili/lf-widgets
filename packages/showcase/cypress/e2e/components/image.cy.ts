@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfImageEvent,
 } from "@lf-widgets/foundations";
 import { getImageFixtures } from "../../../src/components/lf-showcase/assets/data/image";
@@ -15,17 +15,17 @@ const image = imageTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(image).waitForWebComponents([imageTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${imageTag}> exist.`, () => {
-    const fixtures = getImageFixtures(core);
+    const fixtures = getImageFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(imageTag, new Set(keys));
   });

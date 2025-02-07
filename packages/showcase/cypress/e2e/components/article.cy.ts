@@ -4,7 +4,7 @@ import {
   LfArticleNode,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getArticleFixtures } from "../../../src/components/lf-showcase/assets/data/article";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -16,16 +16,16 @@ const article = articleTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(article).waitForWebComponents([articleTag, "lf-code"]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
   it(`Should check that all <${articleTag}> exist.`, () => {
-    const fixtures = getArticleFixtures(core);
+    const fixtures = getArticleFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(articleTag, new Set(keys));
   });

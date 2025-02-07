@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -16,7 +16,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfSplash"> = "LfSplashEventPayload";
 const TAG_NAME: LfComponentTag<"LfSplash"> = "lf-splash";
 
 export const getSplashFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-splash"> => {
   //#region documentation
   const documentation: LfArticleDataset = {

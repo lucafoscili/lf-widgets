@@ -1,0 +1,40 @@
+{
+  "name": "@lf-widgets/react-showcase",
+  "description": "LF Widgets - Showcase component and documentation (React)",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "components",
+    "custom elements",
+    "lf widgets",
+    "pwa",
+    "react",
+    "react showcase",
+    "web components",
+    "showcase"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "peerDependencies": {
+    "@lf-widgets/showcase": "workspace:*",
+    "@stencil/react-output-target": "^0"
+  },
+  "scripts": {
+    "build": "yarn clean && tsc",
+    "clean": "node ./src/scripts/clean.js"
+  },
+  "license": "Apache-2.0",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}

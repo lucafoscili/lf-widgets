@@ -17,8 +17,5 @@
 **/components.d.ts
 **/lib/components
 
-packages/components/hydrate-tmp/
-packages/components/doc.json
-packages/components/doc.d.ts
-
-packages/hydrate/index*
+packages/core/doc.json
+packages/core/doc.d.ts

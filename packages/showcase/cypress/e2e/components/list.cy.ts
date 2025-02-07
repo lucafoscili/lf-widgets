@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfListEvent,
 } from "@lf-widgets/foundations";
@@ -16,17 +16,17 @@ const list = listTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(list).waitForWebComponents([listTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${listTag}> exist.`, () => {
-    const fixtures = getListFixtures(core);
+    const fixtures = getListFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(listTag, new Set(keys));
   });

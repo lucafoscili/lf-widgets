@@ -7,11 +7,9 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>LF Widgets - Showcase</title>
-    <!-- Load Components -->
-    <script type="module" src="/js/components/lfw.js" defer></script>
     <!-- Load Showcase -->
-    <script type="module" src="/build/lfws.esm.js" defer></script>
-    <script nomodule src="/build/lfws.js" defer></script>
+    <script type="module" src="/build/lfw-showcase.esm.js" defer></script>
+    <script nomodule src="/build/lfw-showcase.js" defer></script>
     <style>
       * {
         box-sizing: border-box;
@@ -59,7 +57,7 @@
   <body>
     <script>
       const managerCb = (e) => {
-        const { assets, theme } = e.detail.lfCore;
+        const { assets, theme } = e.detail.lfFramework;
         const path =
           window.location.href.split("/").slice(0, -1).join("/") + "/assets";
         console.log("Setting assets path...", path);
@@ -69,7 +67,7 @@
           theme.set("dark");
         });
         document.removeEventListener("lf-core-event", managerCb);
-        console.log("LfCore ready.");
+        console.log("LfFramework ready.");
       };
       document.addEventListener("lf-core-event", managerCb);
 

@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfImagePropsInterface,
@@ -23,9 +23,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfImage"> = "LfImageEventPayload";
 const TAG_NAME: LfComponentTag<"LfImage"> = "lf-image";
 
 export const getImageFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-image"> => {
-  const { assets, theme } = core;
+  const { assets, theme } = framework;
   const icons = Array.from(Object.values(theme.get.icons()));
 
   //#region mock data

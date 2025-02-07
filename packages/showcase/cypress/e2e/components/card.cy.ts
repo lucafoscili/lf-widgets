@@ -3,7 +3,7 @@ import {
   LfCardEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getCardFixtures } from "../../../src/components/lf-showcase/assets/data/card";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -15,17 +15,17 @@ const card = cardTag.replace("lf-", "");
 
 //#region Basic
 describe("Basic", () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(card).waitForWebComponents([cardTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${cardTag}> exist.`, () => {
-    const fixtures = getCardFixtures(core);
+    const fixtures = getCardFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(cardTag, new Set(keys));
   });

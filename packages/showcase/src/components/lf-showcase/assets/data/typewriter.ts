@@ -4,7 +4,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -29,7 +29,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfTypewriter"> =
 const TAG_NAME: LfComponentTag<"LfTypewriter"> = "lf-typewriter";
 
 export const getTypewriterFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-typewriter"> => {
   //#region documentation
   const documentation: LfArticleDataset = {

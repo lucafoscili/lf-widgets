@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -18,9 +18,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfPlaceholder"> =
 const TAG_NAME: LfComponentTag<"LfPlaceholder"> = "lf-placeholder";
 
 export const getPlaceholderFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-placeholder"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region documentation
   const documentation: LfArticleDataset = {

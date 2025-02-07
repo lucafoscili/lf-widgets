@@ -4,7 +4,7 @@ import {
   LfChipPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -32,9 +32,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfChip"> = "LfChipEventPayload";
 const TAG_NAME: LfComponentTag<"LfChip"> = "lf-chip";
 
 export const getChipFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-chip"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const iconValues = Object.values(theme.get.icons());
 
   //#region mock data

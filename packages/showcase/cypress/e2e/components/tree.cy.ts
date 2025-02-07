@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfTreeEvent,
 } from "@lf-widgets/foundations";
 import { getTreeFixtures } from "../../../src/components/lf-showcase/assets/data/tree";
@@ -15,17 +15,17 @@ const tree = treeTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(tree).waitForWebComponents([treeTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${treeTag}> exist.`, () => {
-    const fixtures = getTreeFixtures(core);
+    const fixtures = getTreeFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(treeTag, new Set(keys));
   });

@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -18,9 +18,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfMasonry"> = "LfMasonryEventPayload";
 const TAG_NAME: LfComponentTag<"LfMasonry"> = "lf-masonry";
 
 export const getMasonryFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-masonry"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const data: Partial<{

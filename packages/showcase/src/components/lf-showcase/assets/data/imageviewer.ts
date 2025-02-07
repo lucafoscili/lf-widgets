@@ -2,10 +2,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -19,9 +19,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfImageviewer"> =
 const TAG_NAME: LfComponentTag<"LfImageviewer"> = "lf-imageviewer";
 
 export const getImageviewerFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-imageviewer"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const data: { [index: string]: LfDataDataset } = {

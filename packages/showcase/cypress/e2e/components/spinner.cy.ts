@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getSpinnerFixtures } from "../../../src/components/lf-showcase/assets/data/spinner";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const spinner = spinnerTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(spinner).waitForWebComponents([spinnerTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${spinnerTag}> exist.`, () => {
-    const fixtures = getSpinnerFixtures(core);
+    const fixtures = getSpinnerFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(spinnerTag, new Set(keys));
   });

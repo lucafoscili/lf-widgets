@@ -4,7 +4,7 @@ import {
   LfArticlePropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -23,9 +23,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfArticle"> = "LfArticleEventPayload";
 const TAG_NAME: LfComponentTag<"LfArticle"> = "lf-article";
 
 export const getArticleFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-article"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const lfDataset: LfArticleDataset = {

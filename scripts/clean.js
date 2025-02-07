@@ -1,19 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 
-// Sub-repositories relative to the project root
 const subRepos = [
-  "../packages/components",
   "../packages/core",
+  "../packages/react-core",
   "../packages/foundations",
-  "../packages/hydrate",
-  "../packages/react",
-  "../packages/react-ssr",
+  "../packages/framework",
   "../packages/showcase",
-  "../packages/showcase-react",
+  "../packages/react-showcase",
 ];
 
-// Clean node_modules/dist folders in subrepositories
 function cleanSubRepos() {
   subRepos.forEach((subRepo) => {
     const nodeModulesPath = path.resolve(__dirname, subRepo, "node_modules");
@@ -47,7 +43,6 @@ function cleanSubRepos() {
   console.log("✨ All sub-repositories cleaned!");
 }
 
-// Clean root node_modules
 const nodeModulesPath = path.resolve(__dirname, "../node_modules");
 
 try {
@@ -62,5 +57,4 @@ try {
   }
 }
 
-// Run the script
 cleanSubRepos();

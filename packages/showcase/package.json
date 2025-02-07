@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.0.1-rc.3",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -26,20 +26,19 @@
   "module": "dist/index.js",
   "es2015": "dist/esm/index.js",
   "es2017": "dist/esm/index.js",
-  "unpkg": "dist/@lf-widgets/showcase/lfws.esm.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "peerDependencies": {
-    "@lf-widgets/components": "^0",
-    "@lf-widgets/core": "^0",
-    "@lf-widgets/foundations": "^0"
+    "@lf-widgets/core": "workspace:*",
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
-    "build": "yarn clean && npx stencil build --docs",
+    "build": "yarn clean && yarn copy && npx stencil build --docs",
     "clean": "node ./src/scripts/clean.js",
     "copy": "node ./src/scripts/copyAssets.js",
     "dev": "yarn copy && npx stencil build --dev --watch --serve",

@@ -1,8 +1,8 @@
-import type { LfShowcaseFixture } from "src/components/lf-showcase/lf-showcase-declarations";
-import type { LfComponentTag } from "src/types/lf-components";
+import { LfComponentTag } from "@lf-widgets/foundations/foundations";
+import { LfShowcaseComponentFixture } from "src/components/lf-showcase/lf-showcase-declarations";
 
 export const getExamplesKeys = (
-  fixtures: LfShowcaseFixture<LfComponentTag>,
+  fixtures: LfShowcaseComponentFixture<LfComponentTag>,
 ) => {
   const examples = fixtures.examples;
   const keys: string[] = [];

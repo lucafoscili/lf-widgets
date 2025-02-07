@@ -1,23 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 
-// Root README path
 const rootReadmePath = path.resolve(__dirname, "../README.md");
 
-// Sub-repositories relative to the project root
 const subRepos = [
   "../packages/assets",
-  "../packages/components",
   "../packages/core",
+  "../packages/react-core",
   "../packages/foundations",
-  "../packages/hydrate",
-  "../packages/react",
-  "../packages/react-ssr",
+  "../packages/framework",
   "../packages/showcase",
-  "../packages/showcase-react",
+  "../packages/react-showcase",
 ];
 
-// Function to copy README.md
 function copyReadmeToSubRepos() {
   if (!fs.existsSync(rootReadmePath)) {
     console.error("❌ Root README.md not found!");
@@ -41,5 +36,4 @@ function copyReadmeToSubRepos() {
   console.log("✨ README.md successfully propagated to all sub-repositories!");
 }
 
-// Run the script
 copyReadmeToSubRepos();

@@ -5,7 +5,7 @@ import {
   LfComponentName,
 } from "../foundations/components.declarations";
 import { LfColorInterface } from "./color.declarations";
-import { LfCoreInterface } from "./core.declarations";
+import { LfFrameworkInterface } from "./framework.declarations";
 import { LfDataInterface } from "./data.declarations";
 import { LfDragInterface } from "./drag.declarations";
 import { LfEffectsInterface } from "./effects.declarations";
@@ -74,7 +74,7 @@ export type LfDebugLogClass =
   | LfDebugInterface
   | LfDragInterface
   | LfLLMInterface
-  | LfCoreInterface
+  | LfFrameworkInterface
   | LfPortalInterface
   | LfEffectsInterface
   | LfThemeInterface;

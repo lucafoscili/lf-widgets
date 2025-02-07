@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -17,9 +17,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCanvas"> = "LfCanvasEventPayload";
 const TAG_NAME: LfComponentTag<"LfCanvas"> = "lf-canvas";
 
 export const getCanvasFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-canvas"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region documentation
   const documentation: LfArticleDataset = {

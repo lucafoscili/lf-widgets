@@ -5,7 +5,7 @@ import {
   LfCardPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -27,9 +27,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCard"> = "LfCardEventPayload";
 const TAG_NAME: LfComponentTag<"LfCard"> = "lf-card";
 
 export const getCardFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-card"> => {
-  const { assets, theme } = core;
+  const { assets, theme } = framework;
   const { get } = assets;
 
   //#region mock data

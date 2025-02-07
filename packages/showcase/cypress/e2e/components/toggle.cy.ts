@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfToggleEvent,
 } from "@lf-widgets/foundations";
 import { getToggleFixtures } from "../../../src/components/lf-showcase/assets/data/toggle";
@@ -15,17 +15,17 @@ const toggle = toggleTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(toggle).waitForWebComponents([toggleTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${toggleTag}> exist.`, () => {
-    const fixtures = getToggleFixtures(core);
+    const fixtures = getToggleFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(toggleTag, new Set(keys));
   });

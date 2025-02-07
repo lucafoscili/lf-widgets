@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -18,10 +18,10 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfPhotoframe"> =
 const TAG_NAME: LfComponentTag<"LfPhotoframe"> = "lf-photoframe";
 
 export const getPhotoframeFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-photoframe"> => {
-  const { get } = core.assets;
-  const icons = Object.values(core.theme.get.icons());
+  const { get } = framework.assets;
+  const icons = Object.values(framework.theme.get.icons());
 
   //#region mock data
   const placeholder = get(`./assets/showcase/blur_color_splash.jpg`).path;
