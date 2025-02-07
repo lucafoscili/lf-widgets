@@ -189,7 +189,7 @@ myButton.addEventListener("lf-button-event", (e) => {
 
 LF Widgets ships with a small singleton “core” (`LfFramework`) that underpins theming, portals, debugging features, and more. To ensure your components work correctly (especially if they need access to themes or LLM utilities), it’s recommended to **initialize** this core before using the widgets.
 
-Below is the **recommended** pattern, using two exported functions:
+Below is the **recommended** pattern, using this function that is re-exported from the `@lf-widgets/core` package:
 
 - **`getLfFramework()`**  
   Returns the LfFramework instance, initializing it if necessary.
@@ -198,13 +198,13 @@ Below is the **recommended** pattern, using two exported functions:
 
 ```ts
 // In your top-level code or a dedicated file
-import { getLfFramework } from "@lf-widgets/framework";
+import { getLfFramework } from "@lf-widgets/core";
 
 // Elsewhere, in a component or function:
 function doSomething() {
   const framework = getLfFramework();
-  core.assets.set("/my-assets-folder");
-  core.theme.set("dark");
+  framework.assets.set("https://example.com/assets");
+  framework.theme.set("dark");
   // ...
 }
 ```
