@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.2.0-rc.0 (2025-02-07)
+
+### Bug Fixes
+
+- **core:** assetPath api import ([fcdec2a](https://github.com/lucafoscili/lf-widgets/commit/fcdec2a0cef1388f92361a14dc777dba4637eb11))
+- **foundations:** added drawer methods ([d8cb19b](https://github.com/lucafoscili/lf-widgets/commit/d8cb19b62c8bfa616a19d97fa035d0489c8d9df2))
+- **lerna:** added prepublishing script ([97ac356](https://github.com/lucafoscili/lf-widgets/commit/97ac35671c904e8cb4c0f0d85888b0b078d680aa))
+- **lerna:** added workspace ([4f1e8ca](https://github.com/lucafoscili/lf-widgets/commit/4f1e8ca1460fc7272e533214d396e6e923629fb4))
+- **version:** prerelease ([63b02f6](https://github.com/lucafoscili/lf-widgets/commit/63b02f65e09124952dccddb8ee07d7ef9da023ad))
+- **worflows:** fixed tag regex ([8114314](https://github.com/lucafoscili/lf-widgets/commit/8114314fcc301fb8862b839edf860d5f0f97d1c8))
+- **yarn:** local deps ([8842f93](https://github.com/lucafoscili/lf-widgets/commit/8842f93c4b6fdf55739c9966a0bae5a98fcdf25a))
+- **yarn:** typo ([7927d5e](https://github.com/lucafoscili/lf-widgets/commit/7927d5e0374d34de2550fffeca700c348ba05743))
+- **yarn:** updated lock ([5d5a0d3](https://github.com/lucafoscili/lf-widgets/commit/5d5a0d39d536cba7dcafd719c8584a0b435314cb))
+- **yarn:** updated lock ([8ae32de](https://github.com/lucafoscili/lf-widgets/commit/8ae32de138c7bf158cd05a612e7721ca1b02b58c))
+
+### Features
+
+- **code:** added lfShowHeader prop ([02f8945](https://github.com/lucafoscili/lf-widgets/commit/02f8945af2b123a9b54cfb5009c9b938cce11612))
+- **showcase:** added copy button ([0f11023](https://github.com/lucafoscili/lf-widgets/commit/0f11023c8187bf8530f45369b4a442e7d475f3ea))
+
 ## [0.1.1-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.0.1-rc.2...0.1.1-rc.1) (2025-02-07)
 
 ### Bug Fixes
