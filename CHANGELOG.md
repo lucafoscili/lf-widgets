@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.0.1-rc.2...0.1.1-rc.0) (2025-02-07)
+
+### Bug Fixes
+
+- **worflows:** fixed tag regex ([8114314](https://github.com/lucafoscili/lf-widgets/commit/8114314fcc301fb8862b839edf860d5f0f97d1c8))
+
 ## [0.0.1-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.0.1-rc.2...0.0.1-rc.5) (2025-02-05)
 
 **Note:** Version bump only for package @lf-widgets/root
