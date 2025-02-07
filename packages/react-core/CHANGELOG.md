@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.2.0-rc.0 (2025-02-07)
+
+### Bug Fixes
+
+- **lerna:** added prepublishing script ([97ac356](https://github.com/lucafoscili/lf-widgets/commit/97ac35671c904e8cb4c0f0d85888b0b078d680aa))
+
+### Features
+
+- **showcase:** added copy button ([0f11023](https://github.com/lucafoscili/lf-widgets/commit/0f11023c8187bf8530f45369b4a442e7d475f3ea))
+
 ## [0.1.1-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.0.1-rc.2...0.1.1-rc.1) (2025-02-07)
 
 **Note:** Version bump only for package @lf-widgets/react-core
