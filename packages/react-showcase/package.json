@@ -30,6 +30,7 @@
     "@stencil/react-output-target": "^0"
   },
   "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
     "build": "yarn clean && tsc",
     "clean": "node ./src/scripts/clean.js"
   },

@@ -27,6 +27,7 @@
     "@lf-widgets/foundations": "workspace:*"
   },
   "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
     "build": "yarn clean && tsc",
     "clean": "node ./src/scripts/clean.js"
   },

@@ -38,6 +38,7 @@
     "dist/"
   ],
   "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
     "build": "yarn clean && yarn copy && npx stencil build --docs",
     "clean": "node ./src/scripts/clean.js",
     "copy": "node ./src/scripts/copyAssets.js",
