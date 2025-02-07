@@ -68,7 +68,7 @@ jobs:
         if: steps.check_merge.outputs.should_publish == 'true'
         id: get_version
         run: |
-          PUBLISHED_VERSION=$(grep -oP '(?<=lf-widgets@)[^ ]+' lerna-output.log | head -1)
+          PUBLISHED_VERSION=$(grep -oP '(?<=@lf-widgets/core@)[^ ]+' lerna-output.log | head -1)
           echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create and Push Tag
