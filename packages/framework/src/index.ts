@@ -2,25 +2,19 @@ export { Build, getAssetPath, setAssetPath } from "@stencil/core";
 
 import {
   LF_FRAMEWORK_EVENT_NAME,
-  LF_FRAMEWORK_SYMBOL_ID,
+  LF_FRAMEWORK_SYMBOL,
   LfFrameworkEventPayload,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { Build } from "@stencil/core";
-import { LfFramework } from "./lf-core/lf-core";
+import { LfFramework } from "./lf-framework/lf-framework";
 
 declare global {
   interface Window {
-    [SYMBOL]: LfFrameworkInterface;
+    [symbol: symbol]: LfFrameworkInterface;
   }
 }
-/**
- * Symbol used to identify the LfFramework service.
- * This unique symbol serves as a dependency injection token.
- *
- * @const {unique symbol}
- */
-export const SYMBOL: unique symbol = Symbol.for(LF_FRAMEWORK_SYMBOL_ID);
+const isClient = typeof window !== "undefined";
 let lfFramework: LfFramework | null = null;
 
 //#region getLfFramework
@@ -56,12 +50,14 @@ export function getLfFramework(): LfFramework {
 //#region initLfFramework
 function initLfFramework() {
   const { isDev } = Build;
+  const isInitialized =
+    (isClient && window[LF_FRAMEWORK_SYMBOL]) || lfFramework;
 
-  if (Build.isDev) {
+  if (isDev) {
     console.log("Initializing LfFramework...");
   }
 
-  if (lfFramework) {
+  if (isInitialized) {
     if (isDev) {
       console.warn(
         "LfFramework has already been initialized. This should only happen once.",
@@ -70,12 +66,11 @@ function initLfFramework() {
     }
   }
 
-  const isClient = typeof window !== "undefined";
   const framework = new LfFramework();
   lfFramework = framework;
 
   if (isClient) {
-    window[SYMBOL] = framework;
+    window[LF_FRAMEWORK_SYMBOL] = framework;
     const ev = new CustomEvent<LfFrameworkEventPayload>(
       LF_FRAMEWORK_EVENT_NAME,
       {
