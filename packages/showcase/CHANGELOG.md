@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.0...0.2.0-rc.1) (2025-02-07)
+
+### Bug Fixes
+
+- **framework:** moved symbol to foundations ([6cdf8fe](https://github.com/lucafoscili/lf-widgets/commit/6cdf8fe19ba576a23708393779e4f5811cbb7a12))
+
 # 0.2.0-rc.0 (2025-02-07)
 
 ### Bug Fixes
