@@ -354,9 +354,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
   }
   //#endregion

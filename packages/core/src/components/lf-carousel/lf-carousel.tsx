@@ -533,12 +533,9 @@ export class LfCarousel implements LfCarouselInterface {
   }
 
   disconnectedCallback() {
-    const { drag, theme } = this.#framework;
-    const { stop } = autoplay;
-
-    drag.unregister.swipe(this.#carousel);
-    theme.unregister(this);
-    stop(this.#adapter);
+    this.#framework?.drag.unregister.swipe(this.#carousel);
+    this.#framework?.theme.unregister(this);
+    autoplay.stop(this.#adapter);
   }
   //#endregion
 }

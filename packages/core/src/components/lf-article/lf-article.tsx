@@ -400,9 +400,7 @@ export class LfArticle implements LfArticleInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

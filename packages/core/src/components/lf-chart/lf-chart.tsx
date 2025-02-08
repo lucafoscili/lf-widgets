@@ -685,14 +685,12 @@ export class LfChart implements LfChartInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect();
     }
 
     dispose(this.#container);
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

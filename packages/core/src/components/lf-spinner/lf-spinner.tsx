@@ -398,9 +398,7 @@ export class LfSpinner implements LfSpinnerInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
     cancelAnimationFrame(this.#progressAnimationFrame);
   }
 }

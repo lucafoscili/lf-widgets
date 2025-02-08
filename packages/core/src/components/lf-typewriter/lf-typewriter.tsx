@@ -375,9 +375,7 @@ export class LfTypewriter implements LfTypewriterInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
     clearTimeout(this.#timeout);
   }
   //#endregion

@@ -499,13 +499,11 @@ export class LfTabbar implements LfTabbarInterface {
     );
   }
   disconnectedCallback() {
-    const { drag, theme } = this.#framework;
-
-    if (drag.getActiveSession(this.#scrollContainer)) {
-      drag.unregister.dragToScroll(this.#scrollContainer);
+    if (this.#framework?.drag.getActiveSession(this.#scrollContainer)) {
+      this.#framework?.drag.unregister.dragToScroll(this.#scrollContainer);
     }
 
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

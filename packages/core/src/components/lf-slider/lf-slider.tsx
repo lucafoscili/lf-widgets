@@ -453,9 +453,7 @@ export class LfSlider implements LfSliderInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
 }
 //#endregion
