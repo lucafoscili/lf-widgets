@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
@@ -12,11 +11,12 @@ import {
   LfBadgeInterface,
   LfBadgePositions,
   LfBadgePropsInterface,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfImagePropsInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -227,9 +227,9 @@ export class LfBadge implements LfBadgeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

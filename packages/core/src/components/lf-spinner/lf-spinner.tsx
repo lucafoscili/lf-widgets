@@ -1,15 +1,15 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_SPINNER_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfSpinnerElement,
   LfSpinnerEvent,
   LfSpinnerEventPayload,
   LfSpinnerInterface,
   LfSpinnerPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -292,9 +292,9 @@ export class LfSpinner implements LfSpinnerInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

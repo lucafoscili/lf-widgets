@@ -1,10 +1,11 @@
-import { getLfFramework } from "@lf-widgets/framework";
+import { onFrameworkReady } from "@lf-widgets/foundations";
 import { getAssetPath, setAssetPath } from "@stencil/core";
 
-const framework = getLfFramework();
-framework.register("lf-core", {
-  getAssetPath,
-  setAssetPath,
+onFrameworkReady.then((framework) => {
+  framework.register("lf-core", {
+    getAssetPath,
+    setAssetPath,
+  });
 });
 
 export * from "./components";

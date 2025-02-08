@@ -15,8 +15,8 @@ import {
   LfPhotoframeOrientation,
   LfPhotoframeOverlay,
   LfPhotoframePropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -311,9 +311,9 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

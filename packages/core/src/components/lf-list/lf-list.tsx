@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_LIST_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfListElement,
   LfListEvent,
   LfListEventPayload,
@@ -18,6 +17,7 @@ import {
   LfListPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -537,9 +537,9 @@ export class LfList implements LfListInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_TREE_PARTS,
   LF_TREE_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfTextfieldEventPayload,
   LfThemeUISize,
   LfTreeElement,
@@ -20,6 +19,7 @@ import {
   LfTreeInterface,
   LfTreeNodeProps,
   LfTreePropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -429,9 +429,9 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

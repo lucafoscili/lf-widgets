@@ -1,18 +1,18 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_SPLASH_BLOCKS,
   LF_SPLASH_PARTS,
   LF_SPLASH_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfSplashElement,
   LfSplashEvent,
   LfSplashEventPayload,
   LfSplashInterface,
   LfSplashPropsInterface,
   LfSplashStates,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -168,9 +168,9 @@ export class LfSplash implements LfSplashInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,8 +6,8 @@ import {
   LF_TOGGLE_PARTS,
   LF_TOGGLE_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
   LfToggleElement,
@@ -17,6 +16,7 @@ import {
   LfToggleInterface,
   LfTogglePropsInterface,
   LfToggleState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -295,9 +295,9 @@ export class LfToggle implements LfToggleInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

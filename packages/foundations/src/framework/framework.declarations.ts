@@ -40,7 +40,7 @@ export interface LfFrameworkInterface {
   getModules: () => Map<LfFrameworkModuleKey, LfFrameworkModuleOptions>;
   register: (
     module: LfFrameworkModuleKey,
-    options: LfFrameworkModuleOptions,
+    options: Partial<LfFrameworkModuleOptions>,
   ) => void;
   removeClickCallback: (cb: LfFrameworkClickCb) => void;
   sanitizeProps<P extends { [key: string]: any }>(props: P): P;

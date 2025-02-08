@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,9 +6,9 @@ import {
   LF_TEXTFIELD_PARTS,
   LF_TEXTFIELD_PROPS,
   LF_WRAPPER_ID,
+  LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
-  LfDebugLifecycleInfo,
   LfTextfieldElement,
   LfTextfieldEvent,
   LfTextfieldEventPayload,
@@ -20,6 +19,7 @@ import {
   LfTextfieldStyling,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -588,9 +588,9 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -15,8 +15,8 @@ import {
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -426,9 +426,9 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -9,13 +8,13 @@ import {
   LF_MASONRY_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
   LfMasonryAdapter,
   LfMasonryColumns,
   LfMasonryElement,
@@ -25,6 +24,7 @@ import {
   LfMasonryPropsInterface,
   LfMasonrySelectedShape,
   LfMasonryView,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -499,9 +499,9 @@ export class LfMasonry implements LfMasonryInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

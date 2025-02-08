@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -17,11 +16,12 @@ import {
   LfChatPropsInterface,
   LfChatStatus,
   LfChatView,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfLLMChoiceMessage,
   LfThemeUISize,
   LfTypewriterPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -594,9 +594,9 @@ export class LfChat implements LfChatInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_CHART_BLOCKS,
   LF_CHART_CSS_VARS,
@@ -20,9 +19,10 @@ import {
   LfChartType,
   LfChartXAxis,
   LfChartYAxis,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,7 +37,6 @@ import {
   State,
 } from "@stencil/core";
 import { dispose, ECharts, init } from "echarts";
-import { createAdapter } from "./lf-chart-adapter";
 import {
   prepAxis,
   prepLabel,
@@ -45,6 +44,7 @@ import {
   prepSeries,
   prepTooltip,
 } from "./helpers.utils";
+import { createAdapter } from "./lf-chart-adapter";
 
 /**
  * Represents a chart component that displays data in various formats, such as
@@ -551,9 +551,9 @@ export class LfChart implements LfChartInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

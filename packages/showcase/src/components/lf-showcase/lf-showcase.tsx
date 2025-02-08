@@ -8,8 +8,8 @@ import {
   LfEvent,
   LfFrameworkInterface,
   LfListEventPayload,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -554,9 +554,9 @@ export class LfShowcase {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.isDarkMode = this.#framework.theme.get.current().isDark;

@@ -31,8 +31,7 @@
   "collection:main": "dist/collection/index.js",
   "peerDependencies": {
     "@lf-widgets/core": "workspace:*",
-    "@lf-widgets/foundations": "workspace:*",
-    "@lf-widgets/framework": "workspace:*"
+    "@lf-widgets/foundations": "workspace:*"
   },
   "files": [
     "dist/"

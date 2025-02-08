@@ -14,12 +14,13 @@ import {
   LfCompareInterface,
   LfComparePropsInterface,
   LfCompareView,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,7 +38,6 @@ import {
   Watch,
 } from "@stencil/core";
 import { createAdapter } from "./lf-compare-adapter";
-import { getLfFramework } from "@lf-widgets/framework";
 
 /**
  * Represents a comparison component that displays two shapes side by side or
@@ -358,9 +358,9 @@ export class LfCompare implements LfCompareInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

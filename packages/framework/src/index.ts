@@ -3,6 +3,7 @@ import {
   LF_FRAMEWORK_SYMBOL,
   LfFrameworkEventPayload,
   LfFrameworkInterface,
+  markFrameworkReady,
 } from "@lf-widgets/foundations";
 import { Build } from "@stencil/core";
 import { LfFramework } from "./lf-framework/lf-framework";
@@ -12,6 +13,7 @@ declare global {
     [symbol: symbol]: LfFrameworkInterface;
   }
 }
+const { isDev } = Build;
 const isClient = typeof window !== "undefined";
 let lfFramework: LfFramework | null = null;
 
@@ -28,8 +30,6 @@ let lfFramework: LfFramework | null = null;
  * ```
  */
 export function getLfFramework(): LfFramework {
-  const { isDev } = Build;
-
   if (!lfFramework) {
     if (isDev) {
       console.warn(
@@ -45,9 +45,8 @@ export function getLfFramework(): LfFramework {
 }
 //#endregion
 
-//#region initLfFramework
+//#region Helpers
 function initLfFramework() {
-  const { isDev } = Build;
   const isInitialized =
     (isClient && window[LF_FRAMEWORK_SYMBOL]) || lfFramework;
 
@@ -68,29 +67,20 @@ function initLfFramework() {
   lfFramework = framework;
 
   if (isClient) {
-    window[LF_FRAMEWORK_SYMBOL] = framework;
-    const ev = new CustomEvent<LfFrameworkEventPayload>(
-      LF_FRAMEWORK_EVENT_NAME,
-      {
-        detail: { lfFramework: framework },
-      },
-    );
-
-    document.dispatchEvent(ev);
-    if (isDev) {
-      console.log(
-        "LfFramework initialized and dispatched to window.",
-        framework,
-      );
-    }
-  } else {
-    if (isDev) {
-      console.warn(
-        "LfFramework initialized but not dispatched to window.",
-        framework,
-      );
-    }
+    finalize(framework);
   }
 }
+const finalize = (framework: LfFrameworkInterface) => {
+  window[LF_FRAMEWORK_SYMBOL] = framework;
+  markFrameworkReady(framework);
 
+  const ev = new CustomEvent<LfFrameworkEventPayload>(LF_FRAMEWORK_EVENT_NAME, {
+    detail: { lfFramework: framework },
+  });
+
+  document.dispatchEvent(ev);
+  if (isDev) {
+    console.log("LfFramework initialized and dispatched to window.", framework);
+  }
+};
 //#endregion

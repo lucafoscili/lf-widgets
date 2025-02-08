@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -16,12 +15,13 @@ import {
   LfCardInterface,
   LfCardLayout,
   LfCardPropsInterface,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -277,9 +277,9 @@ export class LfCard implements LfCardInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

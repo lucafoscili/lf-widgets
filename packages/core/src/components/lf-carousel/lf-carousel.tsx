@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -13,13 +12,14 @@ import {
   LfCarouselEventPayload,
   LfCarouselInterface,
   LfCarouselPropsInterface,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -419,9 +419,9 @@ export class LfCarousel implements LfCarouselInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

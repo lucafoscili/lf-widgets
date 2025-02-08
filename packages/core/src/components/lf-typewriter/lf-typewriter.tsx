@@ -1,12 +1,11 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_STYLE_ID,
   LF_TYPEWRITER_BLOCKS,
   LF_TYPEWRITER_PARTS,
   LF_TYPEWRITER_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfTypewriterCursor,
   LfTypewriterElement,
@@ -16,6 +15,7 @@ import {
   LfTypewriterPropsInterface,
   LfTypewriterTag,
   LfTypewriterValue,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -331,9 +331,9 @@ export class LfTypewriter implements LfTypewriterInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

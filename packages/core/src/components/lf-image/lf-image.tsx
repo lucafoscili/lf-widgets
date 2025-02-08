@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CSS_VAR_PREFIX,
   CY_ATTRIBUTES,
@@ -9,9 +8,9 @@ import {
   LF_IMAGE_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
-  LfDebugLifecycleInfo,
   LfImageElement,
   LfImageEvent,
   LfImageEventPayload,
@@ -20,6 +19,7 @@ import {
   LfThemeIcon,
   LfThemeIconVariable,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -328,9 +328,9 @@ export class LfImage implements LfImageInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

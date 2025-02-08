@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -8,8 +7,8 @@ import {
   LF_TOAST_PARTS,
   LF_TOAST_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeIcon,
   LfThemeUISize,
   LfThemeUIState,
@@ -19,6 +18,7 @@ import {
   LfToastEventPayload,
   LfToastInterface,
   LfToastPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -285,9 +285,9 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   COVER_ICONS,
   CY_ATTRIBUTES,
@@ -11,8 +10,8 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatStatus,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfMessengerAdapter,
   LfMessengerBaseChildNode,
   LfMessengerCharacterNode,
@@ -32,6 +31,7 @@ import {
   LfMessengerPanels,
   LfMessengerPropsInterface,
   LfMessengerUnionChildIds,
+  onFrameworkReady,
   OPTION_TYPE_IDS,
 } from "@lf-widgets/foundations";
 import {
@@ -741,9 +741,9 @@ export class LfMessenger implements LfMessengerInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

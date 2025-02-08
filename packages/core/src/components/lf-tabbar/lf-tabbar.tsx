@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_TABBAR_PARTS,
   LF_TABBAR_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfTabbarElement,
   LfTabbarEvent,
   LfTabbarEventPayload,
@@ -19,6 +18,7 @@ import {
   LfTabbarState,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -380,9 +380,9 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

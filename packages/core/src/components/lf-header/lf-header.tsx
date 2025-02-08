@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_HEADER_BLOCKS,
   LF_HEADER_PARTS,
@@ -6,13 +5,14 @@ import {
   LF_HEADER_SLOT,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfHeaderElement,
   LfHeaderEvent,
   LfHeaderEventPayload,
   LfHeaderInterface,
   LfHeaderPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -145,9 +145,9 @@ export class LfHeader implements LfHeaderInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);

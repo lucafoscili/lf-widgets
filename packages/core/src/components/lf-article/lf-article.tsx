@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ARTICLE_BLOCKS,
@@ -13,9 +12,10 @@ import {
   LfArticleInterface,
   LfArticleNode,
   LfArticlePropsInterface,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -347,9 +347,9 @@ export class LfArticle implements LfArticleInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  connectedCallback() {
+  async connectedCallback() {
     if (!this.#framework) {
-      this.#framework = getLfFramework();
+      this.#framework = await onFrameworkReady;
       this.debugInfo = this.#framework.debug.info.create();
     }
     this.#framework.theme.register(this);
