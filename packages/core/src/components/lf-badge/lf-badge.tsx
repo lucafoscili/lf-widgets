@@ -305,9 +305,7 @@ export class LfBadge implements LfBadgeInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

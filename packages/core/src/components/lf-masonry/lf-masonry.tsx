@@ -525,9 +525,6 @@ export class LfMasonry implements LfMasonryInterface {
     if (this.#framework) {
       this.#framework.theme.register(this);
     }
-
-    this.viewportWidth = window.innerWidth;
-    window.addEventListener("resize", this.#handleResize);
   }
   async componentWillLoad() {
     await this.#onFrameworkReady();
@@ -535,6 +532,9 @@ export class LfMasonry implements LfMasonryInterface {
     this.updateShapes();
   }
   componentDidLoad() {
+    window.addEventListener("resize", this.#handleResize);
+    this.viewportWidth = window.innerWidth;
+
     const { info } = this.#framework.debug;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
@@ -571,9 +571,7 @@ export class LfMasonry implements LfMasonryInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
     window.removeEventListener("resize", this.#handleResize);
   }
   //#endregion

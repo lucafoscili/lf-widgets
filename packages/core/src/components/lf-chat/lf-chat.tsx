@@ -710,10 +710,8 @@ export class LfChat implements LfChatInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
     clearInterval(this.#interval);
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

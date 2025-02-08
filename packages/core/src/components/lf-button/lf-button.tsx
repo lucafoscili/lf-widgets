@@ -557,14 +557,12 @@ export class LfButton implements LfButtonInterface {
     );
   }
   disconnectedCallback() {
-    const { portal, theme } = this.#framework;
-
     const { list } = this.#adapter.elements.refs;
 
-    if (list && portal.isInPortal(list)) {
-      portal.close(list);
+    if (list && this.#framework?.portal.isInPortal(list)) {
+      this.#framework?.portal.close(list);
     }
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

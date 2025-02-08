@@ -200,9 +200,7 @@ export class LfHeader implements LfHeaderInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }

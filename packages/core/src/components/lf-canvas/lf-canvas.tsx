@@ -496,9 +496,7 @@ export class LfCanvas implements LfCanvasInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
 
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect();

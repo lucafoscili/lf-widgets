@@ -270,12 +270,14 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     if (this.#framework) {
       this.#framework.theme.register(this);
     }
-    this.#setObserver();
   }
-  async componentDidLoad() {
+  async componentWillLoad() {
     await this.#onFrameworkReady();
+  }
+  componentDidLoad() {
     const { info } = this.#framework.debug;
 
+    this.#setObserver();
     this.#intObserver.observe(this.rootElement);
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
@@ -352,9 +354,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
-    theme.unregister(this);
+    this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
   }
   //#endregion

@@ -505,13 +505,11 @@ export class LfDrawer implements LfDrawerInterface {
     );
   }
   disconnectedCallback() {
-    const { theme } = this.#framework;
-
     if (this.#resizeHandler) {
       window.removeEventListener("resize", this.#resizeHandler);
     }
-    this.#framework.effects.backdrop.hide();
-    theme.unregister(this);
+    this.#framework?.effects.backdrop.hide();
+    this.#framework?.theme.unregister(this);
   }
   //#endregion
 }
