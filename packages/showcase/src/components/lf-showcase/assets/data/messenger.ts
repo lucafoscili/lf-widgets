@@ -2,10 +2,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkComputedGetAssetPath,
-  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkGetAssetPath,
+  LfFrameworkInterface,
   LfMessengerAvatarNode,
   LfMessengerDataset,
   LfMessengerLocationNode,
@@ -142,7 +142,7 @@ Freya embodies the complex nature of feminine power in Norse mythology, combinin
 `;
 
 export const FREYA_AVATARS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerAvatarNode[] => [
   {
     cells: {
@@ -169,7 +169,7 @@ export const FREYA_AVATARS = (
 ];
 
 export const FREYA_LOCATIONS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerLocationNode[] => [
   {
     cells: {
@@ -196,7 +196,7 @@ export const FREYA_LOCATIONS = (
 ];
 
 export const FREYA_OUTFITS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerOutfitNode[] => [
   {
     cells: {
@@ -223,7 +223,7 @@ export const FREYA_OUTFITS = (
 ];
 
 export const FREYA_STYLES = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerStyleNode[] => [
   {
     cells: {
@@ -290,7 +290,7 @@ As one of the most prominent gods in Norse mythology, Thor remains a significant
 `;
 
 export const THOR_AVATARS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerAvatarNode[] => [
   {
     cells: {
@@ -317,7 +317,7 @@ export const THOR_AVATARS = (
 ];
 
 export const THOR_LOCATIONS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerLocationNode[] => [
   {
     cells: {
@@ -366,7 +366,7 @@ export const THOR_LOCATIONS = (
 ];
 
 export const THOR_OUTFITS = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerOutfitNode[] => [
   {
     cells: {
@@ -393,7 +393,7 @@ export const THOR_OUTFITS = (
 ];
 
 export const THOR_STYLES = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerStyleNode[] => [
   {
     cells: {
@@ -420,7 +420,7 @@ export const THOR_STYLES = (
 ];
 
 export const MESSENGER_LFDATA = (
-  get: LfFrameworkComputedGetAssetPath,
+  get: LfFrameworkGetAssetPath,
 ): LfMessengerDataset => ({
   nodes: [
     {

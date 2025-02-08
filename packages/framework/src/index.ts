@@ -1,5 +1,3 @@
-export { Build, getAssetPath, setAssetPath } from "@stencil/core";
-
 import {
   LF_FRAMEWORK_EVENT_NAME,
   LF_FRAMEWORK_SYMBOL,

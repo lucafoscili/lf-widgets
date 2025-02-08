@@ -1,15 +1,15 @@
-import { getLfFramework } from "@lf-widgets/core";
 import {
   LF_WRAPPER_ID,
   LfButtonEventPayload,
   LfCardEventPayload,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
   LfListEventPayload,
 } from "@lf-widgets/foundations";
+import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,

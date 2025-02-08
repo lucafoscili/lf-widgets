@@ -3,7 +3,7 @@ import { reactOutputTarget } from "@stencil/react-output-target";
 import { sass } from "@stencil/sass";
 
 export const config: Config = {
-  namespace: "lfw-showcase",
+  namespace: "lf-showcase",
   outputTargets: [
     {
       type: "dist",
@@ -16,7 +16,10 @@ export const config: Config = {
     },
     {
       type: "www",
-      copy: [{ src: "assets" }],
+      copy: [
+        { src: "assets" },
+        { src: "../../core/dist", dest: "assets/core" },
+      ],
       serviceWorker: null,
     },
     reactOutputTarget({

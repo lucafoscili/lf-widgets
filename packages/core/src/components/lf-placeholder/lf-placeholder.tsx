@@ -10,9 +10,9 @@ import {
   LfComponentProps,
   LfComponentRootElement,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
   LfPlaceholderElement,
   LfPlaceholderEvent,
   LfPlaceholderEventPayload,
@@ -21,6 +21,7 @@ import {
   LfPlaceholderTrigger,
   LfThemeIcon,
 } from "@lf-widgets/foundations";
+import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -34,7 +35,6 @@ import {
   State,
   VNode,
 } from "@stencil/core";
-import { getLfFramework } from "@lf-widgets/framework";
 
 /**
  * Represents a placeholder loading component that renders a placeholder until the main component is loaded.

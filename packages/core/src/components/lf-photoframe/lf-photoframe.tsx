@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_PHOTOFRAME_BLOCKS,
@@ -6,9 +5,9 @@ import {
   LF_PHOTOFRAME_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
-  LfDebugLifecycleInfo,
   LfPhotoframeElement,
   LfPhotoframeEvent,
   LfPhotoframeEventPayload,
@@ -17,6 +16,7 @@ import {
   LfPhotoframeOverlay,
   LfPhotoframePropsInterface,
 } from "@lf-widgets/foundations";
+import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,

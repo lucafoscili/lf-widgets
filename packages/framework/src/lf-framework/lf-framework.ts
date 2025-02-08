@@ -10,15 +10,17 @@ import {
   LfDragInterface,
   LfEffectsInterface,
   LfFrameworkClickCb,
-  LfFrameworkComputedGetAssetPath,
+  LfFrameworkGetAssetPath,
   LfFrameworkInterface,
+  LfFrameworkModuleKey,
+  LfFrameworkModuleOptions,
   LfFrameworkSetAssetPath,
   LfFrameworkUtilities,
   LfLLMInterface,
   LfPortalInterface,
   LfThemeInterface,
 } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "../index";
+import { getAssetPath, setAssetPath } from "@stencil/core";
 import { LfColor } from "../lf-color/lf-color";
 import { LfData } from "../lf-data/lf-data";
 import { LfDebug } from "../lf-debug/lf-debug";
@@ -30,8 +32,19 @@ import { LfTheme } from "../lf-theme/lf-theme";
 
 export class LfFramework implements LfFrameworkInterface {
   #LISTENERS_SETUP = false;
+  #MODULES = new Map<LfFrameworkModuleKey, LfFrameworkModuleOptions>([
+    [
+      "lf-framework",
+      {
+        name: "lf-framework",
+        getAssetPath,
+        setAssetPath,
+      },
+    ],
+  ]);
+
   assets: {
-    get: LfFrameworkComputedGetAssetPath;
+    get: LfFrameworkGetAssetPath;
     set: LfFrameworkSetAssetPath;
   };
   color: LfColorInterface;
@@ -46,7 +59,21 @@ export class LfFramework implements LfFrameworkInterface {
 
   constructor() {
     this.assets = {
-      get: (value) => {
+      get: (value, module = "lf-framework") => {
+        if (!this.#MODULES.has(module)) {
+          this.debug.logs.new(
+            this,
+            `Module ${module} is not registered.`,
+            "error",
+          );
+          return {
+            path: "",
+            style: { mask: "", webkitMask: "" },
+          };
+        }
+
+        const { getAssetPath } = this.#MODULES.get(module);
+
         const path = getAssetPath(value);
         const style = {
           mask: `url('${path}') no-repeat center`,
@@ -58,7 +85,14 @@ export class LfFramework implements LfFrameworkInterface {
           style,
         };
       },
-      set: setAssetPath,
+      set: (value, module?) => {
+        if (!module) {
+          this.#MODULES.forEach(({ setAssetPath }) => setAssetPath(value));
+        } else if (this.#MODULES.has(module)) {
+          const { setAssetPath } = this.#MODULES.get(module);
+          setAssetPath(value);
+        }
+      },
     };
 
     this.color = new LfColor(this);
@@ -134,11 +168,58 @@ export class LfFramework implements LfFrameworkInterface {
   //#endregion
 
   //#region assignRef
+  /**
+   * Creates a function to bind an HTML element reference to a specified key.
+   *
+   * This higher-order function accepts a record of HTML element references and a key.
+   * It returns a callback that, when provided with a non-null HTML element, assigns it
+   * to the specified key within the reference record.
+   *
+   * @template R - The type of keys used in the reference record.
+   * @param refs - An object mapping keys to HTML elements. The element will be assigned to this object.
+   * @param key - The key within the refs object where the element should be stored.
+   * @returns A function that takes an HTML element and assigns it to the provided reference key if the element exists.
+   */
   assignRef =
     <R extends string>(refs: Record<R & string, HTMLElement>, key: R) =>
     (el: HTMLElement) => {
       if (el) refs[key] = el;
     };
+  //#endregion
+
+  //#region getModules
+  /**
+   * Retrieves the list of registered modules.
+   * @returns A Map object containing the registered modules.
+   */
+  getModules = () => this.#MODULES;
+  //#endregion
+
+  //#region register
+  /**
+   * Registers a new module with the corresponding options.
+   * If the module is already registered, the function logs an error and exits early.
+   *
+   * @param module - The unique key identifier for the module.
+   * @param options - A partial configuration object for the module excluding the "name" property.
+   */
+  register = (
+    module: LfFrameworkModuleKey,
+    options: Partial<Omit<LfFrameworkModuleOptions, "name">>,
+  ) => {
+    if (this.#MODULES.has(module)) {
+      this.debug.logs.new(
+        this,
+        `Module ${module} is already registered.`,
+        "error",
+      );
+      return;
+    }
+
+    this.#MODULES.set(module, { name: module, ...options });
+
+    this.debug.logs.new(this, `Module ${module} registered.`);
+  };
   //#endregion
 
   //#region removeClickCallback
