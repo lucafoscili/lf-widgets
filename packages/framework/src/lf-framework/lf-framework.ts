@@ -100,8 +100,8 @@ export class LfFramework implements LfFrameworkInterface {
     this.debug = new LfDebug(this);
     this.drag = new LfDrag(this);
     this.effects = new LfEffects(this);
-    this.portal = new LfPortal(this);
     this.llm = new LfLLM(this);
+    this.portal = new LfPortal(this);
     this.theme = new LfTheme(this);
     this.utilities = {
       clickCallbacks: new Set(),

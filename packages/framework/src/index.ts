@@ -5,7 +5,6 @@ import {
   LfFrameworkInterface,
   markFrameworkReady,
 } from "@lf-widgets/foundations";
-import { Build } from "@stencil/core";
 import { LfFramework } from "./lf-framework/lf-framework";
 
 declare global {
@@ -13,7 +12,7 @@ declare global {
     [symbol: symbol]: LfFrameworkInterface;
   }
 }
-const { isDev } = Build;
+const isDev = process?.env?.NODE_ENV === "development";
 const isClient = typeof window !== "undefined";
 let lfFramework: LfFramework | null = null;
 
