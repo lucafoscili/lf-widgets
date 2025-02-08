@@ -23,6 +23,7 @@ export const config: Config = {
     port: 3333,
   },
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
+  globalScript: "src/global/global.ts",
   plugins: [
     sass({
       includePaths: ["./node_modules", "./src/style"],

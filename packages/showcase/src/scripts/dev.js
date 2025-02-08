@@ -60,10 +60,14 @@ function initDom() {
 //#region initFramework
 function initFramework() {
   const lfFramework = Framework.getLfFramework();
-  const { assets, theme } = lfFramework;
+  const { assets, debug, theme } = lfFramework;
 
   const path =
     window.location.href.split("/").slice(0, -1).join("/") + "/assets";
+
+  console.log("Setting debug mode...");
+  debug.toggle(true);
+
   console.log("Setting assets path...", path);
   assets.set(path);
 
