@@ -337,6 +337,11 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #format(value: string) {
     const { stringify } = this.#framework.data.cell;
 
@@ -426,14 +431,13 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     this.loadLanguage();
     this.#updateValue();
   }

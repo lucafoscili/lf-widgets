@@ -397,18 +397,7 @@ export class LfCanvas implements LfCanvasInterface {
   //#endregion
 
   //#region Private methods
-  #isCursorPreview() {
-    return this.lfCursor === "preview";
-  }
-  //#endregion
-
-  //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
-    }
-    this.#framework.theme.register(this);
+  #initAdapter = () => {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
@@ -426,6 +415,27 @@ export class LfCanvas implements LfCanvasInterface {
       },
       () => this.#adapter,
     );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
+  #isCursorPreview() {
+    return this.lfCursor === "preview";
+  }
+  //#endregion
+
+  //#region Lifecycle hooks
+  async connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
+    }
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
+    this.resizeCanvas();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

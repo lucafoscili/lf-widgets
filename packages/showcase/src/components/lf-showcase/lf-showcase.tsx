@@ -158,6 +158,10 @@ export class LfShowcase {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+  };
   async #handleCardClick(
     e: CustomEvent<LfCardEventPayload>,
     type: LfShowcaseTitle,
@@ -554,17 +558,16 @@ export class LfShowcase {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
-    }
-    this.isDarkMode = this.#framework.theme.get.current().isDark;
+  connectedCallback() {
+    console.log("connectedCallback");
     if (this.lfScrollElement) {
       this.lfScrollElement.addEventListener("scroll", this.#handleScroll);
     }
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.isDarkMode = this.#framework.theme.get.current().isDark;
+
     const icons = this.#framework.theme.get.icons();
     this.datasets.Components = LF_SHOWCASE_COMPONENTS(icons);
     this.datasets.Framework = LF_SHOWCASE_FRAMEWORK(icons);

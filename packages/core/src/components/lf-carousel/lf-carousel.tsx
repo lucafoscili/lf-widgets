@@ -312,6 +312,46 @@ export class LfCarousel implements LfCarouselInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: CY_ATTRIBUTES,
+        index: {
+          current: () => this.currentIndex,
+        },
+        interval: () => this.#interval,
+        manager: this.#framework,
+        parts: LF_CAROUSEL_PARTS,
+        totalSlides: () => this.#getTotalSlides(),
+      },
+      {
+        index: {
+          current: (value) => (this.currentIndex = value),
+          next: () => {
+            this.currentIndex = navigation.calcNextIdx(
+              this.currentIndex,
+              this.#getTotalSlides(),
+            );
+          },
+          previous: () => {
+            this.currentIndex = navigation.calcPreviousIdx(
+              this.currentIndex,
+              this.#getTotalSlides(),
+            );
+          },
+        },
+        interval: (value) => (this.#interval = value),
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #getTotalSlides() {
     return this.shapes?.[this.lfShape]?.length || 0;
   }
@@ -419,53 +459,18 @@ export class LfCarousel implements LfCarouselInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: CY_ATTRIBUTES,
-        index: {
-          current: () => this.currentIndex,
-        },
-        interval: () => this.#interval,
-        manager: this.#framework,
-        parts: LF_CAROUSEL_PARTS,
-        totalSlides: () => this.#getTotalSlides(),
-      },
-      {
-        index: {
-          current: (value) => (this.currentIndex = value),
-          next: () => {
-            this.currentIndex = navigation.calcNextIdx(
-              this.currentIndex,
-              this.#getTotalSlides(),
-            );
-          },
-          previous: () => {
-            this.currentIndex = navigation.calcPreviousIdx(
-              this.currentIndex,
-              this.#getTotalSlides(),
-            );
-          },
-        },
-        interval: (value) => (this.#interval = value),
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
-    const { start } = autoplay;
-
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.updateShapes();
 
     if (this.lfAutoPlay) {
-      start(this.#adapter);
+      autoplay.start(this.#adapter);
     }
   }
   componentDidLoad() {

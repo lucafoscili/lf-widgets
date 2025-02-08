@@ -365,6 +365,11 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isDisabled = () => this.lfUiState === "disabled";
   #isOutlined = () => {
     return this.lfStyling === "outlined" || this.lfStyling === "textarea";
@@ -588,14 +593,13 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     if (this.lfValue) {
       this.status.add("filled");
       this.value = this.lfValue;

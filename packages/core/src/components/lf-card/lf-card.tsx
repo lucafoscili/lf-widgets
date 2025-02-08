@@ -276,13 +276,8 @@ export class LfCard implements LfCardInterface {
   }
   //#endregion
 
-  //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
-    }
-    this.#framework.theme.register(this);
+  //#region Private methods
+  #initAdapter = () => {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
@@ -295,8 +290,23 @@ export class LfCard implements LfCardInterface {
       },
       () => this.#adapter,
     );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
+  //#endregion
+
+  //#region Lifecycle hooks
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
+    }
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.updateShapes();
   }
   componentDidLoad() {

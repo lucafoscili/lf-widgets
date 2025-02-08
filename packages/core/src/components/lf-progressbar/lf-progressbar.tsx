@@ -266,6 +266,11 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon() {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -377,14 +382,13 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentDidLoad() {
+  async componentDidLoad() {
+    await this.#onFrameworkReady();
     const { info } = this.#framework.debug;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");

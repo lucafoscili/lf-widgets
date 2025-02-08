@@ -233,6 +233,11 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isLandscape(image: HTMLImageElement) {
     return Boolean(image.naturalWidth > image.naturalHeight);
   }
@@ -311,16 +316,16 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-
-    this.#setObserver();
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
   }
   componentDidLoad() {
+    this.#setObserver();
     const { info } = this.#framework.debug;
 
     this.#intObserver?.observe(this.rootElement);

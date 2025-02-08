@@ -29,19 +29,22 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
+  "devDependencies": {
+    "vite": "^6"
+  },
   "peerDependencies": {
     "@lf-widgets/core": "workspace:*",
-    "@lf-widgets/foundations": "workspace:*"
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
     "prepublishOnly": "node ./src/scripts/prepublish.js",
-    "build": "yarn clean && yarn copy && npx stencil build --docs",
+    "build": "yarn clean && npx stencil build --docs",
     "clean": "node ./src/scripts/clean.js",
-    "copy": "node ./src/scripts/copyAssets.js",
-    "dev": "yarn copy && npx stencil build --dev --watch --serve",
+    "dev": "yarn build && vite",
     "doc": "npx stencil doc",
     "test": "npx cypress run",
     "test:open": "npx cypress open"

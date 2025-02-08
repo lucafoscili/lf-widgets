@@ -259,6 +259,11 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon = (isClose = false): VNode => {
     const { assets, theme } = this.#framework;
     const { get } = assets;
@@ -285,12 +290,14 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+
     if (this.lfCloseIcon === "") {
       const { "--lf-icon-delete": close } =
         this.#framework.theme.get.current().variables;

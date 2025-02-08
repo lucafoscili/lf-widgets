@@ -243,6 +243,11 @@ export class LfImage implements LfImageInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #createIcon(): VNode {
     const { sanitizeProps, theme } = this.#framework;
     const { bemClass } = theme;
@@ -328,14 +333,14 @@ export class LfImage implements LfImageInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
   async componentWillLoad() {
+    await this.#onFrameworkReady();
+
     const { logs } = this.#framework.debug;
 
     if (!this.#isResourceUrl() && this.lfValue) {

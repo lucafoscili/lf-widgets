@@ -23,6 +23,11 @@ export const config: Config = {
       outDir: "../react-core/lib/components/stencil-generated/",
     }),
   ],
+  rollupConfig: {
+    inputOptions: {
+      external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
+    },
+  },
   globalStyle: "src/style/global.scss",
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [

@@ -14,14 +14,6 @@ export const config: Config = {
       type: "dist-custom-elements",
       externalRuntime: false,
     },
-    {
-      type: "www",
-      copy: [
-        { src: "assets" },
-        { src: "../../core/dist", dest: "assets/core" },
-      ],
-      serviceWorker: null,
-    },
     reactOutputTarget({
       outDir: "../react-showcase/lib/components/stencil-generated/",
     }),
@@ -40,5 +32,10 @@ export const config: Config = {
       ],
     }),
   ],
+  rollupConfig: {
+    inputOptions: {
+      external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
+    },
+  },
   sourceMap: false,
 };

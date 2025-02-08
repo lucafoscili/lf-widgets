@@ -361,6 +361,55 @@ export class LfChart implements LfChartInterface {
       );
     }
   }
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        compInstance: this,
+        columnById: (id: string) =>
+          this.#framework.data.column.find(this.lfDataset, { id })[0],
+        manager: this.#framework,
+        mappedType: (type) => {
+          switch (type) {
+            case "area":
+            case "gaussian":
+              return "line";
+            case "calendar":
+            case "hbar":
+            case "sbar":
+              return "bar";
+            case "bubble":
+              return "scatter";
+            default:
+              return type;
+          }
+        },
+        seriesColumn: (series) =>
+          this.#framework.data.column.find(this.lfDataset, { title: series }),
+        seriesData: () => this.#seriesData,
+        style: {
+          axis: () => prepAxis(() => this.#adapter),
+          label: () => prepLabel(() => this.#adapter),
+          legend: () => prepLegend(() => this.#adapter),
+          seriesColor: (amount: number) =>
+            prepSeries(() => this.#adapter, amount),
+          theme: () => this.themeValues,
+          tooltip: (formatter) => prepTooltip(() => this.#adapter, formatter),
+        },
+        xAxesData: () => this.#axesData,
+      },
+      {
+        style: {
+          theme: () => this.#updateThemeColors(),
+        },
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #consistencyCheck() {
     const { logs } = this.#framework.debug;
 
@@ -551,56 +600,15 @@ export class LfChart implements LfChartInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        compInstance: this,
-        columnById: (id: string) =>
-          this.#framework.data.column.find(this.lfDataset, { id })[0],
-        manager: this.#framework,
-        mappedType: (type) => {
-          switch (type) {
-            case "area":
-            case "gaussian":
-              return "line";
-            case "calendar":
-            case "hbar":
-            case "sbar":
-              return "bar";
-            case "bubble":
-              return "scatter";
-            default:
-              return type;
-          }
-        },
-        seriesColumn: (series) =>
-          this.#framework.data.column.find(this.lfDataset, { title: series }),
-        seriesData: () => this.#seriesData,
-        style: {
-          axis: () => prepAxis(() => this.#adapter),
-          label: () => prepLabel(() => this.#adapter),
-          legend: () => prepLegend(() => this.#adapter),
-          seriesColor: (amount: number) =>
-            prepSeries(() => this.#adapter, amount),
-          theme: () => this.themeValues,
-          tooltip: (formatter) => prepTooltip(() => this.#adapter, formatter),
-        },
-        xAxesData: () => this.#axesData,
-      },
-      {
-        style: {
-          theme: () => this.#updateThemeColors(),
-        },
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
+
     const { logs } = this.#framework.debug;
 
     if (!this.lfDataset?.columns || !this.lfDataset?.nodes) {

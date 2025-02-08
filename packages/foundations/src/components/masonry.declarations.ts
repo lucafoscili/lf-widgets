@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -13,15 +12,16 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_MASONRY_BLOCKS,

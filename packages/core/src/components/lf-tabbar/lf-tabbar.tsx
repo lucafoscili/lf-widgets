@@ -306,6 +306,11 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon = (node: LfDataNode) => {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -380,14 +385,13 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     const { debug } = this.#framework;
 
     const { lfDataset, lfValue } = this;

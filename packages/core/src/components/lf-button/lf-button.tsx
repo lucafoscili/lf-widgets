@@ -439,6 +439,28 @@ export class LfButton implements LfButtonInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        isDisabled: () => this.#isDisabled(),
+        isDropdown: () => this.#isDropdown(),
+        isOn: () => this.#isOn(),
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        styling: () => this.#normalizedStyling(),
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isDisabled = () => this.lfUiState === "disabled";
   #isDropdown = () => {
     return Boolean(this.lfDataset?.nodes?.[0]?.children?.length);
@@ -464,29 +486,15 @@ export class LfButton implements LfButtonInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        isDisabled: () => this.#isDisabled(),
-        isDropdown: () => this.#isDropdown(),
-        isOn: () => this.#isOn(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        styling: () => this.#normalizedStyling(),
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
+
     const { data } = this.#framework;
 
     if (this.lfValue) {

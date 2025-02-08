@@ -34,7 +34,8 @@
     "prismjs": "^1"
   },
   "peerDependencies": {
-    "@lf-widgets/foundations": "workspace:*"
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
   },
   "optionalDependencies": {
     "@lf-widgets/assets": "workspace:*"

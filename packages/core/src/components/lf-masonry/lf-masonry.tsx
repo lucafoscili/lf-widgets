@@ -355,6 +355,28 @@ export class LfMasonry implements LfMasonryInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        currentColumns: () => this.#currentColumns,
+        cyAttributes: this.#cy,
+        isMasonry: () => this.#isMasonry(),
+        isVertical: () => this.#isVertical(),
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        shapes: () => this.shapes,
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #hasShapes = () => {
     return !!this.shapes?.[this.lfShape];
   };
@@ -499,32 +521,17 @@ export class LfMasonry implements LfMasonryInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        currentColumns: () => this.#currentColumns,
-        cyAttributes: this.#cy,
-        isMasonry: () => this.#isMasonry(),
-        isVertical: () => this.#isVertical(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        shapes: () => this.shapes,
-      },
-      () => this.#adapter,
-    );
 
     this.viewportWidth = window.innerWidth;
     window.addEventListener("resize", this.#handleResize);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.updateShapes();
   }
   componentDidLoad() {

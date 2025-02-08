@@ -306,6 +306,19 @@ export class LfMessenger implements LfMessengerInterface {
       this.#initConfig();
     }
   };
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+      },
+      () => this.#adapter,
+    );
+  };
   #initCharacter = (character: LfMessengerCharacterNode) => {
     const { get } = this.#adapter.controller;
 
@@ -358,6 +371,11 @@ export class LfMessenger implements LfMessengerInterface {
         this.ui.panels[k] = panel;
       }
     }
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
   };
   #save = async () => {
     const { get, set } = this.#adapter.controller;
@@ -741,25 +759,14 @@ export class LfMessenger implements LfMessengerInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = await onFrameworkReady;
-      this.debugInfo = this.#framework.debug.info.create();
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.#initialize();
   }
   componentDidLoad() {
