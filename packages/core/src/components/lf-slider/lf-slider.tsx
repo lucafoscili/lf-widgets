@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -8,8 +7,8 @@ import {
   LF_SLIDER_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfSliderElement,
   LfSliderEvent,
   LfSliderEventPayload,
@@ -18,6 +17,7 @@ import {
   LfSliderValue,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -309,6 +309,11 @@ export class LfSlider implements LfSliderInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isDisabled = (): boolean => {
     return this.lfUiState === "disabled";
   };
@@ -316,13 +321,12 @@ export class LfSlider implements LfSliderInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     const { lfValue } = this;
 
     if (lfValue) {

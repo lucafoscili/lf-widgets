@@ -1,15 +1,15 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_SPINNER_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfSpinnerElement,
   LfSpinnerEvent,
   LfSpinnerEventPayload,
   LfSpinnerInterface,
   LfSpinnerPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -271,6 +271,11 @@ export class LfSpinner implements LfSpinnerInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #startProgressBar() {
     this.progress = 0;
     const startTime = Date.now();
@@ -293,11 +298,12 @@ export class LfSpinner implements LfSpinnerInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfBadgeElement,
   LfBadgePropsInterface,
@@ -56,6 +55,7 @@ import {
   LfComponent,
   LfComponentName,
   LfComponentRootElement,
+  VNode,
 } from "../foundations/components.declarations";
 import {
   LfEventPayload,

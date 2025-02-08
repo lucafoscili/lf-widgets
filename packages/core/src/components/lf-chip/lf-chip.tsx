@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -15,12 +14,13 @@ import {
   LfChipInterface,
   LfChipPropsInterface,
   LfChipStyling,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -337,6 +337,11 @@ export class LfChip implements LfChipInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #hasChildren(node: LfDataNode) {
     return !!(node.children && node.children.length);
   }
@@ -555,13 +560,13 @@ export class LfChip implements LfChipInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+
     if (this.lfValue?.length) {
       this.setSelectedNodes(this.lfValue);
     }

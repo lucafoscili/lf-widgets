@@ -10,9 +10,9 @@ import {
   LfComponentProps,
   LfComponentRootElement,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
   LfPlaceholderElement,
   LfPlaceholderEvent,
   LfPlaceholderEventPayload,
@@ -20,6 +20,7 @@ import {
   LfPlaceholderPropsInterface,
   LfPlaceholderTrigger,
   LfThemeIcon,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -34,7 +35,6 @@ import {
   State,
   VNode,
 } from "@stencil/core";
-import { getLfFramework } from "@lf-widgets/framework";
 
 /**
  * Represents a placeholder loading component that renders a placeholder until the main component is loaded.
@@ -237,6 +237,11 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #setObserver(): void {
     const { debug } = this.#framework;
 
@@ -262,14 +267,13 @@ export class LfPlaceholder implements LfPlaceholderInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
     this.#setObserver();
   }
-  componentDidLoad() {
+  async componentDidLoad() {
+    await this.#onFrameworkReady();
     const { info } = this.#framework.debug;
 
     this.#intObserver.observe(this.rootElement);

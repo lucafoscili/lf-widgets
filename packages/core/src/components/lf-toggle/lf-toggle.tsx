@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,8 +6,8 @@ import {
   LF_TOGGLE_PARTS,
   LF_TOGGLE_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
   LfToggleElement,
@@ -17,6 +16,7 @@ import {
   LfToggleInterface,
   LfTogglePropsInterface,
   LfToggleState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -269,6 +269,11 @@ export class LfToggle implements LfToggleInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isDisabled = () => {
     return this.lfUiState === "disabled";
   };
@@ -296,13 +301,12 @@ export class LfToggle implements LfToggleInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     if (this.lfValue) {
       this.value = "on";
     }

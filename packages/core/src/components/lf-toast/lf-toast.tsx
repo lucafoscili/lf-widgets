@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -8,8 +7,8 @@ import {
   LF_TOAST_PARTS,
   LF_TOAST_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeIcon,
   LfThemeUISize,
   LfThemeUIState,
@@ -19,6 +18,7 @@ import {
   LfToastEventPayload,
   LfToastInterface,
   LfToastPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -259,6 +259,11 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon = (isClose = false): VNode => {
     const { assets, theme } = this.#framework;
     const { get } = assets;
@@ -286,11 +291,13 @@ export class LfToast implements LfToastInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+
     if (this.lfCloseIcon === "") {
       const { "--lf-icon-delete": close } =
         this.#framework.theme.get.current().variables;

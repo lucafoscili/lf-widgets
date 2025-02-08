@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_TREE_PARTS,
   LF_TREE_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfTextfieldEventPayload,
   LfThemeUISize,
   LfTreeElement,
@@ -20,6 +19,7 @@ import {
   LfTreeInterface,
   LfTreeNodeProps,
   LfTreePropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -302,6 +302,11 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #filter(e: CustomEvent<LfTextfieldEventPayload>) {
     const { filter } = this.#framework.data.node;
 
@@ -430,11 +435,12 @@ export class LfTree implements LfTreeInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

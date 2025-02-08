@@ -7,9 +7,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>LF Widgets - Showcase</title>
-    <!-- Load Showcase -->
-    <script type="module" src="/build/lfw-showcase.esm.js" defer></script>
-    <script nomodule src="/build/lfw-showcase.js" defer></script>
+    <script type="module" src="./scripts/dev.js"></script>
     <style>
       * {
         box-sizing: border-box;
@@ -54,49 +52,5 @@
     </style>
   </head>
 
-  <body>
-    <script>
-      const managerCb = (e) => {
-        const { assets, theme } = e.detail.lfFramework;
-        const path =
-          window.location.href.split("/").slice(0, -1).join("/") + "/assets";
-        console.log("Setting assets path...", path);
-        assets.set(path);
-        requestAnimationFrame(async () => {
-          console.log("Setting default theme...");
-          theme.set("dark");
-        });
-        document.removeEventListener("lf-core-event", managerCb);
-        console.log("LfFramework ready.");
-      };
-      document.addEventListener("lf-core-event", managerCb);
-
-      console.log("Initializing index page...");
-      const readyCb = (e) => {
-        const { comp, eventType } = e.detail;
-        switch (eventType) {
-          case "ready":
-            console.log("App ready!");
-            comp.unmount();
-            document.querySelector("lf-showcase").hidden = false;
-            break;
-        }
-        document.removeEventListener("lf-splash-event", readyCb);
-      };
-
-      document.addEventListener("lf-splash-event", readyCb);
-    </script>
-    <lf-splash id="splash" aria-label="Loading application">
-      <lf-spinner
-        aria-live="polite"
-        lf-active
-        lf-layout="14"
-        role="status"
-      ></lf-spinner>
-    </lf-splash>
-    <div id="bg" aria-hidden="true"></div>
-    <div id="lf-showcase">
-      <lf-showcase hidden lf-header="true"></lf-showcase>
-    </div>
-  </body>
+  <body> </body>
 </html>

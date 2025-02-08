@@ -14,12 +14,13 @@ import {
   LfCompareInterface,
   LfComparePropsInterface,
   LfCompareView,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,7 +38,6 @@ import {
   Watch,
 } from "@stencil/core";
 import { createAdapter } from "./lf-compare-adapter";
-import { getLfFramework } from "@lf-widgets/framework";
 
 /**
  * Represents a comparison component that displays two shapes side by side or
@@ -236,6 +236,47 @@ export class LfCompare implements LfCompareInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        isOverlay: () => this.#isOverlay(),
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        shapes: () => this.#getShapes(),
+      },
+      {
+        leftPanelOpened: (value?) => {
+          if (value === undefined) {
+            this.isLeftPanelOpened = !this.isLeftPanelOpened;
+          } else {
+            this.isLeftPanelOpened = value;
+          }
+        },
+        leftShape: (shape) => (this.leftShape = shape),
+        rightPanelOpened: (value?) => {
+          if (value === undefined) {
+            this.isRightPanelOpened = !this.isRightPanelOpened;
+          } else {
+            this.isRightPanelOpened = value;
+          }
+        },
+        rightShape: (shape) => (this.rightShape = shape),
+        splitView: (value) => {
+          this.lfView = value ? "split" : "main";
+        },
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #getShapes() {
     return this.shapes?.[this.lfShape] || [];
   }
@@ -359,47 +400,13 @@ export class LfCompare implements LfCompareInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        isOverlay: () => this.#isOverlay(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        shapes: () => this.#getShapes(),
-      },
-      {
-        leftPanelOpened: (value?) => {
-          if (value === undefined) {
-            this.isLeftPanelOpened = !this.isLeftPanelOpened;
-          } else {
-            this.isLeftPanelOpened = value;
-          }
-        },
-        leftShape: (shape) => (this.leftShape = shape),
-        rightPanelOpened: (value?) => {
-          if (value === undefined) {
-            this.isRightPanelOpened = !this.isRightPanelOpened;
-          } else {
-            this.isRightPanelOpened = value;
-          }
-        },
-        rightShape: (shape) => (this.rightShape = shape),
-        splitView: (value) => {
-          this.lfView = value ? "split" : "main";
-        },
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.updateShapes();
   }
   componentDidLoad() {

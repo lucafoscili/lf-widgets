@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -11,6 +10,7 @@ import { CY_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
+  VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";

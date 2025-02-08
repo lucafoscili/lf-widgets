@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_IMAGEVIEWER_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataDataset,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfImageviewerAdapter,
   LfImageviewerAdapterRefs,
   LfImageviewerElement,
@@ -21,6 +20,7 @@ import {
   LfImageviewerLoadCallback,
   LfImageviewerPropsInterface,
   LfMasonrySelectedShape,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -290,6 +290,76 @@ export class LfImageviewer implements LfImageviewerInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        currentShape: () => this.#getSelectedShapeValue(this.currentShape),
+        cyAttributes: this.#cy,
+        history: {
+          current: () => this.history[this.currentShape.index],
+          currentSnapshot: () => {
+            if (this.historyIndex === null) {
+              return null;
+            }
+
+            const snapshot =
+              this.history[this.currentShape.index][this.historyIndex];
+
+            return this.#getSelectedShapeValue(snapshot);
+          },
+          full: () => this.history,
+          index: () => this.historyIndex,
+        },
+        lfAttribute: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        spinnerStatus: () => this.isSpinnerActive,
+      },
+      {
+        currentShape: (node) => (this.currentShape = node),
+        history: {
+          index: (index) => (this.historyIndex = index),
+          new: (selectedShape, isSnapshot = false) => {
+            const historyByIndex = this.history?.[selectedShape.index] || [];
+
+            if (this.historyIndex < historyByIndex.length - 1) {
+              historyByIndex.splice(this.historyIndex + 1);
+            }
+
+            if (historyByIndex?.length && !isSnapshot) {
+              historyByIndex[0] = selectedShape;
+              return;
+            }
+
+            historyByIndex.push(selectedShape);
+            this.history[selectedShape.index] = historyByIndex;
+            this.historyIndex = historyByIndex.length - 1;
+          },
+          pop: (index = null) => {
+            if (index !== null) {
+              this.history[index] = [this.history[index][0]];
+              if (this.historyIndex === 0) {
+                this.refresh();
+              } else {
+                this.historyIndex = 0;
+              }
+            } else {
+              this.history = {};
+              this.historyIndex = null;
+            }
+          },
+        },
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #getSelectedShapeValue(selectedShape: LfMasonrySelectedShape) {
     const { data } = this.#framework;
     const { cell } = data;
@@ -375,74 +445,13 @@ export class LfImageviewer implements LfImageviewerInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        currentShape: () => this.#getSelectedShapeValue(this.currentShape),
-        cyAttributes: this.#cy,
-        history: {
-          current: () => this.history[this.currentShape.index],
-          currentSnapshot: () => {
-            if (this.historyIndex === null) {
-              return null;
-            }
-
-            const snapshot =
-              this.history[this.currentShape.index][this.historyIndex];
-
-            return this.#getSelectedShapeValue(snapshot);
-          },
-          full: () => this.history,
-          index: () => this.historyIndex,
-        },
-        lfAttribute: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        spinnerStatus: () => this.isSpinnerActive,
-      },
-      {
-        currentShape: (node) => (this.currentShape = node),
-        history: {
-          index: (index) => (this.historyIndex = index),
-          new: (selectedShape, isSnapshot = false) => {
-            const historyByIndex = this.history?.[selectedShape.index] || [];
-
-            if (this.historyIndex < historyByIndex.length - 1) {
-              historyByIndex.splice(this.historyIndex + 1);
-            }
-
-            if (historyByIndex?.length && !isSnapshot) {
-              historyByIndex[0] = selectedShape;
-              return;
-            }
-
-            historyByIndex.push(selectedShape);
-            this.history[selectedShape.index] = historyByIndex;
-            this.historyIndex = historyByIndex.length - 1;
-          },
-          pop: (index = null) => {
-            if (index !== null) {
-              this.history[index] = [this.history[index][0]];
-              if (this.historyIndex === 0) {
-                this.refresh();
-              } else {
-                this.historyIndex = 0;
-              }
-            } else {
-              this.history = {};
-              this.historyIndex = null;
-            }
-          },
-        },
-      },
-      () => this.#adapter,
-    );
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

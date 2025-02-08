@@ -1,6 +1,5 @@
-import type { VNode } from "@stencil/core";
 import type { ECElementEvent } from "echarts";
-import { LfComponent } from "./components.declarations";
+import { LfComponent, VNode } from "./components.declarations";
 import { LfEvent } from "./events.declarations";
 
 //#region Adapter

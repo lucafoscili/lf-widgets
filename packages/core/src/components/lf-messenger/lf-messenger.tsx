@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   COVER_ICONS,
   CY_ATTRIBUTES,
@@ -11,8 +10,8 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatStatus,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfMessengerAdapter,
   LfMessengerBaseChildNode,
   LfMessengerCharacterNode,
@@ -32,6 +31,7 @@ import {
   LfMessengerPanels,
   LfMessengerPropsInterface,
   LfMessengerUnionChildIds,
+  onFrameworkReady,
   OPTION_TYPE_IDS,
 } from "@lf-widgets/foundations";
 import {
@@ -306,6 +306,19 @@ export class LfMessenger implements LfMessengerInterface {
       this.#initConfig();
     }
   };
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+      },
+      () => this.#adapter,
+    );
+  };
   #initCharacter = (character: LfMessengerCharacterNode) => {
     const { get } = this.#adapter.controller;
 
@@ -358,6 +371,11 @@ export class LfMessenger implements LfMessengerInterface {
         this.ui.panels[k] = panel;
       }
     }
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
   };
   #save = async () => {
     const { get, set } = this.#adapter.controller;
@@ -742,24 +760,13 @@ export class LfMessenger implements LfMessengerInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.#initialize();
   }
   componentDidLoad() {

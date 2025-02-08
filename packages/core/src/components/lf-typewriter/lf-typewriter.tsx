@@ -1,12 +1,11 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_STYLE_ID,
   LF_TYPEWRITER_BLOCKS,
   LF_TYPEWRITER_PARTS,
   LF_TYPEWRITER_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfTypewriterCursor,
   LfTypewriterElement,
@@ -16,6 +15,7 @@ import {
   LfTypewriterPropsInterface,
   LfTypewriterTag,
   LfTypewriterValue,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -236,6 +236,11 @@ export class LfTypewriter implements LfTypewriterInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #initializeTexts() {
     const { lfValue } = this;
 
@@ -332,13 +337,12 @@ export class LfTypewriter implements LfTypewriterInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     this.#initializeTexts();
   }
   componentDidLoad() {

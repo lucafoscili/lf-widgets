@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,10 +6,10 @@ import {
   LF_TABBAR_PARTS,
   LF_TABBAR_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfTabbarElement,
   LfTabbarEvent,
   LfTabbarEventPayload,
@@ -19,6 +18,7 @@ import {
   LfTabbarState,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -306,6 +306,11 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon = (node: LfDataNode) => {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -381,13 +386,12 @@ export class LfTabbar implements LfTabbarInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     const { debug } = this.#framework;
 
     const { lfDataset, lfValue } = this;

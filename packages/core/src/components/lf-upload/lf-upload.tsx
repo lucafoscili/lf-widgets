@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,12 +6,13 @@ import {
   LF_UPLOAD_PARTS,
   LF_UPLOAD_PROPS,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfUploadElement,
   LfUploadEvent,
   LfUploadEventPayload,
   LfUploadPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -218,6 +218,11 @@ export class LfUpload {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #formatFileSize(size: number): string {
     const units = ["Bytes", "KB", "MB", "GB", "TB"];
     let unitIndex = 0;
@@ -339,13 +344,12 @@ export class LfUpload {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     if (Array.isArray(this.lfValue)) {
       this.selectedFiles = this.lfValue;
     }

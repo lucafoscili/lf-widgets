@@ -15,8 +15,8 @@ import {
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   Component,
   Element,
@@ -337,6 +337,11 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #format(value: string) {
     const { stringify } = this.#framework.data.cell;
 
@@ -427,13 +432,12 @@ export class LfCode implements LfCodeInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     this.loadLanguage();
     this.#updateValue();
   }

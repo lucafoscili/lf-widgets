@@ -30,7 +30,9 @@
     "puppeteer": "^22.9.0",
     "react": "^18",
     "react-dom": "^18",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^6",
+    "vite-plugin-static-copy": "^2"
   },
   "scripts": {
     "build:core": "lerna run build --scope @lf-widgets/core --stream",

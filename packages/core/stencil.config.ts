@@ -3,7 +3,7 @@ import { reactOutputTarget } from "@stencil/react-output-target";
 import { sass } from "@stencil/sass";
 
 export const config: Config = {
-  namespace: "lfw-core",
+  namespace: "lf-core",
   outputTargets: [
     {
       type: "dist",
@@ -23,6 +23,12 @@ export const config: Config = {
       outDir: "../react-core/lib/components/stencil-generated/",
     }),
   ],
+  rollupConfig: {
+    inputOptions: {
+      external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
+    },
+  },
+  globalScript: "src/global/global.ts",
   globalStyle: "src/style/global.scss",
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [

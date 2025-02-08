@@ -58,40 +58,6 @@ Represents a showcase component for displaying and navigating through multiple s
 | `--lf-showcase-font-size`     | Sets the font size for the showcase component. Defaults to => var(--lf-font-size)                     |
 
 
-## Dependencies
-
-### Depends on
-
-- lf-article
-- lf-button
-- lf-drawer
-- lf-image
-- lf-tree
-- lf-header
-- lf-typewriter
-- lf-card
-- lf-spinner
-- lf-splash
-- lf-toast
-
-### Graph
-```mermaid
-graph TD;
-  lf-showcase --> lf-article
-  lf-showcase --> lf-button
-  lf-showcase --> lf-drawer
-  lf-showcase --> lf-image
-  lf-showcase --> lf-tree
-  lf-showcase --> lf-header
-  lf-showcase --> lf-typewriter
-  lf-showcase --> lf-card
-  lf-showcase --> lf-spinner
-  lf-showcase --> lf-splash
-  lf-showcase --> lf-toast
-  lf-tree --> lf-textfield
-  style lf-showcase fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

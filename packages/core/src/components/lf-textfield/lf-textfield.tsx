@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -7,9 +6,9 @@ import {
   LF_TEXTFIELD_PARTS,
   LF_TEXTFIELD_PROPS,
   LF_WRAPPER_ID,
+  LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
-  LfDebugLifecycleInfo,
   LfTextfieldElement,
   LfTextfieldEvent,
   LfTextfieldEventPayload,
@@ -20,6 +19,7 @@ import {
   LfTextfieldStyling,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -365,6 +365,11 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isDisabled = () => this.lfUiState === "disabled";
   #isOutlined = () => {
     return this.lfStyling === "outlined" || this.lfStyling === "textarea";
@@ -589,13 +594,12 @@ export class LfTextfield implements LfTextfieldInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
     if (this.lfValue) {
       this.status.add("filled");
       this.value = this.lfValue;

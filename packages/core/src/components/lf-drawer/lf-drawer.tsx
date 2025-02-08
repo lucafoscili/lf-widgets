@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_ATTRIBUTES,
   LF_DRAWER_BLOCKS,
@@ -8,7 +7,6 @@ import {
   LF_EFFECTS_FOCUSABLES,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
   LfDrawerDisplay,
   LfDrawerElement,
@@ -17,6 +15,8 @@ import {
   LfDrawerInterface,
   LfDrawerPosition,
   LfDrawerPropsInterface,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -352,6 +352,11 @@ export class LfDrawer implements LfDrawerInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #applyResponsiveMode() {
     if (this.lfResponsive <= 0) {
       return;
@@ -429,11 +434,12 @@ export class LfDrawer implements LfDrawerInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
 
     if (this.lfResponsive > 0) {
       this.#applyResponsiveMode();

@@ -11,12 +11,13 @@ import {
   LfAccordionEventPayload,
   LfAccordionInterface,
   LfAccordionPropsInterface,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -31,7 +32,6 @@ import {
   State,
   VNode,
 } from "@stencil/core";
-import { getLfFramework } from "@lf-widgets/framework";
 
 /**
  * Represents an accordion-style component that displays a list of data items,
@@ -291,6 +291,11 @@ export class LfAccordion implements LfAccordionInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #isExpanded(node: LfDataNode) {
     return this.expandedNodes.has(node);
   }
@@ -410,11 +415,12 @@ export class LfAccordion implements LfAccordionInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
+  }
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

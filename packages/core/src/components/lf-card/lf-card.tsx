@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -16,12 +15,13 @@ import {
   LfCardInterface,
   LfCardLayout,
   LfCardPropsInterface,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -276,13 +276,8 @@ export class LfCard implements LfCardInterface {
   }
   //#endregion
 
-  //#region Lifecycle hooks
-  connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
-    }
-    this.#framework.theme.register(this);
+  //#region Private methods
+  #initAdapter = () => {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
@@ -295,8 +290,23 @@ export class LfCard implements LfCardInterface {
       },
       () => this.#adapter,
     );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
+  //#endregion
+
+  //#region Lifecycle hooks
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
+    }
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
     this.updateShapes();
   }
   componentDidLoad() {

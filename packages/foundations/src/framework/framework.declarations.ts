@@ -11,6 +11,7 @@ import { LfEffectsInterface } from "./effects.declarations";
 import {
   LF_FRAMEWORK_ALLOWED_ATTRS,
   LF_FRAMEWORK_ALLOWED_PREFIXES,
+  LF_FRAMEWORK_MODULES,
 } from "./framework.constants";
 import { LfLLMInterface } from "./llm.declarations";
 import { LfPortalInterface } from "./portal.declarations";
@@ -19,7 +20,7 @@ import { LfThemeInterface } from "./theme.declarations";
 //#region Class
 export interface LfFrameworkInterface {
   assets: {
-    get: LfFrameworkComputedGetAssetPath;
+    get: LfFrameworkGetAssetPath;
     set: LfFrameworkSetAssetPath;
   };
   color: LfColorInterface;
@@ -36,6 +37,11 @@ export interface LfFrameworkInterface {
     refs: Record<R, HTMLElement>,
     key: R,
   ) => (el: HTMLElement) => void;
+  getModules: () => Map<LfFrameworkModuleKey, LfFrameworkModuleOptions>;
+  register: (
+    module: LfFrameworkModuleKey,
+    options: Partial<LfFrameworkModuleOptions>,
+  ) => void;
   removeClickCallback: (cb: LfFrameworkClickCb) => void;
   sanitizeProps<P extends { [key: string]: any }>(props: P): P;
   sanitizeProps<C extends LfComponentName>(
@@ -53,12 +59,23 @@ export interface LfFrameworkClickCb {
   cb: () => unknown;
   element?: HTMLElement;
 }
-export type LfFrameworkGetAssetPath = (value: string) => string;
-export type LfFrameworkSetAssetPath = (value: string) => void;
-export type LfFrameworkComputedGetAssetPath = (value: string) => {
+export type LfFrameworkModuleKey = (typeof LF_FRAMEWORK_MODULES)[number];
+export type LfFrameworkGetAssetPath = (
+  value: string,
+  module?: LfFrameworkModuleKey,
+) => {
   path: string;
   style: { mask: string; webkitMask: string };
 };
+export type LfFrameworkSetAssetPath = (
+  value: string,
+  module?: LfFrameworkModuleKey,
+) => void;
+export interface LfFrameworkModuleOptions {
+  name: LfFrameworkModuleKey;
+  getAssetPath?: (value: string) => string;
+  setAssetPath?: (value: string) => void;
+}
 export type LfFrameworkEvent = CustomEvent<LfFrameworkEventPayload>;
 export interface LfFrameworkEventPayload {
   lfFramework: LfFrameworkInterface;

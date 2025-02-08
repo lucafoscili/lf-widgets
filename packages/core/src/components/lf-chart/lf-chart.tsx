@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   LF_CHART_BLOCKS,
   LF_CHART_CSS_VARS,
@@ -20,9 +19,10 @@ import {
   LfChartType,
   LfChartXAxis,
   LfChartYAxis,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,7 +37,6 @@ import {
   State,
 } from "@stencil/core";
 import { dispose, ECharts, init } from "echarts";
-import { createAdapter } from "./lf-chart-adapter";
 import {
   prepAxis,
   prepLabel,
@@ -45,6 +44,7 @@ import {
   prepSeries,
   prepTooltip,
 } from "./helpers.utils";
+import { createAdapter } from "./lf-chart-adapter";
 
 /**
  * Represents a chart component that displays data in various formats, such as
@@ -361,6 +361,55 @@ export class LfChart implements LfChartInterface {
       );
     }
   }
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        compInstance: this,
+        columnById: (id: string) =>
+          this.#framework.data.column.find(this.lfDataset, { id })[0],
+        manager: this.#framework,
+        mappedType: (type) => {
+          switch (type) {
+            case "area":
+            case "gaussian":
+              return "line";
+            case "calendar":
+            case "hbar":
+            case "sbar":
+              return "bar";
+            case "bubble":
+              return "scatter";
+            default:
+              return type;
+          }
+        },
+        seriesColumn: (series) =>
+          this.#framework.data.column.find(this.lfDataset, { title: series }),
+        seriesData: () => this.#seriesData,
+        style: {
+          axis: () => prepAxis(() => this.#adapter),
+          label: () => prepLabel(() => this.#adapter),
+          legend: () => prepLegend(() => this.#adapter),
+          seriesColor: (amount: number) =>
+            prepSeries(() => this.#adapter, amount),
+          theme: () => this.themeValues,
+          tooltip: (formatter) => prepTooltip(() => this.#adapter, formatter),
+        },
+        xAxesData: () => this.#axesData,
+      },
+      {
+        style: {
+          theme: () => this.#updateThemeColors(),
+        },
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #consistencyCheck() {
     const { logs } = this.#framework.debug;
 
@@ -552,55 +601,14 @@ export class LfChart implements LfChartInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        compInstance: this,
-        columnById: (id: string) =>
-          this.#framework.data.column.find(this.lfDataset, { id })[0],
-        manager: this.#framework,
-        mappedType: (type) => {
-          switch (type) {
-            case "area":
-            case "gaussian":
-              return "line";
-            case "calendar":
-            case "hbar":
-            case "sbar":
-              return "bar";
-            case "bubble":
-              return "scatter";
-            default:
-              return type;
-          }
-        },
-        seriesColumn: (series) =>
-          this.#framework.data.column.find(this.lfDataset, { title: series }),
-        seriesData: () => this.#seriesData,
-        style: {
-          axis: () => prepAxis(() => this.#adapter),
-          label: () => prepLabel(() => this.#adapter),
-          legend: () => prepLegend(() => this.#adapter),
-          seriesColor: (amount: number) =>
-            prepSeries(() => this.#adapter, amount),
-          theme: () => this.themeValues,
-          tooltip: (formatter) => prepTooltip(() => this.#adapter, formatter),
-        },
-        xAxesData: () => this.#axesData,
-      },
-      {
-        style: {
-          theme: () => this.#updateThemeColors(),
-        },
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
+
     const { logs } = this.#framework.debug;
 
     if (!this.lfDataset?.columns || !this.lfDataset?.nodes) {

@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -17,11 +16,12 @@ import {
   LfChatPropsInterface,
   LfChatStatus,
   LfChatView,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfLLMChoiceMessage,
   LfThemeUISize,
   LfTypewriterPropsInterface,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -406,6 +406,46 @@ export class LfChat implements LfChatInterface {
   //#endregion
 
   //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        currentPrompt: () => this.currentPrompt,
+        currentTokens: () => this.currentTokens,
+        cyAttributes: this.#cy,
+        history: () => this.history,
+        lastMessage: (role = "user") => {
+          return this.history
+            .slice()
+            .reverse()
+            .find((m) => m.role === role);
+        },
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        status: () => this.status,
+        view: () => this.view,
+      },
+      {
+        currentPrompt: (value) => (this.currentPrompt = value),
+        currentTokens: (value) => (this.currentTokens = value),
+        history: async (cb) => {
+          cb();
+          this.currentTokens = await calcTokens(this.#adapter);
+          this.onLfEvent(new CustomEvent("update"), "update");
+        },
+        status: (status) => (this.status = status),
+        view: (view) => (this.view = view),
+      },
+      () => this.#adapter,
+    );
+  };
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   async #checkLLMStatus() {
     const { llm } = this.#framework;
 
@@ -595,48 +635,15 @@ export class LfChat implements LfChatInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        currentPrompt: () => this.currentPrompt,
-        currentTokens: () => this.currentTokens,
-        cyAttributes: this.#cy,
-        history: () => this.history,
-        lastMessage: (role = "user") => {
-          return this.history
-            .slice()
-            .reverse()
-            .find((m) => m.role === role);
-        },
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        status: () => this.status,
-        view: () => this.view,
-      },
-      {
-        currentPrompt: (value) => (this.currentPrompt = value),
-        currentTokens: (value) => (this.currentTokens = value),
-        history: async (cb) => {
-          cb();
-          this.currentTokens = await calcTokens(this.#adapter);
-          this.onLfEvent(new CustomEvent("update"), "update");
-        },
-        status: (status) => (this.status = status),
-        view: (view) => (this.view = view),
-      },
-      () => this.#adapter,
-    );
   }
-  componentWillLoad() {
-    const { debug } = this.#framework;
+  async componentWillLoad() {
+    await this.#onFrameworkReady();
+    this.#initAdapter();
 
+    const { debug } = this.#framework;
     const { set } = this.#adapter.controller;
 
     if (this.lfValue) {

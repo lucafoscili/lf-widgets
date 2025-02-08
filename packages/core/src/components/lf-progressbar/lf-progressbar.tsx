@@ -1,4 +1,3 @@
-import { getLfFramework } from "@lf-widgets/framework";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -8,8 +7,8 @@ import {
   LF_PROGRESSBAR_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfFrameworkInterface,
   LfDebugLifecycleInfo,
+  LfFrameworkInterface,
   LfProgressbarElement,
   LfProgressbarEvent,
   LfProgressbarEventPayload,
@@ -17,6 +16,7 @@ import {
   LfProgressbarPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
+  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -266,6 +266,11 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Private methods
+  #onFrameworkReady = async () => {
+    this.#framework = await onFrameworkReady;
+    this.debugInfo = this.#framework.debug.info.create();
+    this.#framework.theme.register(this);
+  };
   #prepIcon() {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -378,13 +383,12 @@ export class LfProgressbar implements LfProgressbarInterface {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#framework) {
-      this.#framework = getLfFramework();
-      this.debugInfo = this.#framework.debug.info.create();
+    if (this.#framework) {
+      this.#framework.theme.register(this);
     }
-    this.#framework.theme.register(this);
   }
-  componentDidLoad() {
+  async componentDidLoad() {
+    await this.#onFrameworkReady();
     const { info } = this.#framework.debug;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
