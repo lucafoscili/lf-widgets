@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.1...0.2.0-rc.2) (2025-02-08)
+
+### Features
+
+- **framework:** added module management ([23eb5ca](https://github.com/lucafoscili/lf-widgets/commit/23eb5ca90f664f9fcb15a31f742ced65b4aca243))
+
 # [0.2.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.0...0.2.0-rc.1) (2025-02-07)
 
 **Note:** Version bump only for package @lf-widgets/react-showcase
