@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.2...0.2.0-rc.3) (2025-02-08)
+
+### Bug Fixes
+
+- **framework:** safeguard for early disconnects ([d4200cf](https://github.com/lucafoscili/lf-widgets/commit/d4200cffc6e6b751bde83ee72b37b5c64afeb0d4))
+- **placeholder:** wrong lifecycle initialization ([3a8ce33](https://github.com/lucafoscili/lf-widgets/commit/3a8ce33399a7213f8c1e3f1ae122318f515ea210))
+
 # [0.2.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.1...0.2.0-rc.2) (2025-02-08)
 
 ### Bug Fixes
