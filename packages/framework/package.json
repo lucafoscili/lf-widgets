@@ -18,8 +18,13 @@
     "typescript",
     "webcomponents"
   ],
+  "main": "./dist/index.cjs.js",
   "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
   "files": [
     "dist/"
   ],
@@ -28,7 +33,7 @@
   },
   "scripts": {
     "prepublishOnly": "node ./src/scripts/prepublish.js",
-    "build": "yarn clean && tsc",
+    "build": "yarn clean && npx stencil build",
     "clean": "node ./src/scripts/clean.js"
   },
   "repository": {
