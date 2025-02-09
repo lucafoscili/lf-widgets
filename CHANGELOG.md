@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.13](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.12...0.2.0-rc.13) (2025-02-09)
+
+### Bug Fixes
+
+- **placeholder:** typo ([1f61cda](https://github.com/lucafoscili/lf-widgets/commit/1f61cda11c2152a0c785374824a3366962fdcdcf))
+
+# [0.2.0-rc.12](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.11...0.2.0-rc.12) (2025-02-09)
+
+### Bug Fixes
+
+- **photoframe:** improved intersection ([913d1f2](https://github.com/lucafoscili/lf-widgets/commit/913d1f2494517d6f6591945e59228afaeaa076c4))
+
+# [0.2.0-rc.11](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.10...0.2.0-rc.11) (2025-02-09)
+
+### Bug Fixes
+
+- **placeholder:** upgraded intersection logic ([f3bc218](https://github.com/lucafoscili/lf-widgets/commit/f3bc218d77407ab15eeea4300beceb34af47eb2e))
+
+# [0.2.0-rc.10](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.9...0.2.0-rc.10) (2025-02-09)
+
+### Features
+
+- **framework:** added stencil pipeline ([ad6fb0e](https://github.com/lucafoscili/lf-widgets/commit/ad6fb0ebc9e5d4317050bd92238b76df0d125e6e))
+
+# [0.2.0-rc.9](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.8...0.2.0-rc.9) (2025-02-09)
+
+### Bug Fixes
+
+- **image:** path calc relies on window ([1b2d4b6](https://github.com/lucafoscili/lf-widgets/commit/1b2d4b60a6fda4290f4c5103a8ac18602fe2b183))
+
 # [0.2.0-rc.8](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.7...0.2.0-rc.8) (2025-02-09)
 
 ### Bug Fixes
