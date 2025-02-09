@@ -298,9 +298,12 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       (entries) => {
         entries.forEach((entry) => {
           const isHydrated = this.rootElement.hasAttribute("lf-hydrated");
-          if (entry.isIntersecting && isHydrated) {
-            this.isInViewport = true;
-            this.#intObserver.unobserve(this.rootElement);
+          const isConnected = this.rootElement.isConnected;
+          if (entry.isIntersecting && isHydrated && isConnected) {
+            requestAnimationFrame(() => {
+              this.isInViewport = true;
+              this.#intObserver.unobserve(this.rootElement);
+            });
           }
         });
       },
@@ -320,12 +323,12 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.#setObserver();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
     this.#intObserver?.observe(this.rootElement);
+    this.#setObserver();
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
   }
