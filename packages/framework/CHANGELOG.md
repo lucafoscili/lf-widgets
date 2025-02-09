@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.4...0.2.0-rc.5) (2025-02-09)
+
+### Bug Fixes
+
+- **theme:** globalstyle inlined directly in the theme manager ([53ed0ef](https://github.com/lucafoscili/lf-widgets/commit/53ed0ef786f719d8fb25a0f2725874c8ec76f100))
+
 # [0.2.0-rc.4](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.3...0.2.0-rc.4) (2025-02-08)
 
 ### Bug Fixes
