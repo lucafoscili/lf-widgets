@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.6](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.5...0.2.0-rc.6) (2025-02-09)
+
+### Bug Fixes
+
+- **framework:** revised promise strategy ([fa74752](https://github.com/lucafoscili/lf-widgets/commit/fa74752c63ef542412892c69350712065efa14cb))
+
 # [0.2.0-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.4...0.2.0-rc.5) (2025-02-09)
 
 ### Bug Fixes

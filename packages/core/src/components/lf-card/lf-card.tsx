@@ -20,7 +20,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfThemeUISize,
-  LfThemeUIState
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import {
   Component,
