@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.9](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.8...0.2.0-rc.9) (2025-02-09)
+
+### Bug Fixes
+
+- **image:** path calc relies on window ([1b2d4b6](https://github.com/lucafoscili/lf-widgets/commit/1b2d4b60a6fda4290f4c5103a8ac18602fe2b183))
+
 # [0.2.0-rc.8](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.7...0.2.0-rc.8) (2025-02-09)
 
 ### Bug Fixes
