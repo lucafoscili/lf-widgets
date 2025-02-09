@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.8](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.7...0.2.0-rc.8) (2025-02-09)
+
+### Bug Fixes
+
+- **cell:** added a key to slots and strings/numbers ([09b02c3](https://github.com/lucafoscili/lf-widgets/commit/09b02c34750763ad864bfd003f777b1b5a4076de))
+
 # [0.2.0-rc.7](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.6...0.2.0-rc.7) (2025-02-09)
 
 **Note:** Version bump only for package @lf-widgets/framework
