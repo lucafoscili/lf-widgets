@@ -559,7 +559,6 @@ export class LfShowcase {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    console.log("connectedCallback");
     if (this.lfScrollElement) {
       this.lfScrollElement.addEventListener("scroll", this.#handleScroll);
     }

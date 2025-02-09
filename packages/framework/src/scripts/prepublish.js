@@ -17,7 +17,7 @@ const version = packageJson.version;
 const browseDeps = (deps) => {
   for (const dep in deps) {
     const v = deps[dep];
-    if (v.startsWith("workspace:")) {
+    if (v.includes("workspace:")) {
       console.log("Found workspace dependency: " + dep);
       deps[dep] = version;
     }

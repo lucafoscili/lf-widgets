@@ -121,8 +121,6 @@ export const getAllFrameworkFixtures = (framework: string) => {
   switch (framework.toLowerCase()) {
     case "color":
       return getColorFixtures();
-    case "core":
-      return getFrameworkFixtures();
     case "data":
       return getDataFixtures();
     case "debug":
@@ -131,6 +129,8 @@ export const getAllFrameworkFixtures = (framework: string) => {
       return getDragFixtures();
     case "effects":
       return getEffectsFixtures();
+    case "framework":
+      return getFrameworkFixtures();
     case "llm":
       return getLlmFixtures();
     case "portal":

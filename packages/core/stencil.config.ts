@@ -12,6 +12,7 @@ export const config: Config = {
     },
     {
       type: "dist-custom-elements",
+      includeGlobalScripts: true,
       externalRuntime: false,
     },
     {
@@ -28,15 +29,15 @@ export const config: Config = {
       external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
     },
   },
-  globalScript: "src/global/global.ts",
-  globalStyle: "src/style/global.scss",
+  globalScript: "./src/global/global.ts",
+  globalStyle: "./src/style/global.scss",
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [
     sass({
       includePaths: ["./src/style"],
       injectGlobalPaths: [
-        "src/style/_mixins.scss",
-        "src/style/_variables.scss",
+        "./src/style/_mixins.scss",
+        "./src/style/_variables.scss",
       ],
     }),
   ],
