@@ -242,7 +242,8 @@ export class LfPlaceholder implements LfPlaceholderInterface {
 
     const callback: IntersectionObserverCallback = (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        const isHydrated = this.rootElement.hasAttribute("lf-hydrated");
+        if (entry.isIntersecting && isHydrated) {
           debug.logs.new(
             this,
             "lf-placeholder entering the viewport, rendering " +
@@ -264,6 +265,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   connectedCallback() {
     if (this.#framework) {
       this.#framework.theme.register(this);
+      this.#setObserver();
     }
   }
   async componentWillLoad() {

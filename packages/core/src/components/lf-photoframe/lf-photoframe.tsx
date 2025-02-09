@@ -297,7 +297,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     this.#intObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          const isHydrated = this.rootElement.hasAttribute("lf-hydrated");
+          if (entry.isIntersecting && isHydrated) {
             this.isInViewport = true;
             this.#intObserver.unobserve(this.rootElement);
           }
@@ -314,13 +315,14 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   connectedCallback() {
     if (this.#framework) {
       this.#framework.theme.register(this);
+      this.#setObserver();
     }
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#setObserver();
   }
   componentDidLoad() {
-    this.#setObserver();
     const { info } = this.#framework.debug;
 
     this.#intObserver?.observe(this.rootElement);
