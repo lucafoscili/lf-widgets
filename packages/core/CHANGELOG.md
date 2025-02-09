@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.8](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.7...0.2.0-rc.8) (2025-02-09)
+
+### Bug Fixes
+
+- **chart:** resize always triggers a refresh ([ab12d36](https://github.com/lucafoscili/lf-widgets/commit/ab12d36043962dc74650fd961101f162ed872ed3))
+
 # [0.2.0-rc.7](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.6...0.2.0-rc.7) (2025-02-09)
 
 ### Bug Fixes
