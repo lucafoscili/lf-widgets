@@ -16,7 +16,6 @@ import {
   LfProgressbarPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -31,6 +30,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * A progress bar component that displays the progress of a task or process.
@@ -266,11 +266,6 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #prepIcon() {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -388,7 +383,7 @@ export class LfProgressbar implements LfProgressbarInterface {
     }
   }
   async componentDidLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     const { info } = this.#framework.debug;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");

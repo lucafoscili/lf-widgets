@@ -8,7 +8,6 @@ import {
   LfEvent,
   LfFrameworkInterface,
   LfListEventPayload,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -20,6 +19,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { ComponentTemplate } from "./components/component-template";
 import { FrameworkTemplate } from "./components/framework-template";
 import {
@@ -158,10 +158,6 @@ export class LfShowcase {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-  };
   async #handleCardClick(
     e: CustomEvent<LfCardEventPayload>,
     type: LfShowcaseTitle,
@@ -564,7 +560,7 @@ export class LfShowcase {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.isDarkMode = this.#framework.theme.get.current().isDark;
 
     const icons = this.#framework.theme.get.icons();

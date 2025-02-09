@@ -16,7 +16,6 @@ import {
   LfDrawerPosition,
   LfDrawerPropsInterface,
   LfFrameworkInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -32,6 +31,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents a drawer-style component that displays content on the screen,
@@ -352,11 +352,6 @@ export class LfDrawer implements LfDrawerInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #applyResponsiveMode() {
     if (this.lfResponsive <= 0) {
       return;
@@ -439,7 +434,7 @@ export class LfDrawer implements LfDrawerInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
 
     if (this.lfResponsive > 0) {
       this.#applyResponsiveMode();

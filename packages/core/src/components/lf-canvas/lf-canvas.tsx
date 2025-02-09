@@ -19,7 +19,6 @@ import {
   LfFrameworkInterface,
   LfImageElement,
   LfImagePropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -33,6 +32,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-canvas-adapter";
 
 /**
@@ -416,11 +416,6 @@ export class LfCanvas implements LfCanvasInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isCursorPreview() {
     return this.lfCursor === "preview";
   }
@@ -433,7 +428,7 @@ export class LfCanvas implements LfCanvasInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
   }
   componentDidLoad() {

@@ -12,7 +12,6 @@ import {
   LfSplashInterface,
   LfSplashPropsInterface,
   LfSplashStates,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -26,6 +25,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The splash component is designed to be displayed during the initial loading of a page or application.
@@ -168,11 +168,6 @@ export class LfSplash implements LfSplashInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -182,7 +177,7 @@ export class LfSplash implements LfSplashInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

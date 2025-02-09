@@ -15,7 +15,6 @@ import {
   LfPhotoframeOrientation,
   LfPhotoframeOverlay,
   LfPhotoframePropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -30,6 +29,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents an image component that displays a photo or graphic.
@@ -233,11 +233,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isLandscape(image: HTMLImageElement) {
     return Boolean(image.naturalWidth > image.naturalHeight);
   }
@@ -322,7 +317,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     this.#setObserver();

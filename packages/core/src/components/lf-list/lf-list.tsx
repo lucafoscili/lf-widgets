@@ -17,7 +17,6 @@ import {
   LfListPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -32,6 +31,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The list component displays a collection of items in a vertical list layout.
@@ -407,11 +407,6 @@ export class LfList implements LfListInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #handleSelection(index: number): void {
     if (
       this.lfSelectable &&
@@ -548,7 +543,7 @@ export class LfList implements LfListInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
 
     if (this.lfValue && typeof this.lfValue === "number") {
       this.selected = this.lfValue;

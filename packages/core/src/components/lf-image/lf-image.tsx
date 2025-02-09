@@ -19,7 +19,6 @@ import {
   LfThemeIcon,
   LfThemeIconVariable,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -35,6 +34,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents an image component that displays an image or icon.
@@ -243,11 +243,6 @@ export class LfImage implements LfImageInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #createIcon(): VNode {
     const { sanitizeProps, theme } = this.#framework;
     const { bemClass } = theme;
@@ -339,7 +334,7 @@ export class LfImage implements LfImageInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
 
     const { logs } = this.#framework.debug;
 

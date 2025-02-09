@@ -15,7 +15,6 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfThemeUISize,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -31,6 +30,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents an article-style component that displays structured content
@@ -206,11 +206,6 @@ export class LfArticle implements LfArticleInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #recursive(node: LfArticleNode, depth: number) {
     switch (depth) {
       case 0:
@@ -358,7 +353,7 @@ export class LfArticle implements LfArticleInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

@@ -20,8 +20,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfThemeUISize,
-  LfThemeUIState,
-  onFrameworkReady,
+  LfThemeUIState
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -36,6 +35,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-card-adapter";
 
 /**
@@ -291,11 +291,6 @@ export class LfCard implements LfCardInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -305,7 +300,7 @@ export class LfCard implements LfCardInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
     this.updateShapes();
   }

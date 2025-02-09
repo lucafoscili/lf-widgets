@@ -223,7 +223,7 @@ export class LfTheme implements LfThemeInterface {
             {
               icon: this.get.icon("colorSwatch"),
               id: "root",
-              value: "Randomize",
+              value: "Random",
               children: nodes,
             },
           ],

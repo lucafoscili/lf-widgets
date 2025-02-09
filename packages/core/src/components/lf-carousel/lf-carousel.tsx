@@ -19,7 +19,6 @@ import {
   LfDebugLifecycleInfo,
   LfEvent,
   LfFrameworkInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -36,6 +35,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { autoplay, navigation } from "./helpers.utils";
 import { createAdapter } from "./lf-carousel-adapter";
 
@@ -347,11 +347,6 @@ export class LfCarousel implements LfCarouselInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #getTotalSlides() {
     return this.shapes?.[this.lfShape]?.length || 0;
   }
@@ -465,7 +460,7 @@ export class LfCarousel implements LfCarouselInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
     this.updateShapes();
 

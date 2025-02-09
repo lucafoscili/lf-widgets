@@ -16,7 +16,6 @@ import {
   LfToggleInterface,
   LfTogglePropsInterface,
   LfToggleState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -30,6 +29,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The toggle component is a switch that can be toggled on or off.
@@ -269,11 +269,6 @@ export class LfToggle implements LfToggleInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isDisabled = () => {
     return this.lfUiState === "disabled";
   };
@@ -306,7 +301,7 @@ export class LfToggle implements LfToggleInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     if (this.lfValue) {
       this.value = "on";
     }

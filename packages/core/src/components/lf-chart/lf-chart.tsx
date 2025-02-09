@@ -22,7 +22,6 @@ import {
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,6 +36,7 @@ import {
   State,
 } from "@stencil/core";
 import { dispose, ECharts, init } from "echarts";
+import { awaitFramework } from "../../utils/setup";
 import {
   prepAxis,
   prepLabel,
@@ -405,11 +405,6 @@ export class LfChart implements LfChartInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #consistencyCheck() {
     const { logs } = this.#framework.debug;
 
@@ -606,7 +601,7 @@ export class LfChart implements LfChartInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
 
     const { logs } = this.#framework.debug;
