@@ -60,7 +60,6 @@ import { awaitFramework } from "../../utils/setup";
  */
 @Component({
   tag: "lf-image",
-  assetsDirs: ["assets/svg"],
   styleUrl: "lf-image.scss",
   shadow: true,
 })
