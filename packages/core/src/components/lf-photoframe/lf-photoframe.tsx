@@ -327,8 +327,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.#intObserver?.observe(this.rootElement);
     this.#setObserver();
+    this.#intObserver?.observe(this.rootElement);
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
   }
