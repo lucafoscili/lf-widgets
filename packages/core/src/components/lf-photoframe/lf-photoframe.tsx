@@ -143,7 +143,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver;
-  #mutObserver: MutationObserver;
   #placeholder: HTMLImageElement;
   #readyPromise: Promise<void>;
   #resolveReady!: () => void;
@@ -170,11 +169,13 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     switch (eventType) {
       case "load":
         if (isPlaceholder) {
-          if (this.#isLandscape(this.#placeholder)) {
-            this.imageOrientation = "horizontal";
-          } else {
-            this.imageOrientation = "vertical";
-          }
+          this.waitUntilReady().then(() => {
+            if (this.#isLandscape(this.#placeholder)) {
+              this.imageOrientation = "horizontal";
+            } else {
+              this.imageOrientation = "vertical";
+            }
+          });
         } else {
           this.waitUntilReady().then(() => (this.isReady = true));
         }
@@ -326,16 +327,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
         threshold: this.lfThreshold,
       },
     );
-    this.#mutObserver = new MutationObserver(() => {
-      if (
-        this.rootElement.isConnected &&
-        this.rootElement.hasAttribute("lf-hydrated")
-      ) {
-        this.isReady = true;
-        this.#resolveReady();
-        this.#mutObserver.disconnect();
-      }
-    });
   }
   //#endregion
 
@@ -357,10 +348,13 @@ export class LfPhotoframe implements LfPhotoframeInterface {
 
     this.#setObserver();
     this.#intObserver?.observe(this.rootElement);
-    this.#mutObserver?.observe(this.rootElement, { attributes: true });
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
+
+    requestAnimationFrame(() => {
+      this.#resolveReady();
+    });
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -426,7 +420,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
-    this.#mutObserver?.disconnect();
   }
   //#endregion
 }
