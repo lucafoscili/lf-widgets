@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.13](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.12...0.2.0-rc.13) (2025-02-09)
+
+### Bug Fixes
+
+- **placeholder:** typo ([1f61cda](https://github.com/lucafoscili/lf-widgets/commit/1f61cda11c2152a0c785374824a3366962fdcdcf))
+
 # [0.2.0-rc.12](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.11...0.2.0-rc.12) (2025-02-09)
 
 ### Bug Fixes
