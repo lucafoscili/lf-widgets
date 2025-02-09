@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.11](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.10...0.2.0-rc.11) (2025-02-09)
+
+**Note:** Version bump only for package @lf-widgets/showcase
+
+# [0.2.0-rc.10](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.9...0.2.0-rc.10) (2025-02-09)
+
+### Features
+
+- **framework:** added stencil pipeline ([ad6fb0e](https://github.com/lucafoscili/lf-widgets/commit/ad6fb0ebc9e5d4317050bd92238b76df0d125e6e))
+
+# [0.2.0-rc.9](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.8...0.2.0-rc.9) (2025-02-09)
+
+**Note:** Version bump only for package @lf-widgets/showcase
+
 # [0.2.0-rc.8](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.7...0.2.0-rc.8) (2025-02-09)
 
 **Note:** Version bump only for package @lf-widgets/showcase
