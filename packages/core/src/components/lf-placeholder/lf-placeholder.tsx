@@ -20,7 +20,6 @@ import {
   LfPlaceholderPropsInterface,
   LfPlaceholderTrigger,
   LfThemeIcon,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -35,6 +34,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents a placeholder loading component that renders a placeholder until the main component is loaded.
@@ -237,11 +237,6 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #setObserver(): void {
     const { debug } = this.#framework;
 
@@ -272,7 +267,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#setObserver();
   }
   componentDidLoad() {

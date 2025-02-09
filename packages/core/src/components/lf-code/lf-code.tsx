@@ -15,7 +15,6 @@ import {
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -31,6 +30,7 @@ import {
   Watch,
 } from "@stencil/core";
 import Prism from "prismjs";
+import { awaitFramework } from "../../utils/setup";
 import { LF_CODE_CSS } from "./prism.css.highlight";
 import { LF_CODE_JAVASCRIPT } from "./prism.javascript.highlight";
 import { LF_CODE_JSON } from "./prism.json.highlight";
@@ -337,11 +337,6 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #format(value: string) {
     const { stringify } = this.#framework.data.cell;
 
@@ -437,7 +432,7 @@ export class LfCode implements LfCodeInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.loadLanguage();
     this.#updateValue();
   }

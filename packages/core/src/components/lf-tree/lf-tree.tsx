@@ -19,7 +19,6 @@ import {
   LfTreeInterface,
   LfTreeNodeProps,
   LfTreePropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -34,6 +33,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { TreeNode } from "./components.node";
 
 /**
@@ -302,11 +302,6 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #filter(e: CustomEvent<LfTextfieldEventPayload>) {
     const { filter } = this.#framework.data.node;
 
@@ -440,7 +435,7 @@ export class LfTree implements LfTreeInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

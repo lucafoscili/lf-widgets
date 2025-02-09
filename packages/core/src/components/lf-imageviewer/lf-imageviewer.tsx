@@ -20,7 +20,6 @@ import {
   LfImageviewerLoadCallback,
   LfImageviewerPropsInterface,
   LfMasonrySelectedShape,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -35,6 +34,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import {
   clearHistory,
   clearSelection,
@@ -355,11 +355,6 @@ export class LfImageviewer implements LfImageviewerInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #getSelectedShapeValue(selectedShape: LfMasonrySelectedShape) {
     const { data } = this.#framework;
     const { cell } = data;
@@ -450,7 +445,7 @@ export class LfImageviewer implements LfImageviewerInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
   }
   componentDidLoad() {

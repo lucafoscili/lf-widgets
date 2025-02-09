@@ -12,7 +12,6 @@ import {
   LfHeaderEventPayload,
   LfHeaderInterface,
   LfHeaderPropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -26,6 +25,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents a header component that displays a title or logo at the top of the screen.
@@ -145,11 +145,6 @@ export class LfHeader implements LfHeaderInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -159,7 +154,7 @@ export class LfHeader implements LfHeaderInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

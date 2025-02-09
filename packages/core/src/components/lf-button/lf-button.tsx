@@ -20,7 +20,6 @@ import {
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -34,6 +33,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-button-adapter";
 
 /**
@@ -456,11 +456,6 @@ export class LfButton implements LfButtonInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isDisabled = () => this.lfUiState === "disabled";
   #isDropdown = () => {
     return Boolean(this.lfDataset?.nodes?.[0]?.children?.length);
@@ -492,7 +487,7 @@ export class LfButton implements LfButtonInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
 
     const { data } = this.#framework;

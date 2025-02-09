@@ -24,7 +24,6 @@ import {
   LfMasonryPropsInterface,
   LfMasonrySelectedShape,
   LfMasonryView,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -41,6 +40,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-masonry-adapter";
 
 /**
@@ -372,11 +372,6 @@ export class LfMasonry implements LfMasonryInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #hasShapes = () => {
     return !!this.shapes?.[this.lfShape];
   };
@@ -527,7 +522,7 @@ export class LfMasonry implements LfMasonryInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
     this.updateShapes();
   }

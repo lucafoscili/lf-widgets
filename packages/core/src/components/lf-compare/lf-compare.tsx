@@ -20,7 +20,6 @@ import {
   LfDataShapesMap,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -37,6 +36,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-compare-adapter";
 
 /**
@@ -272,11 +272,6 @@ export class LfCompare implements LfCompareInterface {
       () => this.#adapter,
     );
   };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #getShapes() {
     return this.shapes?.[this.lfShape] || [];
   }
@@ -405,7 +400,7 @@ export class LfCompare implements LfCompareInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
     this.updateShapes();
   }

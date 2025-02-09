@@ -12,7 +12,6 @@ import {
   LfUploadEvent,
   LfUploadEventPayload,
   LfUploadPropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -27,6 +26,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The upload component allows users to upload files, displaying the selected files and their sizes.
@@ -218,11 +218,6 @@ export class LfUpload {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #formatFileSize(size: number): string {
     const units = ["Bytes", "KB", "MB", "GB", "TB"];
     let unitIndex = 0;
@@ -349,7 +344,7 @@ export class LfUpload {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     if (Array.isArray(this.lfValue)) {
       this.selectedFiles = this.lfValue;
     }

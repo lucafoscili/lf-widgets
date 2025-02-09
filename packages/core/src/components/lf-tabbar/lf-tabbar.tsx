@@ -18,7 +18,6 @@ import {
   LfTabbarState,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -32,6 +31,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { triggerScroll } from "./helpers.utils";
 
 /**
@@ -306,11 +306,6 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #prepIcon = (node: LfDataNode) => {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -391,7 +386,7 @@ export class LfTabbar implements LfTabbarInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     const { debug } = this.#framework;
 
     const { lfDataset, lfValue } = this;

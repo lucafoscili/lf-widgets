@@ -17,7 +17,6 @@ import {
   LfSliderValue,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -31,6 +30,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The slider component allows users to select a value within a defined range.
@@ -309,11 +309,6 @@ export class LfSlider implements LfSliderInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isDisabled = (): boolean => {
     return this.lfUiState === "disabled";
   };
@@ -326,7 +321,7 @@ export class LfSlider implements LfSliderInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     const { lfValue } = this;
 
     if (lfValue) {

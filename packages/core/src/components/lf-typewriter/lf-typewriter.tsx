@@ -15,7 +15,6 @@ import {
   LfTypewriterPropsInterface,
   LfTypewriterTag,
   LfTypewriterValue,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -30,6 +29,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The typewriter component displays text with a typewriter effect.
@@ -236,11 +236,6 @@ export class LfTypewriter implements LfTypewriterInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #initializeTexts() {
     const { lfValue } = this;
 
@@ -342,7 +337,7 @@ export class LfTypewriter implements LfTypewriterInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initializeTexts();
   }
   componentDidLoad() {

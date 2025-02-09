@@ -9,7 +9,6 @@ import {
   LfSpinnerEventPayload,
   LfSpinnerInterface,
   LfSpinnerPropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -24,6 +23,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { LF_SPINNER_BARS } from "./helpers.bar";
 import { LF_SPINNER_WIDGETS } from "./helpers.widget";
 
@@ -271,11 +271,6 @@ export class LfSpinner implements LfSpinnerInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #startProgressBar() {
     this.progress = 0;
     const startTime = Date.now();
@@ -303,7 +298,7 @@ export class LfSpinner implements LfSpinnerInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

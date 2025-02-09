@@ -31,7 +31,6 @@ import {
   LfMessengerPanels,
   LfMessengerPropsInterface,
   LfMessengerUnionChildIds,
-  onFrameworkReady,
   OPTION_TYPE_IDS,
 } from "@lf-widgets/foundations";
 import {
@@ -48,6 +47,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import {
   assignPropsToChatCell,
   extractPropsFromChatCell,
@@ -371,11 +371,6 @@ export class LfMessenger implements LfMessengerInterface {
         this.ui.panels[k] = panel;
       }
     }
-  };
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
   };
   #save = async () => {
     const { get, set } = this.#adapter.controller;
@@ -765,7 +760,7 @@ export class LfMessenger implements LfMessengerInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     this.#initAdapter();
     this.#initialize();
   }

@@ -19,7 +19,6 @@ import {
   LfTextfieldStyling,
   LfThemeUISize,
   LfThemeUIState,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -34,6 +33,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * Represents the text field component, which allows users to input text or data.
@@ -365,11 +365,6 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #isDisabled = () => this.lfUiState === "disabled";
   #isOutlined = () => {
     return this.lfStyling === "outlined" || this.lfStyling === "textarea";
@@ -599,7 +594,7 @@ export class LfTextfield implements LfTextfieldInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
     if (this.lfValue) {
       this.status.add("filled");
       this.value = this.lfValue;

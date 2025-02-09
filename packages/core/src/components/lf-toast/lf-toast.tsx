@@ -18,7 +18,6 @@ import {
   LfToastEventPayload,
   LfToastInterface,
   LfToastPropsInterface,
-  onFrameworkReady,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -33,6 +32,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 
 /**
  * The toast component displays a temporary message to the user.
@@ -259,11 +259,6 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Private methods
-  #onFrameworkReady = async () => {
-    this.#framework = await onFrameworkReady;
-    this.debugInfo = this.#framework.debug.info.create();
-    this.#framework.theme.register(this);
-  };
   #prepIcon = (isClose = false): VNode => {
     const { assets, theme } = this.#framework;
     const { get } = assets;
@@ -296,7 +291,7 @@ export class LfToast implements LfToastInterface {
     }
   }
   async componentWillLoad() {
-    await this.#onFrameworkReady();
+    this.#framework = await awaitFramework(this);
 
     if (this.lfCloseIcon === "") {
       const { "--lf-icon-delete": close } =
