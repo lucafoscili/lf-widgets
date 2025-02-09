@@ -143,7 +143,10 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver;
+  #mutObserver: MutationObserver;
   #placeholder: HTMLImageElement;
+  #readyPromise: Promise<void>;
+  #resolveReady!: () => void;
   //#endregion
 
   //#region Events
@@ -173,7 +176,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
             this.imageOrientation = "vertical";
           }
         } else {
-          this.isReady = true;
+          this.waitUntilReady().then(() => (this.isReady = true));
         }
     }
 
@@ -229,6 +232,18 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       this.onLfEvent(new CustomEvent("unmount"), "unmount");
       this.rootElement.remove();
     }, ms);
+  }
+  /**
+   * Waits until the component is ready.
+   *
+   * This method returns a Promise that resolves once the internal state has been initialized,
+   * indicating that the component is fully set up and ready for interactions.
+   *
+   * @returns A Promise that resolves to void when the component is ready.
+   */
+  @Method()
+  async waitUntilReady(): Promise<void> {
+    return this.#readyPromise;
   }
   //#endregion
 
@@ -311,6 +326,16 @@ export class LfPhotoframe implements LfPhotoframeInterface {
         threshold: this.lfThreshold,
       },
     );
+    this.#mutObserver = new MutationObserver(() => {
+      if (
+        this.rootElement.isConnected &&
+        this.rootElement.hasAttribute("lf-hydrated")
+      ) {
+        this.isReady = true;
+        this.#resolveReady();
+        this.#mutObserver.disconnect();
+      }
+    });
   }
   //#endregion
 
@@ -322,6 +347,9 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     }
   }
   async componentWillLoad() {
+    this.#readyPromise = new Promise<void>((resolve) => {
+      this.#resolveReady = resolve;
+    });
     this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
@@ -329,6 +357,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
 
     this.#setObserver();
     this.#intObserver?.observe(this.rootElement);
+    this.#mutObserver?.observe(this.rootElement, { attributes: true });
+
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
   }
@@ -396,6 +426,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
+    this.#mutObserver?.disconnect();
   }
   //#endregion
 }
