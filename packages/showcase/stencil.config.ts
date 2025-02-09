@@ -18,18 +18,14 @@ export const config: Config = {
       outDir: "../react-showcase/lib/components/stencil-generated/",
     }),
   ],
-  devServer: {
-    openBrowser: true,
-    port: 3333,
-  },
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
-  globalScript: "src/global/global.ts",
+  globalScript: "./src/global/global.ts",
   plugins: [
     sass({
       includePaths: ["./node_modules", "./src/style"],
       injectGlobalPaths: [
-        "src/style/_mixins.scss",
-        "src/style/_variables.scss",
+        "./src/style/_mixins.scss",
+        "./src/style/_variables.scss",
       ],
     }),
   ],

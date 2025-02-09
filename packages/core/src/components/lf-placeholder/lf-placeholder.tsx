@@ -273,11 +273,11 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   }
   async componentWillLoad() {
     await this.#onFrameworkReady();
+    this.#setObserver();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.#setObserver();
     this.#intObserver.observe(this.rootElement);
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");

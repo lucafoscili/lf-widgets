@@ -427,7 +427,7 @@ export class LfCanvas implements LfCanvasInterface {
   //#endregion
 
   //#region Lifecycle hooks
-  async connectedCallback() {
+  connectedCallback() {
     if (this.#framework) {
       this.#framework.theme.register(this);
     }
@@ -435,7 +435,6 @@ export class LfCanvas implements LfCanvasInterface {
   async componentWillLoad() {
     await this.#onFrameworkReady();
     this.#initAdapter();
-    this.resizeCanvas();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

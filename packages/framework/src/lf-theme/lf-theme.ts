@@ -13,6 +13,7 @@ import {
   LfThemeInterface,
   LfThemeList,
   THEME_LIST,
+  GLOBAL_STYLES,
 } from "@lf-widgets/foundations";
 
 export class LfTheme implements LfThemeInterface {
@@ -54,6 +55,38 @@ export class LfTheme implements LfThemeInterface {
     }
 
     return css;
+  };
+  #prepGlobalStyles = (): string => {
+    let css = "";
+
+    for (const [selector, rules] of Object.entries(GLOBAL_STYLES)) {
+      if (selector.startsWith("@keyframes")) {
+        css += `${selector} { `;
+        if (Array.isArray(rules)) {
+          for (const frame of rules) {
+            for (const [frameKey, props] of Object.entries(frame)) {
+              css += `${frameKey} { `;
+              for (const [prop, value] of Object.entries(
+                props as Record<string, string>,
+              )) {
+                css += `${prop}: ${value}; `;
+              }
+              css += `} `;
+            }
+          }
+        }
+        css += `} `;
+      } else {
+        css += `${selector} { `;
+        for (const [prop, value] of Object.entries(
+          rules as Record<string, string>,
+        )) {
+          css += `${prop}: ${value}; `;
+        }
+        css += `} `;
+      }
+    }
+    return css.trim();
   };
   #prepVariables = () => {
     const { assets, color } = this.#MANAGER;
@@ -105,8 +138,8 @@ export class LfTheme implements LfThemeInterface {
   #updateStyleElement = () => {
     let css = "";
     css += this.#prepFont();
-    css += `:root[lf-theme="${this.#CURRENT}"]`;
-    css += `{${this.#prepVariables()}}`;
+    css += this.#prepGlobalStyles();
+    css += `:root[lf-theme="${this.#CURRENT}"] {${this.#prepVariables()}}`;
 
     this.#STYLE_ELEMENT.innerText = css;
   };

@@ -12,7 +12,6 @@ declare global {
     [symbol: symbol]: LfFrameworkInterface;
   }
 }
-const isDev = process?.env?.NODE_ENV === "development";
 const isClient = typeof window !== "undefined";
 let lfFramework: LfFramework | null = null;
 
@@ -30,11 +29,6 @@ let lfFramework: LfFramework | null = null;
  */
 export function getLfFramework(): LfFramework {
   if (!lfFramework) {
-    if (isDev) {
-      console.warn(
-        "Initializing LfFramework for the first time. This should only happen once.",
-      );
-    }
     initLfFramework();
     if (!lfFramework) {
       throw new Error("Failed to initialize LfFramework.");
@@ -49,17 +43,8 @@ function initLfFramework() {
   const isInitialized =
     (isClient && window[LF_FRAMEWORK_SYMBOL]) || lfFramework;
 
-  if (isDev) {
-    console.log("Initializing LfFramework...");
-  }
-
   if (isInitialized) {
-    if (isDev) {
-      console.warn(
-        "LfFramework has already been initialized. This should only happen once.",
-      );
-      return;
-    }
+    return;
   }
 
   const framework = new LfFramework();
@@ -78,8 +63,5 @@ const finalize = (framework: LfFrameworkInterface) => {
   });
 
   document.dispatchEvent(ev);
-  if (isDev) {
-    console.log("LfFramework initialized and dispatched to window.", framework);
-  }
 };
 //#endregion

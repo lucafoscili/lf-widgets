@@ -864,3 +864,86 @@ export const LF_ICONS_REGISTRY = {
   zip: "zip",
 } as const;
 //#endregion
+
+//#region Global styles
+export const GLOBAL_STYLES = {
+  "::-webkit-scrollbar": {
+    width: "9px",
+  },
+  "::-webkit-scrollbar-thumb": {
+    transition: "all 400ms cubic-bezier(0.8, -0.5, 0.2, 1.4)",
+    "background-color": "rgb(var(--lf-color-primary))",
+  },
+  "::-webkit-scrollbar-track": {
+    "background-color": "rgb(var(--lf-color-bg))",
+  },
+  '.lf-effects [data-lf="backdrop"]': {
+    transition: "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",
+    background: "rgba(0, 0, 0, 0.375)",
+    height: "100vh",
+    left: "0",
+    opacity: "0",
+    position: "fixed",
+    top: "0",
+    width: "100vw",
+    "z-index": "var(--lf-ui-zindex-backdrop, 899)",
+  },
+  "@keyframes lf-fade-in": [
+    {
+      from: {
+        visibility: "hidden",
+        opacity: "0",
+      },
+    },
+    {
+      to: {
+        visibility: "visible",
+        opacity: "1",
+      },
+    },
+  ],
+  '.lf-effects [data-lf="lightbox"]': {
+    transition: "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",
+    height: "90dvh",
+    left: "5dvw",
+    position: "fixed",
+    top: "5dvh",
+    width: "90dvw",
+    "z-index": "var(--lf-ui-zindex-lightbox, 900)",
+  },
+  '.lf-effects [data-lf="lightbox-content"]': {
+    width: "100%",
+    height: "100%",
+    border: "1px solid rgba(var(--lf-color-border), 0.375)",
+    "border-radius": "var(--lf-ui-border-radius)",
+    "box-sizing": "border-box",
+    outline: "none",
+    "z-index": "calc(var(--lf-ui-zindex-lightbox, 900) + 1)",
+  },
+  "@keyframes lf-pop": [
+    {
+      from: {
+        opacity: "0",
+        transform: "translate(-50%, -50%) scale(0.8)",
+      },
+    },
+    {
+      to: {
+        opacity: "1",
+        transform: "translate(-50%, -50%) scale(1)",
+      },
+    },
+  ],
+  '.lf-portal [data-lf="portal"]': {
+    display: "block",
+    height: "auto",
+    "max-height": "45dvh",
+    "max-width": "45dvw",
+    "min-height": "max-content",
+    "min-width": "max-content",
+    position: "fixed",
+    width: "auto",
+    "z-index": "var(--lf-ui-zindex-portal)",
+  },
+} as const;
+//#endregion
