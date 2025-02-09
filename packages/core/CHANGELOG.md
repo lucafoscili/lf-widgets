@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.14](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.13...0.2.0-rc.14) (2025-02-09)
+
+### Bug Fixes
+
+- **photoframe:** fixed early ready state ([c8d9c4d](https://github.com/lucafoscili/lf-widgets/commit/c8d9c4df513b86f0f2d4217d1e22b52f51a0b583))
+
 # [0.2.0-rc.13](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.12...0.2.0-rc.13) (2025-02-09)
 
 ### Bug Fixes

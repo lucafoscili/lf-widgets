@@ -76,6 +76,19 @@ Type: `Promise<void>`
 
 
 
+### `waitUntilReady() => Promise<void>`
+
+Waits until the component is ready.
+
+This method returns a Promise that resolves once the internal state has been initialized,
+indicating that the component is fully set up and ready for interactions.
+
+#### Returns
+
+Type: `Promise<void>`
+
+A Promise that resolves to void when the component is ready.
+
 
 ## CSS Custom Properties
 
