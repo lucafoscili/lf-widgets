@@ -328,7 +328,11 @@ export class LfChart implements LfChartInterface {
    */
   @Method()
   async resize(): Promise<void> {
-    this.#chart.resize();
+    if (this.#chart && this.#container) {
+      this.#chart.resize();
+    } else {
+      this.refresh();
+    }
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
