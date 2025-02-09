@@ -308,7 +308,7 @@ export class LfImage implements LfImageInterface {
     const svgAsset = assets.get(`./assets/svg/${realIconName}.svg`);
 
     const img = new Image();
-    const svgUrl = new URL(svgAsset.path, import.meta.url).href;
+    const svgUrl = new URL(svgAsset.path, window.location.origin).href;
 
     const promise = new Promise<void>((resolve, reject) => {
       img.onload = () => resolve();
