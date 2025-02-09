@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.7](https://github.com/lucafoscili/lf-assets/compare/0.2.0-rc.6...0.2.0-rc.7) (2025-02-09)
+
+### Bug Fixes
+
+- **assets:** packaged into assets folder ([08f3896](https://github.com/lucafoscili/lf-assets/commit/08f3896c764d37dca9b6648b276ea4fd07c21277))
+
 # [0.2.0-rc.6](https://github.com/lucafoscili/lf-assets/compare/0.2.0-rc.5...0.2.0-rc.6) (2025-02-09)
 
 **Note:** Version bump only for package @lf-widgets/assets
