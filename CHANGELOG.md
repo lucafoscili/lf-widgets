@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.7](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.6...0.2.0-rc.7) (2025-02-09)
+
+### Bug Fixes
+
+- **assets:** packaged into assets folder ([08f3896](https://github.com/lucafoscili/lf-widgets/commit/08f3896c764d37dca9b6648b276ea4fd07c21277))
+- **chart:** more robust resize check ([229a9bd](https://github.com/lucafoscili/lf-widgets/commit/229a9bdb976b6a8ec593abef579b7ec0cf04b912))
+- **image:** removed assetsDir from image component ([0e39b3b](https://github.com/lucafoscili/lf-widgets/commit/0e39b3b9fb254a5dcb4b5f6c488c2aea345d810f))
+
 # [0.2.0-rc.6](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.5...0.2.0-rc.6) (2025-02-09)
 
 ### Bug Fixes
