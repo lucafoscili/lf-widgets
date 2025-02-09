@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.12](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.11...0.2.0-rc.12) (2025-02-09)
+
+### Bug Fixes
+
+- **photoframe:** improved intersection ([913d1f2](https://github.com/lucafoscili/lf-widgets/commit/913d1f2494517d6f6591945e59228afaeaa076c4))
+
 # [0.2.0-rc.11](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.10...0.2.0-rc.11) (2025-02-09)
 
 ### Bug Fixes
