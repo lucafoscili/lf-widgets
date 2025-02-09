@@ -62,13 +62,22 @@ export const cellDecorateShapes = <
   switch (shape) {
     case "slot":
       for (let index = 0; items && index < items.length; index++) {
-        elements.push(<slot name={stringify(items[index].value)}></slot>);
+        elements.push(
+          <slot
+            key={`${shape}${index}`}
+            name={stringify(items[index].value)}
+          ></slot>,
+        );
       }
       break;
     case "number":
     case "text":
       for (let index = 0; items && index < items.length; index++) {
-        elements.push(<div id={`${shape}${index}`}>{items[index].value}</div>);
+        elements.push(
+          <div id={`${shape}${index}`} key={`${shape}${index}`}>
+            {items[index].value}
+          </div>,
+        );
       }
       break;
     default:
@@ -145,7 +154,7 @@ export const cellExists = (node: LfDataNode) => {
 export const cellGetShape = <T extends LfDataShapes>(
   cell: LfDataCell<T>,
   deepCopy: boolean,
-) => {
+): Partial<LfDataCell<T>> => {
   if (!deepCopy) {
     return cell;
   }
