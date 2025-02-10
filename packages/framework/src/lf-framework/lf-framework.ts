@@ -230,12 +230,6 @@ export class LfFramework implements LfFrameworkInterface {
   removeClickCallback = (cb: LfFrameworkClickCb) => {
     this.utilities.clickCallbacks.delete(cb);
   };
-  /**
-   * Removes suspicious props from an object.
-   * @param  props - The object to sanitize.
-   * @param  compName - The component name to use for specific sanitization.
-   * @returns The sanitized object.
-   */
   //#endregion
 
   //#region sanitizeProps
