@@ -64,6 +64,9 @@ export class LfPhotoframe implements LfPhotoframeInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
+  @State() imageOrientation: LfPhotoframeOrientation = "";
+  @State() isInViewport = false;
+  @State() isReady = false;
   //#endregion
 
   //#region Props
@@ -141,11 +144,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver;
   #placeholder: HTMLImageElement;
-  #imageOrientation: LfPhotoframeOrientation = "";
-  #isInViewport = false;
-  #isReady = false;
-  #isImageLoaded = false;
-  #debounceHandle: number | null = null;
   //#endregion
 
   //#region Events
@@ -170,12 +168,12 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       case "load":
         if (isPlaceholder) {
           if (this.#isLandscape(this.#placeholder)) {
-            this.#imageOrientation = "horizontal";
+            this.imageOrientation = "horizontal";
           } else {
-            this.#imageOrientation = "vertical";
+            this.imageOrientation = "vertical";
           }
         } else {
-          this.#isImageLoaded = true;
+          this.isReady = true;
         }
     }
 
@@ -302,22 +300,10 @@ export class LfPhotoframe implements LfPhotoframeInterface {
           const isHydrated = this.rootElement.hasAttribute("lf-hydrated");
           const isConnected = this.rootElement.isConnected;
           if (entry.isIntersecting && isHydrated && isConnected) {
-            this.#isInViewport = true;
-            if (this.#isImageLoaded && this.#debounceHandle === null) {
-              // Wait 50ms before confirming that the element is still connected.
-              this.#debounceHandle = window.setTimeout(() => {
-                // Check again before finalizing.
-                if (this.rootElement.isConnected) {
-                  requestAnimationFrame(() => {
-                    this.#intObserver.unobserve(this.rootElement);
-                    this.#isReady = true;
-                    this.refresh();
-                  });
-                }
-                // Clear the debounce handle whether or not we proceeded.
-                this.#debounceHandle = null;
-              }, 50);
-            }
+            requestAnimationFrame(() => {
+              this.isInViewport = true;
+              this.#intObserver.unobserve(this.rootElement);
+            });
           }
         });
       },
@@ -326,7 +312,33 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       },
     );
   }
+  #waitForStableConnection(stableDuration: number): Promise<void> {
+    return new Promise((resolve) => {
+      let stableStart: number | null = null;
 
+      const check = () => {
+        if (this.rootElement.isConnected) {
+          if (stableStart === null) {
+            stableStart = performance.now();
+          } else if (performance.now() - stableStart >= stableDuration) {
+            resolve();
+            return;
+          }
+        } else {
+          stableStart = null;
+        }
+        requestAnimationFrame(check);
+      };
+
+      check();
+    });
+  }
+  #debounceLoadEvent(e: Event, isPlaceholder: boolean, stableDuration = 100) {
+    // Wait until the element has been stably connected for the specified duration
+    this.#waitForStableConnection(stableDuration).then(() => {
+      this.onLfEvent(e, "load", isPlaceholder);
+    });
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -362,28 +374,28 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     const { bemClass, setLfStyle } = theme;
 
     const { photoframe } = this.#b;
-    const { lfPlaceholder, lfStyle, lfValue } = this;
+    const { isInViewport, isReady, lfPlaceholder, lfStyle, lfValue } = this;
 
-    const replace = Boolean(this.#isInViewport && this.#isReady);
+    const replace = Boolean(isInViewport && isReady);
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div
           class={bemClass(photoframe._, null, {
-            [this.#imageOrientation]: this.#imageOrientation && true,
+            [this.imageOrientation]: this.imageOrientation && true,
           })}
           id={this.#w}
         >
           {this.#prepOverlay()}
           <img
             class={bemClass(photoframe._, photoframe.placeholder, {
-              loaded: Boolean(this.#imageOrientation),
+              loaded: Boolean(this.imageOrientation),
               hidden: replace,
             })}
             data-cy={this.#cy.image}
             onLoad={(e) => {
-              this.onLfEvent(e, "load", true);
+              this.#debounceLoadEvent(e, true);
             }}
             part={this.#p.placeholder}
             ref={(el) => {
@@ -391,14 +403,14 @@ export class LfPhotoframe implements LfPhotoframeInterface {
             }}
             {...sanitizeProps(lfPlaceholder)}
           ></img>
-          {this.#isInViewport && (
+          {isInViewport && (
             <img
               class={bemClass(photoframe._, photoframe.image, {
                 active: replace,
               })}
               data-cy={this.#cy.image}
               onLoad={(e) => {
-                this.onLfEvent(e, "load");
+                this.#debounceLoadEvent(e, false);
               }}
               part={this.#p.image}
               {...sanitizeProps(lfValue)}
@@ -411,9 +423,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
-    this.#isReady = false;
-    this.#isInViewport = false;
-    this.#imageOrientation = "";
   }
   //#endregion
 }
