@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -8,9 +7,13 @@ import {
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import { CY_ATTRIBUTES } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_CANVAS_BLOCKS,
   LF_CANVAS_BRUSH,
@@ -74,7 +77,7 @@ export interface LfCanvasAdapterControllerGetters
   cyAttributes: typeof CY_ATTRIBUTES;
   isCursorPreview: () => boolean;
   isPainting: () => boolean;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   parts: typeof LF_CANVAS_PARTS;
   points: () => LfCanvasPoints;
 }

@@ -1,0 +1,54 @@
+{
+  "name": "@lf-widgets/framework",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.2.0-rc.25",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "LF Widgets - Core manager and framework modules, including theming, asset management, and submodule orchestration.",
+  "keywords": [
+    "lf-widgets",
+    "core",
+    "framework",
+    "manager",
+    "theming",
+    "typescript",
+    "webcomponents"
+  ],
+  "main": "./dist/index.cjs.js",
+  "module": "dist/index.js",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "files": [
+    "dist/"
+  ],
+  "peerDependencies": {
+    "@lf-widgets/foundations": "workspace:*"
+  },
+  "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
+    "build": "yarn clean && npx stencil build",
+    "clean": "node ./src/scripts/clean.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucafoscili/lf-widgets.git"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  }
+}

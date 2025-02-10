@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getChartFixtures } from "../../../src/components/lf-showcase/assets/data/chart";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const chart = chartTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(chart).waitForWebComponents([chartTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${chartTag}> exist.`, () => {
-    const fixtures = getChartFixtures(core);
+    const fixtures = getChartFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(chartTag, new Set(keys));
   });

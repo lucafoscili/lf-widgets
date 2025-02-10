@@ -3,7 +3,7 @@ import {
   LfCanvasEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getCanvasFixtures } from "../../../src/components/lf-showcase/assets/data/canvas";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -15,17 +15,17 @@ const canvas = canvasTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(canvas).waitForWebComponents([canvasTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${canvasTag}> exist.`, () => {
-    const fixtures = getCanvasFixtures(core);
+    const fixtures = getCanvasFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(canvasTag, new Set(keys));
   });

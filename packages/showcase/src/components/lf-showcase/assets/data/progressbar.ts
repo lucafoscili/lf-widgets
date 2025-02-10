@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfProgressbarPropsInterface,
@@ -30,9 +30,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfProgressbar"> =
 const TAG_NAME: LfComponentTag<"LfProgressbar"> = "lf-progressbar";
 
 export const getProgressbarFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-progressbar"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region documentation

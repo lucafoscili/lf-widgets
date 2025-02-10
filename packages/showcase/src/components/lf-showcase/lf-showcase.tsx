@@ -1,13 +1,12 @@
-import { getLfCore } from "@lf-widgets/components";
 import {
   LF_WRAPPER_ID,
   LfButtonEventPayload,
   LfCardEventPayload,
   LfComponentTag,
-  LfCoreInterface,
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfEvent,
+  LfFrameworkInterface,
   LfListEventPayload,
 } from "@lf-widgets/foundations";
 import {
@@ -20,6 +19,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { awaitFramework } from "../../utils/setup";
 import { ComponentTemplate } from "./components/component-template";
 import { FrameworkTemplate } from "./components/framework-template";
 import {
@@ -53,7 +53,6 @@ import {
  * @public
  */
 @Component({
-  assetsDirs: ["assets/media"],
   tag: "lf-showcase",
   styleUrl: "lf-showcase.scss",
   shadow: true,
@@ -114,7 +113,7 @@ export class LfShowcase {
   //#endregion
 
   //#region Internal variables
-  #core: LfCoreInterface;
+  #framework: LfFrameworkInterface;
   #cards: { [index: string]: HTMLLfCardElement } = {};
   #content: HTMLDivElement;
   #drawer: HTMLLfDrawerElement;
@@ -192,7 +191,7 @@ export class LfShowcase {
     }
   }
   #prepContent = (): VNode => {
-    const { bemClass, get } = this.#core.theme;
+    const { bemClass, get } = this.#framework.theme;
 
     return (
       <div
@@ -206,7 +205,7 @@ export class LfShowcase {
       >
         <lf-article
           class={bemClass("showcase", "intro")}
-          lfDataset={LF_DOC}
+          lfDataset={LF_DOC(this.#framework)}
           part="intro"
         ></lf-article>
         <div class={bemClass("showcase", "links")}>
@@ -229,7 +228,10 @@ export class LfShowcase {
             lfLabel="npm"
             lfStyling="floating"
             onClick={() =>
-              window.open("https://www.npmjs.com/package/lf-widgets", "_blank")
+              window.open(
+                "https://www.npmjs.com/package/@lf-widgets/core",
+                "_blank",
+              )
             }
             part="npm"
             title="Open npm Package"
@@ -241,8 +243,8 @@ export class LfShowcase {
     );
   };
   #prepCards(type: LfShowcaseTitle): VNode[] {
-    const { stringify } = this.#core.data.cell;
-    const { effects, theme } = this.#core;
+    const { stringify } = this.#framework.data.cell;
+    const { effects, theme } = this.#framework;
 
     return this.datasets[type as keyof LfShowcaseDatasets].nodes.map((node) => {
       const cardDataset: LfDataDataset = {
@@ -290,7 +292,7 @@ export class LfShowcase {
     });
   }
   #prepDrawerToggler = (className?: string): VNode => {
-    const { current, icon } = this.#core.theme.get;
+    const { current, icon } = this.#framework.theme.get;
 
     const drawerIconOff = icon("layoutSidebar");
     const drawerIcon = current().variables["--lf-icon-clear"];
@@ -326,7 +328,7 @@ export class LfShowcase {
     );
   };
   #prepThemeToggler = (className?: string): VNode => {
-    const { get } = this.#core.theme;
+    const { get } = this.#framework.theme;
 
     const themeIcon = get.icon("moon");
     const themeLabel = this.isDarkMode
@@ -341,12 +343,12 @@ export class LfShowcase {
             if (process.env.NODE_ENV === "development") {
               console.log("Dark mode enabled");
             }
-            this.#core.theme.set("dark");
+            this.#framework.theme.set("dark");
           } else {
             if (process.env.NODE_ENV === "development") {
               console.log("Light mode enabled");
             }
-            this.#core.theme.set("light");
+            this.#framework.theme.set("light");
           }
           break;
       }
@@ -367,7 +369,7 @@ export class LfShowcase {
     );
   };
   #prepDrawer = (): VNode => {
-    const { bemClass, get, randomize, set } = this.#core.theme;
+    const { bemClass, get, randomize, set } = this.#framework.theme;
 
     return (
       <lf-drawer
@@ -453,7 +455,7 @@ export class LfShowcase {
     );
   };
   #prepHeader = (): VNode => {
-    const { bemClass } = this.#core.theme;
+    const { bemClass } = this.#framework.theme;
 
     return (
       <lf-header
@@ -474,7 +476,7 @@ export class LfShowcase {
     );
   };
   #prepSection(type: LfShowcaseTitle): VNode {
-    const { bemClass } = this.#core.theme;
+    const { bemClass } = this.#framework.theme;
 
     const currentValue = this.currentState[type];
     const tag = ("lf-" + currentValue.toLowerCase()) as LfComponentTag;
@@ -497,13 +499,13 @@ export class LfShowcase {
         ) : type === "Components" ? (
           <ComponentTemplate
             component={tag}
-            manager={this.#core}
+            manager={this.#framework}
             showcase={this}
           ></ComponentTemplate>
         ) : (
           <FrameworkTemplate
             framework={currentValue}
-            manager={this.#core}
+            manager={this.#framework}
             showcase={this}
           ></FrameworkTemplate>
         )}
@@ -511,7 +513,7 @@ export class LfShowcase {
     );
   }
   #prepTitle = (type: LfShowcaseTitle, current: string): VNode => {
-    const { bemClass, get } = this.#core.theme;
+    const { bemClass, get } = this.#framework.theme;
 
     return (
       <div
@@ -556,17 +558,15 @@ export class LfShowcase {
 
   //#region Lifecycle hooks
   connectedCallback() {
-    if (!this.#core) {
-      this.#core = getLfCore();
-      this.debugInfo = this.#core.debug.info.create();
-    }
-    this.isDarkMode = this.#core.theme.get.current().isDark;
     if (this.lfScrollElement) {
       this.lfScrollElement.addEventListener("scroll", this.#handleScroll);
     }
   }
-  componentWillLoad() {
-    const icons = this.#core.theme.get.icons();
+  async componentWillLoad() {
+    this.#framework = await awaitFramework(this);
+    this.isDarkMode = this.#framework.theme.get.current().isDark;
+
+    const icons = this.#framework.theme.get.icons();
     this.datasets.Components = LF_SHOWCASE_COMPONENTS(icons);
     this.datasets.Framework = LF_SHOWCASE_FRAMEWORK(icons);
 
@@ -631,7 +631,7 @@ export class LfShowcase {
     }
   }
   render() {
-    const { bemClass, get } = this.#core.theme;
+    const { bemClass, get } = this.#framework.theme;
 
     return (
       <Host>
@@ -664,7 +664,7 @@ export class LfShowcase {
     );
   }
   disconnectedCallback() {
-    const { effects } = this.#core;
+    const { effects } = this.#framework;
 
     if (this.lfScrollElement) {
       this.lfScrollElement.removeEventListener("scroll", this.#handleScroll);

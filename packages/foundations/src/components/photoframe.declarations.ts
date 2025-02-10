@@ -1,6 +1,9 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreAllowedKeysMap } from "../framework/core.declarations";
+import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
 import {
   LF_PHOTOFRAME_EVENTS,
   LF_PHOTOFRAME_ORIENTATION,
@@ -31,10 +34,10 @@ export type LfPhotoframeOrientation =
 //#region Props
 export interface LfPhotoframePropsInterface {
   lfOverlay?: LfPhotoframeOverlay;
-  lfPlaceholder?: Partial<LfCoreAllowedKeysMap>;
+  lfPlaceholder?: Partial<LfFrameworkAllowedKeysMap>;
   lfStyle?: string;
   lfThreshold?: number;
-  lfValue?: Partial<LfCoreAllowedKeysMap>;
+  lfValue?: Partial<LfFrameworkAllowedKeysMap>;
 }
 export interface LfPhotoframeOverlay {
   description?: string;

@@ -3,7 +3,7 @@ import {
   LfChartType,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -23,7 +23,7 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfChart"> = "LfChartEventPayload";
 const TAG_NAME: LfComponentTag<"LfChart"> = "lf-chart";
 
 export const getChartFixtures = (
-  _core: LfCoreInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-chart"> => {
   //#region mock data
   const lfAxis = "Department";

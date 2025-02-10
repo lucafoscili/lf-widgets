@@ -4,11 +4,11 @@ import {
   LfComponentPropsFor,
   LfComponentReverseTagMap,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h, VNode } from "@stencil/core";
 import { FIXTURES_CATEGORIES, FIXTURES_DUMMY } from "../helpers/constants";
-import { getComponentFixtures } from "../helpers/doc.fixtures";
+import { getAllComponentFixtures } from "../helpers/doc.fixtures";
 import { LfShowcase } from "../lf-showcase";
 import {
   LfShowcaseActions,
@@ -25,18 +25,18 @@ type LfTemplateArgs<C extends LfComponentTag> = {
   documentation: LfArticleDataset;
   examples?: LfShowcaseData<C>;
   ids: LfShowcaseIds;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
 };
 
 const fixtureCache = new WeakMap<
   LfShowcase,
-  Map<LfComponentTag, ReturnType<typeof getComponentFixtures>>
+  Map<LfComponentTag, ReturnType<typeof getAllComponentFixtures>>
 >();
 
 export const ComponentTemplate: FunctionalComponent<{
   showcase: LfShowcase;
   component: LfComponentTag;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
 }> = ({ showcase, component, manager }) => {
   const { bemClass } = manager.theme;
 
@@ -79,7 +79,7 @@ export const ComponentTemplate: FunctionalComponent<{
 const getCachedFixtures = (
   showcase: LfShowcase,
   component: LfComponentTag,
-  manager: LfCoreInterface,
+  manager: LfFrameworkInterface,
 ) => {
   if (!fixtureCache.has(showcase)) {
     fixtureCache.set(showcase, new Map());
@@ -89,7 +89,7 @@ const getCachedFixtures = (
   if (!managerCache.has(component)) {
     managerCache.set(
       component,
-      getComponentFixtures(showcase, component, manager),
+      getAllComponentFixtures(showcase, component, manager),
     );
   }
 
@@ -127,22 +127,46 @@ const prepExample = <C extends LfComponentTag>(
   component: C,
   id: string,
   example: LfShowcaseData<C>[(typeof FIXTURES_CATEGORIES)[number]][string],
-  manager: LfCoreInterface,
+  manager: LfFrameworkInterface,
   category: string,
 ): VNode => {
-  const { bemClass } = manager.theme;
+  const { bemClass, get } = manager.theme;
+  const { "--lf-icon-copy": copy, "--lf-icon-copy-ok": copyOk } =
+    get.current().variables;
+
   const { description, hasMinHeight, hasParent, props, slots } = example;
   const TagName = component;
   const p = props as LfComponentPropsFor<LfComponentReverseTagMap[C]>;
   const tag = (
-    <TagName key={`${category}-${id}`} id={`${category}-${id}`} {...(p as any)}>
+    <TagName
+      data-cy={CY_ATTRIBUTES.showcaseExample}
+      key={`${category}-${id}`}
+      id={`${category}-${id}`}
+      {...(p as any)}
+    >
       {prepSlot(component, manager, slots)}
     </TagName>
   );
 
   return (
     <div class={bemClass("example")}>
-      <div class={bemClass("example", "description")}>{description}</div>
+      <div class={bemClass("example", "description")}>
+        <div>{description}</div>
+        <lf-button
+          class={bemClass("example", "copy")}
+          lfIcon={copy}
+          lfStretchY={true}
+          lfStyling="flat"
+          onLf-button-event={(e) => {
+            const { comp, eventType } = e.detail;
+            if (eventType === "click") {
+              navigator.clipboard.writeText(JSON.stringify(p, null, 2));
+              comp.setMessage("", copyOk);
+            }
+          }}
+          title="Copy props"
+        ></lf-button>
+      </div>
       <div
         class={bemClass("example", "component", {
           expanded: hasMinHeight,
@@ -193,7 +217,7 @@ const prepExamples = <C extends LfComponentTag>(
 };
 const prepSlot = <C extends LfComponentTag>(
   _component: C,
-  manager: LfCoreInterface,
+  manager: LfFrameworkInterface,
   slots: string[] = [],
 ): VNode[] => {
   const { bemClass } = manager.theme;

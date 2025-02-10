@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
 } from "@lf-widgets/foundations";
@@ -17,9 +17,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCanvas"> = "LfCanvasEventPayload";
 const TAG_NAME: LfComponentTag<"LfCanvas"> = "lf-canvas";
 
 export const getCanvasFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-canvas"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region documentation
   const documentation: LfArticleDataset = {
@@ -85,7 +85,7 @@ export const getCanvasFixtures = (
             lfImageProps: {
               lfSizeX: "256px",
               lfSizeY: "256px",
-              lfValue: get(`./assets/media/avatar_freya.png`).path,
+              lfValue: get(`./assets/showcase/avatar_freya.png`).path,
             },
           },
         },
@@ -96,7 +96,7 @@ export const getCanvasFixtures = (
               lfSizeX: "256px",
               lfSizeY: "256px",
               lfStyle: randomStyle(),
-              lfValue: get(`./assets/media/avatar_thor.png`).path,
+              lfValue: get(`./assets/showcase/avatar_thor.png`).path,
             },
           },
         },
@@ -109,7 +109,7 @@ export const getCanvasFixtures = (
           description: "Canvas with square brush",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/light.webp`).path,
+              lfValue: get(`./assets/showcase/light.webp`).path,
             },
             lfBrush: "square",
           },
@@ -118,7 +118,7 @@ export const getCanvasFixtures = (
           description: "Canvas with brush opacity",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/dark.webp`).path,
+              lfValue: get(`./assets/showcase/dark.webp`).path,
             },
             lfOpacity: 0.5,
           },
@@ -127,7 +127,7 @@ export const getCanvasFixtures = (
           description: "Canvas with brush size",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/light.webp`).path,
+              lfValue: get(`./assets/showcase/light.webp`).path,
             },
             lfSize: 128,
           },
@@ -136,7 +136,7 @@ export const getCanvasFixtures = (
           description: "Canvas stroke color",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/dark.webp`).path,
+              lfValue: get(`./assets/showcase/dark.webp`).path,
             },
             lfColor: "blue",
           },
@@ -145,7 +145,7 @@ export const getCanvasFixtures = (
           description: "Canvas without preview cursor",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/light.webp`).path,
+              lfValue: get(`./assets/showcase/light.webp`).path,
             },
             lfCursor: "default",
           },
@@ -154,7 +154,7 @@ export const getCanvasFixtures = (
           description: "Canvas without preview stroke",
           props: {
             lfImageProps: {
-              lfValue: get(`./assets/media/dark.webp`).path,
+              lfValue: get(`./assets/showcase/dark.webp`).path,
             },
             lfPreview: false,
           },

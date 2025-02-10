@@ -3,7 +3,7 @@ import { reactOutputTarget } from "@stencil/react-output-target";
 import { sass } from "@stencil/sass";
 
 export const config: Config = {
-  namespace: "lfws",
+  namespace: "lf-showcase",
   outputTargets: [
     {
       type: "dist",
@@ -14,27 +14,24 @@ export const config: Config = {
       type: "dist-custom-elements",
       externalRuntime: false,
     },
-    {
-      type: "www",
-      copy: [{ src: "assets" }],
-      serviceWorker: null,
-    },
     reactOutputTarget({
-      outDir: "../showcase-react/lib/components/stencil-generated/",
+      outDir: "../react-showcase/lib/components/stencil-generated/",
     }),
   ],
-  devServer: {
-    openBrowser: true,
-    port: 3333,
-  },
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [
     sass({
       includePaths: ["./node_modules", "./src/style"],
       injectGlobalPaths: [
-        "src/style/_mixins.scss",
-        "src/style/_variables.scss",
+        "./src/style/_mixins.scss",
+        "./src/style/_variables.scss",
       ],
     }),
   ],
+  rollupConfig: {
+    inputOptions: {
+      external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
+    },
+  },
+  sourceMap: false,
 };

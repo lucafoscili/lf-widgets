@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -11,9 +10,12 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
 import {
   LfDataCell,
   LfDataDataset,
@@ -21,6 +23,7 @@ import {
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_COMPARE_BLOCKS,
@@ -78,7 +81,7 @@ export interface LfCompareAdapterControllerGetters
   cyAttributes: typeof CY_ATTRIBUTES;
   defaults: LfCompareAdapterDefaults;
   lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   isOverlay: () => boolean;
   parts: typeof LF_COMPARE_PARTS;
   shapes: () => LfDataShapesMap[LfDataShapes];

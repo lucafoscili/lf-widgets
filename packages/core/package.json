@@ -1,34 +1,53 @@
 {
   "name": "@lf-widgets/core",
+  "description": "LF Widgets - Main components library",
   "author": {
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.0.0",
+  "version": "0.2.0-rc.25",
   "publishConfig": {
     "access": "public"
   },
-  "description": "LF Widgets - Core manager and framework for LF Widgets, including theming, asset management, and submodule orchestration.",
   "keywords": [
-    "lf-widgets",
-    "core",
-    "framework",
-    "manager",
+    "chat",
+    "custom elements",
+    "lf widgets",
+    "lf nodes",
+    "llm",
+    "monorepo",
+    "scss",
+    "stenciljs",
     "theming",
     "typescript",
     "webcomponents"
   ],
+  "main": "./dist/index.cjs.js",
   "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "dependencies": {
+    "echarts": "^5",
+    "prismjs": "^1"
+  },
+  "peerDependencies": {
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
+  },
+  "optionalDependencies": {
+    "@lf-widgets/assets": "workspace:*"
+  },
   "files": [
     "dist/"
   ],
-  "peerDependencies": {
-    "@lf-widgets/foundations": "0.0.0"
-  },
   "scripts": {
-    "build": "yarn clean && tsc",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\""
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
+    "build": "yarn clean && npx stencil build --docs",
+    "clean": "node ./src/scripts/clean.js",
+    "doc": "npx stencil doc"
   },
   "repository": {
     "type": "git",
@@ -37,11 +56,5 @@
   "installConfig": {
     "hoistingLimits": "workspaces"
   },
-  "license": "Apache-2.0",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  }
+  "license": "Apache-2.0"
 }

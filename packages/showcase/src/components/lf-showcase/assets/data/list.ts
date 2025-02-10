@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -32,9 +32,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfList"> = "LfListEventPayload";
 const TAG_NAME: LfComponentTag<"LfList"> = "lf-list";
 
 export const getListFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-list"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region mock data

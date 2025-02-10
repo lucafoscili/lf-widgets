@@ -160,14 +160,6 @@ import {
 } from "../components/upload.declarations";
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
 
-export interface HTMLStencilElement
-  extends HTMLElement,
-    Pick<
-      LfComponentCommon,
-      "getDebugInfo" | "getProps" | "refresh" | "unmount"
-    > {
-  componentOnReady(): Promise<this>;
-}
 export interface LfComponent<T extends LfComponentName = LfComponentName>
   extends LfComponentCommon {
   rootElement: LfComponentElementMap[T];
@@ -252,7 +244,7 @@ interface LfComponentCommon {
   ) => Promise<LfComponentPropsFor<LfComponentName>>;
   lfStyle?: string;
   refresh: () => Promise<void>;
-  unmount: () => Promise<void>;
+  unmount: (ms?: number) => Promise<void>;
 }
 export type LfComponentRootElement<
   C extends LfComponentName = LfComponentName,
@@ -435,3 +427,24 @@ export type LfComponentReverseTagMap = {
   "lf-typewriter": "LfTypewriter";
   "lf-upload": "LfUpload";
 };
+
+//#region Third-party declarations (Stencil)
+export interface VNode {
+  $flags$: number;
+  $tag$: string | number | Function;
+  $elm$: any;
+  $text$: string;
+  $children$: VNode[];
+  $attrs$?: any;
+  $name$?: string;
+  $key$?: string | number;
+}
+export interface HTMLStencilElement
+  extends HTMLElement,
+    Pick<
+      LfComponentCommon,
+      "getDebugInfo" | "getProps" | "refresh" | "unmount"
+    > {
+  componentOnReady(): Promise<this>;
+}
+//#endregion

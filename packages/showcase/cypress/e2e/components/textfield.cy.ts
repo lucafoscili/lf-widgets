@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfTextfieldEvent,
 } from "@lf-widgets/foundations";
 import { getTextfieldFixtures } from "../../../src/components/lf-showcase/assets/data/textfield";
@@ -15,17 +15,17 @@ const textfield = textfieldTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(textfield).waitForWebComponents([textfieldTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${textfieldTag}> exist.`, () => {
-    const fixtures = getTextfieldFixtures(core);
+    const fixtures = getTextfieldFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(textfieldTag, new Set(keys));
   });

@@ -1,0 +1,40 @@
+{
+  "name": "@lf-widgets/react-core",
+  "description": "LF Widgets - Main components library (React)",
+  "author": {
+    "name": "Luca Foscili",
+    "url": "https://www.lucafoscili.com"
+  },
+  "version": "0.2.0-rc.25",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "keywords": [
+    "components",
+    "custom elements",
+    "lf widgets",
+    "pwa",
+    "react",
+    "react components",
+    "web components"
+  ],
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
+    "build": "yarn clean && tsc",
+    "clean": "node ./src/scripts/clean.js"
+  },
+  "peerDependencies": {
+    "@lf-widgets/core": "workspace:*",
+    "@stencil/react-output-target": "^0"
+  },
+  "license": "Apache-2.0",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}

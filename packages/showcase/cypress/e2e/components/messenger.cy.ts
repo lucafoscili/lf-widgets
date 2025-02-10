@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getMessengerFixtures } from "../../../src/components/lf-showcase/assets/data/messenger";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const messenger = messengerTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(messenger).waitForWebComponents([messengerTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${messengerTag}> exist.`, () => {
-    const fixtures = getMessengerFixtures(core);
+    const fixtures = getMessengerFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(messengerTag, new Set(keys));
   });

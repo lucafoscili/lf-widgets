@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfPlaceholderEvent,
 } from "@lf-widgets/foundations";
 import { getPlaceholderFixtures } from "../../../src/components/lf-showcase/assets/data/placeholder";
@@ -15,17 +15,17 @@ const placeholder = placeholderTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(placeholder).waitForWebComponents([placeholderTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${placeholderTag}> exist.`, () => {
-    const fixtures = getPlaceholderFixtures(core);
+    const fixtures = getPlaceholderFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(placeholderTag, new Set(keys));
   });

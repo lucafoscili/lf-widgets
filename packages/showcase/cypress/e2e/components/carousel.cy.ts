@@ -3,7 +3,7 @@ import {
   LfCarouselEvent,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getCarouselFixtures } from "../../../src/components/lf-showcase/assets/data/carousel";
 import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
@@ -14,17 +14,17 @@ const carouselTag: LfComponentTag<typeof carouselName> = "lf-carousel";
 const carousel = carouselTag.replace("lf-", "");
 
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(carousel).waitForWebComponents([carouselTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${carouselTag}> exist.`, () => {
-    const fixtures = getCarouselFixtures(core);
+    const fixtures = getCarouselFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(carouselTag, new Set(keys));
   });

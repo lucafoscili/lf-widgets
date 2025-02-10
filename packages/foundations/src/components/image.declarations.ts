@@ -1,6 +1,9 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreAllowedKeysMap } from "../framework/core.declarations";
+import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
 import { LF_IMAGE_EVENTS } from "./image.constants";
 
 //#region Class
@@ -18,7 +21,7 @@ export interface LfImageEventPayload
 
 //#region Props
 export interface LfImagePropsInterface {
-  lfHtmlAttributes?: Partial<LfCoreAllowedKeysMap>;
+  lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
   lfSizeX?: string;
   lfSizeY?: string;
   lfStyle?: string;

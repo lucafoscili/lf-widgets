@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.0.0",
+  "version": "0.2.0-rc.25",
   "publishConfig": {
     "access": "public"
   },
@@ -26,20 +26,26 @@
   "module": "dist/index.js",
   "es2015": "dist/esm/index.js",
   "es2017": "dist/esm/index.js",
-  "unpkg": "dist/@lf-widgets/showcase/lfws.esm.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/types/components.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
+  "devDependencies": {
+    "vite": "^6"
+  },
   "peerDependencies": {
-    "@lf-widgets/components": "0.0.0"
+    "@lf-widgets/core": "workspace:*",
+    "@lf-widgets/foundations": "workspace:*",
+    "@lf-widgets/framework": "workspace:*"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
+    "prepublishOnly": "node ./src/scripts/prepublish.js",
     "build": "yarn clean && npx stencil build --docs",
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true })\"",
-    "dev": "npx stencil build --dev --watch --serve",
+    "clean": "node ./src/scripts/clean.js",
+    "dev": "yarn build && vite",
+    "dev:stencil": "yarn build && npx stencil build --dev --watch --serve",
     "doc": "npx stencil doc",
     "test": "npx cypress run",
     "test:open": "npx cypress open"

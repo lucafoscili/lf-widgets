@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -8,10 +7,14 @@ import {
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import { CY_ATTRIBUTES } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CAROUSEL_BLOCKS,
@@ -76,7 +79,7 @@ export interface LfCarouselAdapterControllerGetters
     current: () => number;
   };
   interval: () => NodeJS.Timeout;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   parts: typeof LF_CAROUSEL_PARTS;
   totalSlides: () => number;
 }

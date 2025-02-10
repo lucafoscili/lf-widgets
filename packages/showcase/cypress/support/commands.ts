@@ -1,22 +1,22 @@
 /// <reference types="cypress" />
-/// <reference types="@lf-widgets/components" />
+/// <reference types="@lf-widgets/core" />
 
 import {
   CY_ATTRIBUTES,
   getComponentProps,
-  LF_CORE_EVENT_NAME,
+  LF_FRAMEWORK_EVENT_NAME,
   LfComponentName,
   LfComponentRootElement,
   LfComponentTag,
-  LfCoreEvent,
-  LfCoreInterface,
+  LfFrameworkEvent,
+  LfFrameworkInterface,
   LfEvent,
   LfEventType,
 } from "@lf-widgets/foundations";
 import { CY_ALIASES } from "./constants";
 import { DataCyAttributeTransformed } from "./declarations";
 
-let lfCore: LfCoreInterface;
+let lfFramework: LfFrameworkInterface;
 
 /**
  * Global type declarations for Cypress custom commands
@@ -122,9 +122,9 @@ declare global {
 
       /**
        * Gets LF manager instance
-       * @returns Chainable<LfCore>
+       * @returns Chainable<LfFramework>
        */
-      getLfCore(): Chainable<LfCoreInterface>;
+      getLfFramework(): Chainable<LfFrameworkInterface>;
 
       /**
        * Navigates to a component
@@ -144,11 +144,11 @@ declare global {
 //#region checkComponentExamples
 Cypress.Commands.add(
   "checkComponentExamples",
-  (component, componentExamples) => {
+  (_component, componentExamples) => {
     cy.log("Checking component examples...");
     componentExamples.forEach((example) => cy.log(example));
     cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(component)
+      .findCyElement(CY_ATTRIBUTES.showcaseExample)
       .should("have.length", componentExamples.size);
   },
 );
@@ -211,7 +211,7 @@ Cypress.Commands.add(
 
     setupEventChecker(component, eventType);
     cy.get(lfComponentShowcase)
-      .find(`lf-${component}`)
+      .findCyElement(CY_ATTRIBUTES.showcaseExample)
       .should("exist")
       .first()
       .scrollIntoView()
@@ -360,10 +360,10 @@ Cypress.Commands.add("getCyElement", (dataCy: string) =>
 );
 //#endregion
 
-//#region getLfCore
-Cypress.Commands.add("getLfCore", () => {
+//#region getLfFramework
+Cypress.Commands.add("getLfFramework", () => {
   cy.window().then(() => {
-    return lfCore;
+    return lfFramework;
   });
 });
 //#endregion
@@ -442,9 +442,9 @@ function visitManager() {
       cy.visit("http://localhost:3333", {
         onBeforeLoad: (win) => {
           win.document.addEventListener(
-            LF_CORE_EVENT_NAME,
-            (e: LfCoreEvent) => {
-              lfCore = e.detail.lfCore;
+            LF_FRAMEWORK_EVENT_NAME,
+            (e: LfFrameworkEvent) => {
+              lfFramework = e.detail.lfFramework;
             },
           );
         },

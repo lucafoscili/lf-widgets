@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -18,16 +18,16 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfCompare"> = "LfCompareEventPayload";
 const TAG_NAME: LfComponentTag<"LfCompare"> = "lf-compare";
 
 export const getCompareFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-compare"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const images = [
-    get(`./assets/media/dark.webp`).path,
-    get(`./assets/media/light.webp`).path,
-    get(`./assets/media/avatar_thor_2.png`).path,
-    get(`./assets/media/avatar_freya_2.png`).path,
+    get(`./assets/showcase/dark.webp`).path,
+    get(`./assets/showcase/light.webp`).path,
+    get(`./assets/showcase/avatar_thor_2.png`).path,
+    get(`./assets/showcase/avatar_freya_2.png`).path,
   ];
   const lfDataset: Partial<{
     [K in LfComponentName]: LfDataDataset;

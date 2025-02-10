@@ -138,6 +138,7 @@ export const FIXTURES_CATEGORIES = [
   "input",
   "javascript",
   "keywords",
+  "languages",
   "line",
   "material",
   "mixed",

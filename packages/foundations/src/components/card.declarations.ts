@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -10,14 +9,18 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
 import {
   LfDataDataset,
   LfDataShapeDefaults,
   LfDataShapesMap,
 } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CARD_BLOCKS,
@@ -94,7 +97,7 @@ export interface LfCardAdapterControllerGetters
   cyAttributes: typeof CY_ATTRIBUTES;
   defaults: LfCardAdapterDefaults;
   lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   parts: typeof LF_CARD_PARTS;
   shapes: () => LfDataShapesMap;
 }

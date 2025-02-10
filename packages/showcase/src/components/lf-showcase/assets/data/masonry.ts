@@ -2,7 +2,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -18,9 +18,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfMasonry"> = "LfMasonryEventPayload";
 const TAG_NAME: LfComponentTag<"LfMasonry"> = "lf-masonry";
 
 export const getMasonryFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-masonry"> => {
-  const { get } = core.assets;
+  const { get } = framework.assets;
 
   //#region mock data
   const data: Partial<{
@@ -106,18 +106,18 @@ export const getMasonryFixtures = (
     },
     LfImage: () => {
       const imagesPaths = [
-        get(`./assets/media/dark.webp`).path,
-        get(`./assets/media/light.webp`).path,
-        get(`./assets/media/avatar_thor.png`).path,
-        get(`./assets/media/avatar_freya.png`).path,
-        get(`./assets/media/avatar_freya_2.png`).path,
-        get(`./assets/media/avatar_thor_2.png`).path,
-        get(`./assets/media/outfit_armor_2.png`).path,
-        get(`./assets/media/outfit_armor_3.png`).path,
-        get(`./assets/media/location_forest.png`).path,
-        get(`./assets/media/location_lake.png`).path,
-        get(`./assets/media/blur_color_splash.jpg`).path,
-        get(`./assets/media/color_splash.jpg`).path,
+        get(`./assets/showcase/dark.webp`).path,
+        get(`./assets/showcase/light.webp`).path,
+        get(`./assets/showcase/avatar_thor.png`).path,
+        get(`./assets/showcase/avatar_freya.png`).path,
+        get(`./assets/showcase/avatar_freya_2.png`).path,
+        get(`./assets/showcase/avatar_thor_2.png`).path,
+        get(`./assets/showcase/outfit_armor_2.png`).path,
+        get(`./assets/showcase/outfit_armor_3.png`).path,
+        get(`./assets/showcase/location_forest.png`).path,
+        get(`./assets/showcase/location_lake.png`).path,
+        get(`./assets/showcase/blur_color_splash.jpg`).path,
+        get(`./assets/showcase/color_splash.jpg`).path,
       ];
       return {
         nodes: imagesPaths.map((path, i) => ({
@@ -133,8 +133,8 @@ export const getMasonryFixtures = (
     },
     LfPhotoframe: () => {
       const imagesPaths = [
-        get(`./assets/media/blur_color_splash.jpg`).path,
-        get(`./assets/media/color_splash.jpg`).path,
+        get(`./assets/showcase/blur_color_splash.jpg`).path,
+        get(`./assets/showcase/color_splash.jpg`).path,
       ];
       return {
         nodes: Array.from({ length: randomNumber(5, 15) }).map((_, i) => ({

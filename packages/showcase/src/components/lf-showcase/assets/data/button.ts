@@ -5,7 +5,7 @@ import {
   LfButtonPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -27,9 +27,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfButton"> = "LfButtonEventPayload";
 const TAG_NAME: LfComponentTag<"LfButton"> = "lf-button";
 
 export const getButtonFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-button"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const { brandGithub, brandNpm, palette } = theme.get.icons();
 
   //#region mock data

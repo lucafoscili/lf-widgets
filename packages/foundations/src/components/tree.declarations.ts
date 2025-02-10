@@ -1,8 +1,11 @@
-import type { VNode } from "@stencil/core";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import { LF_TREE_EVENTS } from "./tree.constants";
 
@@ -36,7 +39,7 @@ export interface LfTreeNodeProps {
     onPointerDown: (event: MouseEvent) => void;
   };
   expanded: boolean;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   node: LfDataNode;
   selected: boolean;
 }

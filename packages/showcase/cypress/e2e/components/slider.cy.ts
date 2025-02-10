@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfSliderEvent,
 } from "@lf-widgets/foundations";
 import { getSliderFixtures } from "../../../src/components/lf-showcase/assets/data/slider";
@@ -15,17 +15,17 @@ const slider = sliderTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(slider).waitForWebComponents([sliderTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${sliderTag}> exist.`, () => {
-    const fixtures = getSliderFixtures(core);
+    const fixtures = getSliderFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(sliderTag, new Set(keys));
   });

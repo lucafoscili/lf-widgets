@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
@@ -29,9 +29,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfTree"> = "LfTreeEventPayload";
 const TAG_NAME: LfComponentTag<"LfTree"> = "lf-tree";
 
 export const getTreeFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-tree"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region mock data

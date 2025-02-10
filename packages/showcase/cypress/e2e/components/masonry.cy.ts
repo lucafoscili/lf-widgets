@@ -2,7 +2,7 @@ import {
   CY_ATTRIBUTES,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfMasonryEvent,
 } from "@lf-widgets/foundations";
 import { getMasonryFixtures } from "../../../src/components/lf-showcase/assets/data/masonry";
@@ -15,17 +15,17 @@ const masonry = masonryTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(masonry).waitForWebComponents([masonryTag, "lf-image"]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${masonryTag}> exist.`, () => {
-    const fixtures = getMasonryFixtures(core);
+    const fixtures = getMasonryFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(masonryTag, new Set(keys));
   });

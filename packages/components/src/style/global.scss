@@ -1,9 +1,0 @@
-@include lf-app-scrollbar;
-
-.lf-effects {
-  @include lf-fw-backdrop;
-  @include lf-fw-lightbox;
-}
-.lf-portal {
-  @include lf-fw-portal(true);
-}

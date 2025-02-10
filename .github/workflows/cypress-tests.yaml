@@ -33,7 +33,7 @@ jobs:
 
       - name: Start Stencil Development Server
         run: |
-          yarn workspace lf-widgets run dev &
+          yarn workspace @lf-widgets/showcase run dev &
           n=0
           until [ $n -ge 10 ]
           do

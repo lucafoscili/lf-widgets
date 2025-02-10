@@ -3,7 +3,7 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
   LfThemeUISize,
@@ -29,9 +29,9 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfToast"> = "LfToastEventPayload";
 const TAG_NAME: LfComponentTag<"LfToast"> = "lf-toast";
 
 export const getToastFixtures = (
-  core: LfCoreInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-toast"> => {
-  const { theme } = core;
+  const { theme } = framework;
   const icons = Object.values(theme.get.icons());
 
   //#region documentation

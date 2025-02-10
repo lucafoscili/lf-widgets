@@ -1,4 +1,3 @@
-import type { VNode } from "@stencil/core";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -11,10 +10,14 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfCoreInterface } from "../framework/core.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import { LfCanvasElement, LfCanvasEventPayload } from "./canvas.declarations";
 import {
@@ -135,7 +138,7 @@ export interface LfImageviewerAdapterControllerGetters
     index: () => number;
   };
   lfAttribute: typeof LF_ATTRIBUTES;
-  manager: LfCoreInterface;
+  manager: LfFrameworkInterface;
   parts: typeof LF_IMAGEVIEWER_PARTS;
   spinnerStatus: () => boolean;
 }

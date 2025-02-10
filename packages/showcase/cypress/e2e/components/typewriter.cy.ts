@@ -1,7 +1,7 @@
 import {
   LfComponentName,
   LfComponentTag,
-  LfCoreInterface,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getTypewriterFixtures } from "../../../src/components/lf-showcase/assets/data/typewriter";
 import { CY_CATEGORIES } from "../../support/constants";
@@ -13,17 +13,17 @@ const typewriter = typewriterTag.replace("lf-", "");
 
 //#region Basic
 describe(CY_CATEGORIES.basic, () => {
-  let core: LfCoreInterface;
+  let framework: LfFrameworkInterface;
 
   beforeEach(() => {
     cy.navigate(typewriter).waitForWebComponents([typewriterTag]);
-    cy.getLfCore().then((lfCore) => {
-      core = lfCore;
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
     });
   });
 
   it(`Should check that all <${typewriterTag}> exist.`, () => {
-    const fixtures = getTypewriterFixtures(core);
+    const fixtures = getTypewriterFixtures(framework);
     const keys = getExamplesKeys(fixtures);
     cy.checkComponentExamples(typewriterTag, new Set(keys));
   });
