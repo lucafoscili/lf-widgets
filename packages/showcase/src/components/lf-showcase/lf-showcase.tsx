@@ -228,7 +228,10 @@ export class LfShowcase {
             lfLabel="npm"
             lfStyling="floating"
             onClick={() =>
-              window.open("https://www.npmjs.com/package/lf-widgets", "_blank")
+              window.open(
+                "https://www.npmjs.com/package/@lf-widgets/core",
+                "_blank",
+              )
             }
             part="npm"
             title="Open npm Package"
