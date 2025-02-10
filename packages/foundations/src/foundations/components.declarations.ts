@@ -244,7 +244,7 @@ interface LfComponentCommon {
   ) => Promise<LfComponentPropsFor<LfComponentName>>;
   lfStyle?: string;
   refresh: () => Promise<void>;
-  unmount: () => Promise<void>;
+  unmount: (ms?: number) => Promise<void>;
 }
 export type LfComponentRootElement<
   C extends LfComponentName = LfComponentName,
