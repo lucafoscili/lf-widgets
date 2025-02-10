@@ -25,7 +25,9 @@ const browseDeps = (deps) => {
 };
 
 for (const key of depsKeys) {
-  browseDeps(packageJson[key]);
+  if (packageJson[key]) {
+    browseDeps(packageJson[key]);
+  }
 }
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
