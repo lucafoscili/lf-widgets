@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.15](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.14...0.2.0-rc.15) (2025-02-09)
+
+### Bug Fixes
+
+- **photoframe:** promise fix ([bb027e9](https://github.com/lucafoscili/lf-widgets/commit/bb027e988b225b619a288e5c17c8edfbfebba63d))
+
 # [0.2.0-rc.14](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.13...0.2.0-rc.14) (2025-02-09)
 
 **Note:** Version bump only for package @lf-widgets/showcase
