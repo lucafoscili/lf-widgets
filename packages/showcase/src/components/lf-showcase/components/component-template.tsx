@@ -138,7 +138,12 @@ const prepExample = <C extends LfComponentTag>(
   const TagName = component;
   const p = props as LfComponentPropsFor<LfComponentReverseTagMap[C]>;
   const tag = (
-    <TagName key={`${category}-${id}`} id={`${category}-${id}`} {...(p as any)}>
+    <TagName
+      data-cy={CY_ATTRIBUTES.showcaseExample}
+      key={`${category}-${id}`}
+      id={`${category}-${id}`}
+      {...(p as any)}
+    >
       {prepSlot(component, manager, slots)}
     </TagName>
   );

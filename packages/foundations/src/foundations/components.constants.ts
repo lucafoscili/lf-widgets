@@ -51,6 +51,7 @@ export const CY_ATTRIBUTES = {
   portal: "portal",
   rippleSurface: "ripple-surface",
   shape: "shape",
+  showcaseExample: "showcase-example",
   showcaseGridWrapper: "showcase-grid-wrapper",
 } as const;
 export const LF_ATTRIBUTES = {

@@ -144,11 +144,11 @@ declare global {
 //#region checkComponentExamples
 Cypress.Commands.add(
   "checkComponentExamples",
-  (component, componentExamples) => {
+  (_component, componentExamples) => {
     cy.log("Checking component examples...");
     componentExamples.forEach((example) => cy.log(example));
     cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(component)
+      .findCyElement(CY_ATTRIBUTES.showcaseExample)
       .should("have.length", componentExamples.size);
   },
 );
@@ -211,7 +211,7 @@ Cypress.Commands.add(
 
     setupEventChecker(component, eventType);
     cy.get(lfComponentShowcase)
-      .find(`lf-${component}`)
+      .findCyElement(CY_ATTRIBUTES.showcaseExample)
       .should("exist")
       .first()
       .scrollIntoView()

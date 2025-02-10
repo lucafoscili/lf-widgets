@@ -45,6 +45,7 @@
     "build": "yarn clean && npx stencil build --docs",
     "clean": "node ./src/scripts/clean.js",
     "dev": "yarn build && vite",
+    "dev:stencil": "yarn build && npx stencil build --dev --watch --serve",
     "doc": "npx stencil doc",
     "test": "npx cypress run",
     "test:open": "npx cypress open"
