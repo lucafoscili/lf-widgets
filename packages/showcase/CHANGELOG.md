@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.23](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.22...0.2.0-rc.23) (2025-02-10)
+
+### Bug Fixes
+
+- **showcase:** wrong npm link ([bcfbd65](https://github.com/lucafoscili/lf-widgets/commit/bcfbd6599d73d570b1858bcf6082abada4c8d420))
+
 # [0.2.0-rc.22](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.21...0.2.0-rc.22) (2025-02-10)
 
 **Note:** Version bump only for package @lf-widgets/showcase
