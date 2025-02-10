@@ -64,9 +64,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() imageOrientation: LfPhotoframeOrientation = "";
-  @State() isInViewport = false;
-  @State() isReady = false;
   //#endregion
 
   //#region Props
@@ -144,8 +141,9 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver;
   #placeholder: HTMLImageElement;
-  #readyPromise: Promise<void>;
-  #resolveReady!: () => void;
+  #imageOrientation: LfPhotoframeOrientation = "";
+  #isInViewport = false;
+  #isReady = false;
   //#endregion
 
   //#region Events
@@ -169,16 +167,15 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     switch (eventType) {
       case "load":
         if (isPlaceholder) {
-          this.waitUntilReady().then(() => {
-            if (this.#isLandscape(this.#placeholder)) {
-              this.imageOrientation = "horizontal";
-            } else {
-              this.imageOrientation = "vertical";
-            }
-          });
+          if (this.#isLandscape(this.#placeholder)) {
+            this.#imageOrientation = "horizontal";
+          } else {
+            this.#imageOrientation = "vertical";
+          }
         } else {
-          this.waitUntilReady().then(() => (this.isReady = true));
+          this.#isReady = true;
         }
+        this.refresh();
     }
 
     this.lfEvent.emit({
@@ -233,18 +230,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       this.onLfEvent(new CustomEvent("unmount"), "unmount");
       this.rootElement.remove();
     }, ms);
-  }
-  /**
-   * Waits until the component is ready.
-   *
-   * This method returns a Promise that resolves once the internal state has been initialized,
-   * indicating that the component is fully set up and ready for interactions.
-   *
-   * @returns A Promise that resolves to void when the component is ready.
-   */
-  @Method()
-  async waitUntilReady(): Promise<void> {
-    return this.#readyPromise;
   }
   //#endregion
 
@@ -317,7 +302,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
           const isConnected = this.rootElement.isConnected;
           if (entry.isIntersecting && isHydrated && isConnected) {
             requestAnimationFrame(() => {
-              this.isInViewport = true;
+              this.#isInViewport = true;
               this.#intObserver.unobserve(this.rootElement);
             });
           }
@@ -338,9 +323,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     }
   }
   async componentWillLoad() {
-    this.#readyPromise = new Promise<void>((resolve) => {
-      this.#resolveReady = resolve;
-    });
     this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
@@ -348,13 +330,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
 
     this.#setObserver();
     this.#intObserver?.observe(this.rootElement);
-
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
-
-    requestAnimationFrame(() => {
-      this.#resolveReady();
-    });
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -371,23 +348,23 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     const { bemClass, setLfStyle } = theme;
 
     const { photoframe } = this.#b;
-    const { isInViewport, isReady, lfPlaceholder, lfStyle, lfValue } = this;
+    const { lfPlaceholder, lfStyle, lfValue } = this;
 
-    const replace = Boolean(isInViewport && isReady);
+    const replace = Boolean(this.#isInViewport && this.#isReady);
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div
           class={bemClass(photoframe._, null, {
-            [this.imageOrientation]: this.imageOrientation && true,
+            [this.#imageOrientation]: this.#imageOrientation && true,
           })}
           id={this.#w}
         >
           {this.#prepOverlay()}
           <img
             class={bemClass(photoframe._, photoframe.placeholder, {
-              loaded: Boolean(this.imageOrientation),
+              loaded: Boolean(this.#imageOrientation),
               hidden: replace,
             })}
             data-cy={this.#cy.image}
@@ -400,7 +377,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
             }}
             {...sanitizeProps(lfPlaceholder)}
           ></img>
-          {isInViewport && (
+          {this.#isInViewport && (
             <img
               class={bemClass(photoframe._, photoframe.image, {
                 active: replace,

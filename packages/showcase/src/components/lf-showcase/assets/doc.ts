@@ -2809,15 +2809,6 @@ export const LF_DOC: LfShowcaseDoc = {
         },
         signature: "(ms?: number) => Promise<void>",
       },
-      {
-        name: "waitUntilReady",
-        docs: "Waits until the component is ready.\r\n\r\nThis method returns a Promise that resolves once the internal state has been initialized,\r\nindicating that the component is fully set up and ready for interactions.",
-        returns: {
-          type: "Promise<void>",
-          docs: "A Promise that resolves to void when the component is ready.",
-        },
-        signature: "() => Promise<void>",
-      },
     ],
     props: [
       {
