@@ -382,8 +382,10 @@ export class LfProgressbar implements LfProgressbarInterface {
       this.#framework.theme.register(this);
     }
   }
-  async componentDidLoad() {
+  async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+  }
+  componentDidLoad() {
     const { info } = this.#framework.debug;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
