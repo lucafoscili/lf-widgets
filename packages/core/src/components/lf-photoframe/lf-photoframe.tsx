@@ -144,6 +144,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   #imageOrientation: LfPhotoframeOrientation = "";
   #isInViewport = false;
   #isReady = false;
+  #isImageLoaded = false;
+  #debounceHandle: number | null = null;
   //#endregion
 
   //#region Events
@@ -173,9 +175,8 @@ export class LfPhotoframe implements LfPhotoframeInterface {
             this.#imageOrientation = "vertical";
           }
         } else {
-          this.#isReady = true;
+          this.#isImageLoaded = true;
         }
-        this.refresh();
     }
 
     this.lfEvent.emit({
@@ -301,10 +302,22 @@ export class LfPhotoframe implements LfPhotoframeInterface {
           const isHydrated = this.rootElement.hasAttribute("lf-hydrated");
           const isConnected = this.rootElement.isConnected;
           if (entry.isIntersecting && isHydrated && isConnected) {
-            requestAnimationFrame(() => {
-              this.#isInViewport = true;
-              this.#intObserver.unobserve(this.rootElement);
-            });
+            this.#isInViewport = true;
+            if (this.#isImageLoaded && this.#debounceHandle === null) {
+              // Wait 50ms before confirming that the element is still connected.
+              this.#debounceHandle = window.setTimeout(() => {
+                // Check again before finalizing.
+                if (this.rootElement.isConnected) {
+                  requestAnimationFrame(() => {
+                    this.#intObserver.unobserve(this.rootElement);
+                    this.#isReady = true;
+                    this.refresh();
+                  });
+                }
+                // Clear the debounce handle whether or not we proceeded.
+                this.#debounceHandle = null;
+              }, 50);
+            }
           }
         });
       },
@@ -313,6 +326,7 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       },
     );
   }
+
   //#endregion
 
   //#region Lifecycle hooks
@@ -397,6 +411,9 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
     this.#intObserver?.unobserve(this.rootElement);
+    this.#isReady = false;
+    this.#isInViewport = false;
+    this.#imageOrientation = "";
   }
   //#endregion
 }
