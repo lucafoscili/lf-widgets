@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.17](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.16...0.2.0-rc.17) (2025-02-10)
+
+**Note:** Version bump only for package @lf-widgets/showcase
+
+# [0.2.0-rc.16](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.15...0.2.0-rc.16) (2025-02-10)
+
+### Bug Fixes
+
+- **photoframe:** replaced promise with not-reactive states ([c94d983](https://github.com/lucafoscili/lf-widgets/commit/c94d9832a61cdba0f79dadb5d0518c4e0a8a0f39))
+
 # [0.2.0-rc.15](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.14...0.2.0-rc.15) (2025-02-09)
 
 ### Bug Fixes
