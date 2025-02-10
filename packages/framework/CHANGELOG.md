@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.21](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.20...0.2.0-rc.21) (2025-02-10)
+
+### Bug Fixes
+
+- **framework:** adjusted package.json ([e3bb898](https://github.com/lucafoscili/lf-widgets/commit/e3bb89808402a2c256887837384bb177029fd640))
+
 # [0.2.0-rc.20](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.19...0.2.0-rc.20) (2025-02-10)
 
 ### Bug Fixes
