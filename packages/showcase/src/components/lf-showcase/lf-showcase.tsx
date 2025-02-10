@@ -205,7 +205,7 @@ export class LfShowcase {
       >
         <lf-article
           class={bemClass("showcase", "intro")}
-          lfDataset={LF_DOC}
+          lfDataset={LF_DOC(this.#framework)}
           part="intro"
         ></lf-article>
         <div class={bemClass("showcase", "links")}>
