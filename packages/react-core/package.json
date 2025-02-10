@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "@lf-widgets/core": "workspace:*",
-    "@stencil/react-output-target": "workspace:*"
+    "@stencil/react-output-target": "^0"
   },
   "license": "Apache-2.0",
   "installConfig": {
