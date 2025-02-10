@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.25](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.24...0.2.0-rc.25) (2025-02-10)
+
+### Bug Fixes
+
+- **progressbar:** wrong initialization ([eb6594e](https://github.com/lucafoscili/lf-widgets/commit/eb6594e3cfcc4e83c22559d0f3bc2a47702a30d2))
+
 # [0.2.0-rc.24](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.23...0.2.0-rc.24) (2025-02-10)
 
 **Note:** Version bump only for package @lf-widgets/core
