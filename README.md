@@ -10,7 +10,7 @@
 
 <div align="center">
 
-![LF Widgets Logo](https://github.com/lucafoscili/lucafoscili/blob/6c96e75b7ba7ff3ea0a0b868e36a4d67292b2746/lf-widgets/logo/LFW.webp "LF Widgets logo")
+![LF Widgets Logo](https://github.com/lucafoscili/lucafoscili/blob/f61c1faa81d9fd6840f13353053f161902b1ebf7/lf-widgets/logo/LFW.jpg "LF Widgets logo")
 
 </div>
 

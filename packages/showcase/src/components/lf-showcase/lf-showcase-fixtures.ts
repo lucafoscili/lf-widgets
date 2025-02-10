@@ -1,6 +1,7 @@
 import {
   LfArticleDataset,
   LfDataDataset,
+  LfFrameworkInterface,
   LfThemeIconRegistry,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "./helpers/constants";
@@ -361,52 +362,73 @@ export const LF_SHOWCASE_FRAMEWORK = (
     ],
   };
 };
-export const LF_DOC: LfArticleDataset = {
-  nodes: [
-    {
-      id: DOC_IDS.root,
-      value: "LF Widgets",
-      children: [
-        {
-          id: DOC_IDS.section,
-          value: "",
-          children: [
-            {
-              id: DOC_IDS.paragraph,
-              value: "",
-              children: [
-                {
-                  id: DOC_IDS.contentWrapper,
-                  value:
-                    "This page is designed to showcase LF Widgets webcomponents.",
-                },
-              ],
-            },
-            {
-              id: DOC_IDS.paragraph,
-              value: "",
-              children: [
-                {
-                  id: DOC_IDS.contentWrapper,
-                  value:
-                    "If this is the first time that you stumble upon the library and want to know more, you should check out the GitHub repository (link below!)",
-                },
-              ],
-            },
-            {
-              id: DOC_IDS.paragraph,
-              value: "",
-              children: [
-                {
-                  id: DOC_IDS.contentWrapper,
-                  value:
-                    "In short: LF Widgets is a framework-agnostic web components library built with Stencil.js, offering offering lightweight and stylish components for web pages.",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  ],
+export const LF_DOC = (framework: LfFrameworkInterface): LfArticleDataset => {
+  return {
+    nodes: [
+      {
+        id: DOC_IDS.root,
+        value: "LF Widgets",
+        children: [
+          {
+            id: DOC_IDS.section,
+            value: "",
+            children: [
+              {
+                id: DOC_IDS.paragraph,
+                value: "",
+                children: [
+                  {
+                    cells: {
+                      lfImage: {
+                        lfValue: framework.assets.get(
+                          "./assets/showcase/LFW.jpg",
+                        ).path,
+                        shape: "image",
+                        value: "",
+                      },
+                    },
+                    id: DOC_IDS.contentWrapper,
+                    value: "",
+                  },
+                ],
+              },
+              {
+                id: DOC_IDS.paragraph,
+                value: "",
+                children: [
+                  {
+                    id: DOC_IDS.contentWrapper,
+                    value:
+                      "This page is designed to showcase LF Widgets webcomponents.",
+                  },
+                ],
+              },
+              {
+                id: DOC_IDS.paragraph,
+                value: "",
+                children: [
+                  {
+                    id: DOC_IDS.contentWrapper,
+                    value:
+                      "If this is the first time that you stumble upon the library and want to know more, you should check out the GitHub repository (link below!)",
+                  },
+                ],
+              },
+              {
+                id: DOC_IDS.paragraph,
+                value: "",
+                children: [
+                  {
+                    id: DOC_IDS.contentWrapper,
+                    value:
+                      "In short: LF Widgets is a framework-agnostic web components library built with Stencil.js, offering offering lightweight and stylish components for web pages.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 };
