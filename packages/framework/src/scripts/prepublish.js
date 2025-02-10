@@ -15,13 +15,13 @@ const packageJson = require(packageJsonPath);
 const version = packageJson.version;
 
 const browseDeps = (deps) => {
-  for (const dep in deps) {
+  Object.keys(deps).forEach((dep) => {
     const v = deps[dep];
     if (v.includes("workspace:")) {
       console.log("Found workspace dependency: " + dep);
       deps[dep] = version;
     }
-  }
+  });
 };
 
 for (const key of depsKeys) {
@@ -30,4 +30,4 @@ for (const key of depsKeys) {
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 
-console.log("✅ Updated package.json!");
+console.log("✅ Updated package.json for @lf-widgets/framework!");

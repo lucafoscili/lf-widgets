@@ -10,7 +10,7 @@
 
 <div align="center">
 
-![LF Widgets Logo](https://github.com/lucafoscili/lf-widgets/blob/main/docs/images/Logo.png "LF Widgets logo")
+![LF Widgets Logo](https://github.com/lucafoscili/lucafoscili/blob/6c96e75b7ba7ff3ea0a0b868e36a4d67292b2746/lf-widgets/logo/LFW.webp "LF Widgets logo")
 
 </div>
 
@@ -38,28 +38,153 @@ Built with modern standards and best practices in mind, LF Widgets offers a coll
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Features](#features)
-- [Key components](#key-components)
-  - [`LfChart`](#lfchart)
-  - [`LfMasonry`](#lfmasonry)
-  - [`LfMessenger`](#lfmessenger)
 - [Getting Started](#getting-started)
-  - [Installation](#installation)
+  - [Quick Start](#quick-start)
   - [Usage](#usage)
+  - [Initializing LfFramework](#initializing-lfframework)
 - [Documentation](#documentation)
+- [Key components](#key-components)
+  - [LfChart](#lfchart)
+  - [LfMasonry](#lfmasonry)
+  - [LfMessenger](#lfmessenger)
 - [Contributing](#contributing)
 - [A `Comfy` Marriage](#a-comfy-marriage)
 - [Credits](#credits)
+- [Icon Attribution](#icon-attribution)
+- [Font Attribution](#font-attribution)
 
 ## Features
 
 - **Framework Agnostic**: Use with React, Vue, Angular, or just plain JavaScript.
 - **Cross-Browser Compatible**: Works across all major browsers without additional polyfills.
 - **Customizable**: The components are highly customizable, giving you the necessary tools to match your project's design system.
-- **Oriented Towards Personal Websites/Projects**: Optimized for personal projects and small teams, LF Widgets offers simplicity, elegance, and ease of use for developers seeking fast, hassle-free integration.
 - **Glassmorphism Look**: LF Widgets incorporates a glassmorphism aesthetic throughout its components. This gives a modern, transparent, and sleek appearance to the UI elements, enhancing the visual appeal of personal projects.
 - **Single Event Management**: Each component emits a single generic event that encapsulates various actions.
+
+<div align="right">
+
+[(Back to Top)](#lf-widgets)
+
+</div>
+
+## Getting Started
+
+### Quick Start
+
+#### 1. Install Yarn
+
+If you haven't installed Yarn yet, get it done with:
+
+```bash
+npm install -g yarn
+```
+
+Or check out [Yarn's installation guide](https://yarnpkg.com/getting-started/install) for more options.
+
+#### 2. Clone the Repository & Install Dependencies
+
+Clone this repo and install everything in one go:
+
+```bash
+git clone https://github.com/lucafoscili/lf-widgets.git
+cd lf-widgets
+yarn install
+```
+
+#### 3. Run the Showcase
+
+Fire up the showcase to view the webcomponents:
+
+```bash
+yarn dev:setup
+```
+
+That's it!
+
+---
+
+### Usage
+
+After installing, you can import and use LF Widgets components in your project. Here's a quick example of how to use the `<lf-button>` component directly in your HTML file:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LF Widgets Example</title>
+    <script
+      type="module"
+      src="./path/to/@lf-widgets/foundations/dist/index.js"
+    ></script>
+    <script
+      type="module"
+      src="./path/to/@lf-widgets/framework/dist/index.js"
+    ></script>
+    <script
+      type="module"
+      src="./path/to/@lf-widgets/core/dist/esm/lf-widgets.js"
+    ></script>
+  </head>
+  <body>
+    <lf-button lf-label="Click me!" />
+  </body>
+</html>
+```
+
+Make sure to replace the paths with the actual locations of the LF Widgets packages in your project.
+
+The event handling is wrapped in a single event, emitted by the root element. In this small example we add a listener to the button component, performing different actions for different situations:
+
+```javascript
+const myButton = document.createElement("lf-button");
+
+myButton.addEventListener("lf-button-event", (e) => {
+  const { eventType } = e.detail;
+
+  switch (eventType) {
+    case "click":
+      console.log("Click!");
+      break;
+    case "blur":
+      console.log("Blur!");
+      break;
+    case "ready":
+      console.log("The button is ready!");
+      break;
+    case "unmount":
+      console.log("The button has been removed from the DOM!");
+      break;
+  }
+
+  document.body.appendChild(myButton);
+});
+```
+
+### Initializing LfFramework
+
+LF Widgets ships with a small singleton “core” (`LfFramework`) that underpins theming, portals, debugging features, and more. The singleton must be initialized manually. This is an architectural choice to avoid global state and ensure that the core is only created when needed. In addition, by initializing the core early, you can set up theming and other features before components are rendered to avoid flickering.
+
+Below is the **recommended** pattern, using this function exported by the `@lf-widgets/framework` package:
+
+- **`getLfFramework()`**  
+  Returns the LfFramework instance, initializing it if necessary.
+
+#### Example
+
+```ts
+// In your top-level code or a dedicated file
+import { getLfFramework } from "@lf-widgets/core";
+
+// Elsewhere, in a component or function:
+function doSomething() {
+  const framework = getLfFramework();
+  framework.assets.set("https://example.com/assets");
+  framework.theme.set("dark");
+  // ...
+}
+```
 
 <div align="right">
 
@@ -122,135 +247,6 @@ Perfect for creating immersive role-playing experiences, educational tools, or c
 **Note:**  
 A functional local endpoint is required for chat functionality. If the endpoint is offline, the chat interface will remain static.
 
-## Getting Started
-
-### Installation
-
-To add LF Widgets to your project, you can install it via `yarn`:
-
-```sh
-yarn add lf-widgets
-```
-
-Or `npm`:
-
-```sh
-npm install lf-widgets
-```
-
-### Usage
-
-After installing, you can import and use LF Widgets components in your project. Here's a quick example of how to use the `<lf-button>` component:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>LF Widgets Example</title>
-    <script type="module" src="./path/to/lf-widgets/dist/index.js"></script>
-  </head>
-  <body>
-    <lf-button lf-label="Click me!" />
-  </body>
-</html>
-```
-
-Make sure to replace `./path/to/lf-widgets/dist/index.js` with the correct path to the `index.js` file in your `node_modules/lf-widgets` directory.
-
-The event handling is wrapped in a single event, emitted by the root element. In this small example we add a listener to the button component, performing different actions for different situations:
-
-```javascript
-const myButton = document.createElement("lf-button");
-
-myButton.addEventListener("lf-button-event", (e) => {
-  const { eventType } = e.detail;
-
-  switch (eventType) {
-    case "click":
-      console.log("Click!");
-      break;
-    case "blur":
-      console.log("Blur!");
-      break;
-    case "ready":
-      console.log("The button is ready!");
-      break;
-    case "unmount":
-      console.log("The button has been removed from the DOM!");
-      break;
-  }
-
-  document.body.appendChild(myButton);
-});
-```
-
-### Initializing LfFramework
-
-LF Widgets ships with a small singleton “core” (`LfFramework`) that underpins theming, portals, debugging features, and more. To ensure your components work correctly (especially if they need access to themes or LLM utilities), it’s recommended to **initialize** this core before using the widgets.
-
-Below is the **recommended** pattern, using this function that is re-exported from the `@lf-widgets/core` package:
-
-- **`getLfFramework()`**  
-  Returns the LfFramework instance, initializing it if necessary.
-
-#### Example
-
-```ts
-// In your top-level code or a dedicated file
-import { getLfFramework } from "@lf-widgets/core";
-
-// Elsewhere, in a component or function:
-function doSomething() {
-  const framework = getLfFramework();
-  framework.assets.set("https://example.com/assets");
-  framework.theme.set("dark");
-  // ...
-}
-```
-
-#### In Your LF Widgets Components
-
-If you’re using `<lf-button>`, `<lf-chart>`, or any other LF component, you can rely on the fact that **once `getLfFramework()` is called**, they’ll be able to access the proper theming and debugging utilities. If you skip the explicit call, any LF Widgets component that needs the core will lazily initialize it when first used.
-
-A typical pattern in a custom element might look like:
-
-```ts
-connectedCallback() {
-  const framework = getLfFramework();
-  core.theme.register(this);
-  this.debugInfo = core.debug.info.create();
-}
-```
-
-#### Why Initialize Early?
-
-- **Consistent Theming**: If you want to avoid a “flash” of unstyled or default theme, you can call `getLfFramework()` (and set a theme) **before** rendering components.
-- **Server-Side or Client-Side**: The `getLfFramework()` function gracefully handles SSR by skipping DOM operations on the server, then running the real DOM logic in the browser.
-
-#### Summary
-
-1. **Call `getLfFramework()`** in a central place (like your main script or Next.js `_app.tsx`) if you need to set a theme or do immediate setup.
-2. **Lazy Initialization**: If you don’t call `getLfFramework()`, the core will be initialized when the first LF Widgets component is used.
-
-Either way, once `LfFramework` is ready, all LF Widgets have access to theming, portals, debug logging, and other shared features.
-
-<div align="right">
-
-[(Back to Top)](#lf-widgets)
-
-</div>
-
-## Documentation
-
-For detailed information about each component, including available properties, events, and methods, please refer to the [showcase](https://www.lucafoscili.com/lf-widgets).
-
-<div align="right">
-
-[(Back to Top)](#lf-widgets)
-
-</div>
-
 ## Contributing
 
 If you discover a new bug or have an exciting idea for a new component, feel free to open an issue or a discussion! Check out the [issues](https://github.com/lucafoscili/lf-widgets/issues) or [discussions](https://github.com/lucafoscili/lf-widgets/discussions) tabs to see how you can get involved.
@@ -287,6 +283,28 @@ And… they look fantastic in action!
 
 ![LoRA Tester Workflow](https://github.com/lucafoscili/comfyui-lf/blob/0b438784ecce5bb2a3bde66cf3029d91ced61911/docs/images/Screenshot%202024-11-01%20204059.png "Screenshot taken from the LoRA tester workflow")
 
+## Documentation
+
+- [Architecture](https://github.com/lucafoscili/lf-widgets/blob/main/docs/architecture.md)
+
+- [Framework](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-framework.md)
+  - [LfColor](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-color.md)
+  - [LfData](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-data.md)
+  - [LfDebug](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-debug.md)
+  - [LfDrag](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-drag.md)
+  - [LfEffects](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-effects.md)
+  - [LfLlm](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-llm.md)
+  - [LfPortal](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-portal.md)
+  - [LfTheme](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-theme.md)
+
+For detailed information about each component, including available properties, events, and methods, please refer to the [showcase](https://www.lucafoscili.com/lf-widgets).
+
+<div align="right">
+
+[(Back to Top)](#lf-widgets)
+
+</div>
+
 ### Credits
 
 | **Tool** | **Purpose** | **License** |
@@ -298,6 +316,7 @@ And… they look fantastic in action!
 | [Prism.js](https://prismjs.com/) | Syntax highlighting for code blocks | MIT |
 | [Stencil.js](https://stenciljs.com/) | Web Components engine | MIT |
 | [Tabler Icons](https://tabler-icons.io/) | Icon library for UI elements | MIT |
+| [Vite](https://vitejs.dev/) | Development server for the showcase | MIT |
 
 For detailed licensing information, see the [NOTICE](./NOTICE) file.
 
