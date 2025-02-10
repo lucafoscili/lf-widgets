@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.17](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.16...0.2.0-rc.17) (2025-02-10)
+
+### Bug Fixes
+
+- **photoframe:** added debounce ([284b852](https://github.com/lucafoscili/lf-widgets/commit/284b852829a90d69c63977d5e5459ad96d116dfb))
+
 # [0.2.0-rc.16](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.15...0.2.0-rc.16) (2025-02-10)
 
 ### Bug Fixes
