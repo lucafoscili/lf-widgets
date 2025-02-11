@@ -46,6 +46,9 @@
     }
 
     &--assistant {
+      --lf-typewriter-color-bg: none;
+      --lf-typewriter-padding: 0;
+
       justify-self: start;
     }
 

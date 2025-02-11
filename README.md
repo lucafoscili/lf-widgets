@@ -38,21 +38,30 @@ Built with modern standards and best practices in mind, LF Widgets offers a coll
 
 ## Table of Contents
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Quick Start](#quick-start)
-  - [Usage](#usage)
-  - [Initializing LfFramework](#initializing-lfframework)
-- [Documentation](#documentation)
-- [Key components](#key-components)
-  - [LfChart](#lfchart)
-  - [LfMasonry](#lfmasonry)
-  - [LfMessenger](#lfmessenger)
-- [Contributing](#contributing)
-- [A `Comfy` Marriage](#a-comfy-marriage)
-- [Credits](#credits)
-- [Icon Attribution](#icon-attribution)
-- [Font Attribution](#font-attribution)
+- [LF Widgets](#lf-widgets)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Quick Start](#quick-start)
+      - [1. Install Yarn](#1-install-yarn)
+      - [2. Clone the Repository \& Install Dependencies](#2-clone-the-repository--install-dependencies)
+      - [3. Run the Showcase](#3-run-the-showcase)
+    - [Usage](#usage)
+    - [Initializing LfFramework](#initializing-lfframework)
+      - [Example](#example)
+  - [Key components](#key-components)
+    - [LfChart](#lfchart)
+    - [LfMasonry](#lfmasonry)
+    - [LfMessenger](#lfmessenger)
+  - [Contributing](#contributing)
+  - [A `Comfy` Marriage](#a-comfy-marriage)
+  - [Documentation](#documentation)
+    - [Credits](#credits)
+    - [Transition from Ketchup Lite](#transition-from-ketchup-lite)
+    - [Icon Attribution](#icon-attribution)
+      - [Adding Custom Icons](#adding-custom-icons)
+    - [Font Attribution](#font-attribution)
+      - [Adding Custom Fonts](#adding-custom-fonts)
 
 ## Features
 
@@ -196,7 +205,11 @@ function doSomething() {
 
 ### LfChart
 
-![LfChart](https://github.com/lucafoscili/lf-widgets/blob/f3291bb78e2c56eda38d97d182e03cdbacd1ff75/docs/images/chart.png)
+<div align="center">
+
+![LfChart](https://github.com/lucafoscili/lucafoscili/blob/ea30fd47b149048b96d0a1388f724d6690e20a82/lf-widgets/screenshots/chart.jpg)
+
+</div>
 
 **Description:**  
 Provides an advanced charting solution built on top of the Echarts library. It supports various chart types, including line, bar, bubble, and candlestick charts, as well as unique options like dual-axis and heatmap calendars.
@@ -213,7 +226,11 @@ Perfect for building real-time dashboards, financial data visualizations, and mu
 
 ### LfMasonry
 
-![LfMasonry](https://github.com/lucafoscili/lf-widgets/blob/f3291bb78e2c56eda38d97d182e03cdbacd1ff75/docs/images/masonry.png)
+<div align="center">
+
+![LfMasonry](https://github.com/lucafoscili/lucafoscili/blob/ea30fd47b149048b96d0a1388f724d6690e20a82/lf-widgets/screenshots/masonry.jpg)
+
+</div>
 
 **Description:**  
 Perfect for creating visually appealing layouts with items of varying sizes. It supports a dynamic masonry or waterfall grid style, making it ideal for galleries, portfolios, and content-heavy applications.
@@ -229,7 +246,11 @@ Display dynamic content, such as photo galleries or portfolio showcases, where i
 
 ### LfMessenger
 
-![LfMessenger](https://github.com/lucafoscili/lf-widgets/blob/f3291bb78e2c56eda38d97d182e03cdbacd1ff75/docs/images/messenger.png)
+<div align="center">
+
+![LfMessenger](https://github.com/lucafoscili/lucafoscili/blob/ea30fd47b149048b96d0a1388f724d6690e20a82/lf-widgets/screenshots/messenger.jpg)
+
+</div>
 
 **Description:**  
 Provides a customizable chat interface for interactive roleplay or AI-driven conversations. Users can define a JSON dataset of characters and initiate dynamic dialogues through a third-party API (OpenAI compatible endpoint required).

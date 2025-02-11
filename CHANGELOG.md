@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file. See [Conven
 # [0.2.0](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0) (2025-02-10)
 
 **Note:** Version bump only for package @lf-widgets/root
+# [0.2.0-rc.26](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0-rc.26) (2025-02-11)
+
+### Bug Fixes
+
+- **chat:** added user messages to request ([c601e4c](https://github.com/lucafoscili/lf-widgets/commit/c601e4c1d12d792e7d917c8a0f9b50a011c9496e))
+- **chat:** fixed regerenation ([d20b11b](https://github.com/lucafoscili/lf-widgets/commit/d20b11b4c2df22a44b3d124cec287ea663841845))
+- **chat:** removed typewriter background color ([f4d40f1](https://github.com/lucafoscili/lf-widgets/commit/f4d40f149bdab9ad959378ce78186399b2d296a8))
+- **chat:** removed typewriter padding ([992a547](https://github.com/lucafoscili/lf-widgets/commit/992a547a1055e2239fbc50fcdc72e82872a028f2))
 
 # [0.2.0-rc.25](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.24...0.2.0-rc.25) (2025-02-10)
 
