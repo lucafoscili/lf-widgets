@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.26](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0-rc.26) (2025-02-11)
+
+### Bug Fixes
+
+- **chat:** fixed regerenation ([d20b11b](https://github.com/lucafoscili/lf-widgets/commit/d20b11b4c2df22a44b3d124cec287ea663841845))
+
 # [0.2.0-rc.25](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.24...0.2.0-rc.25) (2025-02-10)
 
 **Note:** Version bump only for package @lf-widgets/foundations
