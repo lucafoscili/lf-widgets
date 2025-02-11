@@ -141,10 +141,12 @@ export const newRequest = (adapter: LfChatAdapter) => {
     });
   }
 
-  history().map((msg) => ({
-    role: msg.role,
-    content: msg.content,
-  }));
+  for (const msg of history()) {
+    messages.push({
+      role: msg.role,
+      content: msg.content,
+    });
+  }
 
   return {
     temperature: lfTemperature,
