@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-rc.27](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0-rc.27) (2025-02-11)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
 # [0.2.0-rc.26](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0-rc.26) (2025-02-11)
 
 **Note:** Version bump only for package @lf-widgets/react-core
