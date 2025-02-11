@@ -160,7 +160,7 @@ export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentPrompt: (value: LfLLMChoiceMessage) => void;
   currentTokens: (value: number) => void;
-  history: (cb: () => unknown) => void;
+  history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
   view: (view: LfChatView) => void;
 }
