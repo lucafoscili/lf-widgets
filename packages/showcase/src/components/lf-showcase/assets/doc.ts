@@ -1700,6 +1700,10 @@ export const LF_DOC: LfShowcaseDoc = {
         name: "--lf-code-header-position",
         docs: "Sets the position for the header. Defaults to => sticky",
       },
+      {
+        name: "--lf-code-height",
+        docs: "Sets the height for the code component. Defaults to => 100%",
+      },
     ],
   },
   "lf-compare": {
