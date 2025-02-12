@@ -5,6 +5,7 @@ import {
   LfLLMChoiceMessage,
   LfLLMRequest,
 } from "@lf-widgets/foundations";
+import { LfChat } from "./lf-chat";
 
 /**
  * Makes an API call to a Language Learning Model (LLM) endpoint using the provided chat adapter.
@@ -141,10 +142,12 @@ export const newRequest = (adapter: LfChatAdapter) => {
     });
   }
 
-  history().map((msg) => ({
-    role: msg.role,
-    content: msg.content,
-  }));
+  for (const msg of history()) {
+    messages.push({
+      role: msg.role,
+      content: msg.content,
+    });
+  }
 
   return {
     temperature: lfTemperature,
@@ -176,9 +179,13 @@ export const regenerateMessage = async (
   const { get, set } = adapter.controller;
 
   const h = get.history();
+  const compInstance = get.compInstance as LfChat;
+
   const index = h.indexOf(m);
   if (index !== -1) {
-    set.history(() => h.slice(0, index + 1));
+    await set.history(() => {
+      compInstance.history = h.slice(0, index + 1);
+    });
   }
   await apiCall(adapter);
   resetPrompt(adapter);

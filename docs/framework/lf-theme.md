@@ -1,4 +1,3 @@
-````markdown
 # LfTheme
 
 `LfTheme` is a utility class designed for theme management within the LF Widgets framework. It centralizes the creation and application of theme-specific CSS—such as global styles, fonts, and CSS variables—ensuring that web components remain in sync with the active theme. It also provides helper functions to generate BEM class names, manage component registrations, and handle dynamic theme updates.
@@ -25,7 +24,6 @@
   const lfFramework = getLfFramework();
   const themeManager = new LfTheme(lfFramework);
   ```
-````
 
 ---
 
