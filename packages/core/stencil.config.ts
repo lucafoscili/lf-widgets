@@ -4,15 +4,19 @@ import { sass } from "@stencil/sass";
 
 export const config: Config = {
   namespace: "lf-core",
+  extras: {
+    enableImportInjection: true,
+  },
   outputTargets: [
     {
-      type: "dist",
       esmLoaderPath: "./loader",
+      type: "dist",
       typesDir: "./types",
     },
     {
-      type: "dist-custom-elements",
+      customElementsExportBehavior: "auto-define-custom-elements",
       externalRuntime: false,
+      type: "dist-custom-elements",
     },
     {
       type: "docs-json",
