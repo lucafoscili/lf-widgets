@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.2...0.3.1-rc.3) (2025-02-12)
+
+**Note:** Version bump only for package @lf-widgets/react-showcase
+
+## [0.3.1-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.1...0.3.1-rc.2) (2025-02-12)
+
+**Note:** Version bump only for package @lf-widgets/react-showcase
+
+## [0.3.1-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.0...0.3.1-rc.1) (2025-02-12)
+
+**Note:** Version bump only for package @lf-widgets/react-showcase
+
+## [0.3.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.0...0.3.1-rc.0) (2025-02-12)
+
+**Note:** Version bump only for package @lf-widgets/react-showcase
+
 # [0.3.0](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.26...0.3.0) (2025-02-12)
 
 **Note:** Version bump only for package @lf-widgets/react-showcase

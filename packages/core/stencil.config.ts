@@ -6,13 +6,13 @@ export const config: Config = {
   namespace: "lf-core",
   outputTargets: [
     {
-      type: "dist",
       esmLoaderPath: "./loader",
+      type: "dist",
       typesDir: "./types",
     },
     {
-      type: "dist-custom-elements",
       externalRuntime: false,
+      type: "dist-custom-elements",
     },
     {
       type: "docs-json",
