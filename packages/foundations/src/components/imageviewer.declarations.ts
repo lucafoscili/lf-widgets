@@ -40,7 +40,18 @@ import { LfTreeElement, LfTreeEventPayload } from "./tree.declarations";
 //#region Class
 export interface LfImageviewerInterface
   extends LfComponent<"LfImageviewer">,
-    LfImageviewerPropsInterface {}
+    LfImageviewerPropsInterface {
+  addSnapshot: (value: string) => Promise<void>;
+  clearHistory: (index?: number) => Promise<void>;
+  clearSelection: () => Promise<void>;
+  getComponents: () => Promise<LfImageviewerAdapterRefs>;
+  getCurrentSnapshot: () => Promise<{
+    shape: LfMasonrySelectedShape;
+    value: string;
+  }>;
+  reset: () => Promise<void>;
+  setSpinnerStatus: (status: boolean) => Promise<void>;
+}
 export interface LfImageviewerElement
   extends HTMLStencilElement,
     LfImageviewerInterface {}
