@@ -20,6 +20,11 @@ $borderC: 1px solid rgb(var(--lf-color-border));
   & {
     display: grid;
     grid-template-rows: 1fr;
+    /**
+    * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+    *                             Defaults to => 100%
+    */
+    height: var(--lf-#{$comp}-height, 100%);
   }
 
   &--has-header {
@@ -78,11 +83,13 @@ pre,
   @include lf-comp-border($comp);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+  box-sizing: border-box;
   @include lf-comp-glassmorphize($comp, "surface", "all", 0.375);
 }
 
 .body {
   @include lf-el-text("body");
+  box-sizing: border-box;
   padding: 1em;
   white-space: pre-line;
 }
