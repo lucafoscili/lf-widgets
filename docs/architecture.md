@@ -38,21 +38,21 @@ graph TD
     A[lf-widgets]
     A --> B[packages]
     B --> C[assets]
-    C --> C1[assets/]
-    C1 --> C2[fonts/]
-    C1 --> C3[showcase/]
-    C1 --> C4[svg/]
+    C --> C1["assets/"]
+    C1 --> C2["fonts/"]
+    C1 --> C3["showcase/"]
+    C1 --> C4["svg/"]
     B --> D[core]
-    D --> D1[dist/ (Stencil build output)]
+    D --> D1["dist/ (Stencil build output)"]
     B --> E[foundations]
-    E --> E1[dist/ (TSC build output)]
+    E --> E1["dist/ (TSC build output)"]
     B --> F[framework]
-    F --> F1[dist/ (Stencil build output)]
+    F --> F1["dist/ (Stencil build output)"]
     B --> G[react-core]
     B --> H[react-showcase]
     B --> I[showcase]
-    I --> I1[src/ (index.html & entry files)]
-    I --> I2[vite.config.mjs]
+    I --> I1["src/ (index.html & entry files)"]
+    I --> I2["vite.config.mjs"]
     A --> J[node_modules]
 ```
 
@@ -220,16 +220,16 @@ The LF Widgets framework is designed to be initialized on demand. The following 
 
 ```mermaid
 flowchart TD
-    A[getLfFramework() called]
-    B{lfFramework already exists?}
-    B -- Yes --> C[Return existing lfFramework instance]
-    B -- No --> D[Call initLfFramework()]
-    D --> E[Create new LfFramework instance]
-    E --> F[Call finalize() on the new instance]
-    F --> G[Set global window[LF_FRAMEWORK_SYMBOL]]
-    G --> H[Call markFrameworkReady()]
-    H --> I[Dispatch CustomEvent (LF_FRAMEWORK_EVENT_NAME)]
-    I --> C[Return newly created lfFramework instance]
+    A["getLfFramework() called"]
+    B{"lfFramework already exists?"}
+    B -- Yes --> C["Return existing lfFramework instance"]
+    B -- No --> D["Call initLfFramework()"]
+    D --> E["Create new LfFramework instance"]
+    E --> F["Call finalize() on the new instance"]
+    F --> G["Set global window[LF_FRAMEWORK_SYMBOL]"]
+    G --> H["Call markFrameworkReady()"]
+    H --> I["Dispatch CustomEvent (LF_FRAMEWORK_EVENT_NAME)"]
+    I --> C["Return newly created lfFramework instance"]
 ```
 
 **Key Points:**
@@ -248,48 +248,48 @@ The following diagram illustrates the internal structure of the Messenger compon
 
 ```mermaid
 flowchart TD
-  %% Top-level component
-  M[Messenger Component<br/>(lf-messenger.tsx)]
-  
-  %% Global Framework integration
-  FW[LF Framework<br/>(theme, assets, debug)]
-  M --- FW
-  
-  %% Messenger Adapter layer
-  M --> AD[Messenger Adapter<br/>(lf-messenger-adapter)]
-  
-  %% Adapter internal structure
-  AD --> CONT[Controller]
-  AD --> ELEM[Elements<br/>(JSX & Refs)]
-  AD --> HAND[Handlers]
-  
-  %% Controller submodules
-  CONT --> CH[Character Controller]
-  CONT --> IMG[Image Controller]
-  CONT --> UI[UI Controller]
-  
-  %% Elements breakdown
-  ELEM --> CH_E[Character Elements]
-  ELEM --> CHAT_E[Chat Elements]
-  ELEM --> CUSTOM_E[Customization Elements]
-  ELEM --> OPT_E[Options Elements]
-  
-  %% Handlers breakdown
-  HAND --> CH_H[Character Handlers]
-  HAND --> CHAT_H[Chat Handlers]
-  HAND --> CUSTOM_H[Customization Handlers]
-  HAND --> OPT_H[Options Handlers]
-  
-  %% Messenger component internal aspects
-  M --- PS[Props & States<br/>(lfDataset, lfValue, lfStyle, etc.)]
-  M --- EV[Custom Events<br/>(lf-messenger-event)]
-  M --- PM[Public Methods<br/>(refresh, save, reset, unmount)]
-  
-  %% Helpers/Utils used across the layers
-  F[Helpers & Utils]
-  F --- CONT
-  F --- HAND
-  F --- M
+    %% Top-level component
+    M["Messenger Component\n(lf-messenger.tsx)"]
+    
+    %% Global Framework integration
+    FW["LF Framework\n(theme, assets, debug)"]
+    M --- FW
+    
+    %% Messenger Adapter layer
+    M --> AD["Messenger Adapter\n(lf-messenger-adapter)"]
+    
+    %% Adapter internal structure
+    AD --> CONT["Controller"]
+    AD --> ELEM["Elements\n(JSX & Refs)"]
+    AD --> HAND["Handlers"]
+    
+    %% Controller submodules
+    CONT --> CH["Character Controller"]
+    CONT --> IMG["Image Controller"]
+    CONT --> UI["UI Controller"]
+    
+    %% Elements breakdown
+    ELEM --> CH_E["Character Elements"]
+    ELEM --> CHAT_E["Chat Elements"]
+    ELEM --> CUSTOM_E["Customization Elements"]
+    ELEM --> OPT_E["Options Elements"]
+    
+    %% Handlers breakdown
+    HAND --> CH_H["Character Handlers"]
+    HAND --> CHAT_H["Chat Handlers"]
+    HAND --> CUSTOM_H["Customization Handlers"]
+    HAND --> OPT_H["Options Handlers"]
+    
+    %% Messenger component internal aspects
+    M --- PS["Props & States\n(lfDataset, lfValue, lfStyle, etc.)"]
+    M --- EV["Custom Events\n(lf-messenger-event)"]
+    M --- PM["Public Methods\n(refresh, save, reset, unmount)"]
+    
+    %% Helpers/Utils used across the layers
+    F["Helpers & Utils"]
+    F --- CONT
+    F --- HAND
+    F --- M
 ```
 
 ### Adapter's Role
