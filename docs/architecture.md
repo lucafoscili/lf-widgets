@@ -6,20 +6,26 @@ This document provides a comprehensive overview of the architecture of the LF Wi
 
 ## Table of Contents
 
-1. [Monorepo Structure](#monorepo-structure)
-2. [Packages Overview](#packages-overview)
-   - [Root Package](#root-package)
-   - [Assets](#assets)
-   - [Foundations](#foundations)
-   - [Framework](#framework)
-   - [Core](#core)
-   - [Showcase](#showcase)
-   - [React-core](#react-core)
-   - [React-showcase](#react-showcase)
-3. [Inter-Package Relationships](#inter-package-relationships)
-4. [Framework Initialization Flow](#framework-initialization-flow)
-5. [Build & Testing Scripts](#build--testing-scripts)
-6. [Conclusion](#conclusion)
+- [LF Widgets Architecture](#lf-widgets-architecture)
+  - [Table of Contents](#table-of-contents)
+  - [Monorepo Structure](#monorepo-structure)
+  - [Packages Overview](#packages-overview)
+    - [Root Package](#root-package)
+    - [Assets](#assets)
+    - [Foundations](#foundations)
+    - [Framework](#framework)
+    - [Core](#core)
+    - [Showcase](#showcase)
+    - [React-core](#react-core)
+    - [React-showcase](#react-showcase)
+  - [Inter-Package Relationships](#inter-package-relationships)
+  - [Framework Initialization Flow](#framework-initialization-flow)
+  - [Advanced component architecture](#advanced-component-architecture)
+    - [Adapter's Role](#adapters-role)
+    - [Controller Submodules](#controller-submodules)
+    - [Elements \& Handlers](#elements--handlers)
+  - [Build \& Testing Scripts](#build--testing-scripts)
+  - [Conclusion](#conclusion)
 
 ---
 
@@ -233,6 +239,70 @@ flowchart TD
 - **Event Dispatching:** A custom event notifies any listeners that the framework is ready, enabling dependent components to safely execute initialization code.
 
 ---
+
+## Advanced component architecture
+
+The most complex components in the library are built using a combination of Stencil.js and the LF Widgets framework. This architecture allows for a clear separation of concerns and ensures that components are modular, reusable, and easy to maintain.
+
+The following diagram illustrates the internal structure of the Messenger component, which is a top-level component in the library:
+
+```mermaid
+flowchart TD
+  %% Top-level component
+  M[Messenger Component<br/>(lf-messenger.tsx)]
+  
+  %% Global Framework integration
+  FW[LF Framework<br/>(theme, assets, debug)]
+  M --- FW
+  
+  %% Messenger Adapter layer
+  M --> AD[Messenger Adapter<br/>(lf-messenger-adapter)]
+  
+  %% Adapter internal structure
+  AD --> CONT[Controller]
+  AD --> ELEM[Elements<br/>(JSX & Refs)]
+  AD --> HAND[Handlers]
+  
+  %% Controller submodules
+  CONT --> CH[Character Controller]
+  CONT --> IMG[Image Controller]
+  CONT --> UI[UI Controller]
+  
+  %% Elements breakdown
+  ELEM --> CH_E[Character Elements]
+  ELEM --> CHAT_E[Chat Elements]
+  ELEM --> CUSTOM_E[Customization Elements]
+  ELEM --> OPT_E[Options Elements]
+  
+  %% Handlers breakdown
+  HAND --> CH_H[Character Handlers]
+  HAND --> CHAT_H[Chat Handlers]
+  HAND --> CUSTOM_H[Customization Handlers]
+  HAND --> OPT_H[Options Handlers]
+  
+  %% Messenger component internal aspects
+  M --- PS[Props & States<br/>(lfDataset, lfValue, lfStyle, etc.)]
+  M --- EV[Custom Events<br/>(lf-messenger-event)]
+  M --- PM[Public Methods<br/>(refresh, save, reset, unmount)]
+  
+  %% Helpers/Utils used across the layers
+  F[Helpers & Utils]
+  F --- CONT
+  F --- HAND
+  F --- M
+```
+
+### Adapter's Role
+
+In order to keep the main source file of feature-rich components clean and maintainable, the adapter layer acts as a mediator between the component and its internal structure. It abstracts the component's logic into separate controllers, elements, and handlers, each responsible for a specific aspect of the component's functionality.
+
+### Controller Submodules
+
+The controller is the heart of the component, managing the interaction between the various elements and handlers. It is further divided into submodules, each handling a specific part of the component's functionality (e.g., character management, image handling, UI updates).
+
+### Elements & Handlers
+
+The elements represent the visual structure of the component, while the handlers manage the component's behavior and interactions. By separating these concerns, the component's codebase remains organized and easy to extend.
 
 ## Build & Testing Scripts
 

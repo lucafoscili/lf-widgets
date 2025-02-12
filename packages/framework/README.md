@@ -306,6 +306,8 @@ And… they look fantastic in action!
 
 ## Documentation
 
+For detailed information about LF Widgets, including architecture, framework, and individual components, please refer to the following documentation:
+
 - [Architecture](https://github.com/lucafoscili/lf-widgets/blob/main/docs/architecture.md)
 
 - [Framework](https://github.com/lucafoscili/lf-widgets/blob/main/docs/framework/lf-framework.md)
