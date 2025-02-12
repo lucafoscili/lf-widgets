@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.26...0.3.0) (2025-02-12)
+
+### Bug Fixes
+
+- **canvas:** updated foundations ([1d5b615](https://github.com/lucafoscili/lf-widgets/commit/1d5b615d8a5a07553ab59a93c5a9de71135d0aad))
+- **imageviewer:** fixed foundations ([45b67e7](https://github.com/lucafoscili/lf-widgets/commit/45b67e7acf25074e4adffff7bb640da22310e543))
+
 # [0.2.0](https://github.com/lucafoscili/lf-widgets/compare/0.2.0-rc.25...0.2.0) (2025-02-10)
 
 **Note:** Version bump only for package @lf-widgets/foundations
