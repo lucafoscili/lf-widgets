@@ -99,6 +99,7 @@ Type: `Promise<void>`
 | `--lf-code-font-family`      | Sets the primary font family for the code component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-code-font-size`        | Sets the font size for the code component. Defaults to => var(--lf-font-size)                     |
 | `--lf-code-header-position`  | Sets the position for the header. Defaults to => sticky                                           |
+| `--lf-code-height`           | Sets the height for the code component. Defaults to => 100%                                       |
 
 
 ## Dependencies
