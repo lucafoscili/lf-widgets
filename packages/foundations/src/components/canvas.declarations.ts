@@ -28,9 +28,14 @@ import { LfImageElement, LfImagePropsInterface } from "./image.declarations";
 export interface LfCanvasInterface
   extends LfComponent<"LfCanvas">,
     LfCanvasPropsInterface {}
-export interface LfCanvasElement
-  extends HTMLStencilElement,
-    LfCanvasInterface {}
+export interface LfCanvasElement extends HTMLStencilElement, LfCanvasInterface {
+  clearCanvas(type?: LfCanvasType): () => Promise<void>;
+  getCanvas(): () => Promise<HTMLCanvasElement>;
+  getImage(): () => Promise<LfImageElement>;
+  resizeCanvas(): () => Promise<void>;
+  setCanvasHeight(value?: number): () => Promise<void>;
+  setCanvasWidth(value?: number): () => Promise<void>;
+}
 //#endregion
 
 //#region Adapter
