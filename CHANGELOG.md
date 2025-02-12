@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.1...0.3.1-rc.2) (2025-02-12)
+
+### Reverts
+
+- core config rollback ([57b88e7](https://github.com/lucafoscili/lf-widgets/commit/57b88e7c929f2a0a152fcedcbe175f445c69bc42))
+
 ## [0.3.1-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.0...0.3.1-rc.1) (2025-02-12)
 
 ### Bug Fixes
