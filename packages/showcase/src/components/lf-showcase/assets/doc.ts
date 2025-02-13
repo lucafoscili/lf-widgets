@@ -3111,10 +3111,6 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the padding for the progressbar component. Defaults to => 2em 0.5em",
       },
       {
-        name: "--lf-progressbar-radial-color",
-        docs: "Sets the color for the radial variant of the progressbar component. Defaults to => rgb(var(--lf-color-primary))",
-      },
-      {
         name: "--lf-progressbar-width",
         docs: "Sets the width for the progressbar component. Defaults to => 100%",
       },

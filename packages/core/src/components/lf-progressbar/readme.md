@@ -84,21 +84,20 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                | Description                                                                                                     |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `--lf-progressbar-border-color`     | Sets the border color for the progressbar component. Defaults to => var(--lf-color-border)                      |
-| `--lf-progressbar-border-radius`    | Sets the border radius for the progressbar component. Defaults to => var(--lf-ui-border-radius)                 |
-| `--lf-progressbar-color-on-bg`      | Sets the color-on-bg color for the progressbar component. Defaults to => var(--lf-color-on-bg)                  |
-| `--lf-progressbar-color-on-primary` | Sets the color-on-primary color for the progressbar component. Defaults to => var(--lf-color-on-primary)        |
-| `--lf-progressbar-color-on-surface` | Sets the color-on-surface color for the progressbar component. Defaults to => var(--lf-color-on-surface)        |
-| `--lf-progressbar-color-primary`    | Sets the color-primary color for the progressbar component. Defaults to => var(--lf-color-primary)              |
-| `--lf-progressbar-color-surface`    | Sets the color-surface color for the progressbar component. Defaults to => var(--lf-color-surface)              |
-| `--lf-progressbar-font-family`      | Sets the primary font family for the progressbar component. Defaults to => var(--lf-font-family-primary)        |
-| `--lf-progressbar-font-size`        | Sets the font size for the progressbar component. Defaults to => var(--lf-font-size)                            |
-| `--lf-progressbar-height`           | Sets the height for the progressbar component. Defaults to => 100%                                              |
-| `--lf-progressbar-padding`          | Sets the padding for the progressbar component. Defaults to => 2em 0.5em                                        |
-| `--lf-progressbar-radial-color`     | Sets the color for the radial variant of the progressbar component. Defaults to => rgb(var(--lf-color-primary)) |
-| `--lf-progressbar-width`            | Sets the width for the progressbar component. Defaults to => 100%                                               |
+| Name                                | Description                                                                                              |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-progressbar-border-color`     | Sets the border color for the progressbar component. Defaults to => var(--lf-color-border)               |
+| `--lf-progressbar-border-radius`    | Sets the border radius for the progressbar component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-progressbar-color-on-bg`      | Sets the color-on-bg color for the progressbar component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-progressbar-color-on-primary` | Sets the color-on-primary color for the progressbar component. Defaults to => var(--lf-color-on-primary) |
+| `--lf-progressbar-color-on-surface` | Sets the color-on-surface color for the progressbar component. Defaults to => var(--lf-color-on-surface) |
+| `--lf-progressbar-color-primary`    | Sets the color-primary color for the progressbar component. Defaults to => var(--lf-color-primary)       |
+| `--lf-progressbar-color-surface`    | Sets the color-surface color for the progressbar component. Defaults to => var(--lf-color-surface)       |
+| `--lf-progressbar-font-family`      | Sets the primary font family for the progressbar component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-progressbar-font-size`        | Sets the font size for the progressbar component. Defaults to => var(--lf-font-size)                     |
+| `--lf-progressbar-height`           | Sets the height for the progressbar component. Defaults to => 100%                                       |
+| `--lf-progressbar-padding`          | Sets the padding for the progressbar component. Defaults to => 2em 0.5em                                 |
+| `--lf-progressbar-width`            | Sets the width for the progressbar component. Defaults to => 100%                                        |
 
 
 ## Dependencies
