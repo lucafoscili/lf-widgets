@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.1...0.3.2-rc.2) (2025-02-13)
+
+### Bug Fixes
+
+- **cicd:** improved component count action ([0d5b604](https://github.com/lucafoscili/lf-widgets/commit/0d5b604a410cc881a27fa4a48e94b5ed3a91134e))
+- **lifecycle:** added safeguard to Watchers preventing early executions ([17146b0](https://github.com/lucafoscili/lf-widgets/commit/17146b0685e03f3925880e83ca02844c63aca765))
+
 ## [0.3.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.0...0.3.2-rc.1) (2025-02-13)
 
 ### Bug Fixes
