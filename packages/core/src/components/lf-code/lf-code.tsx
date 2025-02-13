@@ -493,19 +493,23 @@ export class LfCode implements LfCodeInterface {
             part={this.#p.code}
           >
             {this.lfShowHeader && this.#prepHeader()}
-            <TagName
-              class={`language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`}
-              data-lf={this.#lf.fadeIn}
-              key={this.value}
-              part={this.#p.prism}
-              ref={(el) => {
-                if (el) {
-                  this.#el = el;
-                }
-              }}
-            >
-              {shouldPreserveSpace ? <code>{this.value}</code> : this.value}
-            </TagName>
+            {h(
+              TagName,
+              {
+                className: `language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`,
+                "data-lf": this.#lf.fadeIn,
+                key: this.value,
+                part: this.#p.prism,
+                ref: (el: HTMLDivElement) => {
+                  if (el) {
+                    this.#el = el;
+                  }
+                },
+              },
+              shouldPreserveSpace
+                ? h("code", null, this.value)
+                : h("span", null, this.value),
+            )}
           </div>
         </div>
       </Host>

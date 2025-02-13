@@ -100,20 +100,24 @@ export const cellDecorateShapes = <
         };
 
         elements.push(
-          <TagName
-            data-component={component}
-            data-cy={CY_ATTRIBUTES.shape}
-            id={`${shape}${index}`}
-            key={`${shape}${index}`}
-            ref={(el: LfComponentRootElement<C>) => {
-              if (el && Array.isArray(refsCb) && refsCb[index]) {
-                const cb = refsCb[index];
-                cb(el);
-              }
-            }}
-            {...eventHandler}
-            {...sanitizeProps(toSpread, component)}
-          ></TagName>,
+          h(
+            TagName,
+            {
+              "data-component": component,
+              "data-cy": CY_ATTRIBUTES.shape,
+              id: `${shape}${index}`,
+              key: `${shape}${index}`,
+              ref: (el: LfComponentRootElement<C>) => {
+                if (el && Array.isArray(refsCb) && refsCb[index]) {
+                  const cb = refsCb[index];
+                  cb(el);
+                }
+              },
+              ...eventHandler,
+              ...sanitizeProps(toSpread, component),
+            },
+            null,
+          ),
         );
       }
       break;

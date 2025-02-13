@@ -317,18 +317,25 @@ export class LfTypewriter implements LfTypewriterInterface {
 
     return (
       <div class={bemClass(typewriter._)} part={this.#p.typewriter}>
-        <TagName
-          class={bemClass(typewriter._, typewriter.text)}
-          part={this.#p.text}
-        >
-          <span>{displayedText || "\u00A0"}</span>
-          {shouldShowCursor && (
-            <span
-              class={bemClass(typewriter._, typewriter.cursor)}
-              part={this.#p.cursor}
-            ></span>
-          )}
-        </TagName>
+        {h(
+          TagName,
+          {
+            className: bemClass(typewriter._, typewriter.text),
+            part: this.#p.text,
+          },
+          [
+            h("span", null, displayedText || "\u00A0"),
+            shouldShowCursor &&
+              h(
+                "span",
+                {
+                  className: bemClass(typewriter._, typewriter.cursor),
+                  part: this.#p.cursor,
+                },
+                null,
+              ),
+          ],
+        )}
       </div>
     );
   }
