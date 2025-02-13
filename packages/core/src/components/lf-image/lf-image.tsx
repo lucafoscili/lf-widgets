@@ -191,6 +191,10 @@ export class LfImage implements LfImageInterface {
   //#region Watchers
   @Watch("lfValue")
   async resetState() {
+    if (!this.#framework) {
+      return;
+    }
+
     this.error = false;
     this.isLoaded = false;
   }

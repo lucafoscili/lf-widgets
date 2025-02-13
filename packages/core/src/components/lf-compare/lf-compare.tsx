@@ -177,6 +177,10 @@ export class LfCompare implements LfCompareInterface {
   @Watch("lfDataset")
   @Watch("lfShape")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {

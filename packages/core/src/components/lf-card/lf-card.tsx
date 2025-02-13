@@ -213,6 +213,10 @@ export class LfCard implements LfCardInterface {
   //#region Watchers
   @Watch("lfDataset")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {

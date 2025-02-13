@@ -247,6 +247,10 @@ export class LfMasonry implements LfMasonryInterface {
   //#region Watchers
   @Watch("lfColumns")
   validateColumns() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { debug } = this.#framework;
 
     if (
@@ -264,6 +268,10 @@ export class LfMasonry implements LfMasonryInterface {
   @Watch("lfDataset")
   @Watch("lfShape")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {

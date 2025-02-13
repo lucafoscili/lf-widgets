@@ -320,11 +320,19 @@ export class LfChat implements LfChatInterface {
   //#region Watchers
   @Watch("lfPollingInterval")
   updatePollingInterval() {
+    if (!this.#framework) {
+      return;
+    }
+
     clearInterval(this.#interval);
     this.#interval = setInterval(this.#checkLLMStatus, this.lfPollingInterval);
   }
   @Watch("lfSystem")
   async updateTokensCount() {
+    if (!this.#framework) {
+      return;
+    }
+
     this.currentTokens = await calcTokens(this.#adapter);
   }
   //#endregion

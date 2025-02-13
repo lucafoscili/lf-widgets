@@ -223,6 +223,10 @@ export class LfCarousel implements LfCarouselInterface {
   @Watch("lfDataset")
   @Watch("lfShape")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {

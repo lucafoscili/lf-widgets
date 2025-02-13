@@ -209,10 +209,18 @@ export class LfDrawer implements LfDrawerInterface {
   //#region Watchers
   @Watch("lfDisplay")
   onLfDisplayChange(newVal: LfDrawerDisplay, oldVal: LfDrawerDisplay) {
+    if (!this.#framework) {
+      return;
+    }
+
     this.#handleBackdropChange(oldVal, newVal);
   }
   @Watch("lfResponsive")
   onLfResponsiveChange() {
+    if (!this.#framework) {
+      return;
+    }
+
     if (this.lfResponsive > 0) {
       this.#applyResponsiveMode();
       if (!this.#resizeHandler) {
