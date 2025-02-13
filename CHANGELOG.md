@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.1...0.3.2-rc.0) (2025-02-13)
+
+### Bug Fixes
+
+- **code:** removed margin bottom ([4a52057](https://github.com/lucafoscili/lf-widgets/commit/4a5205788a857b13905a1e7c74bf79f97359b3f3))
+
 ## [0.3.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.3...0.3.1) (2025-02-12)
 
 **Note:** Version bump only for package @lf-widgets/root
