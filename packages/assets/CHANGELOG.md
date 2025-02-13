@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.1](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.0...0.3.2-rc.1) (2025-02-13)
+
+### Bug Fixes
+
+- **assets:** added history icon ([5b605c4](https://github.com/lucafoscili/lf-assets/commit/5b605c43dddbe0568752231b449cfadc3606b33d))
+
 ## [0.3.2-rc.0](https://github.com/lucafoscili/lf-assets/compare/0.3.1...0.3.2-rc.0) (2025-02-13)
 
 **Note:** Version bump only for package @lf-widgets/assets
