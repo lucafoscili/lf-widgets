@@ -40,6 +40,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { defineShapes } from "../../utils/shapes";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-masonry-adapter";
 
@@ -531,6 +532,7 @@ export class LfMasonry implements LfMasonryInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
   }

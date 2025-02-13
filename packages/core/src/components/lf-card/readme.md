@@ -103,6 +103,33 @@ Type: `Promise<void>`
 | `--lf-card-font-size`     | Sets the font size for the card component. Defaults to => var(--lf-font-size)                     |
 
 
+## Dependencies
+
+### Depends on
+
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
+- [lf-button](../lf-button)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
+
+### Graph
+```mermaid
+graph TD;
+  lf-card --> lf-list
+  lf-card --> lf-spinner
+  lf-card --> lf-image
+  lf-card --> lf-button
+  lf-card --> lf-typewriter
+  lf-card --> lf-progressbar
+  lf-card --> lf-textfield
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  style lf-card fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

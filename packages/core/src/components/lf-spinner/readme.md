@@ -93,16 +93,28 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
  - [lf-button](../lf-button)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
+ - [lf-compare](../lf-compare)
  - [lf-imageviewer](../lf-imageviewer)
+ - [lf-masonry](../lf-masonry)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-accordion --> lf-spinner
+  lf-article --> lf-spinner
   lf-button --> lf-spinner
+  lf-card --> lf-spinner
+  lf-carousel --> lf-spinner
   lf-chat --> lf-spinner
+  lf-compare --> lf-spinner
   lf-imageviewer --> lf-spinner
+  lf-masonry --> lf-spinner
   style lf-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

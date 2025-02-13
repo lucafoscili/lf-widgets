@@ -113,6 +113,33 @@ Type: `Promise<void>`
 | `--lf-article-padding-ul`       | Sets the padding for the ul component. Defaults to => 1.25em                                         |
 
 
+## Dependencies
+
+### Depends on
+
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
+- [lf-button](../lf-button)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
+
+### Graph
+```mermaid
+graph TD;
+  lf-article --> lf-list
+  lf-article --> lf-spinner
+  lf-article --> lf-image
+  lf-article --> lf-button
+  lf-article --> lf-typewriter
+  lf-article --> lf-progressbar
+  lf-article --> lf-textfield
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  style lf-article fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

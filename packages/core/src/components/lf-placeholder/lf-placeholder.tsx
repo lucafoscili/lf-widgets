@@ -316,12 +316,16 @@ export class LfPlaceholder implements LfPlaceholderInterface {
         },
       };
       const Tag = ("lf-" + name) as LfComponentTag<typeof lfValue>;
-      content = h(Tag, {
-        ...(sanitizeProps(lfProps, lfValue) as any),
-        ...evDispatcher,
-        "data-lf": LF_ATTRIBUTES.fadeIn,
-        ref: (el: LfComponentRootElement) => (this.#placeholderComponent = el),
-      });
+      content = (
+        <Tag
+          {...(sanitizeProps(lfProps, lfValue) as any)}
+          {...evDispatcher}
+          data-lf={LF_ATTRIBUTES.fadeIn}
+          ref={(el: LfComponentRootElement) =>
+            (this.#placeholderComponent = el)
+          }
+        ></Tag>
+      );
     } else if (lfIcon) {
       const { style } = assets.get(`./assets/svg/${lfIcon}.svg`);
       content = (

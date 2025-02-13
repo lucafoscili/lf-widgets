@@ -38,6 +38,7 @@ import {
 import { awaitFramework } from "../../utils/setup";
 import { autoplay, navigation } from "./helpers.utils";
 import { createAdapter } from "./lf-carousel-adapter";
+import { defineShapes } from "../../utils/shapes";
 
 /**
  * The carousel component displays a carousel with slides that can be navigated using navigation controls or by clicking on slide indicators.
@@ -465,6 +466,7 @@ export class LfCarousel implements LfCarouselInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
 

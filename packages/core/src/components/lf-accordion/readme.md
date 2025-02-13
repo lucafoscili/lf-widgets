@@ -130,6 +130,33 @@ Type: `Promise<void>`
 | `--lf-accordion-text-margin`      | Sets the margin of the accordion text. Defaults to => 0 0.5em 0 0                                      |
 
 
+## Dependencies
+
+### Depends on
+
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
+- [lf-button](../lf-button)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
+
+### Graph
+```mermaid
+graph TD;
+  lf-accordion --> lf-list
+  lf-accordion --> lf-spinner
+  lf-accordion --> lf-image
+  lf-accordion --> lf-button
+  lf-accordion --> lf-typewriter
+  lf-accordion --> lf-progressbar
+  lf-accordion --> lf-textfield
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  style lf-accordion fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

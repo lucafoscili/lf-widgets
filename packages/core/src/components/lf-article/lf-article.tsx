@@ -31,6 +31,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { defineShapes } from "../../utils/shapes";
 
 /**
  * Represents an article-style component that displays structured content
@@ -354,6 +355,7 @@ export class LfArticle implements LfArticleInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    defineShapes(this.#framework);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

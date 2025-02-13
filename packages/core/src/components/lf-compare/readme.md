@@ -103,12 +103,24 @@ Type: `Promise<void>`
 
 - [lf-button](../lf-button)
 - [lf-tree](../lf-tree)
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-compare --> lf-button
   lf-compare --> lf-tree
+  lf-compare --> lf-list
+  lf-compare --> lf-spinner
+  lf-compare --> lf-image
+  lf-compare --> lf-typewriter
+  lf-compare --> lf-progressbar
+  lf-compare --> lf-textfield
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-tree --> lf-textfield

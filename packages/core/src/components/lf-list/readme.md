@@ -155,12 +155,24 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
  - [lf-button](../lf-button)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-accordion --> lf-list
+  lf-article --> lf-list
   lf-button --> lf-list
+  lf-card --> lf-list
+  lf-carousel --> lf-list
+  lf-compare --> lf-list
+  lf-masonry --> lf-list
   style lf-list fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

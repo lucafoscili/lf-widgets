@@ -32,6 +32,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { defineShapes } from "../../utils/shapes";
 
 /**
  * Represents an accordion-style component that displays a list of data items,
@@ -416,6 +417,7 @@ export class LfAccordion implements LfAccordionInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    defineShapes(this.#framework);
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

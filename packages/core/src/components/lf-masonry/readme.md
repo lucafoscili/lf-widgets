@@ -143,12 +143,24 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
 - [lf-button](../lf-button)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-masonry --> lf-list
+  lf-masonry --> lf-spinner
+  lf-masonry --> lf-image
   lf-masonry --> lf-button
+  lf-masonry --> lf-typewriter
+  lf-masonry --> lf-progressbar
+  lf-masonry --> lf-textfield
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-imageviewer --> lf-masonry

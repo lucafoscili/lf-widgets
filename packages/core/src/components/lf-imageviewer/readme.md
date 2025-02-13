@@ -203,7 +203,13 @@ graph TD;
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-tree --> lf-textfield
+  lf-masonry --> lf-list
+  lf-masonry --> lf-spinner
+  lf-masonry --> lf-image
   lf-masonry --> lf-button
+  lf-masonry --> lf-typewriter
+  lf-masonry --> lf-progressbar
+  lf-masonry --> lf-textfield
   style lf-imageviewer fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

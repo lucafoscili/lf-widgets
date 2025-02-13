@@ -137,11 +137,23 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-button](../lf-button)
+- [lf-list](../lf-list)
+- [lf-spinner](../lf-spinner)
+- [lf-image](../lf-image)
+- [lf-typewriter](../lf-typewriter)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-carousel --> lf-button
+  lf-carousel --> lf-list
+  lf-carousel --> lf-spinner
+  lf-carousel --> lf-image
+  lf-carousel --> lf-typewriter
+  lf-carousel --> lf-progressbar
+  lf-carousel --> lf-textfield
   lf-button --> lf-list
   lf-button --> lf-spinner
   style lf-carousel fill:#f9f,stroke:#333,stroke-width:4px

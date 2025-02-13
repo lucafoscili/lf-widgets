@@ -4,7 +4,7 @@ import {
   LfComponentPropsFor,
 } from "../foundations/components.declarations";
 import { LfColorInterface } from "./color.declarations";
-import { LfDataInterface } from "./data.declarations";
+import { LfDataInterface, LfDataShapes } from "./data.declarations";
 import { LfDebugInterface } from "./debug.declarations";
 import { LfDragInterface } from "./drag.declarations";
 import { LfEffectsInterface } from "./effects.declarations";
@@ -48,6 +48,10 @@ export interface LfFrameworkInterface {
     props: { [key: string]: any },
     compName: C,
   ): LfComponentPropsFor<C>;
+  shapes: {
+    get: () => LfFrameworkShapes;
+    set: (value: LfFrameworkShapes) => void;
+  };
 }
 //#endregion
 
@@ -88,5 +92,9 @@ export type LfFrameworkAllowedKeysMap = {
         typeof getComponentProps
       >][number]]: any;
 };
-
+export type LfFrameworkShapesMap = WeakMap<
+  LfFrameworkInterface,
+  Record<LfDataShapes, string>
+>;
+export type LfFrameworkShapes = Record<LfDataShapes, string>;
 //#endregion

@@ -38,6 +38,7 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-compare-adapter";
+import { defineShapes } from "../../utils/shapes";
 
 /**
  * Represents a comparison component that displays two shapes side by side or
@@ -405,6 +406,7 @@ export class LfCompare implements LfCompareInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
   }
