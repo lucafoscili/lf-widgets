@@ -183,13 +183,8 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
   &--has-value {
     .pie__half-circle {
       & {
-        /**
-        * @prop --lf-#{$comp}-radial-color: Sets the color for the radial variant of the #{$comp} component.
-        *                                   Defaults to => rgb(var(--lf-color-primary))
-        */
-        border-color: var(
-          --lf-#{$comp}-radial-color,
-          rgb(var(--lf-color-primary))
+        border-color: rgb(
+          var(--lf-#{$comp}-color-primary, rgb(var(--lf-color-primary)))
         );
       }
 
