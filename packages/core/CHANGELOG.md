@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.2...0.3.2-rc.3) (2025-02-13)
+
+### Bug Fixes
+
+- **progressbar:** fixed radial state colors ([959aef3](https://github.com/lucafoscili/lf-widgets/commit/959aef3160046a02626b7f914b5255b8dd0ec410))
+- replaced composed tagnames with direct h() invocation ([7751582](https://github.com/lucafoscili/lf-widgets/commit/7751582ccc86a8bbd0c6266396a7a4be2c01c1ec))
+
 ## [0.3.2-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.1...0.3.2-rc.2) (2025-02-13)
 
 ### Bug Fixes
