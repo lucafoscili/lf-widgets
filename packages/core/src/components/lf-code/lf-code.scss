@@ -90,6 +90,7 @@ pre,
 .body {
   @include lf-el-text("body");
   box-sizing: border-box;
+  margin-bottom: 0;
   padding: 1em;
   white-space: pre-line;
 }
