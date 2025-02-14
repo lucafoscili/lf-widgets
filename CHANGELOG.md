@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.4...0.3.2-rc.5) (2025-02-14)
+
+### Bug Fixes
+
+- **card:** fixed unscrollable description ([3e53ed7](https://github.com/lucafoscili/lf-widgets/commit/3e53ed71da916d3b829f20c5ba34fd5a28aa7ff2))
+- **chart:** increased tooltip's background alpha ([8d8a2b7](https://github.com/lucafoscili/lf-widgets/commit/8d8a2b71a7b14f739f3c1fa8207fbd78dfcb065e))
+- **code:** adjusted style ([e0735ee](https://github.com/lucafoscili/lf-widgets/commit/e0735eeba9c9df65b601f565b8955de076f7fdb1))
+- **shapes:** extracted from framework, moved to core ([dcb112a](https://github.com/lucafoscili/lf-widgets/commit/dcb112a9858bfe2bf17bf6b5aa4dc75a850eed3e))
+
 ## [0.3.2-rc.4](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.3...0.3.2-rc.4) (2025-02-13)
 
 ### Bug Fixes
