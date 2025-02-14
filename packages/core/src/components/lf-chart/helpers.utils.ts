@@ -210,7 +210,7 @@ export const prepTooltip = (
   const { compute } = manager.color;
 
   const tooltip: TooltipComponentOption = {
-    backgroundColor: `rgba(${compute(background).rgbValues}, 0.575)`,
+    backgroundColor: `rgba(${compute(background).rgbValues}, 0.875)`,
     formatter,
     textStyle: {
       color: text,
