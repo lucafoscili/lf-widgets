@@ -8,7 +8,6 @@ $borderC: 1px solid rgb(var(--lf-color-border));
 
 #lf-component,
 .container {
-  overflow: auto;
   position: relative;
 }
 
@@ -28,7 +27,7 @@ $borderC: 1px solid rgb(var(--lf-color-border));
   }
 
   &--has-header {
-    grid-template-rows: max-content 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   &__header {
@@ -53,6 +52,7 @@ $borderC: 1px solid rgb(var(--lf-color-border));
       *                                 Defaults to => 1px solid var(--lf-color-border)
       */
       border-top: var(--lf-#{comp}-border-top, $borderC);
+      box-sizing: border-box;
       display: flex;
       height: var(--lf-#{$comp}-header-height, 2.25em);
       justify-content: var(--lf-#{$comp}-header-justify, space-between);
@@ -84,6 +84,7 @@ pre,
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   box-sizing: border-box;
+  overflow: auto;
   @include lf-comp-glassmorphize($comp, "surface", "all", 0.375);
 }
 
