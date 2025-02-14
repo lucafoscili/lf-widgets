@@ -10,6 +10,7 @@ import { CY_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -28,7 +29,7 @@ export interface LfCarouselInterface
     LfCarouselPropsInterface {}
 export interface LfCarouselElement
   extends HTMLStencilElement,
-    LfCarouselInterface {}
+    Omit<LfCarouselInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

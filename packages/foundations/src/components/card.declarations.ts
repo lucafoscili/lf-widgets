@@ -12,6 +12,7 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -37,7 +38,9 @@ import { LfToggleElement, LfToggleEventPayload } from "./toggle.declarations";
 export interface LfCardInterface
   extends LfComponent<"LfCard">,
     LfCardPropsInterface {}
-export interface LfCardElement extends HTMLStencilElement, LfCardInterface {}
+export interface LfCardElement
+  extends HTMLStencilElement,
+    Omit<LfCardInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

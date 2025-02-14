@@ -90,6 +90,7 @@ export const getCodeFixtures = (
     //#region configuration
     configuration: {
       columns: {
+        languages: 4,
         sizes: 4,
         states: 4,
         uncategorized: 3,

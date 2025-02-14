@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
@@ -11,7 +12,9 @@ import { LfImagePropsInterface } from "./image.declarations";
 export interface LfBadgeInterface
   extends LfComponent<"LfBadge">,
     LfBadgePropsInterface {}
-export interface LfBadgeElement extends HTMLStencilElement, LfBadgeInterface {}
+export interface LfBadgeElement
+  extends HTMLStencilElement,
+    Omit<LfBadgeInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

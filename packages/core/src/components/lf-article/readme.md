@@ -113,6 +113,68 @@ Type: `Promise<void>`
 | `--lf-article-padding-ul`       | Sets the padding for the ul component. Defaults to => 1.25em                                         |
 
 
+## Dependencies
+
+### Depends on
+
+- [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
+- [lf-canvas](../lf-canvas)
+- [lf-card](../lf-card)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
+- [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
+- [lf-typewriter](../lf-typewriter)
+- [lf-upload](../lf-upload)
+
+### Graph
+```mermaid
+graph TD;
+  lf-article --> lf-badge
+  lf-article --> lf-button
+  lf-article --> lf-canvas
+  lf-article --> lf-card
+  lf-article --> lf-chart
+  lf-article --> lf-chat
+  lf-article --> lf-chip
+  lf-article --> lf-code
+  lf-article --> lf-image
+  lf-article --> lf-photoframe
+  lf-article --> lf-toggle
+  lf-article --> lf-typewriter
+  lf-article --> lf-upload
+  lf-badge --> lf-image
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-card --> lf-badge
+  lf-card --> lf-button
+  lf-card --> lf-canvas
+  lf-card --> lf-card
+  lf-card --> lf-chart
+  lf-card --> lf-chat
+  lf-card --> lf-chip
+  lf-card --> lf-code
+  lf-card --> lf-image
+  lf-card --> lf-photoframe
+  lf-card --> lf-toggle
+  lf-card --> lf-typewriter
+  lf-card --> lf-upload
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
+  style lf-article fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

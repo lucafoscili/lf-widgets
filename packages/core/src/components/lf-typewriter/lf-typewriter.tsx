@@ -183,6 +183,10 @@ export class LfTypewriter implements LfTypewriterInterface {
   //#region Watchers
   @Watch("lfValue")
   handleLfValueChange() {
+    if (!this.#framework) {
+      return;
+    }
+
     if (this.lfUpdatable) {
       this.#initializeTexts();
       this.#resetTyping();

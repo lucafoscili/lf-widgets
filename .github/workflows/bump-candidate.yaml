@@ -7,18 +7,29 @@ on:
 
 jobs:
   version-bump:
-    if: "${{ ! contains(github.event.head_commit.message, 'chore: bump versions for release candidate') }}"
-
     runs-on: ubuntu-latest
     environment: Development
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
 
+      - name: Check if version bump is needed
+        id: check_bump
+        run: |
+          if echo "${{ github.event.head_commit.message }}" | grep -q 'chore: bump versions for release candidate'; then
+            echo "Skipping version bump"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Proceeding with version bump"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup and Build
+        if: steps.check_bump.outputs.skip == 'false'
         uses: ./.github/actions/setup
         with:
           node-version: "18.x"
@@ -27,21 +38,26 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Configure Git
+        if: steps.check_bump.outputs.skip == 'false'
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
       - name: Bump Versions with Lerna
+        if: steps.check_bump.outputs.skip == 'false'
         run: |
           npx lerna version --conventional-prerelease --preid=rc --no-push --yes
 
       - name: Build Packages
+        if: steps.check_bump.outputs.skip == 'false'
         run: yarn build
 
       - name: Format Code with Prettier
+        if: steps.check_bump.outputs.skip == 'false'
         run: yarn format
 
       - name: Check for Changes
+        if: steps.check_bump.outputs.skip == 'false'
         run: |
           if git diff --quiet && git diff --cached --quiet; then
             echo "No changes to commit"
@@ -49,6 +65,7 @@ jobs:
           fi
 
       - name: Create or Update Pull Request
+        if: steps.check_bump.outputs.skip == 'false'
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: "chore: bump versions for release candidate"

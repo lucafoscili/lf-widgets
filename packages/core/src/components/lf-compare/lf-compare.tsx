@@ -37,6 +37,7 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 import { createAdapter } from "./lf-compare-adapter";
 
 /**
@@ -177,6 +178,10 @@ export class LfCompare implements LfCompareInterface {
   @Watch("lfDataset")
   @Watch("lfShape")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {
@@ -315,7 +320,7 @@ export class LfCompare implements LfCompareInterface {
     );
   }
   #prepView(): VNode {
-    const { data, sanitizeProps, theme } = this.#framework;
+    const { sanitizeProps, theme } = this.#framework;
     const { bemClass } = theme;
 
     const { view } = this.#b;
@@ -343,13 +348,6 @@ export class LfCompare implements LfCompareInterface {
       rightSanitized.push(sanitizeProps(s));
     }
 
-    const shapes = data.cell.shapes.decorate(
-      lfShape,
-      [leftShape, rightShape],
-      async (e) => this.onLfEvent(e, "lf-event"),
-      [...leftSanitized, ...rightSanitized],
-    );
-
     return (
       <Fragment>
         <div
@@ -357,7 +355,15 @@ export class LfCompare implements LfCompareInterface {
             [lfView]: true,
           })}
         >
-          <div class={bemClass(view._, view.left)}>{shapes[0]}</div>
+          <div class={bemClass(view._, view.left)}>
+            <LfShape
+              cell={Object.assign(leftSanitized, leftShape)}
+              index={0}
+              shape={lfShape}
+              eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+              framework={this.#framework}
+            ></LfShape>
+          </div>
           {isLeftPanelOpened && leftTree()}
           {isRightPanelOpened && rightTree()}
           {this.#isOverlay() && (
@@ -376,7 +382,15 @@ export class LfCompare implements LfCompareInterface {
               />
             </div>
           )}
-          <div class={bemClass(view._, view.right)}>{shapes[1]}</div>
+          <div class={bemClass(view._, view.right)}>
+            <LfShape
+              cell={Object.assign(rightSanitized, rightShape)}
+              index={1}
+              shape={lfShape}
+              eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+              framework={this.#framework}
+            ></LfShape>
+          </div>
         </div>
       </Fragment>
     );

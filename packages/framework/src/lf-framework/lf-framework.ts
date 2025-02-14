@@ -15,6 +15,8 @@ import {
   LfFrameworkModuleKey,
   LfFrameworkModuleOptions,
   LfFrameworkSetAssetPath,
+  LfFrameworkShapes,
+  LfFrameworkShapesMap,
   LfFrameworkUtilities,
   LfLLMInterface,
   LfPortalInterface,
@@ -42,6 +44,7 @@ export class LfFramework implements LfFrameworkInterface {
       },
     ],
   ]);
+  #SHAPES: LfFrameworkShapesMap = new WeakMap();
 
   assets: {
     get: LfFrameworkGetAssetPath;
@@ -302,5 +305,14 @@ export class LfFramework implements LfFrameworkInterface {
       return sanitized as P;
     }
   }
+  //#endregion
+
+  //#region shapes
+  shapes = {
+    get: () => this.#SHAPES.get(this),
+    set: (shapes: LfFrameworkShapes) => {
+      this.#SHAPES.set(this, shapes);
+    },
+  };
   //#endregion
 }

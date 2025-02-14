@@ -97,6 +97,15 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+
 ### Depends on
 
 - [lf-image](../lf-image)
@@ -105,6 +114,12 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-badge --> lf-image
+  lf-accordion --> lf-badge
+  lf-article --> lf-badge
+  lf-card --> lf-badge
+  lf-carousel --> lf-badge
+  lf-compare --> lf-badge
+  lf-masonry --> lf-badge
   style lf-badge fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

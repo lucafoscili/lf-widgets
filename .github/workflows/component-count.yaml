@@ -9,7 +9,8 @@ jobs:
   update-count:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -19,18 +20,6 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-
-      - name: Fetch All Branches
-        run: git fetch --all
-
-      - name: Checkout or Create Component Count Update Branch
-        run: |
-          if git show-ref --verify --quiet refs/heads/component-count-update; then
-            git checkout component-count-update
-            git merge origin/candidate
-          else
-            git checkout -b component-count-update origin/candidate
-          fi
 
       - name: Count Components
         id: count
@@ -48,15 +37,17 @@ jobs:
             echo "changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit Component Count
+      - name: Create Component Count Update Branch and Commit Changes
         if: steps.git-check.outputs.changes == 'true'
         run: |
+          # Create (or update) branch 'component-count-update' from candidate HEAD
+          git checkout -B component-count-update
           git add count.json
           git commit -m "Update component count to ${{ steps.count.outputs.components }} [skip ci]" || echo "No changes to commit"
 
       - name: Push Changes to Branch
         if: steps.git-check.outputs.changes == 'true'
-        run: git push origin component-count-update
+        run: git push origin component-count-update --force
 
       - name: Create or Update Pull Request
         if: steps.git-check.outputs.changes == 'true'

@@ -32,6 +32,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 
 /**
  * Represents an accordion-style component that displays a list of data items,
@@ -394,17 +395,19 @@ export class LfAccordion implements LfAccordionInterface {
     return nodes;
   }
   #prepCell = (node: LfDataNode): VNode => {
-    const { data } = this.#framework;
-    const { decorate } = data.cell.shapes;
-
     const { cells } = node;
     const key = cells && Object.keys(cells)[0];
     const cell = cells?.[key];
 
-    const shape = decorate(cell.shape, [cell], async (e) =>
-      this.onLfEvent(e, "lf-event"),
+    return (
+      <LfShape
+        cell={cell}
+        index={0}
+        shape={cell.shape}
+        eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+        framework={this.#framework}
+      ></LfShape>
     );
-    return shape[0];
   };
   //#endregion
 

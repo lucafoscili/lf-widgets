@@ -192,6 +192,10 @@ export class LfSpinner implements LfSpinnerInterface {
   //#region Watchers
   @Watch("lfBarVariant")
   lfBarVariantChanged(newValue: boolean) {
+    if (!this.#framework) {
+      return;
+    }
+
     if (newValue && this.lfTimeout) {
       this.#startProgressBar();
     } else {
@@ -201,6 +205,10 @@ export class LfSpinner implements LfSpinnerInterface {
   }
   @Watch("lfTimeout")
   lfTimeoutChanged(newValue: number, oldValue: number) {
+    if (!this.#framework) {
+      return;
+    }
+
     if (newValue !== oldValue && this.lfBarVariant) {
       this.#startProgressBar();
     }

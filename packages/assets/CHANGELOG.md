@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.5](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.4...0.3.2-rc.5) (2025-02-14)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+## [0.3.2-rc.4](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.3...0.3.2-rc.4) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+## [0.3.2-rc.3](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.2...0.3.2-rc.3) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+## [0.3.2-rc.2](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.1...0.3.2-rc.2) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+## [0.3.2-rc.1](https://github.com/lucafoscili/lf-assets/compare/0.3.2-rc.0...0.3.2-rc.1) (2025-02-13)
+
+### Bug Fixes
+
+- **assets:** added history icon ([5b605c4](https://github.com/lucafoscili/lf-assets/commit/5b605c43dddbe0568752231b449cfadc3606b33d))
+
+## [0.3.2-rc.0](https://github.com/lucafoscili/lf-assets/compare/0.3.1...0.3.2-rc.0) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
 ## [0.3.1](https://github.com/lucafoscili/lf-assets/compare/0.3.1-rc.3...0.3.1) (2025-02-12)
 
 **Note:** Version bump only for package @lf-widgets/assets

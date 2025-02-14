@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
@@ -13,7 +17,9 @@ export interface LfChipInterface
     nodes: (LfDataNode[] | string[]) & Array<any>,
   ) => Promise<void>;
 }
-export interface LfChipElement extends HTMLStencilElement, LfChipInterface {}
+export interface LfChipElement
+  extends HTMLStencilElement,
+    Omit<LfChipInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

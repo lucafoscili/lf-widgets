@@ -72,7 +72,8 @@ export class LfCard implements LfCardInterface {
   /**
    * References the root HTML element of the component (<lf-card>).
    */
-  @Element() rootElement: LfCardElement;
+  @Element()
+  rootElement: LfCardElement;
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
@@ -213,6 +214,10 @@ export class LfCard implements LfCardInterface {
   //#region Watchers
   @Watch("lfDataset")
   async updateShapes() {
+    if (!this.#framework) {
+      return;
+    }
+
     const { data, debug } = this.#framework;
 
     try {

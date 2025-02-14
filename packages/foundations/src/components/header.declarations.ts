@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LF_HEADER_EVENTS } from "./header.constants";
 
@@ -8,7 +12,7 @@ export interface LfHeaderInterface
     LfHeaderPropsInterface {}
 export interface LfHeaderElement
   extends HTMLStencilElement,
-    LfHeaderInterface {}
+    Omit<LfHeaderInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

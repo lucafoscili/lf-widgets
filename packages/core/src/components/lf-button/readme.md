@@ -160,6 +160,9 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
  - [lf-code](../lf-code)
@@ -179,6 +182,9 @@ Type: `Promise<void>`
 graph TD;
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-accordion --> lf-button
+  lf-article --> lf-button
+  lf-card --> lf-button
   lf-carousel --> lf-button
   lf-chat --> lf-button
   lf-code --> lf-button

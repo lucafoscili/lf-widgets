@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LF_UPLOAD_EVENTS } from "./upload.constants";
@@ -11,7 +12,7 @@ export interface LfUploadInterface
     LfUploadPropsInterface {}
 export interface LfUploadElement
   extends HTMLStencilElement,
-    LfUploadInterface {}
+    Omit<LfUploadInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

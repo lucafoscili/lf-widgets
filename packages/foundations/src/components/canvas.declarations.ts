@@ -10,6 +10,7 @@ import { CY_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -37,7 +38,7 @@ export interface LfCanvasInterface
 }
 export interface LfCanvasElement
   extends HTMLStencilElement,
-    LfCanvasInterface {}
+    Omit<LfCanvasInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

@@ -191,6 +191,10 @@ export class LfImage implements LfImageInterface {
   //#region Watchers
   @Watch("lfValue")
   async resetState() {
+    if (!this.#framework) {
+      return;
+    }
+
     this.error = false;
     this.isLoaded = false;
   }
@@ -289,7 +293,8 @@ export class LfImage implements LfImageInterface {
 
     if (!lfValue || typeof lfValue !== "string") return false;
 
-    const resourceUrlPattern = /^(https?:\/\/|\/|\.{1,2}\/|[a-zA-Z]:\\|\\\\).+/;
+    const resourceUrlPattern =
+      /^(?:(?:https?:\/\/|\/|\.{1,2}\/|[a-zA-Z]:\\|\\\\|blob:).+|data:image\/[a-zA-Z0-9+.-]+(?:;charset=[^;,]+)?(?:;base64)?,.*)$/;
 
     return resourceUrlPattern.test(lfValue);
   }

@@ -106,7 +106,13 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
 
 ### Depends on
@@ -119,7 +125,13 @@ graph TD;
   lf-code --> lf-button
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-accordion --> lf-code
+  lf-article --> lf-code
+  lf-card --> lf-code
+  lf-carousel --> lf-code
   lf-chat --> lf-code
+  lf-compare --> lf-code
+  lf-masonry --> lf-code
   lf-messenger --> lf-code
   style lf-code fill:#f9f,stroke:#333,stroke-width:4px
 ```

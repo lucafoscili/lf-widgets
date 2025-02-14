@@ -106,6 +106,29 @@ Type: `Promise<void>`
 | `--lf-chart-font-size`   | Sets the font size for the chart component. Defaults to => var(--lf-font-size)                     |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+
+### Graph
+```mermaid
+graph TD;
+  lf-accordion --> lf-chart
+  lf-article --> lf-chart
+  lf-card --> lf-chart
+  lf-carousel --> lf-chart
+  lf-compare --> lf-chart
+  lf-masonry --> lf-chart
+  style lf-chart fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

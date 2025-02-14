@@ -13,6 +13,7 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -39,7 +40,7 @@ export interface LfCompareInterface
     LfComparePropsInterface {}
 export interface LfCompareElement
   extends HTMLStencilElement,
-    LfCompareInterface {}
+    Omit<LfCompareInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

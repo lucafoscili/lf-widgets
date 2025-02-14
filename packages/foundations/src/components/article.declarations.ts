@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
@@ -12,7 +13,7 @@ export interface LfArticleInterface
     LfArticlePropsInterface {}
 export interface LfArticleElement
   extends HTMLStencilElement,
-    LfArticleInterface {}
+    Omit<LfArticleInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Dataset

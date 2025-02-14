@@ -1,5 +1,12 @@
-import { LfCardAdapter } from "@lf-widgets/foundations";
+import {
+  LfButtonElement,
+  LfCardAdapter,
+  LfCodeElement,
+  LfDataCell,
+  LfToggleElement,
+} from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { LfShape } from "../../utils/shapes";
 import { LfCard } from "./lf-card";
 
 export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
@@ -9,8 +16,7 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
   const { blocks, compInstance, defaults, manager, parts, shapes } =
     controller.get;
   const { debug } = defaults;
-  const { data, theme } = manager;
-  const { decorate } = data.cell.shapes;
+  const { theme } = manager;
   const { bemClass } = theme;
   const { debugLayout } = blocks;
 
@@ -18,39 +24,72 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
   const comp = compInstance as LfCard;
 
   //#region Button
-  const buttons = decorate<"LfButton", "button">(
-    "button",
-    button,
-    async (e) => comp.onLfEvent(e, "lf-event"),
-    debug.button(),
-    layouts.debug.button,
-    [(r) => (refs.layouts.debug.button = r)],
-  );
+  const buttons: LfDataCell<"button">[] = [];
+  const buttonsDef = debug.button();
+  for (let index = 0; index < button.length; index++) {
+    buttons.push(
+      <LfShape
+        shape={"button"}
+        cell={
+          buttonsDef[index]
+            ? Object.assign(buttonsDef[index], button[index])
+            : button[index]
+        }
+        index={index}
+        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
+        framework={manager}
+        defaultCb={layouts.debug.button}
+        refCallback={(r: LfButtonElement) => (refs.layouts.debug.button = r)}
+      ></LfShape>,
+    );
+  }
   const hasButton = Boolean(buttons?.length);
-  const hasButton2 = Boolean(buttons?.length > 1);
+  const hasMoreButtons = Boolean(buttons?.length > 1);
   //#endregion
 
   //#region Code
-  const codes = decorate<"LfCode", "code">(
-    "code",
-    code,
-    async (e) => comp.onLfEvent(e, "lf-event"),
-    debug.code(),
-    layouts.debug.code,
-    [(r) => (refs.layouts.debug.code = r)],
-  );
+  const codes: LfDataCell<"code">[] = [];
+  const codesDef = debug.code();
+  for (let index = 0; index < code.length; index++) {
+    codes.push(
+      <LfShape
+        shape={"code"}
+        cell={
+          codesDef[index]
+            ? Object.assign(codesDef[index], code[index])
+            : code[index]
+        }
+        index={index}
+        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
+        framework={manager}
+        defaultCb={layouts.debug.code}
+        refCallback={(r: LfCodeElement) => (refs.layouts.debug.code = r)}
+      ></LfShape>,
+    );
+  }
   const hasCode = Boolean(codes?.length);
   //#endregion
 
   //#region Toggle
-  const toggles = decorate<"LfToggle", "toggle">(
-    "toggle",
-    toggle,
-    async (e) => comp.onLfEvent(e, "lf-event"),
-    debug.toggle(),
-    layouts.debug.toggle,
-    [(r) => (refs.layouts.debug.toggle = r)],
-  );
+  const toggles: LfDataCell<"toggle">[] = [];
+  const togglesDef = debug.toggle();
+  for (let index = 0; index < toggle.length; index++) {
+    toggles.push(
+      <LfShape
+        shape={"toggle"}
+        cell={
+          togglesDef[index]
+            ? Object.assign(togglesDef[index], toggle[index])
+            : toggle[index]
+        }
+        index={index}
+        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
+        framework={manager}
+        defaultCb={layouts.debug.toggle}
+        refCallback={(r: LfToggleElement) => (refs.layouts.debug.toggle = r)}
+      ></LfShape>,
+    );
+  }
   const hasToggle = Boolean(toggles?.length);
   //#endregion
 
@@ -71,7 +110,7 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
           {buttons[0]}
         </div>
       )}
-      {hasButton2 && (
+      {hasMoreButtons && (
         <div class={bemClass(debugLayout._, debugLayout.section4)}>
           {buttons[1]}
         </div>

@@ -17,6 +17,7 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
@@ -36,7 +37,9 @@ import {
 export interface LfChartInterface
   extends LfComponent<"LfChart">,
     LfChartPropsInterface {}
-export interface LfChartElement extends HTMLStencilElement, LfChartInterface {}
+export interface LfChartElement
+  extends HTMLStencilElement,
+    Omit<LfChartInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

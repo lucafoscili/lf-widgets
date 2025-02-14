@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import {
@@ -13,7 +17,7 @@ export interface LfTypewriterInterface
     LfTypewriterPropsInterface {}
 export interface LfTypewriterElement
   extends HTMLStencilElement,
-    LfTypewriterInterface {}
+    Omit<LfTypewriterInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

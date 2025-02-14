@@ -11,6 +11,7 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
       0 2px 1px -1px rgba($box-shadow-color, 0.1),
       0 1px 1px 0 rgba($box-shadow-color, 0.1),
       0 1px 3px 0 rgba($box-shadow-color, 0.6);
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -99,4 +100,9 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
       white-space: pre-wrap;
     }
   }
+}
+
+[data-lf="ripple-surface"] {
+  pointer-events: none;
+  z-index: 1;
 }

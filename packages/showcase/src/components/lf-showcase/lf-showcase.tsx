@@ -132,6 +132,10 @@ export class LfShowcase {
   //#region Watchers
   @Watch("currentState")
   handleCurrentStateChange(newValue: LfShowcaseViews) {
+    if (!this.#framework) {
+      return;
+    }
+
     const params = new URLSearchParams();
 
     if (newValue.Components) {
@@ -147,6 +151,10 @@ export class LfShowcase {
   }
   @Watch("lfDrawer")
   handleDrawerChange(newValue: boolean) {
+    if (!this.#framework) {
+      return;
+    }
+
     if (this.#drawer) {
       if (newValue) {
         this.#drawer.open();

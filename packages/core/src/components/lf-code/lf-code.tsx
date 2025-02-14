@@ -252,6 +252,10 @@ export class LfCode implements LfCodeInterface {
   //#region Watchers
   @Watch("lfLanguage")
   loadLanguage() {
+    if (!this.#framework) {
+      return;
+    }
+
     switch (this.lfLanguage.toLowerCase()) {
       case "css":
         LF_CODE_CSS(Prism);

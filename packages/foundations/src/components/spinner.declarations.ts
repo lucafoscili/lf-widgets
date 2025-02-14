@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LF_SPINNER_EVENTS } from "./spinner.constants";
 
@@ -8,7 +12,7 @@ export interface LfSpinnerInterface
     LfSpinnerPropsInterface {}
 export interface LfSpinnerElement
   extends HTMLStencilElement,
-    LfSpinnerInterface {}
+    Omit<LfSpinnerInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

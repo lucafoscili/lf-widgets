@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.4...0.3.2-rc.5) (2025-02-14)
+
+### Bug Fixes
+
+- **card:** fixed unscrollable description ([3e53ed7](https://github.com/lucafoscili/lf-widgets/commit/3e53ed71da916d3b829f20c5ba34fd5a28aa7ff2))
+- **chart:** increased tooltip's background alpha ([8d8a2b7](https://github.com/lucafoscili/lf-widgets/commit/8d8a2b71a7b14f739f3c1fa8207fbd78dfcb065e))
+- **code:** adjusted style ([e0735ee](https://github.com/lucafoscili/lf-widgets/commit/e0735eeba9c9df65b601f565b8955de076f7fdb1))
+- **shapes:** extracted from framework, moved to core ([dcb112a](https://github.com/lucafoscili/lf-widgets/commit/dcb112a9858bfe2bf17bf6b5aa4dc75a850eed3e))
+
+## [0.3.2-rc.4](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.3...0.3.2-rc.4) (2025-02-13)
+
+### Bug Fixes
+
+- **shapes:** correctly imported shapes in related consumers ([72a2792](https://github.com/lucafoscili/lf-widgets/commit/72a2792e06dc716b094aecec038c115c8826a53b))
+
+## [0.3.2-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.2...0.3.2-rc.3) (2025-02-13)
+
+### Bug Fixes
+
+- **progressbar:** fixed radial state colors ([959aef3](https://github.com/lucafoscili/lf-widgets/commit/959aef3160046a02626b7f914b5255b8dd0ec410))
+- replaced composed tagnames with direct h() invocation ([7751582](https://github.com/lucafoscili/lf-widgets/commit/7751582ccc86a8bbd0c6266396a7a4be2c01c1ec))
+
+## [0.3.2-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.1...0.3.2-rc.2) (2025-02-13)
+
+### Bug Fixes
+
+- **cicd:** improved component count action ([0d5b604](https://github.com/lucafoscili/lf-widgets/commit/0d5b604a410cc881a27fa4a48e94b5ed3a91134e))
+- **image:** improved RegEx to catch images ([834a1f3](https://github.com/lucafoscili/lf-widgets/commit/834a1f36398b7f03c1d1cb75d8d8274f27b955bf))
+- **lifecycle:** added safeguard to Watchers preventing early executions ([17146b0](https://github.com/lucafoscili/lf-widgets/commit/17146b0685e03f3925880e83ca02844c63aca765))
+
+## [0.3.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.0...0.3.2-rc.1) (2025-02-13)
+
+### Bug Fixes
+
+- **assets:** added history icon ([5b605c4](https://github.com/lucafoscili/lf-widgets/commit/5b605c43dddbe0568752231b449cfadc3606b33d))
+
+## [0.3.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.1...0.3.2-rc.0) (2025-02-13)
+
+### Bug Fixes
+
+- **cicd:** updated workflows to never skip ([4718440](https://github.com/lucafoscili/lf-widgets/commit/471844062410ab4dccf0e145fb37695ed7f2059a))
+- **code:** removed margin bottom ([4a52057](https://github.com/lucafoscili/lf-widgets/commit/4a5205788a857b13905a1e7c74bf79f97359b3f3))
+
 ## [0.3.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.3...0.3.1) (2025-02-12)
 
 **Note:** Version bump only for package @lf-widgets/root

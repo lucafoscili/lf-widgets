@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2-rc.5](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.4...0.3.2-rc.5) (2025-02-14)
+
+### Bug Fixes
+
+- **shapes:** extracted from framework, moved to core ([dcb112a](https://github.com/lucafoscili/lf-widgets/commit/dcb112a9858bfe2bf17bf6b5aa4dc75a850eed3e))
+
+## [0.3.2-rc.4](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.3...0.3.2-rc.4) (2025-02-13)
+
+### Bug Fixes
+
+- **shapes:** correctly imported shapes in related consumers ([72a2792](https://github.com/lucafoscili/lf-widgets/commit/72a2792e06dc716b094aecec038c115c8826a53b))
+
+## [0.3.2-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.2...0.3.2-rc.3) (2025-02-13)
+
+### Bug Fixes
+
+- replaced composed tagnames with direct h() invocation ([7751582](https://github.com/lucafoscili/lf-widgets/commit/7751582ccc86a8bbd0c6266396a7a4be2c01c1ec))
+
+## [0.3.2-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.1...0.3.2-rc.2) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+## [0.3.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.0...0.3.2-rc.1) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+## [0.3.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.1...0.3.2-rc.0) (2025-02-13)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
 ## [0.3.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.1-rc.3...0.3.1) (2025-02-12)
 
 **Note:** Version bump only for package @lf-widgets/framework

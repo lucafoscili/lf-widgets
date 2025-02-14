@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import { LF_TOGGLE_EVENTS, LF_TOGGLE_STATES } from "./toggle.constants";
@@ -11,7 +15,7 @@ export interface LfToggleInterface
 }
 export interface LfToggleElement
   extends HTMLStencilElement,
-    LfToggleInterface {}
+    Omit<LfToggleInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

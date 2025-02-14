@@ -31,6 +31,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 
 /**
  * Represents an article-style component that displays structured content
@@ -314,8 +315,7 @@ export class LfArticle implements LfArticleInterface {
     );
   }
   #contentTemplate(node: LfArticleNode, depth: number): VNode {
-    const { data, theme } = this.#framework;
-    const { decorate } = data.cell.shapes;
+    const { theme } = this.#framework;
 
     const { cells, cssStyle, tagName, value } = node;
     const key = cells && Object.keys(cells)[0];
@@ -324,10 +324,15 @@ export class LfArticle implements LfArticleInterface {
     const { content } = this.#b;
 
     if (cell) {
-      const shape = decorate(cell.shape, [cell], async (e) =>
-        this.onLfEvent(e, "lf-event"),
+      return (
+        <LfShape
+          cell={cell}
+          index={0}
+          shape={cell.shape}
+          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+          framework={this.#framework}
+        ></LfShape>
       );
-      return shape[0];
     } else {
       const ComponentTag = tagName ? tagName : "span";
       return (

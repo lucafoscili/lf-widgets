@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
@@ -13,7 +14,7 @@ export interface LfAccordionInterface
     LfAccordionPropsInterface {}
 export interface LfAccordionElement
   extends HTMLStencilElement,
-    LfAccordionInterface {}
+    Omit<LfAccordionInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events
