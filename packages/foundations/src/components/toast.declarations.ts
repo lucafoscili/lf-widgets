@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import {
   LfThemeIcon,
@@ -11,7 +15,9 @@ import { LF_TOAST_EVENTS } from "./toast.constants";
 export interface LfToastInterface
   extends LfComponent<"LfToast">,
     LfToastPropsInterface {}
-export interface LfToastElement extends HTMLStencilElement, LfToastInterface {}
+export interface LfToastElement
+  extends HTMLStencilElement,
+    Omit<LfToastPropsInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

@@ -129,6 +129,29 @@ Type: `Promise<void>`
 | `--lf-toggle-track-width`         | Sets the width for the toggle component's track. Defaults to => 3em                                 |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+
+### Graph
+```mermaid
+graph TD;
+  lf-accordion --> lf-toggle
+  lf-article --> lf-toggle
+  lf-card --> lf-toggle
+  lf-carousel --> lf-toggle
+  lf-compare --> lf-toggle
+  lf-masonry --> lf-toggle
+  style lf-toggle fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

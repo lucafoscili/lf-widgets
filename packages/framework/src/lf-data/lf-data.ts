@@ -1,21 +1,15 @@
 import {
-  LfComponentName,
-  LfFrameworkInterface,
   LfDataCell,
   LfDataColumn,
   LfDataDataset,
   LfDataInterface,
   LfDataNode,
   LfDataNodeOperations,
-  LfDataShapeCallback,
-  LfDataShapeComponentMap,
-  LfDataShapeEventDispatcher,
-  LfDataShapeRefCallback,
   LfDataShapes,
   LfDataShapesMap,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import {
-  cellDecorateShapes,
   cellExists,
   cellGetAllShapes,
   cellGetShape,
@@ -35,29 +29,7 @@ import {
 } from "./helpers.node";
 
 export class LfData implements LfDataInterface {
-  #MANAGER: LfFrameworkInterface;
-  #SHAPES_MAP: LfDataShapeComponentMap = {
-    badge: "LfBadge",
-    button: "LfButton",
-    canvas: "LfCanvas",
-    card: "LfCard",
-    chart: "LfChart",
-    chat: "LfChat",
-    chip: "LfChip",
-    code: "LfCode",
-    image: "LfImage",
-    number: "LfTextfield",
-    photoframe: "LfPhotoframe",
-    slot: "LfTextfield",
-    text: "LfTextfield",
-    toggle: "LfToggle",
-    typewriter: "LfTypewriter",
-    upload: "LfUpload",
-  };
-
-  constructor(lfFramework: LfFrameworkInterface) {
-    this.#MANAGER = lfFramework;
-  }
+  constructor(_lfFramework: LfFrameworkInterface) {}
 
   //#region Cell
   /**
@@ -65,7 +37,6 @@ export class LfData implements LfDataInterface {
    * @property {Object} cell - The cell management object
    * @property {(node: LfDataNode) => boolean} cell.exists - Checks if a cell exists in the given node
    * @property {Object} cell.shapes - Contains methods for managing cell shapes
-   * @property {<C extends LfComponentName, S extends LfDataShapes | "text">(shape: S, items: Partial<LfDataCell<S>>[], eventDispatcher: LfDataShapeEventDispatcher, defaultProps?: Partial<LfDataCell<S>>[], defaultCb?: S extends "text" ? never : LfDataShapeCallback<C, S>) => void} cell.shapes.decorate - Decorates cells with shapes
    * @property {(cell: LfDataCell<LfDataShapes>, deepCopy?: boolean) => LfDataCell<LfDataShapes>} cell.shapes.get - Retrieves a shape from a cell
    * @property {(dataset: LfDataDataset, deepCopy?: boolean) => LfDataCell<LfDataShapes>[]} cell.shapes.getAll - Retrieves all shapes from a dataset
    * @property {(value: LfDataCell<LfDataShapes>["value"]) => string} cell.stringify - Converts a cell value to string
@@ -73,24 +44,6 @@ export class LfData implements LfDataInterface {
   cell: LfDataInterface["cell"] = {
     exists: (node: LfDataNode) => cellExists(node),
     shapes: {
-      decorate: <C extends LfComponentName, S extends LfDataShapes | "text">(
-        shape: S,
-        items: Partial<LfDataCell<S>>[],
-        eventDispatcher: LfDataShapeEventDispatcher,
-        defaultProps?: Partial<LfDataCell<S>>[],
-        defaultCb?: S extends "text" ? never : LfDataShapeCallback<C, S>,
-        refsCb?: Array<LfDataShapeRefCallback<C>>,
-      ) =>
-        cellDecorateShapes(
-          this.#MANAGER,
-          this.#SHAPES_MAP[shape],
-          shape,
-          items,
-          eventDispatcher,
-          defaultProps,
-          defaultCb,
-          refsCb,
-        ),
       get: (
         cell: LfDataCell<LfDataShapes>,
         deepCopy = true,

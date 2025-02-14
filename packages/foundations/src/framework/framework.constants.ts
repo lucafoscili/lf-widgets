@@ -7,6 +7,7 @@ export const LF_FRAMEWORK_ALLOWED_ATTRS = [
   "autofocus",
   "checked",
   "class",
+  "dataset",
   "disabled",
   "href",
   "htmlProps",

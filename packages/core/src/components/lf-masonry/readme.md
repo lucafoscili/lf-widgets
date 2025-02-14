@@ -143,26 +143,61 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [lf-list](../lf-list)
-- [lf-spinner](../lf-spinner)
-- [lf-image](../lf-image)
+- [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
+- [lf-canvas](../lf-canvas)
+- [lf-card](../lf-card)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
+- [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
-- [lf-progressbar](../lf-progressbar)
-- [lf-textfield](../lf-textfield)
+- [lf-upload](../lf-upload)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-masonry --> lf-list
-  lf-masonry --> lf-spinner
-  lf-masonry --> lf-image
+  lf-masonry --> lf-badge
   lf-masonry --> lf-button
+  lf-masonry --> lf-canvas
+  lf-masonry --> lf-card
+  lf-masonry --> lf-chart
+  lf-masonry --> lf-chat
+  lf-masonry --> lf-chip
+  lf-masonry --> lf-code
+  lf-masonry --> lf-image
+  lf-masonry --> lf-photoframe
+  lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
-  lf-masonry --> lf-progressbar
-  lf-masonry --> lf-textfield
+  lf-masonry --> lf-upload
+  lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-card --> lf-badge
+  lf-card --> lf-button
+  lf-card --> lf-canvas
+  lf-card --> lf-card
+  lf-card --> lf-chart
+  lf-card --> lf-chat
+  lf-card --> lf-chip
+  lf-card --> lf-code
+  lf-card --> lf-image
+  lf-card --> lf-photoframe
+  lf-card --> lf-toggle
+  lf-card --> lf-typewriter
+  lf-card --> lf-upload
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
   lf-imageviewer --> lf-masonry
   style lf-masonry fill:#f9f,stroke:#333,stroke-width:4px
 ```

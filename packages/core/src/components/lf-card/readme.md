@@ -105,28 +105,52 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](.)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+
 ### Depends on
 
-- [lf-list](../lf-list)
-- [lf-spinner](../lf-spinner)
-- [lf-image](../lf-image)
+- [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
+- [lf-canvas](../lf-canvas)
+- [lf-card](.)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
+- [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
-- [lf-progressbar](../lf-progressbar)
-- [lf-textfield](../lf-textfield)
+- [lf-upload](../lf-upload)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-card --> lf-list
-  lf-card --> lf-spinner
-  lf-card --> lf-image
-  lf-card --> lf-button
-  lf-card --> lf-typewriter
-  lf-card --> lf-progressbar
-  lf-card --> lf-textfield
+  lf-card --> lf-card
+  lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
+  lf-accordion --> lf-card
+  lf-article --> lf-card
+  lf-carousel --> lf-card
+  lf-compare --> lf-card
+  lf-masonry --> lf-card
   style lf-card fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

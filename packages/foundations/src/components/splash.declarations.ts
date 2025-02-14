@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LF_SPLASH_EVENTS, LF_SPLASH_STATES } from "./splash.constants";
 
@@ -8,7 +12,7 @@ export interface LfSplashInterface
     LfSplashPropsInterface {}
 export interface LfSplashElement
   extends HTMLStencilElement,
-    LfSplashInterface {}
+    Omit<LfSplashInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

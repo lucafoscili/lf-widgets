@@ -101,28 +101,63 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
-- [lf-tree](../lf-tree)
-- [lf-list](../lf-list)
-- [lf-spinner](../lf-spinner)
+- [lf-canvas](../lf-canvas)
+- [lf-card](../lf-card)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
 - [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
-- [lf-progressbar](../lf-progressbar)
-- [lf-textfield](../lf-textfield)
+- [lf-upload](../lf-upload)
+- [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-compare --> lf-badge
   lf-compare --> lf-button
-  lf-compare --> lf-tree
-  lf-compare --> lf-list
-  lf-compare --> lf-spinner
+  lf-compare --> lf-canvas
+  lf-compare --> lf-card
+  lf-compare --> lf-chart
+  lf-compare --> lf-chat
+  lf-compare --> lf-chip
+  lf-compare --> lf-code
   lf-compare --> lf-image
+  lf-compare --> lf-photoframe
+  lf-compare --> lf-toggle
   lf-compare --> lf-typewriter
-  lf-compare --> lf-progressbar
-  lf-compare --> lf-textfield
+  lf-compare --> lf-upload
+  lf-compare --> lf-tree
+  lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-card --> lf-badge
+  lf-card --> lf-button
+  lf-card --> lf-canvas
+  lf-card --> lf-card
+  lf-card --> lf-chart
+  lf-card --> lf-chat
+  lf-card --> lf-chip
+  lf-card --> lf-code
+  lf-card --> lf-image
+  lf-card --> lf-photoframe
+  lf-card --> lf-toggle
+  lf-card --> lf-typewriter
+  lf-card --> lf-upload
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
   lf-tree --> lf-textfield
   style lf-compare fill:#f9f,stroke:#333,stroke-width:4px
 ```

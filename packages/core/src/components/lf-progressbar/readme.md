@@ -104,24 +104,12 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [lf-accordion](../lf-accordion)
- - [lf-article](../lf-article)
- - [lf-card](../lf-card)
- - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
- - [lf-compare](../lf-compare)
- - [lf-masonry](../lf-masonry)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-accordion --> lf-progressbar
-  lf-article --> lf-progressbar
-  lf-card --> lf-progressbar
-  lf-carousel --> lf-progressbar
   lf-chat --> lf-progressbar
-  lf-compare --> lf-progressbar
-  lf-masonry --> lf-progressbar
   style lf-progressbar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

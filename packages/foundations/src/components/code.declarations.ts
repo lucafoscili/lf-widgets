@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
@@ -10,7 +11,9 @@ import { LF_CODE_EVENTS } from "./code.constants";
 export interface LfCodeInterface
   extends LfComponent<"LfCode">,
     LfCodePropsInterface {}
-export interface LfCodeElement extends HTMLStencilElement, LfCodeInterface {}
+export interface LfCodeElement
+  extends HTMLStencilElement,
+    Omit<LfCodeInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

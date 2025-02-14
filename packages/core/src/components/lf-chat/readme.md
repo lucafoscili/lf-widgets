@@ -147,6 +147,12 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
 
 ### Depends on
@@ -170,6 +176,12 @@ graph TD;
   lf-code --> lf-button
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-accordion --> lf-chat
+  lf-article --> lf-chat
+  lf-card --> lf-chat
+  lf-carousel --> lf-chat
+  lf-compare --> lf-chat
+  lf-masonry --> lf-chat
   lf-messenger --> lf-chat
   style lf-chat fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -158,12 +158,21 @@ import {
   LfUploadInterface,
   LfUploadPropsInterface,
 } from "../components/upload.declarations";
+import {
+  LfDataCell,
+  LfDataShapeCallback,
+  LfDataShapeEventDispatcher,
+  LfDataShapeRefCallback,
+  LfDataShapes,
+  LfFrameworkInterface,
+} from "../framework";
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
 
 export interface LfComponent<T extends LfComponentName = LfComponentName>
   extends LfComponentCommon {
   rootElement: LfComponentElementMap[T];
 }
+export type LfComponentClassProperties = "rootElement" | "debugInfo";
 export type LfComponentType<T extends LfComponentName = LfComponentName> =
   T extends keyof LfComponentClassMap
     ? LfComponentClassMap[T]
@@ -255,6 +264,17 @@ export type LfComponentTag<C extends LfComponentName = LfComponentName> =
   LfComponentTagMap[C];
 export interface LfComponentBaseProps {
   lfStyle?: string;
+}
+export interface LfShapePropsInterface<S extends LfDataShapes = LfDataShapes> {
+  framework: LfFrameworkInterface;
+  shape: S;
+  index: number;
+  cell: Partial<LfDataCell<S>>;
+  eventDispatcher: LfDataShapeEventDispatcher;
+  defaultCb?: S extends "text"
+    ? never
+    : LfDataShapeCallback<LfComponentName, S>;
+  refCallback?: LfDataShapeRefCallback<LfComponentName>;
 }
 export type LfDynamicComponentProps = {
   [K in `lf${Capitalize<string>}`]?: any;

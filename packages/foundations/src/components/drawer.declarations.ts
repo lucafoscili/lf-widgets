@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import {
@@ -20,7 +21,7 @@ export interface LfDrawerInterface
 }
 export interface LfDrawerElement
   extends HTMLStencilElement,
-    LfDrawerInterface {}
+    Omit<LfDrawerInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

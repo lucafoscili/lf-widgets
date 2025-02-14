@@ -13,6 +13,7 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -40,7 +41,9 @@ import { LfTypewriterPropsInterface } from "./typewriter.declarations";
 export interface LfChatInterface
   extends LfComponent<"LfChat">,
     LfChatPropsInterface {}
-export interface LfChatElement extends HTMLStencilElement, LfChatInterface {}
+export interface LfChatElement
+  extends HTMLStencilElement,
+    Omit<LfChatInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

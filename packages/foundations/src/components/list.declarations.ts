@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
@@ -8,7 +12,9 @@ import { LF_LIST_EVENTS } from "./list.constants";
 export interface LfListInterface
   extends LfComponent<"LfList">,
     LfListPropsInterface {}
-export interface LfListElement extends HTMLStencilElement, LfListInterface {}
+export interface LfListElement
+  extends HTMLStencilElement,
+    Omit<LfListInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

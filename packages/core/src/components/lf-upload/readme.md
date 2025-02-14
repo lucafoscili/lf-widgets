@@ -103,6 +103,29 @@ Type: `Promise<void>`
 | `--lf-upload-padding`       | Sets the padding for the upload component. Defaults to => 1em                                       |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+
+### Graph
+```mermaid
+graph TD;
+  lf-accordion --> lf-upload
+  lf-article --> lf-upload
+  lf-card --> lf-upload
+  lf-carousel --> lf-upload
+  lf-compare --> lf-upload
+  lf-masonry --> lf-upload
+  style lf-upload fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

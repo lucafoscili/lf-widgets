@@ -40,8 +40,8 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
-import { defineShapes } from "../../utils/shapes";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 import { createAdapter } from "./lf-masonry-adapter";
 
 /**
@@ -425,8 +425,6 @@ export class LfMasonry implements LfMasonryInterface {
     return 1;
   }
   #divideShapesIntoColumns = (): VNode[][] => {
-    const { decorate } = this.#framework.data.cell.shapes;
-
     const { lfShape, selectedShape, shapes } = this;
 
     const props: Partial<LfDataCell<LfDataShapes>>[] = shapes[this.lfShape].map(
@@ -448,17 +446,21 @@ export class LfMasonry implements LfMasonryInterface {
       (): VNode[] => [],
       [],
     );
-    const decoratedShapes = decorate(
-      lfShape,
-      shapes[lfShape],
-      async (e) => this.onLfEvent(e, "lf-event"),
-      props,
-    );
 
-    decoratedShapes.forEach((element: VNode, index: number) => {
-      element.$attrs$["data-index"] = index.toString();
-      columns[index % this.#currentColumns].push(element);
-    });
+    for (let index = 0; index < shapes[lfShape].length; index++) {
+      const cell = shapes[lfShape][index];
+      const defaultCell = props[index];
+
+      columns[index % this.#currentColumns].push(
+        <LfShape
+          cell={Object.assign(defaultCell, cell)}
+          index={index}
+          shape={lfShape}
+          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+          framework={this.#framework}
+        ></LfShape>,
+      );
+    }
 
     return columns;
   };
@@ -532,7 +534,6 @@ export class LfMasonry implements LfMasonryInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
   }

@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
@@ -22,7 +23,7 @@ export interface LfTextfieldInterface
 }
 export interface LfTextfieldElement
   extends HTMLStencilElement,
-    LfTextfieldInterface {}
+    Omit<LfTextfieldInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

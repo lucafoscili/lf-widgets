@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -13,7 +14,9 @@ import { LF_TREE_EVENTS } from "./tree.constants";
 export interface LfTreeInterface
   extends LfComponent<"LfTree">,
     LfTreePropsInterface {}
-export interface LfTreeElement extends HTMLStencilElement, LfTreeInterface {}
+export interface LfTreeElement
+  extends HTMLStencilElement,
+    Omit<LfTreeInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

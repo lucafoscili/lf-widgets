@@ -37,7 +37,6 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-card-adapter";
-import { defineShapes } from "../../utils/shapes";
 
 /**
  * The card component displays a card with a header, body, and footer section.
@@ -307,7 +306,6 @@ export class LfCard implements LfCardInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
   }

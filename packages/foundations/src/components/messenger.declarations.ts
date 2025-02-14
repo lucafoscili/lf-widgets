@@ -13,6 +13,7 @@ import {
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
@@ -39,7 +40,7 @@ export interface LfMessengerInterface
     LfMessengerPropsInterface {}
 export interface LfMessengerElement
   extends HTMLStencilElement,
-    LfMessengerInterface {}
+    Omit<LfMessengerInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter

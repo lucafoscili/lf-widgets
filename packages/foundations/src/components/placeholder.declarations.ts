@@ -1,7 +1,9 @@
 import {
-  HTMLStencilElement, LfComponent,
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
   LfComponentName,
-  LfComponentProps
+  LfComponentProps,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeIcon } from "../framework/theme.declarations";
@@ -16,7 +18,7 @@ export interface LfPlaceholderInterface
     LfPlaceholderPropsInterface {}
 export interface LfPlaceholderElement
   extends HTMLStencilElement,
-    LfPlaceholderInterface {}
+    Omit<LfPlaceholderInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

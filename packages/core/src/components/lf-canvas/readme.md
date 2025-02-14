@@ -193,7 +193,13 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
  - [lf-imageviewer](../lf-imageviewer)
+ - [lf-masonry](../lf-masonry)
 
 ### Depends on
 
@@ -203,7 +209,13 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-canvas --> lf-image
+  lf-accordion --> lf-canvas
+  lf-article --> lf-canvas
+  lf-card --> lf-canvas
+  lf-carousel --> lf-canvas
+  lf-compare --> lf-canvas
   lf-imageviewer --> lf-canvas
+  lf-masonry --> lf-canvas
   style lf-canvas fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -36,9 +36,9 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 import { autoplay, navigation } from "./helpers.utils";
 import { createAdapter } from "./lf-carousel-adapter";
-import { defineShapes } from "../../utils/shapes";
 
 /**
  * The carousel component displays a carousel with slides that can be navigated using navigation controls or by clicking on slide indicators.
@@ -423,7 +423,6 @@ export class LfCarousel implements LfCarouselInterface {
     );
   }
   #prepSlide(): VNode {
-    const { decorate } = this.#framework.data.cell.shapes;
     const { bemClass } = this.#framework.theme;
 
     const { currentIndex, lfShape } = this;
@@ -440,19 +439,21 @@ export class LfCarousel implements LfCarouselInterface {
       }),
     );
 
-    const decoratedShapes = decorate(
-      lfShape,
-      this.shapes[lfShape],
-      async (e) => this.onLfEvent(e, "lf-event"),
-      props,
-    );
+    const cell = this.shapes[lfShape][currentIndex];
+    const defaultCell = props[currentIndex];
 
     return (
       <div
         class={bemClass(carousel._, carousel.slide)}
         data-index={currentIndex}
       >
-        <Fragment>{decoratedShapes[currentIndex]}</Fragment>
+        <LfShape
+          cell={Object.assign(defaultCell, cell)}
+          index={currentIndex}
+          shape={lfShape}
+          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+          framework={this.#framework}
+        ></LfShape>
       </div>
     );
   }
@@ -466,7 +467,6 @@ export class LfCarousel implements LfCarouselInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    defineShapes(this.#framework);
     this.#initAdapter();
     this.updateShapes();
 

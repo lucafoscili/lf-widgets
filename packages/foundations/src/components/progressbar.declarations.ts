@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import { LF_PROGRESSBAR_EVENTS } from "./progressbar.constants";
@@ -9,7 +13,7 @@ export interface LfProgressbarInterface
     LfProgressbarPropsInterface {}
 export interface LfProgressbarElement
   extends HTMLStencilElement,
-    LfProgressbarInterface {}
+    Omit<LfProgressbarInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

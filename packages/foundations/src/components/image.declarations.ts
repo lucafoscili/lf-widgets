@@ -1,6 +1,7 @@
 import {
   HTMLStencilElement,
   LfComponent,
+  LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
@@ -10,7 +11,9 @@ import { LF_IMAGE_EVENTS } from "./image.constants";
 export interface LfImageInterface
   extends LfComponent<"LfImage">,
     LfImagePropsInterface {}
-export interface LfImageElement extends HTMLStencilElement, LfImageInterface {}
+export interface LfImageElement
+  extends HTMLStencilElement,
+    Omit<LfImageInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events

@@ -133,11 +133,23 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-accordion --> lf-chip
+  lf-article --> lf-chip
+  lf-card --> lf-chip
+  lf-carousel --> lf-chip
+  lf-compare --> lf-chip
+  lf-masonry --> lf-chip
   lf-messenger --> lf-chip
   style lf-chip fill:#f9f,stroke:#333,stroke-width:4px
 ```

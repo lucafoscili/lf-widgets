@@ -1,4 +1,8 @@
-import { HTMLStencilElement, LfComponent } from "../foundations/components.declarations";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
@@ -10,7 +14,7 @@ export interface LfTabbarInterface
     LfTabbarPropsInterface {}
 export interface LfTabbarElement
   extends HTMLStencilElement,
-    LfTabbarInterface {}
+    Omit<LfTabbarInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events
