@@ -116,7 +116,7 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
       @include lf-comp-color($comp, "bg", text);
       cursor: default;
       display: flex;
-      font-size: 0.25em;
+      font-size: 0.15em;
     }
 
     &__um {
