@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.2...0.3.3-rc.0) (2025-02-15)
+
+### Bug Fixes
+
+- **masonry:** reduced actions size ([f975228](https://github.com/lucafoscili/lf-widgets/commit/f9752283a3000c2016afdc7bd97804b37ea69272))
+- **progressbar:** reduced label size for radial variant ([69804e1](https://github.com/lucafoscili/lf-widgets/commit/69804e1f1400c1eca5e62920d8a37f8587080855))
+
 ## [0.3.2](https://github.com/lucafoscili/lf-widgets/compare/0.3.2-rc.5...0.3.2) (2025-02-14)
 
 ### Bug Fixes
