@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.4-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.3...0.3.4-rc.0) (2025-02-16)
+
+### Bug Fixes
+
+- **chat:** improved token counter ([d5b8d01](https://github.com/lucafoscili/lf-widgets/commit/d5b8d0184985b075e8d88afecdd875907d30e89c))
+- **messenger:** fixed messages overflow ([9ce4744](https://github.com/lucafoscili/lf-widgets/commit/9ce4744a02c6d4ed840949128212d85290d5812e))
+- **spinner:** added missing rgb() ([165fb85](https://github.com/lucafoscili/lf-widgets/commit/165fb855488ae75ca614f7b0f2632005a931447f))
+
 ## [0.3.3](https://github.com/lucafoscili/lf-widgets/compare/0.3.3-rc.0...0.3.3) (2025-02-16)
 
 ### Bug Fixes
