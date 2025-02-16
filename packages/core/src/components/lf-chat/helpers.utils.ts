@@ -2,6 +2,7 @@
 
 import {
   LfChatAdapter,
+  LfChatCurrentTokens,
   LfLLMChoiceMessage,
   LfLLMRequest,
 } from "@lf-widgets/foundations";
@@ -47,29 +48,38 @@ export const apiCall = async (adapter: LfChatAdapter) => {
 
 //#region calcTokens
 /**
- * Calculates the token usage percentage based on the chat history and system context.
- * The calculation is an estimation based on character length divided by 4.
- * The result is normalized as a percentage of the context window size.
+ * Calculates the current number of tokens in the chat history and the percentage of the context window.
  *
- * @param adapter - The chat adapter instance containing controller and component data
- * @returns Promise<number> - The estimated token usage as a percentage (0-100) of the context window
+ * @param adapter - The chat adapter instance containing controller and component settings
+ * @returns A Promise that resolves with the current token count and percentage
  *
  * @example
- * const tokenPercentage = await calcTokens(chatAdapter);
- * console.log(`Current token usage: ${tokenPercentage}%`);
+ * ```typescript
+ * const adapter = new LfChatAdapter();
+ * const tokens = await calcTokens(adapter);
+ * ```
  */
-export const calcTokens = async (adapter: LfChatAdapter) => {
+export const calcTokens = async (
+  adapter: LfChatAdapter,
+): Promise<LfChatCurrentTokens> => {
   const { compInstance, history } = adapter.controller.get;
   const { lfContextWindow, lfSystem } = compInstance;
 
   if (!lfContextWindow) {
-    return 0;
+    return {
+      current: 0,
+      percentage: 0,
+    };
   }
 
-  let count = lfSystem ? lfSystem.length / 4 : 0;
+  let count = lfSystem ? lfSystem.length : 0;
   history().forEach((m) => (count += m.content.length));
-  const estimated = count ? count / 4 : 0;
-  return (estimated / lfContextWindow) * 100;
+  const estimated = count / 4;
+
+  return {
+    current: estimated,
+    percentage: (estimated / lfContextWindow) * 100,
+  };
 };
 //#endregion
 

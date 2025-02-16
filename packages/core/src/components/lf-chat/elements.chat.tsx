@@ -104,8 +104,8 @@ export const prepChat = (
       const { assignRef, theme } = manager;
       const { bemClass, get } = theme;
 
-      const value = currentTokens();
-      const title = `Estimated tokens used: ${value}/${lfContextWindow}`;
+      const { current, percentage } = currentTokens();
+      const title = `Estimated tokens used: ${current}/${lfContextWindow}`;
 
       return (
         <lf-progressbar
@@ -113,7 +113,7 @@ export const prepChat = (
           lfCenteredLabel={true}
           lfIcon={get.icon("percentage60")}
           lfLabel="Context window"
-          lfValue={value}
+          lfValue={percentage}
           ref={assignRef(chat, "progressbar")}
           title={title}
         ></lf-progressbar>
@@ -145,13 +145,7 @@ export const prepChat = (
           part={parts.send}
           ref={assignRef(chat, "send")}
           title="Send your prompt (CTRL + Enter)."
-        >
-          <lf-spinner
-            lfActive={showSpinner}
-            lfDimensions="0.6em"
-            slot="spinner"
-          ></lf-spinner>
-        </lf-button>
+        ></lf-button>
       );
     },
     //#endregion
@@ -193,6 +187,7 @@ export const prepChat = (
         <lf-spinner
           lfActive={showSpinner}
           lfBarVariant={true}
+          lfDimensions="3px"
           ref={assignRef(chat, "spinner")}
         ></lf-spinner>
       );

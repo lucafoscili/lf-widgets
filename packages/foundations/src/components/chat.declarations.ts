@@ -148,7 +148,7 @@ export interface LfChatAdapterControllerGetters
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
   currentPrompt: () => LfLLMChoiceMessage;
-  currentTokens: () => number;
+  currentTokens: () => LfChatCurrentTokens;
   cyAttributes: typeof CY_ATTRIBUTES;
   history: () => LfChatHistory;
   lastMessage: (role?: LfLLMRole) => LfLLMChoiceMessage;
@@ -162,7 +162,7 @@ export interface LfChatAdapterControllerGetters
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentPrompt: (value: LfLLMChoiceMessage) => void;
-  currentTokens: (value: number) => void;
+  currentTokens: (value: LfChatCurrentTokens) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
   view: (view: LfChatView) => void;
@@ -179,6 +179,10 @@ export interface LfChatEventPayload
 //#endregion
 
 //#region States
+export interface LfChatCurrentTokens {
+  current: number;
+  percentage: number;
+}
 export type LfChatHistory = LfLLMChoiceMessage[];
 export type LfChatStatus = (typeof LF_CHAT_STATUS)[number];
 export type LfChatView = (typeof LF_CHAT_VIEW)[number];

@@ -59,7 +59,7 @@
     left: -25%;
     background: linear-gradient(
       to right,
-      var(--lf-color-on-#{$comp}) 0,
+      rgb(var(--lf-color-on-#{$comp})) 0,
       transparent 100%
     );
   }
