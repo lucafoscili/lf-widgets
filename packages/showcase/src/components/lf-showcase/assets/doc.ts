@@ -3108,7 +3108,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-progressbar-padding",
-        docs: "Sets the padding for the progressbar component. Defaults to => 2em 0.5em",
+        docs: "Sets the padding for the progressbar component. Defaults to => 1em 0em",
       },
       {
         name: "--lf-progressbar-width",

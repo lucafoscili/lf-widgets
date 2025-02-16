@@ -96,7 +96,7 @@ Type: `Promise<void>`
 | `--lf-progressbar-font-family`      | Sets the primary font family for the progressbar component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-progressbar-font-size`        | Sets the font size for the progressbar component. Defaults to => var(--lf-font-size)                     |
 | `--lf-progressbar-height`           | Sets the height for the progressbar component. Defaults to => 100%                                       |
-| `--lf-progressbar-padding`          | Sets the padding for the progressbar component. Defaults to => 2em 0.5em                                 |
+| `--lf-progressbar-padding`          | Sets the padding for the progressbar component. Defaults to => 1em 0em                                   |
 | `--lf-progressbar-width`            | Sets the width for the progressbar component. Defaults to => 100%                                        |
 
 
