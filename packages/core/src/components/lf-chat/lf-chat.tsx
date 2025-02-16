@@ -7,6 +7,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatAdapter,
+  LfChatCurrentTokens,
   LfChatElement,
   LfChatEvent,
   LfChatEventPayload,
@@ -81,7 +82,7 @@ export class LfChat implements LfChatInterface {
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() history: LfChatHistory = [];
   @State() currentPrompt: LfLLMChoiceMessage;
-  @State() currentTokens = 0;
+  @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
   @State() status: LfChatStatus = "connecting";
   @State() view: LfChatView = "main";
   //#endregion
