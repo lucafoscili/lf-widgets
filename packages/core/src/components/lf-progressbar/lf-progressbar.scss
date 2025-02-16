@@ -58,9 +58,9 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
     height: var(--lf-progressbar-height, 100%);
     /**
     * @prop --lf-progressbar-padding: Sets the padding for the #{$comp} component.
-    *                                 Defaults to => 2em 0.5em
+    *                                 Defaults to => 1em 0em
     */
-    padding: var(--lf-#{$comp}-padding, 1em 0.5em);
+    padding: var(--lf-#{$comp}-padding, 1em 0);
     position: relative;
     text-align: center;
     width: var(--lf_progressbar_percentage_width);
