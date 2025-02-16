@@ -26,5 +26,6 @@
 
   &__chat {
     grid-area: chat;
+    overflow: auto;
   }
 }
