@@ -418,7 +418,9 @@ export class LfTabbar implements LfTabbarInterface {
   componentDidLoad() {
     const { debug, drag } = this.#framework;
 
-    drag.register.dragToScroll(this.#scrollContainer);
+    if (this.#scrollContainer) {
+      drag.register.dragToScroll(this.#scrollContainer);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");

@@ -125,15 +125,11 @@ After installing, you can import and use LF Widgets components in your project. 
     <title>LF Widgets Example</title>
     <script
       type="module"
-      src="./path/to/@lf-widgets/foundations/dist/index.js"
+      src="./path/to/@lf-widgets/framework/dist/framework/lf-framework.esm.js"
     ></script>
     <script
       type="module"
-      src="./path/to/@lf-widgets/framework/dist/index.js"
-    ></script>
-    <script
-      type="module"
-      src="./path/to/@lf-widgets/core/dist/esm/lf-widgets.js"
+      src="./path/to/@lf-widgets/core/dist/lf-core/lf-core.esm.js"
     ></script>
   </head>
   <body>

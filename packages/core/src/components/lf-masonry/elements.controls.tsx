@@ -29,7 +29,7 @@ export const prepControls = (
           key={LF_MASONRY_IDS.addColumn}
           lfIcon={plus}
           lfStyling={"floating"}
-          lfUiSize="small"
+          lfUiSize="xxsmall"
           onLf-button-event={button}
           part={parts.addColumn}
           ref={assignRef(refs, "addColumn")}
@@ -59,7 +59,7 @@ export const prepControls = (
           key={LF_MASONRY_IDS.removeColumn}
           lfIcon={minus}
           lfStyling={"floating"}
-          lfUiSize="small"
+          lfUiSize="xxsmall"
           onLf-button-event={button}
           part={parts.removeColumn}
           ref={assignRef(refs, "removeColumn")}
@@ -94,6 +94,7 @@ export const prepControls = (
                 : layoutBoardSplit
           }
           lfStyling={"floating"}
+          lfUiSize="xsmall"
           onLf-button-event={button}
           part={parts.changeView}
           ref={assignRef(refs, "changeView")}
