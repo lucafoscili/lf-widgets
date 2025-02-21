@@ -113,6 +113,7 @@ export const prepChat = (
           lfCenteredLabel={true}
           lfIcon={get.icon("percentage60")}
           lfLabel="Context window"
+          lfUiSize="xsmall"
           lfValue={percentage}
           ref={assignRef(chat, "progressbar")}
           title={title}
