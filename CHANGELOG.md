@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.4...0.3.5-rc.0) (2025-02-21)
+
+### Bug Fixes
+
+- **chat:** reduced progressbar size ([947493a](https://github.com/lucafoscili/lf-widgets/commit/947493a52085d2f1da36bcc27c122c55c44a78f0))
+
 ## [0.3.4](https://github.com/lucafoscili/lf-widgets/compare/0.3.4-rc.0...0.3.4) (2025-02-16)
 
 **Note:** Version bump only for package @lf-widgets/root
