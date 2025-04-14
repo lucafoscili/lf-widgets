@@ -1169,7 +1169,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfTypes",
-        docs: "The type of the chart.\r\nSupported formats: Bar, Gaussian, Line, Pie, Map and Scatter.",
+        docs: "The type of the chart.\r\nSupported chart formats.",
         type: '("area" | "line" | "bar" | "radar" | "calendar" | "scatter" | "pie" | "funnel" | "sankey" | "candlestick" | "heatmap" | "bubble" | "gaussian" | "hbar" | "sbar")[]',
       },
       {
