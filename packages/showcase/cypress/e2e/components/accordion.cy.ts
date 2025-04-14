@@ -180,7 +180,7 @@ describe(CY_CATEGORIES.e2e, () => {
           const c = $c[0] as HTMLLfAccordionElement;
 
           const { id } = c.lfDataset.nodes[0];
-          return c.toggleNode(id);
+          await c.toggleNode(id);
         });
       })
       .within(() => {
