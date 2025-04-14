@@ -1,6 +1,6 @@
 {
   "npmClient": "yarn",
-  "version": "0.3.6-rc.0",
+  "version": "0.3.6-rc.1",
   "command": {
     "publish": {
       "conventionalCommits": true,
@@ -8,6 +8,8 @@
       "message": "chore(release): publish",
       "tagVersionPrefix": ""
     },
-    "version": { "tagVersionPrefix": "" }
+    "version": {
+      "tagVersionPrefix": ""
+    }
   }
 }
