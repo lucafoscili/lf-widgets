@@ -16,9 +16,9 @@ The component supports various customization options, including character select
 | Property     | Attribute     | Description                                                                                                                     | Type                 | Default |
 | ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ------- |
 | `lfAutosave` | `lf-autosave` | Automatically saves the dataset when a chat updates.                                                                            | `boolean`            | `true`  |
-| `lfDataset`  | --            | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfMessengerDataset` | `null`  |
+| `lfDataset`  | `lf-dataset`  | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfMessengerDataset` | `null`  |
 | `lfStyle`    | `lf-style`    | Custom styling for the component.                                                                                               | `string`             | `""`    |
-| `lfValue`    | --            | Sets the initial configuration, including active character and filters.                                                         | `LfMessengerConfig`  | `null`  |
+| `lfValue`    | `lf-value`    | Sets the initial configuration, including active character and filters.                                                         | `LfMessengerConfig`  | `null`  |
 
 
 ## Events
