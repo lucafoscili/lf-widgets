@@ -176,7 +176,7 @@ describe(CY_CATEGORIES.e2e, () => {
       .first()
       .should("exist")
       .then(async ($comp) => {
-        cy.wrap($comp).should(async ($c) => {
+        cy.wrap($comp).then(async ($c) => {
           const c = $c[0] as HTMLLfAccordionElement;
 
           const { id } = c.lfDataset.nodes[0];
