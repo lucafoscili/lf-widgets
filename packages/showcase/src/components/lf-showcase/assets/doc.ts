@@ -60,7 +60,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Accordion component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Accordion component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -197,7 +197,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Article component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Article component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfArticleDataset",
       },
       {
@@ -515,7 +515,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The dataset for the button, containing the nodes to be displayed.\nThe first node will be used to set the icon and label if not provided.",
+        docs: "The dataset for the button, containing the nodes to be displayed.\r\nThe first node will be used to set the icon and label if not provided.",
         type: "LfDataDataset",
       },
       {
@@ -590,7 +590,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial state of the button.\nRelevant only when lfToggable is set to true.",
+        docs: "Sets the initial state of the button.\r\nRelevant only when lfToggable is set to true.",
         type: "boolean",
       },
     ],
@@ -691,7 +691,7 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Retrieves the HTMLLfImageElement from the canvas.",
         returns: {
           type: "Promise<LfImageElement>",
-          docs: "A promise that resolves with the HTMLLfImageElement instance\nrepresenting the image element in the canvas.",
+          docs: "A promise that resolves with the HTMLLfImageElement instance\r\nrepresenting the image element in the canvas.",
         },
         signature: "() => Promise<LfImageElement>",
       },
@@ -715,7 +715,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "resizeCanvas",
-        docs: "Resizes the canvas elements to match the container's dimensions.\n\nThis method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)\nto match the current container's height and width obtained via getBoundingClientRect().",
+        docs: "Resizes the canvas elements to match the container's dimensions.\r\n\r\nThis method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)\r\nto match the current container's height and width obtained via getBoundingClientRect().",
         returns: {
           type: "Promise<void>",
           docs: "A Promise that resolves when the resize operation is complete",
@@ -724,7 +724,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "setCanvasHeight",
-        docs: "Sets the canvas height for both the board and preview elements.\nIf a value is provided, it will set that specific height.\nIf no value is provided, it will set the height based on the container's bounding client rect.",
+        docs: "Sets the canvas height for both the board and preview elements.\r\nIf a value is provided, it will set that specific height.\r\nIf no value is provided, it will set the height based on the container's bounding client rect.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the height has been set",
@@ -733,7 +733,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "setCanvasWidth",
-        docs: "Sets the width of the canvas element(s).\nIf a value is provided, sets the width to that specific value.\nIf no value is provided, sets the width to match the container's width.\nWhen cursor preview is enabled, also updates the preview canvas width.",
+        docs: "Sets the width of the canvas element(s).\r\nIf a value is provided, sets the width to that specific value.\r\nIf no value is provided, sets the width to match the container's width.\r\nWhen cursor preview is enabled, also updates the preview canvas width.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when width is set",
@@ -768,7 +768,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfImageProps",
-        docs: "The props of the image displayed inside the badge.",
+        docs: "The props of the image displayed inside the canvas.",
         type: "LfImagePropsInterface",
       },
       {
@@ -788,7 +788,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfStrokeTolerance",
-        docs: "Simplifies the coordinates array by applying the Ramer-Douglas-Peucker algorithm.\nThis prop sets the tolerance of the algorithm (null to disable).",
+        docs: "Simplifies the coordinates array by applying the Ramer-Douglas-Peucker algorithm.\r\nThis prop sets the tolerance of the algorithm (null to disable).",
         type: "number",
       },
       {
@@ -879,12 +879,12 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Card component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Card component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
         name: "lfLayout",
-        docs: 'The layout style for the card component.\nCan be set to different predefined styles like "material" design.',
+        docs: 'The layout style for the card component.\r\nCan be set to different predefined styles like "material" design.',
         type: '"debug" | "keywords" | "material" | "upload"',
       },
       {
@@ -971,7 +971,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "nextSlide",
-        docs: "Moves the carousel to the next slide.\nTriggers the next slide transition using the carousel controller's next function.",
+        docs: "Moves the carousel to the next slide.\r\nTriggers the next slide transition using the carousel controller's next function.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the slide transition is complete.",
@@ -980,7 +980,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "prevSlide",
-        docs: "Moves the carousel to the previous slide by invoking the `previous` method\nfrom the carousel controller's index set.",
+        docs: "Moves the carousel to the previous slide by invoking the `previous` method\r\nfrom the carousel controller's index set.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the slide transition is complete",
@@ -1014,7 +1014,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF Carousel component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Carousel component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -1139,12 +1139,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF Chart component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Chart component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
         name: "lfLegend",
-        docs: "Sets the position of the legend.\nSupported values: bottom, left, right, top, hidden.\nKeep in mind that legend types are tied to chart types, some combinations might not work.",
+        docs: "Sets the position of the legend.\r\nSupported values: bottom, left, right, top, hidden.\r\nKeep in mind that legend types are tied to chart types, some combinations might not work.",
         type: '"bottom" | "hidden" | "left" | "right" | "top"',
       },
       {
@@ -1169,8 +1169,8 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfTypes",
-        docs: "The type of the chart.\nSupported formats: Bar, Gaussian, Line, Pie, Map and Scatter.",
-        type: '("bar" | "line" | "radar" | "calendar" | "scatter" | "pie" | "area" | "funnel" | "sankey" | "candlestick" | "heatmap" | "bubble" | "gaussian" | "hbar" | "sbar")[]',
+        docs: "The type of the chart.\r\nSupported chart formats.",
+        type: '("area" | "line" | "bar" | "radar" | "calendar" | "scatter" | "pie" | "funnel" | "sankey" | "candlestick" | "heatmap" | "bubble" | "gaussian" | "hbar" | "sbar")[]',
       },
       {
         name: "lfXAxis",
@@ -1459,7 +1459,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Chip component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Chip component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -1489,7 +1489,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial state of the chip.\nRelevant only when the chip can be selected.",
+        docs: "Sets the initial state of the chip.\r\nRelevant only when the chip can be selected.",
         type: "string[]",
       },
     ],
@@ -1748,7 +1748,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Chart component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Chart component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -1826,7 +1826,7 @@ export const LF_DOC: LfShowcaseDoc = {
     methods: [
       {
         name: "close",
-        docs: "Closes the drawer component.\nUses requestAnimationFrame to ensure smooth animation and state update.\nDispatches a 'close' custom event when the drawer is closed.",
+        docs: "Closes the drawer component.\r\nUses requestAnimationFrame to ensure smooth animation and state update.\r\nDispatches a 'close' custom event when the drawer is closed.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the drawer closing animation is scheduled",
@@ -1880,7 +1880,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "toggle",
-        docs: "Toggles the drawer state between opened and closed.\nIf the drawer is currently opened, it will be closed.\nIf the drawer is currently closed, it will be opened.",
+        docs: "Toggles the drawer state between opened and closed.\r\nIf the drawer is currently opened, it will be closed.\r\nIf the drawer is currently closed, it will be opened.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the toggle operation is complete",
@@ -1910,7 +1910,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfResponsive",
-        docs: 'A number representing a screen-width breakpoint for responsiveness.\nIf set to 0 (or negative), no responsiveness is applied, and `lfDisplay` remains what you set.\nIf > 0, the drawer will switch to `"dock"` if `window.innerWidth >= lfResponsive`,\notherwise `"slide"`.',
+        docs: 'A number representing a screen-width breakpoint for responsiveness.\r\nIf set to 0 (or negative), no responsiveness is applied, and `lfDisplay` remains what you set.\r\nIf > 0, the drawer will switch to `"dock"` if `window.innerWidth >= lfResponsive`,\r\notherwise `"slide"`.',
         type: "number",
       },
       {
@@ -2078,22 +2078,22 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfHtmlAttributes",
-        docs: "Allows customization of the image element.\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        docs: "Allows customization of the image element.\r\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfShowSpinner",
-        docs: "Controls the display of a loading indicator.\nWhen enabled, a spinner is shown until the image finishes loading.\nThis property is not compatible with SVG images.",
+        docs: "Controls the display of a loading indicator.\r\nWhen enabled, a spinner is shown until the image finishes loading.\r\nThis property is not compatible with SVG images.",
         type: "boolean",
       },
       {
         name: "lfSizeX",
-        docs: "Sets the width of the icon.\nThis property accepts any valid CSS measurement value (e.g., px, %, vh, etc.) and defaults to 100%.",
+        docs: "Sets the width of the icon.\r\nThis property accepts any valid CSS measurement value (e.g., px, %, vh, etc.) and defaults to 100%.",
         type: "string",
       },
       {
         name: "lfSizeY",
-        docs: "Sets the height of the icon.\nThis property accepts any valid CSS measurement value (e.g., px, %, vh, etc.) and defaults to 100%.",
+        docs: "Sets the height of the icon.\r\nThis property accepts any valid CSS measurement value (e.g., px, %, vh, etc.) and defaults to 100%.",
         type: "string",
       },
       {
@@ -2108,7 +2108,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Defines the source URL of the image.\nThis property is used to set the image resource that the component should display.",
+        docs: "Defines the source URL of the image.\r\nThis property is used to set the image resource that the component should display.",
         type: "string",
       },
     ],
@@ -2143,7 +2143,7 @@ export const LF_DOC: LfShowcaseDoc = {
     methods: [
       {
         name: "addSnapshot",
-        docs: "Appends a new snapshot to the current shape's history by duplicating it with an updated value.\nIt has no effect when the current shape is not set.",
+        docs: "Appends a new snapshot to the current shape's history by duplicating it with an updated value.\r\nIt has no effect when the current shape is not set.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -2152,7 +2152,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "clearHistory",
-        docs: "Clears the history related to the shape identified by the index.\nWhen index is not provided, it clear the full history.",
+        docs: "Clears the history related to the shape identified by the index.\r\nWhen index is not provided, it clear the full history.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -2245,7 +2245,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Imageviewer component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Imageviewer component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -2295,7 +2295,7 @@ export const LF_DOC: LfShowcaseDoc = {
     methods: [
       {
         name: "focusNext",
-        docs: "Moves focus to the next item in the list.\nIf no item is currently focused, focuses the selected item.\nIf the last item is focused, wraps around to the first item.",
+        docs: "Moves focus to the next item in the list.\r\nIf no item is currently focused, focuses the selected item.\r\nIf the last item is focused, wraps around to the first item.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the focus operation is complete",
@@ -2304,7 +2304,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "focusPrevious",
-        docs: "Focuses the previous item in the list.\nIf no item is currently focused, it focuses the selected item.\nIf focused item is the first one, it wraps around to the last item.",
+        docs: "Focuses the previous item in the list.\r\nIf no item is currently focused, it focuses the selected item.\r\nIf focused item is the first one, it wraps around to the last item.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the focus operation is complete",
@@ -2349,7 +2349,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "selectNode",
-        docs: "Selects a node in the list at the specified index.\nIf no index is provided, selects the currently focused node.",
+        docs: "Selects a node in the list at the specified index.\r\nIf no index is provided, selects the currently focused node.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the selection is complete.",
@@ -2369,7 +2369,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF List component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF List component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -2414,7 +2414,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial state of the list.\nRelevant only when the list can be selected.",
+        docs: "Sets the initial state of the list.\r\nRelevant only when the list can be selected.",
         type: "number",
       },
     ],
@@ -2543,7 +2543,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfColumns",
-        docs: "Number of columns of the masonry, doesn't affect sequential views.\nCan be set with a number or an array of numbers that identify each breakpoint.",
+        docs: "Number of columns of the masonry, doesn't affect sequential views.\r\nCan be set with a number or an array of numbers that identify each breakpoint.",
         type: "number | number[]",
       },
       {
@@ -2668,7 +2668,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "reset",
-        docs: "Resets the messenger component to its initial state.\nClears covers, current character, and message history.\nReinitializes the component.",
+        docs: "Resets the messenger component to its initial state.\r\nClears covers, current character, and message history.\r\nReinitializes the component.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the reset is complete",
@@ -2702,7 +2702,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF List component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF List component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfMessengerDataset",
       },
       {
@@ -2823,7 +2823,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPlaceholder",
         docs: "Html attributes of the picture before the component enters the viewport.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfStyle",
@@ -2838,7 +2838,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Html attributes of the picture after the component enters the viewport.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
     ],
     styles: [
@@ -2928,7 +2928,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Displays an animated SVG placeholder until the component is loaded.",
-        type: '"x" | "id" | "replace" | "search" | "brush" | "list" | "progress" | "upload" | "check" | "code" | "copy" | "refresh" | "settings" | "messages" | "temperature" | "hexagon-plus" | "photo-x" | "chevron-right" | "copy-check" | "square-x" | "lock" | "download" | "chevron-down" | "edit" | "info-hexagon" | "hexagon-minus" | "chevron-left" | "lf-website" | "lf-signature" | "alert-triangle" | "adjustments-horizontal" | "arrow-autofit-content" | "arrow-back" | "article" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "bug" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "door" | "drag-drop" | "droplet" | "file" | "folder" | "forms" | "hexagon-minus-2" | "hexagon-plus-2" | "hourglass-low" | "ikosaedr" | "image-in-picture" | "inner-shadow-bottom" | "key" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "list-tree" | "loader" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "off-brush" | "off-hexagon" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-template" | "palette" | "pdf" | "percentage-60" | "photo" | "photo-search" | "robot" | "schema" | "shirt" | "slideshow" | "square-toggle" | "stack-pop" | "stack-push" | "sunset-2" | "template" | "toggle-right" | "viewport-tall" | "viewport-wide" | "wand" | "writing" | "zip"',
+        type: '"article" | "code" | "progress" | "download" | "id" | "key" | "list" | "replace" | "x" | "copy" | "search" | "brush" | "upload" | "check" | "refresh" | "settings" | "messages" | "temperature" | "hexagon-plus" | "photo-x" | "chevron-right" | "copy-check" | "square-x" | "lock" | "chevron-down" | "edit" | "info-hexagon" | "hexagon-minus" | "chevron-left" | "lf-website" | "lf-signature" | "alert-triangle" | "adjustments-horizontal" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "bug" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "door" | "drag-drop" | "droplet" | "file" | "folder" | "forms" | "hexagon-minus-2" | "hexagon-plus-2" | "hourglass-low" | "ikosaedr" | "image-in-picture" | "inner-shadow-bottom" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "list-tree" | "loader" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "off-brush" | "off-hexagon" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-template" | "palette" | "pdf" | "percentage-60" | "photo" | "photo-search" | "robot" | "schema" | "shirt" | "slideshow" | "square-toggle" | "stack-pop" | "stack-push" | "sunset-2" | "template" | "toggle-right" | "viewport-tall" | "viewport-wide" | "wand" | "writing" | "zip"',
       },
       {
         name: "lfProps",
@@ -2947,7 +2947,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfTrigger",
-        docs: "Decides when the sub-component should be rendered.\nBy default when both the component props exist and the component is in the viewport.",
+        docs: "Decides when the sub-component should be rendered.\r\nBy default when both the component props exist and the component is in the viewport.",
         type: '"both" | "props" | "viewport"',
       },
       {
@@ -3026,7 +3026,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfCenteredLabel",
-        docs: "Displays the label in the middle of the progress bar.\nIt's the default for the radial variant and can't be changed.",
+        docs: "Displays the label in the middle of the progress bar.\r\nIt's the default for the radial variant and can't be changed.",
         type: "boolean",
       },
       {
@@ -3181,7 +3181,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfLeadingLabel",
-        docs: "When true, displays the label before the slider component.\nDefaults to `false`.",
+        docs: "When true, displays the label before the slider component.\r\nDefaults to `false`.",
         type: "boolean",
       },
       {
@@ -3360,7 +3360,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDimensions",
-        docs: "Defines the width and height of the spinner.\nIn the bar variant, it specifies only the height.",
+        docs: "Defines the width and height of the spinner.\r\nIn the bar variant, it specifies only the height.",
         type: "string",
       },
       {
@@ -3567,7 +3567,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Tabbar component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Tabbar component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -3722,13 +3722,13 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfHelper",
-        docs: "Sets the helper text for the text field.\nThe helper text can provide additional information or instructions to the user.",
+        docs: "Sets the helper text for the text field.\r\nThe helper text can provide additional information or instructions to the user.",
         type: "LfTextfieldHelper",
       },
       {
         name: "lfHtmlAttributes",
-        docs: "Allows customization of the input or textarea element through additional HTML attributes.\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        docs: "Allows customization of the input or textarea element through additional HTML attributes.\r\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfIcon",
@@ -4168,7 +4168,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF Tree component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Tree component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -4183,7 +4183,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfInitialExpansionDepth",
-        docs: "Sets the initial expanded nodes based on the specified depth.\nIf the property is not provided, all nodes in the tree will be expanded.",
+        docs: "Sets the initial expanded nodes based on the specified depth.\r\nIf the property is not provided, all nodes in the tree will be expanded.",
         type: "number",
       },
       {
