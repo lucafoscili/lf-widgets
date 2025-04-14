@@ -61,11 +61,7 @@ import { createAdapter } from "./lf-canvas-adapter";
  *
  * @fires {CustomEvent} lf-canvas-event - Emitted for various component events
  */
-@Component({
-  tag: "lf-canvas",
-  styleUrl: "lf-canvas.scss",
-  shadow: true,
-})
+@Component({ tag: "lf-canvas", styleUrl: "lf-canvas.scss", shadow: true })
 export class LfCanvas implements LfCanvasInterface {
   /**
    * References the root HTML element of the component (<lf-canvas>).
@@ -119,7 +115,7 @@ export class LfCanvas implements LfCanvasInterface {
    */
   @Prop({ mutable: true }) lfCursor: LfCanvasCursor = "preview";
   /**
-   * The props of the image displayed inside the badge.
+   * The props of the image displayed inside the canvas.
    *
    * @type {LfImagePropsInterface}
    * @default null

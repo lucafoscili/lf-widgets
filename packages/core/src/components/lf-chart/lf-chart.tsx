@@ -74,11 +74,7 @@ import { createAdapter } from "./lf-chart-adapter";
  *
  * @fires {CustomEvent} lf-chart-event - Emitted for various component events
  */
-@Component({
-  tag: "lf-chart",
-  styleUrl: "lf-chart.scss",
-  shadow: true,
-})
+@Component({ tag: "lf-chart", styleUrl: "lf-chart.scss", shadow: true })
 export class LfChart implements LfChartInterface {
   /**
    * References the root HTML element of the component (<lf-chart>).
@@ -206,8 +202,7 @@ export class LfChart implements LfChartInterface {
    */
   @Prop({ mutable: true }) lfStyle: string = "";
   /**
-   * The type of the chart.
-   * Supported formats: Bar, Gaussian, Line, Pie, Map and Scatter.
+   * The type(s) of the chart.
    *
    * @type {LfChartType[]}
    * @default ["line"]
@@ -400,11 +395,7 @@ export class LfChart implements LfChartInterface {
         },
         xAxesData: () => this.#axesData,
       },
-      {
-        style: {
-          theme: () => this.#updateThemeColors(),
-        },
-      },
+      { style: { theme: () => this.#updateThemeColors() } },
       () => this.#adapter,
     );
   };

@@ -176,16 +176,22 @@ describe(CY_CATEGORIES.e2e, () => {
       .first()
       .should("exist")
       .then(async ($comp) => {
-        cy.wrap($comp).should(async ($accordion) => {
-          const { lfDataset, toggleNode } =
-            $accordion[0] as HTMLLfAccordionElement;
+        cy.wrap($comp).then(async ($c) => {
+          const c = $c[0] as HTMLLfAccordionElement;
 
-          const { id } = lfDataset.nodes[0];
-          await toggleNode(id);
+          const { id } = c.lfDataset.nodes[0];
+          await c.toggleNode(id);
         });
       })
       .within(() => {
-        cy.getCyElement(node).first().click({ force: true });
+        cy.get(`.${framework.theme.bemClass("node", "content")}`)
+          .should("exist")
+          .and("not.be.empty");
+
+        cy.get(`.${framework.theme.bemClass("node", "header")}`)
+          .first()
+          .click({ force: true });
+
         cy.get(`.${framework.theme.bemClass("node", "content")}`).should(
           "not.exist",
         );

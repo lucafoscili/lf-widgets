@@ -17,7 +17,7 @@ The component can be customized with a label, ripple effect, and custom styling.
 | `lfLabel`  | `lf-label`  | Sets the button's label.                                              | `string`  | `"Upload files..."` |
 | `lfRipple` | `lf-ripple` | When set to true, the pointerdown event will trigger a ripple effect. | `boolean` | `true`              |
 | `lfStyle`  | `lf-style`  | Custom styling for the component.                                     | `string`  | `""`                |
-| `lfValue`  | --          | Initializes the component with these files.                           | `File[]`  | `null`              |
+| `lfValue`  | `lf-value`  | Initializes the component with these files.                           | `File[]`  | `null`              |
 
 
 ## Events
