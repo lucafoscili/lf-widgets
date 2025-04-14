@@ -768,7 +768,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfImageProps",
-        docs: "The props of the image displayed inside the badge.",
+        docs: "The props of the image displayed inside the canvas.",
         type: "LfImagePropsInterface",
       },
       {
