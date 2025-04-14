@@ -202,8 +202,7 @@ export class LfChart implements LfChartInterface {
    */
   @Prop({ mutable: true }) lfStyle: string = "";
   /**
-   * The type of the chart.
-   * Supported chart formats.
+   * The type(s) of the chart.
    *
    * @type {LfChartType[]}
    * @default ["line"]
