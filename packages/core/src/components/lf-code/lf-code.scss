@@ -96,6 +96,10 @@ pre,
   white-space: pre-line;
 }
 
+.code-snippet {
+  display: initial;
+}
+
 :not(pre) > code,
 pre {
   @include lf-el-text("code");
