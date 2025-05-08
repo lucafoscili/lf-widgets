@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.7-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.6...0.3.7-rc.0) (2025-05-08)
+
+### Bug Fixes
+
+- **code:** code words do not inherit component's styles ([195dcb6](https://github.com/lucafoscili/lf-widgets/commit/195dcb6eade150d19abb03209406541c71e44368))
+
 ## [0.3.6](https://github.com/lucafoscili/lf-widgets/compare/0.3.6-rc.1...0.3.6) (2025-04-14)
 
 **Note:** Version bump only for package @lf-widgets/root
