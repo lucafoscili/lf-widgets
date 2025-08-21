@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 .debug-layout {
   & {
     @include lf-comp-border($comp, "radius");

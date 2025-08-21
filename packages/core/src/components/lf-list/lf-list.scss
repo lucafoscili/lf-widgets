@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "list";
 @include lf-comp-setup($comp, "true", "true");
 

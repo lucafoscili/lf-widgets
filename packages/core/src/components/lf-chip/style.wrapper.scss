@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 .wrapper {
   & {
     align-items: center;

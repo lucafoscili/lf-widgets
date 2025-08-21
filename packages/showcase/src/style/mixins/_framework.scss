@@ -1,3 +1,7 @@
+@use "./elements" as *;
+@use "./helpers" as *;
+@use "../_variables" as *;
+
 /*******************************************
  * @mixin lf-fw-backdrop
  * Creates a full-screen backdrop element with a fade-in-out transition.

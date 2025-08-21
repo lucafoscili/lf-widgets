@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 .extra-context {
   & {
     @include lf-el-transition("slide-in-out");

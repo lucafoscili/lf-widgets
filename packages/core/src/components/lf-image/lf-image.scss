@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "image";
 @include lf-comp-setup("image", "true", "false", "true");
 

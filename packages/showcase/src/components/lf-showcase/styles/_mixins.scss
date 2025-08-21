@@ -1,3 +1,6 @@
+@use "../../../style/_variables" as *;
+@use "../../../style/mixins" as *;
+
 @mixin showcase-title {
   @include lf-comp-color("showcase", "bg", "bg", 0.675);
   @include lf-el-sticky;

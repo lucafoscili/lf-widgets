@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "upload";
 @include lf-comp-setup($comp, "false", "true", "true");
 

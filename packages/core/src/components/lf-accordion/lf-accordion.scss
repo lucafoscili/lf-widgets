@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "accordion";
 @include lf-comp-setup($comp, "true", "true", "true");
 

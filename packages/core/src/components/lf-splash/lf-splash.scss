@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "splash";
 @include lf-comp-setup("splash");
 

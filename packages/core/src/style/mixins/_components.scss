@@ -1,3 +1,9 @@
+@use "./app" as *;
+@use "./framework" as *;
+@use "./elements" as *;
+@use "./helpers" as *;
+@use "../_variables" as *;
+
 /*******************************************
  * @mixin lf-comp-border
  * Applies border styling (color, width, and optional radius)

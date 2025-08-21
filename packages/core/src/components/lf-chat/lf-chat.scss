@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "chat";
 @include lf-comp-setup("chat");
 

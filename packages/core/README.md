@@ -274,7 +274,13 @@ Pull requests are also welcome if you want to contribute firsthand. Just clone t
 yarn install
 ```
 
-Then you can launch the development environment with the command:
+Then build the library with the command:
+
+```sh
+yarn build
+```
+
+Finally, you can launch the development environment with the command:
 
 ```sh
 yarn dev
