@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_SCSS = (Prism: Prism.Environment) => {
-  (Prism.languages.scss = Prism.languages.extend("css", {
+  ((Prism.languages.scss = Prism.languages.extend("css", {
     comment: {
       pattern: /(^|[^\\])(?:\/\*[\s\S]*?\*\/|\/\/.*)/,
       lookbehind: !0,
@@ -50,5 +50,5 @@ export const LF_CODE_SCSS = (Prism: Prism.Environment) => {
         lookbehind: !0,
       },
     }),
-    (Prism.languages.scss.atrule.inside.rest = Prism.languages.scss);
+    (Prism.languages.scss.atrule.inside.rest = Prism.languages.scss));
 };
