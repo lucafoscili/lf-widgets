@@ -1,6 +1,8 @@
 @use "variables" as *;
 @use "mixins" as *;
 
+$comp: null !default;
+
 h1 {
   @include lf-el-text("h1");
   /**

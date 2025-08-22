@@ -35,6 +35,7 @@
     "vite-plugin-static-copy": "^2"
   },
   "scripts": {
+    "prebuild": "yarn lint:scss-modules",
     "build:core": "lerna run build --scope @lf-widgets/core --stream",
     "build:foundations": "lerna run build --scope @lf-widgets/foundations --stream",
     "build:framework": "lerna run build --scope @lf-widgets/framework --stream",
@@ -52,7 +53,8 @@
     "mixins": "node ./packages/core/src/scripts/copyMixins.js",
     "sync:showcase": "yarn doc && yarn mixins",
     "test": "lerna run test --scope @lf-widgets/showcase --stream",
-    "test:open": "lerna run test:open --scope @lf-widgets/showcase --stream"
+    "test:open": "lerna run test:open --scope @lf-widgets/showcase --stream",
+    "lint:scss-modules": "node scripts/checkNoScssImports.js"
   },
   "workspaces": [
     "packages/assets",

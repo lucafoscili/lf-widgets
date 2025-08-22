@@ -1,5 +1,11 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "./style.bars" as sb with (
+  $comp: "spinner"
+);
+@use "./style.widgets" as sw with (
+  $comp: "spinner"
+);
 
 $comp: "spinner";
 @include lf-comp-setup($comp, "true", "true");
@@ -81,5 +87,4 @@ $comp: "spinner";
   }
 }
 
-@import "./style.bars.scss";
-@import "./style.widgets.scss";
+/* local partials loaded above */

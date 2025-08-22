@@ -1,6 +1,8 @@
 @use "variables" as *;
 @use "mixins" as *;
 
+$comp: null !default;
+
 $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 
 .button {

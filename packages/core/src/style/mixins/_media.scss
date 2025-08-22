@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "../_variables" as *;
 
 /*******************************************
@@ -13,7 +14,7 @@
  *   }
  *******************************************/
 @mixin lf-respond-to-min($breakpoint) {
-  $size: map-get($lf-media-breakpoints, $breakpoint);
+  $size: map.get($lf-media-breakpoints, $breakpoint);
 
   @if $size {
     @media (min-width: #{$size}) {
@@ -36,7 +37,7 @@
  *   }
  *******************************************/
 @mixin lf-respond-to-max($breakpoint) {
-  $size: map-get($lf-media-breakpoints, $breakpoint);
+  $size: map.get($lf-media-breakpoints, $breakpoint);
 
   @if $size {
     @media (max-width: #{$size}) {

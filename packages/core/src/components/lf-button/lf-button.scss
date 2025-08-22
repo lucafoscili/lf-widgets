@@ -1,5 +1,11 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "./style.button" as sb with (
+  $comp: "button"
+);
+@use "./style.icon" as si with (
+  $comp: "button"
+);
 
 $comp: "button";
 @include lf-comp-setup($comp, "true", "true", "false", "true");
@@ -38,5 +44,4 @@ $comp: "button";
   }
 }
 
-@import "./style.button.scss";
-@import "./style.icon.scss";
+/* local partials loaded above */

@@ -1,6 +1,8 @@
 @use "variables" as *;
 @use "mixins" as *;
 
+$comp: null !default;
+
 .button--icon {
   & {
     @include lf-comp-color($comp, "primary", "text");

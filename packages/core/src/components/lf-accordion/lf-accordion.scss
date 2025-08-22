@@ -1,5 +1,8 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "./style.node" as sn with (
+  $comp: "accordion"
+);
 
 $comp: "accordion";
 @include lf-comp-setup($comp, "true", "true", "true");
@@ -24,4 +27,4 @@ $comp: "accordion";
   width: 100%;
 }
 
-@import "./style.node.scss";
+/* local partial loaded above */

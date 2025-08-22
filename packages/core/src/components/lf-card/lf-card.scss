@@ -1,5 +1,17 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "./style.debug" as sd with (
+  $comp: "card"
+);
+@use "./style.keywords" as sk with (
+  $comp: "card"
+);
+@use "./style.material" as sm with (
+  $comp: "card"
+);
+@use "./style.upload" as su with (
+  $comp: "card"
+);
 
 $comp: "card";
 @include lf-comp-setup($comp, "true", "true", "true");
@@ -16,7 +28,4 @@ $comp: "card";
   @include lf-comp-border($comp, "radius");
 }
 
-@import "style.debug.scss";
-@import "style.keywords.scss";
-@import "style.material.scss";
-@import "style.upload.scss";
+/* local partials loaded above */

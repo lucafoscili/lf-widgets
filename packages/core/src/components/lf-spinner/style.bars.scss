@@ -1,3 +1,6 @@
+@use "variables";
+$comp: null !default;
+
 .spinner-bar-v1 {
   position: absolute;
   overflow: hidden;

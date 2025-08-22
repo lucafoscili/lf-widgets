@@ -1,6 +1,8 @@
 @use "variables" as *;
 @use "mixins" as *;
 
+$comp: null !default;
+
 .keywords-layout {
   & {
     @include lf-comp-border($comp, "radius");

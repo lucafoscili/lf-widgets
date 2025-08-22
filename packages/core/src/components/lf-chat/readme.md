@@ -136,7 +136,7 @@ Type: `Promise<void>`
 | `--lf-chat-font-family`      | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-chat-font-size`        | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
 | `--lf-chat-grid-gap`         | Sets the grid gap for the messages area. Defaults to => 0.75em                                    |
-| `--lf-chat-inner-padding`    | Sets the inner padding for the chat component. Defaults to => 0 1em                               |
+| `--lf-chat-inner-padding`    | Sets the inner padding for the messages area. Defaults to => 1em                                  |
 | `--lf-chat-margin-bottom`    | Sets the margin bottom for the messages area. Defaults to => 1em                                  |
 | `--lf-chat-margin-top`       | Sets the margin top for the messages area. Defaults to => 1em                                     |
 | `--lf-chat-outer-grid-gap`   | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |

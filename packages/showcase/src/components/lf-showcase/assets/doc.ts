@@ -1378,7 +1378,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-chat-inner-padding",
-        docs: "Sets the inner padding for the chat component. Defaults to => 0 1em",
+        docs: "Sets the inner padding for the messages area. Defaults to => 1em",
       },
       {
         name: "--lf-chat-margin-bottom",
