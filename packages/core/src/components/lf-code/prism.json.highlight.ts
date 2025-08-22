@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_JSON = (Prism: Prism.Environment) => {
-  (Prism.languages.json = {
+  ((Prism.languages.json = {
     property: {
       pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/,
       lookbehind: !0,
@@ -18,5 +18,5 @@ export const LF_CODE_JSON = (Prism: Prism.Environment) => {
     boolean: /\b(?:false|true)\b/,
     null: { pattern: /\bnull\b/, alias: "keyword" },
   }),
-    (Prism.languages.webmanifest = Prism.languages.json);
+    (Prism.languages.webmanifest = Prism.languages.json));
 };

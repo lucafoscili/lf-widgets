@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
-  (Prism.languages.markup = {
+  ((Prism.languages.markup = {
     comment: { pattern: /<!--(?:(?!<!--)[\s\S])*?-->/, greedy: !0 },
     prolog: { pattern: /<\?[\s\S]+?\?>/, greedy: !0 },
     doctype: {
@@ -66,12 +66,12 @@ export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
     Object.defineProperty(Prism.languages.markup.tag, "addInlined", {
       value: function (a, e) {
         var s = {};
-        (s["language-" + e] = {
+        ((s["language-" + e] = {
           pattern: /(^<!\[CDATA\[)[\s\S]+?(?=\]\]>$)/i,
           lookbehind: !0,
           inside: Prism.languages[e],
         }),
-          (s["cdata"] = /^<!\[CDATA\[|\]\]>$/i);
+          (s["cdata"] = /^<!\[CDATA\[|\]\]>$/i));
         var t = {
           "included-cdata": {
             pattern: /<!\[CDATA\[[\s\S]*?\]\]>/i,
@@ -83,7 +83,7 @@ export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
           inside: Prism.languages[e],
         };
         var n = {};
-        (n[a] = {
+        ((n[a] = {
           pattern: RegExp(
             "(<__[^>]*>)(?:<!\\[CDATA\\[(?:[^\\]]|\\](?!\\]>))*\\]\\]>|(?!<!\\[CDATA\\[)[^])*?(?=</__>)".replace(
               /__/g,
@@ -97,7 +97,7 @@ export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
           greedy: !0,
           inside: t,
         }),
-          Prism.languages.insertBefore("markup", "cdata", n);
+          Prism.languages.insertBefore("markup", "cdata", n));
       },
     }),
     Object.defineProperty(Prism.languages.markup.tag, "addAttribute", {
@@ -134,5 +134,5 @@ export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
     (Prism.languages.xml = Prism.languages.extend("markup", {})),
     (Prism.languages.ssml = Prism.languages.xml),
     (Prism.languages.atom = Prism.languages.xml),
-    (Prism.languages.rss = Prism.languages.xml);
+    (Prism.languages.rss = Prism.languages.xml));
 };

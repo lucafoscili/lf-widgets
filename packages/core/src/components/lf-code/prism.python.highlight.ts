@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_PYTHON = (Prism: Prism.Environment) => {
-  (Prism.languages.python = {
+  ((Prism.languages.python = {
     comment: { pattern: /(^|[^\\])#.*/, lookbehind: !0, greedy: !0 },
     "string-interpolation": {
       pattern:
@@ -59,5 +59,5 @@ export const LF_CODE_PYTHON = (Prism: Prism.Environment) => {
     (Prism.languages.python[
       "string-interpolation"
     ].inside.interpolation.inside.rest = Prism.languages.python),
-    (Prism.languages.py = Prism.languages.python);
+    (Prism.languages.py = Prism.languages.python));
 };
