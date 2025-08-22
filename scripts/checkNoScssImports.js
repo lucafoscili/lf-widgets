@@ -25,7 +25,8 @@ function scanFile(filePath) {
     if (/^@import\b|[^A-Za-z-]@import\b/.test(trimmed)) {
       if (/^@import/.test(trimmed)) {
         violations.push({ file: filePath, line: idx + 1, code: line });
-      }
+    if (trimmed.startsWith("@import")) {
+      violations.push({ file: filePath, line: idx + 1, code: line });
     }
   });
 }
