@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "header";
 
 @include lf-comp-setup($comp);

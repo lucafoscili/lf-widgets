@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "progressbar";
 $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
 @include lf-comp-setup($comp, "true");

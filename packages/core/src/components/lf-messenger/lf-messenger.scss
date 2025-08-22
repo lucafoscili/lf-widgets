@@ -1,3 +1,30 @@
+@use "variables" as *;
+@use "mixins" as *;
+@use "./style.character" as schar with (
+  $comp: "messenger"
+);
+@use "./style.chat" as scha with (
+  $comp: "messenger"
+);
+@use "./style.covers" as scov with (
+  $comp: "messenger"
+);
+@use "./style.extra-context" as sextra with (
+  $comp: "messenger"
+);
+@use "./style.form" as sform with (
+  $comp: "messenger"
+);
+@use "./style.list" as slist with (
+  $comp: "messenger"
+);
+@use "./style.options" as sopt with (
+  $comp: "messenger"
+);
+@use "./style.roster" as srost with (
+  $comp: "messenger"
+);
+
 $comp: "messenger";
 @include lf-comp-setup($comp, "false", "false", "true");
 
@@ -27,11 +54,4 @@ $comp: "messenger";
   }
 }
 
-@import "style.character.scss";
-@import "style.chat.scss";
-@import "style.covers.scss";
-@import "style.extra-context.scss";
-@import "style.form.scss";
-@import "style.list.scss";
-@import "style.options.scss";
-@import "style.roster.scss";
+/* local partials loaded above */

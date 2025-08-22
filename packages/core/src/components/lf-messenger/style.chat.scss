@@ -1,3 +1,8 @@
+// Allow configuration when @used
+$comp: null !default;
+@use "variables" as *;
+@use "mixins" as *;
+
 .chat {
   & {
     display: grid;

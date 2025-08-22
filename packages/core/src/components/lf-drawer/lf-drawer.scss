@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "drawer";
 $borderC: 1px solid rgba(var(--lf-color-border), 0.75);
 @include lf-comp-setup($comp, "false", "false", "true");

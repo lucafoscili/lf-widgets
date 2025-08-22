@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "badge";
 @include lf-comp-setup($comp, "true");
 

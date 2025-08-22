@@ -274,11 +274,38 @@ Pull requests are also welcome if you want to contribute firsthand. Just clone t
 yarn install
 ```
 
-Then you can launch the development environment with the command:
+Then build the library with the command:
+
+```sh
+yarn build
+```
+
+Finally, you can launch the development environment with the command:
 
 ```sh
 yarn dev
 ```
+
+### Sass / Styling Guidelines
+
+The project uses **Sass Modules** only. Legacy `@import` is forbidden (enforced by `yarn lint:scss-modules`).
+
+Guidelines:
+
+1. Prefer `@use` for consuming, `@forward` for re‑exporting.
+2. Place all `@use` statements at the very top of the file.
+3. Never use `@use "..." as *` when bringing in multiple partials that expose the same configurable variables (e.g. `$comp`). Provide short, unique namespaces instead.
+4. Any variable meant for configuration via `with (...)` must be declared with `!default` in the partial (example: `$comp: null !default;`).
+5. Aggregator files should contain only `@forward` statements—no styles, no mixin calls.
+6. If a refactor introduces shared utilities, add them to an appropriate forwarded index rather than creating new global side‑effects.
+
+Run the validation locally:
+
+```sh
+yarn lint:scss-modules
+```
+
+If it fails, replace remaining `@import` with proper `@use` / `@forward` equivalents.
 
 <div align="right">
 
