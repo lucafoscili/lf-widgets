@@ -158,6 +158,20 @@ graph TD;
   lf-chat --> lf-textfield
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-tree --> lf-textfield
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
   style lf-compare fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -105,6 +105,7 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-photoframe](../lf-photoframe)
+ - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -118,6 +119,7 @@ graph TD;
   lf-compare --> lf-image
   lf-masonry --> lf-image
   lf-photoframe --> lf-image
+  lf-tree --> lf-image
   style lf-image fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

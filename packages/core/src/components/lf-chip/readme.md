@@ -141,6 +141,7 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
+ - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -152,6 +153,7 @@ graph TD;
   lf-compare --> lf-chip
   lf-masonry --> lf-chip
   lf-messenger --> lf-chip
+  lf-tree --> lf-chip
   style lf-chip fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -106,9 +106,65 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-imageviewer](../lf-imageviewer)
 
+### Depends on
+
+- [lf-textfield](../lf-textfield)
+- [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
+- [lf-canvas](../lf-canvas)
+- [lf-card](../lf-card)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
+- [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
+- [lf-typewriter](../lf-typewriter)
+- [lf-upload](../lf-upload)
+
 ### Graph
 ```mermaid
 graph TD;
+  lf-tree --> lf-textfield
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
+  lf-badge --> lf-image
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-card --> lf-badge
+  lf-card --> lf-button
+  lf-card --> lf-canvas
+  lf-card --> lf-card
+  lf-card --> lf-chart
+  lf-card --> lf-chat
+  lf-card --> lf-chip
+  lf-card --> lf-code
+  lf-card --> lf-image
+  lf-card --> lf-photoframe
+  lf-card --> lf-toggle
+  lf-card --> lf-typewriter
+  lf-card --> lf-upload
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
   lf-compare --> lf-tree
   lf-imageviewer --> lf-tree
   style lf-tree fill:#f9f,stroke:#333,stroke-width:4px
