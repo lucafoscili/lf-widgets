@@ -200,7 +200,6 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-imageviewer](../lf-imageviewer)
  - [lf-masonry](../lf-masonry)
- - [lf-tree](../lf-tree)
 
 ### Depends on
 
@@ -217,7 +216,6 @@ graph TD;
   lf-compare --> lf-canvas
   lf-imageviewer --> lf-canvas
   lf-masonry --> lf-canvas
-  lf-tree --> lf-canvas
   style lf-canvas fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

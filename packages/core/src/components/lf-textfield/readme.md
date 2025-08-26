@@ -150,7 +150,6 @@ Type: `Promise<void>`
  - [lf-chat](../lf-chat)
  - [lf-imageviewer](../lf-imageviewer)
  - [lf-messenger](../lf-messenger)
- - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -158,7 +157,6 @@ graph TD;
   lf-chat --> lf-textfield
   lf-imageviewer --> lf-textfield
   lf-messenger --> lf-textfield
-  lf-tree --> lf-textfield
   style lf-textfield fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
