@@ -14,7 +14,7 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
   const out: any[] = [];
   const stringify = manager.data.cell.stringify;
   const nodes: LfDataNode[] = compInstance.lfDataset?.nodes || [];
-  const filterValue = (adapter.controller.get as any).filterValue || "";
+  const filterValue = adapter.controller.get.filterValue?.() || "";
   const blocks = adapter.controller.get.blocks;
   const { noMatches } = blocks;
   const { bemClass } = manager.theme;
@@ -27,9 +27,13 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
     const { cell: cellOps } = manager.data;
     const cell = node.cells?.[colId];
     if (!cell) {
+      const nodeBlock = blocks.node;
+      const { bemClass } = manager.theme;
       return (
         <div
-          class={"node__grid-cell" + (isFirst ? " node__grid-cell--value" : "")}
+          class={bemClass(nodeBlock._, nodeBlock.gridCell, {
+            value: isFirst,
+          })}
           data-column={colId}
         >
           {isFirst ? stringify(node.value) : ""}
@@ -42,8 +46,12 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
     if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
       (shapeProps as any).lfValue = cell.value;
     }
+    const nodeBlock = blocks.node;
     return (
-      <div class="node__grid-cell" data-column={colId}>
+      <div
+        class={manager.theme.bemClass(nodeBlock._, nodeBlock.gridCell)}
+        data-column={colId}
+      >
         {simple ? (
           stringify(cell.value as any)
         ) : (
@@ -65,8 +73,13 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
     if (!(compInstance.lfGrid && compInstance.lfDataset?.columns?.length))
       return null;
     const parts = adapter.controller.get.parts;
+    const nodeBlock = adapter.controller.get.blocks.node;
+    const { bemClass } = manager.theme;
     return (
-      <div class="node__grid" part={parts.node + "-grid"}>
+      <div
+        class={bemClass(nodeBlock._, nodeBlock.grid)}
+        part={parts.node + "-grid"}
+      >
         {compInstance.lfDataset.columns.map((c: any, i: number) =>
           renderCellShape(node, c.id as string, i === 0),
         )}
@@ -97,12 +110,24 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
               }}
             ></div>
           ),
-          value:
-            compInstance.lfGrid && gridValue ? (
-              <div class="node__value node__value--grid">{gridValue}</div>
-            ) : (
-              <div class="node__value">{stringify(node.value)}</div>
-            ),
+          value: (() => {
+            const nodeBlock = blocks.node;
+            const { bemClass } = manager.theme;
+            if (compInstance.lfGrid && gridValue) {
+              return (
+                <div
+                  class={bemClass(nodeBlock._, nodeBlock.value, { grid: true })}
+                >
+                  {gridValue}
+                </div>
+              );
+            }
+            return (
+              <div class={bemClass(nodeBlock._, nodeBlock.value)}>
+                {stringify(node.value)}
+              </div>
+            );
+          })(),
         },
         events: {
           onClick: (e) => adapter.handlers.nodeClick(e, node),

@@ -74,7 +74,7 @@ $comp: "tree";
       overflow: hidden;
     }
 
-    .tree__header {
+    .header {
       & {
         position: sticky;
         top: 0;
@@ -85,7 +85,7 @@ $comp: "tree";
         line-height: 1.2;
       }
 
-      &-row {
+      &__row {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: minmax(120px, auto);
@@ -94,7 +94,7 @@ $comp: "tree";
         box-sizing: border-box;
       }
 
-      &-cell {
+      &__cell {
         @include lf-el-text("caption");
         font-weight: 600;
         text-transform: none;

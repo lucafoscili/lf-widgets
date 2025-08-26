@@ -16,9 +16,18 @@ export const LF_TREE_BLOCKS = {
     expand: "expand",
     icon: "icon",
     padding: "padding",
+    value: "value",
+    grid: "grid",
+    gridCell: "grid-cell",
   },
   noMatches: { _: "no-matches", filter: "filter", icon: "icon", text: "text" },
-  tree: { _: "tree", filter: "filter", nodesWrapper: "nodes-wrapper" },
+  tree: {
+    _: "tree",
+    filter: "filter",
+    nodesWrapper: "nodes-wrapper",
+    header: "header",
+  },
+  header: { _: "header", row: "row", cell: "cell" },
 } as const;
 //#endregion
 

@@ -8,7 +8,7 @@ import { traverseNodes } from "./lf-tree-traverse";
 export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   filter: () => {
     const { controller, handlers } = getAdapter();
-    const { compInstance, manager } = controller.get as any;
+    const { compInstance, manager } = controller.get;
     if (!compInstance.lfFilter) return null;
     const { theme } = manager;
     const { bemClass, get } = theme;
@@ -34,12 +34,16 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     const ds = controller.get.dataset();
     if (!ds?.columns?.length) return null;
     const parts = controller.get.parts;
+    const blocks = controller.get.blocks;
+    const { manager } = controller.get;
+    const { bemClass } = manager.theme;
+    const header = blocks.header;
     return (
-      <div class="tree__header" part={parts.node + "-header"}>
-        <div class="tree__header-row">
+      <div class={bemClass(header._)} part={parts.node + "-header"}>
+        <div class={bemClass(header._, header.row)}>
           {ds.columns.map((c: any, i: number) => (
             <div
-              class={"tree__header-cell"}
+              class={bemClass(header._, header.cell)}
               data-column={c.id as string}
               data-index={i.toString()}
               key={c.id as string}
@@ -55,7 +59,7 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     const adapter = getAdapter();
     const content = traverseNodes(adapter);
     const { controller } = adapter;
-    const { manager } = controller.get as any;
+    const { manager } = controller.get;
     const { bemClass } = manager.theme;
     const blocks = controller.get.blocks;
     const tree = blocks.tree;
@@ -65,7 +69,7 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   },
   empty: () => {
     const { controller } = getAdapter();
-    const { compInstance, manager } = controller.get as any;
+    const { compInstance, manager } = controller.get;
     const { theme } = manager;
     const { bemClass } = theme;
     const blocks = controller.get.blocks;

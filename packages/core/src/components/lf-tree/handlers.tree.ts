@@ -2,29 +2,27 @@ import {
   LfDataNode,
   LfTreeAdapter,
   LfTreeAdapterHandlers,
-  LfTreeAdapterInitializerGetters,
 } from "@lf-widgets/foundations";
 
 export const createHandlers = (
-  _getters: LfTreeAdapterInitializerGetters,
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapterHandlers => ({
   nodeClick: (e: Event, node: LfDataNode) => {
     const adapter = getAdapter();
     adapter.controller.set.selection.set(node);
-    const ci: any = adapter.controller.get.compInstance;
+    const ci = adapter.controller.get.compInstance as any;
     ci.onLfEvent?.(e, "click", { node });
   },
   nodeExpand: (e: Event, node: LfDataNode) => {
     const adapter = getAdapter();
     adapter.controller.set.expansion.toggle(node);
-    const ci: any = adapter.controller.get.compInstance;
+    const ci = adapter.controller.get.compInstance as any;
     ci.onLfEvent?.(e, "expand", { node, expansion: true });
     ci.onLfEvent?.(e, "click", { node, expansion: true });
   },
   nodePointerDown: (e: Event, node: LfDataNode) => {
     const adapter = getAdapter();
-    const ci: any = adapter.controller.get.compInstance;
+    const ci = adapter.controller.get.compInstance as any;
     ci.onLfEvent?.(e, "pointerdown", { node });
   },
   filterInput: (e: CustomEvent<any>) => {

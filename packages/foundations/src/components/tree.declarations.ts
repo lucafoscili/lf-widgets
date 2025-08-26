@@ -54,7 +54,7 @@ export interface LfTreeAdapterInitializerGetters {
   isExpanded: (node: LfDataNode) => boolean;
   isHidden: (node: LfDataNode) => boolean;
   isSelected: (node: LfDataNode) => boolean;
-  filterValue: () => string;
+  filterValue: () => string; // kept as function to always reflect latest value
 }
 export interface LfTreeAdapterInitializerSetters {
   expansion: { toggle: (node: LfDataNode) => void };
@@ -75,7 +75,7 @@ export interface LfTreeAdapterControllerGetters
   isExpanded: (node: LfDataNode) => boolean;
   isHidden: (node: LfDataNode) => boolean;
   isSelected: (node: LfDataNode) => boolean;
-  filterValue: string;
+  filterValue: () => string; // function rather than snapshot for dynamic filtering
 }
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {

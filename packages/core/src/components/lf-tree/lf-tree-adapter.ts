@@ -20,7 +20,7 @@ export const createAdapter = (
     set: createSetters(setters),
   },
   elements: { jsx: createJsx(getAdapter), refs: createRefs() },
-  handlers: createHandlers(getters, getAdapter),
+  handlers: createHandlers(getAdapter),
 });
 
 export const createRefs = (): LfTreeAdapterRefs => ({

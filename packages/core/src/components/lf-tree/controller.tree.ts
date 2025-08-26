@@ -8,6 +8,7 @@ import {
 export const createGetters = (
   getters: LfTreeAdapterInitializerGetters,
 ): LfTreeAdapterControllerGetters => ({
+  // Pass-through (no snapshotting) to align with other adapters
   blocks: getters.blocks,
   compInstance: getters.compInstance,
   manager: getters.manager,
@@ -20,9 +21,10 @@ export const createGetters = (
   isExpanded: getters.isExpanded,
   isHidden: getters.isHidden,
   isSelected: getters.isSelected,
-  filterValue: getters.filterValue(),
+  filterValue: getters.filterValue,
 });
 
 export const createSetters = (
   setters: LfTreeAdapterInitializerSetters,
-): LfTreeAdapterControllerSetters => setters as any;
+): LfTreeAdapterControllerSetters =>
+  setters as unknown as LfTreeAdapterControllerSetters;
