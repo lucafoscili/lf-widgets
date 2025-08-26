@@ -1,10 +1,4 @@
 import {
-  HTMLStencilElement,
-  LfComponent,
-  LfComponentClassProperties,
-  VNode,
-} from "../foundations/components.declarations";
-import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
   LfComponentAdapterHandlers,
@@ -16,16 +10,30 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
 } from "../foundations/components.constants";
+import {
+  HTMLStencilElement,
+  LfComponent,
+  LfComponentClassProperties,
+  VNode,
+} from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
+import { LfTextfieldEventPayload } from "./textfield.declarations";
 import { LF_TREE_EVENTS } from "./tree.constants";
 
 //#region Class
 export interface LfTreeInterface
   extends LfComponent<"LfTree">,
-    LfTreePropsInterface {}
+    LfTreePropsInterface {
+  onLfEvent: (
+    e: Event | CustomEvent,
+    eventType: LfTreeEvent,
+    args?: LfTreeEventArguments,
+  ) => void;
+  _filterTimeout?: any;
+}
 export interface LfTreeElement
   extends HTMLStencilElement,
     Omit<LfTreeInterface, LfComponentClassProperties> {}
@@ -40,7 +48,6 @@ export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
   elements: { jsx: LfTreeAdapterJsx; refs: LfTreeAdapterRefs };
   handlers: LfTreeAdapterHandlers;
 }
-// Standardized initializer (Phase 1) following other components (carousel/compare/masonry)
 export interface LfTreeAdapterInitializerGetters {
   blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
   compInstance: LfTreeInterface;
@@ -75,7 +82,7 @@ export interface LfTreeAdapterControllerGetters
   isExpanded: (node: LfDataNode) => boolean;
   isHidden: (node: LfDataNode) => boolean;
   isSelected: (node: LfDataNode) => boolean;
-  filterValue: () => string; // function rather than snapshot for dynamic filtering
+  filterValue: () => string;
 }
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -86,18 +93,22 @@ export interface LfTreeAdapterControllerSetters
 export interface LfTreeAdapterJsx extends LfComponentAdapterJsx {
   filter: () => VNode;
   header: () => VNode;
-  nodes: () => VNode; // wrapper will ensure single VNode even if underlying traversal returns list
+  nodes: () => VNode;
   empty: () => VNode;
 }
 export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
   rippleSurfaces: Record<string, HTMLElement>;
-  filterField: HTMLElement | null; // lf-textfield element reference
+  filterField: HTMLElement | null;
 }
 export interface LfTreeAdapterHandlers extends LfComponentAdapterHandlers {
-  nodeClick: (e: Event, node: LfDataNode) => void;
-  nodeExpand: (e: Event, node: LfDataNode) => void;
-  nodePointerDown: (e: Event, node: LfDataNode) => void;
-  filterInput: (e: CustomEvent<any>) => void; // refine later when textfield event typed here
+  node: {
+    click: (e: Event, node: LfDataNode) => void;
+    expand: (e: Event, node: LfDataNode) => void;
+    pointerDown: (e: Event, node: LfDataNode) => void;
+  };
+  filter: {
+    input: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+  };
 }
 //#endregion
 
@@ -110,6 +121,7 @@ export interface LfTreeEventPayload
 export interface LfTreeEventArguments {
   expansion?: boolean;
   node?: LfDataNode;
+  selected?: boolean;
 }
 //#endregion
 

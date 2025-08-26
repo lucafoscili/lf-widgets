@@ -32,9 +32,8 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-// Shape & node rendering moved to adapter recursion (Phase 2)
-import { createAdapter } from "./lf-tree-adapter";
 import type { LfTreeAdapter } from "./lf-tree-adapter";
+import { createAdapter } from "./lf-tree-adapter";
 
 /**
  * The tree component displays a hierarchical dataset in a tree structure.
@@ -100,19 +99,6 @@ export class LfTree implements LfTreeInterface {
    */
   @Prop({ mutable: true }) lfDataset: LfDataDataset = null;
   /**
-   * When true, displays a text field which enables filtering the dataset of the tree.
-   *
-   * @type {boolean}
-   * @default true
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-tree lfFilter={true}></lf-tree>
-   * ```
-   */
-  @Prop({ mutable: true }) lfFilter: boolean = true;
-  /**
    * Empty text displayed when there is no data.
    *
    * @type {string}
@@ -125,6 +111,19 @@ export class LfTree implements LfTreeInterface {
    * ```
    */
   @Prop({ mutable: true }) lfEmpty: string = "Empty data.";
+  /**
+   * When true, displays a text field which enables filtering the dataset of the tree.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-tree lfFilter={true}></lf-tree>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFilter: boolean = true;
   /**
    * When true, the tree behaves like a grid, displaying each node's cells across the configured dataset columns.
    * The dataset should provide a `columns` array. Each column id will be looked up inside the node `cells` container; if a matching cell is found its shape/component will be rendered, otherwise a textual fallback (node value / empty) is shown. The first column will still contain the hierarchical expansion affordance and node icon.
@@ -213,14 +212,14 @@ export class LfTree implements LfTreeInterface {
   #p = LF_TREE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  _filterValue = ""; // moved from private to public-ish for adapter access
-  #adapter: LfTreeAdapter; // Adapter instance
+  _filterValue = "";
+  _filterTimeout: any;
+  #adapter: LfTreeAdapter;
   //#endregion
 
   //#region Watchers
   @Watch("lfDataset")
   handleDatasetChange() {
-    // Reset internal expansion / selection / filtering state when dataset changes
     this.expandedNodes = new Set();
     this.hiddenNodes = new Set();
     this.selectedNode = null;
@@ -253,7 +252,7 @@ export class LfTree implements LfTreeInterface {
     args?: LfTreeEventArguments,
   ) {
     const { effects } = this.#framework;
-    const { node } = args || {};
+    const { node, selected } = args || {};
     if (eventType === "pointerdown" && node && this.lfRipple) {
       const rippleEl = this.#adapter?.elements.refs.rippleSurfaces[node.id];
       if (rippleEl) {
@@ -267,6 +266,8 @@ export class LfTree implements LfTreeInterface {
       id: this.rootElement.id,
       originalEvent: e,
       node,
+      ...(args?.expansion ? { expansion: true } : {}),
+      ...(selected != null ? { selected } : {}),
     });
   }
   //#endregion
@@ -317,7 +318,24 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
-  // Tree traversal & filtering logic moved to adapter (Phase 2)
+  #applyInitialExpansion() {
+    const depth = this.lfInitialExpansionDepth;
+    const nodes = this.lfDataset?.nodes || [];
+    const walk = (list: LfDataNode[], currentDepth: number) => {
+      for (const n of list) {
+        if (depth == null) {
+          this.expandedNodes.add(n);
+        } else if (currentDepth < depth) {
+          this.expandedNodes.add(n);
+        }
+        if (n.children?.length) {
+          walk(n.children as LfDataNode[], currentDepth + 1);
+        }
+      }
+    };
+    walk(nodes, 0);
+    this.expandedNodes = new Set(this.expandedNodes);
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -328,7 +346,6 @@ export class LfTree implements LfTreeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    // Initialize adapter (new standardized signature)
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
@@ -429,23 +446,4 @@ export class LfTree implements LfTreeInterface {
     this.#framework?.theme.unregister(this);
   }
   //#endregion
-  #applyInitialExpansion() {
-    const depth = this.lfInitialExpansionDepth;
-    const nodes = this.lfDataset?.nodes || [];
-    const walk = (list: LfDataNode[], currentDepth: number) => {
-      for (const n of list) {
-        if (depth == null) {
-          // No depth specified: expand all
-          this.expandedNodes.add(n);
-        } else if (currentDepth < depth) {
-          this.expandedNodes.add(n);
-        }
-        if (n.children?.length) {
-          walk(n.children as LfDataNode[], currentDepth + 1);
-        }
-      }
-    };
-    walk(nodes, 0);
-    this.expandedNodes = new Set(this.expandedNodes);
-  }
 }

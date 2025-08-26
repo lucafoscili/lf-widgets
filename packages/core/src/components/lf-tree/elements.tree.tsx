@@ -1,9 +1,9 @@
-import { h } from "@stencil/core";
 import {
   LfTextfieldEventPayload,
   LfTreeAdapter,
 } from "@lf-widgets/foundations";
-import { traverseNodes } from "./lf-tree-traverse";
+import { h } from "@stencil/core";
+import { traverseNodes } from "./helpers.traverse";
 
 export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   filter: () => {
@@ -22,7 +22,7 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
         lfLabel={"Search..."}
         lfStyling="flat"
         onLf-textfield-event={(e: CustomEvent<LfTextfieldEventPayload>) =>
-          handlers.filterInput(e as any)
+          handlers.filter.input(e)
         }
         ref={(el) => (getAdapter().elements.refs.filterField = el)}
       ></lf-textfield>
@@ -31,8 +31,8 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   header: () => {
     const { controller } = getAdapter();
     if (!controller.get.isGrid()) return null;
-    const ds = controller.get.dataset();
-    if (!ds?.columns?.length) return null;
+    const columns = controller.get.columns();
+    if (!columns.length) return null;
     const parts = controller.get.parts;
     const blocks = controller.get.blocks;
     const { manager } = controller.get;
@@ -41,7 +41,7 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     return (
       <div class={bemClass(header._)} part={parts.node + "-header"}>
         <div class={bemClass(header._, header.row)}>
-          {ds.columns.map((c: any, i: number) => (
+          {columns.map((c, i) => (
             <div
               class={bemClass(header._, header.cell)}
               data-column={c.id as string}
