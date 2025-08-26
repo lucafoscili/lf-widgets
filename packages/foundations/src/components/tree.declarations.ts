@@ -40,6 +40,27 @@ export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
   elements: { jsx: LfTreeAdapterJsx; refs: LfTreeAdapterRefs };
   handlers: LfTreeAdapterHandlers;
 }
+// Standardized initializer (Phase 1) following other components (carousel/compare/masonry)
+export interface LfTreeAdapterInitializerGetters {
+  blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
+  compInstance: LfTreeInterface;
+  cyAttributes: typeof CY_ATTRIBUTES;
+  dataset: () => LfDataDataset;
+  columns: () => NonNullable<LfDataDataset["columns"]>;
+  isGrid: () => boolean;
+  lfAttributes: typeof LF_ATTRIBUTES;
+  manager: import("../framework/framework.declarations").LfFrameworkInterface;
+  parts: typeof import("./tree.constants").LF_TREE_PARTS;
+  isExpanded: (node: LfDataNode) => boolean;
+  isHidden: (node: LfDataNode) => boolean;
+  isSelected: (node: LfDataNode) => boolean;
+  filterValue: () => string;
+}
+export interface LfTreeAdapterInitializerSetters {
+  expansion: { toggle: (node: LfDataNode) => void };
+  selection: { set: (node: LfDataNode) => void };
+  filter: { setValue: (value: string) => void; apply: (value: string) => void };
+}
 export interface LfTreeAdapterControllerGetters
   extends LfComponentAdapterGetters<LfTreeInterface> {
   blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;

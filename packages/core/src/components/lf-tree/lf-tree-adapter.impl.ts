@@ -1,5 +1,7 @@
 // Internal implementation moved here to avoid .tsx shadowing issues during Rollup resolution.
 import {
+  CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
   LfFrameworkInterface,
   LfDataNode,
   LfDataDataset,
@@ -9,53 +11,86 @@ import {
   LfTreeAdapterControllerGetters,
   LfTreeAdapterControllerSetters,
   LfTreeAdapterHandlers,
+  LfTreeAdapterInitializerGetters,
+  LfTreeAdapterInitializerSetters,
   LfTreeAdapterRefs,
   LfTreeInterface,
 } from "@lf-widgets/foundations";
 import { createJsx } from "./lf-tree-elements";
 export type { LfTreeAdapter } from "@lf-widgets/foundations";
 
-interface CreateAdapterGetters {
-  compInstance: LfTreeInterface;
-  manager: LfFrameworkInterface;
-  blocks: typeof LF_TREE_BLOCKS;
-  parts: typeof LF_TREE_PARTS;
-}
-
+// New standardized adapter factory (Phase 1)
 export const createAdapter = (
-  getters: CreateAdapterGetters,
+  getters: LfTreeAdapterInitializerGetters,
+  setters: LfTreeAdapterInitializerSetters,
   getAdapter: () => LfTreeAdapter,
-): LfTreeAdapter => ({
-  controller: {
-    get: createGetters(getters),
-    set: buildSetters(getters, getAdapter),
+): LfTreeAdapter => {
+  return {
+    controller: {
+      get: createGetters(getters),
+      set: createSetters(setters),
+    },
+    elements: { jsx: createJsx(getAdapter), refs: createRefs() },
+    handlers: createHandlers(getters, getAdapter),
+  };
+};
+
+// Backwards compatibility wrapper (deprecated) – remove in Phase 2 cleanup
+// Accepts the old (gettersOnly, getAdapter) signature.
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const createAdapterLegacy = (
+  legacy: {
+    compInstance: LfTreeInterface;
+    manager: LfFrameworkInterface;
+    blocks: typeof LF_TREE_BLOCKS;
+    parts: typeof LF_TREE_PARTS;
   },
-  elements: { jsx: createJsx(getAdapter), refs: createRefs() },
-  handlers: createHandlers(getters, getAdapter),
-});
+  getAdapter: () => LfTreeAdapter,
+): LfTreeAdapter =>
+  createAdapter(
+    {
+      blocks: legacy.blocks,
+      compInstance: legacy.compInstance,
+      cyAttributes: CY_ATTRIBUTES,
+      dataset: () => legacy.compInstance.lfDataset as LfDataDataset,
+      columns: () => legacy.compInstance.lfDataset?.columns || [],
+      isGrid: () =>
+        !!(
+          legacy.compInstance.lfGrid &&
+          legacy.compInstance.lfDataset?.columns?.length
+        ),
+      lfAttributes: LF_ATTRIBUTES,
+      manager: legacy.manager,
+      parts: legacy.parts,
+      isExpanded: (node: LfDataNode) =>
+        (legacy.compInstance as any).expandedNodes?.has(node),
+      isHidden: (node: LfDataNode) =>
+        (legacy.compInstance as any).hiddenNodes?.has(node),
+      isSelected: (node: LfDataNode) =>
+        (legacy.compInstance as any).selectedNode === node,
+      filterValue: () => (legacy.compInstance as any)._filterValue || "",
+    },
+    buildSetters(legacy, getAdapter),
+    getAdapter,
+  );
 
 export const createGetters = (
-  getters: CreateAdapterGetters,
+  getters: LfTreeAdapterInitializerGetters,
 ): LfTreeAdapterControllerGetters => {
-  const ci = getters.compInstance as any; // limited to internal fields without widening public type
   return {
     blocks: getters.blocks,
     compInstance: getters.compInstance,
     manager: getters.manager,
-    cyAttributes: undefined as any,
-    dataset: () => getters.compInstance.lfDataset as LfDataDataset,
-    columns: () => getters.compInstance.lfDataset?.columns || [],
-    isGrid: () =>
-      !!(
-        getters.compInstance.lfGrid &&
-        getters.compInstance.lfDataset?.columns?.length
-      ),
-    lfAttributes: undefined as any,
+    cyAttributes: getters.cyAttributes,
+    dataset: getters.dataset,
+    columns: getters.columns,
+    isGrid: getters.isGrid,
+    lfAttributes: getters.lfAttributes,
     parts: getters.parts,
-    isExpanded: (node: LfDataNode) => ci.expandedNodes.has(node),
-    isHidden: (node: LfDataNode) => ci.hiddenNodes.has(node),
-    isSelected: (node: LfDataNode) => ci.selectedNode === node,
-    filterValue: ci._filterValue || "",
+    isExpanded: getters.isExpanded,
+    isHidden: getters.isHidden,
+    isSelected: getters.isSelected,
+    filterValue: getters.filterValue(),
   };
 };
 
@@ -68,11 +103,12 @@ export const createRefs = (): LfTreeAdapterRefs => ({
   _filterTimeout: undefined,
 });
 
+// Setters builder (legacy path) re-used by legacy wrapper to avoid code duplication
 export const buildSetters = (
-  _getters: CreateAdapterGetters,
+  legacyGetters: { compInstance: LfTreeInterface },
   getAdapter: () => LfTreeAdapter,
-): LfTreeAdapterControllerSetters => {
-  const ci = _getters.compInstance as any;
+): LfTreeAdapterInitializerSetters => {
+  const ci = legacyGetters.compInstance as any;
   return {
     expansion: {
       toggle: (node: LfDataNode) => {
@@ -111,8 +147,14 @@ export const buildSetters = (
   };
 };
 
+export const createSetters = (
+  setters: LfTreeAdapterInitializerSetters,
+): LfTreeAdapterControllerSetters => {
+  return setters as unknown as LfTreeAdapterControllerSetters; // structure already matches
+};
+
 export const createHandlers = (
-  _getters: CreateAdapterGetters,
+  _getters: LfTreeAdapterInitializerGetters | any,
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapterHandlers => ({
   nodeClick: (e: Event, node: LfDataNode) => {
@@ -125,10 +167,10 @@ export const createHandlers = (
   nodeExpand: (e: Event, node: LfDataNode) => {
     const adapter = getAdapter();
     adapter.controller.set.expansion.toggle(node);
-    (adapter.controller.get.compInstance as any).onLfEvent?.(e, "click", {
-      expansion: true,
-      node,
-    });
+    const ci: any = adapter.controller.get.compInstance;
+    // Dual emission: explicit expand + legacy click with expansion arg
+    ci.onLfEvent?.(e, "expand", { node, expansion: true });
+    ci.onLfEvent?.(e, "click", { node, expansion: true });
   },
   nodePointerDown: (e: Event, node: LfDataNode) => {
     const adapter = getAdapter();
@@ -139,9 +181,14 @@ export const createHandlers = (
   filterInput: (e: CustomEvent<any>) => {
     const adapter = getAdapter();
     const value = e.detail.inputValue?.toLowerCase() || "";
-    const refs: any = adapter.elements.refs;
-    clearTimeout(refs._filterTimeout);
-    refs._filterTimeout = setTimeout(() => {
+    // Local runtime debounce (avoids mixing into refs shape)
+    let runtime = (adapter as any)._runtime as { filterTimeout?: any };
+    if (!runtime) {
+      runtime = {};
+      (adapter as any)._runtime = runtime;
+    }
+    clearTimeout(runtime.filterTimeout);
+    runtime.filterTimeout = setTimeout(() => {
       adapter.controller.set.filter.setValue(value);
       adapter.controller.set.filter.apply(value);
     }, 300);

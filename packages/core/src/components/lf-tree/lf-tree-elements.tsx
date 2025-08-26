@@ -52,8 +52,16 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   nodes: () => {
     const adapter = getAdapter();
     const content = traverseNodes(adapter);
+    const { controller } = adapter;
+    const { manager } = controller.get as any;
+    const { bemClass } = manager.theme;
+    const blocks = controller.get.blocks;
+    const tree = blocks.tree;
     // Ensure single VNode wrapper per adapter contract
-    return (<div class="tree__nodes-wrapper">{content}</div>) as any;
+    const nodesWrapperKey: any = (tree as any).nodesWrapper;
+    return (
+      <div class={bemClass(tree._, nodesWrapperKey)}>{content}</div>
+    ) as any;
   },
   empty: () => {
     const { controller } = getAdapter();

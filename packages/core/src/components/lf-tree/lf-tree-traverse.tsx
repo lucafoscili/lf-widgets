@@ -14,24 +14,10 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
   const out: any[] = [];
   const stringify = manager.data.cell.stringify;
   const nodes: LfDataNode[] = compInstance.lfDataset?.nodes || [];
-  const initialDepth = compInstance.lfInitialExpansionDepth;
   const filterValue = (adapter.controller.get as any).filterValue || "";
   const blocks = adapter.controller.get.blocks;
   const { noMatches } = blocks;
   const { bemClass } = manager.theme;
-
-  const ensureInitial = (node: LfDataNode, depth: number) => {
-    if (!compInstance.debugInfo?.endTime) {
-      const ci = compInstance as any;
-      if (
-        initialDepth === null ||
-        initialDepth === undefined ||
-        initialDepth > depth
-      ) {
-        ci.expandedNodes.add(node);
-      }
-    }
-  };
 
   const renderCellShape = (
     node: LfDataNode,
@@ -89,7 +75,6 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
   };
 
   const walk = (node: LfDataNode, depth: number) => {
-    ensureInitial(node, depth);
     const ci = compInstance as any;
     const isExpanded = filterValue ? true : ci.expandedNodes.has(node);
     const isHidden = ci.hiddenNodes.has(node);

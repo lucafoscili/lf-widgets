@@ -27,6 +27,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 // Shape & node rendering moved to adapter recursion (Phase 2)
@@ -210,12 +211,28 @@ export class LfTree implements LfTreeInterface {
   #p = LF_TREE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  _filterTimeout: ReturnType<typeof setTimeout>;
   _filterValue = ""; // moved from private to public-ish for adapter access
-  #adapter: LfTreeAdapter; // Phase 1 adapter scaffold
+  #adapter: LfTreeAdapter; // Adapter instance
   // Adapter bridges (temporary) - to be removed in later phases when logic moves fully out
   _treeBlocks = () => this.#b; // still used by adapter until promotion
   _treeParts = () => this.#p;
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfDataset")
+  handleDatasetChange() {
+    // Reset internal expansion / selection / filtering state when dataset changes
+    this.expandedNodes = new Set();
+    this.hiddenNodes = new Set();
+    this.selectedNode = null;
+    this._filterValue = "";
+    this.#applyInitialExpansion();
+  }
+  @Watch("lfInitialExpansionDepth")
+  handleInitialDepthChange() {
+    this.expandedNodes = new Set();
+    this.#applyInitialExpansion();
+  }
   //#endregion
 
   //#region Events
@@ -312,16 +329,62 @@ export class LfTree implements LfTreeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    // Initialize adapter (Phase 1)
+    // Initialize adapter (new standardized signature)
     this.#adapter = createAdapter(
       {
-        compInstance: this,
-        manager: this.#framework,
         blocks: this.#b,
+        compInstance: this,
+        cyAttributes: (this.#framework as any).cyAttributes || ({} as any),
+        dataset: () => this.lfDataset,
+        columns: () => this.lfDataset?.columns || [],
+        isGrid: () => !!(this.lfGrid && this.lfDataset?.columns?.length),
+        lfAttributes: (this.#framework as any).lfAttributes || ({} as any),
+        manager: this.#framework,
         parts: this.#p,
+        isExpanded: (node) => this.expandedNodes.has(node),
+        isHidden: (node) => this.hiddenNodes.has(node),
+        isSelected: (node) => this.selectedNode === node,
+        filterValue: () => this._filterValue,
+      },
+      {
+        expansion: {
+          toggle: (node) => {
+            if (this.expandedNodes.has(node)) this.expandedNodes.delete(node);
+            else this.expandedNodes.add(node);
+            this.expandedNodes = new Set(this.expandedNodes);
+          },
+        },
+        selection: {
+          set: (node) => {
+            if (this.lfSelectable) {
+              this.selectedNode = node;
+            }
+          },
+        },
+        filter: {
+          setValue: (value: string) => {
+            this._filterValue = value;
+          },
+          apply: (value: string) => {
+            const { filter } = this.#framework.data.node;
+            if (!value) {
+              this.hiddenNodes = new Set();
+              return;
+            }
+            const { ancestorNodes, remainingNodes } = filter(
+              this.lfDataset,
+              { value },
+              true,
+            );
+            const hidden = new Set(remainingNodes);
+            if (ancestorNodes) ancestorNodes.forEach((a) => hidden.delete(a));
+            this.hiddenNodes = hidden;
+          },
+        },
       },
       () => this.#adapter,
     );
+    this.#applyInitialExpansion();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -367,4 +430,23 @@ export class LfTree implements LfTreeInterface {
     this.#framework?.theme.unregister(this);
   }
   //#endregion
+  #applyInitialExpansion() {
+    const depth = this.lfInitialExpansionDepth;
+    const nodes = this.lfDataset?.nodes || [];
+    const walk = (list: LfDataNode[], currentDepth: number) => {
+      for (const n of list) {
+        if (depth == null) {
+          // No depth specified: expand all
+          this.expandedNodes.add(n);
+        } else if (currentDepth < depth) {
+          this.expandedNodes.add(n);
+        }
+        if (n.children?.length) {
+          walk(n.children as LfDataNode[], currentDepth + 1);
+        }
+      }
+    };
+    walk(nodes, 0);
+    this.expandedNodes = new Set(this.expandedNodes);
+  }
 }

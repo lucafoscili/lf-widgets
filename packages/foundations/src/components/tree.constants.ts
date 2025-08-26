@@ -18,13 +18,15 @@ export const LF_TREE_BLOCKS = {
     padding: "padding",
   },
   noMatches: { _: "no-matches", filter: "filter", icon: "icon", text: "text" },
-  tree: { _: "tree", filter: "filter" },
+  tree: { _: "tree", filter: "filter", nodesWrapper: "nodes-wrapper" },
 } as const;
 //#endregion
 
 //#region Events
 export const LF_TREE_EVENTS = [
   "click",
+  // New explicit expand event (Phase 1); "click" with args.expansion kept for backward compat
+  "expand",
   "lf-event",
   "pointerdown",
   "ready",

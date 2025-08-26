@@ -388,7 +388,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPosition",
         docs: "The position of the badge in relation of its container.",
-        type: '"bottom-left" | "bottom-right" | "top-left" | "top-right"',
+        type: '"bottom-left" | "bottom-right" | "inline" | "top-left" | "top-right"',
       },
       {
         name: "lfStyle",
