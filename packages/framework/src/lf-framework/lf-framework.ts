@@ -61,6 +61,11 @@ export class LfFramework implements LfFrameworkInterface {
   theme: LfThemeInterface;
 
   constructor() {
+    const ICON_STYLE_CACHE = new Map<
+      string,
+      { path: string; style: { mask: string; webkitMask: string } }
+    >();
+
     this.assets = {
       get: (value, module = "lf-framework") => {
         if (!this.#MODULES.has(module)) {
@@ -77,16 +82,20 @@ export class LfFramework implements LfFrameworkInterface {
 
         const { getAssetPath } = this.#MODULES.get(module);
 
+        if (ICON_STYLE_CACHE.has(value)) {
+          return ICON_STYLE_CACHE.get(value);
+        }
+
         const path = getAssetPath(value);
         const style = {
           mask: `url('${path}') no-repeat center`,
           webkitMask: `url('${path}') no-repeat center`,
         };
+        const cached = { path, style };
 
-        return {
-          path,
-          style,
-        };
+        ICON_STYLE_CACHE.set(value, cached);
+
+        return cached;
       },
       set: (value, module?) => {
         if (!module) {
