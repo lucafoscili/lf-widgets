@@ -15,19 +15,20 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
   const stringify = manager.data.cell.stringify;
   const nodes: LfDataNode[] = compInstance.lfDataset?.nodes || [];
   const initialDepth = compInstance.lfInitialExpansionDepth;
-  const filterValue = (compInstance as any)._filterValue;
+  const filterValue = (adapter.controller.get as any).filterValue || "";
   const blocks = adapter.controller.get.blocks;
   const { noMatches } = blocks;
   const { bemClass } = manager.theme;
 
   const ensureInitial = (node: LfDataNode, depth: number) => {
     if (!compInstance.debugInfo?.endTime) {
+      const ci = compInstance as any;
       if (
         initialDepth === null ||
         initialDepth === undefined ||
         initialDepth > depth
       ) {
-        (compInstance as any).expandedNodes.add(node);
+        ci.expandedNodes.add(node);
       }
     }
   };

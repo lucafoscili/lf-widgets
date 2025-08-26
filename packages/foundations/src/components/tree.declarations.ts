@@ -54,6 +54,7 @@ export interface LfTreeAdapterControllerGetters
   isExpanded: (node: LfDataNode) => boolean;
   isHidden: (node: LfDataNode) => boolean;
   isSelected: (node: LfDataNode) => boolean;
+  filterValue: string;
 }
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -69,7 +70,7 @@ export interface LfTreeAdapterJsx extends LfComponentAdapterJsx {
 }
 export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
   rippleSurfaces: Record<string, HTMLElement>;
-  filterField: any; // textfield element ref (kept as any to avoid cross-package circular type dependency)
+  filterField: HTMLElement | null; // lf-textfield element reference
 }
 export interface LfTreeAdapterHandlers extends LfComponentAdapterHandlers {
   nodeClick: (e: Event, node: LfDataNode) => void;
