@@ -1,4 +1,6 @@
 import {
+  CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TREE_BLOCKS,
   LF_TREE_PARTS,
@@ -213,9 +215,6 @@ export class LfTree implements LfTreeInterface {
   #w = LF_WRAPPER_ID;
   _filterValue = ""; // moved from private to public-ish for adapter access
   #adapter: LfTreeAdapter; // Adapter instance
-  // Adapter bridges (temporary) - to be removed in later phases when logic moves fully out
-  _treeBlocks = () => this.#b; // still used by adapter until promotion
-  _treeParts = () => this.#p;
   //#endregion
 
   //#region Watchers
@@ -334,11 +333,11 @@ export class LfTree implements LfTreeInterface {
       {
         blocks: this.#b,
         compInstance: this,
-        cyAttributes: (this.#framework as any).cyAttributes || ({} as any),
+        cyAttributes: CY_ATTRIBUTES,
         dataset: () => this.lfDataset,
         columns: () => this.lfDataset?.columns || [],
         isGrid: () => !!(this.lfGrid && this.lfDataset?.columns?.length),
-        lfAttributes: (this.#framework as any).lfAttributes || ({} as any),
+        lfAttributes: LF_ATTRIBUTES,
         manager: this.#framework,
         parts: this.#p,
         isExpanded: (node) => this.expandedNodes.has(node),

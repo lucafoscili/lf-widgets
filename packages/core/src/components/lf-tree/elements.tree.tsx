@@ -1,6 +1,8 @@
 import { h } from "@stencil/core";
-import { LfTreeAdapter } from "./lf-tree-adapter"; // local adapter type; migrate to foundations after full alignment
-import { LfTextfieldEventPayload } from "@lf-widgets/foundations";
+import {
+  LfTextfieldEventPayload,
+  LfTreeAdapter,
+} from "@lf-widgets/foundations";
 import { traverseNodes } from "./lf-tree-traverse";
 
 export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
@@ -57,10 +59,8 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     const { bemClass } = manager.theme;
     const blocks = controller.get.blocks;
     const tree = blocks.tree;
-    // Ensure single VNode wrapper per adapter contract
-    const nodesWrapperKey: any = (tree as any).nodesWrapper;
     return (
-      <div class={bemClass(tree._, nodesWrapperKey)}>{content}</div>
+      <div class={bemClass(tree._, tree.nodesWrapper)}>{content}</div>
     ) as any;
   },
   empty: () => {
