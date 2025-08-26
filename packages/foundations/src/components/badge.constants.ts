@@ -29,6 +29,7 @@ export const LF_BADGE_POSITIONS = [
   "bottom-right",
   "top-left",
   "top-right",
+  "inline",
 ] as const;
 //#endregion
 
