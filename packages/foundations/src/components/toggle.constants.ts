@@ -40,6 +40,7 @@ export const LF_TOGGLE_PARTS = {
 
 //#region Props
 export const LF_TOGGLE_PROPS = [
+  "lfAriaLabel",
   "lfLabel",
   "lfLeadingLabel",
   "lfRipple",

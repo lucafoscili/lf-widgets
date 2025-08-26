@@ -33,6 +33,7 @@ export type LfToggleState = (typeof LF_TOGGLE_STATES)[number];
 
 //#region Props
 export interface LfTogglePropsInterface {
+  lfAriaLabel?: string;
   lfLabel?: string;
   lfLeadingLabel?: boolean;
   lfRipple?: boolean;
