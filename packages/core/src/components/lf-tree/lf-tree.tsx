@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TREE_BLOCKS,
   LF_TREE_PARTS,
@@ -10,14 +8,12 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfTextfieldEventPayload,
   LfThemeUISize,
   LfTreeElement,
   LfTreeEvent,
   LfTreeEventArguments,
   LfTreeEventPayload,
   LfTreeInterface,
-  LfTreeNodeProps,
   LfTreePropsInterface,
 } from "@lf-widgets/foundations";
 import {
@@ -31,11 +27,11 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
-import { TreeNode } from "./components.node";
+// Shape & node rendering moved to adapter recursion (Phase 2)
+import { createAdapter } from "./lf-tree-adapter";
+import type { LfTreeAdapter } from "./lf-tree-adapter";
 
 /**
  * The tree component displays a hierarchical dataset in a tree structure.
@@ -214,9 +210,12 @@ export class LfTree implements LfTreeInterface {
   #p = LF_TREE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: { [id: string]: HTMLElement } = {};
-  #filterTimeout: ReturnType<typeof setTimeout>;
-  #filterValue = "";
+  _filterTimeout: ReturnType<typeof setTimeout>;
+  _filterValue = ""; // moved from private to public-ish for adapter access
+  #adapter: LfTreeAdapter; // Phase 1 adapter scaffold
+  // Adapter bridges (temporary) - to be removed in later phases when logic moves fully out
+  _treeBlocks = () => this.#b; // still used by adapter until promotion
+  _treeParts = () => this.#p;
   //#endregion
 
   //#region Events
@@ -238,27 +237,12 @@ export class LfTree implements LfTreeInterface {
     args?: LfTreeEventArguments,
   ) {
     const { effects } = this.#framework;
-
-    const { expansion, node } = args || {};
-
-    switch (eventType) {
-      case "click":
-        if (expansion && node.children?.length) {
-          if (this.expandedNodes.has(node)) {
-            this.expandedNodes.delete(node);
-          } else {
-            this.expandedNodes.add(node);
-          }
-          this.expandedNodes = new Set(this.expandedNodes);
-        } else if (node) {
-          this.selectedNode = node;
-        }
-        break;
-      case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r[node.id]);
-        }
-        break;
+    const { node } = args || {};
+    if (eventType === "pointerdown" && node && this.lfRipple) {
+      const rippleEl = this.#adapter?.elements.refs.rippleSurfaces[node.id];
+      if (rippleEl) {
+        effects.ripple(e as PointerEvent, rippleEl);
+      }
     }
 
     this.lfEvent.emit({
@@ -317,190 +301,7 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
-  #filter(e: CustomEvent<LfTextfieldEventPayload>) {
-    const { filter } = this.#framework.data.node;
-
-    clearTimeout(this.#filterTimeout);
-    this.#filterTimeout = setTimeout(() => {
-      this.#filterValue = e.detail.inputValue?.toLowerCase();
-
-      if (!this.#filterValue) {
-        this.hiddenNodes = new Set();
-      } else {
-        const { ancestorNodes, remainingNodes } = filter(
-          this.lfDataset,
-          { value: this.#filterValue },
-          true,
-        );
-
-        this.hiddenNodes = new Set(remainingNodes);
-
-        if (ancestorNodes) {
-          ancestorNodes.forEach((ancestor) => {
-            this.hiddenNodes.delete(ancestor);
-          });
-        }
-      }
-    }, 300);
-  }
-  #prepTree(): VNode[] {
-    const { bemClass } = this.#framework.theme;
-
-    const { noMatches } = this.#b;
-    const elements: VNode[] = [];
-
-    const nodes = this.lfDataset.nodes;
-    for (let index = 0; index < nodes.length; index++) {
-      const node = nodes[index];
-      this.#recursive(elements, node, 0);
-    }
-
-    return elements.length
-      ? elements
-      : this.#filterValue && (
-          <div class={bemClass(noMatches._)}>
-            <div class={bemClass(noMatches._, noMatches.icon)}></div>
-            <div class={bemClass(noMatches._, noMatches.text)}>
-              No matches found for "
-              <strong class={bemClass(noMatches._, noMatches.filter)}>
-                {this.#filterValue}
-              </strong>
-              ".
-            </div>
-          </div>
-        );
-  }
-  #recursive(elements: VNode[], node: LfDataNode, depth: number) {
-    const { stringify } = this.#framework.data.cell;
-
-    if (!this.debugInfo.endTime) {
-      if (
-        this.lfInitialExpansionDepth === null ||
-        this.lfInitialExpansionDepth === undefined ||
-        this.lfInitialExpansionDepth > depth
-      ) {
-        this.expandedNodes.add(node);
-      }
-    }
-    const isExpanded = this.#filterValue ? true : this.expandedNodes.has(node);
-    const isHidden = this.hiddenNodes.has(node);
-    const isSelected = this.selectedNode === node;
-    // Prep grid cells (if enabled)
-    let gridValue: VNode = null;
-    if (this.lfGrid && this.lfDataset?.columns?.length) {
-      const { cell: cellOps } = this.#framework.data;
-      const columns = this.lfDataset.columns;
-      const renderCellShape = (colId: string, isFirst: boolean): VNode => {
-        const cell = node.cells?.[colId];
-        // First column: keep hierarchical semantics (TreeNode still adds expand/icon outside of grid cell content). If a cell exists we render it; else fallback to node.value.
-        if (!cell) {
-          return (
-            <div
-              class={
-                "node__grid-cell" + (isFirst ? " node__grid-cell--value" : "")
-              }
-              data-column={colId}
-            >
-              {isFirst ? stringify(node.value) : ""}
-            </div>
-          );
-        }
-        const shape = cell.shape || "text";
-        // For primitive textual shapes we simply stringify, for others we rely on <LfShape/> helper.
-        const simple =
-          shape === "text" || shape === "number" || shape === "slot";
-        // Prepare processed cell (adds lf* props etc.)
-        const shapeProps = cellOps.shapes.get(cell);
-        if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
-          (shapeProps as any).lfValue = cell.value;
-        }
-        return (
-          <div class="node__grid-cell" data-column={colId}>
-            {simple ? (
-              stringify(cell.value as any)
-            ) : (
-              <LfShape
-                framework={this.#framework}
-                shape={shape as any}
-                index={0}
-                cell={shapeProps as any}
-                // dispatch events through tree unified event stream
-                eventDispatcher={async (e: any) => {
-                  this.onLfEvent(e, "lf-event", { node });
-                }}
-              ></LfShape>
-            )}
-          </div>
-        );
-      };
-      gridValue = (
-        <div class="node__grid" part={this.#p.node + "-grid"}>
-          {columns.map((c, i) => renderCellShape(c.id as string, i === 0))}
-        </div>
-      );
-    }
-
-    const nodeProps: LfTreeNodeProps = {
-      accordionLayout: this.lfAccordionLayout && depth === 0,
-      depth,
-      elements: {
-        ripple: (
-          <div
-            data-cy={CY_ATTRIBUTES.rippleSurface}
-            data-lf={LF_ATTRIBUTES.rippleSurface}
-            ref={(el) => {
-              if (el && this.lfRipple) {
-                this.#r[node.id] = el;
-              }
-            }}
-          ></div>
-        ),
-        value:
-          this.lfGrid && gridValue ? (
-            <div class="node__value node__value--grid">{gridValue}</div>
-          ) : (
-            <div class="node__value">{stringify(node.value)}</div>
-          ),
-      },
-      events: {
-        onClick: (e) => {
-          this.onLfEvent(e, "click", { node });
-        },
-        onClickExpand: (e) => {
-          this.onLfEvent(e, "click", { expansion: true, node });
-        },
-        onPointerDown: (e) => {
-          this.onLfEvent(e, "pointerdown", { node });
-        },
-      },
-      expanded: isExpanded,
-      manager: this.#framework,
-      node,
-      selected: isSelected,
-    };
-
-    if (!isHidden) {
-      elements.push(<TreeNode {...nodeProps}></TreeNode>);
-      if (isExpanded) {
-        node.children?.map((child) =>
-          this.#recursive(elements, child, depth + 1),
-        );
-      }
-    }
-  }
-  #setExpansion(node: LfDataNode) {
-    if (this.expandedNodes.has(node)) {
-      this.expandedNodes.delete(node);
-    } else {
-      this.expandedNodes.add(node);
-    }
-
-    if (node.children?.length) {
-      node.children.forEach((child) => {
-        this.#setExpansion(child);
-      });
-    }
-  }
+  // Tree traversal & filtering logic moved to adapter (Phase 2)
   //#endregion
 
   //#region Lifecycle hooks
@@ -511,6 +312,16 @@ export class LfTree implements LfTreeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    // Initialize adapter (Phase 1)
+    this.#adapter = createAdapter(
+      {
+        compInstance: this,
+        manager: this.#framework,
+        blocks: this.#b,
+        parts: this.#p,
+      },
+      () => this.#adapter,
+    );
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -529,13 +340,12 @@ export class LfTree implements LfTreeInterface {
     debug.info.update(this, "did-render");
   }
   render() {
-    const { bemClass, get, setLfStyle } = this.#framework.theme;
-
-    const { emptyData, tree } = this.#b;
-    const { lfDataset, lfEmpty, lfFilter, lfStyle, lfGrid } = this;
+    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { tree } = this.#b;
+    const { lfDataset, lfStyle, lfGrid } = this;
+    const adapterJsx = this.#adapter?.elements.jsx;
 
     const isEmpty = !!!lfDataset?.nodes?.length;
-    this.#r = {};
 
     return (
       <Host>
@@ -545,46 +355,9 @@ export class LfTree implements LfTreeInterface {
             class={bemClass(tree._) + (lfGrid ? " tree--grid" : "")}
             part={this.#p.tree}
           >
-            {lfFilter && (
-              <lf-textfield
-                class={bemClass(tree._, tree.filter)}
-                lfStretchX={true}
-                lfIcon={get.current().variables["--lf-icon-search"]}
-                lfLabel={"Search..."}
-                lfStyling="flat"
-                onLf-textfield-event={(e) => {
-                  this.onLfEvent(e, "lf-event");
-                  if (e.detail.eventType === "input") {
-                    this.#filter(e);
-                  }
-                }}
-              ></lf-textfield>
-            )}
-            {lfGrid && lfDataset?.columns?.length ? (
-              <div class="tree__header" part={this.#p.node + "-header"}>
-                <div class="tree__header-row">
-                  {lfDataset.columns.map((c, i) => (
-                    <div
-                      class={"tree__header-cell"}
-                      data-column={c.id as string}
-                      data-index={i.toString()}
-                      key={c.id as string}
-                    >
-                      {c.title}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            {isEmpty ? (
-              <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
-                <div class={bemClass(emptyData._, emptyData.text)}>
-                  {lfEmpty}
-                </div>
-              </div>
-            ) : (
-              this.#prepTree()
-            )}
+            {adapterJsx?.filter()}
+            {adapterJsx?.header()}
+            {isEmpty ? adapterJsx?.empty() : adapterJsx?.nodes()}
           </div>
         </div>
       </Host>
