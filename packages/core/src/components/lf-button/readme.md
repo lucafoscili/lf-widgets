@@ -172,6 +172,7 @@ Type: `Promise<void>`
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-tabbar](../lf-tabbar)
+ - [lf-tree](../lf-tree)
 
 ### Depends on
 
@@ -194,6 +195,7 @@ graph TD;
   lf-masonry --> lf-button
   lf-messenger --> lf-button
   lf-tabbar --> lf-button
+  lf-tree --> lf-button
   style lf-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -12,17 +12,18 @@ The tree may include nodes that can be expanded or collapsed.
 
 ## Properties
 
-| Property                  | Attribute                    | Description                                                                                                                            | Type                                                                               | Default         |
-| ------------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| `lfAccordionLayout`       | `lf-accordion-layout`        | When enabled, the first level of depth will create an accordion-style appearance for nodes.                                            | `boolean`                                                                          | `true`          |
-| `lfDataset`               | `lf-dataset`                 | The data set for the LF Tree component. This property is mutable, meaning it can be changed after the component is initialized.        | `LfDataDataset`                                                                    | `null`          |
-| `lfEmpty`                 | `lf-empty`                   | Empty text displayed when there is no data.                                                                                            | `string`                                                                           | `"Empty data."` |
-| `lfFilter`                | `lf-filter`                  | When true, displays a text field which enables filtering the dataset of the tree.                                                      | `boolean`                                                                          | `true`          |
-| `lfInitialExpansionDepth` | `lf-initial-expansion-depth` | Sets the initial expanded nodes based on the specified depth. If the property is not provided, all nodes in the tree will be expanded. | `number`                                                                           | `undefined`     |
-| `lfRipple`                | `lf-ripple`                  | When set to true, the pointerdown event will trigger a ripple effect.                                                                  | `boolean`                                                                          | `true`          |
-| `lfSelectable`            | `lf-selectable`              | When true, nodes can be selected.                                                                                                      | `boolean`                                                                          | `true`          |
-| `lfStyle`                 | `lf-style`                   | Custom styling for the component.                                                                                                      | `string`                                                                           | `""`            |
-| `lfUiSize`                | `lf-ui-size`                 | The size of the component.                                                                                                             | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`      |
+| Property                  | Attribute                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           | Type                                                                               | Default         |
+| ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
+| `lfAccordionLayout`       | `lf-accordion-layout`        | When enabled, the first level of depth will create an accordion-style appearance for nodes.                                                                                                                                                                                                                                                                                                                                                           | `boolean`                                                                          | `true`          |
+| `lfDataset`               | `lf-dataset`                 | The data set for the LF Tree component. This property is mutable, meaning it can be changed after the component is initialized.                                                                                                                                                                                                                                                                                                                       | `LfDataDataset`                                                                    | `null`          |
+| `lfEmpty`                 | `lf-empty`                   | Empty text displayed when there is no data.                                                                                                                                                                                                                                                                                                                                                                                                           | `string`                                                                           | `"Empty data."` |
+| `lfFilter`                | `lf-filter`                  | When true, displays a text field which enables filtering the dataset of the tree.                                                                                                                                                                                                                                                                                                                                                                     | `boolean`                                                                          | `true`          |
+| `lfGrid`                  | `lf-grid`                    | When true, the tree behaves like a grid, displaying each node's cells across the configured dataset columns. The dataset should provide a `columns` array. Each column id will be looked up inside the node `cells` container; if a matching cell is found its shape/component will be rendered, otherwise a textual fallback (node value / empty) is shown. The first column will still contain the hierarchical expansion affordance and node icon. | `boolean`                                                                          | `false`         |
+| `lfInitialExpansionDepth` | `lf-initial-expansion-depth` | Sets the initial expanded nodes based on the specified depth. If the property is not provided, all nodes in the tree will be expanded.                                                                                                                                                                                                                                                                                                                | `number`                                                                           | `undefined`     |
+| `lfRipple`                | `lf-ripple`                  | When set to true, the pointerdown event will trigger a ripple effect.                                                                                                                                                                                                                                                                                                                                                                                 | `boolean`                                                                          | `true`          |
+| `lfSelectable`            | `lf-selectable`              | When true, nodes can be selected.                                                                                                                                                                                                                                                                                                                                                                                                                     | `boolean`                                                                          | `true`          |
+| `lfStyle`                 | `lf-style`                   | Custom styling for the component.                                                                                                                                                                                                                                                                                                                                                                                                                     | `string`                                                                           | `""`            |
+| `lfUiSize`                | `lf-ui-size`                 | The size of the component.                                                                                                                                                                                                                                                                                                                                                                                                                            | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`      |
 
 
 ## Events
@@ -108,11 +109,62 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-textfield](../lf-textfield)
+- [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
+- [lf-canvas](../lf-canvas)
+- [lf-card](../lf-card)
+- [lf-chart](../lf-chart)
+- [lf-chat](../lf-chat)
+- [lf-chip](../lf-chip)
+- [lf-code](../lf-code)
+- [lf-image](../lf-image)
+- [lf-photoframe](../lf-photoframe)
+- [lf-toggle](../lf-toggle)
+- [lf-typewriter](../lf-typewriter)
+- [lf-upload](../lf-upload)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-tree --> lf-textfield
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
+  lf-badge --> lf-image
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  lf-canvas --> lf-image
+  lf-card --> lf-badge
+  lf-card --> lf-button
+  lf-card --> lf-canvas
+  lf-card --> lf-card
+  lf-card --> lf-chart
+  lf-card --> lf-chat
+  lf-card --> lf-chip
+  lf-card --> lf-code
+  lf-card --> lf-image
+  lf-card --> lf-photoframe
+  lf-card --> lf-toggle
+  lf-card --> lf-typewriter
+  lf-card --> lf-upload
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-button
+  lf-chat --> lf-typewriter
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-textfield
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
   lf-compare --> lf-tree
   lf-imageviewer --> lf-tree
   style lf-tree fill:#f9f,stroke:#333,stroke-width:4px

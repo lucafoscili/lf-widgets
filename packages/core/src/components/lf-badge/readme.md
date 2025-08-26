@@ -105,6 +105,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-tree](../lf-tree)
 
 ### Depends on
 
@@ -120,6 +121,7 @@ graph TD;
   lf-carousel --> lf-badge
   lf-compare --> lf-badge
   lf-masonry --> lf-badge
+  lf-tree --> lf-badge
   style lf-badge fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
