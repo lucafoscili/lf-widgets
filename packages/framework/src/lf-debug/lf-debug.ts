@@ -166,6 +166,14 @@ export class LfDebug implements LfDebugInterface {
 
     //#region New log
     new: async (comp, message, category = "informational") => {
+      const IS_PROD =
+        typeof process !== "undefined" &&
+        process.env?.NODE_ENV === "production";
+
+      if (IS_PROD && category === "informational") {
+        return;
+      }
+
       if (this.#COMPONENTS.codes.has(comp as LfCodeInterface)) {
         return;
       }
