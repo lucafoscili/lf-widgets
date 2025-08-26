@@ -34,6 +34,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { LfShape } from "../../utils/shapes";
 import { TreeNode } from "./components.node";
 
 /**
@@ -125,6 +126,20 @@ export class LfTree implements LfTreeInterface {
    * ```
    */
   @Prop({ mutable: true }) lfEmpty: string = "Empty data.";
+  /**
+   * When true, the tree behaves like a grid, displaying each node's cells across the configured dataset columns.
+   * The dataset should provide a `columns` array. Each column id will be looked up inside the node `cells` container; if a matching cell is found its shape/component will be rendered, otherwise a textual fallback (node value / empty) is shown. The first column will still contain the hierarchical expansion affordance and node icon.
+   *
+   * @type {boolean}
+   * @default false
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-tree lfGrid={true} lfDataset={datasetWithColumns}></lf-tree>
+   * ```
+   */
+  @Prop({ mutable: true, reflect: true }) lfGrid: boolean = false;
   /**
    * Sets the initial expanded nodes based on the specified depth.
    * If the property is not provided, all nodes in the tree will be expanded.
@@ -370,6 +385,61 @@ export class LfTree implements LfTreeInterface {
     const isExpanded = this.#filterValue ? true : this.expandedNodes.has(node);
     const isHidden = this.hiddenNodes.has(node);
     const isSelected = this.selectedNode === node;
+    // Prep grid cells (if enabled)
+    let gridValue: VNode = null;
+    if (this.lfGrid && this.lfDataset?.columns?.length) {
+      const { cell: cellOps } = this.#framework.data;
+      const columns = this.lfDataset.columns;
+      const renderCellShape = (colId: string, isFirst: boolean): VNode => {
+        const cell = node.cells?.[colId];
+        // First column: keep hierarchical semantics (TreeNode still adds expand/icon outside of grid cell content). If a cell exists we render it; else fallback to node.value.
+        if (!cell) {
+          return (
+            <div
+              class={
+                "node__grid-cell" + (isFirst ? " node__grid-cell--value" : "")
+              }
+              data-column={colId}
+            >
+              {isFirst ? stringify(node.value) : ""}
+            </div>
+          );
+        }
+        const shape = cell.shape || "text";
+        // For primitive textual shapes we simply stringify, for others we rely on <LfShape/> helper.
+        const simple =
+          shape === "text" || shape === "number" || shape === "slot";
+        // Prepare processed cell (adds lf* props etc.)
+        const shapeProps = cellOps.shapes.get(cell);
+        if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
+          (shapeProps as any).lfValue = cell.value;
+        }
+        return (
+          <div class="node__grid-cell" data-column={colId}>
+            {simple ? (
+              stringify(cell.value as any)
+            ) : (
+              <LfShape
+                framework={this.#framework}
+                shape={shape as any}
+                index={0}
+                cell={shapeProps as any}
+                // dispatch events through tree unified event stream
+                eventDispatcher={async (e: any) => {
+                  this.onLfEvent(e, "lf-event", { node });
+                }}
+              ></LfShape>
+            )}
+          </div>
+        );
+      };
+      gridValue = (
+        <div class="node__grid" part={this.#p.node + "-grid"}>
+          {columns.map((c, i) => renderCellShape(c.id as string, i === 0))}
+        </div>
+      );
+    }
+
     const nodeProps: LfTreeNodeProps = {
       accordionLayout: this.lfAccordionLayout && depth === 0,
       depth,
@@ -385,7 +455,12 @@ export class LfTree implements LfTreeInterface {
             }}
           ></div>
         ),
-        value: <div class="node__value">{stringify(node.value)}</div>,
+        value:
+          this.lfGrid && gridValue ? (
+            <div class="node__value node__value--grid">{gridValue}</div>
+          ) : (
+            <div class="node__value">{stringify(node.value)}</div>
+          ),
       },
       events: {
         onClick: (e) => {
@@ -457,7 +532,7 @@ export class LfTree implements LfTreeInterface {
     const { bemClass, get, setLfStyle } = this.#framework.theme;
 
     const { emptyData, tree } = this.#b;
-    const { lfDataset, lfEmpty, lfFilter, lfStyle } = this;
+    const { lfDataset, lfEmpty, lfFilter, lfStyle, lfGrid } = this;
 
     const isEmpty = !!!lfDataset?.nodes?.length;
     this.#r = {};
@@ -466,7 +541,10 @@ export class LfTree implements LfTreeInterface {
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div class={bemClass(tree._)} part={this.#p.tree}>
+          <div
+            class={bemClass(tree._) + (lfGrid ? " tree--grid" : "")}
+            part={this.#p.tree}
+          >
             {lfFilter && (
               <lf-textfield
                 class={bemClass(tree._, tree.filter)}
@@ -482,6 +560,22 @@ export class LfTree implements LfTreeInterface {
                 }}
               ></lf-textfield>
             )}
+            {lfGrid && lfDataset?.columns?.length ? (
+              <div class="tree__header" part={this.#p.node + "-header"}>
+                <div class="tree__header-row">
+                  {lfDataset.columns.map((c, i) => (
+                    <div
+                      class={"tree__header-cell"}
+                      data-column={c.id as string}
+                      data-index={i.toString()}
+                      key={c.id as string}
+                    >
+                      {c.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {isEmpty ? (
               <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
                 <div class={bemClass(emptyData._, emptyData.text)}>

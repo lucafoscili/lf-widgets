@@ -55,6 +55,7 @@ export interface LfTreePropsInterface {
   lfEmpty?: string;
   lfFilter?: boolean;
   lfInitialExpansionDepth?: number;
+  lfGrid?: boolean;
   lfRipple?: boolean;
   lfSelectable?: boolean;
   lfStyle?: string;
