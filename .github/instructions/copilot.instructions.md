@@ -8,17 +8,15 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 
 ## TL;DR (Quick Compliance Snapshot)
 
-- Monorepo flow: foundations (types only) → framework (services) → core (web components) → showcase → react wrappers.
-- One event per component (`lf-<name>-event`); everything funneled via `onLfEvent(event, eventType, args?)`.
-- Dataset + shapes: use `LfDataDataset`; render non‑primitive cells with `<LfShape/>`; primitives via `stringify`; ensure `lfValue`.
-- Adapter structure: `{ controller: { get, set }, elements: { jsx, refs }, handlers }`; getters return functions for dynamic state.
-- Adapter types: always import adapter interfaces directly from `@lf-widgets/foundations` (no local re-exports) — follow `lf-messenger` pattern.
-- No logic in foundations; no snapshotting dynamic getters; mutate via setters; clone Sets/Maps for re-render.
-- BEM classes only via `theme.bemClass` + `LF_<COMP>_BLOCKS`; theme services after `awaitFramework`.
-- Refs store only elements; domain modules for large adapters (see messenger) with namespaced getters/setters.
-- Debounce filters (300ms), centralize dataset updates (`set.data()`), sanitize nested component props.
-- Avoid: extra events, ad‑hoc traversal, per-component shape maps, storing timers in refs, large monolithic adapters.
-- Before PR: build foundations/core, regenerate docs, check single event usage & adapter checklist.
+- Monorepo flow: foundations (types) → framework (services) → core (web components) → showcase → react wrappers.
+- Single outward event (`lf-<name>-event`) via `onLfEvent`.
+- Data: `LfDataDataset`; non‑primitives through `<LfShape/>`, primitives via `stringify`; add `lfValue` if missing.
+- Adapter: `{ controller.get/set, elements.jsx/refs, handlers }`; getters are functions; types only from foundations.
+- Foundations: no runtime logic. Framework: generic utilities only. Core: component state + rendering.
+- Styling: only `theme.bemClass` with `LF_<COMP>_BLOCKS`.
+- State mutation: clone Sets/Maps before reassign; debounce filters (300ms).
+- Avoid: extra events, ad‑hoc traversal duplicated from framework, local shape maps, timers in refs, monolithic >300 line adapters.
+- Pre-PR: build foundations/core, docs sync, run adapter + SoC checklist.
 
 ## 1. Packages (monorepo)
 
@@ -27,6 +25,80 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 - core: web components (`lf-*`), plus shared utilities (`utils/`). Single consolidated event per component (`lf-<name>-event`).
 - showcase: demo + docs generation (consumes `core/doc.json`).
 - react-\* wrappers: generated via react output target.
+
+### 1.1 Layer Responsibilities (Separation of Concerns)
+
+Explicit ownership to prevent logic bleed:
+
+Foundations (types/constants only):
+
+- Owns: public type surfaces (component props, adapter interfaces, enums/constants, event payloads, string literal maps), discriminated unions.
+- Forbid: runtime functions, conditionals, loops, data mutation, service access, DOM, timers.
+- Reason: zero side-effects, fastest builds, single truth for types.
+
+Framework (runtime singleton services):
+
+- Owns: generic, UI-agnostic data utilities (dataset traversal/filter, shape extraction), theming resolution, effects, portals, drag, color, LLM, debug helpers.
+- May expose: generic traversal helpers with predicate callbacks (e.g. `data.node.traverseVisible`).
+- Forbid: component-specific assumptions, direct component state mutation, hard-coded tags, adapter imports.
+
+Core (web components + adapters):
+
+- Owns: component state (expanded/selected/hidden), adapter factories, JSX, event funneling, UI-specific decoration of generic outputs.
+- Forbid: duplicating framework utilities, redefining foundations types, cross-component singletons, embedding a generic helper already in framework.
+
+Showcase: demos, docs, deterministic samples, Cypress specs.
+
+React wrappers: generated bindings only; no logic.
+
+### 1.2 Placement Cheatsheet
+
+| Task | Layer | Notes |
+| --- | --- | --- |
+| Declare new adapter getter type | Foundations | Update declarations then `yarn build:foundations` |
+| Depth-first traversal (generic) | Framework | Accept predicates; no UI flags stored globally |
+| Flatten + UI flags for rendering | Core | Use framework traversal, add view-only data locally |
+| Blocks / parts / events constants | Foundations | Pure object literals |
+| Shape prop sanitization | Core utility (`LfShape`) | Reuse across components |
+| Cell stringify | Framework | Central formatting |
+| Expanded nodes Set | Core | Clone before reassign |
+| Theming variable lookup | Framework theme service | Always after `awaitFramework` |
+
+### 1.3 Guardrails
+
+- No service or DOM access from foundations.
+- No UI semantics baked into framework; predicates in, generic structure out.
+- No traversal snapshots stored in refs (recompute; O(n)).
+- No promotion of ephemeral UI flags (expanded/selected/hidden) to foundations.
+- Prefer wrapping a framework utility over rewriting it in core.
+
+### 1.4 Decision Flow
+
+1. Pure type? → Foundations.
+2. Data manipulation w/out UI semantics? → Framework.
+3. Needs component instance state or emits events? → Core.
+4. Produces JSX? → Core only.
+5. Side-effects (DOM/timers)? → Framework service if generic, otherwise Core.
+
+### 1.5 Traversal Rules
+
+- Use `framework.data.node.traverseVisible` for flattening; pass predicates (`isExpanded`, etc.).
+- Derive additional UI decoration (indent, guides) after traversal in JSX layer.
+- Introduce specialized traversal only if profiling shows a bottleneck; upstream generic part first.
+
+### 1.6 Adapter Boundary Recap
+
+- Foundations: declarative shapes only.
+- Framework: unaware of adapters.
+- Core: wires framework → adapter → JSX.
+
+Pre-PR SoC Checklist (all must be true):
+
+- [ ] No functions in foundations beyond type exports.
+- [ ] No framework helper references component tag names.
+- [ ] No duplicate traversal logic in core.
+- [ ] Single outward event per component.
+- [ ] All adapter interfaces imported from foundations directly.
 
 ## 2. Build / Dev
 
@@ -71,7 +143,7 @@ Event pattern:
 ```tsx
 <LfShape
   framework={this.#framework}
-  shape={shape as any}
+  shape={shape}
   index={i}
   cell={cellProps}
   eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", { node })}
@@ -87,17 +159,13 @@ Do NOT:
 - Maintain per-component shape-to-tag maps (removed from `lf-tree`).
 - Manually forward every single prop; rely on `sanitizeProps` via LfShape.
 
-Performance: precompute with `getAll` for large collections; skip `<LfShape/>` for primitive-only columns to reduce DOM depth.
+Performance: precompute with `getAll` for large collections; skip `<LfShape/>` for primitive-only columns.
 
 ## 5.1 Adapter Pattern (Data + Shape + Events) — Canonical Reference (see `lf-messenger`)
 
-Three pillars ensure cross-component consistency:
+Three pillars ensure cross-component consistency: Data, Adapter Structure, Unified Event Management.
 
-### A. Data Pattern
-
-Leverages Section 4 & 5: dataset + cell shapes + `<LfShape/>` (non‑primitives) with fallback text logic for primitives / missing cells. First grid column retains hierarchical affordances.
-
-### B. Adapter Structure
+### A. Adapter Structure
 
 Canonical factory signature:
 
@@ -113,26 +181,21 @@ Type sourcing:
 
 - Adapter interfaces (e.g. `LfTreeAdapter`, `LfMessengerAdapter`) are defined ONLY in foundations; components must import them from `@lf-widgets/foundations` instead of re-exporting locally. This keeps a single source of truth and prevents divergent type surfaces.
 
-Standard partitions:
+Partitions:
 
-- `controller.get` (pure getters, no eager evaluation that would snapshot mutable state; functions stay functions e.g. `filterValue: () => string`).
-- `controller.set` (imperative state mutators; cloning Sets/Maps inside to trigger re-render).
-- `elements.jsx` (pure/side-effect-free VNode producers; no state mutation here).
-- `elements.refs` (stable object storing mutable element references only; never shape or data caches — precomputed shape maps can be local variables outside render or inside traversal helpers).
-- `handlers` (UI event callbacks calling setters + funnel events through component `onLfEvent`).
+- `controller.get` (pure dynamic accessors)
+- `controller.set` (mutators; clone collections)
+- `elements.jsx` (pure VNode producers)
+- `elements.refs` (element handles only)
+- `handlers` (UI callbacks → setters → event funnel)
 
-Guidelines:
+Guidelines (summary – see SoC section for details): no duplicated traversal, no `any`, no direct component import inside handlers/JSX, follow messenger for large scale.
 
-- Zero business logic duplication: data traversal (e.g. tree walking) can live in an adapter helper (like `lf-tree-traverse.tsx`) but must consume the unified getters/setters.
-- Avoid `any`; if a new dynamic getter is needed, add it to foundations declarations first and rebuild.
-- No cross-calling between handlers and jsx via importing component class directly (always go through `getAdapter()`).
-- Messenger is the richest example (multiple nested handler groups, rich refs usage, complex toolbar) — follow its layering & naming.
+### B. Unified Event Management
 
-### C. Unified Event Management
+Single outward event (`lf-<comp>-event`); all interactions route through `onLfEvent(event, eventType, args?)`. Shape events use `<LfShape eventDispatcher>` → `lf-event`. Ripple & side-effects centralized there.
 
-Single outward custom event (`lf-<comp>-event`) per component. All internal interactions invoke `onLfEvent(event, eventType, args?)`. Shape events route via `<LfShape eventDispatcher>` → `lf-event`. Keep legacy dual emissions only when necessary. Ripple & side-effects centralized in `onLfEvent`.
-
-Quick checklist when adding/refactoring a component adapter:
+Quick checklist:
 
 1. Add / update foundations declarations (getters, setters, handlers, refs, jsx entries).
 2. Build foundations (`yarn build:foundations`).
@@ -143,77 +206,18 @@ Quick checklist when adding/refactoring a component adapter:
 7. Add/adjust showcase examples + (optional) Cypress tests.
 8. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
 
-## 5.2 Advanced Adapter Patterns (Messenger Deep-Dive)
+## 5.2 Scaling Up (Messenger Pattern Summary)
 
-Use `lf-messenger` as the canonical large/complex reference. Replicate these when a component grows:
+When complexity grows (see `lf-messenger` for full example):
 
-### Domain Segmentation
-
-- Split large adapters into domain modules: `controller.<domain>.ts`, `elements.<domain>.tsx`, `handlers.<domain>.ts` (e.g. character, image, ui, chat, customization, options).
-- Each exposes factories: `prep<Domain>Getters`, `prep<Domain>Setters`, `prep<Domain>` (JSX object), `prep<Domain>Handlers`.
-- Main adapter only aggregates; factory surface stays `{ controller, elements, handlers }`.
-
-### Namespaced Getters & Setters
-
-- Dynamic values are functions (never snapshot mutable state).
-- Setters mirror getter namespace 1:1.
-- Composite getters (`config()`, `history()`, `data()`) bundle frequently co-accessed state.
-
-### Refs Tree Mirrors UI
-
-- Deep ref structure follows visual hierarchy (e.g. `refs.customization.form.avatars.confirm`).
-- Refs store only element handles (focus, effects) — never caches or timers.
-
-### Pure JSX Producers
-
-- JSX functions are pure (read-only).
-- Use `sanitizeProps(...)` for nested LF components.
-- Keyed renders (`key={current().id}`) reset nested component internal state on identity change.
-
-### Handler Design
-
-- Grouped per domain → switch on `eventType` → branch by id.
-- Only call namespaced setters; allow setters to return flags for immediate UI updates.
-
-### Async-Ready
-
-- Mark handlers `async` even if sync now for future extensibility.
-
-### Dataset & Shapes
-
-- Central dataset update entrypoint (e.g. `set.data()`) invokes a utility (like `updateDataset`) to handle recalculation / cache invalidation.
-
-### Event Funnel
-
-- Domain handlers mutate state only; component `onLfEvent` handles all outward emission & side-effects.
-
-### Theming & Icons
-
-- Resolve icons/vars inside JSX; destructure minimally.
-
-### Cross-Domain Boundaries
-
-- Domains interact only via namespaced setters (no direct mutation).
-
-### Avoid Anti-Patterns
-
-- Monolithic adapter file >300 lines.
-- Snapshotting dynamic getters.
-- Storing timers/caches in `refs`.
-- Multiple outward events.
-
-### Advanced Checklist
-
-1. Domain modules present.
-2. Dynamic getters are functions.
-3. Setters mirror namespace.
-4. Refs only store elements.
-5. JSX pure & sanitized.
-6. Handlers grouped & eventType-first.
-7. Single event funnel intact.
-8. Dataset updates centralized.
-9. Theme/icon lookups inside JSX.
-10. No cross-domain direct mutation.
+- Segment domains (`controller.*`, `elements.*`, `handlers.*`).
+- Mirror namespaces between getters & setters.
+- Keep refs as element handles only.
+- JSX pure + `sanitizeProps` + keyed resets.
+- Handlers domain-grouped; async-capable.
+- Centralize dataset updates via one setter.
+- Single event funnel remains.
+- Avoid monolithic >300 line adapter files, snapshot getters, timers in refs, multiple outward events. Advanced checklist (condensed): domains present · dynamic getters · mirrored setters · pure JSX · grouped handlers · single event · centralized data · theme lookups inside JSX · no cross-domain mutation.
 
 ## 6. Styling & Theming
 
