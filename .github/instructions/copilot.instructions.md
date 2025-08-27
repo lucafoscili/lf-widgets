@@ -12,6 +12,7 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 - One event per component (`lf-<name>-event`); everything funneled via `onLfEvent(event, eventType, args?)`.
 - Dataset + shapes: use `LfDataDataset`; render non‑primitive cells with `<LfShape/>`; primitives via `stringify`; ensure `lfValue`.
 - Adapter structure: `{ controller: { get, set }, elements: { jsx, refs }, handlers }`; getters return functions for dynamic state.
+- Adapter types: always import adapter interfaces directly from `@lf-widgets/foundations` (no local re-exports) — follow `lf-messenger` pattern.
 - No logic in foundations; no snapshotting dynamic getters; mutate via setters; clone Sets/Maps for re-render.
 - BEM classes only via `theme.bemClass` + `LF_<COMP>_BLOCKS`; theme services after `awaitFramework`.
 - Refs store only elements; domain modules for large adapters (see messenger) with namespaced getters/setters.
@@ -108,6 +109,10 @@ export const createAdapter = (getters, setters, getAdapter) => ({
 });
 ```
 
+Type sourcing:
+
+- Adapter interfaces (e.g. `LfTreeAdapter`, `LfMessengerAdapter`) are defined ONLY in foundations; components must import them from `@lf-widgets/foundations` instead of re-exporting locally. This keeps a single source of truth and prevents divergent type surfaces.
+
 Standard partitions:
 
 - `controller.get` (pure getters, no eager evaluation that would snapshot mutable state; functions stay functions e.g. `filterValue: () => string`).
@@ -136,6 +141,7 @@ Quick checklist when adding/refactoring a component adapter:
 5. Funnel all interactions via `onLfEvent` to emit the single outward event.
 6. Rebuild core and verify docs regenerated.
 7. Add/adjust showcase examples + (optional) Cypress tests.
+ 8. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
 
 ## 5.2 Advanced Adapter Patterns (Messenger Deep-Dive)
 
