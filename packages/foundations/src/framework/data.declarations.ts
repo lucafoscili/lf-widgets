@@ -225,6 +225,21 @@ export interface LfDataNodeOperations {
     exclude?: LfDataNode[],
   ) => LfDataNode[];
   toStream: (nodes: LfDataNode[]) => LfDataNode[];
+  traverseVisible: (
+    nodes: LfDataNode[] | undefined,
+    options: {
+      isExpanded?: (node: LfDataNode) => boolean;
+      isHidden?: (node: LfDataNode) => boolean;
+      isSelected?: (node: LfDataNode) => boolean;
+      forceExpand?: boolean;
+    },
+  ) => Array<{
+    node: LfDataNode;
+    depth: number;
+    expanded?: boolean;
+    hidden?: boolean;
+    selected?: boolean;
+  }>;
 }
 export interface LfDataNodeDrilldownInfo {
   maxChildren?: number;

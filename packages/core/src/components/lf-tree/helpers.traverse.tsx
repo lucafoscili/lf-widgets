@@ -1,8 +1,4 @@
-import {
-  LfDataNode,
-  LfTreeAdapter,
-  LfTreeTraversedNode,
-} from "@lf-widgets/foundations";
+import { LfTreeAdapter, LfTreeTraversedNode } from "@lf-widgets/foundations";
 
 /**
  * Collects all visible nodes from a tree structure and returns them as a flattened array
@@ -34,21 +30,11 @@ export const collectVisibleNodes = (
   const { get } = controller;
   const dataset = get.dataset();
   const filterValue = get.filterValue?.() || "";
-  const nodes: LfDataNode[] = dataset?.nodes || [];
-  const out: LfTreeTraversedNode[] = [];
 
-  const walk = (node: LfDataNode, depth: number) => {
-    const expanded = filterValue ? true : get.isExpanded(node);
-    const hidden = get.isHidden(node);
-    const selected = get.isSelected(node);
-    if (!hidden) {
-      out.push({ node, depth, expanded, hidden, selected });
-    }
-    if (expanded)
-      node.children?.forEach((c) => walk(c as LfDataNode, depth + 1));
-  };
-
-  nodes.forEach((n) => walk(n, 0));
-
-  return out;
+  return get.manager.data.node.traverseVisible(dataset?.nodes, {
+    isExpanded: get.isExpanded,
+    isHidden: get.isHidden,
+    isSelected: get.isSelected,
+    forceExpand: !!filterValue,
+  }) as LfTreeTraversedNode[];
 };

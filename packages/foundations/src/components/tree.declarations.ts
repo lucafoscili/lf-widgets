@@ -143,9 +143,9 @@ export interface LfTreeNodeProps {
 export interface LfTreeTraversedNode {
   node: LfDataNode;
   depth: number;
-  expanded: boolean;
-  hidden: boolean;
-  selected: boolean;
+  expanded?: boolean;
+  hidden?: boolean;
+  selected?: boolean;
 }
 //#endregion
 
