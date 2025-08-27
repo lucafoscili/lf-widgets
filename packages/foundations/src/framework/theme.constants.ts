@@ -199,6 +199,7 @@ export const LF_THEME_MODIFIERS = [
   "focused",
   "full",
   "full-width",
+  "grid",
   "has-actions",
   "has-description",
   "has-drawer",

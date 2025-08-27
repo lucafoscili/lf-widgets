@@ -8,7 +8,7 @@ import { createGetters, createSetters } from "./controller.tree";
 import { createJsx } from "./elements.tree";
 import { createHandlers } from "./handlers.tree";
 
-export type { LfTreeAdapter } from "@lf-widgets/foundations";
+//#region Adapteryarn dev
 
 export const createAdapter = (
   getters: LfTreeAdapterInitializerGetters,
@@ -22,8 +22,11 @@ export const createAdapter = (
   elements: { jsx: createJsx(getAdapter), refs: createRefs() },
   handlers: createHandlers(getAdapter),
 });
+//#endregion
 
+//#region Refs
 export const createRefs = (): LfTreeAdapterRefs => ({
   rippleSurfaces: {},
   filterField: null,
 });
+//#endregion

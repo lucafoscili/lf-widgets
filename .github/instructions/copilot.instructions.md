@@ -141,7 +141,7 @@ Quick checklist when adding/refactoring a component adapter:
 5. Funnel all interactions via `onLfEvent` to emit the single outward event.
 6. Rebuild core and verify docs regenerated.
 7. Add/adjust showcase examples + (optional) Cypress tests.
- 8. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
+8. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
 
 ## 5.2 Advanced Adapter Patterns (Messenger Deep-Dive)
 

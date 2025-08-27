@@ -92,7 +92,7 @@ export const traverseNodes = (adapter: LfTreeAdapter) => {
     const nodeBlock = blocks.node;
     const valueEl =
       comp.lfGrid && gridValue ? (
-        <div class={bemClass(nodeBlock._, nodeBlock.value) + " grid"}>
+        <div class={bemClass(nodeBlock._, nodeBlock.value, { grid: true })}>
           {gridValue}
         </div>
       ) : (

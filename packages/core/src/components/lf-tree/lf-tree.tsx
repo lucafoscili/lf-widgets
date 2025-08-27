@@ -1,3 +1,4 @@
+import type { LfTreeAdapter } from "@lf-widgets/foundations";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -32,7 +33,6 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import type { LfTreeAdapter } from "./lf-tree-adapter";
 import { createAdapter } from "./lf-tree-adapter";
 
 /**

@@ -1,11 +1,14 @@
 import {
   LfTextfieldEventPayload,
   LfTreeAdapter,
+  LfTreeAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 import { traverseNodes } from "./helpers.traverse";
 
-export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
+export const createJsx = (
+  getAdapter: () => LfTreeAdapter,
+): LfTreeAdapterJsx => ({
   filter: () => {
     const { controller, handlers } = getAdapter();
     const { compInstance, manager } = controller.get;
@@ -30,14 +33,17 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
   },
   header: () => {
     const { controller } = getAdapter();
-    if (!controller.get.isGrid()) return null;
     const columns = controller.get.columns();
-    if (!columns.length) return null;
-    const parts = controller.get.parts;
-    const blocks = controller.get.blocks;
-    const { manager } = controller.get;
+    const { blocks, isGrid, manager, parts } = controller.get;
+    const renderGrid = isGrid() && columns.length > 0;
+
+    if (!renderGrid) {
+      return null;
+    }
+
     const { bemClass } = manager.theme;
     const header = blocks.header;
+
     return (
       <div class={bemClass(header._)} part={parts.node + "-header"}>
         <div class={bemClass(header._, header.row)}>
@@ -63,9 +69,8 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     const { bemClass } = manager.theme;
     const blocks = controller.get.blocks;
     const tree = blocks.tree;
-    return (
-      <div class={bemClass(tree._, tree.nodesWrapper)}>{content}</div>
-    ) as any;
+
+    return <div class={bemClass(tree._, tree.nodesWrapper)}>{content}</div>;
   },
   empty: () => {
     const { controller } = getAdapter();
@@ -75,6 +80,7 @@ export const createJsx = (getAdapter: () => LfTreeAdapter) => ({
     const blocks = controller.get.blocks;
     const { emptyData } = blocks;
     const parts = controller.get.parts;
+
     return (
       <div class={bemClass(emptyData._)} part={parts.emptyData}>
         <div class={bemClass(emptyData._, emptyData.text)}>

@@ -34,8 +34,6 @@ export const LF_TREE_BLOCKS = {
 //#region Events
 export const LF_TREE_EVENTS = [
   "click",
-  // New explicit expand event (Phase 1); "click" with args.expansion kept for backward compat
-  "expand",
   "lf-event",
   "pointerdown",
   "ready",
