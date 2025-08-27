@@ -35,6 +35,7 @@ export const LF_TABBAR_PARTS = {
 
 //#region Props
 export const LF_TABBAR_PROPS = [
+  "lfAriaLabel",
   "lfDataset",
   "lfNavigation",
   "lfRipple",

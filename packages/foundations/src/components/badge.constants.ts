@@ -1,5 +1,11 @@
 import { LfBadgePropsInterface } from "./badge.declarations";
 
+//#region Automatic CSS variables
+export const LF_BADGE_CSS_VARS = {
+  transform: "--lf_badge_transform",
+} as const;
+//#endregion
+
 //#region Blocks
 export const LF_BADGE_BLOCKS = {
   badge: { _: "badge", image: "image", label: "label" },
@@ -29,6 +35,7 @@ export const LF_BADGE_POSITIONS = [
   "bottom-right",
   "top-left",
   "top-right",
+  "inline",
 ] as const;
 //#endregion
 

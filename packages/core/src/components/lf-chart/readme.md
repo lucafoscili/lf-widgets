@@ -116,6 +116,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -126,6 +127,7 @@ graph TD;
   lf-carousel --> lf-chart
   lf-compare --> lf-chart
   lf-masonry --> lf-chart
+  lf-tree --> lf-chart
   style lf-chart fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

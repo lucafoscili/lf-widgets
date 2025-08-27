@@ -40,6 +40,7 @@ export interface LfChipEventArguments {
 
 //#region Props
 export interface LfChipPropsInterface {
+  lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
   lfRipple?: boolean;
   lfStyle?: string;

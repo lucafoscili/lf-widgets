@@ -1,6 +1,7 @@
 import {
   LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
+  LF_BADGE_CSS_VARS,
   LF_BADGE_PARTS,
   LF_BADGE_PROPS,
   LF_STYLE_ID,
@@ -107,7 +108,8 @@ export class LfBadge implements LfBadgeInterface {
    * <lf-badge lfPosition="bottom-right"></lf-badge>
    * ```
    */
-  @Prop({ mutable: true }) lfPosition: LfBadgePositions = "top-left";
+  @Prop({ mutable: true, reflect: true }) lfPosition: LfBadgePositions =
+    "top-left";
   /**
    * Custom styling for the component.
    *
@@ -256,25 +258,39 @@ export class LfBadge implements LfBadgeInterface {
     const { bemClass, setLfStyle } = theme;
     const { lfImageProps, lfLabel, lfStyle } = this;
 
-    const [ver, hor] = this.lfPosition.split("-");
+    const isInline = this.lfPosition === "inline";
+    const [ver, hor] = isInline ? [null, null] : this.lfPosition.split("-");
+    const y = ver === "bottom" ? "bottom" : "top";
+    const x = hor === "right" ? "right" : "left";
+    const translateX = hor === "right" ? "50%" : "-50%";
+    const translateY = ver === "bottom" ? "50%" : "-50%";
 
     const { badge } = this.#b;
 
+    const renderStyles = () => {
+      const styles: Record<string, string> = {};
+      const { transform } = LF_BADGE_CSS_VARS;
+
+      if (!isInline) {
+        styles[y] = "0";
+        styles[x] = "0";
+        styles[transform] = `translate(${translateX}, ${translateY})`;
+      } else {
+        styles[transform] = "none";
+      }
+
+      const hostStyles = Object.entries(styles)
+        .map(([prop, value]) => `${prop}: ${value}`)
+        .join("; ");
+
+      const customStyles = (lfStyle && setLfStyle(this)) || "";
+
+      return `:host { ${hostStyles} }\n${customStyles}`;
+    };
+
     return (
       <Host>
-        <style id={this.#s}>
-          {`
-          :host {
-          ${ver || "top"}: 0;
-          ${hor || "left"}: 0;
-          transform: translate(
-          ${hor === "right" ? "50%" : "-50%"},
-          ${ver === "bottom" ? "50%" : "-50%"}
-          );
-          }
-          ${(lfStyle && setLfStyle(this)) || ""}`}
-        </style>
-
+        <style id={this.#s}>{renderStyles()}</style>
         <div id={this.#w}>
           <div
             class={bemClass(badge._)}

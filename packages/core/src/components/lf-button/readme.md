@@ -15,24 +15,25 @@ The button can be styled with a theme color and size.
 
 ## Properties
 
-| Property         | Attribute          | Description                                                                                                                              | Type                                                                                     | Default     |
-| ---------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| `lfDataset`      | `lf-dataset`       | The dataset for the button, containing the nodes to be displayed. The first node will be used to set the icon and label if not provided. | `LfDataDataset`                                                                          | `null`      |
-| `lfIcon`         | `lf-icon`          | When set, the button will show this icon.                                                                                                | `string`                                                                                 | `""`        |
-| `lfIconOff`      | `lf-icon-off`      | When set, the icon button off state will show this icon. Otherwise, an outlined version of the icon prop will be displayed.              | `string`                                                                                 | `""`        |
-| `lfLabel`        | `lf-label`         | When set, the button will show this text.                                                                                                | `string`                                                                                 | `""`        |
-| `lfRipple`       | `lf-ripple`        | When set to true, the pointerdown event will trigger a ripple effect.                                                                    | `boolean`                                                                                | `true`      |
-| `lfShowSpinner`  | `lf-show-spinner`  | When set to true, the button will display a spinner and won't be clickable.                                                              | `boolean`                                                                                | `false`     |
-| `lfStretchX`     | `lf-stretch-x`     | When set to true, the button will stretch to fill the available horizontal space.                                                        | `boolean`                                                                                | `false`     |
-| `lfStretchY`     | `lf-stretch-y`     | When set to true, the button will stretch to fill the available vertical space.                                                          | `boolean`                                                                                | `false`     |
-| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                        | `string`                                                                                 | `""`        |
-| `lfStyling`      | `lf-styling`       | Defines the style of the button. This property controls the visual appearance of the button.                                             | `"flat" \| "floating" \| "icon" \| "outlined" \| "raised"`                               | `"raised"`  |
-| `lfToggable`     | `lf-toggable`      | When set to true, the icon button will be toggable on/off.                                                                               | `boolean`                                                                                | `false`     |
-| `lfTrailingIcon` | `lf-trailing-icon` | When set, the icon will be shown after the text.                                                                                         | `boolean`                                                                                | `false`     |
-| `lfType`         | `lf-type`          | Sets the type of the button.                                                                                                             | `"button" \| "reset" \| "submit"`                                                        | `"button"`  |
-| `lfUiSize`       | `lf-ui-size`       | The size of the component.                                                                                                               | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
-| `lfUiState`      | `lf-ui-state`      | Reflects the specified state color defined by the theme.                                                                                 | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
-| `lfValue`        | `lf-value`         | Sets the initial state of the button. Relevant only when lfToggable is set to true.                                                      | `boolean`                                                                                | `false`     |
+| Property         | Attribute          | Description                                                                                                                                                                           | Type                                                                                     | Default     |
+| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
+| `lfAriaLabel`    | `lf-aria-label`    | Explicit accessible label for the button. When provided it takes precedence over any derived label (lfLabel / lfIcon / id fallback) and is applied to the internal button element(s). | `string`                                                                                 | `""`        |
+| `lfDataset`      | `lf-dataset`       | The dataset for the button, containing the nodes to be displayed. The first node will be used to set the icon and label if not provided.                                              | `LfDataDataset`                                                                          | `null`      |
+| `lfIcon`         | `lf-icon`          | When set, the button will show this icon.                                                                                                                                             | `string`                                                                                 | `""`        |
+| `lfIconOff`      | `lf-icon-off`      | When set, the icon button off state will show this icon. Otherwise, an outlined version of the icon prop will be displayed.                                                           | `string`                                                                                 | `""`        |
+| `lfLabel`        | `lf-label`         | When set, the button will show this text.                                                                                                                                             | `string`                                                                                 | `""`        |
+| `lfRipple`       | `lf-ripple`        | When set to true, the pointerdown event will trigger a ripple effect.                                                                                                                 | `boolean`                                                                                | `true`      |
+| `lfShowSpinner`  | `lf-show-spinner`  | When set to true, the button will display a spinner and won't be clickable.                                                                                                           | `boolean`                                                                                | `false`     |
+| `lfStretchX`     | `lf-stretch-x`     | When set to true, the button will stretch to fill the available horizontal space.                                                                                                     | `boolean`                                                                                | `false`     |
+| `lfStretchY`     | `lf-stretch-y`     | When set to true, the button will stretch to fill the available vertical space.                                                                                                       | `boolean`                                                                                | `false`     |
+| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                                                                     | `string`                                                                                 | `""`        |
+| `lfStyling`      | `lf-styling`       | Defines the style of the button. This property controls the visual appearance of the button.                                                                                          | `"flat" \| "floating" \| "icon" \| "outlined" \| "raised"`                               | `"raised"`  |
+| `lfToggable`     | `lf-toggable`      | When set to true, the icon button will be toggable on/off.                                                                                                                            | `boolean`                                                                                | `false`     |
+| `lfTrailingIcon` | `lf-trailing-icon` | When set, the icon will be shown after the text.                                                                                                                                      | `boolean`                                                                                | `false`     |
+| `lfType`         | `lf-type`          | Sets the type of the button.                                                                                                                                                          | `"button" \| "reset" \| "submit"`                                                        | `"button"`  |
+| `lfUiSize`       | `lf-ui-size`       | The size of the component.                                                                                                                                                            | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
+| `lfUiState`      | `lf-ui-state`      | Reflects the specified state color defined by the theme.                                                                                                                              | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
+| `lfValue`        | `lf-value`         | Sets the initial state of the button. Relevant only when lfToggable is set to true.                                                                                                   | `boolean`                                                                                | `false`     |
 
 
 ## Events
@@ -171,6 +172,7 @@ Type: `Promise<void>`
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-tabbar](../lf-tabbar)
+ - [lf-tree](../lf-tree)
 
 ### Depends on
 
@@ -193,6 +195,7 @@ graph TD;
   lf-masonry --> lf-button
   lf-messenger --> lf-button
   lf-tabbar --> lf-button
+  lf-tree --> lf-button
   style lf-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

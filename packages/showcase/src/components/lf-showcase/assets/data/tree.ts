@@ -57,6 +57,64 @@ export const getTreeFixtures = (
       })),
     })),
   };
+  const lfDatasetGrid: LfDataDataset = {
+    columns: [
+      { id: "name", title: "Name" },
+      { id: "status", title: "Status" },
+      { id: "progress", title: "Progress" },
+      { id: "actions", title: "Actions" },
+    ],
+    nodes: Array.from({ length: 5 }, (_, i) => ({
+      id: `g-${i}`,
+      value: `Group ${i}`,
+      icon: randomBoolean() ? randomIcon(icons) : undefined,
+      cells: {
+        name: { shape: "text", value: `Group ${i}` },
+        status: {
+          shape: "badge",
+          value: `S${i}`,
+          lfLabel: randomBoolean() ? "A" : "I",
+          lfUiState: randomBoolean() ? "success" : "primary",
+          lfPosition: "inline" as any,
+        },
+        progress: {
+          shape: "number",
+          value: randomNumber(0, 100),
+        },
+        actions: {
+          shape: "button",
+          value: `A${i}`,
+          lfLabel: "Action",
+          lfUiSize: "xsmall",
+        },
+      },
+      children: Array.from({ length: randomNumber(2, 4) }, (_, j) => ({
+        id: `g-${i}-${j}`,
+        value: `Item ${i}.${j}`,
+        icon: randomBoolean() ? randomIcon(icons) : undefined,
+        cells: {
+          name: { shape: "text", value: `Item ${i}.${j}` },
+          status: {
+            shape: "badge",
+            value: `I${j}`,
+            lfLabel: randomBoolean() ? "R" : "W",
+            lfUiState: randomBoolean() ? "success" : "warning",
+            lfPosition: "inline" as any,
+          },
+          progress: {
+            shape: "number",
+            value: randomNumber(0, 100),
+          },
+          actions: {
+            shape: "button",
+            value: `AI${j}`,
+            lfLabel: "Run",
+            lfUiSize: "xsmall",
+          },
+        },
+      })),
+    })),
+  };
   //#endregion
 
   //#region documentation
@@ -177,6 +235,15 @@ export const getTreeFixtures = (
             lfDataset,
             lfSelectable: false,
             lfStyle: randomStyle(),
+          },
+        },
+        grid: {
+          description: "Tree rendered as a grid with columns and cells",
+          props: {
+            lfAccordionLayout: false,
+            lfDataset: lfDatasetGrid,
+            lfGrid: true,
+            lfInitialExpansionDepth: 1,
           },
         },
       },

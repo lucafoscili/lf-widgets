@@ -203,19 +203,19 @@ graph TD;
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-tree --> lf-textfield
-  lf-masonry --> lf-badge
-  lf-masonry --> lf-button
-  lf-masonry --> lf-canvas
-  lf-masonry --> lf-card
-  lf-masonry --> lf-chart
-  lf-masonry --> lf-chat
-  lf-masonry --> lf-chip
-  lf-masonry --> lf-code
-  lf-masonry --> lf-image
-  lf-masonry --> lf-photoframe
-  lf-masonry --> lf-toggle
-  lf-masonry --> lf-typewriter
-  lf-masonry --> lf-upload
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
   lf-badge --> lf-image
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -238,6 +238,19 @@ graph TD;
   lf-chat --> lf-textfield
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-masonry --> lf-badge
+  lf-masonry --> lf-button
+  lf-masonry --> lf-canvas
+  lf-masonry --> lf-card
+  lf-masonry --> lf-chart
+  lf-masonry --> lf-chat
+  lf-masonry --> lf-chip
+  lf-masonry --> lf-code
+  lf-masonry --> lf-image
+  lf-masonry --> lf-photoframe
+  lf-masonry --> lf-toggle
+  lf-masonry --> lf-typewriter
+  lf-masonry --> lf-upload
   style lf-imageviewer fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

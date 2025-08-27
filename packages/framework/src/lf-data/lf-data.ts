@@ -26,6 +26,7 @@ import {
   nodePop,
   nodeSetProperties,
   nodeToStream,
+  nodeTraverseVisible,
 } from "./helpers.node";
 
 export class LfData implements LfDataInterface {
@@ -101,6 +102,15 @@ export class LfData implements LfDataInterface {
     setProperties: (nodes, properties, recursively?, exclude?) =>
       nodeSetProperties(nodes, properties, recursively, exclude),
     toStream: (nodes) => nodeToStream(nodes),
+    traverseVisible: (
+      nodes: LfDataNode[] | undefined,
+      predicates: {
+        isExpanded: (node: LfDataNode) => boolean;
+        isHidden: (node: LfDataNode) => boolean;
+        isSelected: (node: LfDataNode) => boolean;
+        forceExpand?: boolean;
+      },
+    ) => nodeTraverseVisible(nodes, predicates),
   };
   //#endregion
 }

@@ -85,6 +85,18 @@ export class LfChip implements LfChipInterface {
 
   //#region Props
   /**
+   * Explicit accessible label applied to each chip item when it would otherwise lack a text label.
+   * Fallback chain per item: node.value -> lfAriaLabel -> node.icon -> component id -> 'chip item'.
+   *
+   * @type {string}
+   * @default ""
+   * @mutable
+   *
+   * @example
+   * <lf-chip lfAriaLabel="Enable feature"></lf-chip>
+   */
+  @Prop({ mutable: true }) lfAriaLabel: string = "";
+  /**
    * The data set for the LF Chip component.
    * This property is mutable, meaning it can be changed after the component is initialized.
    *
@@ -457,6 +469,13 @@ export class LfChip implements LfChipInterface {
           }}
           role="button"
           tabindex={i}
+          aria-label={(
+            (this.#hasIconOnly(node) ? this.lfAriaLabel : "") ||
+            (typeof node.value === "string" ? node.value : "") ||
+            node.icon ||
+            this.rootElement.id ||
+            "chip item"
+          ).toString().trim()}
         >
           <span class={bemClass(item._, item.text)}>{node.value}</span>
         </span>

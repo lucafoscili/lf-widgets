@@ -74,6 +74,20 @@ export class LfButton implements LfButtonInterface {
 
   //#region Props
   /**
+   * Explicit accessible label for the button. When provided it takes precedence over
+   * any derived label (lfLabel / lfIcon / id fallback) and is applied to the internal button element(s).
+   *
+   * @type {string}
+   * @default ""
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-button lfIcon="save" lfAriaLabel="Save document"></lf-button>
+   * ```
+   */
+  @Prop({ mutable: true }) lfAriaLabel: string = "";
+  /**
    * The dataset for the button, containing the nodes to be displayed.
    * The first node will be used to set the icon and label if not provided.
    *

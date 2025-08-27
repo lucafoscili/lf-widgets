@@ -12,6 +12,7 @@ import { prepSideButtonsJsx } from "./elements.side-buttons";
 import { prepSideButtonHandlers } from "./handlers.side-buttons";
 import { autoplay } from "./helpers.utils";
 
+//#region Adapter
 export const createAdapter = (
   getters: LfCarouselAdapterInitializerGetters,
   setters: LfCarouselAdapterInitializerSetters,
@@ -29,6 +30,7 @@ export const createAdapter = (
     handlers: createHandlers(getAdapter),
   };
 };
+//#endregion
 
 //#region Controller
 export const createGetters = (
