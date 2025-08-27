@@ -8,8 +8,7 @@ import { createGetters, createSetters } from "./controller.tree";
 import { createJsx } from "./elements.tree";
 import { createHandlers } from "./handlers.tree";
 
-//#region Adapteryarn dev
-
+//#region Adapter
 export const createAdapter = (
   getters: LfTreeAdapterInitializerGetters,
   setters: LfTreeAdapterInitializerSetters,

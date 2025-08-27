@@ -213,7 +213,7 @@ export class LfTree implements LfTreeInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   _filterValue = "";
-  _filterTimeout: any;
+  _filterTimeout: ReturnType<typeof setTimeout> | null;
   #adapter: LfTreeAdapter;
   //#endregion
 

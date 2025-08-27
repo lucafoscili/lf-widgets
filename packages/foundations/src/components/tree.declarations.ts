@@ -140,6 +140,13 @@ export interface LfTreeNodeProps {
   node: LfDataNode;
   selected: boolean;
 }
+export interface LfTreeTraversedNode {
+  node: LfDataNode;
+  depth: number;
+  expanded: boolean;
+  hidden: boolean;
+  selected: boolean;
+}
 //#endregion
 
 //#region Props
