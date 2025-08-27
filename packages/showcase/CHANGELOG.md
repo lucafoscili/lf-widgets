@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.1) (2025-08-27)
+
+### Features
+
+- Add grid layout support to lf-tree component ([16cf082](https://github.com/lucafoscili/lf-widgets/commit/16cf082e9676c57a738e975a24075247c0b2a8de))
+
 # [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
 
 ### Features
