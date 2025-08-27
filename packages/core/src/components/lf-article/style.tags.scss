@@ -25,7 +25,7 @@ h1 {
   word-break: break-word;
 }
 
-h1 {
+h2 {
   @include lf-el-text("h2");
   /**
   * @prop --lf-#{$comp}-color-h2: Sets the h2 color for the #{$comp} component.

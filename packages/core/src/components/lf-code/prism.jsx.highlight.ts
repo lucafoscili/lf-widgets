@@ -17,7 +17,7 @@ export const LF_CODE_JSX = (Prism: Prism.Environment) => {
       RegExp(t, n)
     );
   }
-  (e = a(e).source),
+  ((e = a(e).source),
     (Prism.languages.jsx = Prism.languages.extend("markup", n)),
     (Prism.languages.jsx.tag.pattern = a(
       "</?(?:[\\w.:-]+(?:<S>+(?:[\\w.:$-]+(?:=(?:\"(?:\\\\[^]|[^\\\\\"])*\"|'(?:\\\\[^]|[^\\\\'])*'|[^\\s{'\"/>=]+|<BRACES>))?|<SPREAD>))*<S>*/?)?>",
@@ -56,7 +56,7 @@ export const LF_CODE_JSX = (Prism: Prism.Environment) => {
         },
       },
       Prism.languages.jsx.tag,
-    );
+    ));
   var s = function (t) {
       return t
         ? "string" == typeof t
@@ -95,13 +95,13 @@ export const LF_CODE_JSX = (Prism: Prism.Environment) => {
             0 === e[e.length - 1].openedBraces)
         ) {
           var r = s(o);
-          a < n.length - 1 &&
+          (a < n.length - 1 &&
             ("string" == typeof n[a + 1] || "plain-text" === n[a + 1].type) &&
             ((r += s(n[a + 1])), n.splice(a + 1, 1)),
             a > 0 &&
               ("string" == typeof n[a - 1] || "plain-text" === n[a - 1].type) &&
               ((r = s(n[a - 1]) + r), n.splice(a - 1, 1), a--),
-            (n[a] = new Prism.Token("plain-text", r, null, r));
+            (n[a] = new Prism.Token("plain-text", r, null, r)));
         }
         o.content && "string" != typeof o.content && g(o.content);
       }

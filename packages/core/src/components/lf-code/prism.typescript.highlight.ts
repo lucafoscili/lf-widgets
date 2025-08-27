@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_TYPESCRIPT = (Prism: Prism.Environment) => {
-  (Prism.languages.typescript = Prism.languages.extend("javascript", {
+  ((Prism.languages.typescript = Prism.languages.extend("javascript", {
     "class-name": {
       pattern:
         /(\b(?:class|extends|implements|instanceof|interface|new|type)\s+)(?!keyof\b)(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?:\s*<(?:[^<>]|<(?:[^<>]|<[^<>]*>)*>)*>)?/,
@@ -17,9 +17,9 @@ export const LF_CODE_TYPESCRIPT = (Prism: Prism.Environment) => {
       /\btype\b(?=\s*(?:[\{*]|$))/,
     ),
     delete Prism.languages.typescript.parameter,
-    delete Prism.languages.typescript["literal-property"];
+    delete Prism.languages.typescript["literal-property"]);
   var s = Prism.languages.extend("typescript", {});
-  delete s["class-name"],
+  (delete s["class-name"],
     (Prism.languages.typescript["class-name"].inside = s),
     Prism.languages.insertBefore("typescript", "function", {
       decorator: {
@@ -43,5 +43,5 @@ export const LF_CODE_TYPESCRIPT = (Prism: Prism.Environment) => {
         },
       },
     }),
-    (Prism.languages.ts = Prism.languages.typescript);
+    (Prism.languages.ts = Prism.languages.typescript));
 };
