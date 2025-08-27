@@ -475,7 +475,9 @@ export class LfChip implements LfChipInterface {
             node.icon ||
             this.rootElement.id ||
             "chip item"
-          ).toString().trim()}
+          )
+            .toString()
+            .trim()}
         >
           <span class={bemClass(item._, item.text)}>{node.value}</span>
         </span>

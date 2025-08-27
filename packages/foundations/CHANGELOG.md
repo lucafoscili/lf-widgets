@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
+
+### Features
+
+- Add 'inline' position option to lf-badge component ([6da1385](https://github.com/lucafoscili/lf-widgets/commit/6da138566a244c88702543f8f86d78416f274cf3))
+- Add grid layout support to lf-tree component ([16cf082](https://github.com/lucafoscili/lf-widgets/commit/16cf082e9676c57a738e975a24075247c0b2a8de))
+- Refactor lf-tree to use adapter pattern ([c1dac36](https://github.com/lucafoscili/lf-widgets/commit/c1dac362e0f26f24bed99484ed5417bdb81b6813))
+
 ## [0.3.8-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.7...0.3.8-rc.0) (2025-08-22)
 
 **Note:** Version bump only for package @lf-widgets/foundations
