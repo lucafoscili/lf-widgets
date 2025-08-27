@@ -5,6 +5,7 @@ import {
   LfLLMCompletionObject,
   LfLLMRequest,
   LfTextfieldElement,
+  LfLLMStreamChunk,
 } from "@lf-widgets/foundations";
 
 // Internal key to store original methods (string literal for simpler typing)
@@ -17,6 +18,11 @@ interface OriginalLlmMethods {
     textarea: LfTextfieldElement,
     button: LfButtonElement,
   ) => Promise<void>;
+  stream: (
+    request: LfLLMRequest,
+    url: string,
+    opts?: { signal?: AbortSignal },
+  ) => AsyncGenerator<LfLLMStreamChunk>;
 }
 
 type LlmWithOriginals = {
@@ -28,6 +34,8 @@ export type LfMockLlmMode = "echo" | "reverse" | "summarize" | "classify";
 export interface EnableMockLlmOptions {
   mode?: LfMockLlmMode;
   classifyLabels?: string[];
+  streamChunkWords?: number; // default 1
+  streamDelayMs?: number; // default 80ms
 }
 
 const defaultLabels = ["info", "warning", "error", "debug", "success"];
@@ -109,6 +117,7 @@ export const enableMockLLM = (
       fetch: llm.fetch.bind(llm),
       poll: llm.poll.bind(llm),
       speechToText: llm.speechToText.bind(llm),
+      stream: llm.stream.bind(llm),
     };
   }
 
@@ -147,6 +156,42 @@ export const enableMockLLM = (
     await textarea.setValue(mockText);
     button.lfShowSpinner = false;
   };
+
+  // Streaming simulation; yields incremental word slices
+  llm.stream = async function* (
+    request: LfLLMRequest,
+    _url: string,
+    opts?: { signal?: AbortSignal },
+  ): AsyncGenerator<LfLLMStreamChunk> {
+    const lastContent =
+      request.messages
+        ?.slice()
+        .reverse()
+        .find((m) => m.content)?.content ||
+      request.prompt ||
+      "";
+    const full = transformContent(mode, lastContent, request, options);
+    const words = full.split(/\s+/);
+    const chunkWords = Math.max(1, options.streamChunkWords || 1);
+    const delay = Math.max(0, options.streamDelayMs ?? 80);
+    let aborted = false;
+    const signal = opts?.signal;
+    const onAbort = () => (aborted = true);
+    if (signal) {
+      if (signal.aborted) aborted = true;
+      else signal.addEventListener("abort", onAbort, { once: true });
+    }
+    try {
+      for (let i = 0; i < words.length && !aborted; i += chunkWords) {
+        const slice = words.slice(i, i + chunkWords).join(" ");
+        yield { contentDelta: (i === 0 ? "" : " ") + slice };
+        if (delay) await new Promise((r) => setTimeout(r, delay));
+      }
+      if (!aborted) yield { done: true };
+    } finally {
+      if (signal) signal.removeEventListener("abort", onAbort);
+    }
+  };
 };
 
 export const disableMockLLM = (framework: LfFrameworkInterface) => {
@@ -158,6 +203,7 @@ export const disableMockLLM = (framework: LfFrameworkInterface) => {
   llm.fetch = originals.fetch;
   llm.poll = originals.poll;
   llm.speechToText = originals.speechToText;
+  llm.stream = originals.stream;
   debug.logs.new(llm, `[MockLLM] Disabled (restored originals)`);
 };
 
