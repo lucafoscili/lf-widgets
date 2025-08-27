@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
+
+### Bug Fixes
+
+- Cache production environment flag in LfDebug ([5f99305](https://github.com/lucafoscili/lf-widgets/commit/5f99305713c0fdca68a5e6abcc15399b48fe560c))
+
 ## [0.3.8-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.7...0.3.8-rc.0) (2025-08-22)
 
 **Note:** Version bump only for package @lf-widgets/framework

@@ -69,11 +69,11 @@ export class LfToggle implements LfToggleInterface {
   /**
    * Explicit accessible label for the toggle control. Fallback chain when empty:
    * lfLabel -> root element id -> 'toggle'. Applied to the native input element.
-   * 
+   *
    * @type {string}
    * @default ""
    * @mutable
-   * 
+   *
    * @example
    * <lf-toggle lfAriaLabel="Enable feature"></lf-toggle>
    */
@@ -337,9 +337,15 @@ export class LfToggle implements LfToggleInterface {
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
-  const { formField, toggle } = this.#b;
-  const { lfAriaLabel, lfLabel, lfLeadingLabel, lfRipple, lfStyle, value } = this;
-  const accessibleLabel = (lfAriaLabel || lfLabel || this.rootElement.id || "toggle").trim();
+    const { formField, toggle } = this.#b;
+    const { lfAriaLabel, lfLabel, lfLeadingLabel, lfRipple, lfStyle, value } =
+      this;
+    const accessibleLabel = (
+      lfAriaLabel ||
+      lfLabel ||
+      this.rootElement.id ||
+      "toggle"
+    ).trim();
 
     return (
       <Host>

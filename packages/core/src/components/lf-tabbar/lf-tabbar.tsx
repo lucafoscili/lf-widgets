@@ -71,7 +71,7 @@ export class LfTabbar implements LfTabbarInterface {
   /**
    * Explicit accessible label prefix for tabs. Final per-tab aria-label resolves as:
    * lfAriaLabel + ' ' + node.value (if both present) else node.value -> lfAriaLabel -> node.icon -> component id -> 'tab'.
-   * 
+   *
    * @type {string}
    * @default ""
    * @mutable
@@ -344,11 +344,16 @@ export class LfTabbar implements LfTabbarInterface {
     return (
       <button
         aria-selected={isSelected}
-        aria-label={(
-          (this.lfAriaLabel && node.value
-            ? `${this.lfAriaLabel} ${node.value}`
-            : node.value || this.lfAriaLabel || node.icon || this.rootElement.id || "tab")
-        ).toString().trim()}
+        aria-label={(this.lfAriaLabel && node.value
+          ? `${this.lfAriaLabel} ${node.value}`
+          : node.value ||
+            this.lfAriaLabel ||
+            node.icon ||
+            this.rootElement.id ||
+            "tab"
+        )
+          .toString()
+          .trim()}
         class={bemClass(tab._, null, {
           active: isSelected,
         })}
