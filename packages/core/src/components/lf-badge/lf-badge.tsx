@@ -1,6 +1,7 @@
 import {
   LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
+  LF_BADGE_CSS_VARS,
   LF_BADGE_PARTS,
   LF_BADGE_PROPS,
   LF_STYLE_ID,
@@ -268,14 +269,14 @@ export class LfBadge implements LfBadgeInterface {
 
     const renderStyles = () => {
       const styles: Record<string, string> = {};
+      const { transform } = LF_BADGE_CSS_VARS;
 
       if (!isInline) {
         styles[y] = "0";
         styles[x] = "0";
-        styles["--lf-badge-transform"] =
-          `translate(${translateX}, ${translateY})`;
+        styles[transform] = `translate(${translateX}, ${translateY})`;
       } else {
-        styles["--lf-badge-transform"] = "none";
+        styles[transform] = "none";
       }
 
       const hostStyles = Object.entries(styles)
