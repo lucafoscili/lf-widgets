@@ -1,17 +1,27 @@
 import {
+  LfButtonElement,
   LfFrameworkInterface,
   LfLLMChoiceMessage,
   LfLLMCompletionObject,
   LfLLMRequest,
+  LfTextfieldElement,
 } from "@lf-widgets/foundations";
 
-const ORIGINALS_KEY = Symbol.for("__lf_llm_originals__");
+// Internal key to store original methods (string literal for simpler typing)
+const ORIGINALS_KEY = "__lf_llm_originals__" as const;
 
 interface OriginalLlmMethods {
-  fetch: (request: LfLLMRequest, url: string) => Promise<any>;
+  fetch: (request: LfLLMRequest, url: string) => Promise<LfLLMCompletionObject>;
   poll: (url: string) => Promise<Response>;
-  speechToText: (textarea: any, button: any) => Promise<void>;
+  speechToText: (
+    textarea: LfTextfieldElement,
+    button: LfButtonElement,
+  ) => Promise<void>;
 }
+
+type LlmWithOriginals = {
+  [ORIGINALS_KEY]?: OriginalLlmMethods;
+} & LfFrameworkInterface["llm"]; // augment runtime instance
 
 export type LfMockLlmMode = "echo" | "reverse" | "summarize" | "classify";
 
@@ -92,19 +102,22 @@ export const enableMockLLM = (
 ) => {
   const { llm, debug } = framework;
   const mode: LfMockLlmMode = options.mode || "echo";
-  const store: any = llm as any;
+  const store = llm as LlmWithOriginals;
 
   if (!store[ORIGINALS_KEY]) {
     store[ORIGINALS_KEY] = {
       fetch: llm.fetch.bind(llm),
       poll: llm.poll.bind(llm),
       speechToText: llm.speechToText.bind(llm),
-    } as OriginalLlmMethods;
+    };
   }
 
   debug.logs.new(llm, `[MockLLM] Enabled mode='${mode}'`);
 
-  llm.fetch = (async (request: LfLLMRequest, _url: string) => {
+  llm.fetch = async (
+    request: LfLLMRequest,
+    _url: string,
+  ): Promise<LfLLMCompletionObject> => {
     const lastContent =
       request.messages
         ?.slice()
@@ -114,32 +127,33 @@ export const enableMockLLM = (
       "";
     const content = transformContent(mode, lastContent, request, options);
     return buildMockResponse(request, content);
-  }) as any;
+  };
 
-  llm.poll = (async (_url: string) => {
+  llm.poll = async (_url: string): Promise<Response> => {
     const body = JSON.stringify({ status: "ok", ts: Date.now(), mock: true });
     return new Response(body, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  }) as any;
+  };
 
-  llm.speechToText = (async (
-    textarea: { setValue: (v: string) => Promise<void> },
-    button: { lfShowSpinner: boolean },
-  ) => {
+  llm.speechToText = async (
+    textarea: LfTextfieldElement,
+    button: LfButtonElement,
+  ): Promise<void> => {
     button.lfShowSpinner = true;
     await new Promise((r) => setTimeout(r, 150));
     const mockText = "mock transcription";
     await textarea.setValue(mockText);
     button.lfShowSpinner = false;
-  }) as any;
+  };
 };
 
 export const disableMockLLM = (framework: LfFrameworkInterface) => {
   const { llm, debug } = framework;
-  const store: any = llm as any;
-  const originals: OriginalLlmMethods | undefined = store[ORIGINALS_KEY];
+
+  const store = llm as LlmWithOriginals;
+  const originals = store[ORIGINALS_KEY];
   if (!originals) return;
   llm.fetch = originals.fetch;
   llm.poll = originals.poll;
@@ -148,8 +162,6 @@ export const disableMockLLM = (framework: LfFrameworkInterface) => {
 };
 
 export const isMockLLMEnabled = (framework: LfFrameworkInterface) => {
-  const store: any = framework.llm as any;
-  return Boolean(
-    store[ORIGINALS_KEY] && store.fetch !== store[ORIGINALS_KEY]?.fetch,
-  );
+  const store = framework.llm as LlmWithOriginals;
+  return Boolean(store[ORIGINALS_KEY]);
 };

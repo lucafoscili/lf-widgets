@@ -3,6 +3,7 @@ import {
   LfFrameworkInterface,
   LfLLMInterface,
   LfLLMRequest,
+  LfLLMCompletionObject,
   LfTextfieldElement,
 } from "@lf-widgets/foundations";
 
@@ -16,12 +17,15 @@ export class LfLLM implements LfLLMInterface {
   //#region Fetch
   /**
    * Sends a chat completion request to the LLM service.
-   * @param request - The request object containing the chat completion parameters
-   * @param url - The base URL of the LLM service
-   * @returns Promise<any> - The JSON response from the LLM service
-   * @throws {Error} - Throws if the HTTP request fails or returns a non-200 status
+   * @param request - Chat completion parameters.
+   * @param url - Base URL of the LLM service (without trailing /v1...).
+   * @returns The parsed completion object.
+   * @throws {Error} When network fails or non-OK status code.
    */
-  fetch = async (request: LfLLMRequest, url: string) => {
+  fetch = async (
+    request: LfLLMRequest,
+    url: string,
+  ): Promise<LfLLMCompletionObject> => {
     try {
       const response = await fetch(`${url}/v1/chat/completions`, {
         method: "POST",
@@ -33,7 +37,7 @@ export class LfLLM implements LfLLMInterface {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data = (await response.json()) as LfLLMCompletionObject;
       return data;
     } catch (error) {
       console.error("Error calling LLM:", error);

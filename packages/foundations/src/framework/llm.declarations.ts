@@ -4,7 +4,7 @@ import { LF_LLM_ROLES } from "./llm.constants";
 
 //#region Class
 export interface LfLLMInterface {
-  fetch: (request: LfLLMRequest, url: string) => Promise<any>;
+  fetch: (request: LfLLMRequest, url: string) => Promise<LfLLMCompletionObject>;
   poll: (url: string) => Promise<Response>;
   speechToText: (
     textarea: LfTextfieldElement,
