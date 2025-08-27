@@ -45,10 +45,14 @@ export class LfDebug implements LfDebugInterface {
     toggles: new Set<LfToggleInterface>(),
   };
   #IS_ENABLED = false;
+  #IS_PROD = false;
   #LOG_LIMIT = 250;
   #LOGS: LfDebugLog[] = [];
 
-  constructor(_lfFramework: LfFrameworkInterface) {}
+  constructor(_lfFramework: LfFrameworkInterface) {
+    this.#IS_PROD =
+      typeof process !== "undefined" && process.env?.NODE_ENV === "production";
+  }
 
   #codeDispatcher = (log?: LfDebugLog) => {
     Array.from(this.#COMPONENTS.codes).forEach((comp) => {
@@ -166,11 +170,7 @@ export class LfDebug implements LfDebugInterface {
 
     //#region New log
     new: async (comp, message, category = "informational") => {
-      const IS_PROD =
-        typeof process !== "undefined" &&
-        process.env?.NODE_ENV === "production";
-
-      if (IS_PROD && category === "informational") {
+      if (this.#IS_PROD && category === "informational") {
         return;
       }
 
