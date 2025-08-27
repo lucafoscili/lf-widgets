@@ -17,14 +17,15 @@ export class LfLLM implements LfLLMInterface {
   /**
    * Utility functions for LLM operations including request hashing and token estimation.
    *
-   * @property hash - Generates a deterministic hash string from an LfLLMRequest object.
-   * Creates a pruned copy of the request (removing undefined values, sorting keys),
-   * then applies FNV-1a hashing algorithm to the JSON stringified result.
-   * Used for cache key generation.
+   * hash:
+   *  - Builds a pruned & key‑sorted subset of the request (only model, messages, prompt, and core sampling knobs; excludes user/system/etc. for stability)
+   *  - Applies a lightweight FNV‑1a style 32‑bit mixing hash over the JSON string
+   *  - Intended ONLY for short‑lived cache keys / memo maps (not cryptographic)
    *
-   * @property estimateTokens - Provides a heuristic estimation of token count for message arrays.
-   * Uses an approximation of 4 characters per token and includes overhead for role information.
-   * Returns the estimated number of tokens as a rounded-up integer.
+   * estimateTokens:
+   *  - Heuristic: ~4 characters ≈ 1 token
+   *  - Adds small per‑message overhead (role length + 4) to approximate protocol framing
+   *  - Returns Math.ceil of the estimate
    */
   utils: LfLLMUtils = {
     hash: (request: LfLLMRequest): string => {
@@ -82,11 +83,12 @@ export class LfLLM implements LfLLMInterface {
 
   //#region Fetch
   /**
-   * Sends a chat completion request to the LLM service.
-   * @param request - Chat completion parameters.
-   * @param url - Base URL of the LLM service (without trailing /v1...).
-   * @returns The parsed completion object.
-   * @throws {Error} When network fails or non-OK status code.
+   * Sends a chat completion request to an OpenAI‑style endpoint.
+   * NOTE: This helper does NOT add auth headers; caller must inject them upstream.
+   * @param request Chat completion parameters
+   * @param url Base service URL (without trailing /v1...)
+   * @returns Parsed completion object
+   * @throws {Error} Network failure or non‑OK status (generic Error with status embedded in message)
    */
   fetch = async (
     request: LfLLMRequest,
@@ -114,9 +116,9 @@ export class LfLLM implements LfLLMInterface {
 
   //#region Poll
   /**
-   * Performs a polling request to the specified URL.
-   * @param url - The URL to poll.
-   * @returns A Promise that resolves with the fetch response.
+   * Performs a simple poll fetch. Thin wrapper: no retries, no headers, no error shaping.
+   * @param url URL to poll
+   * @returns Raw fetch Response promise
    */
   poll = async (url: string) => {
     return fetch(url);
@@ -150,10 +152,10 @@ export class LfLLM implements LfLLMInterface {
    * @param opts - Optional configuration object
    * @param opts.signal - AbortSignal to cancel the request if needed
    *
-   * @yields {Object} Streaming response objects with the following properties:
-   * @yields {Object.contentDelta} - The incremental content text from the response
-   * @yields {Object.done} - Boolean indicating if the stream has completed
-   * @yields {Object.raw} - The raw response object from the API
+   * Yields chunk objects with:
+   *  - contentDelta: incremental text (only when present)
+   *  - done: final sentinel chunk (always the last emission)
+   *  - raw: raw parsed SSE JSON object (only for chunks that contained content OR the single non‑stream fallback)
    *
    * @throws {Error} Throws an error if the HTTP request fails or returns a non-ok status
    *
@@ -170,11 +172,12 @@ export class LfLLM implements LfLLMInterface {
    * ```
    *
    * @remarks
-   * - Automatically sets `stream: true` in the request payload if not explicitly provided
+   * - Automatically sets `stream: true` only when request.stream is undefined
    * - Handles abort signals gracefully by silently exiting on AbortError
-   * - Falls back to parsing single JSON response if streaming is not available
-   * - Supports OpenAI-compatible SSE format with "data: [DONE]" termination
-   * - Ignores malformed JSON chunks to maintain stream stability
+   * - Falls back to a single JSON response (emitting one chunk with contentDelta + done + raw) if body reader missing
+   * - Final streaming termination yields a { done: true } chunk (no raw) after all deltas
+   * - Supports OpenAI-compatible SSE lines with "data: [DONE]" termination
+   * - Silently ignores malformed JSON lines for resilience
    */
   stream = async function* (
     this: LfLLM,
@@ -264,22 +267,19 @@ export class LfLLM implements LfLLMInterface {
 
   //#region SpeechToText
   /**
-   * Initiates speech-to-text functionality using the browser's Speech Recognition API.
-   * The recognized speech is automatically populated into the provided textarea element.
-   * The function handles the recognition process, including visual feedback through a spinner on the button.
+   * Starts browser speech recognition and streams interim & final transcript into the provided textfield.
+   * Adds spinner state to the trigger button while active.
    *
-   * @param textarea - The HTMLLfTextfieldElement where the transcribed text will be inserted
-   * @param button - The HTMLLfButtonElement that triggers the speech recognition and displays spinner feedback
-   * @returns A Promise that resolves when the speech recognition process is complete
+   * @param textarea LfTextfieldElement target for transcript
+   * @param button LfButtonElement used to show spinner while capturing
+   * @returns Promise resolving after recognition lifecycle finishes
    *
-   * @throws Will alert if speech recognition is not supported by the browser
-   * @throws May throw errors during speech recognition initialization
+   * @throws Alerts if recognition API unsupported
    *
-   * @remarks
-   * - Uses either standard SpeechRecognition or webkitSpeechRecognition API
-   * - Sets interimResults to true for real-time transcription
-   * - Automatically stops recognition when a final result is received
-   * - Handles recognition start, result, and end events
+   * Notes:
+   *  - Uses (webkit)SpeechRecognition with interimResults=true, maxAlternatives=1
+   *  - Stops automatically on first final result
+   *  - Cleans up spinner on end
    */
   speechToText = async (
     textarea: LfTextfieldElement,
@@ -332,9 +332,10 @@ export class LfLLM implements LfLLMInterface {
   /**
    * Executes a function with automatic retry logic based on configurable retry policies.
    *
-   * This method implements exponential backoff with optional jitter for handling transient failures
-   * such as network errors, timeouts, and specific HTTP status codes. The retry behavior can be
-   * customized through the policy parameter.
+   * Implements exponential backoff (baseDelayMs * 2^(attempt-1)) with optional full jitter
+   * (random 0..delayBase). Retries only when BOTH (a) error name (if present) is in the
+   * configured retriableErrorNames AND (b) status (if detectable) is in retriableStatus.
+   * If either list rejects the error, it stops early. AbortError is never retried.
    *
    * @template T - The return type of the function being executed
    * @param fn - The async function to execute with retry logic
@@ -342,11 +343,11 @@ export class LfLLM implements LfLLMInterface {
    * @param policy.maxAttempts - Maximum number of retry attempts (default: 3)
    * @param policy.baseDelayMs - Base delay in milliseconds for exponential backoff (default: 300)
    * @param policy.jitter - Whether to apply random jitter to delay calculation (default: true)
-   * @param policy.retriableStatus - HTTP status codes that should trigger a retry (default: [408, 429, 500, 502, 503, 504])
-   * @param policy.retriableErrorNames - Error names that should trigger a retry (default: ["TypeError", "NetworkError"])
+   * @param policy.retriableStatus - HTTP status codes considered transient (default: [408, 429, 500, 502, 503, 504])
+   * @param policy.retriableErrorNames - Error names considered transient (default: ["TypeError", "NetworkError"]) - (fetch network failures often surface as TypeError in browsers)
    *
    * @returns A promise that resolves with the result of the successful function execution
-   * @throws The last error encountered if all retry attempts are exhausted or if an AbortError occurs
+   * @throws The last error encountered if attempts exhausted or non‑retriable condition encountered
    *
    * @example
    * ```typescript
@@ -384,6 +385,32 @@ export class LfLLM implements LfLLMInterface {
         // AbortError and DOMExceptions shouldn't be retried here.
         if (this.#IS_ABORT_ERROR(e)) {
           break;
+        }
+        // Determine retriable by name & status (if discoverable)
+        const name = (e as { name?: string })?.name;
+        const message = (e as { message?: string })?.message;
+        let status: number | undefined;
+        // Attempt to extract status if error message follows pattern 'HTTP error! status: N'
+        if (message) {
+          const m = message.match(/status:\s*(\d{3})/i);
+          if (m) status = parseInt(m[1], 10);
+        }
+        // Allow custom error objects with status property
+        if (
+          status === undefined &&
+          typeof e === "object" &&
+          e &&
+          "status" in (e as any)
+        ) {
+          const maybe = (e as any).status;
+          if (typeof maybe === "number") status = maybe;
+        }
+        const nameOk = !name || p.retriableErrorNames?.includes(name);
+        const statusOk =
+          status === undefined || p.retriableStatus?.includes(status);
+        const shouldRetry = nameOk && statusOk;
+        if (!shouldRetry) {
+          break; // Non-retriable condition
         }
         // TODO: Non-network HTTP status errors must be surfaced: we can optionally attach status in custom error shape; skip for now.
         if (attempt >= p.maxAttempts) {
