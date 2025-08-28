@@ -24,6 +24,9 @@ export class LfTheme implements LfThemeInterface {
   #MANAGER: LfFrameworkInterface;
   #MASTER_CUSTOM_STYLE: keyof LfThemeCustomStyles = "MASTER";
   #STYLE_ELEMENT: HTMLStyleElement;
+  // Cached sprite sheet indexing for centralized access
+  #SPRITE_IDS?: Set<string>;
+  #SPRITE_INDEXING?: Promise<Set<string>>;
 
   constructor(lfFramework: LfFrameworkInterface) {
     this.#MANAGER = lfFramework;
@@ -199,6 +202,44 @@ export class LfTheme implements LfThemeInterface {
         name: this.#CURRENT,
         full: this.#LIST[this.#CURRENT],
       };
+    },
+    sprite: {
+      path: (): string => {
+        const { assets } = this.#MANAGER;
+        return assets.get("./assets/svg/sprite.svg").path;
+      },
+      ids: async (): Promise<Set<string>> => {
+        if (this.#SPRITE_IDS) return this.#SPRITE_IDS;
+        if (this.#SPRITE_INDEXING) return this.#SPRITE_INDEXING;
+
+        this.#SPRITE_INDEXING = (async () => {
+          try {
+            const { assets } = this.#MANAGER;
+            const sprite = assets.get("./assets/svg/sprite.svg");
+            if (!sprite?.path || typeof fetch === "undefined")
+              return new Set<string>();
+            const res = await fetch(sprite.path);
+            if (!res.ok) return new Set<string>();
+            const text = await res.text();
+            const ids = new Set<string>();
+            const re = /<symbol\s+id=\"([^\"]+)\"/g;
+            let m: RegExpExecArray | null;
+            while ((m = re.exec(text))) ids.add(m[1]);
+            this.#SPRITE_IDS = ids;
+            return ids;
+          } catch {
+            return new Set<string>();
+          } finally {
+            this.#SPRITE_INDEXING = undefined;
+          }
+        })();
+
+        return this.#SPRITE_INDEXING;
+      },
+      hasIcon: async (id: string): Promise<boolean> => {
+        const ids = await this.get.sprite.ids();
+        return ids.has(id);
+      },
     },
     icon: (name: keyof typeof LF_ICONS_REGISTRY) => LF_ICONS_REGISTRY[name],
     icons: () => LF_ICONS_REGISTRY,

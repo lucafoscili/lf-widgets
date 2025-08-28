@@ -6,6 +6,7 @@ import {
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
 import { LF_IMAGE_EVENTS } from "./image.constants";
+import { LfThemeUIState } from "../framework/theme.declarations";
 
 //#region Class
 export interface LfImageInterface
@@ -28,6 +29,11 @@ export interface LfImagePropsInterface {
   lfSizeX?: string;
   lfSizeY?: string;
   lfStyle?: string;
+  /** Visual state color (theme token). */
+  lfUiState?: LfThemeUIState;
   lfValue?: string;
+  /** Rendering mode for non-URL values: sprite (SVG <use>) or mask (legacy CSS mask). Default: sprite */
+  lfMode?: LfImageMode;
 }
+export type LfImageMode = "sprite" | "mask";
 //#endregion

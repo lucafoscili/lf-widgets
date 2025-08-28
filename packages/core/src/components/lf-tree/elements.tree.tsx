@@ -12,7 +12,6 @@ import {
 import { h } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
 import { TreeNode } from "./components.node";
-import { collectVisibleNodes } from "./helpers.traverse";
 
 export const createJsx = (
   getAdapter: () => LfTreeAdapter,
@@ -78,17 +77,21 @@ export const createJsx = (
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
     const { get } = controller;
-    const { manager } = get;
-    const blocks = get.blocks;
-    const parts = get.parts;
+    const { blocks, manager, parts } = get;
     const { bemClass } = manager.theme;
-    const tree = blocks.tree;
-    const filterValue = get.filterValue?.() || "";
+    const { tree } = blocks;
     const stringify = manager.data.cell.stringify;
+
+    const filterValue = get.filterValue() || "";
     const columns = get.columns();
     const isGrid = get.isGrid();
-
-    const visible = collectVisibleNodes(adapter);
+    const dataset = get.dataset();
+    const visible = get.manager.data.node.traverseVisible(dataset?.nodes, {
+      isExpanded: get.isExpanded,
+      isHidden: get.isHidden,
+      isSelected: get.isSelected,
+      forceExpand: !!filterValue,
+    }) as ReturnType<typeof get.manager.data.node.traverseVisible>;
     const hasNodes = visible.length > 0;
 
     const renderCellShape = (
@@ -111,32 +114,35 @@ export const createJsx = (
       }
       const shape = cell.shape || "text";
       const simple = shape === "text" || shape === "number" || shape === "slot";
-      const shapeProps = manager.data.cell.shapes.get(
-        cell as LfDataCell<LfDataShapes>,
-      ) as LfDataCell<LfDataShapes> & { lfValue?: unknown };
+      const shapeProps: LfDataCell<LfDataShapes> & { lfValue?: unknown } =
+        manager.data.cell.shapes.get(
+          cell as LfDataCell<LfDataShapes>,
+        ) as LfDataCell<LfDataShapes> & { lfValue?: unknown };
+
       if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
         shapeProps.lfValue = cell.value;
+
+        return (
+          <div
+            class={bemClass(nodeBlock._, nodeBlock.gridCell)}
+            data-column={col.id as string}
+          >
+            {simple ? (
+              stringify(cell.value)
+            ) : (
+              <LfShape
+                framework={manager}
+                shape={shape}
+                index={0}
+                cell={shapeProps}
+                eventDispatcher={async (e: Event) =>
+                  get.compInstance.onLfEvent(e, "lf-event", { node })
+                }
+              ></LfShape>
+            )}
+          </div>
+        );
       }
-      return (
-        <div
-          class={bemClass(nodeBlock._, nodeBlock.gridCell)}
-          data-column={col.id as string}
-        >
-          {simple ? (
-            stringify(cell.value)
-          ) : (
-            <LfShape
-              framework={manager}
-              shape={shape}
-              index={0}
-              cell={shapeProps}
-              eventDispatcher={async (e: Event) =>
-                get.compInstance.onLfEvent(e, "lf-event", { node })
-              }
-            ></LfShape>
-          )}
-        </div>
-      );
     };
 
     const renderGridCells = (node: LfDataNode) => {

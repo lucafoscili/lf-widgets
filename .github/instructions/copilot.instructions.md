@@ -248,10 +248,10 @@ When complexity grows (see `lf-messenger` for full example):
 
 ## 11. Absolute Don'ts
 
-- Add runtime logic to foundations.
 - Use `any` casually (if a new prop is introduced remember to build the foundations to spread it downstream).
 - Duplicate shape rendering logic (use `LfShape`).
 - Break alphabetical / logical ordering in large maps without reason.
+- Hacks and workarounds that bypass the established architecture or that do not follow the best practices.
 
 ---
 

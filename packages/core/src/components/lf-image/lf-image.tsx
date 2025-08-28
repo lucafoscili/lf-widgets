@@ -15,6 +15,7 @@ import {
   LfImageEvent,
   LfImageEventPayload,
   LfImageInterface,
+  LfImageMode,
   LfImagePropsInterface,
   LfThemeIcon,
   LfThemeIconVariable,
@@ -86,6 +87,11 @@ export class LfImage implements LfImageInterface {
    * This property is set to true once the image load event completes.
    */
   @State() isLoaded: boolean = false;
+  /**
+   * The resolved sprite name to be used for the image.
+   * This state property is set when the component successfully resolves the sprite name.
+   */
+  @State() resolvedSpriteName?: string;
   //#endregion
 
   //#region Props
@@ -98,6 +104,14 @@ export class LfImage implements LfImageInterface {
    */
   @Prop({ mutable: true })
   lfHtmlAttributes: Partial<LfFrameworkAllowedKeysMap> = {};
+  /**
+   * Rendering mode for non-URL values: sprite (default) or mask (legacy).
+   *
+   * @type {LfImageMode}
+   * @default "sprite"
+   * @mutable
+   */
+  @Prop({ mutable: true, reflect: true }) lfMode: LfImageMode = "sprite";
   /**
    * Controls the display of a loading indicator.
    * When enabled, a spinner is shown until the image finishes loading.
@@ -186,7 +200,7 @@ export class LfImage implements LfImageInterface {
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
   #mask: string;
-  //#endregion
+  #resolvedFor?: string;
 
   //#region Watchers
   @Watch("lfValue")
@@ -197,6 +211,8 @@ export class LfImage implements LfImageInterface {
 
     this.error = false;
     this.isLoaded = false;
+    this.resolvedSpriteName = undefined;
+    this.#resolvedFor = undefined;
   }
   //#endregion
 
@@ -291,7 +307,9 @@ export class LfImage implements LfImageInterface {
   #isResourceUrl() {
     const { lfValue } = this;
 
-    if (!lfValue || typeof lfValue !== "string") return false;
+    if (!lfValue || typeof lfValue !== "string") {
+      return false;
+    }
 
     const resourceUrlPattern =
       /^(?:(?:https?:\/\/|\/|\.{1,2}\/|[a-zA-Z]:\\|\\\\|blob:).+|data:image\/[a-zA-Z0-9+.-]+(?:;charset=[^;,]+)?(?:;base64)?,.*)$/;
@@ -323,6 +341,47 @@ export class LfImage implements LfImageInterface {
 
     await promise;
   }
+  #prepSpriteIcon(value?: LfThemeIconVariable): VNode {
+    const { theme, sanitizeProps } = this.#framework;
+    const { bemClass } = theme;
+    const { image } = this.#b;
+    const { variables } = theme.get.current();
+
+    const resolved = !value
+      ? variables["--lf-icon-broken-image"]
+      : value.indexOf(CSS_VAR_PREFIX) > -1
+        ? variables[value]
+        : value;
+
+    if (this.#resolvedFor !== resolved) {
+      this.resolvedSpriteName = undefined;
+      this.#resolvedFor = resolved;
+      theme.get.sprite.hasIcon(resolved).then((exists) => {
+        if (this.#resolvedFor === resolved) {
+          this.resolvedSpriteName = exists
+            ? resolved
+            : variables["--lf-icon-broken-image"];
+        }
+      });
+    }
+
+    const effectiveName = this.resolvedSpriteName ?? resolved;
+    const href = `${theme.get.sprite.path()}#${effectiveName}`;
+
+    return (
+      <svg
+        {...sanitizeProps(this.lfHtmlAttributes)}
+        part={this.#p.icon}
+        class={bemClass(image._, image.icon)}
+        data-cy={this.#cy.maskedSvg}
+        data-lf={this.lfUiState}
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+      >
+        <use href={href}></use>
+      </svg>
+    );
+  }
   #setMask = (icon: LfThemeIcon | string) => {
     const { assets } = this.#framework;
 
@@ -343,12 +402,18 @@ export class LfImage implements LfImageInterface {
     const { logs } = this.#framework.debug;
 
     if (!this.#isResourceUrl() && this.lfValue) {
-      try {
-        await this.#preloadIcon(this.lfValue);
+      if (this.lfMode === "mask") {
+        try {
+          await this.#preloadIcon(this.lfValue);
+          this.isLoaded = true;
+        } catch (err) {
+          logs.new(this, "Failed to preload icon", "warning");
+          this.error = true;
+        }
+      } else {
+        const { theme } = this.#framework;
         this.isLoaded = true;
-      } catch (err) {
-        logs.new(this, "Failed to preload icon", "warning");
-        this.error = true;
+        theme.get.sprite.ids();
       }
     }
   }
@@ -383,16 +448,19 @@ export class LfImage implements LfImageInterface {
 
     this.#mask = "";
     const isUrl = this.#isResourceUrl();
+    const isSpriteCandidate = !isUrl && this.lfMode === "sprite";
 
-    if (error) {
-      const { "--lf-icon-broken-image": broken } = variables;
-      this.#setMask(broken);
-    } else if (!isUrl) {
-      const isThemeIcon = lfValue.indexOf(CSS_VAR_PREFIX) > -1;
-      const icon = isThemeIcon
-        ? variables[lfValue as LfThemeIconVariable]
-        : lfValue;
-      this.#setMask(icon);
+    if (this.lfMode === "mask") {
+      if (error) {
+        const { "--lf-icon-broken-image": broken } = variables;
+        this.#setMask(broken);
+      } else if (!isUrl) {
+        const isThemeIcon = lfValue.indexOf(CSS_VAR_PREFIX) > -1;
+        const icon = isThemeIcon
+          ? variables[lfValue as LfThemeIconVariable]
+          : lfValue;
+        this.#setMask(icon);
+      }
     }
 
     return (
@@ -400,9 +468,9 @@ export class LfImage implements LfImageInterface {
         <style id={this.#s}>
           {`
           :host {
-            ${this.#v.mask}: ${this.#mask ? this.#mask : "none"};
+            ${this.#v.mask}: ${this.lfMode === "mask" && this.#mask ? this.#mask : "none"};
             ${this.#v.height}: ${lfSizeY || "100%"};
-            ${this.#v.width}:  ${lfSizeX || "100%"};
+            ${this.#v.width}: ${lfSizeX || "100%"};
           }
           ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
@@ -415,13 +483,24 @@ export class LfImage implements LfImageInterface {
             }}
             part={this.#p.image}
           >
-            {error
-              ? this.#createIcon()
-              : isUrl
-                ? this.#createImage()
-                : isLoaded
+            {(() => {
+              if (error) {
+                return this.lfMode === "mask"
                   ? this.#createIcon()
-                  : null}
+                  : this.#prepSpriteIcon();
+              }
+              if (isUrl) {
+                return this.#createImage();
+              }
+              if (isSpriteCandidate && isLoaded) {
+                return this.#prepSpriteIcon(lfValue as LfThemeIconVariable);
+              }
+              if (this.lfMode === "mask" && isLoaded) {
+                return this.#createIcon();
+              }
+
+              return null;
+            })()}
           </div>
         </div>
       </Host>

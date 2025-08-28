@@ -19,6 +19,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { disableMockLLM, enableMockLLM } from "../../utils/llm.mock";
 import { awaitFramework } from "../../utils/setup";
 import { ComponentTemplate } from "./components/component-template";
 import { FrameworkTemplate } from "./components/framework-template";
@@ -73,6 +74,7 @@ export class LfShowcase {
     Framework: null,
   };
   @State() showScrollTop = false;
+  @State() useMockLlm = false;
   //#endregion
 
   //#region Props
@@ -335,6 +337,38 @@ export class LfShowcase {
       ></lf-button>
     );
   };
+  #prepLlmMockToggler = (className?: string): VNode => {
+    const { get } = this.#framework.theme;
+
+    const label = this.useMockLlm ? "Disable Mock LLM" : "Enable Mock LLM";
+    const icon = get.icon("robot");
+    const llmHandler = async (e: LfEvent<LfButtonEventPayload>) => {
+      const { eventType } = e.detail;
+
+      if (eventType === "click") {
+        if (this.useMockLlm) {
+          disableMockLLM(this.#framework);
+          this.useMockLlm = false;
+        } else {
+          enableMockLLM(this.#framework, { mode: "echo" });
+          this.useMockLlm = true;
+        }
+      }
+    };
+    return (
+      <lf-button
+        aria-label={label}
+        class={className || ""}
+        lfIcon={icon}
+        lfStyling="icon"
+        lfToggable={true}
+        lfValue={!this.useMockLlm}
+        onLf-button-event={llmHandler}
+        part="llm-mock-button"
+        title={label}
+      ></lf-button>
+    );
+  };
   #prepThemeToggler = (className?: string): VNode => {
     const { get } = this.#framework.theme;
 
@@ -478,6 +512,7 @@ export class LfShowcase {
           </div>
           <div class={bemClass("header", "right")}>
             {this.#prepThemeToggler(bemClass("header", "button"))}
+            {this.#prepLlmMockToggler(bemClass("header", "button"))}
           </div>
         </div>
       </lf-header>

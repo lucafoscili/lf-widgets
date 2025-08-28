@@ -22,20 +22,21 @@ Represents a showcase component for displaying and navigating through multiple s
 
 ## Shadow Parts
 
-| Part              | Description |
-| ----------------- | ----------- |
-| `"back"`          |             |
-| `"drawer"`        |             |
-| `"drawer-button"` |             |
-| `"github"`        |             |
-| `"header"`        |             |
-| `"intro"`         |             |
-| `"npm"`           |             |
-| `"scroll-to-top"` |             |
-| `"showcase"`      |             |
-| `"theme-button"`  |             |
-| `"title"`         |             |
-| `"typewriter"`    |             |
+| Part                | Description |
+| ------------------- | ----------- |
+| `"back"`            |             |
+| `"drawer"`          |             |
+| `"drawer-button"`   |             |
+| `"github"`          |             |
+| `"header"`          |             |
+| `"intro"`           |             |
+| `"llm-mock-button"` |             |
+| `"npm"`             |             |
+| `"scroll-to-top"`   |             |
+| `"showcase"`        |             |
+| `"theme-button"`    |             |
+| `"title"`           |             |
+| `"typewriter"`      |             |
 
 
 ## CSS Custom Properties

@@ -78,11 +78,112 @@ describe(CY_CATEGORIES.methods, () => {
 
 //#region Props
 describe(CY_CATEGORIES.props, () => {
+  let framework: LfFrameworkInterface;
+
   beforeEach(() => {
     cy.navigate(image);
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
+    });
   });
+
+  it("lfHtmlAttributes: passes attributes to rendered element", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#states-primary`)
+      .should("exist")
+      .shadow()
+      .find(`.${iconClass}`)
+      .should("have.attr", "title", "Icon in primary state");
+
+    // Mask example should propagate html attributes to the masked element as well
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-mask`)
+      .should("exist")
+      .and("have.attr", "lf-mode", "mask")
+      .shadow()
+      .find(`.${iconClass}`)
+      .should("have.attr", "title", "Mask icon");
+  });
+
+  it("lfMode: default 'sprite' renders an <svg> icon", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-icon`)
+      .should(($img) => {
+        const comp = $img[0] as HTMLLfImageElement;
+        expect(comp.lfMode).to.eq("sprite");
+      })
+      .shadow()
+      .find(`.${iconClass}`)
+      .should(($el) => {
+        expect($el.get(0).tagName.toLowerCase()).to.eq("svg");
+      })
+      .find("use")
+      .should("have.attr", "href");
+  });
+
+  it("lfMode: 'mask' renders a masked <div> and reflects attribute", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-mask`)
+      .should("exist")
+      .and("have.attr", "lf-mode", "mask")
+      .should(($img) => {
+        const comp = $img[0] as HTMLLfImageElement;
+        expect(comp.lfMode).to.eq("mask");
+      })
+      .shadow()
+      .find(`.${iconClass}`)
+      .should("have.attr", "data-cy", CY_ATTRIBUTES.maskedSvg);
+  });
+
+  it("lfSizeX/lfSizeY: inject width/height CSS variables", () => {
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-icon`)
+      .should("exist")
+      .shadow()
+      .find("#lf-style")
+      .should(($style) => {
+        const text = $style.text();
+        expect(text).to.include("--lf_image_width: 128px");
+        expect(text).to.include("--lf_image_height: 128px");
+      });
+  });
+
   it("lfStyle: should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
+  });
+
+  it("lfUiState: reflected on icon via data-lf", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#states-success`)
+      .should("exist")
+      .shadow()
+      .find(`.${iconClass}`)
+      .should("have.attr", "data-lf", "success");
+  });
+
+  it("lfValue: URL renders <img> with matching src", () => {
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#image-image`)
+      .should("exist")
+      .then(($img) => {
+        const comp = $img[0] as HTMLLfImageElement;
+        expect(comp.lfValue).to.be.a("string").and.not.be.empty;
+      })
+      .shadow()
+      .find("img")
+      .should("exist")
+      .then(($el) => {
+        cy.wrap($el)
+          .parents("lf-image")
+          .then(($host) => {
+            const comp = $host[0] as HTMLLfImageElement;
+            expect($el.attr("src")).to.eq(comp.lfValue);
+          });
+      });
   });
 });
 //#endregion

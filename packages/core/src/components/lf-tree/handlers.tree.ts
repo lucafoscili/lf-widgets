@@ -13,11 +13,11 @@ export const createHandlers = (
       const adapter = getAdapter();
       const { controller } = adapter;
       const comp = controller.get.compInstance;
-      const isSelected = controller.get.isSelected(node);
 
       controller.set.selection.set(node);
+      const nowSelected = controller.get.isSelected(node);
 
-      comp.onLfEvent?.(e, "click", { node, selected: isSelected });
+      comp.onLfEvent?.(e, "click", { node, selected: nowSelected });
     },
     expand: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();

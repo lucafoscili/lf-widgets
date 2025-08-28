@@ -2,6 +2,7 @@ import { LfImagePropsInterface } from "./image.declarations";
 
 //#region Automatic CSS variables
 export const LF_IMAGE_CSS_VARS = {
+  brokenImage: "--lf_broken_image",
   height: "--lf_image_height",
   mask: "--lf_image_mask",
   width: "--lf_image_width",
@@ -39,6 +40,8 @@ export const LF_IMAGE_PROPS = [
   "lfSizeX",
   "lfSizeY",
   "lfStyle",
+  "lfUiState",
   "lfValue",
+  "lfMode",
 ] as const satisfies (keyof LfImagePropsInterface)[];
 //#endregion
