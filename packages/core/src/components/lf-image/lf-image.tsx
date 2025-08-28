@@ -87,6 +87,11 @@ export class LfImage implements LfImageInterface {
    * This property is set to true once the image load event completes.
    */
   @State() isLoaded: boolean = false;
+  /**
+   * The resolved sprite name to be used for the image.
+   * This state property is set when the component successfully resolves the sprite name.
+   */
+  @State() resolvedSpriteName?: string;
   //#endregion
 
   //#region Props
@@ -195,9 +200,7 @@ export class LfImage implements LfImageInterface {
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
   #mask: string;
-  #spritePath?: string; // cached sprite sheet path
-  #spriteIds?: Set<string>; // available symbol ids
-  //#endregion
+  #resolvedFor?: string;
 
   //#region Watchers
   @Watch("lfValue")
@@ -208,6 +211,8 @@ export class LfImage implements LfImageInterface {
 
     this.error = false;
     this.isLoaded = false;
+    this.resolvedSpriteName = undefined;
+    this.#resolvedFor = undefined;
   }
   //#endregion
 
@@ -336,6 +341,46 @@ export class LfImage implements LfImageInterface {
 
     await promise;
   }
+  #prepSpriteIcon(value?: LfThemeIconVariable): VNode {
+    const { theme } = this.#framework;
+    const { bemClass } = theme;
+    const { image } = this.#b;
+    const { variables } = theme.get.current();
+
+    const resolved = !value
+      ? variables["--lf-icon-broken-image"]
+      : value.indexOf(CSS_VAR_PREFIX) > -1
+        ? variables[value]
+        : value;
+
+    if (this.#resolvedFor !== resolved) {
+      this.resolvedSpriteName = undefined;
+      this.#resolvedFor = resolved;
+      theme.get.sprite.hasIcon(resolved).then((exists) => {
+        if (this.#resolvedFor === resolved) {
+          this.resolvedSpriteName = exists
+            ? resolved
+            : variables["--lf-icon-broken-image"];
+        }
+      });
+    }
+
+    const effectiveName = this.resolvedSpriteName ?? resolved;
+    const href = `${theme.get.sprite.path()}#${effectiveName}`;
+
+    return (
+      <svg
+        part={this.#p.icon}
+        class={bemClass(image._, image.icon)}
+        data-cy={this.#cy.maskedSvg}
+        data-lf={this.lfUiState}
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+      >
+        <use href={href}></use>
+      </svg>
+    );
+  }
   #setMask = (icon: LfThemeIcon | string) => {
     const { assets } = this.#framework;
 
@@ -365,12 +410,9 @@ export class LfImage implements LfImageInterface {
           this.error = true;
         }
       } else {
-        // sprite mode: mark loaded synchronously; cache sprite path and index ids (async)
-        const { assets } = this.#framework;
-        const sprite = assets.get("./assets/svg/sprite.svg");
-        this.#spritePath = sprite.path;
+        const { theme } = this.#framework;
         this.isLoaded = true;
-        this.#indexSpriteSymbols();
+        theme.get.sprite.ids();
       }
     }
   }
@@ -418,15 +460,10 @@ export class LfImage implements LfImageInterface {
           : lfValue;
         this.#setMask(icon);
       }
-    } else if (isSpriteCandidate && !this.#spritePath) {
-      const { assets } = this.#framework;
-      const sprite = assets.get("./assets/svg/sprite.svg");
-      this.#spritePath = sprite.path;
-      this.#indexSpriteSymbols();
     }
 
     return (
-      <Host data-mode={this.lfMode}>
+      <Host>
         <style id={this.#s}>
           {`
           :host {
@@ -449,13 +486,18 @@ export class LfImage implements LfImageInterface {
               if (error) {
                 return this.lfMode === "mask"
                   ? this.#createIcon()
-                  : this.#renderSpriteIcon("--lf-icon-broken-image");
+                  : this.#prepSpriteIcon();
               }
-              if (isUrl) return this.#createImage();
+              if (isUrl) {
+                return this.#createImage();
+              }
               if (isSpriteCandidate && isLoaded) {
-                return this.#renderSpriteIcon(lfValue);
+                return this.#prepSpriteIcon(lfValue as LfThemeIconVariable);
               }
-              if (this.lfMode === "mask" && isLoaded) return this.#createIcon();
+              if (this.lfMode === "mask" && isLoaded) {
+                return this.#createIcon();
+              }
+
               return null;
             })()}
           </div>
@@ -467,57 +509,4 @@ export class LfImage implements LfImageInterface {
     this.#framework?.theme.unregister(this);
   }
   //#endregion
-
-  // sprite icon renderer
-  #renderSpriteIcon(value: string): VNode {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
-    const { image } = this.#b;
-    const { variables } = theme.get.current();
-    const resolved =
-      value.indexOf(CSS_VAR_PREFIX) > -1
-        ? (variables[value as LfThemeIconVariable] as string)
-        : value;
-    const iconName = this.error
-      ? (variables["--lf-icon-broken-image" as LfThemeIconVariable] as string)
-      : resolved;
-    const broken = variables[
-      "--lf-icon-broken-image" as LfThemeIconVariable
-    ] as string;
-    const effectiveName = this.#spriteIds && !this.#spriteIds.has(iconName)
-      ? broken
-      : iconName;
-    const href = `${this.#spritePath}#${effectiveName}`;
-    return (
-      <svg
-        part={this.#p.icon}
-        class={bemClass(image._, image.icon)}
-        data-cy={this.#cy.maskedSvg}
-        data-lf={this.lfUiState}
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-      >
-        <use href={href}></use>
-      </svg>
-    );
-  }
-
-  // Asynchronously fetch and index available <symbol id> values from the sprite sheet
-  async #indexSpriteSymbols() {
-    try {
-      if (!this.#spritePath || typeof fetch === "undefined") return;
-      const res = await fetch(this.#spritePath);
-      if (!res.ok) return;
-      const text = await res.text();
-      const ids = new Set<string>();
-      const re = /<symbol\s+id="([^"]+)"/g;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(text))) ids.add(m[1]);
-      this.#spriteIds = ids;
-      // Re-render in case we need to fall back for a missing id
-      forceUpdate(this);
-    } catch (_) {
-      // ignore indexing failures; rendering will proceed without fallback
-    }
-  }
 }
