@@ -196,6 +196,7 @@ export class LfImage implements LfImageInterface {
   #w = LF_WRAPPER_ID;
   #mask: string;
   #spritePath?: string; // cached sprite sheet path
+  #spriteIds?: Set<string>; // available symbol ids
   //#endregion
 
   //#region Watchers
@@ -364,11 +365,12 @@ export class LfImage implements LfImageInterface {
           this.error = true;
         }
       } else {
-        // sprite mode: mark loaded synchronously; cache sprite path
+        // sprite mode: mark loaded synchronously; cache sprite path and index ids (async)
         const { assets } = this.#framework;
         const sprite = assets.get("./assets/svg/sprite.svg");
         this.#spritePath = sprite.path;
         this.isLoaded = true;
+        this.#indexSpriteSymbols();
       }
     }
   }
@@ -420,10 +422,11 @@ export class LfImage implements LfImageInterface {
       const { assets } = this.#framework;
       const sprite = assets.get("./assets/svg/sprite.svg");
       this.#spritePath = sprite.path;
+      this.#indexSpriteSymbols();
     }
 
     return (
-      <Host>
+      <Host data-mode={this.lfMode}>
         <style id={this.#s}>
           {`
           :host {
@@ -478,7 +481,13 @@ export class LfImage implements LfImageInterface {
     const iconName = this.error
       ? (variables["--lf-icon-broken-image" as LfThemeIconVariable] as string)
       : resolved;
-    const href = `${this.#spritePath}#${iconName}`;
+    const broken = variables[
+      "--lf-icon-broken-image" as LfThemeIconVariable
+    ] as string;
+    const effectiveName = this.#spriteIds && !this.#spriteIds.has(iconName)
+      ? broken
+      : iconName;
+    const href = `${this.#spritePath}#${effectiveName}`;
     return (
       <svg
         part={this.#p.icon}
@@ -491,5 +500,24 @@ export class LfImage implements LfImageInterface {
         <use href={href}></use>
       </svg>
     );
+  }
+
+  // Asynchronously fetch and index available <symbol id> values from the sprite sheet
+  async #indexSpriteSymbols() {
+    try {
+      if (!this.#spritePath || typeof fetch === "undefined") return;
+      const res = await fetch(this.#spritePath);
+      if (!res.ok) return;
+      const text = await res.text();
+      const ids = new Set<string>();
+      const re = /<symbol\s+id="([^"]+)"/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text))) ids.add(m[1]);
+      this.#spriteIds = ids;
+      // Re-render in case we need to fall back for a missing id
+      forceUpdate(this);
+    } catch (_) {
+      // ignore indexing failures; rendering will proceed without fallback
+    }
   }
 }
