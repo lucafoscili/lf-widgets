@@ -195,7 +195,7 @@ export class LfLLM implements LfLLMInterface {
         signal: opts?.signal,
       });
     } catch (e) {
-      if (e instanceof DOMException && e.name === "AbortError") {
+      if (this.#IS_ABORT_ERROR(e)) {
         return;
       }
       throw e;
@@ -218,7 +218,9 @@ export class LfLLM implements LfLLMInterface {
       try {
         result = await reader.read();
       } catch (e) {
-        if (e instanceof DOMException && e.name === "AbortError") return;
+        if (this.#IS_ABORT_ERROR(e)) {
+          return;
+        }
         throw e;
       }
       if (result.done) {
