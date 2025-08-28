@@ -104,6 +104,15 @@ export const getImageFixtures = (
             lfValue: randomIcon(icons),
           },
         },
+        mask: {
+          description: "Icon rendered with CSS mask mode",
+          props: {
+            lfMode: "mask",
+            lfSizeX: "128px",
+            lfSizeY: "128px",
+            lfValue: randomIcon(icons),
+          },
+        },
         style: {
           description: "Icon with custom style",
           props: {
@@ -113,9 +122,28 @@ export const getImageFixtures = (
             lfValue: randomIcon(icons),
           },
         },
+        maskStyle: {
+          description: "Mask icon with custom style",
+          props: {
+            lfMode: "mask",
+            lfSizeX: "128px",
+            lfSizeY: "128px",
+            lfStyle: randomStyle(),
+            lfValue: randomIcon(icons),
+          },
+        },
         error: {
           description: "Icon with unresolved source",
           props: {
+            lfSizeX: "128px",
+            lfSizeY: "128px",
+            lfValue: "NOT_FOUND",
+          },
+        },
+        maskError: {
+          description: "Mask icon with unresolved source",
+          props: {
+            lfMode: "mask",
             lfSizeX: "128px",
             lfSizeY: "128px",
             lfValue: "NOT_FOUND",

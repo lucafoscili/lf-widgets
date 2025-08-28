@@ -78,9 +78,47 @@ describe(CY_CATEGORIES.methods, () => {
 
 //#region Props
 describe(CY_CATEGORIES.props, () => {
+  let framework: LfFrameworkInterface;
+
   beforeEach(() => {
     cy.navigate(image);
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
+    });
   });
+
+  it("lfMode: default 'sprite' renders an <svg> icon", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-icon`)
+      .should(($img) => {
+        const comp = $img[0] as HTMLLfImageElement;
+        expect(comp.lfMode).to.eq("sprite");
+      })
+      .shadow()
+      .find(`.${iconClass}`)
+      .should(($el) => {
+        expect($el.get(0).tagName.toLowerCase()).to.eq("svg");
+      })
+      .find("use")
+      .should("have.attr", "href");
+  });
+
+  it("lfMode: 'mask' renders a masked <div> and reflects attribute", () => {
+    const iconClass = framework.theme.bemClass("image", "icon");
+    cy.get(CY_ALIASES.lfComponentShowcase)
+      .find(`${imageTag}#icon-mask`)
+      .should("exist")
+      .and("have.attr", "lf-mode", "mask")
+      .should(($img) => {
+        const comp = $img[0] as HTMLLfImageElement;
+        expect(comp.lfMode).to.eq("mask");
+      })
+      .shadow()
+      .find(`.${iconClass}`)
+      .should("have.attr", "data-cy", CY_ATTRIBUTES.maskedSvg);
+  });
+
   it("lfStyle: should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
   });
