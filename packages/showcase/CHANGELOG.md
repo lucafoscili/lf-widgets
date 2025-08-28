@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.0...0.4.0-rc.1) (2025-08-28)
+
+### Bug Fixes
+
+- Propagate lfHtmlAttributes to rendered image elements ([27cdf7c](https://github.com/lucafoscili/lf-widgets/commit/27cdf7ca459427c9cf09f4e36ec36a026f09da3b))
+
+### Features
+
+- Add LLM mock toggler to showcase component ([52e4b8d](https://github.com/lucafoscili/lf-widgets/commit/52e4b8d1fa33fb2bc3f73482ed15710992c66bbe))
+- Add streaming and retry utilities to LLM interface ([ecafa9e](https://github.com/lucafoscili/lf-widgets/commit/ecafa9e24595a23dcfe3c6bad5ce04ffd7a06129))
+- Add SVG sprite support to lf-image component ([e300e7d](https://github.com/lucafoscili/lf-widgets/commit/e300e7dbe75a0fefe60b00d638fa080c1ec4b06f))
+
 # [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
 
 ### Features
