@@ -110,6 +110,7 @@ export const getImageFixtures = (
             lfMode: "mask",
             lfSizeX: "128px",
             lfSizeY: "128px",
+            lfHtmlAttributes: { title: "Mask icon" },
             lfValue: randomIcon(icons),
           },
         },

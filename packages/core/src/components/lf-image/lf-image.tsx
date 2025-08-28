@@ -342,7 +342,7 @@ export class LfImage implements LfImageInterface {
     await promise;
   }
   #prepSpriteIcon(value?: LfThemeIconVariable): VNode {
-    const { theme } = this.#framework;
+    const { theme, sanitizeProps } = this.#framework;
     const { bemClass } = theme;
     const { image } = this.#b;
     const { variables } = theme.get.current();
@@ -370,6 +370,7 @@ export class LfImage implements LfImageInterface {
 
     return (
       <svg
+        {...sanitizeProps(this.lfHtmlAttributes)}
         part={this.#p.icon}
         class={bemClass(image._, image.icon)}
         data-cy={this.#cy.maskedSvg}
@@ -469,7 +470,7 @@ export class LfImage implements LfImageInterface {
           :host {
             ${this.#v.mask}: ${this.lfMode === "mask" && this.#mask ? this.#mask : "none"};
             ${this.#v.height}: ${lfSizeY || "100%"};
-            ${this.#v.width}:  ${lfSizeX || "100%"};
+            ${this.#v.width}: ${lfSizeX || "100%"};
           }
           ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
