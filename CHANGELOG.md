@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.2...0.4.0-rc.3) (2025-08-29)
+
+### Bug Fixes
+
+- Update prop types and docs for core components ([b8f4a64](https://github.com/lucafoscili/lf-widgets/commit/b8f4a64d323023a86375d6ccbb37dcd65ebb10ce))
+
 # [0.4.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.1...0.4.0-rc.2) (2025-08-29)
 
 **Note:** Version bump only for package @lf-widgets/root
