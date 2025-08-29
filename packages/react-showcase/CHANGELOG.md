@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.1...0.4.0-rc.2) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/react-showcase
+
 # [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.0...0.4.0-rc.1) (2025-08-28)
 
 **Note:** Version bump only for package @lf-widgets/react-showcase
