@@ -8,6 +8,23 @@ import {
 export const createHandlers = (
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapterHandlers => ({
+  filter: {
+    input: (e: CustomEvent<LfTextfieldEventPayload>) => {
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const comp = controller.get.compInstance;
+      const value = e.detail.inputValue?.toLowerCase() || "";
+
+      clearTimeout(comp._filterTimeout);
+
+      comp._filterTimeout = setTimeout(() => {
+        controller.set.filter.setValue(value);
+        controller.set.filter.apply(value);
+      }, 300);
+
+      comp.onLfEvent?.(e, "lf-event");
+    },
+  },
   node: {
     click: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
@@ -34,21 +51,6 @@ export const createHandlers = (
       const comp = controller.get.compInstance;
 
       comp.onLfEvent?.(e, "pointerdown", { node });
-    },
-  },
-  filter: {
-    input: (e: CustomEvent<LfTextfieldEventPayload>) => {
-      const adapter = getAdapter();
-      const { controller } = adapter;
-      const comp = controller.get.compInstance;
-      const value = e.detail.inputValue?.toLowerCase() || "";
-
-      clearTimeout(comp._filterTimeout);
-
-      comp._filterTimeout = setTimeout(() => {
-        controller.set.filter.setValue(value);
-        controller.set.filter.apply(value);
-      }, 300);
     },
   },
 });
