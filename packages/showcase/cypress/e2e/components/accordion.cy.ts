@@ -1,5 +1,6 @@
 import {
   CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
   LfAccordionEvent,
   LfComponentName,
   LfComponentTag,
@@ -115,6 +116,7 @@ describe(CY_CATEGORIES.methods, () => {
 describe(CY_CATEGORIES.props, () => {
   const { lfComponentShowcase } = CY_ALIASES;
   const { node } = CY_ATTRIBUTES;
+  const { success } = LF_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(accordion);
@@ -140,6 +142,21 @@ describe(CY_CATEGORIES.props, () => {
   });
   it("lfStyle: should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
+  });
+  it("lfUiSize: reflected as host attribute", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${accordionTag}#sizes-small`)
+      .should("exist")
+      .should("have.attr", "lf-ui-size", "small");
+  });
+  it("lfUiState: reflected on nodes via data-lf", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${accordionTag}#states-${success}`)
+      .should("exist")
+      .shadow()
+      .find(`[data-cy="${node}"]`)
+      .first()
+      .should("have.attr", "data-lf", success);
   });
 });
 //#endregion

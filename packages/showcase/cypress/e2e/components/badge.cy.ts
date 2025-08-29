@@ -1,5 +1,6 @@
 import {
   CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
   LfBadgeEvent,
   LfComponentName,
   LfComponentTag,
@@ -74,6 +75,7 @@ describe(CY_CATEGORIES.methods, () => {
 //#region Props
 describe(CY_CATEGORIES.props, () => {
   const { lfComponentShowcase } = CY_ALIASES;
+  const { success } = LF_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(badge);
@@ -122,8 +124,28 @@ describe(CY_CATEGORIES.props, () => {
       .find(`.${badge}`)
       .should("not.be.empty");
   });
+  it("lfPosition: reflected as host attribute", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#positions-top-right`)
+      .should("exist")
+      .should("have.attr", "lf-position", "top-right");
+  });
   it("lfStyle: Should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
+  });
+  it("lfUiSize: reflected as host attribute", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#sizes-small`)
+      .should("exist")
+      .should("have.attr", "lf-ui-size", "small");
+  });
+  it("lfUiState: reflected on badge via data-lf", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#states-${success}`)
+      .should("exist")
+      .shadow()
+      .find(`.${badge}`)
+      .should("have.attr", "data-lf", success);
   });
 });
 //#endregion
