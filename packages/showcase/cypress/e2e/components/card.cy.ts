@@ -65,7 +65,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.get(`${cardTag}#material-material-0`)
       .findCyElement(rippleSurface)
       .parent() // the actual listener is on the parent in this case
-      .click();
+      .click({ multiple: true });
     cy.getCyElement(check).should("exist");
   });
   it(`ready`, () => {
