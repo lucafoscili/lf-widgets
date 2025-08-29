@@ -1,4 +1,4 @@
-﻿import {
+import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LfAccordionEvent,
