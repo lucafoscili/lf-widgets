@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "code";
 $borderC: 1px solid rgb(var(--lf-color-border));
 @include lf-comp-setup($comp, "true", "false", "true");

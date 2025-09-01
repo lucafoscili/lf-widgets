@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "textfield";
 $onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
 $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));

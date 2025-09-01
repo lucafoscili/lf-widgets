@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.2...0.4.0-rc.3) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
+# [0.4.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.1...0.4.0-rc.2) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
+# [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.0...0.4.0-rc.1) (2025-08-28)
+
+### Features
+
+- Add streaming and retry utilities to LLM interface ([ecafa9e](https://github.com/lucafoscili/lf-widgets/commit/ecafa9e24595a23dcfe3c6bad5ce04ffd7a06129))
+- Add SVG sprite support to lf-image component ([e300e7d](https://github.com/lucafoscili/lf-widgets/commit/e300e7dbe75a0fefe60b00d638fa080c1ec4b06f))
+
+# [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
+
+### Features
+
+- Add 'inline' position option to lf-badge component ([6da1385](https://github.com/lucafoscili/lf-widgets/commit/6da138566a244c88702543f8f86d78416f274cf3))
+- Add grid layout support to lf-tree component ([16cf082](https://github.com/lucafoscili/lf-widgets/commit/16cf082e9676c57a738e975a24075247c0b2a8de))
+- Refactor lf-tree to use adapter pattern ([c1dac36](https://github.com/lucafoscili/lf-widgets/commit/c1dac362e0f26f24bed99484ed5417bdb81b6813))
+
+## [0.3.8-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.7...0.3.8-rc.0) (2025-08-22)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
 ## [0.3.7](https://github.com/lucafoscili/lf-widgets/compare/0.3.7-rc.0...0.3.7) (2025-05-08)
 
 **Note:** Version bump only for package @lf-widgets/foundations

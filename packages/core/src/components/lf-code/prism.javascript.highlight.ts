@@ -1,6 +1,6 @@
 // @ts-nocheck
 export const LF_CODE_JAVASCRIPT = (Prism: Prism.Environment) => {
-  (Prism.languages.javascript = Prism.languages.extend("clike", {
+  ((Prism.languages.javascript = Prism.languages.extend("clike", {
     "class-name": [
       Prism.languages.clike["class-name"],
       {
@@ -129,5 +129,5 @@ export const LF_CODE_JAVASCRIPT = (Prism: Prism.Environment) => {
         "on(?:abort|blur|change|click|composition(?:end|start|update)|dblclick|error|focus(?:in|out)?|key(?:down|up)|load|mouse(?:down|enter|leave|move|out|over|up)|reset|resize|scroll|select|slotchange|submit|unload|wheel)",
         "javascript",
       )),
-    (Prism.languages.js = Prism.languages.javascript);
+    (Prism.languages.js = Prism.languages.javascript));
 };

@@ -1,5 +1,7 @@
-@import "styles/mixins";
-@import "styles/component-template";
+@use "../../style/_variables" as *;
+@use "../../style/mixins" as *;
+@use "./styles/component-template" as *;
+@use "./styles/mixins" as *;
 
 $gap: 1.5em;
 

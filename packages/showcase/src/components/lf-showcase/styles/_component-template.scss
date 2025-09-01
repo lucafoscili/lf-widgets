@@ -1,3 +1,7 @@
+@use "../../../style/_variables" as *;
+@use "../../../style/mixins" as *;
+@use "./mixins" as *;
+
 .code-word {
   @include lf-comp-color("", "primary", "text");
   @include lf-comp-font("", "monospace");

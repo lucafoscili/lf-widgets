@@ -1,5 +1,6 @@
 import {
   CY_ATTRIBUTES,
+  LF_ARTICLE_PARTS,
   LfArticleEvent,
   LfArticleNode,
   LfComponentName,
@@ -74,6 +75,7 @@ describe(CY_CATEGORIES.methods, () => {
 //#region Props
 describe(CY_CATEGORIES.props, () => {
   const { lfComponentShowcase } = CY_ALIASES;
+  const { emptyData } = LF_ARTICLE_PARTS;
 
   beforeEach(() => {
     cy.navigate(article);
@@ -109,8 +111,34 @@ describe(CY_CATEGORIES.props, () => {
           });
       });
   });
+  it("lfEmpty: renders custom empty text when dataset empty", () => {
+    const emptyText = "Nothing to see here";
+    cy.get(lfComponentShowcase)
+      .find(articleTag)
+      .first()
+      .should("exist")
+      .then(($comp) => {
+        cy.wrap($comp).should(async ($c) => {
+          const c = $c[0] as HTMLLfArticleElement;
+          c.lfEmpty = emptyText;
+          c.lfDataset = { nodes: [] };
+          if (c.refresh) await c.refresh();
+        });
+        cy.wrap($comp)
+          .shadow()
+          .find(`[part="${emptyData}"]`)
+          .should("exist")
+          .contains(emptyText);
+      });
+  });
   it("lfStyle: Should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
+  });
+  it("lfUiSize: reflected as host attribute", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${articleTag}#sizes-small`)
+      .should("exist")
+      .should("have.attr", "lf-ui-size", "small");
   });
 });
 //#endregion

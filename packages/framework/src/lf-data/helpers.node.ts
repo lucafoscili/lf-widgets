@@ -454,6 +454,53 @@ export const nodeToStream = (nodes: LfDataNode[]) => {
 };
 //#endregion
 
+//#region nodeTraverseVisible
+/**
+ * Produces a depth-first flattened list of nodes enriched with visibility / UI state flags.
+ * Expansion, hidden and selection logic is delegated to predicate functions to keep this
+ * utility framework-level and decoupled from component instance state containers.
+ *
+ * @param nodes - Root nodes to traverse
+ * @param predicates - Predicate functions controlling expansion, hidden and selection state
+ * @returns Array of traversed nodes with depth & state metadata
+ */
+export const nodeTraverseVisible = (
+  nodes: LfDataNode[] | undefined,
+  options: {
+    isExpanded?: (node: LfDataNode) => boolean;
+    isHidden?: (node: LfDataNode) => boolean;
+    isSelected?: (node: LfDataNode) => boolean;
+    forceExpand?: boolean;
+  },
+) => {
+  const out: {
+    node: LfDataNode;
+    depth: number;
+    expanded?: boolean;
+    hidden?: boolean;
+    selected?: boolean;
+  }[] = [];
+  if (!nodes?.length) return out;
+  const {
+    isExpanded = () => true,
+    isHidden = () => false,
+    isSelected = () => false,
+    forceExpand,
+  } = options || {};
+  const walk = (node: LfDataNode, depth: number) => {
+    const expanded = forceExpand ? true : isExpanded(node);
+    const hidden = isHidden(node);
+    const selected = isSelected(node);
+    if (!hidden) out.push({ node, depth, expanded, hidden, selected });
+    if (expanded && node.children) {
+      for (const child of node.children) walk(child, depth + 1);
+    }
+  };
+  for (const n of nodes) walk(n, 0);
+  return out;
+};
+//#endregion
+
 //#region removeNodeByCell
 /**
  * Removes a node from a dataset by finding the node that contains the specified cell.

@@ -114,6 +114,7 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
+ - [lf-tree](../lf-tree)
 
 ### Depends on
 
@@ -133,6 +134,7 @@ graph TD;
   lf-compare --> lf-code
   lf-masonry --> lf-code
   lf-messenger --> lf-code
+  lf-tree --> lf-code
   style lf-code fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

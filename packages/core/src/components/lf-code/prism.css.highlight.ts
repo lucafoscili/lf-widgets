@@ -2,7 +2,7 @@
 export const LF_CODE_CSS = (Prism: Prism.Environment) => {
   var e =
     /(?:"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n])*')/;
-  (Prism.languages.css = {
+  ((Prism.languages.css = {
     comment: /\/\*[\s\S]*?\*\//,
     atrule: {
       pattern: RegExp(
@@ -60,7 +60,7 @@ export const LF_CODE_CSS = (Prism: Prism.Environment) => {
     },
     punctuation: /[(){};:,]/,
   }),
-    (Prism.languages.css.atrule.inside.rest = Prism.languages.css);
+    (Prism.languages.css.atrule.inside.rest = Prism.languages.css));
   var t = Prism.languages.markup;
   t && (t.tag.addInlined("style", "css"), t.tag.addAttribute("style", "css"));
 };

@@ -67,6 +67,18 @@ export class LfToggle implements LfToggleInterface {
 
   //#region Props
   /**
+   * Explicit accessible label for the toggle control. Fallback chain when empty:
+   * lfLabel -> root element id -> 'toggle'. Applied to the native input element.
+   *
+   * @type {string}
+   * @default ""
+   * @mutable
+   *
+   * @example
+   * <lf-toggle lfAriaLabel="Enable feature"></lf-toggle>
+   */
+  @Prop({ mutable: true }) lfAriaLabel: string = "";
+  /**
    * Defines text to display along with the toggle.
    *
    * @type {string}
@@ -326,7 +338,14 @@ export class LfToggle implements LfToggleInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { formField, toggle } = this.#b;
-    const { lfLabel, lfLeadingLabel, lfRipple, lfStyle, value } = this;
+    const { lfAriaLabel, lfLabel, lfLeadingLabel, lfRipple, lfStyle, value } =
+      this;
+    const accessibleLabel = (
+      lfAriaLabel ||
+      lfLabel ||
+      this.rootElement.id ||
+      "toggle"
+    ).trim();
 
     return (
       <Host>
@@ -365,6 +384,7 @@ export class LfToggle implements LfToggleInterface {
                   checked={this.#isOn()}
                   data-cy={this.#cy.input}
                   disabled={this.#isDisabled()}
+                  aria-label={accessibleLabel}
                   onBlur={(e) => {
                     this.onLfEvent(e, "blur");
                   }}

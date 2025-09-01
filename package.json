@@ -16,7 +16,7 @@
     "@lf-widgets/showcase": "workspace:*",
     "@stencil/core": "^4",
     "@stencil/react-output-target": "^0",
-    "@stencil/sass": "3.0.12",
+    "@stencil/sass": "^3",
     "@types/eslint": "^9",
     "@types/node": "^22",
     "@types/prismjs": "^1",
@@ -27,7 +27,7 @@
     "lerna": "^8",
     "prettier": "^3",
     "prismjs": "^1",
-    "puppeteer": "^22.9.0",
+    "puppeteer": "^24",
     "react": "^19",
     "react-dom": "^19",
     "typescript": "^5",
@@ -35,13 +35,15 @@
     "vite-plugin-static-copy": "^2"
   },
   "scripts": {
+    "prebuild": "yarn lint:scss-modules",
     "build:core": "lerna run build --scope @lf-widgets/core --stream",
     "build:foundations": "lerna run build --scope @lf-widgets/foundations --stream",
     "build:framework": "lerna run build --scope @lf-widgets/framework --stream",
     "build:react-core": "lerna run build --scope @lf-widgets/react-core --stream",
     "build:react-showcase": "lerna run build --scope @lf-widgets/react-showcase --stream",
     "build:showcase": "lerna run build --scope @lf-widgets/showcase --stream",
-    "build": "yarn build:foundations && yarn build:framework && yarn build:core && yarn sync:showcase && yarn build:showcase && yarn build:react-core && yarn build:react-showcase && yarn markdown",
+    "build:assets:sprite": "lerna run generate:sprite --scope @lf-widgets/assets --stream",
+    "build": "yarn build:assets:sprite && yarn build:foundations && yarn build:framework && yarn build:core && yarn sync:showcase && yarn build:showcase && yarn build:react-core && yarn build:react-showcase && yarn markdown",
     "clean": "lerna run clean --stream && node scripts/clean.js",
     "dev:setup": "yarn build:foundations && yarn build:framework && yarn build:core && lerna run dev --scope @lf-widgets/showcase --stream",
     "dev": "lerna run dev --scope @lf-widgets/showcase --stream",
@@ -52,7 +54,8 @@
     "mixins": "node ./packages/core/src/scripts/copyMixins.js",
     "sync:showcase": "yarn doc && yarn mixins",
     "test": "lerna run test --scope @lf-widgets/showcase --stream",
-    "test:open": "lerna run test:open --scope @lf-widgets/showcase --stream"
+    "test:open": "lerna run test:open --scope @lf-widgets/showcase --stream",
+    "lint:scss-modules": "node scripts/checkNoScssImports.js"
   },
   "workspaces": [
     "packages/assets",

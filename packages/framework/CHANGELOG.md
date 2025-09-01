@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.2...0.4.0-rc.3) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+# [0.4.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.1...0.4.0-rc.2) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+# [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.0...0.4.0-rc.1) (2025-08-28)
+
+### Bug Fixes
+
+- Refactor abort error handling in LfLLM ([eee2577](https://github.com/lucafoscili/lf-widgets/commit/eee25773e548a745cca7160926ce81ef7d41a9ea))
+- Revise LfLLM method docs and improve retry logic ([04b0933](https://github.com/lucafoscili/lf-widgets/commit/04b0933d818434798e08c9ec69bcef6e796ff313))
+
+### Features
+
+- Add streaming and retry utilities to LLM interface ([ecafa9e](https://github.com/lucafoscili/lf-widgets/commit/ecafa9e24595a23dcfe3c6bad5ce04ffd7a06129))
+
+# [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
+
+### Bug Fixes
+
+- Cache production environment flag in LfDebug ([5f99305](https://github.com/lucafoscili/lf-widgets/commit/5f99305713c0fdca68a5e6abcc15399b48fe560c))
+
+## [0.3.8-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.7...0.3.8-rc.0) (2025-08-22)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
 ## [0.3.7](https://github.com/lucafoscili/lf-widgets/compare/0.3.7-rc.0...0.3.7) (2025-05-08)
 
 **Note:** Version bump only for package @lf-widgets/framework

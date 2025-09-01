@@ -28,6 +28,7 @@ export const prepButton = (
         styling,
       } = controller.get;
       const {
+        lfAriaLabel,
         lfIcon,
         lfLabel,
         lfShowSpinner,
@@ -42,9 +43,17 @@ export const prepButton = (
 
       const comp = compInstance as LfButton;
 
+      const accessibleLabel = (
+        lfAriaLabel ||
+        lfLabel ||
+        lfIcon ||
+        rootElement.id ||
+        "button"
+      ).trim();
+
       return (
         <button
-          aria-label={rootElement.title}
+          aria-label={accessibleLabel}
           class={bemClass(blocks.button._, null, {
             [styling()]: true,
             disabled: isDisabled(),
@@ -141,17 +150,31 @@ export const prepButton = (
         isOn,
         parts,
       } = controller.get;
-      const { lfShowSpinner, lfToggable, lfType, lfUiState, rootElement } =
-        compInstance;
+      const {
+        lfAriaLabel,
+        lfShowSpinner,
+        lfToggable,
+        lfType,
+        lfUiState,
+        rootElement,
+      } = compInstance;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
       const { refs } = elements;
 
       const comp = compInstance as LfButton;
 
+      const accessibleLabel = (
+        lfAriaLabel ||
+        compInstance.lfLabel ||
+        compInstance.lfIcon ||
+        rootElement.id ||
+        "button"
+      ).trim();
+
       return (
         <button
-          aria-label={rootElement.title}
+          aria-label={accessibleLabel}
           class={bemClass(blocks.button._, null, {
             active: lfToggable && isOn(),
             disabled: isDisabled(),

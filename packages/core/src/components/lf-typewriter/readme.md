@@ -109,6 +109,7 @@ Type: `Promise<void>`
  - [lf-chat](../lf-chat)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -120,6 +121,7 @@ graph TD;
   lf-chat --> lf-typewriter
   lf-compare --> lf-typewriter
   lf-masonry --> lf-typewriter
+  lf-tree --> lf-typewriter
   style lf-typewriter fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

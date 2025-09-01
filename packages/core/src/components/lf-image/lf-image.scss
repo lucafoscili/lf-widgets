@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "image";
 @include lf-comp-setup("image", "true", "false", "true");
 
@@ -12,6 +15,7 @@ $comp: "image";
 .image {
   &__icon,
   &__img {
+    display: block;
     height: var(--lf_#{$comp}_height, 0);
     /**
     * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
@@ -24,7 +28,6 @@ $comp: "image";
   &__icon {
     & {
       @include lf-el-transition;
-      @include lf-comp-glassmorphize("image", "primary", "bg", 0.775);
       /**
       * @prop --lf-#{$comp}-aspect-ratio: Sets the aspect ratio for the icons.
       *                                   Defaults to => 1
@@ -36,11 +39,33 @@ $comp: "image";
   }
 
   &__img {
-    display: block;
     /**
-    * @prop --lf-#{$comp}-object-fit: Sets the object fit for the image element.
-    *                                 Defaults to => cover
-    */
+      * @prop --lf-#{$comp}-object-fit: Sets the object fit for the image element.
+      *                                 Defaults to => cover
+      */
     object-fit: var(--lf-#{$comp}-object-fit, cover);
+  }
+}
+
+:host([lf-mode="mask"]) {
+  .image {
+    &__icon {
+      @include lf-comp-glassmorphize("image", "primary", "bg", 0.775);
+    }
+  }
+}
+
+:host([lf-mode="sprite"]) {
+  .image {
+    &__icon {
+      @include lf-comp-glassmorphize(
+        "image",
+        "primary",
+        "text",
+        0.775,
+        8px,
+        true
+      );
+    }
   }
 }

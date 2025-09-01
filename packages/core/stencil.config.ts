@@ -32,10 +32,7 @@ export const config: Config = {
   plugins: [
     sass({
       includePaths: ["./src/style"],
-      injectGlobalPaths: [
-        "./src/style/_mixins.scss",
-        "./src/style/_variables.scss",
-      ],
+      injectGlobalPaths: [],
     }),
   ],
   sourceMap: false,

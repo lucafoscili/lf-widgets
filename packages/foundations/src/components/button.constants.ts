@@ -41,6 +41,7 @@ export const LF_BUTTON_PARTS = {
 
 //#region Props
 export const LF_BUTTON_PROPS = [
+  "lfAriaLabel",
   "lfDataset",
   "lfIcon",
   "lfIconOff",

@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "imageviewer";
 $borderC: 1px solid var(--lf-color-border);
 @include lf-comp-setup($comp, "false", "false", "true");

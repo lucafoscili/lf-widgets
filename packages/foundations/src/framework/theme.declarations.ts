@@ -35,6 +35,11 @@ export interface LfThemeInterface {
     };
     icon: (name: keyof typeof LF_ICONS_REGISTRY) => string;
     icons: () => typeof LF_ICONS_REGISTRY;
+    sprite: {
+      path: () => string;
+      ids: () => Promise<Set<string>>;
+      hasIcon: (id: string) => Promise<boolean>;
+    };
     themes: () => {
       asArray: string[];
       asDataset: LfDataDataset;

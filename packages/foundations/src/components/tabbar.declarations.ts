@@ -36,6 +36,7 @@ export interface LfTabbarState {
 
 //#region Props
 export interface LfTabbarPropsInterface {
+  lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
   lfNavigation?: boolean;
   lfRipple?: boolean;

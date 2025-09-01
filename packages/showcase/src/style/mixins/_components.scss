@@ -1,3 +1,10 @@
+@use "sass:string";
+@use "./app" as *;
+@use "./framework" as *;
+@use "./elements" as *;
+@use "./helpers" as *;
+@use "../_variables" as *;
+
 /*******************************************
  * @mixin lf-comp-border
  * Applies border styling (color, width, and optional radius)
@@ -9,7 +16,7 @@
  * @param {String} $width - Border width (e.g. "1px", "2px")
  *******************************************/
 @mixin lf-comp-border($comp, $scope: all, $style: solid, $width: 1px) {
-  $scope: to-lower-case($scope);
+  $scope: string.to-lower-case($scope);
 
   border: 0;
   border-style: $style;
@@ -46,7 +53,7 @@
  * @param {Boolean} $reverse - If true, background uses "on-<color>" and text uses "<color>"
  *******************************************/
 @mixin lf-comp-color($comp, $color, $scope: "all", $alpha: 1, $reverse: false) {
-  $scope: to-lower-case($scope);
+  $scope: string.to-lower-case($scope);
   $bgVar: if($reverse, "color-on-#{$color}", "color-#{$color}");
   $textVar: if($reverse, "color-#{$color}", "color-on-#{$color}");
 

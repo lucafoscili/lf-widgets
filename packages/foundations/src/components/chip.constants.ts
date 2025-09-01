@@ -49,6 +49,7 @@ export const LF_CHIP_PARTS = {
 
 //#region Props
 export const LF_CHIP_PROPS = [
+  "lfAriaLabel",
   "lfDataset",
   "lfRipple",
   "lfStyle",

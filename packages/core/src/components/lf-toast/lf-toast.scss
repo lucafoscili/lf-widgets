@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "toast";
 @include lf-comp-setup($comp, "true", "false", "true");
 

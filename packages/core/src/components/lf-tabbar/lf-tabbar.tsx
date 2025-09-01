@@ -69,6 +69,18 @@ export class LfTabbar implements LfTabbarInterface {
 
   //#region Props
   /**
+   * Explicit accessible label prefix for tabs. Final per-tab aria-label resolves as:
+   * lfAriaLabel + ' ' + node.value (if both present) else node.value -> lfAriaLabel -> node.icon -> component id -> 'tab'.
+   *
+   * @type {string}
+   * @default ""
+   * @mutable
+   *
+   * @example
+   * <lf-tabbar lfAriaLabel="Enable feature"></lf-tabbar>
+   */
+  @Prop({ mutable: true }) lfAriaLabel: string = "";
+  /**
    * The data set for the LF Tabbar component.
    * This property is mutable, meaning it can be changed after the component is initialized.
    *
@@ -332,6 +344,16 @@ export class LfTabbar implements LfTabbarInterface {
     return (
       <button
         aria-selected={isSelected}
+        aria-label={(this.lfAriaLabel && node.value
+          ? `${this.lfAriaLabel} ${node.value}`
+          : node.value ||
+            this.lfAriaLabel ||
+            node.icon ||
+            this.rootElement.id ||
+            "tab"
+        )
+          .toString()
+          .trim()}
         class={bemClass(tab._, null, {
           active: isSelected,
         })}

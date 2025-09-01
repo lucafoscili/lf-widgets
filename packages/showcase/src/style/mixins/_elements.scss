@@ -1,7 +1,12 @@
+@use "sass:string";
+@use "sass:map";
+@use "sass:list";
+@use "../_variables" as *;
+@use "./helpers" as *;
+
 /*******************************************
  * @mixin lf-el-ellipsis
  * Truncates text to a single line with an ellipsis.
- * 
  * Usage:
  *   .my-element {
  *     @include lf-el-ellipsis;
@@ -77,10 +82,10 @@
  * @param {Bool}   $responsive - If true, might handle responsive text
  *******************************************/
 @mixin lf-el-text($scope: body, $responsive: false) {
-  $scope: to-lower-case($scope);
+  $scope: string.to-lower-case($scope);
 
-  @if map-has-key($lf-typography, $scope) {
-    $properties: map-get($lf-typography, $scope);
+  @if map.has-key($lf-typography, $scope) {
+    $properties: map.get($lf-typography, $scope);
 
     @each $property, $value in $properties {
       @if $property == hover {
@@ -107,15 +112,17 @@
  * @param {String} $properties - Which CSS properties to transition (e.g. "all")
  *******************************************/
 @mixin lf-el-transition($preset: default, $properties: all) {
-  $transition: map-get($lf-transitions, $preset);
+  $transition: map.get($lf-transitions, $preset);
 
   @if $transition {
-    transition: #{$properties} nth($transition, 1) nth($transition, 2);
+    transition: #{$properties}
+      list.nth($transition, 1)
+      list.nth($transition, 2);
   } @else {
     @warn "Unknown transition preset '#{$preset}'. Falling back to 'default'.";
     transition: #{$properties}
-      nth(map-get($lf-transitions, default), 1)
-      nth(map-get($lf-transitions, default), 2);
+      list.nth(map.get($lf-transitions, default), 1)
+      list.nth(map.get($lf-transitions, default), 2);
   }
 }
 /*******************************************
@@ -126,5 +133,5 @@
  *******************************************/
 @mixin lf-el-zoom($scale: 1.1) {
   animation: lf-zoom 150ms cubic-bezier(0.42, 0, 0.58, 1);
-  @include lf-keyframe(lf-zoom, map-get($lf-keyframes, zoom));
+  @include lf-keyframe(lf-zoom, map.get($lf-keyframes, zoom));
 }

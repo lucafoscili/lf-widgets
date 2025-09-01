@@ -22,10 +22,6 @@ export const config: Config = {
   plugins: [
     sass({
       includePaths: ["./node_modules", "./src/style"],
-      injectGlobalPaths: [
-        "./src/style/_mixins.scss",
-        "./src/style/_variables.scss",
-      ],
     }),
   ],
   rollupConfig: {

@@ -1,3 +1,12 @@
+@use "variables" as *;
+@use "mixins" as *;
+@use "./style.item" as si with (
+  $comp: "chip"
+);
+@use "./style.wrapper" as sw with (
+  $comp: "chip"
+);
+
 $comp: "chip";
 @include lf-comp-setup($comp, "true", "true");
 
@@ -128,5 +137,4 @@ $comp: "chip";
   }
 }
 
-@import "./style.item.scss";
-@import "./style.wrapper.scss";
+/* local partials loaded above */

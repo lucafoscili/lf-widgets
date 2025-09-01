@@ -1,3 +1,8 @@
+@use "sass:map";
+@use "./elements" as *;
+@use "./helpers" as *;
+@use "../_variables" as *;
+
 /*******************************************
  * @mixin lf-fw-backdrop
  * Creates a full-screen backdrop element with a fade-in-out transition.
@@ -15,7 +20,7 @@
     width: 100vw;
     z-index: var(--lf-ui-zindex-backdrop, 899);
 
-    @include lf-keyframe(lf-fade-in, map-get($lf-keyframes, fade-in));
+    @include lf-keyframe(lf-fade-in, map.get($lf-keyframes, fade-in));
   }
 }
 /*******************************************
@@ -31,7 +36,7 @@
     animation: lf-fade-in-#{$display} 0.25s ease-out forwards;
     @include lf-keyframe(
       lf-fade-in-#{$display},
-      map-get($lf-keyframes, fade-in)
+      map.get($lf-keyframes, fade-in)
     );
   }
 }
@@ -58,7 +63,7 @@
     outline: none;
     z-index: calc(var(--lf-ui-zindex-lightbox, 900) + 1);
 
-    @include lf-keyframe(lf-pop, map-get($lf-keyframes, pop));
+    @include lf-keyframe(lf-pop, map.get($lf-keyframes, pop));
   }
 }
 /*******************************************
@@ -104,7 +109,7 @@
     transform: scale(0);
     width: var(--lf-ui-ripple-width, 100%);
 
-    @include lf-keyframe(lf-ripple, map-get($lf-keyframes, ripple));
+    @include lf-keyframe(lf-ripple, map.get($lf-keyframes, ripple));
   }
 }
 /*******************************************

@@ -13,15 +13,16 @@ The toggle may also include a ripple effect when clicked.
 
 ## Properties
 
-| Property         | Attribute          | Description                                                                            | Type                                                                                     | Default     |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| `lfLabel`        | `lf-label`         | Defines text to display along with the toggle.                                         | `string`                                                                                 | `""`        |
-| `lfLeadingLabel` | `lf-leading-label` | Defaults at false. When set to true, the label will be displayed before the component. | `boolean`                                                                                | `false`     |
-| `lfRipple`       | `lf-ripple`        | When set to true, the pointerdown event will trigger a ripple effect.                  | `boolean`                                                                                | `true`      |
-| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                      | `string`                                                                                 | `""`        |
-| `lfUiSize`       | `lf-ui-size`       | The size of the component.                                                             | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
-| `lfUiState`      | `lf-ui-state`      | Reflects the specified state color defined by the theme.                               | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
-| `lfValue`        | `lf-value`         | Sets the initial boolean state of the toggle.                                          | `boolean`                                                                                | `false`     |
+| Property         | Attribute          | Description                                                                                                                                               | Type                                                                                     | Default     |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
+| `lfAriaLabel`    | `lf-aria-label`    | Explicit accessible label for the toggle control. Fallback chain when empty: lfLabel -> root element id -> 'toggle'. Applied to the native input element. | `string`                                                                                 | `""`        |
+| `lfLabel`        | `lf-label`         | Defines text to display along with the toggle.                                                                                                            | `string`                                                                                 | `""`        |
+| `lfLeadingLabel` | `lf-leading-label` | Defaults at false. When set to true, the label will be displayed before the component.                                                                    | `boolean`                                                                                | `false`     |
+| `lfRipple`       | `lf-ripple`        | When set to true, the pointerdown event will trigger a ripple effect.                                                                                     | `boolean`                                                                                | `true`      |
+| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                                         | `string`                                                                                 | `""`        |
+| `lfUiSize`       | `lf-ui-size`       | The size of the component.                                                                                                                                | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
+| `lfUiState`      | `lf-ui-state`      | Reflects the specified state color defined by the theme.                                                                                                  | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
+| `lfValue`        | `lf-value`         | Sets the initial boolean state of the toggle.                                                                                                             | `boolean`                                                                                | `false`     |
 
 
 ## Events
@@ -139,6 +140,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
@@ -149,6 +151,7 @@ graph TD;
   lf-carousel --> lf-toggle
   lf-compare --> lf-toggle
   lf-masonry --> lf-toggle
+  lf-tree --> lf-toggle
   style lf-toggle fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

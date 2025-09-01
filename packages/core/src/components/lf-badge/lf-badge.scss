@@ -1,8 +1,18 @@
+@use "variables" as *;
+@use "mixins" as *;
+
 $comp: "badge";
 @include lf-comp-setup($comp, "true");
 
 :host {
   position: absolute;
+  transform: var(--lf_#{$comp}_transform, translate(-50%, -50%));
+}
+
+:host([lf-position="inline"]) {
+  display: inline-flex;
+  position: static;
+  transform: var(--lf_#{$comp}_transform, none);
 }
 
 .badge {

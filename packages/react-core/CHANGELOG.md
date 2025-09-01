@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.2...0.4.0-rc.3) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
+# [0.4.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.1...0.4.0-rc.2) (2025-08-29)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
+# [0.4.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.0...0.4.0-rc.1) (2025-08-28)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
+# [0.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.8-rc.0...0.4.0-rc.0) (2025-08-27)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
+## [0.3.8-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.3.7...0.3.8-rc.0) (2025-08-22)
+
+**Note:** Version bump only for package @lf-widgets/react-core
+
 ## [0.3.7](https://github.com/lucafoscili/lf-widgets/compare/0.3.7-rc.0...0.3.7) (2025-05-08)
 
 **Note:** Version bump only for package @lf-widgets/react-core

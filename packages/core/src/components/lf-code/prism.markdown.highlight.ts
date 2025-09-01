@@ -17,7 +17,7 @@ export const LF_CODE_MARKDOWN = (Prism: Prism.Environment) => {
     ),
     i =
       "\\|?[ \t]*:?-{3,}:?[ \t]*(?:\\|[ \t]*:?-{3,}:?[ \t]*)+\\|?(?:\n|\r\n?)";
-  (Prism.languages.markdown = Prism.languages.extend("markup", {})),
+  ((Prism.languages.markdown = Prism.languages.extend("markup", {})),
     Prism.languages.insertBefore("markdown", "prolog", {
       "front-matter-block": {
         pattern: /(^(?:\s*[\r\n])?)---(?!.)[\s\S]*?[\r\n]---(?!.)/,
@@ -273,7 +273,7 @@ export const LF_CODE_MARKDOWN = (Prism: Prism.Environment) => {
             new Date().valueOf() +
             "-" +
             Math.floor(1e16 * Math.random());
-          (e.attributes.id = u),
+          ((e.attributes.id = u),
             Prism.plugins.autoloader.loadLanguages(t, function () {
               var e = document.getElementById(u);
               e &&
@@ -282,10 +282,10 @@ export const LF_CODE_MARKDOWN = (Prism: Prism.Environment) => {
                   Prism.languages[t],
                   t,
                 ));
-            });
+            }));
         }
       }
-    });
+    }));
   var r = RegExp(Prism.languages.markup.tag.pattern.source, "gi"),
     o = { amp: "&", lt: "<", gt: ">", quot: '"' },
     l = String.fromCodePoint || String.fromCharCode;

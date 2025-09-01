@@ -120,6 +120,7 @@ export type LfButtonState = (typeof LF_BUTTON_STATE)[number];
 
 //#region Props
 export interface LfButtonPropsInterface {
+  lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
   lfIcon?: string;
   lfIconOff?: string;
