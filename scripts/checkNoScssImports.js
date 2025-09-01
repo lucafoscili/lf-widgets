@@ -22,9 +22,6 @@ function scanFile(filePath) {
   lines.forEach((line, idx) => {
     const trimmed = line.trim();
     if (trimmed.startsWith("//")) return; // ignore line comments
-    if (/^@import\b|[^A-Za-z-]@import\b/.test(trimmed)) {
-      if (/^@import/.test(trimmed)) {
-        violations.push({ file: filePath, line: idx + 1, code: line });
     if (trimmed.startsWith("@import")) {
       violations.push({ file: filePath, line: idx + 1, code: line });
     }
