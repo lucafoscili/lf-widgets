@@ -119,30 +119,26 @@ export const createJsx = (
           cell as LfDataCell<LfDataShapes>,
         ) as LfDataCell<LfDataShapes> & { lfValue?: unknown };
 
-      if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
-        shapeProps.lfValue = cell.value;
-
-        return (
-          <div
-            class={bemClass(nodeBlock._, nodeBlock.gridCell)}
-            data-column={col.id as string}
-          >
-            {simple ? (
-              stringify(cell.value)
-            ) : (
-              <LfShape
-                framework={manager}
-                shape={shape}
-                index={0}
-                cell={shapeProps}
-                eventDispatcher={async (e: Event) =>
-                  get.compInstance.onLfEvent(e, "lf-event", { node })
-                }
-              ></LfShape>
-            )}
-          </div>
-        );
-      }
+      return (
+        <div
+          class={bemClass(nodeBlock._, nodeBlock.gridCell)}
+          data-column={col.id as string}
+        >
+          {simple ? (
+            stringify(cell.value)
+          ) : (
+            <LfShape
+              framework={manager}
+              shape={shape}
+              index={0}
+              cell={shapeProps}
+              eventDispatcher={async (e: Event) =>
+                get.compInstance.onLfEvent(e, "lf-event", { node })
+              }
+            ></LfShape>
+          )}
+        </div>
+      );
     };
 
     const renderGridCells = (node: LfDataNode) => {
