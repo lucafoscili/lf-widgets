@@ -100,4 +100,9 @@ $borderC: 1px solid var(--lf-color-border);
     grid-area: tree;
     overflow: auto;
   }
+
+  &__settings {
+    grid-area: settings;
+    overflow: auto;
+  }
 }
