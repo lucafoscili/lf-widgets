@@ -114,7 +114,7 @@ export class LfSpinner implements LfSpinnerInterface {
    * <lf-spinner lfFader={true}></lf-spinner>
    * ```
    */
-  @Prop({ mutable: true }) lfFader: boolean = false;
+  @Prop({ mutable: true, reflect: true }) lfFader: boolean = false;
   /**
    * Duration needed for the fader to become active.
    *
@@ -187,9 +187,16 @@ export class LfSpinner implements LfSpinnerInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #progressAnimationFrame: number;
+  #faderTimer?: number;
   //#endregion
 
   //#region Watchers
+  @Watch("lfActive")
+  @Watch("lfFader")
+  @Watch("lfFaderTimeout")
+  onFaderChange() {
+    this.#scheduleFader();
+  }
   @Watch("lfBarVariant")
   lfBarVariantChanged(newValue: boolean) {
     if (!this.#framework) {
@@ -325,25 +332,23 @@ export class LfSpinner implements LfSpinnerInterface {
 
     info.update(this, "will-render");
   }
-  componentWillUpdate() {
-    if (this.lfFader) {
-      this.bigWait = false;
-    }
-  }
   componentDidRender() {
     const { info } = this.#framework.debug;
 
-    const root = this.rootElement.shadowRoot;
-
-    if (root) {
-      if (this.lfFader && this.lfActive) {
-        setTimeout(() => {
-          this.bigWait = true;
-        }, this.lfFaderTimeout);
-      }
+    info.update(this, "did-render");
+  }
+  #scheduleFader() {
+    if (this.#faderTimer) {
+      clearTimeout(this.#faderTimer);
+      this.#faderTimer = undefined;
     }
 
-    info.update(this, "did-render");
+    this.bigWait = false;
+    if (this.lfFader && this.lfActive) {
+      this.#faderTimer = window.setTimeout(() => {
+        this.bigWait = true;
+      }, this.lfFaderTimeout);
+    }
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
@@ -374,7 +379,7 @@ export class LfSpinner implements LfSpinnerInterface {
 
     const masterClass = {
       "spinner-version": !lfBarVariant,
-      "big-wait": bigWait,
+      "loading-wrapper-big-wait": bigWait,
     };
 
     const spinnerClass =
@@ -403,5 +408,8 @@ export class LfSpinner implements LfSpinnerInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
     cancelAnimationFrame(this.#progressAnimationFrame);
+    if (this.#faderTimer) {
+      clearTimeout(this.#faderTimer);
+    }
   }
 }

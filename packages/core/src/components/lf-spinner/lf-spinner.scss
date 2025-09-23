@@ -87,4 +87,7 @@ $comp: "spinner";
   }
 }
 
-/* local partials loaded above */
+:host([lf-active][lf-fader]) #loading-wrapper-master {
+  pointer-events: all;
+  cursor: not-allowed;
+}
