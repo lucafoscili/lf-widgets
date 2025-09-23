@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-rc.4](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.3...0.4.0-rc.4) (2025-09-23)
+
+### Bug Fixes
+
+- Add .details-grid\_\_settings class to image viewer styles ([c630a9d](https://github.com/lucafoscili/lf-widgets/commit/c630a9d5ebd261dfb3de4fb55137ec0eb15f4375))
+- Improve lf-spinner fader behavior and styling ([abc43a2](https://github.com/lucafoscili/lf-widgets/commit/abc43a24d7dc317a2a5313f105bb7745246f730f))
+
 # [0.4.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.4.0-rc.2...0.4.0-rc.3) (2025-08-29)
 
 ### Bug Fixes
