@@ -1,4 +1,5 @@
 import {
+  LfCanvasAdapter,
   LfCanvasAdapterToolkitCoordinates,
   LfCanvasPoints,
 } from "@lf-widgets/foundations";
@@ -50,6 +51,61 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
     return { x, y };
   },
   //#endregion
+
+  //#region Normalize points for image
+  normalizePointsForImage(adapter: LfCanvasAdapter, points: LfCanvasPoints = []) {
+    if (!points.length) {
+      return points;
+    }
+
+    const { controller, elements } = adapter;
+    const { get } = controller;
+    const { refs } = elements;
+    const { board, image } = refs;
+
+    if (!board || !image) {
+      return points.map((point) => ({ ...point }));
+    }
+
+    const boardRect = board.getBoundingClientRect();
+    const boardWidth = boardRect.width || 1;
+    const boardHeight = boardRect.height || 1;
+
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
+
+    const metrics = get.imageMetrics();
+    if (metrics && metrics.width > 0 && metrics.height > 0) {
+      const { offsetX, offsetY, width, height } = metrics;
+
+      return points.map(({ x, y }) => {
+        const pxX = x * boardWidth;
+        const pxY = y * boardHeight;
+
+        return {
+          x: clamp((pxX - offsetX) / width),
+          y: clamp((pxY - offsetY) / height),
+        };
+      });
+    }
+
+    const rect = image.getBoundingClientRect();
+    const offsetX = rect.left - boardRect.left;
+    const offsetY = rect.top - boardRect.top;
+    const effectiveWidth = rect.width || boardWidth;
+    const effectiveHeight = rect.height || boardHeight;
+
+    return points.map(({ x, y }) => {
+      const pxX = x * boardWidth;
+      const pxY = y * boardHeight;
+
+      return {
+        x: clamp((pxX - offsetX) / effectiveWidth),
+        y: clamp((pxY - offsetY) / effectiveHeight),
+      };
+    });
+  },
+  //#endregion
+
 
   //#region Simplify coords
   simplify: (points, tolerance) => {
@@ -110,6 +166,44 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
     simplified.push(points[points.length - 1]);
 
     return simplified;
+  },
+  //#endregion
+
+  //#region Update image metrics
+  updateImageMetrics: async (adapter: LfCanvasAdapter) => {
+    const { controller, elements } = adapter;
+    const { get, set } = controller;
+    const { refs } = elements;
+    const { board, image } = refs;
+
+    const id = get.imageMetricsRequestId() + 1;
+    set.imageMetricsRequestId(id);
+
+    if (!board || !image) {
+      if (id === get.imageMetricsRequestId()) {
+        set.imageMetrics(null);
+      }
+      return;
+    }
+
+    const element = await image.getImage();
+    if (!element) {
+      return;
+    }
+
+    const rect = element.getBoundingClientRect();
+    const boardRect = board.getBoundingClientRect();
+
+    const metrics = {
+      height: rect.height,
+      offsetX: rect.left - boardRect.left,
+      offsetY: rect.top - boardRect.top,
+      width: rect.width,
+    };
+
+    if (id === get.imageMetricsRequestId()) {
+      set.imageMetrics(metrics);
+    }
   },
   //#endregion
 };

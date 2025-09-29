@@ -121,5 +121,41 @@ export const prepCanvasHandlers = (
       },
       //#endregion
     },
+
+    //#region Image
+    image: {
+      onError: async (e) => {
+        const { controller } = getAdapter();
+        const { get, set } = controller;
+        const { compInstance } = get;
+        set.imageMetrics(null);
+        (compInstance as LfCanvas).onLfEvent(e, "lf-event");
+      },
+      onLoad: async (e) => {
+        const adapter = getAdapter();
+        const { controller, toolkit } = adapter;
+        const { get } = controller;
+        const { compInstance } = get;
+        await toolkit.coordinates.updateImageMetrics(adapter);
+        (compInstance as LfCanvas).onLfEvent(e, "lf-event");
+      },
+      onReady: async (e) => {
+        const adapter = getAdapter();
+        const { controller, toolkit } = adapter;
+        const { get } = controller;
+        const { compInstance } = get;
+        await toolkit.coordinates.updateImageMetrics(adapter);
+        (compInstance as LfCanvas).onLfEvent(e, "lf-event");
+      },
+      onUnmount: async (e) => {
+        const { controller } = getAdapter();
+        const { get } = controller;
+        const { compInstance } = get;
+        const { set } = controller;
+        set.imageMetrics(null);
+        (compInstance as LfCanvas).onLfEvent(e, "lf-event");
+      },
+    },
+    //#endregion
   };
 };
