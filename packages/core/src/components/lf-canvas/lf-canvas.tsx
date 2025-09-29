@@ -225,15 +225,17 @@ export class LfCanvas implements LfCanvasInterface {
     const { coordinates } = this.#adapter.toolkit;
     const { lfStrokeTolerance, points, rootElement } = this;
 
+    const outputPoints =
+      lfStrokeTolerance !== null && points?.length
+        ? coordinates.simplify(points, lfStrokeTolerance)
+        : points;
+
     this.lfEvent.emit({
       comp: this,
       id: rootElement.id,
       originalEvent: e,
       eventType,
-      points:
-        lfStrokeTolerance !== null && points?.length
-          ? coordinates.simplify(points, lfStrokeTolerance)
-          : points,
+      points: this.#normalizePointsForImage(outputPoints ?? []),
     });
   }
   //#endregion
@@ -414,6 +416,51 @@ export class LfCanvas implements LfCanvasInterface {
   };
   #isCursorPreview() {
     return this.lfCursor === "preview";
+  }
+  #normalizePointsForImage(points: LfCanvasPoints = []): LfCanvasPoints {
+    // Convert board-space points into the displayed image area so letterboxing does not skew strokes.
+    if (!points.length) {
+      return [];
+    }
+
+    const { refs } = this.#adapter?.elements ?? {};
+    const board = refs?.board;
+    if (!board) {
+      return points.map((point) => ({ ...point }));
+    }
+
+    const boardRect = board.getBoundingClientRect();
+    const boardWidth = boardRect.width || 1;
+    const boardHeight = boardRect.height || 1;
+
+    const image = refs?.image;
+    const imageRect =
+      typeof image?.getBoundingClientRect === "function"
+        ? image.getBoundingClientRect()
+        : null;
+
+    const imageWidth = imageRect?.width || boardWidth;
+    const imageHeight = imageRect?.height || boardHeight;
+
+    if (!imageWidth || !imageHeight) {
+      return points.map((point) => ({ ...point }));
+    }
+
+    const offsetX = imageRect ? imageRect.left - boardRect.left : 0;
+    const offsetY = imageRect ? imageRect.top - boardRect.top : 0;
+
+    return points.map(({ x, y }) => {
+      const pxX = x * boardWidth;
+      const pxY = y * boardHeight;
+
+      const normalizedX = (pxX - offsetX) / imageWidth;
+      const normalizedY = (pxY - offsetY) / imageHeight;
+
+      return {
+        x: Math.max(0, Math.min(1, normalizedX)),
+        y: Math.max(0, Math.min(1, normalizedY)),
+      };
+    });
   }
   //#endregion
 
