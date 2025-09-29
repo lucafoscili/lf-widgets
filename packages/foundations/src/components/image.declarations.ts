@@ -12,7 +12,7 @@ import { LfThemeUIState } from "../framework/theme.declarations";
 export interface LfImageInterface
   extends LfComponent<"LfImage">,
     LfImagePropsInterface {
-  getImageInfo: () => Promise<HTMLImageElement | null>;
+  getImage: () => Promise<HTMLImageElement | SVGElement | null>;
 }
 export interface LfImageElement
   extends HTMLStencilElement,

@@ -199,7 +199,7 @@ export class LfImage implements LfImageInterface {
   #s = LF_STYLE_ID;
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
-  #img: HTMLImageElement | null = null;
+  #img: HTMLImageElement | SVGElement = null;
   #mask: string;
   #resolvedFor?: string;
 
@@ -228,10 +228,10 @@ export class LfImage implements LfImageInterface {
   }
   /**
    * Retrieves the underlying HTMLImageElement used to display the image.
-   * @returns {Promise<HTMLImageElement | null>} A promise that resolves with the HTMLImageElement or null if not available.
+   * @returns {Promise<HTMLImageElement | SVGElement | null>} A promise that resolves with the image element, or null if not available.
    */
   @Method()
-  async getImageInfo(): Promise<HTMLImageElement | null> {
+  async getImage(): Promise<HTMLImageElement | SVGElement | null> {
     return this.#img;
   }
   /**
@@ -385,11 +385,16 @@ export class LfImage implements LfImageInterface {
     return (
       <svg
         {...sanitizeProps(this.lfHtmlAttributes)}
-        part={this.#p.icon}
+        aria-hidden="true"
         class={bemClass(image._, image.icon)}
         data-cy={this.#cy.maskedSvg}
         data-lf={this.lfUiState}
-        aria-hidden="true"
+        part={this.#p.icon}
+        ref={(el) => {
+          if (el) {
+            this.#img = el;
+          }
+        }}
         viewBox="0 0 24 24"
       >
         <use href={href}></use>
