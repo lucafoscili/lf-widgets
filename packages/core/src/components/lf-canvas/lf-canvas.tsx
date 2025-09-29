@@ -451,13 +451,23 @@ export class LfCanvas implements LfCanvasInterface {
     let innerOffsetY = 0;
 
     const shadowRoot = image?.shadowRoot;
-    const shadowImg = shadowRoot?.querySelector("img") as HTMLImageElement | null;
+    const shadowImg = shadowRoot?.querySelector(
+      "img",
+    ) as HTMLImageElement | null;
 
     const naturalWidth = shadowImg?.naturalWidth ?? 0;
     const naturalHeight = shadowImg?.naturalHeight ?? 0;
 
-    if (naturalWidth > 0 && naturalHeight > 0 && containerWidth > 0 && containerHeight > 0) {
-      const scale = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+    if (
+      naturalWidth > 0 &&
+      naturalHeight > 0 &&
+      containerWidth > 0 &&
+      containerHeight > 0
+    ) {
+      const scale = Math.min(
+        containerWidth / naturalWidth,
+        containerHeight / naturalHeight,
+      );
       drawnWidth = naturalWidth * scale;
       drawnHeight = naturalHeight * scale;
       innerOffsetX = (containerWidth - drawnWidth) / 2;

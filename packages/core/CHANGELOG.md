@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.0...0.4.2-rc.1) (2025-09-29)
+
+### Bug Fixes
+
+- Improve image normalization in lf-canvas ([707be69](https://github.com/lucafoscili/lf-widgets/commit/707be69a0efca7efc781ffacc3dfa2824b2b916f))
+
 ## [0.4.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.1...0.4.2-rc.0) (2025-09-29)
 
 ### Bug Fixes
