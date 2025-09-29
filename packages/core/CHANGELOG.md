@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.1...0.4.2-rc.0) (2025-09-29)
+
+### Bug Fixes
+
+- Normalize stroke points to image area ([21594d6](https://github.com/lucafoscili/lf-widgets/commit/21594d68cf14c53b16e476d3bbc55785e1e5285f))
+
 ## [0.4.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.1-rc.0...0.4.1) (2025-09-23)
 
 **Note:** Version bump only for package @lf-widgets/core
