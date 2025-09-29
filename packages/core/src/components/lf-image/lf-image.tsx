@@ -199,6 +199,7 @@ export class LfImage implements LfImageInterface {
   #s = LF_STYLE_ID;
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
+  #img: HTMLImageElement | null = null;
   #mask: string;
   #resolvedFor?: string;
 
@@ -224,6 +225,14 @@ export class LfImage implements LfImageInterface {
   @Method()
   async getDebugInfo(): Promise<LfDebugLifecycleInfo> {
     return this.debugInfo;
+  }
+  /**
+   * Retrieves the underlying HTMLImageElement used to display the image.
+   * @returns {Promise<HTMLImageElement | null>} A promise that resolves with the HTMLImageElement or null if not available.
+   */
+  @Method()
+  async getImageInfo(): Promise<HTMLImageElement | null> {
+    return this.#img;
   }
   /**
    * Used to retrieve component's properties and descriptions.
@@ -300,6 +309,11 @@ export class LfImage implements LfImageInterface {
           this.onLfEvent(e, "load");
         }}
         part={this.#p.img}
+        ref={(el) => {
+          if (el) {
+            this.#img = el;
+          }
+        }}
         src={this.lfValue}
       ></img>
     );

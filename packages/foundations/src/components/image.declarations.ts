@@ -11,7 +11,9 @@ import { LfThemeUIState } from "../framework/theme.declarations";
 //#region Class
 export interface LfImageInterface
   extends LfComponent<"LfImage">,
-    LfImagePropsInterface {}
+    LfImagePropsInterface {
+  getImageInfo: () => Promise<HTMLImageElement | null>;
+}
 export interface LfImageElement
   extends HTMLStencilElement,
     Omit<LfImageInterface, LfComponentClassProperties> {}
@@ -26,14 +28,12 @@ export interface LfImageEventPayload
 //#region Props
 export interface LfImagePropsInterface {
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
+  lfMode?: LfImageMode;
   lfSizeX?: string;
   lfSizeY?: string;
   lfStyle?: string;
-  /** Visual state color (theme token). */
   lfUiState?: LfThemeUIState;
   lfValue?: string;
-  /** Rendering mode for non-URL values: sprite (SVG <use>) or mask (legacy CSS mask). Default: sprite */
-  lfMode?: LfImageMode;
 }
 export type LfImageMode = "sprite" | "mask";
 //#endregion
