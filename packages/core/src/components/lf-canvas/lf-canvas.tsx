@@ -439,22 +439,47 @@ export class LfCanvas implements LfCanvasInterface {
         ? image.getBoundingClientRect()
         : null;
 
-    const imageWidth = imageRect?.width || boardWidth;
-    const imageHeight = imageRect?.height || boardHeight;
+    const containerWidth = imageRect?.width || boardWidth;
+    const containerHeight = imageRect?.height || boardHeight;
 
-    if (!imageWidth || !imageHeight) {
+    const baseOffsetX = imageRect ? imageRect.left - boardRect.left : 0;
+    const baseOffsetY = imageRect ? imageRect.top - boardRect.top : 0;
+
+    let drawnWidth = containerWidth;
+    let drawnHeight = containerHeight;
+    let innerOffsetX = 0;
+    let innerOffsetY = 0;
+
+    const shadowRoot = image?.shadowRoot;
+    const shadowImg = shadowRoot?.querySelector("img") as HTMLImageElement | null;
+
+    const naturalWidth = shadowImg?.naturalWidth ?? 0;
+    const naturalHeight = shadowImg?.naturalHeight ?? 0;
+
+    if (naturalWidth > 0 && naturalHeight > 0 && containerWidth > 0 && containerHeight > 0) {
+      const scale = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+      drawnWidth = naturalWidth * scale;
+      drawnHeight = naturalHeight * scale;
+      innerOffsetX = (containerWidth - drawnWidth) / 2;
+      innerOffsetY = (containerHeight - drawnHeight) / 2;
+    }
+
+    const effectiveWidth = drawnWidth;
+    const effectiveHeight = drawnHeight;
+
+    if (!effectiveWidth || !effectiveHeight) {
       return points.map((point) => ({ ...point }));
     }
 
-    const offsetX = imageRect ? imageRect.left - boardRect.left : 0;
-    const offsetY = imageRect ? imageRect.top - boardRect.top : 0;
+    const offsetX = baseOffsetX + innerOffsetX;
+    const offsetY = baseOffsetY + innerOffsetY;
 
     return points.map(({ x, y }) => {
       const pxX = x * boardWidth;
       const pxY = y * boardHeight;
 
-      const normalizedX = (pxX - offsetX) / imageWidth;
-      const normalizedY = (pxY - offsetY) / imageHeight;
+      const normalizedX = (pxX - offsetX) / effectiveWidth;
+      const normalizedY = (pxY - offsetY) / effectiveHeight;
 
       return {
         x: Math.max(0, Math.min(1, normalizedX)),
