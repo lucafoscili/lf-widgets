@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.1...0.5.0-rc.0) (2025-09-30)
+
+### Bug Fixes
+
+- Support SVGElement in LfImage getImage method ([dc29691](https://github.com/lucafoscili/lf-widgets/commit/dc2969148e72364df17fb861214a9e0234afbc16))
+
+### Features
+
+- Add getImageInfo method to LfImage component ([0d140aa](https://github.com/lucafoscili/lf-widgets/commit/0d140aa7c88f7d07b530e94e78f1db76968e7826))
+- Refactor image event handling and normalization in canvas ([7a798d4](https://github.com/lucafoscili/lf-widgets/commit/7a798d44342cedc7be24ad24d0305dacb13cc29e))
+
 ## [0.4.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.0...0.4.2-rc.1) (2025-09-29)
 
 **Note:** Version bump only for package @lf-widgets/foundations
