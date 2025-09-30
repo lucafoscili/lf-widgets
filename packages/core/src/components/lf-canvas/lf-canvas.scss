@@ -6,7 +6,17 @@ $comp: "canvas";
 
 :host {
   @include lf-el-stretch;
+  display: flex;
+  justify-self: center;
   position: relative;
+}
+
+:host([data-orientation="landscape"]) {
+  height: max-content;
+}
+
+:host([data-orientation="portrait"]) {
+  width: max-content;
 }
 
 .canvas {
