@@ -2598,6 +2598,26 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-masonry-actions-backdrop",
+        docs: "Sets the backdrop filter for the actions of the masonry component. Defaults to => blur(10px)",
+      },
+      {
+        name: "--lf-masonry-actions-background",
+        docs: "Sets the background for the actions of the masonry component. Defaults to => rgba(var(--lf-color-surface), 0.75)",
+      },
+      {
+        name: "--lf-masonry-actions-border-radius",
+        docs: "Sets the border radius for the actions of the masonry component. Defaults to => 50px",
+      },
+      {
+        name: "--lf-masonry-actions-margin",
+        docs: "Sets the margin for the actions of the masonry component. Defaults to => 0 0.5em 0.5em 0",
+      },
+      {
+        name: "--lf-masonry-actions-padding",
+        docs: "Sets the padding for the actions of the masonry component. Defaults to => 0.75em",
+      },
+      {
         name: "--lf-masonry-actions-z-index",
         docs: "Sets the z index for the actions of the masonry component. Defaults to => 2",
       },
