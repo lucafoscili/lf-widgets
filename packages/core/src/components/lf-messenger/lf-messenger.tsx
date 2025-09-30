@@ -711,7 +711,7 @@ export class LfMessenger implements LfMessengerInterface {
       );
     });
   };
-  #prepRoster = (): VNode => {
+  #prepRoster = () => {
     const { bemClass } = this.#framework.theme;
 
     const { roster } = this.#b;
