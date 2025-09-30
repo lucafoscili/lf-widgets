@@ -53,7 +53,10 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
   //#endregion
 
   //#region Normalize points for image
-  normalizePointsForImage(adapter: LfCanvasAdapter, points: LfCanvasPoints = []) {
+  normalizePointsForImage(
+    adapter: LfCanvasAdapter,
+    points: LfCanvasPoints = [],
+  ) {
     if (!points.length) {
       return points;
     }
@@ -105,7 +108,6 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
     });
   },
   //#endregion
-
 
   //#region Simplify coords
   simplify: (points, tolerance) => {
@@ -187,18 +189,34 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
     }
 
     const element = await image.getImage();
-    if (!element) {
-      return;
-    }
-
     const rect = element.getBoundingClientRect();
     const boardRect = board.getBoundingClientRect();
 
+    let width = rect.width;
+    let height = rect.height;
+    let offsetX = rect.left - boardRect.left;
+    let offsetY = rect.top - boardRect.top;
+
+    if (element instanceof HTMLImageElement) {
+      const { naturalHeight, naturalWidth } = element;
+
+      if (naturalWidth > 0 && naturalHeight > 0 && width > 0 && height > 0) {
+        const scale = Math.min(width / naturalWidth, height / naturalHeight);
+        const drawnWidth = naturalWidth * scale;
+        const drawnHeight = naturalHeight * scale;
+
+        offsetX += (width - drawnWidth) / 2;
+        offsetY += (height - drawnHeight) / 2;
+        width = drawnWidth;
+        height = drawnHeight;
+      }
+    }
+
     const metrics = {
-      height: rect.height,
-      offsetX: rect.left - boardRect.left,
-      offsetY: rect.top - boardRect.top,
-      width: rect.width,
+      height,
+      offsetX,
+      offsetY,
+      width,
     };
 
     if (id === get.imageMetricsRequestId()) {
