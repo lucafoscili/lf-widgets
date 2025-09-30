@@ -1,50 +1,59 @@
-//#region addColumn
-
-import { LF_MASONRY_CSS_VARS, LfMasonryAdapter } from "@lf-widgets/foundations";
+import { LfMasonryAdapter } from "@lf-widgets/foundations";
 import { LfMasonry } from "./lf-masonry";
 
+//#region addColumn
 /**
- * Increases the number of columns in the masonry layout by one.
- *
- * @param adapter - The masonry adapter instance that manages the layout
- * @returns A Promise that resolves when the column has been added
+ * Increment the masonry component's column count by one.
  *
  * @remarks
- * This function:
- * - Retrieves the current number of columns from CSS or component state
- * - Increments that value by 1
- * - Updates the CSS value with the new column count
+ * This function retrieves the masonry controller via the provided adapter,
+ * reads the current number of columns using `currentColumns()`, casts the
+ * controller's `compInstance` to `LfMasonry`, and sets `comp.lfColumns` to
+ * `current + 1`.
+ *
+ * The function is declared `async` but does not perform any asynchronous
+ * operations internally, so it returns an already-resolved `Promise<void>`.
+ *
+ * @param adapter - The `LfMasonryAdapter` providing access to the controller and component.
+ * @returns A `Promise<void>` that resolves once the component's column count has been updated.
+ *
+ * @throws If `adapter`, the controller returned by `adapter.controller`, or the
+ * values returned by `get` are missing or not of the expected shape.
  */
 export const addColumn = async (adapter: LfMasonryAdapter) => {
-  const { compInstance, currentColumns } = adapter.controller.get;
+  const { get } = adapter.controller;
+  const { compInstance, currentColumns } = get;
 
+  const current = currentColumns();
   const comp = compInstance as LfMasonry;
-
-  const current = getCSSValue(comp) || currentColumns();
-  setCSSValue(comp, current + 1);
+  comp.lfColumns = current + 1;
 };
 //#endregion
 
 //#region removeColumn
 /**
- * Decrements the number of columns in the masonry layout by one if current columns count is greater than 1.
+ * Decrements the column count of an LfMasonry component by one, if the current count is greater than 1.
  *
- * @param adapter - The masonry adapter instance containing component and controller information
- * @returns A Promise that resolves when the column removal operation is complete
+ * This function obtains the component instance and a callback to read the current column count
+ * from the provided adapter. If the current column count is greater than 1, it updates the
+ * component's `lfColumns` property to `current - 1`. The function is declared `async` for
+ * compatibility with potential future asynchronous behavior but currently performs a synchronous update.
  *
- * @example
- * ```typescript
- * await removeColumn(masonryAdapter);
- * ```
+ * No changes are made when the current column count is 1 or less.
+ *
+ * @param adapter - The LfMasonryAdapter used to access the controller and component instance.
+ * @async
+ * @returns A Promise that resolves when the operation completes.
  */
 export const removeColumn = async (adapter: LfMasonryAdapter) => {
-  const { compInstance, currentColumns } = adapter.controller.get;
+  const { get } = adapter.controller;
+  const { compInstance, currentColumns } = get;
 
   const comp = compInstance as LfMasonry;
 
-  const current = getCSSValue(comp) || currentColumns();
+  const current = currentColumns();
   if (current > 1) {
-    setCSSValue(comp, current - 1);
+    comp.lfColumns = current - 1;
   }
 };
 //#endregion
@@ -67,35 +76,5 @@ export const changeView = async (adapter: LfMasonryAdapter) => {
   } else {
     compInstance.lfView = "main";
   }
-};
-//#endregion
-
-//#region Helpers
-/**
- * Retrieves the CSS custom property value for columns from the root element of a LfMasonry component.
- * @param compInstance - The LfMasonry component instance to extract the CSS value from
- * @returns The numeric value of the columns CSS custom property
- */
-const getCSSValue = (compInstance: LfMasonry) => {
-  return Number(
-    compInstance.rootElement.style.getPropertyValue(
-      LF_MASONRY_CSS_VARS.columns,
-    ),
-  );
-};
-/**
- * Sets the CSS custom property for columns count in the masonry component.
- *
- * @param compInstance - The LfMasonry component instance containing the root element
- * @param value - The number of columns to set
- * @returns The numeric value that was set (always returns 0 since setProperty returns void)
- */
-const setCSSValue = (compInstance: LfMasonry, value: number) => {
-  return Number(
-    compInstance.rootElement.style.setProperty(
-      LF_MASONRY_CSS_VARS.columns,
-      String(value),
-    ),
-  );
 };
 //#endregion
