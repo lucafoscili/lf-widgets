@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0-rc.3) (2025-09-30)
+
+### Bug Fixes
+
+- Add new CSS custom properties for lf-masonry actions ([0f71908](https://github.com/lucafoscili/lf-widgets/commit/0f7190882708e60ce65884c2895d877a42f873c8))
+
 # [0.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.1...0.5.0-rc.2) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/showcase

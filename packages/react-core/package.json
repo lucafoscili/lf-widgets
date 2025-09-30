@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.3",
   "publishConfig": {
     "access": "public"
   },

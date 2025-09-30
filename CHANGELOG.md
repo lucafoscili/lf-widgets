@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0-rc.3) (2025-09-30)
+
+### Bug Fixes
+
+- Add new CSS custom properties for lf-masonry actions ([0f71908](https://github.com/lucafoscili/lf-widgets/commit/0f7190882708e60ce65884c2895d877a42f873c8))
+- Refactor column update logic in lf-masonry helpers ([07a7cb2](https://github.com/lucafoscili/lf-widgets/commit/07a7cb2dceef96c6712ad032fb98b684af9dc401))
+- Refactor image cover fallback logic in controller.image.ts ([d52e1c9](https://github.com/lucafoscili/lf-widgets/commit/d52e1c9900e2d1ff5c08f9b990b45d15a955d46f))
+- Return 1 column when no shapes in lf-masonry ([81d1ad0](https://github.com/lucafoscili/lf-widgets/commit/81d1ad031f04b533ff70d3d0543439de49c36e16))
+
 # [0.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.1...0.5.0-rc.2) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/root
