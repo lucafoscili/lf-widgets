@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.0...0.5.0-rc.1) (2025-09-30)
+
+### Bug Fixes
+
+- Apply image metrics to canvas elements ([4e1e5ea](https://github.com/lucafoscili/lf-widgets/commit/4e1e5eac6cfd362a0dc46bd7a5c5cbf375c9d87a))
+
 # [0.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.1...0.5.0-rc.0) (2025-09-30)
 
 ### Bug Fixes
