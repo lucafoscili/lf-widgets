@@ -16,6 +16,7 @@ import {
 export interface LfTextfieldInterface
   extends LfComponent<"LfTextfield">,
     LfTextfieldPropsInterface {
+  getElement: () => Promise<HTMLTextAreaElement | HTMLInputElement>;
   getValue: () => Promise<string>;
   setBlur: () => Promise<void>;
   setFocus: () => Promise<void>;
