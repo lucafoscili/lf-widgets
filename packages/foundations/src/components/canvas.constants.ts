@@ -20,7 +20,12 @@ export const LF_CANVAS_CURSOR = ["preview", "default"] as const;
 //#endregion
 
 //#region Events
-export const LF_CANVAS_EVENTS = ["stroke", "ready", "unmount"] as const;
+export const LF_CANVAS_EVENTS = [
+  "lf-event",
+  "ready",
+  "stroke",
+  "unmount",
+] as const;
 //#endregion
 
 //#region Parts
