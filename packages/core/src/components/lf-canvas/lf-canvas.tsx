@@ -333,6 +333,7 @@ export class LfCanvas implements LfCanvasInterface {
     }
 
     await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
+    this.#applyImageMetrics();
   }
   /**
    * Sets the canvas height for both the board and preview elements.
@@ -362,6 +363,7 @@ export class LfCanvas implements LfCanvasInterface {
     }
 
     await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
+    this.#applyImageMetrics();
   }
   /**
    * Sets the width of the canvas element(s).
@@ -392,6 +394,7 @@ export class LfCanvas implements LfCanvasInterface {
     }
 
     await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
+    this.#applyImageMetrics();
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -422,7 +425,10 @@ export class LfCanvas implements LfCanvasInterface {
         points: () => this.points,
       },
       {
-        imageMetrics: (value) => (this.#imageMetrics = value),
+        imageMetrics: (value) => {
+          this.#imageMetrics = value;
+          this.#applyImageMetrics();
+        },
         imageMetricsRequestId: (value) => (this.#imageMetricsRequestId = value),
         isPainting: (value) => (this.isPainting = value),
         points: (value) => (this.points = value),
@@ -430,6 +436,61 @@ export class LfCanvas implements LfCanvasInterface {
       () => this.#adapter,
     );
   };
+  #applyImageMetrics() {
+    if (!this.#adapter) {
+      return;
+    }
+
+    const { board, preview } = this.#adapter.elements.refs;
+    if (!board || !preview) {
+      return;
+    }
+
+    const containerRect = this.#container?.getBoundingClientRect();
+    const containerWidth = containerRect?.width ?? 0;
+    const containerHeight = containerRect?.height ?? 0;
+
+    const metrics = this.#imageMetrics;
+    if (!metrics) {
+      board.style.left = "0px";
+      board.style.top = "0px";
+      preview.style.left = "0px";
+      preview.style.top = "0px";
+
+      const roundedWidth = Math.max(1, Math.round(containerWidth));
+      const roundedHeight = Math.max(1, Math.round(containerHeight));
+
+      board.style.width = `${containerWidth}px`;
+      board.style.height = `${containerHeight}px`;
+      preview.style.width = `${containerWidth}px`;
+      preview.style.height = `${containerHeight}px`;
+
+      board.width = roundedWidth;
+      board.height = roundedHeight;
+      preview.width = roundedWidth;
+      preview.height = roundedHeight;
+      return;
+    }
+
+    const { offsetX, offsetY, width, height } = metrics;
+    const roundedWidth = Math.max(1, Math.round(width));
+    const roundedHeight = Math.max(1, Math.round(height));
+
+    board.style.left = `${offsetX}px`;
+    board.style.top = `${offsetY}px`;
+    preview.style.left = `${offsetX}px`;
+    preview.style.top = `${offsetY}px`;
+
+    board.style.width = `${width}px`;
+    board.style.height = `${height}px`;
+    preview.style.width = `${width}px`;
+    preview.style.height = `${height}px`;
+
+    board.width = roundedWidth;
+    board.height = roundedHeight;
+    preview.width = roundedWidth;
+    preview.height = roundedHeight;
+  }
   #isCursorPreview() {
     return this.lfCursor === "preview";
   }

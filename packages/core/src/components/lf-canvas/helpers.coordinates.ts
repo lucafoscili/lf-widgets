@@ -189,6 +189,9 @@ export const coordinates: LfCanvasAdapterToolkitCoordinates = {
     }
 
     const element = await image.getImage();
+    if (!element) {
+      return;
+    }
     const rect = element.getBoundingClientRect();
     const boardRect = board.getBoundingClientRect();
 
