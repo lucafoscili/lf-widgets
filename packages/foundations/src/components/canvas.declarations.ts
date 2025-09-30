@@ -63,17 +63,16 @@ export type LfCanvasAdapterInitializerGetters = Pick<
   | "blocks"
   | "compInstance"
   | "cyAttributes"
-  | "imageMetrics"
-  | "imageMetricsRequestId"
   | "isCursorPreview"
   | "isPainting"
   | "manager"
+  | "orientation"
   | "parts"
   | "points"
 >;
 export type LfCanvasAdapterInitializerSetters = Pick<
   LfCanvasAdapterControllerSetters,
-  "imageMetrics" | "imageMetricsRequestId" | "isPainting" | "points"
+  "isPainting" | "orientation" | "points"
 >;
 export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
   board: {
@@ -84,10 +83,7 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
     onPointerUp: (e: PointerEvent) => void;
   };
   image: {
-    onError: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
     onLoad: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
-    onReady: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
-    onUnmount: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
   };
 }
 export interface LfCanvasAdapterControllerGetters
@@ -95,19 +91,17 @@ export interface LfCanvasAdapterControllerGetters
   blocks: typeof LF_CANVAS_BLOCKS;
   compInstance: LfCanvasInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
-  imageMetrics: () => LfCanvasImageMetric | null;
-  imageMetricsRequestId: () => number;
   isCursorPreview: () => boolean;
   isPainting: () => boolean;
   manager: LfFrameworkInterface;
+  orientation: () => LfCanvasOrientation;
   parts: typeof LF_CANVAS_PARTS;
   points: () => LfCanvasPoints;
 }
 export interface LfCanvasAdapterControllerSetters
   extends LfComponentAdapterSetters {
-  imageMetrics: (value: LfCanvasImageMetric | null) => void;
-  imageMetricsRequestId: (value: number) => void;
   isPainting: (value: boolean) => void;
+  orientation: (value: LfCanvasOrientation) => void;
   points: (value: LfCanvasPoints) => void;
 }
 export interface LfCanvasAdapterJsx extends LfComponentAdapterJsx {
@@ -145,12 +139,7 @@ export interface LfCanvasAdapterToolkitCoordinates {
     x: number;
     y: number;
   };
-  normalizePointsForImage(
-    adapter: LfCanvasAdapter,
-    points: LfCanvasPoints,
-  ): LfCanvasPoints;
   simplify: (points: LfCanvasPoints, tolerance: number) => LfCanvasPoints;
-  updateImageMetrics: (adapter: LfCanvasAdapter) => Promise<void>;
 }
 export interface LfCanvasAdapterToolkitDraw {
   cursor: (e: PointerEvent) => void;
@@ -172,16 +161,8 @@ export interface LfCanvasEventPayload
 }
 //#endregion
 
-//#region Internal
-export type LfCanvasImageMetric = {
-  height: number;
-  offsetX: number;
-  offsetY: number;
-  width: number;
-};
-//#endregion
-
 //#region States
+export type LfCanvasOrientation = "portrait" | "landscape" | null;
 export type LfCanvasPoints = Array<{ x: number; y: number }>;
 //#endregion
 

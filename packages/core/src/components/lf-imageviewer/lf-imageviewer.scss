@@ -82,6 +82,7 @@ $borderC: 1px solid var(--lf-color-border);
   }
 
   &__preview {
+    align-content: center;
     grid-area: image;
     position: relative;
   }

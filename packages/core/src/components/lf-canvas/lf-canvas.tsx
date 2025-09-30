@@ -11,8 +11,8 @@ import {
   LfCanvasElement,
   LfCanvasEvent,
   LfCanvasEventPayload,
-  LfCanvasImageMetric,
   LfCanvasInterface,
+  LfCanvasOrientation,
   LfCanvasPoints,
   LfCanvasPropsInterface,
   LfCanvasType,
@@ -73,6 +73,7 @@ export class LfCanvas implements LfCanvasInterface {
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() isPainting = false;
   @State() points: LfCanvasPoints = [];
+  @State() orientation: LfCanvasOrientation = null;
   //#endregion
 
   //#region Props
@@ -205,8 +206,6 @@ export class LfCanvas implements LfCanvasInterface {
   #w = LF_WRAPPER_ID;
   #adapter: LfCanvasAdapter;
   #container: HTMLDivElement;
-  #imageMetrics: LfCanvasImageMetric | null = null;
-  #imageMetricsRequestId = 0;
   #resizeObserver: ResizeObserver;
   #resizeTimeout: NodeJS.Timeout;
   //#endregion
@@ -228,20 +227,15 @@ export class LfCanvas implements LfCanvasInterface {
     const { coordinates } = this.#adapter.toolkit;
     const { lfStrokeTolerance, points, rootElement } = this;
 
-    const outputPoints =
-      lfStrokeTolerance !== null && points?.length
-        ? coordinates.simplify(points, lfStrokeTolerance)
-        : points;
-
     this.lfEvent.emit({
       comp: this,
       id: rootElement.id,
       originalEvent: e,
       eventType,
-      points: coordinates.normalizePointsForImage(
-        this.#adapter,
-        outputPoints ?? [],
-      ),
+      points:
+        lfStrokeTolerance !== null && points?.length
+          ? coordinates.simplify(points, lfStrokeTolerance)
+          : points,
     });
   }
   //#endregion
@@ -331,9 +325,6 @@ export class LfCanvas implements LfCanvasInterface {
       preview.height = height;
       preview.width = width;
     }
-
-    await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
-    this.#applyImageMetrics();
   }
   /**
    * Sets the canvas height for both the board and preview elements.
@@ -361,9 +352,6 @@ export class LfCanvas implements LfCanvasInterface {
         preview.height = height;
       }
     }
-
-    await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
-    this.#applyImageMetrics();
   }
   /**
    * Sets the width of the canvas element(s).
@@ -392,9 +380,6 @@ export class LfCanvas implements LfCanvasInterface {
         preview.width = width;
       }
     }
-
-    await this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
-    this.#applyImageMetrics();
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -416,81 +401,21 @@ export class LfCanvas implements LfCanvasInterface {
         blocks: this.#b,
         compInstance: this,
         cyAttributes: this.#cy,
-        imageMetrics: () => this.#imageMetrics,
-        imageMetricsRequestId: () => this.#imageMetricsRequestId,
         isCursorPreview: () => this.#isCursorPreview(),
         isPainting: () => this.isPainting,
         manager: this.#framework,
+        orientation: () => this.orientation,
         parts: this.#p,
         points: () => this.points,
       },
       {
-        imageMetrics: (value) => {
-          this.#imageMetrics = value;
-          this.#applyImageMetrics();
-        },
-        imageMetricsRequestId: (value) => (this.#imageMetricsRequestId = value),
         isPainting: (value) => (this.isPainting = value),
+        orientation: (value) => (this.orientation = value),
         points: (value) => (this.points = value),
       },
       () => this.#adapter,
     );
   };
-  #applyImageMetrics() {
-    if (!this.#adapter) {
-      return;
-    }
-
-    const { board, preview } = this.#adapter.elements.refs;
-    if (!board || !preview) {
-      return;
-    }
-
-    const containerRect = this.#container?.getBoundingClientRect();
-    const containerWidth = containerRect?.width ?? 0;
-    const containerHeight = containerRect?.height ?? 0;
-
-    const metrics = this.#imageMetrics;
-    if (!metrics) {
-      board.style.left = "0px";
-      board.style.top = "0px";
-      preview.style.left = "0px";
-      preview.style.top = "0px";
-
-      const roundedWidth = Math.max(1, Math.round(containerWidth));
-      const roundedHeight = Math.max(1, Math.round(containerHeight));
-
-      board.style.width = `${containerWidth}px`;
-      board.style.height = `${containerHeight}px`;
-      preview.style.width = `${containerWidth}px`;
-      preview.style.height = `${containerHeight}px`;
-
-      board.width = roundedWidth;
-      board.height = roundedHeight;
-      preview.width = roundedWidth;
-      preview.height = roundedHeight;
-      return;
-    }
-
-    const { offsetX, offsetY, width, height } = metrics;
-    const roundedWidth = Math.max(1, Math.round(width));
-    const roundedHeight = Math.max(1, Math.round(height));
-
-    board.style.left = `${offsetX}px`;
-    board.style.top = `${offsetY}px`;
-    preview.style.left = `${offsetX}px`;
-    preview.style.top = `${offsetY}px`;
-
-    board.style.width = `${width}px`;
-    board.style.height = `${height}px`;
-    preview.style.width = `${width}px`;
-    preview.style.height = `${height}px`;
-
-    board.width = roundedWidth;
-    board.height = roundedHeight;
-    preview.width = roundedWidth;
-    preview.height = roundedHeight;
-  }
   #isCursorPreview() {
     return this.lfCursor === "preview";
   }
@@ -519,8 +444,6 @@ export class LfCanvas implements LfCanvasInterface {
     });
     this.#resizeObserver.observe(this.#container);
 
-    void this.#adapter.toolkit.coordinates.updateImageMetrics(this.#adapter);
-
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
   }
@@ -530,12 +453,9 @@ export class LfCanvas implements LfCanvasInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { coordinates } = this.#adapter.toolkit;
     const { info } = this.#framework.debug;
 
     info.update(this, "did-render");
-
-    void coordinates.updateImageMetrics(this.#adapter);
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
@@ -547,7 +467,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { canvas } = this.#b;
 
     return (
-      <Host>
+      <Host data-orientation={this.orientation}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div

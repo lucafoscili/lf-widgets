@@ -40,22 +40,13 @@ export const prepCanvasJsx = (
       const { blocks, compInstance, cyAttributes, manager, parts } =
         controller.get;
       const { refs } = elements;
-      const { onError, onLoad, onReady, onUnmount } = handlers.image;
+      const { onLoad } = handlers.image;
       const onImageEvent = (event: CustomEvent<LfImageEventPayload>) => {
         const { eventType } = event.detail;
 
         switch (eventType) {
-          case "error":
-            void onError(event);
-            break;
           case "load":
             void onLoad(event);
-            break;
-          case "ready":
-            void onReady(event);
-            break;
-          case "unmount":
-            void onUnmount(event);
             break;
         }
       };
