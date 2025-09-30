@@ -133,6 +133,24 @@ $comp: "masonry";
 
   &__actions {
     /**
+    * @prop --lf-#{$comp}-actions-backdrop: Sets the backdrop filter for the actions of the #{$comp} component.
+    *                                     Defaults to => blur(10px)
+    */
+    backdrop-filter: var(--lf-#{$comp}-actions-backdrop, blur(10px));
+    /**
+    * @prop --lf-#{$comp}-actions-background: Sets the background for the actions of the #{$comp} component.
+    *                                        Defaults to => rgba(var(--lf-color-surface), 0.75)
+    */
+    background-color: var(
+      --lf-#{$comp}-actions-background,
+      rgba(var(--lf-color-surface), 0.75)
+    );
+    /**
+    * @prop --lf-#{$comp}-actions-border-radius: Sets the border radius for the actions of the #{$comp} component.
+    *                                         Defaults to => 50px
+    */
+    border-radius: var(--lf-#{$comp}-actions-border-radius, 50px);
+    /**
     * @prop --lf-#{$comp}-button-bottom: Sets the bottom for the button of the #{$comp} component.
     *                                    Defaults to => 1em
     */
@@ -145,6 +163,16 @@ $comp: "masonry";
     */
     grid-gap: var(--lf-#{$comp}-grid-gap-actions, 0.5em);
     justify-items: center;
+    /**
+    * @prop --lf-#{$comp}-actions-margin: Sets the margin for the actions of the #{$comp} component.
+    *                                   Defaults to => 0 0.5em 0.5em 0
+    */
+    margin: var(--lf-#{$comp}-actions-margin, 0 0.5em 0.5em 0);
+    /**
+    * @prop --lf-#{$comp}-actions-padding: Sets the padding for the actions of the #{$comp} component.
+    *                                    Defaults to => 0.75em
+    */
+    padding: var(--lf-#{$comp}-actions-padding, 0.75em);
     position: absolute;
     /**
     * @prop --lf-#{$comp}-button-right: Sets the right for the button of the #{$comp} component.
