@@ -402,6 +402,10 @@ export class LfMasonry implements LfMasonryInterface {
   #calculateColumnCount() {
     const { lfColumns, viewportWidth, shapes, lfShape } = this;
 
+    if (!this.#hasShapes()) {
+      return 1;
+    }
+
     if (typeof lfColumns === "number") {
       return Math.min(lfColumns, shapes[lfShape]?.length || 0);
     }
