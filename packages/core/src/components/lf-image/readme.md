@@ -44,6 +44,16 @@ Type: `Promise<LfDebugLifecycleInfo>`
 
 A promise that resolves with the debug information object.
 
+### `getImage() => Promise<HTMLImageElement | SVGElement | null>`
+
+Retrieves the underlying HTMLImageElement used to display the image.
+
+#### Returns
+
+Type: `Promise<HTMLImageElement | SVGElement>`
+
+A promise that resolves with the image element, or null if not available.
+
 ### `getProps() => Promise<LfImagePropsInterface>`
 
 Used to retrieve component's properties and descriptions.

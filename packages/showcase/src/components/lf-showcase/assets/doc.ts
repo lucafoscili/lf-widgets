@@ -2058,6 +2058,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfDebugLifecycleInfo>",
       },
       {
+        name: "getImage",
+        docs: "Retrieves the underlying HTMLImageElement used to display the image.",
+        returns: {
+          type: "Promise<HTMLImageElement | SVGElement>",
+          docs: "A promise that resolves with the image element, or null if not available.",
+        },
+        signature: "() => Promise<HTMLImageElement | SVGElement | null>",
+      },
+      {
         name: "getProps",
         docs: "Used to retrieve component's properties and descriptions.",
         returns: {

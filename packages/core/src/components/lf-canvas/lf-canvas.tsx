@@ -12,6 +12,7 @@ import {
   LfCanvasEvent,
   LfCanvasEventPayload,
   LfCanvasInterface,
+  LfCanvasOrientation,
   LfCanvasPoints,
   LfCanvasPropsInterface,
   LfCanvasType,
@@ -72,6 +73,7 @@ export class LfCanvas implements LfCanvasInterface {
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() isPainting = false;
   @State() points: LfCanvasPoints = [];
+  @State() orientation: LfCanvasOrientation = null;
   //#endregion
 
   //#region Props
@@ -202,10 +204,10 @@ export class LfCanvas implements LfCanvasInterface {
   #p = LF_CANVAS_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
+  #adapter: LfCanvasAdapter;
   #container: HTMLDivElement;
   #resizeObserver: ResizeObserver;
   #resizeTimeout: NodeJS.Timeout;
-  #adapter: LfCanvasAdapter;
   //#endregion
 
   //#region Events
@@ -402,11 +404,13 @@ export class LfCanvas implements LfCanvasInterface {
         isCursorPreview: () => this.#isCursorPreview(),
         isPainting: () => this.isPainting,
         manager: this.#framework,
+        orientation: () => this.orientation,
         parts: this.#p,
         points: () => this.points,
       },
       {
         isPainting: (value) => (this.isPainting = value),
+        orientation: (value) => (this.orientation = value),
         points: (value) => (this.points = value),
       },
       () => this.#adapter,
@@ -463,7 +467,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { canvas } = this.#b;
 
     return (
-      <Host>
+      <Host data-orientation={this.orientation}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div

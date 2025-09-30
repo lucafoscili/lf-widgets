@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.1...0.5.0-rc.2) (2025-09-30)
+
+**Note:** Version bump only for package @lf-widgets/root
+
+# [0.5.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.0...0.5.0-rc.1) (2025-09-30)
+
+### Bug Fixes
+
+- Apply image metrics to canvas elements ([4e1e5ea](https://github.com/lucafoscili/lf-widgets/commit/4e1e5eac6cfd362a0dc46bd7a5c5cbf375c9d87a))
+
+# [0.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.1...0.5.0-rc.0) (2025-09-30)
+
+### Bug Fixes
+
+- Fix image metrics calculation for accurate offsets ([32a9720](https://github.com/lucafoscili/lf-widgets/commit/32a9720fe3f44d3f3787be7de88aca7bbf57d72e))
+- Support SVGElement in LfImage getImage method ([dc29691](https://github.com/lucafoscili/lf-widgets/commit/dc2969148e72364df17fb861214a9e0234afbc16))
+- Use shape value if present in prepTreeDataset ([6457510](https://github.com/lucafoscili/lf-widgets/commit/64575108f52fa8e42d0587f26df7ecbb5dc4aef8))
+
+### Features
+
+- Add getImageInfo method to LfImage component ([0d140aa](https://github.com/lucafoscili/lf-widgets/commit/0d140aa7c88f7d07b530e94e78f1db76968e7826))
+- Refactor image event handling and normalization in canvas ([7a798d4](https://github.com/lucafoscili/lf-widgets/commit/7a798d44342cedc7be24ad24d0305dacb13cc29e))
+
+## [0.4.2-rc.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.2-rc.0...0.4.2-rc.1) (2025-09-29)
+
+### Bug Fixes
+
+- Improve image normalization in lf-canvas ([707be69](https://github.com/lucafoscili/lf-widgets/commit/707be69a0efca7efc781ffacc3dfa2824b2b916f))
+
+## [0.4.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.4.1...0.4.2-rc.0) (2025-09-29)
+
+### Bug Fixes
+
+- Normalize stroke points to image area ([21594d6](https://github.com/lucafoscili/lf-widgets/commit/21594d68cf14c53b16e476d3bbc55785e1e5285f))
+
 ## [0.4.1](https://github.com/lucafoscili/lf-widgets/compare/0.4.1-rc.0...0.4.1) (2025-09-23)
 
 **Note:** Version bump only for package @lf-widgets/root

@@ -23,7 +23,11 @@ import {
   LF_CANVAS_PARTS,
   LF_CANVAS_TYPES,
 } from "./canvas.constants";
-import { LfImageElement, LfImagePropsInterface } from "./image.declarations";
+import {
+  LfImageElement,
+  LfImageEventPayload,
+  LfImagePropsInterface,
+} from "./image.declarations";
 
 //#region Class
 export interface LfCanvasInterface
@@ -62,12 +66,13 @@ export type LfCanvasAdapterInitializerGetters = Pick<
   | "isCursorPreview"
   | "isPainting"
   | "manager"
+  | "orientation"
   | "parts"
   | "points"
 >;
 export type LfCanvasAdapterInitializerSetters = Pick<
   LfCanvasAdapterControllerSetters,
-  "isPainting" | "points"
+  "isPainting" | "orientation" | "points"
 >;
 export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
   board: {
@@ -76,6 +81,9 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
     onPointerMove: (e: PointerEvent) => void;
     onPointerOut: (e: PointerEvent) => void;
     onPointerUp: (e: PointerEvent) => void;
+  };
+  image: {
+    onLoad: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
   };
 }
 export interface LfCanvasAdapterControllerGetters
@@ -86,12 +94,14 @@ export interface LfCanvasAdapterControllerGetters
   isCursorPreview: () => boolean;
   isPainting: () => boolean;
   manager: LfFrameworkInterface;
+  orientation: () => LfCanvasOrientation;
   parts: typeof LF_CANVAS_PARTS;
   points: () => LfCanvasPoints;
 }
 export interface LfCanvasAdapterControllerSetters
   extends LfComponentAdapterSetters {
   isPainting: (value: boolean) => void;
+  orientation: (value: LfCanvasOrientation) => void;
   points: (value: LfCanvasPoints) => void;
 }
 export interface LfCanvasAdapterJsx extends LfComponentAdapterJsx {
@@ -152,6 +162,7 @@ export interface LfCanvasEventPayload
 //#endregion
 
 //#region States
+export type LfCanvasOrientation = "portrait" | "landscape" | null;
 export type LfCanvasPoints = Array<{ x: number; y: number }>;
 //#endregion
 
