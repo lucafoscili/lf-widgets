@@ -81,6 +81,22 @@ export const prepImageSetters = (
 //#endregion
 
 //#region Helpers
+const pickFallBackCover = (type: LfMessengerImageTypes) => {
+  switch (type) {
+    case "avatars":
+      return { value: AVATAR_COVER };
+    case "locations":
+      return { value: LOCATION_COVER };
+    case "outfits":
+      return { value: OUTFIT_COVER };
+    case "styles":
+      return { value: STYLE_COVER };
+    case "timeframes":
+      return { value: TIMEFRAME_COVER };
+    default:
+      return { value: "" };
+  }
+};
 const getAsCover = (
   getAdapter: () => LfMessengerAdapter,
   type: LfMessengerImageTypes,
@@ -96,6 +112,10 @@ const getAsCover = (
     const index = covers[id][type];
     const node = root.children[index];
 
+    if (!node?.cells?.lfImage?.value) {
+      return pickFallBackCover(type);
+    }
+
     return {
       node: root.children[
         index
@@ -106,18 +126,7 @@ const getAsCover = (
       value: node.cells.lfImage.value,
     };
   } catch (error) {
-    switch (type) {
-      case "avatars":
-        return { value: AVATAR_COVER };
-      case "locations":
-        return { value: LOCATION_COVER };
-      case "outfits":
-        return { value: OUTFIT_COVER };
-      case "styles":
-        return { value: STYLE_COVER };
-      case "timeframes":
-        return { value: TIMEFRAME_COVER };
-    }
+    return pickFallBackCover(type);
   }
 };
 const getByType = (
