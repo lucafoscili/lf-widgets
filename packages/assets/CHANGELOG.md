@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-rc.1](https://github.com/lucafoscili/lf-assets/compare/0.5.0-rc.0...0.5.0-rc.1) (2025-09-30)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
 # [0.5.0-rc.0](https://github.com/lucafoscili/lf-assets/compare/0.4.2-rc.1...0.5.0-rc.0) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/assets
