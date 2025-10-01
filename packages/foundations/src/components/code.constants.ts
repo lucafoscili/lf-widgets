@@ -22,6 +22,7 @@ export const LF_CODE_PARTS = {
 
 //#region Props
 export const LF_CODE_PROPS = [
+  "lfFadeIn",
   "lfFormat",
   "lfLanguage",
   "lfPreserveSpaces",
