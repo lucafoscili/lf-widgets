@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.1-rc.0...0.6.0-rc.0) (2025-10-01)
+
+### Bug Fixes
+
+- Update lf-chat props and add scrollToBottom method ([e5d7f82](https://github.com/lucafoscili/lf-widgets/commit/e5d7f820879a74f87882dead63ad1df4e7366c9f))
+
+### Features
+
+- Add getElement method to LfTextfield component ([17aab9b](https://github.com/lucafoscili/lf-widgets/commit/17aab9b39cf99bcafaac8994219667b9d718ab9e))
+
 ## [0.5.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.3...0.5.1-rc.0) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/foundations
