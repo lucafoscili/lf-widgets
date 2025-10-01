@@ -42,7 +42,11 @@ $comp: null !default;
       @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
       @include lf-el-transition("fade-in-out", "background-color");
       height: max-content;
-      max-width: 80%;
+      /**
+      * @prop --lf-#{$comp}-message-max-width: Sets the max width for each message in the messages area.
+      *                                      Defaults to => 75%
+      */
+      max-width: var(--lf-#{$comp}-message-max-width, 75%);
       position: relative;
     }
 
@@ -77,5 +81,6 @@ $comp: null !default;
 
   &__code {
     height: auto;
+    padding: 0.75em 0;
   }
 }
