@@ -83,8 +83,21 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Props
+
   /**
-   * Automatically formats the value.
+   * Whether to fade in the component on mount.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-code lfFadeIn={true} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfFadeIn: boolean = true;
+  /**
    *
    * @type {boolean}
    * @default true
@@ -495,7 +508,7 @@ export class LfCode implements LfCodeInterface {
             {this.lfShowHeader && this.#prepHeader()}
             <TagName
               class={`language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`}
-              data-lf={this.#lf.fadeIn}
+              data-lf={this.lfFadeIn && this.#lf.fadeIn}
               key={this.value}
               part={this.#p.prism}
               ref={(el) => {

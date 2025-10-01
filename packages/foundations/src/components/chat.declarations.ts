@@ -44,9 +44,10 @@ export interface LfChatInterface
 export interface LfChatElement
   extends HTMLStencilElement,
     Omit<LfChatInterface, LfComponentClassProperties> {
+  abortStreaming: () => Promise<void>;
   getHistory: () => Promise<string>;
   getLastMessage: () => Promise<string>;
-  scrollToBottom: () => Promise<void>;
+  scrollToBottom: (block?: ScrollLogicalPosition | boolean) => Promise<void>;
   setHistory: (value: string) => Promise<void>;
 }
 //#endregion
@@ -75,6 +76,20 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     stt: () => VNode;
     textarea: () => VNode;
   };
+  content: {
+    bold: (children: VNode[]) => VNode;
+    blockquote: (children: VNode[]) => VNode;
+    bulletList: (children: VNode[]) => VNode;
+    codeFence: (language: string, code: string) => VNode;
+    heading: (level: number, children: VNode[]) => VNode;
+    horizontalRule: () => VNode;
+    inlineCode: (content: string) => VNode;
+    italic: (children: VNode[]) => VNode;
+    lineBreak: () => VNode;
+    link: (href: string, children: VNode[]) => VNode;
+    listItem: (children: VNode[]) => VNode;
+    orderedList: (children: VNode[]) => VNode;
+  };
   settings: {
     back: () => VNode;
     endpoint: () => VNode;
@@ -84,8 +99,8 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     temperature: () => VNode;
   };
   toolbar: {
-    deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     copyContent: (m: LfLLMChoiceMessage) => VNode;
+    deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     regenerate: (m: LfLLMChoiceMessage) => VNode;
   };
 }
@@ -109,8 +124,8 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     temperature: LfTextfieldElement;
   };
   toolbar: {
-    deleteMessage: LfButtonElement;
     copyContent: LfButtonElement;
+    deleteMessage: LfButtonElement;
     regenerate: LfButtonElement;
   };
 }
@@ -133,6 +148,7 @@ export type LfChatAdapterInitializerGetters = Pick<
   LfChatAdapterControllerGetters,
   | "blocks"
   | "compInstance"
+  | "currentAbortStreaming"
   | "currentPrompt"
   | "currentTokens"
   | "cyAttributes"
@@ -146,12 +162,18 @@ export type LfChatAdapterInitializerGetters = Pick<
 >;
 export type LfChatAdapterInitializerSetters = Pick<
   LfChatAdapterControllerSetters,
-  "currentPrompt" | "currentTokens" | "history" | "status" | "view"
+  | "currentAbortStreaming"
+  | "currentPrompt"
+  | "currentTokens"
+  | "history"
+  | "status"
+  | "view"
 >;
 export interface LfChatAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChatInterface> {
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
+  currentAbortStreaming: () => AbortController | null;
   currentPrompt: () => LfLLMChoiceMessage;
   currentTokens: () => LfChatCurrentTokens;
   cyAttributes: typeof CY_ATTRIBUTES;
@@ -166,6 +188,7 @@ export interface LfChatAdapterControllerGetters
 }
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  currentAbortStreaming: (value: AbortController | null) => void;
   currentPrompt: (value: LfLLMChoiceMessage) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   history: (cb: () => unknown) => Promise<void>;

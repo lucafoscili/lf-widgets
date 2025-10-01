@@ -24,6 +24,7 @@ export interface LfCodeEventPayload
 
 //#region Props
 export interface LfCodePropsInterface {
+  lfFadeIn?: boolean;
   lfFormat?: boolean;
   lfLanguage?: string;
   lfPreserveSpaces?: boolean;

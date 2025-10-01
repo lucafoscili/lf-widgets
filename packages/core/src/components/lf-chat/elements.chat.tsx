@@ -2,6 +2,7 @@ import {
   LF_CHAT_IDS,
   LfChatAdapter,
   LfChatAdapterJsx,
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 
@@ -125,23 +126,36 @@ export const prepChat = (
     //#region Send
     send: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, cyAttributes, manager, parts } =
-        controller.get;
+      const {
+        blocks,
+        currentAbortStreaming,
+        currentPrompt,
+        cyAttributes,
+        manager,
+        parts,
+      } = controller.get;
       const { chat } = elements.refs;
       const { button } = handlers.chat;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
-      const showSpinner = Boolean(currentPrompt());
+      const isStreaming = Boolean(currentAbortStreaming());
+      const showSpinner = Boolean(currentPrompt() && !isStreaming);
+      const icon = isStreaming
+        ? theme.get.icon("offSend")
+        : theme.get.icon("send");
+      const label = isStreaming ? "Stop" : "Send";
+      const status: LfThemeUIState = isStreaming ? "danger" : "primary";
 
       return (
         <lf-button
           class={bemClass(blocks.chat._, blocks.chat.send)}
           data-cy={cyAttributes.button}
           id={LF_CHAT_IDS.chat.send}
-          lfIcon="check"
-          lfLabel="Send"
+          lfIcon={icon}
+          lfLabel={label}
           lfShowSpinner={showSpinner}
+          lfUiState={status}
           onLf-button-event={button}
           part={parts.send}
           ref={assignRef(chat, "send")}

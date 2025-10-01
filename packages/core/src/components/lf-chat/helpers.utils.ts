@@ -1,46 +1,94 @@
-//#region Api call
-
 import {
   LfChatAdapter,
   LfChatCurrentTokens,
   LfLLMChoiceMessage,
   LfLLMRequest,
+  LfLLMRole,
 } from "@lf-widgets/foundations";
+import { VNode } from "@stencil/core";
+import MarkdownIt, { type Token } from "markdown-it";
 import { LfChat } from "./lf-chat";
 
+//#region Api call
 /**
- * Makes an API call to a Language Learning Model (LLM) endpoint using the provided chat adapter.
+ * Perform an API call to the configured LLM using the provided chat adapter and
+ * update the adapter's history/state with the assistant's response.
  *
- * This function performs the following operations:
- * 1. Creates a new request using the adapter
- * 2. Sends the request to the LLM endpoint
- * 3. Processes the response and updates the chat history
+ * This function:
+ * - Builds a request using `newRequest(adapter)`.
+ * - Selects streaming or non-streaming call depending on `manager.llm.stream`.
+ * - For streaming mode:
+ *   - Optionally creates an AbortController via `manager.llm.createAbort`.
+ *   - Sets `controller.set.currentAbortStreaming` to a function that aborts the stream.
+ *   - Inserts a placeholder assistant message with empty content into history.
+ *   - Iterates over the async stream returned by `manager.llm.stream(request, lfEndpointUrl, { signal })`
+ *     and appends `chunk.contentDelta` to the placeholder assistant message as chunks arrive.
+ *   - Ensures `controller.set.currentAbortStreaming` is cleared after streaming completes or errors.
+ * - For non-streaming mode:
+ *   - Awaits `manager.llm.fetch(request, lfEndpointUrl)`.
+ *   - Extracts the assistant content from `response.choices?.[0]?.message?.content` and pushes
+ *     an assistant message into history.
+ * - Catches any error thrown during request/streaming and logs it via `manager.debug.logs.new`.
  *
- * @param adapter - The chat adapter instance containing controller and configuration
- * @throws Will log an error message if the API call fails
+ * Important implementation/side-effect notes:
+ * - Mutates adapter controller state through `get`/`set` (e.g. history and currentAbortStreaming).
+ * - Assumes `lfEndpointUrl` is provided on the component instance (`compInstance`).
+ * - Assumes `manager.llm` exposes `stream` or `fetch` and (optionally) `createAbort`.
+ * - Errors are logged and not re-thrown by this function.
  *
- * @example
- * ```typescript
- * const adapter = new LfChatAdapter();
- * await apiCall(adapter);
- * ```
+ * @param adapter - The LfChatAdapter which exposes `controller` (get/set), component instance,
+ *                  history accessor, and the manager with `llm` and `debug`.
+ * @returns A promise that resolves when the API call and history updates have completed.
  */
 export const apiCall = async (adapter: LfChatAdapter) => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
   const { lfEndpointUrl } = compInstance;
   const { debug, llm } = manager;
+  const comp = compInstance as LfChat;
 
   try {
     const request = newRequest(adapter);
-    const response = await llm.fetch(request, lfEndpointUrl);
 
-    const message = response.choices?.[0]?.message?.content;
-    const llmMessage: LfLLMChoiceMessage = {
-      role: "assistant",
-      content: message,
-    };
-    set.history(() => history().push(llmMessage));
+    if (llm.stream) {
+      const abortController = llm.createAbort?.();
+
+      set.currentAbortStreaming(abortController);
+      set.history(() => history().push({ role: "assistant", content: "" }));
+
+      try {
+        let lastIndex = history().length - 1;
+        let chunkCount = 0;
+        for await (const chunk of llm.stream(request, lfEndpointUrl, {
+          signal: abortController?.signal,
+        })) {
+          if (chunk?.contentDelta) {
+            set.history(() => {
+              const h = history();
+              if (h[lastIndex]) {
+                h[lastIndex].content += chunk.contentDelta;
+                if (chunkCount % 5 === 0) {
+                  requestAnimationFrame(() => comp.scrollToBottom(true));
+                }
+                chunkCount++;
+              }
+            });
+          }
+        }
+        requestAnimationFrame(() => comp.scrollToBottom("end"));
+      } finally {
+        set.currentAbortStreaming(null);
+      }
+    } else {
+      const response = await llm.fetch(request, lfEndpointUrl);
+
+      const message = response.choices?.[0]?.message?.content;
+      const llmMessage: LfLLMChoiceMessage = {
+        role: "assistant",
+        content: message,
+      };
+      set.history(() => history().push(llmMessage));
+    }
   } catch (error) {
     debug.logs.new(compInstance, `Error calling LLM: ${error}`, "error");
   }
@@ -257,5 +305,224 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
   }
 
   resetPrompt(adapter);
+};
+//#endregion
+
+//#region Parse message content
+/**
+ * Parses markdown content from a chat message and converts it to VNode elements.
+ *
+ * Supports the following markdown features:
+ * - **Bold** and __bold__ text
+ * - *Italic* and _italic_ text
+ * - `Inline code`
+ * - Fenced code blocks (```lang ... ```)
+ * - Headings (# through ######)
+ * - Blockquotes (>)
+ * - Unordered lists (-, *, +)
+ * - Ordered lists (1., 2., 3.)
+ * - Links ([text](url))
+ * - Horizontal rules (---, ___, ***)
+ * - Line breaks
+ *
+ * @param adapter - The chat adapter instance containing formatting elements
+ * @param content - The markdown content string to parse
+ * @param role - The role of the message sender (affects text rendering via messageBlock)
+ * @returns An array of VNodes representing the parsed content
+ *
+ * @example
+ * ```typescript
+ * const vnodes = parseMessageContent(adapter, "**Hello** world!", "user");
+ * ```
+ */
+export const parseMessageContent = (
+  adapter: LfChatAdapter,
+  content: string,
+  role: LfLLMRole,
+): VNode[] => {
+  const { elements } = adapter;
+  const { messageBlock } = elements.jsx.chat;
+  const contentElements = elements.jsx.content;
+
+  const md = new MarkdownIt({
+    html: false,
+    linkify: false,
+    typographer: false,
+  });
+  const tokens = md.parse(content || "", {});
+
+  const vnodes: VNode[] = [];
+
+  const renderInlineTokens = (inlineTokens: Token[]): VNode[] => {
+    const out: VNode[] = [];
+
+    for (let i = 0; i < inlineTokens.length; i++) {
+      const t = inlineTokens[i];
+
+      if (t.type === "text") {
+        out.push(messageBlock(t.content, role));
+        continue;
+      }
+
+      if (t.type === "code_inline") {
+        out.push(contentElements.inlineCode(t.content));
+        continue;
+      }
+
+      if (t.type === "strong_open") {
+        const inner: Token[] = [];
+        i++;
+        while (
+          i < inlineTokens.length &&
+          inlineTokens[i].type !== "strong_close"
+        ) {
+          inner.push(inlineTokens[i]);
+          i++;
+        }
+        out.push(contentElements.bold(renderInlineTokens(inner)));
+        continue;
+      }
+
+      if (t.type === "em_open") {
+        const inner: Token[] = [];
+        i++;
+        while (i < inlineTokens.length && inlineTokens[i].type !== "em_close") {
+          inner.push(inlineTokens[i]);
+          i++;
+        }
+        out.push(contentElements.italic(renderInlineTokens(inner)));
+        continue;
+      }
+
+      if (t.type === "link_open") {
+        const href = t.attrGet('href') || "#";
+        const inner: Token[] = [];
+        i++;
+        while (
+          i < inlineTokens.length &&
+          inlineTokens[i].type !== "link_close"
+        ) {
+          inner.push(inlineTokens[i]);
+          i++;
+        }
+        out.push(contentElements.link(href, renderInlineTokens(inner)));
+        continue;
+      }
+
+      if (t.type === "softbreak" || t.type === "hardbreak") {
+        out.push(contentElements.lineBreak());
+        continue;
+      }
+
+      if (t.content) {
+        out.push(messageBlock(t.content, role));
+      }
+    }
+
+    return out.flat();
+  };
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    if (token.type === "fence") {
+      const language = (token.info || "").trim() || "text";
+      const codePart = token.content.trim();
+      vnodes.push(contentElements.codeFence(language, codePart));
+      continue;
+    }
+
+    if (token.type === "heading_open") {
+      const level = parseInt(token.tag?.replace("h", "") || "1", 10);
+      // Next token should be inline with heading content
+      i++;
+      if (i < tokens.length && tokens[i].type === "inline") {
+        const headingContent = renderInlineTokens(tokens[i].children || []);
+        vnodes.push(contentElements.heading(level, headingContent));
+      }
+      // Skip heading_close
+      i++;
+      continue;
+    }
+
+    if (token.type === "blockquote_open") {
+      const blockContent: VNode[] = [];
+      i++;
+      while (i < tokens.length && tokens[i].type !== "blockquote_close") {
+        if (tokens[i].type === "inline") {
+          blockContent.push(...renderInlineTokens(tokens[i].children || []));
+        }
+        i++;
+      }
+      vnodes.push(contentElements.blockquote(blockContent));
+      continue;
+    }
+
+    if (token.type === "bullet_list_open") {
+      const listItems: VNode[] = [];
+      i++;
+      while (i < tokens.length && tokens[i].type !== "bullet_list_close") {
+        if (tokens[i].type === "list_item_open") {
+          const itemContent: VNode[] = [];
+          i++;
+          while (i < tokens.length && tokens[i].type !== "list_item_close") {
+            if (tokens[i].type === "inline") {
+              itemContent.push(...renderInlineTokens(tokens[i].children || []));
+            }
+            i++;
+          }
+          listItems.push(contentElements.listItem(itemContent));
+        }
+        i++;
+      }
+      vnodes.push(contentElements.bulletList(listItems));
+      continue;
+    }
+
+    if (token.type === "ordered_list_open") {
+      const listItems: VNode[] = [];
+      i++;
+      while (i < tokens.length && tokens[i].type !== "ordered_list_close") {
+        if (tokens[i].type === "list_item_open") {
+          const itemContent: VNode[] = [];
+          i++;
+          while (i < tokens.length && tokens[i].type !== "list_item_close") {
+            if (tokens[i].type === "inline") {
+              itemContent.push(...renderInlineTokens(tokens[i].children || []));
+            }
+            i++;
+          }
+          listItems.push(contentElements.listItem(itemContent));
+        }
+        i++;
+      }
+      vnodes.push(contentElements.orderedList(listItems));
+      continue;
+    }
+
+    if (token.type === "hr") {
+      vnodes.push(contentElements.horizontalRule());
+      continue;
+    }
+
+    if (token.type === "paragraph_open") {
+      // Next token should be inline
+      continue;
+    }
+
+    if (token.type === "inline") {
+      vnodes.push(...renderInlineTokens(token.children || []));
+      continue;
+    }
+
+    // For any other block types, try to render their children
+    if (token.children) {
+      vnodes.push(...renderInlineTokens(token.children));
+    } else if (token.content) {
+      vnodes.push(messageBlock(token.content, role));
+    }
+  }
+
+  return vnodes;
 };
 //#endregion

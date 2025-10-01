@@ -5,6 +5,7 @@ import {
   LfChatAdapterHandlers,
 } from "@lf-widgets/foundations";
 import { clearTextarea, submitPrompt } from "./helpers.utils";
+import { LfChat } from "./lf-chat";
 
 export const prepChatHandlers = (
   getAdapter: () => LfChatAdapter,
@@ -28,7 +29,11 @@ export const prepChatHandlers = (
               clearTextarea(adapter);
               break;
             case LF_CHAT_IDS.chat.send:
-              submitPrompt(adapter);
+              if (get.currentAbortStreaming()) {
+                (get.compInstance as LfChat).abortStreaming();
+              } else {
+                submitPrompt(adapter);
+              }
               break;
             case LF_CHAT_IDS.chat.configuration:
             case LF_CHAT_IDS.chat.settings:

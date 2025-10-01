@@ -10,6 +10,7 @@ import {
 } from "@lf-widgets/foundations";
 
 export class LfLLM implements LfLLMInterface {
+  #DONE_RESPONSE = "data: [DONE]";
   #IS_ABORT_ERROR = (e: unknown): e is DOMException =>
     e instanceof DOMException && e.name === "AbortError";
   #LF_MANAGER: LfFrameworkInterface;
@@ -232,7 +233,7 @@ export class LfLLM implements LfLLMInterface {
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
-        if (trimmed === "data: [DONE]") {
+        if (trimmed === this.#DONE_RESPONSE) {
           yield { done: true };
           return;
         }
@@ -253,6 +254,10 @@ export class LfLLM implements LfLLMInterface {
 
     if (buffered.trim()) {
       try {
+        if (buffered.trim() === this.#DONE_RESPONSE) {
+          yield { done: true };
+          return;
+        }
         const obj = JSON.parse(buffered.trim());
         const delta =
           obj.choices?.[0]?.delta?.content ||

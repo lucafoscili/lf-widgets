@@ -31,7 +31,6 @@ $comp: null !default;
     *                                    Defaults to => 1em
     */
     padding: var(--lf-#{$comp}-inner-padding, 0 1em);
-    white-space: pre-line;
     width: 100%;
     word-break: normal;
   }
@@ -42,7 +41,11 @@ $comp: null !default;
       @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
       @include lf-el-transition("fade-in-out", "background-color");
       height: max-content;
-      max-width: 80%;
+      /**
+      * @prop --lf-#{$comp}-message-max-width: Sets the max width for each message in the messages area.
+      *                                      Defaults to => 75%
+      */
+      max-width: var(--lf-#{$comp}-message-max-width, 75%);
       position: relative;
     }
 
@@ -73,9 +76,120 @@ $comp: null !default;
     margin: 0;
     max-width: 100%;
     padding: 0.75em;
+    white-space: pre-line;
   }
 
   &__code {
     height: auto;
+    padding: 0.75em 0;
+  }
+
+  &__inline-code {
+    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125, 4px);
+    @include lf-el-text("code");
+    /**
+    * @prop --lf-#{$comp}-inline-code-border-radius: Sets the border radius for inline code.
+    *                                                Defaults to => var(--lf-border-radius, 0.25em)
+    */
+    border-radius: var(
+      --lf-#{$comp}-inline-code-border-radius,
+      var(--lf-border-radius, 0.25em)
+    );
+    /**
+    * @prop --lf-#{$comp}-inline-code-padding: Sets the padding for inline code.
+    *                                          Defaults to => 0.2em 0.4em
+    */
+    padding: var(--lf-#{$comp}-inline-code-padding, 0.2em 0.4em);
+  }
+
+  &__heading {
+    @include lf-el-text("title");
+    /**
+    * @prop --lf-#{$comp}-heading-margin-top: Sets the top margin for headings.
+    *                                         Defaults to => 1em
+    */
+    margin-top: var(--lf-#{$comp}-heading-margin-top, 1em);
+    /**
+    * @prop --lf-#{$comp}-heading-margin-bottom: Sets the bottom margin for headings.
+    *                                            Defaults to => 0.5em
+    */
+    margin-bottom: var(--lf-#{$comp}-heading-margin-bottom, 0.5em);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__blockquote {
+    /**
+    * @prop --lf-#{$comp}-blockquote-border-width: Sets the border width for blockquotes.
+    *                                              Defaults to => 3px
+    */
+    border-left-width: var(--lf-#{$comp}-blockquote-border-width, 3px);
+    border-left-style: solid;
+    /**
+    * @prop --lf-#{$comp}-blockquote-border-opacity: Sets the border opacity for blockquotes.
+    *                                                Defaults to => 0.3
+    */
+    border-left-color: rgba(var(--lf-color-surface), 0.3);
+    opacity: var(--lf-#{$comp}-blockquote-border-opacity, 0.3);
+    /**
+    * @prop --lf-#{$comp}-blockquote-padding: Sets the padding for blockquotes.
+    *                                         Defaults to => 0.5em 1em
+    */
+    padding: var(--lf-#{$comp}-blockquote-padding, 0.5em 1em);
+    /**
+    * @prop --lf-#{$comp}-blockquote-margin: Sets the margin for blockquotes.
+    *                                        Defaults to => 1em 0
+    */
+    margin: var(--lf-#{$comp}-blockquote-margin, 1em 0);
+    font-style: italic;
+  }
+
+  &__list {
+    /**
+    * @prop --lf-#{$comp}-list-margin: Sets the margin for lists.
+    *                                  Defaults to => 0.5em 0
+    */
+    margin: var(--lf-#{$comp}-list-margin, 0.5em 0);
+    /**
+    * @prop --lf-#{$comp}-list-padding-left: Sets the left padding for lists.
+    *                                        Defaults to => 2em
+    */
+    padding-left: var(--lf-#{$comp}-list-padding-left, 2em);
+  }
+
+  &__list-item {
+    /**
+    * @prop --lf-#{$comp}-list-item-margin: Sets the margin for list items.
+    *                                       Defaults to => 0.25em 0
+    */
+    margin: var(--lf-#{$comp}-list-item-margin, 0.25em 0);
+  }
+
+  &__link {
+    @include lf-el-text("link");
+    @include lf-el-transition("fade-in-out", "opacity");
+  }
+
+  &__hr {
+    border: none;
+    /**
+    * @prop --lf-#{$comp}-hr-border-width: Sets the border width for horizontal rules.
+    *                                      Defaults to => 1px
+    */
+    border-top-width: var(--lf-#{$comp}-hr-border-width, 1px);
+    border-top-style: solid;
+    border-top-color: rgba(var(--lf-color-surface), 0.125);
+    /**
+    * @prop --lf-#{$comp}-hr-opacity: Sets the opacity for horizontal rules.
+    *                                 Defaults to => 0.2
+    */
+    opacity: var(--lf-#{$comp}-hr-opacity, 0.2);
+    /**
+    * @prop --lf-#{$comp}-hr-margin: Sets the margin for horizontal rules.
+    *                                Defaults to => 1em 0
+    */
+    margin: var(--lf-#{$comp}-hr-margin, 1em 0);
   }
 }
