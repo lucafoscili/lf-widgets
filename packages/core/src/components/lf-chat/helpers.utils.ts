@@ -191,6 +191,10 @@ export const regenerateMessage = async (
   const h = get.history();
   const compInstance = get.compInstance as LfChat;
 
+  requestAnimationFrame(async () => {
+    set.currentPrompt(m);
+  });
+
   const index = h.indexOf(m);
   if (index !== -1) {
     await set.history(() => {
@@ -209,11 +213,13 @@ export const regenerateMessage = async (
  * @returns A Promise that resolves when the prompt has been reset
  */
 export const resetPrompt = async (adapter: LfChatAdapter) => {
-  const { set } = adapter.controller;
+  const { get, set } = adapter.controller;
+  const comp = get.compInstance as LfChat;
 
   requestAnimationFrame(async () => {
     set.currentPrompt(null);
     clearTextarea(adapter);
+    comp.scrollToBottom();
   });
 };
 //#endregion
