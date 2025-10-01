@@ -112,8 +112,8 @@ export const createRefs = (): LfChatAdapterRefs => {
       temperature: null,
     },
     toolbar: {
-      deleteMessage: null,
       copyContent: null,
+      deleteMessage: null,
       regenerate: null,
     },
   };

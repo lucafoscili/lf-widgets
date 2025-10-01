@@ -9,38 +9,79 @@ import {
 import { LfChat } from "./lf-chat";
 
 /**
- * Makes an API call to a Language Learning Model (LLM) endpoint using the provided chat adapter.
+ * Perform an API call to the configured LLM using the provided chat adapter and
+ * update the adapter's history/state with the assistant's response.
  *
- * This function performs the following operations:
- * 1. Creates a new request using the adapter
- * 2. Sends the request to the LLM endpoint
- * 3. Processes the response and updates the chat history
+ * This function:
+ * - Builds a request using `newRequest(adapter)`.
+ * - Selects streaming or non-streaming call depending on `manager.llm.stream`.
+ * - For streaming mode:
+ *   - Optionally creates an AbortController via `manager.llm.createAbort`.
+ *   - Sets `controller.set.currentAbortStreaming` to a function that aborts the stream.
+ *   - Inserts a placeholder assistant message with empty content into history.
+ *   - Iterates over the async stream returned by `manager.llm.stream(request, lfEndpointUrl, { signal })`
+ *     and appends `chunk.contentDelta` to the placeholder assistant message as chunks arrive.
+ *   - Ensures `controller.set.currentAbortStreaming` is cleared after streaming completes or errors.
+ * - For non-streaming mode:
+ *   - Awaits `manager.llm.fetch(request, lfEndpointUrl)`.
+ *   - Extracts the assistant content from `response.choices?.[0]?.message?.content` and pushes
+ *     an assistant message into history.
+ * - Catches any error thrown during request/streaming and logs it via `manager.debug.logs.new`.
  *
- * @param adapter - The chat adapter instance containing controller and configuration
- * @throws Will log an error message if the API call fails
+ * Important implementation/side-effect notes:
+ * - Mutates adapter controller state through `get`/`set` (e.g. history and currentAbortStreaming).
+ * - Assumes `lfEndpointUrl` is provided on the component instance (`compInstance`).
+ * - Assumes `manager.llm` exposes `stream` or `fetch` and (optionally) `createAbort`.
+ * - Errors are logged and not re-thrown by this function.
  *
- * @example
- * ```typescript
- * const adapter = new LfChatAdapter();
- * await apiCall(adapter);
- * ```
+ * @param adapter - The LfChatAdapter which exposes `controller` (get/set), component instance,
+ *                  history accessor, and the manager with `llm` and `debug`.
+ * @returns A promise that resolves when the API call and history updates have completed.
  */
 export const apiCall = async (adapter: LfChatAdapter) => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
   const { lfEndpointUrl } = compInstance;
   const { debug, llm } = manager;
+  const comp = compInstance as LfChat;
 
   try {
     const request = newRequest(adapter);
-    const response = await llm.fetch(request, lfEndpointUrl);
 
-    const message = response.choices?.[0]?.message?.content;
-    const llmMessage: LfLLMChoiceMessage = {
-      role: "assistant",
-      content: message,
-    };
-    set.history(() => history().push(llmMessage));
+    if (llm.stream) {
+      const abortController = llm.createAbort?.();
+
+      set.currentAbortStreaming(abortController);
+      set.history(() => history().push({ role: "assistant", content: "" }));
+
+      try {
+        let lastIndex = history().length - 1;
+        for await (const chunk of llm.stream(request, lfEndpointUrl, {
+          signal: abortController?.signal,
+        })) {
+          if (chunk?.contentDelta) {
+            set.history(() => {
+              const h = history();
+              if (h[lastIndex]) {
+                h[lastIndex].content += chunk.contentDelta;
+                comp.scrollToBottom("end");
+              }
+            });
+          }
+        }
+      } finally {
+        set.currentAbortStreaming(null);
+      }
+    } else {
+      const response = await llm.fetch(request, lfEndpointUrl);
+
+      const message = response.choices?.[0]?.message?.content;
+      const llmMessage: LfLLMChoiceMessage = {
+        role: "assistant",
+        content: message,
+      };
+      set.history(() => history().push(llmMessage));
+    }
   } catch (error) {
     debug.logs.new(compInstance, `Error calling LLM: ${error}`, "error");
   }

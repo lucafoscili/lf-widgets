@@ -81,6 +81,7 @@ export class LfChat implements LfChatInterface {
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() history: LfChatHistory = [];
+  @State() currentAbortStreaming: AbortController | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
   @State() status: LfChatStatus = "connecting";
@@ -339,6 +340,15 @@ export class LfChat implements LfChatInterface {
 
   //#region Public methods
   /**
+   * Aborts the current streaming response from the LLM.
+   */
+  @Method()
+  async abortStreaming(): Promise<void> {
+    if (this.currentAbortStreaming) {
+      this.currentAbortStreaming.abort();
+    }
+  }
+  /**
    * Retrieves the debug information reflecting the current state of the component.
    * @returns {Promise<LfDebugLifecycleInfo>} A promise that resolves to a LfDebugLifecycleInfo object containing debug information.
    */
@@ -391,9 +401,13 @@ export class LfChat implements LfChatInterface {
   }
   /**
    * Scrolls the chat area to the bottom.
+   *
+   * @param {ScrollLogicalPosition} block - Defines vertical alignment. Options: "start", "center", "end", "nearest". Default is "nearest".
    */
   @Method()
-  async scrollToBottom(): Promise<void> {
+  async scrollToBottom(
+    block: ScrollLogicalPosition = "nearest",
+  ): Promise<void> {
     const { status } = this.#adapter.controller.get;
 
     if (status() !== "ready") {
@@ -402,7 +416,7 @@ export class LfChat implements LfChatInterface {
 
     this.#lastMessage?.scrollIntoView({
       behavior: "smooth",
-      block: "nearest",
+      block,
     });
   }
   /**
@@ -435,6 +449,7 @@ export class LfChat implements LfChatInterface {
       {
         blocks: this.#b,
         compInstance: this,
+        currentAbortStreaming: () => this.currentAbortStreaming,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
         cyAttributes: this.#cy,
@@ -452,6 +467,7 @@ export class LfChat implements LfChatInterface {
         view: () => this.view,
       },
       {
+        currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
         history: async (cb) => {
@@ -478,6 +494,9 @@ export class LfChat implements LfChatInterface {
         this.status = "offline";
       } else {
         this.status = "ready";
+        requestAnimationFrame(() => {
+          this.scrollToBottom("end");
+        });
       }
     } catch (error) {
       this.status = "offline";
@@ -692,7 +711,6 @@ export class LfChat implements LfChatInterface {
     );
     this.onLfEvent(new CustomEvent("ready"), "ready");
     this.#checkLLMStatus();
-    this.scrollToBottom();
     info.update(this, "did-load");
   }
   componentWillRender() {
