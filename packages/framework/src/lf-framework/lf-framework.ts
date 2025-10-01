@@ -20,6 +20,7 @@ import {
   LfFrameworkUtilities,
   LfLLMInterface,
   LfPortalInterface,
+  LfSyntaxInterface,
   LfThemeInterface,
 } from "@lf-widgets/foundations";
 import { getAssetPath, setAssetPath } from "@stencil/core";
@@ -58,7 +59,7 @@ export class LfFramework implements LfFrameworkInterface {
   effects: LfEffectsInterface;
   llm: LfLLMInterface;
   portal: LfPortalInterface;
-  syntax: LfSyntax;
+  syntax: LfSyntaxInterface;
   utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
 

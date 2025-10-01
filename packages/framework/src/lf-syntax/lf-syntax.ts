@@ -1,20 +1,9 @@
-import { LfFrameworkInterface } from "@lf-widgets/foundations";
+import {
+  LfFrameworkInterface,
+  LfSyntaxInterface,
+} from "@lf-widgets/foundations";
 import MarkdownIt from "markdown-it";
 import * as Prism from "prismjs";
-
-// Forward declaration for interface (will be exported from foundations)
-interface LfSyntaxInterface {
-  parseMarkdown: (content: string) => ReturnType<MarkdownIt["parse"]>;
-  readonly markdown: MarkdownIt;
-  highlightElement: (element: HTMLElement) => void;
-  highlightCode: (code: string, language: string) => string;
-  registerLanguage: (
-    name: string,
-    loader: (prism: typeof Prism) => void,
-  ) => void;
-  isLanguageLoaded: (name: string) => boolean;
-  readonly prism: typeof Prism;
-}
 
 /**
  * LfSyntax provides centralized syntax processing for both markdown parsing
@@ -161,7 +150,16 @@ export class LfSyntax implements LfSyntaxInterface {
   ): void => {
     if (!this.#loadedLanguages.has(name)) {
       loader(this.#prism);
-      this.#loadedLanguages.add(name);
+      if (this.#prism.languages[name]) {
+        this.#loadedLanguages.add(name);
+      } else {
+        const { debug } = this.#LF_MANAGER;
+        debug.logs.new(
+          this.#LF_MANAGER,
+          `[LfSyntax] Failed to register Prism language "${name}" (loader did not define grammar)`,
+          "warning",
+        );
+      }
     }
   };
 
