@@ -1210,6 +1210,15 @@ export const LF_DOC: LfShowcaseDoc = {
   "lf-chat": {
     methods: [
       {
+        name: "abortStreaming",
+        docs: "Aborts the current streaming response from the LLM.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
         name: "getDebugInfo",
         docs: "Retrieves the debug information reflecting the current state of the component.",
         returns: {
@@ -1261,7 +1270,7 @@ export const LF_DOC: LfShowcaseDoc = {
           type: "Promise<void>",
           docs: "",
         },
-        signature: "() => Promise<void>",
+        signature: "(block?: ScrollLogicalPosition) => Promise<void>",
       },
       {
         name: "setHistory",
@@ -1401,6 +1410,10 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-chat-margin-top",
         docs: "Sets the margin top for the messages area. Defaults to => 1em",
+      },
+      {
+        name: "--lf-chat-message-max-width",
+        docs: "Sets the max width for each message in the messages area. Defaults to => 75%",
       },
       {
         name: "--lf-chat-outer-grid-gap",
@@ -2981,7 +2994,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Displays an animated SVG placeholder until the component is loaded.",
-        type: '"article" | "code" | "progress" | "download" | "id" | "key" | "list" | "replace" | "x" | "copy" | "search" | "brush" | "upload" | "check" | "refresh" | "messages" | "settings" | "temperature" | "hexagon-plus" | "photo-x" | "chevron-right" | "copy-check" | "square-x" | "lock" | "chevron-down" | "edit" | "info-hexagon" | "hexagon-minus" | "chevron-left" | "lf-website" | "lf-signature" | "alert-triangle" | "adjustments-horizontal" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "bug" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "door" | "drag-drop" | "droplet" | "file" | "folder" | "forms" | "hexagon-minus-2" | "hexagon-plus-2" | "hourglass-low" | "ikosaedr" | "image-in-picture" | "inner-shadow-bottom" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "list-tree" | "loader" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "off-brush" | "off-hexagon" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-template" | "palette" | "pdf" | "percentage-60" | "photo" | "photo-search" | "robot" | "schema" | "shirt" | "slideshow" | "square-toggle" | "stack-pop" | "stack-push" | "sunset-2" | "template" | "toggle-right" | "viewport-tall" | "viewport-wide" | "wand" | "writing" | "zip"',
+        type: '"help" | "json" | "article" | "code" | "progress" | "download" | "id" | "key" | "list" | "replace" | "x" | "copy" | "search" | "brush" | "upload" | "check" | "refresh" | "messages" | "send" | "settings" | "temperature" | "hexagon-plus" | "photo-x" | "chevron-right" | "copy-check" | "square-x" | "lock" | "chevron-down" | "edit" | "info-hexagon" | "hexagon-minus" | "chevron-left" | "lf-website" | "lf-signature" | "alert-triangle" | "adjustments-horizontal" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "bug" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "door" | "drag-drop" | "droplet" | "file" | "folder" | "forms" | "hexagon-minus-2" | "hexagon-plus-2" | "hourglass-low" | "ikosaedr" | "image-in-picture" | "inner-shadow-bottom" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "list-tree" | "loader" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "off-brush" | "off-hexagon" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "palette" | "pdf" | "percentage-60" | "photo" | "photo-search" | "robot" | "schema" | "shirt" | "slideshow" | "square-toggle" | "stack-pop" | "stack-push" | "sunset-2" | "template" | "toggle-right" | "viewport-tall" | "viewport-wide" | "wand" | "writing" | "zip"',
       },
       {
         name: "lfProps",
