@@ -395,7 +395,7 @@ export const parseMessageContent = (
       }
 
       if (t.type === "link_open") {
-        const href = t.attrGet('href') || "#";
+        const href = t.attrGet("href") || "#";
         const inner: Token[] = [];
         i++;
         while (
