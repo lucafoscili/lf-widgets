@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.2) (2025-10-01)
+
+### Bug Fixes
+
+- Add conditional Stencil asset path registration and lazy module loading ([99c41d2](https://github.com/lucafoscili/lf-widgets/commit/99c41d21e1f261cf8415f60b864db3e4a5ab6d3e))
+- Improve language registration and async handling in LfCode ([6abb5e5](https://github.com/lucafoscili/lf-widgets/commit/6abb5e50dce6caadd4a5f89e57082b79bb24dcd1))
+- Improve workflow conditionals for bump and publish jobs ([f4626d1](https://github.com/lucafoscili/lf-widgets/commit/f4626d1bceb11cf6b4b8f456561dc170d260df62))
+- Normalize asset paths for icon style caching ([ecf5472](https://github.com/lucafoscili/lf-widgets/commit/ecf54723b5e3686a566b6388c2b546826c084458))
+- Refactor asset path and syntax language loading ([d9620f2](https://github.com/lucafoscili/lf-widgets/commit/d9620f20ace0c6379b05e1382cf59ae05427f5a7))
+- Refactor LfSyntax interface usage and improve language registration ([02f6f94](https://github.com/lucafoscili/lf-widgets/commit/02f6f9419320772bb499f521b17e854fb2da64b5))
+- Update Prism parameter type in syntax highlight modules ([83308a2](https://github.com/lucafoscili/lf-widgets/commit/83308a20787069b233672642a85a046330c629a9))
+- Use CSS variable for blockquote border opacity ([463046f](https://github.com/lucafoscili/lf-widgets/commit/463046f5416a92e22b007d6526b2993b6f469109))
+
+### Features
+
+- Add centralized syntax module for markdown and code highlighting ([7e99e8d](https://github.com/lucafoscili/lf-widgets/commit/7e99e8d679fc840174cb2e994e7ff2762727a53e))
+- Add highlight and off-highlight SVG icons ([f49acad](https://github.com/lucafoscili/lf-widgets/commit/f49acadc1806260d4fc3cad8362d2cbc93c15bd6))
+- Add inlineContainer and paragraph support to chat content ([0589c21](https://github.com/lucafoscili/lf-widgets/commit/0589c215d011c2580b31c8cd8203ed42bc125ac2))
+- Refactor syntax highlighting to framework package ([6240cd7](https://github.com/lucafoscili/lf-widgets/commit/6240cd7603dd39670000acdab545349f122dfd36))
+
 # [1.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.1) (2025-10-01)
 
 **Note:** Version bump only for package @lf-widgets/root
