@@ -84,11 +84,13 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     heading: (level: number, children: (VNode | string)[]) => VNode;
     horizontalRule: () => VNode;
     inlineCode: (content: string) => VNode;
+    inlineContainer: (children: (VNode | string)[]) => VNode;
     italic: (children: (VNode | string)[]) => VNode;
     lineBreak: () => VNode;
     link: (href: string, children: (VNode | string)[]) => VNode;
     listItem: (children: (VNode | string)[]) => VNode;
     orderedList: (children: VNode[]) => VNode;
+    paragraph: (children: (VNode | string)[]) => VNode;
   };
   settings: {
     back: () => VNode;

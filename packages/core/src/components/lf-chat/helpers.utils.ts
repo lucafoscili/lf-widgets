@@ -502,16 +502,25 @@ export const parseMessageContent = (
     }
 
     if (token.type === "paragraph_open") {
+      i++;
+      if (i < tokens.length && tokens[i].type === "inline") {
+        const paragraphContent = renderInlineTokens(tokens[i].children || []);
+        vnodes.push(contentElements.paragraph(paragraphContent));
+      }
+      i++;
       continue;
     }
 
     if (token.type === "inline") {
-      vnodes.push(...(renderInlineTokens(token.children || []) as VNode[]));
+      const inlineContent = renderInlineTokens(token.children || []);
+      vnodes.push(contentElements.inlineContainer(inlineContent));
       continue;
     }
 
     if (token.children) {
-      vnodes.push(...(renderInlineTokens(token.children) as VNode[]));
+      vnodes.push(
+        contentElements.inlineContainer(renderInlineTokens(token.children)),
+      );
     } else if (token.content) {
       vnodes.push(messageBlock(token.content, role));
     }

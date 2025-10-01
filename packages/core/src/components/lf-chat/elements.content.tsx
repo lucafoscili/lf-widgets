@@ -107,6 +107,22 @@ export const prepContentElements = (
     },
     //#endregion
 
+    //#region Inline Container
+    inlineContainer: (children: (VNode | string)[]) => {
+      const { controller } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { theme } = manager;
+      const { bemClass } = theme;
+      const { messages } = blocks;
+
+      return (
+        <div class={bemClass(messages._, messages.inlineContainer)}>
+          {children}
+        </div>
+      );
+    },
+    //#endregion
+
     //#region Italic
     italic: (children) => {
       const { controller } = getAdapter();
@@ -175,6 +191,20 @@ export const prepContentElements = (
       const { messages } = blocks;
 
       return <ol class={bemClass(messages._, messages.list)}>{children}</ol>;
+    },
+    //#endregion
+
+    //#region Paragraph
+    paragraph: (children: (VNode | string)[]) => {
+      const { controller } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { theme } = manager;
+      const { bemClass } = theme;
+      const { messages } = blocks;
+
+      return (
+        <div class={bemClass(messages._, messages.paragraph)}>{children}</div>
+      );
     },
     //#endregion
   };

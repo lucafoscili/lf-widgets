@@ -38,6 +38,7 @@ export const LF_CHAT_BLOCKS = {
     heading: "heading",
     hr: "hr",
     inlineCode: "inline-code",
+    inlineContainer: "inline-container",
     italic: "italic",
     lineBreak: "line-break",
     link: "link",
