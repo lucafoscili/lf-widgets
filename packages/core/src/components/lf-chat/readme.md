@@ -19,13 +19,13 @@ properties can be set to customize the chat component's appearance and behavior.
 | `lfEmpty`           | `lf-empty`            | Empty text displayed when there is no data.                                                                                        | `string`                                                                           | `"Your chat history is empty!"`                                                         |
 | `lfEndpointUrl`     | `lf-endpoint-url`     | The URL endpoint for the chat service.                                                                                             | `string`                                                                           | `"http://localhost:5001"`                                                               |
 | `lfLayout`          | `lf-layout`           | Sets the layout of the chat.                                                                                                       | `"bottom" \| "top"`                                                                | `"top"`                                                                                 |
-| `lfMaxTokens`       | `lf-max-tokens`       | The maximum amount of tokens allowed in the LLM's answer.                                                                          | `number`                                                                           | `250`                                                                                   |
+| `lfMaxTokens`       | `lf-max-tokens`       | The maximum amount of tokens allowed in the LLM's answer.                                                                          | `number`                                                                           | `2048`                                                                                  |
 | `lfPollingInterval` | `lf-polling-interval` | How often the component checks whether the LLM endpoint is online or not.                                                          | `number`                                                                           | `10000`                                                                                 |
 | `lfSeed`            | `lf-seed`             | The seed of the LLM's answer.                                                                                                      | `number`                                                                           | `-1`                                                                                    |
 | `lfStyle`           | `lf-style`            | Custom styling for the component.                                                                                                  | `string`                                                                           | `""`                                                                                    |
 | `lfSystem`          | `lf-system`           | System message for the LLM.                                                                                                        | `string`                                                                           | `"You are a helpful and cheerful assistant eager to help the user out with his tasks."` |
 | `lfTemperature`     | `lf-temperature`      | Sets the creative boundaries of the LLM.                                                                                           | `number`                                                                           | `0.7`                                                                                   |
-| `lfTypewriterProps` | `lf-typewriter-props` | Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element. | `LfTypewriterPropsInterface`                                                       | `{     lfDeleteSpeed: 10,     lfTag: "p",     lfSpeed: 20,   }`                         |
+| `lfTypewriterProps` | `lf-typewriter-props` | Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element. | `LfTypewriterPropsInterface \| boolean`                                            | `false`                                                                                 |
 | `lfUiSize`          | `lf-ui-size`          | The size of the component.                                                                                                         | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`                                                                              |
 | `lfValue`           | `lf-value`            | Sets the initial history of the chat.                                                                                              | `LfLLMChoiceMessage[]`                                                             | `[]`                                                                                    |
 
@@ -82,6 +82,16 @@ Promise resolved with an object containing the component's properties.
 ### `refresh() => Promise<void>`
 
 Triggers a re-render of the component to reflect any state changes.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `scrollToBottom() => Promise<void>`
+
+Scrolls the chat area to the bottom.
 
 #### Returns
 
