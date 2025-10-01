@@ -19,13 +19,13 @@ properties can be set to customize the chat component's appearance and behavior.
 | `lfEmpty`           | `lf-empty`            | Empty text displayed when there is no data.                                                                                        | `string`                                                                           | `"Your chat history is empty!"`                                                         |
 | `lfEndpointUrl`     | `lf-endpoint-url`     | The URL endpoint for the chat service.                                                                                             | `string`                                                                           | `"http://localhost:5001"`                                                               |
 | `lfLayout`          | `lf-layout`           | Sets the layout of the chat.                                                                                                       | `"bottom" \| "top"`                                                                | `"top"`                                                                                 |
-| `lfMaxTokens`       | `lf-max-tokens`       | The maximum amount of tokens allowed in the LLM's answer.                                                                          | `number`                                                                           | `250`                                                                                   |
+| `lfMaxTokens`       | `lf-max-tokens`       | The maximum amount of tokens allowed in the LLM's answer.                                                                          | `number`                                                                           | `2048`                                                                                  |
 | `lfPollingInterval` | `lf-polling-interval` | How often the component checks whether the LLM endpoint is online or not.                                                          | `number`                                                                           | `10000`                                                                                 |
 | `lfSeed`            | `lf-seed`             | The seed of the LLM's answer.                                                                                                      | `number`                                                                           | `-1`                                                                                    |
 | `lfStyle`           | `lf-style`            | Custom styling for the component.                                                                                                  | `string`                                                                           | `""`                                                                                    |
 | `lfSystem`          | `lf-system`           | System message for the LLM.                                                                                                        | `string`                                                                           | `"You are a helpful and cheerful assistant eager to help the user out with his tasks."` |
 | `lfTemperature`     | `lf-temperature`      | Sets the creative boundaries of the LLM.                                                                                           | `number`                                                                           | `0.7`                                                                                   |
-| `lfTypewriterProps` | `lf-typewriter-props` | Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element. | `LfTypewriterPropsInterface`                                                       | `{     lfDeleteSpeed: 10,     lfTag: "p",     lfSpeed: 20,   }`                         |
+| `lfTypewriterProps` | `lf-typewriter-props` | Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element. | `LfTypewriterPropsInterface \| boolean`                                            | `false`                                                                                 |
 | `lfUiSize`          | `lf-ui-size`          | The size of the component.                                                                                                         | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`                                                                              |
 | `lfValue`           | `lf-value`            | Sets the initial history of the chat.                                                                                              | `LfLLMChoiceMessage[]`                                                             | `[]`                                                                                    |
 
@@ -38,6 +38,16 @@ properties can be set to customize the chat component's appearance and behavior.
 
 
 ## Methods
+
+### `abortStreaming() => Promise<void>`
+
+Aborts the current streaming response from the LLM.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `getDebugInfo() => Promise<LfDebugLifecycleInfo>`
 
@@ -89,6 +99,41 @@ Type: `Promise<void>`
 
 
 
+### `scrollToBottom(blockOrScroll?: ScrollLogicalPosition | boolean) => Promise<void>`
+
+Scrolls the chat message list to the bottom.
+
+The method first checks the component controller status via this.#adapter.controller.get;
+if the controller is not in the "ready" state the method returns early without performing any scrolling.
+
+Behavior:
+- If blockOrScroll === true, performs a passive scroll of the messages container by calling
+  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).
+  This path is intended for initial loads where a container-level scroll is sufficient.
+- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })
+  to bring the last message element into view for active user interactions. The block argument is
+  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").
+
+Notes:
+- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling
+  animation to complete; the promise resolves after issuing the scroll command.
+- If the messages container or last message element is not present, the corresponding scroll call
+  is a no-op.
+- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend
+  to use scrollIntoView should pass a valid ScrollLogicalPosition value.
+
+#### Parameters
+
+| Name            | Type                               | Description                                                                                                                                               |
+| --------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `blockOrScroll` | `boolean \| ScrollLogicalPosition` | - If true, scroll the container to the bottom. Otherwise, a ScrollLogicalPosition   used as the `block` option for scrollIntoView. Defaults to "nearest". |
+
+#### Returns
+
+Type: `Promise<void>`
+
+Promise<void> that resolves after issuing the scroll command.
+
 ### `setHistory(history: string) => Promise<void>`
 
 Sets the history of the component through a string.
@@ -124,23 +169,38 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                         | Description                                                                                       |
-| ---------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-chat-border-color`     | Sets the border color for the chat component. Defaults to => var(--lf-color-border)               |
-| `--lf-chat-border-radius`    | Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-chat-buttons-padding`  | Sets the padding for the buttons of the chat component. Defaults to => 1em 0                      |
-| `--lf-chat-color-bg`         | Sets the color-bg color for the chat component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-chat-color-on-bg`      | Sets the color-on-bg color for the chat component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-chat-color-on-surface` | Sets the color-on-surface color for the chat component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-chat-color-surface`    | Sets the color-surface color for the chat component. Defaults to => var(--lf-color-surface)       |
-| `--lf-chat-font-family`      | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-chat-font-size`        | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
-| `--lf-chat-grid-gap`         | Sets the grid gap for the messages area. Defaults to => 0.75em                                    |
-| `--lf-chat-inner-padding`    | Sets the inner padding for the messages area. Defaults to => 1em                                  |
-| `--lf-chat-margin-bottom`    | Sets the margin bottom for the messages area. Defaults to => 1em                                  |
-| `--lf-chat-margin-top`       | Sets the margin top for the messages area. Defaults to => 1em                                     |
-| `--lf-chat-outer-grid-gap`   | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |
-| `--lf-chat-padding`          | Sets the padding for the chat component. Defaults to => 1em                                       |
+| Name                                  | Description                                                                                       |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--lf-chat-blockquote-border-opacity` | Sets the border opacity for blockquotes. Defaults to => 0.3                                       |
+| `--lf-chat-blockquote-border-width`   | Sets the border width for blockquotes. Defaults to => 3px                                         |
+| `--lf-chat-blockquote-margin`         | Sets the margin for blockquotes. Defaults to => 1em 0                                             |
+| `--lf-chat-blockquote-padding`        | Sets the padding for blockquotes. Defaults to => 0.5em 1em                                        |
+| `--lf-chat-border-color`              | Sets the border color for the chat component. Defaults to => var(--lf-color-border)               |
+| `--lf-chat-border-radius`             | Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-chat-buttons-padding`           | Sets the padding for the buttons of the chat component. Defaults to => 1em 0                      |
+| `--lf-chat-color-bg`                  | Sets the color-bg color for the chat component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-chat-color-on-bg`               | Sets the color-on-bg color for the chat component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-chat-color-on-surface`          | Sets the color-on-surface color for the chat component. Defaults to => var(--lf-color-on-surface) |
+| `--lf-chat-color-surface`             | Sets the color-surface color for the chat component. Defaults to => var(--lf-color-surface)       |
+| `--lf-chat-font-family`               | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-chat-font-size`                 | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
+| `--lf-chat-grid-gap`                  | Sets the grid gap for the messages area. Defaults to => 0.75em                                    |
+| `--lf-chat-heading-margin-bottom`     | Sets the bottom margin for headings. Defaults to => 0.5em                                         |
+| `--lf-chat-heading-margin-top`        | Sets the top margin for headings. Defaults to => 1em                                              |
+| `--lf-chat-hr-border-width`           | Sets the border width for horizontal rules. Defaults to => 1px                                    |
+| `--lf-chat-hr-margin`                 | Sets the margin for horizontal rules. Defaults to => 1em 0                                        |
+| `--lf-chat-hr-opacity`                | Sets the opacity for horizontal rules. Defaults to => 0.2                                         |
+| `--lf-chat-inline-code-border-radius` | Sets the border radius for inline code. Defaults to => var(--lf-border-radius, 0.25em)            |
+| `--lf-chat-inline-code-padding`       | Sets the padding for inline code. Defaults to => 0.2em 0.4em                                      |
+| `--lf-chat-inner-padding`             | Sets the inner padding for the messages area. Defaults to => 1em                                  |
+| `--lf-chat-list-item-margin`          | Sets the margin for list items. Defaults to => 0.25em 0                                           |
+| `--lf-chat-list-margin`               | Sets the margin for lists. Defaults to => 0.5em 0                                                 |
+| `--lf-chat-list-padding-left`         | Sets the left padding for lists. Defaults to => 2em                                               |
+| `--lf-chat-margin-bottom`             | Sets the margin bottom for the messages area. Defaults to => 1em                                  |
+| `--lf-chat-margin-top`                | Sets the margin top for the messages area. Defaults to => 1em                                     |
+| `--lf-chat-message-max-width`         | Sets the max width for each message in the messages area. Defaults to => 75%                      |
+| `--lf-chat-outer-grid-gap`            | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |
+| `--lf-chat-padding`                   | Sets the padding for the chat component. Defaults to => 1em                                       |
 
 
 ## Dependencies
@@ -159,24 +219,24 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-spinner](../lf-spinner)
-- [lf-code](../lf-code)
 - [lf-button](../lf-button)
 - [lf-typewriter](../lf-typewriter)
 - [lf-progressbar](../lf-progressbar)
 - [lf-textfield](../lf-textfield)
+- [lf-code](../lf-code)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-chat --> lf-spinner
-  lf-chat --> lf-code
   lf-chat --> lf-button
   lf-chat --> lf-typewriter
   lf-chat --> lf-progressbar
   lf-chat --> lf-textfield
-  lf-code --> lf-button
+  lf-chat --> lf-code
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-code --> lf-button
   lf-accordion --> lf-chat
   lf-article --> lf-chat
   lf-card --> lf-chat

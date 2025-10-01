@@ -5,7 +5,7 @@
     "name": "Luca Foscili",
     "url": "https://www.lucafoscili.com"
   },
-  "version": "0.5.0-rc.3",
+  "version": "1.0.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -30,8 +30,7 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "dependencies": {
-    "echarts": "^5",
-    "prismjs": "^1"
+    "echarts": "^5"
   },
   "peerDependencies": {
     "@lf-widgets/foundations": "workspace:*",

@@ -7,6 +7,18 @@ import {
 } from "@lf-widgets/foundations";
 import { LfFramework } from "./lf-framework/lf-framework";
 
+export * from "./lf-syntax/languages/prism.css.highlight";
+export * from "./lf-syntax/languages/prism.javascript.highlight";
+export * from "./lf-syntax/languages/prism.json.highlight";
+export * from "./lf-syntax/languages/prism.jsx.highlight";
+export * from "./lf-syntax/languages/prism.markdown.highlight";
+export * from "./lf-syntax/languages/prism.markup.highlight";
+export * from "./lf-syntax/languages/prism.python.highlight";
+export * from "./lf-syntax/languages/prism.regex.highlight";
+export * from "./lf-syntax/languages/prism.scss.highlight";
+export * from "./lf-syntax/languages/prism.tsx.highlight";
+export * from "./lf-syntax/languages/prism.typescript.highlight";
+
 declare global {
   interface Window {
     [symbol: symbol]: LfFrameworkInterface;

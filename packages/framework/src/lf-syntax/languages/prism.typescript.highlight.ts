@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_TYPESCRIPT = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_TYPESCRIPT = (Prism: typeof import("prismjs")) => {
   ((Prism.languages.typescript = Prism.languages.extend("javascript", {
     "class-name": {
       pattern:

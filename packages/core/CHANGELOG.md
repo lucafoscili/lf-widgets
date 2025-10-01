@@ -2,14 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.5.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0-rc.3) (2025-09-30)
+# [1.0.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.2) (2025-10-01)
 
 ### Bug Fixes
 
-- Add new CSS custom properties for lf-masonry actions ([0f71908](https://github.com/lucafoscili/lf-widgets/commit/0f7190882708e60ce65884c2895d877a42f873c8))
-- Refactor column update logic in lf-masonry helpers ([07a7cb2](https://github.com/lucafoscili/lf-widgets/commit/07a7cb2dceef96c6712ad032fb98b684af9dc401))
-- Refactor image cover fallback logic in controller.image.ts ([d52e1c9](https://github.com/lucafoscili/lf-widgets/commit/d52e1c9900e2d1ff5c08f9b990b45d15a955d46f))
-- Return 1 column when no shapes in lf-masonry ([81d1ad0](https://github.com/lucafoscili/lf-widgets/commit/81d1ad031f04b533ff70d3d0543439de49c36e16))
+- Add conditional Stencil asset path registration and lazy module loading ([99c41d2](https://github.com/lucafoscili/lf-widgets/commit/99c41d21e1f261cf8415f60b864db3e4a5ab6d3e))
+- Improve language registration and async handling in LfCode ([6abb5e5](https://github.com/lucafoscili/lf-widgets/commit/6abb5e50dce6caadd4a5f89e57082b79bb24dcd1))
+- Refactor asset path and syntax language loading ([d9620f2](https://github.com/lucafoscili/lf-widgets/commit/d9620f20ace0c6379b05e1382cf59ae05427f5a7))
+- Use CSS variable for blockquote border opacity ([463046f](https://github.com/lucafoscili/lf-widgets/commit/463046f5416a92e22b007d6526b2993b6f469109))
+
+### Features
+
+- Add centralized syntax module for markdown and code highlighting ([7e99e8d](https://github.com/lucafoscili/lf-widgets/commit/7e99e8d679fc840174cb2e994e7ff2762727a53e))
+- Add inlineContainer and paragraph support to chat content ([0589c21](https://github.com/lucafoscili/lf-widgets/commit/0589c215d011c2580b31c8cd8203ed42bc125ac2))
+- Refactor syntax highlighting to framework package ([6240cd7](https://github.com/lucafoscili/lf-widgets/commit/6240cd7603dd39670000acdab545349f122dfd36))
+
+# [1.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.1) (2025-10-01)
+
+**Note:** Version bump only for package @lf-widgets/core
+
+# [1.0.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.1-rc.0...1.0.0-rc.0) (2025-10-01)
+
+### Bug Fixes
+
+- Fix possible undefined error in image src access ([1116f08](https://github.com/lucafoscili/lf-widgets/commit/1116f08cbc5658dd284de404aa0504021d4e2a47))
+- Update character prompt guidelines in helpers.utils.ts ([24ebd7a](https://github.com/lucafoscili/lf-widgets/commit/24ebd7a7ca3dd4d75857d852b8b6ba48504b1d27))
+- Update lf-chat props and add scrollToBottom method ([e5d7f82](https://github.com/lucafoscili/lf-widgets/commit/e5d7f820879a74f87882dead63ad1df4e7366c9f))
+- Update prompt handling in regenerate and reset functions ([a18572f](https://github.com/lucafoscili/lf-widgets/commit/a18572fac676af6ddf611be383043a9427ce6792))
+
+### Features
+
+- Add getElement method to LfTextfield component ([17aab9b](https://github.com/lucafoscili/lf-widgets/commit/17aab9b39cf99bcafaac8994219667b9d718ab9e))
+
+## [0.5.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.3...0.5.1-rc.0) (2025-09-30)
+
+**Note:** Version bump only for package @lf-widgets/core
+
+# [0.5.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0) (2025-09-30)
+
+**Note:** Version bump only for package @lf-widgets/core
 
 # [0.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.1...0.5.0-rc.2) (2025-09-30)
 

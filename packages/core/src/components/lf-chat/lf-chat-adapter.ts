@@ -10,6 +10,7 @@ import {
   LfLLMChoiceMessage,
 } from "@lf-widgets/foundations";
 import { prepChat } from "./elements.chat";
+import { prepContentElements } from "./elements.content";
 import { prepSettings } from "./elements.settings";
 import { prepToolbar } from "./elements.toolbar";
 import { prepChatHandlers } from "./handlers.chat";
@@ -72,6 +73,7 @@ export const createElementsJsx = (
 ): LfChatAdapterJsx => {
   return {
     chat: prepChat(getAdapter),
+    content: prepContentElements(getAdapter),
     settings: prepSettings(getAdapter),
     toolbar: prepToolbar(getAdapter),
   };
@@ -112,8 +114,8 @@ export const createRefs = (): LfChatAdapterRefs => {
       temperature: null,
     },
     toolbar: {
-      deleteMessage: null,
       copyContent: null,
+      deleteMessage: null,
       regenerate: null,
     },
   };

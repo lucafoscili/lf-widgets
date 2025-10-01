@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_JSX = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_JSX = (Prism: typeof import("prismjs")) => {
   var n = Prism.util.clone(Prism.languages.javascript),
     e = "(?:\\{<S>*\\.{3}(?:[^{}]|<BRACES>)*\\})";
   function a(t: string, n?: string) {

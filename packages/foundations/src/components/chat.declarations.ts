@@ -43,7 +43,13 @@ export interface LfChatInterface
     LfChatPropsInterface {}
 export interface LfChatElement
   extends HTMLStencilElement,
-    Omit<LfChatInterface, LfComponentClassProperties> {}
+    Omit<LfChatInterface, LfComponentClassProperties> {
+  abortStreaming: () => Promise<void>;
+  getHistory: () => Promise<string>;
+  getLastMessage: () => Promise<string>;
+  scrollToBottom: (block?: ScrollLogicalPosition | boolean) => Promise<void>;
+  setHistory: (value: string) => Promise<void>;
+}
 //#endregion
 
 //#region Adapter
@@ -70,6 +76,22 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     stt: () => VNode;
     textarea: () => VNode;
   };
+  content: {
+    bold: (children: (VNode | string)[]) => VNode;
+    blockquote: (children: (VNode | string)[]) => VNode;
+    bulletList: (children: VNode[]) => VNode;
+    codeFence: (language: string, code: string) => VNode;
+    heading: (level: number, children: (VNode | string)[]) => VNode;
+    horizontalRule: () => VNode;
+    inlineCode: (content: string) => VNode;
+    inlineContainer: (children: (VNode | string)[]) => VNode;
+    italic: (children: (VNode | string)[]) => VNode;
+    lineBreak: () => VNode;
+    link: (href: string, children: (VNode | string)[]) => VNode;
+    listItem: (children: (VNode | string)[]) => VNode;
+    orderedList: (children: VNode[]) => VNode;
+    paragraph: (children: (VNode | string)[]) => VNode;
+  };
   settings: {
     back: () => VNode;
     endpoint: () => VNode;
@@ -79,8 +101,8 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     temperature: () => VNode;
   };
   toolbar: {
-    deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     copyContent: (m: LfLLMChoiceMessage) => VNode;
+    deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     regenerate: (m: LfLLMChoiceMessage) => VNode;
   };
 }
@@ -104,8 +126,8 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     temperature: LfTextfieldElement;
   };
   toolbar: {
-    deleteMessage: LfButtonElement;
     copyContent: LfButtonElement;
+    deleteMessage: LfButtonElement;
     regenerate: LfButtonElement;
   };
 }
@@ -128,6 +150,7 @@ export type LfChatAdapterInitializerGetters = Pick<
   LfChatAdapterControllerGetters,
   | "blocks"
   | "compInstance"
+  | "currentAbortStreaming"
   | "currentPrompt"
   | "currentTokens"
   | "cyAttributes"
@@ -141,13 +164,19 @@ export type LfChatAdapterInitializerGetters = Pick<
 >;
 export type LfChatAdapterInitializerSetters = Pick<
   LfChatAdapterControllerSetters,
-  "currentPrompt" | "currentTokens" | "history" | "status" | "view"
+  | "currentAbortStreaming"
+  | "currentPrompt"
+  | "currentTokens"
+  | "history"
+  | "status"
+  | "view"
 >;
 export interface LfChatAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChatInterface> {
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
-  currentPrompt: () => LfLLMChoiceMessage;
+  currentAbortStreaming: () => AbortController | null;
+  currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
   cyAttributes: typeof CY_ATTRIBUTES;
   history: () => LfChatHistory;
@@ -161,7 +190,8 @@ export interface LfChatAdapterControllerGetters
 }
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
-  currentPrompt: (value: LfLLMChoiceMessage) => void;
+  currentAbortStreaming: (value: AbortController | null) => void;
+  currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
@@ -200,7 +230,7 @@ export interface LfChatPropsInterface {
   lfStyle?: string;
   lfSystem?: string;
   lfTemperature?: number;
-  lfTypewriterProps?: LfTypewriterPropsInterface;
+  lfTypewriterProps?: LfTypewriterPropsInterface | false;
   lfUiSize?: LfThemeUISize;
   lfValue?: LfChatHistory;
 }

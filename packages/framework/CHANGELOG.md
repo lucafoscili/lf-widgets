@@ -2,7 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.5.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0-rc.3) (2025-09-30)
+# [1.0.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.2) (2025-10-01)
+
+### Bug Fixes
+
+- Normalize asset paths for icon style caching ([ecf5472](https://github.com/lucafoscili/lf-widgets/commit/ecf54723b5e3686a566b6388c2b546826c084458))
+- Refactor asset path and syntax language loading ([d9620f2](https://github.com/lucafoscili/lf-widgets/commit/d9620f20ace0c6379b05e1382cf59ae05427f5a7))
+
+# [1.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.1) (2025-10-01)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+# [1.0.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.1-rc.0...1.0.0-rc.0) (2025-10-01)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+## [0.5.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.3...0.5.1-rc.0) (2025-09-30)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+# [0.5.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.2...0.5.0) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/framework
 

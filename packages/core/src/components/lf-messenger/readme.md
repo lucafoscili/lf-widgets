@@ -160,11 +160,11 @@ graph TD;
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-chat --> lf-spinner
-  lf-chat --> lf-code
   lf-chat --> lf-button
   lf-chat --> lf-typewriter
   lf-chat --> lf-progressbar
   lf-chat --> lf-textfield
+  lf-chat --> lf-code
   lf-tabbar --> lf-button
   style lf-messenger fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -158,11 +158,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-spinner
-  lf-chat --> lf-code
   lf-chat --> lf-button
   lf-chat --> lf-typewriter
   lf-chat --> lf-progressbar
   lf-chat --> lf-textfield
+  lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image
   lf-compare --> lf-tree

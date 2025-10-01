@@ -29,19 +29,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
-import Prism from "prismjs";
 import { awaitFramework } from "../../utils/setup";
-import { LF_CODE_CSS } from "./prism.css.highlight";
-import { LF_CODE_JAVASCRIPT } from "./prism.javascript.highlight";
-import { LF_CODE_JSON } from "./prism.json.highlight";
-import { LF_CODE_JSX } from "./prism.jsx.highlight.js";
-import { LF_CODE_MARKDOWN } from "./prism.markdown.highlight";
-import { LF_CODE_MARKUP } from "./prism.markup.highlight";
-import { LF_CODE_PYTHON } from "./prism.python.highlight";
-import { LF_CODE_REGEX } from "./prism.regex.highlight";
-import { LF_CODE_SCSS } from "./prism.scss.highlight";
-import { LF_CODE_TSX } from "./prism.tsx.highlight";
-import { LF_CODE_TYPESCRIPT } from "./prism.typescript.highlight";
 
 /**
  * The code component displays a snippet of code in a styled container with
@@ -83,8 +71,21 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Props
+
   /**
-   * Automatically formats the value.
+   * Whether to fade in the component on mount.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-code lfFadeIn={true} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfFadeIn: boolean = true;
+  /**
    *
    * @type {boolean}
    * @default true
@@ -251,47 +252,24 @@ export class LfCode implements LfCodeInterface {
 
   //#region Watchers
   @Watch("lfLanguage")
-  loadLanguage() {
+  async loadLanguage() {
     if (!this.#framework) {
       return;
     }
 
-    switch (this.lfLanguage.toLowerCase()) {
-      case "css":
-        LF_CODE_CSS(Prism);
-        break;
-      case "javascript":
-        LF_CODE_JAVASCRIPT(Prism);
-        break;
-      case "json":
-        LF_CODE_JSON(Prism);
-        break;
-      case "jsx":
-        LF_CODE_JSX(Prism);
-        break;
-      case "markdown":
-        LF_CODE_MARKDOWN(Prism);
-        break;
-      case "markup":
-        LF_CODE_MARKUP(Prism);
-        break;
-      case "python":
-        LF_CODE_PYTHON(Prism);
-        break;
-      case "regex":
-        LF_CODE_REGEX(Prism);
-        break;
-      case "scss":
-        LF_CODE_SCSS(Prism);
-        break;
-      case "tsx":
-        LF_CODE_TSX(Prism);
-        break;
-      default:
-      case "typescript":
-        LF_CODE_TYPESCRIPT(Prism);
-        break;
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return;
     }
+
+    const { syntax } = this.#framework;
+    const lang = this.lfLanguage.toLowerCase();
+
+    // Check if language is already loaded
+    if (syntax.isLanguageLoaded(lang)) {
+      return;
+    }
+
+    await syntax.loadLanguage(lang);
   }
   //#endregion
 
@@ -437,7 +415,7 @@ export class LfCode implements LfCodeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.loadLanguage();
+    await this.loadLanguage();
     this.#updateValue();
   }
   componentDidLoad() {
@@ -456,9 +434,10 @@ export class LfCode implements LfCodeInterface {
   }
   componentDidRender() {
     const { info } = this.#framework.debug;
+    const { syntax } = this.#framework;
 
     if (this.#el) {
-      Prism.highlightElement(this.#el);
+      syntax.highlightElement(this.#el);
     }
 
     info.update(this, "did-render");
@@ -495,7 +474,7 @@ export class LfCode implements LfCodeInterface {
             {this.lfShowHeader && this.#prepHeader()}
             <TagName
               class={`language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`}
-              data-lf={this.#lf.fadeIn}
+              data-lf={this.lfFadeIn && this.#lf.fadeIn}
               key={this.value}
               part={this.#p.prism}
               ref={(el) => {

@@ -1,9 +1,3 @@
-import { onFrameworkReady } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "@stencil/core";
+import { registerStencilAssetProxies } from "@lf-widgets/foundations";
 
-onFrameworkReady.then((framework) => {
-  framework.register("lf-showcase", {
-    getAssetPath,
-    setAssetPath,
-  });
-});
+registerStencilAssetProxies("lf-showcase");

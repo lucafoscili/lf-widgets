@@ -606,7 +606,7 @@ export class LfMessenger implements LfMessengerInterface {
                   alt={title(node)}
                   class={bemClass(list._, list.image)}
                   data-lf={this.#lf.fadeIn}
-                  src={node.cells.lfImage.value}
+                  src={node?.cells?.lfImage?.value}
                   title={title(node)}
                 />
                 {hoveredCustomizationOption === node && (

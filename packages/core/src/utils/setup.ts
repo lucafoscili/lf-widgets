@@ -1,16 +1,14 @@
-import { LfComponent, onFrameworkReady } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "@stencil/core";
+import {
+  LfComponent,
+  onFrameworkReady,
+  registerStencilAssetProxies,
+} from "@lf-widgets/foundations";
 
-onFrameworkReady.then((framework) => {
-  framework.register("lf-core", {
-    getAssetPath,
-    setAssetPath,
-  });
-});
+registerStencilAssetProxies("lf-core");
 
 export const awaitFramework = async (comp: LfComponent) => {
   const framework = await onFrameworkReady;
   comp.debugInfo = framework.debug.info.create();
-  framework.theme.register(this);
+  framework.theme.register(comp);
   return framework;
 };

@@ -40,7 +40,7 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { calcTokens, submitPrompt } from "./helpers.utils";
+import { calcTokens, parseMessageContent, submitPrompt } from "./helpers.utils";
 import { createAdapter } from "./lf-chat-adapter";
 
 /**
@@ -79,10 +79,11 @@ export class LfChat implements LfChatInterface {
   @Element() rootElement: LfChatElement;
 
   //#region States
-  @State() debugInfo: LfDebugLifecycleInfo;
-  @State() history: LfChatHistory = [];
+  @State() currentAbortStreaming: AbortController | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
+  @State() debugInfo: LfDebugLifecycleInfo;
+  @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
   @State() view: LfChatView = "main";
   //#endregion
@@ -144,15 +145,15 @@ export class LfChat implements LfChatInterface {
    * The maximum amount of tokens allowed in the LLM's answer.
    *
    * @type {number}
-   * @default 250
+   * @default 2048
    * @mutable
    *
    * @example
    * ```tsx
-   * <lf-chat lfMaxTokens={250}></lf-chat>
+   * <lf-chat lfMaxTokens={2048}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfMaxTokens: number = 250;
+  @Prop({ mutable: true }) lfMaxTokens: number = 2048;
   /**
    * How often the component checks whether the LLM endpoint is online or not.
    *
@@ -222,8 +223,8 @@ export class LfChat implements LfChatInterface {
   /**
    * Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element.
    *
-   * @type {LfTypewriterPropsInterface}
-   * @default  { lfDeleteSpeed: 10, lfTag: "p", lfSpeed: 20 }
+   * @type {LfTypewriterPropsInterface | false}
+   * @default false
    * @mutable
    *
    * @example
@@ -231,11 +232,9 @@ export class LfChat implements LfChatInterface {
    * <lf-chat lfTypewriterProps={{ lfDeleteSpeed: 10, lfTag: "p", lfSpeed: 20 }}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfTypewriterProps: LfTypewriterPropsInterface = {
-    lfDeleteSpeed: 10,
-    lfTag: "p",
-    lfSpeed: 20,
-  };
+  @Prop({ mutable: true }) lfTypewriterProps:
+    | LfTypewriterPropsInterface
+    | false = false;
   /**
    * The size of the component.
    *
@@ -273,6 +272,8 @@ export class LfChat implements LfChatInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #interval: NodeJS.Timeout;
+  #lastMessage: HTMLDivElement | null = null;
+  #messagesContainer: HTMLDivElement | null = null;
   #adapter: LfChatAdapter;
   //#endregion
 
@@ -340,6 +341,15 @@ export class LfChat implements LfChatInterface {
 
   //#region Public methods
   /**
+   * Aborts the current streaming response from the LLM.
+   */
+  @Method()
+  async abortStreaming(): Promise<void> {
+    if (this.currentAbortStreaming) {
+      this.currentAbortStreaming.abort();
+    }
+  }
+  /**
    * Retrieves the debug information reflecting the current state of the component.
    * @returns {Promise<LfDebugLifecycleInfo>} A promise that resolves to a LfDebugLifecycleInfo object containing debug information.
    */
@@ -391,6 +401,59 @@ export class LfChat implements LfChatInterface {
     forceUpdate(this);
   }
   /**
+   * Scrolls the chat message list to the bottom.
+   *
+   * The method first checks the component controller status via this.#adapter.controller.get;
+   * if the controller is not in the "ready" state the method returns early without performing any scrolling.
+   *
+   * Behavior:
+   * - If blockOrScroll === true, performs a passive scroll of the messages container by calling
+   *   this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).
+   *   This path is intended for initial loads where a container-level scroll is sufficient.
+   * - Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })
+   *   to bring the last message element into view for active user interactions. The block argument is
+   *   treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").
+   *
+   * Notes:
+   * - The method is async and returns a Promise<void>, but it does not wait for the visual scrolling
+   *   animation to complete; the promise resolves after issuing the scroll command.
+   * - If the messages container or last message element is not present, the corresponding scroll call
+   *   is a no-op.
+   * - The signature accepts a boolean union for convenience (true = container scroll). Callers who intend
+   *   to use scrollIntoView should pass a valid ScrollLogicalPosition value.
+   *
+   * @param blockOrScroll - If true, scroll the container to the bottom. Otherwise, a ScrollLogicalPosition
+   *                        used as the `block` option for scrollIntoView. Defaults to "nearest".
+   * @returns Promise<void> that resolves after issuing the scroll command.
+   */
+  @Method()
+  async scrollToBottom(
+    blockOrScroll: ScrollLogicalPosition | boolean = "nearest",
+  ): Promise<void> {
+    const { status } = this.#adapter.controller.get;
+
+    if (status() !== "ready") {
+      return;
+    }
+
+    // If true, just scroll the container to the bottom (passive scroll for initial loads)
+    if (blockOrScroll === true) {
+      if (this.#messagesContainer) {
+        this.#messagesContainer.scrollTo({
+          top: this.#messagesContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+      return;
+    }
+
+    // Otherwise, use scrollIntoView for active user interactions
+    this.#lastMessage?.scrollIntoView({
+      behavior: "smooth",
+      block: blockOrScroll as ScrollLogicalPosition,
+    });
+  }
+  /**
    * Sets the history of the component through a string.
    */
   @Method()
@@ -420,6 +483,7 @@ export class LfChat implements LfChatInterface {
       {
         blocks: this.#b,
         compInstance: this,
+        currentAbortStreaming: () => this.currentAbortStreaming,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
         cyAttributes: this.#cy,
@@ -437,6 +501,7 @@ export class LfChat implements LfChatInterface {
         view: () => this.view,
       },
       {
+        currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
         history: async (cb) => {
@@ -462,6 +527,11 @@ export class LfChat implements LfChatInterface {
       if (!response.ok) {
         this.status = "offline";
       } else {
+        if (this.status !== "ready") {
+          requestAnimationFrame(() => {
+            this.scrollToBottom(true); // Container-only scroll for initial load
+          });
+        }
         this.status = "ready";
       }
     } catch (error) {
@@ -491,13 +561,22 @@ export class LfChat implements LfChatInterface {
             {send()}
           </div>
         </div>
-        <div class={bemClass(messages._)}>
+        <div
+          class={bemClass(messages._)}
+          ref={(el) => (this.#messagesContainer = el)}
+        >
           {history?.length ? (
-            history.map((m) => (
+            history.map((m, index) => (
               <div
                 class={bemClass(messages._, messages.container, {
                   [m.role]: true,
                 })}
+                key={index}
+                ref={(el) => {
+                  if (el && index === history.length - 1) {
+                    this.#lastMessage = el;
+                  }
+                }}
               >
                 <div
                   class={bemClass(messages._, messages.content, {
@@ -535,46 +614,7 @@ export class LfChat implements LfChatInterface {
     );
   };
   #prepContent = (message: LfLLMChoiceMessage): VNode[] => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
-
-    const { messages } = this.#b;
-    const { messageBlock } = this.#adapter.elements.jsx.chat;
-    const { role } = message;
-
-    const elements: VNode[] = [];
-    const messageContent = message.content;
-
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    let lastIndex = 0;
-
-    let match: RegExpExecArray | null;
-    while ((match = codeBlockRegex.exec(messageContent)) !== null) {
-      if (match.index > lastIndex) {
-        const text = messageContent.slice(lastIndex, match.index);
-        elements.push(messageBlock(text, role));
-      }
-
-      const language = match[1] ? match[1].trim() : "text";
-      const codePart = match[2].trim();
-
-      elements.push(
-        <lf-code
-          class={bemClass(messages._, messages.code)}
-          lfLanguage={language}
-          lfValue={codePart}
-        ></lf-code>,
-      );
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < messageContent.length) {
-      const remainingText = messageContent.slice(lastIndex);
-      elements.push(messageBlock(remainingText, role));
-    }
-
-    return elements;
+    return parseMessageContent(this.#adapter, message.content, message.role);
   };
   #prepOffline: () => VNode[] = () => {
     const { bemClass, get } = this.#framework.theme;

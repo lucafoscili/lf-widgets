@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_TSX = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_TSX = (Prism: typeof import("prismjs")) => {
   const a = Prism.util.clone(Prism.languages.typescript);
   ((Prism.languages.tsx = Prism.languages.extend("jsx", a)),
     delete Prism?.languages?.tsx?.parameter,

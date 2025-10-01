@@ -20,9 +20,9 @@ import {
   LfFrameworkUtilities,
   LfLLMInterface,
   LfPortalInterface,
+  LfSyntaxInterface,
   LfThemeInterface,
 } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "@stencil/core";
 import { LfColor } from "../lf-color/lf-color";
 import { LfData } from "../lf-data/lf-data";
 import { LfDebug } from "../lf-debug/lf-debug";
@@ -30,7 +30,21 @@ import { LfDrag } from "../lf-drag/lf-drag";
 import { LfEffects } from "../lf-effects/lf-effects";
 import { LfLLM } from "../lf-llm/lf-llm";
 import { LfPortal } from "../lf-portal/lf-portal";
+import { LfSyntax } from "../lf-syntax/lf-syntax";
 import { LfTheme } from "../lf-theme/lf-theme";
+
+// Fallback asset path functions for environments without Stencil
+let ASSET_BASE_PATH = "";
+const fallbackGetAssetPath = (path: string) => {
+  return ASSET_BASE_PATH + path;
+};
+const fallbackSetAssetPath = (path: string) => {
+  ASSET_BASE_PATH = path.endsWith("/") ? path : path + "/";
+};
+
+// Default to fallbacks - components will register Stencil functions if available
+let getAssetPath = fallbackGetAssetPath;
+let setAssetPath = fallbackSetAssetPath;
 
 export class LfFramework implements LfFrameworkInterface {
   #LISTENERS_SETUP = false;
@@ -46,17 +60,19 @@ export class LfFramework implements LfFrameworkInterface {
   ]);
   #SHAPES: LfFrameworkShapesMap = new WeakMap();
 
+  #data?: LfDataInterface;
+  #drag?: LfDragInterface;
+  #llm?: LfLLMInterface;
+  #portal?: LfPortalInterface;
+  #syntax?: LfSyntaxInterface;
+
   assets: {
     get: LfFrameworkGetAssetPath;
     set: LfFrameworkSetAssetPath;
   };
   color: LfColorInterface;
-  data: LfDataInterface;
   debug: LfDebugInterface;
-  drag: LfDragInterface;
   effects: LfEffectsInterface;
-  llm: LfLLMInterface;
-  portal: LfPortalInterface;
   utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
 
@@ -80,45 +96,128 @@ export class LfFramework implements LfFrameworkInterface {
           };
         }
 
-        const { getAssetPath } = this.#MODULES.get(module);
+        const normalizeRequest = (raw: string): string => {
+          if (raw.startsWith("./assets/")) {
+            return `./${raw.slice(9)}`;
+          }
+          if (raw.startsWith("assets/")) {
+            return `./${raw.slice(7)}`;
+          }
+          if (raw.startsWith("/assets/")) {
+            return `./${raw.slice(8)}`;
+          }
+          return raw;
+        };
 
-        if (ICON_STYLE_CACHE.has(value)) {
-          return ICON_STYLE_CACHE.get(value);
+        const request = normalizeRequest(value);
+
+        if (ICON_STYLE_CACHE.has(request)) {
+          return ICON_STYLE_CACHE.get(request);
         }
 
-        const path = getAssetPath(value);
+        const { getAssetPath } = this.#MODULES.get(module);
+        const resolveGetAssetPath =
+          typeof getAssetPath === "function"
+            ? getAssetPath
+            : fallbackGetAssetPath;
+
+        const path = resolveGetAssetPath(request);
         const style = {
           mask: `url('${path}') no-repeat center`,
           webkitMask: `url('${path}') no-repeat center`,
         };
         const cached = { path, style };
 
-        ICON_STYLE_CACHE.set(value, cached);
+        ICON_STYLE_CACHE.set(request, cached);
 
         return cached;
       },
       set: (value, module?) => {
         if (!module) {
-          this.#MODULES.forEach(({ setAssetPath }) => setAssetPath(value));
+          this.#MODULES.forEach(({ setAssetPath }) => {
+            if (typeof setAssetPath === "function") {
+              setAssetPath(value);
+            } else {
+              fallbackSetAssetPath(value);
+            }
+          });
         } else if (this.#MODULES.has(module)) {
           const { setAssetPath } = this.#MODULES.get(module);
-          setAssetPath(value);
+          if (typeof setAssetPath === "function") {
+            setAssetPath(value);
+          } else {
+            fallbackSetAssetPath(value);
+          }
         }
       },
     };
 
     this.color = new LfColor(this);
-    this.data = new LfData(this);
     this.debug = new LfDebug(this);
-    this.drag = new LfDrag(this);
     this.effects = new LfEffects(this);
-    this.llm = new LfLLM(this);
-    this.portal = new LfPortal(this);
     this.theme = new LfTheme(this);
     this.utilities = {
       clickCallbacks: new Set(),
     };
   }
+
+  //#region Lazy Getters for Heavy Modules
+  /**
+   * Data module - lazy initialized on first access.
+   * Provides utilities for data manipulation and tree structures.
+   */
+  get data(): LfDataInterface {
+    if (!this.#data) {
+      this.#data = new LfData(this);
+    }
+    return this.#data;
+  }
+
+  /**
+   * Drag module - lazy initialized on first access.
+   * Provides drag-and-drop functionality.
+   */
+  get drag(): LfDragInterface {
+    if (!this.#drag) {
+      this.#drag = new LfDrag(this);
+    }
+    return this.#drag;
+  }
+
+  /**
+   * LLM module - lazy initialized on first access.
+   * Provides utilities for LLM streaming and interaction.
+   */
+  get llm(): LfLLMInterface {
+    if (!this.#llm) {
+      this.#llm = new LfLLM(this);
+    }
+    return this.#llm;
+  }
+
+  /**
+   * Portal module - lazy initialized on first access.
+   * Manages DOM portals for rendering content outside component tree.
+   */
+  get portal(): LfPortalInterface {
+    if (!this.#portal) {
+      this.#portal = new LfPortal(this);
+    }
+    return this.#portal;
+  }
+
+  /**
+   * Syntax module - lazy initialized on first access.
+   * Provides markdown parsing and code syntax highlighting.
+   * Heavy module: loads Prism + Markdown-it only when needed.
+   */
+  get syntax(): LfSyntaxInterface {
+    if (!this.#syntax) {
+      this.#syntax = new LfSyntax(this);
+    }
+    return this.#syntax;
+  }
+  //#endregion
 
   #setupListeners = () => {
     if (typeof document === "undefined") {
@@ -228,7 +327,20 @@ export class LfFramework implements LfFrameworkInterface {
       return;
     }
 
-    this.#MODULES.set(module, { name: module, ...options });
+    const safeGet =
+      typeof options.getAssetPath === "function"
+        ? options.getAssetPath
+        : fallbackGetAssetPath;
+    const safeSet =
+      typeof options.setAssetPath === "function"
+        ? options.setAssetPath
+        : fallbackSetAssetPath;
+
+    this.#MODULES.set(module, {
+      name: module,
+      getAssetPath: safeGet,
+      setAssetPath: safeSet,
+    });
 
     this.debug.logs.new(this, `Module ${module} registered.`);
   };

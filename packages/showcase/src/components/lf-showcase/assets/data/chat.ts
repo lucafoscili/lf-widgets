@@ -103,6 +103,11 @@ export const getChatFixtures = (
               { role: "assistant", content: "Hi!" },
               { role: "user", content: "How are you?" },
               { role: "assistant", content: "I'm good, thank you!" },
+              {
+                role: "user",
+                content:
+                  "Can you send me a generic JavaScript code snippet along with a generic Python code snippet?",
+              },
             ],
           },
         },
