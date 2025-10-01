@@ -23,7 +23,6 @@ import {
   LfSyntaxInterface,
   LfThemeInterface,
 } from "@lf-widgets/foundations";
-import { getAssetPath, setAssetPath } from "@stencil/core";
 import { LfColor } from "../lf-color/lf-color";
 import { LfData } from "../lf-data/lf-data";
 import { LfDebug } from "../lf-debug/lf-debug";
@@ -33,6 +32,19 @@ import { LfLLM } from "../lf-llm/lf-llm";
 import { LfPortal } from "../lf-portal/lf-portal";
 import { LfSyntax } from "../lf-syntax/lf-syntax";
 import { LfTheme } from "../lf-theme/lf-theme";
+
+// Fallback asset path functions for environments without Stencil
+let ASSET_BASE_PATH = "";
+const fallbackGetAssetPath = (path: string) => {
+  return ASSET_BASE_PATH + path;
+};
+const fallbackSetAssetPath = (path: string) => {
+  ASSET_BASE_PATH = path.endsWith("/") ? path : path + "/";
+};
+
+// Default to fallbacks - components will register Stencil functions if available
+let getAssetPath = fallbackGetAssetPath;
+let setAssetPath = fallbackSetAssetPath;
 
 export class LfFramework implements LfFrameworkInterface {
   #LISTENERS_SETUP = false;
@@ -48,18 +60,19 @@ export class LfFramework implements LfFrameworkInterface {
   ]);
   #SHAPES: LfFrameworkShapesMap = new WeakMap();
 
+  #data?: LfDataInterface;
+  #drag?: LfDragInterface;
+  #llm?: LfLLMInterface;
+  #portal?: LfPortalInterface;
+  #syntax?: LfSyntaxInterface;
+
   assets: {
     get: LfFrameworkGetAssetPath;
     set: LfFrameworkSetAssetPath;
   };
   color: LfColorInterface;
-  data: LfDataInterface;
   debug: LfDebugInterface;
-  drag: LfDragInterface;
   effects: LfEffectsInterface;
-  llm: LfLLMInterface;
-  portal: LfPortalInterface;
-  syntax: LfSyntaxInterface;
   utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
 
@@ -111,18 +124,71 @@ export class LfFramework implements LfFrameworkInterface {
     };
 
     this.color = new LfColor(this);
-    this.data = new LfData(this);
     this.debug = new LfDebug(this);
-    this.drag = new LfDrag(this);
     this.effects = new LfEffects(this);
-    this.llm = new LfLLM(this);
-    this.portal = new LfPortal(this);
-    this.syntax = new LfSyntax(this);
     this.theme = new LfTheme(this);
     this.utilities = {
       clickCallbacks: new Set(),
     };
   }
+
+  //#region Lazy Getters for Heavy Modules
+  /**
+   * Data module - lazy initialized on first access.
+   * Provides utilities for data manipulation and tree structures.
+   */
+  get data(): LfDataInterface {
+    if (!this.#data) {
+      this.#data = new LfData(this);
+    }
+    return this.#data;
+  }
+
+  /**
+   * Drag module - lazy initialized on first access.
+   * Provides drag-and-drop functionality.
+   */
+  get drag(): LfDragInterface {
+    if (!this.#drag) {
+      this.#drag = new LfDrag(this);
+    }
+    return this.#drag;
+  }
+
+  /**
+   * LLM module - lazy initialized on first access.
+   * Provides utilities for LLM streaming and interaction.
+   */
+  get llm(): LfLLMInterface {
+    if (!this.#llm) {
+      this.#llm = new LfLLM(this);
+    }
+    return this.#llm;
+  }
+
+  /**
+   * Portal module - lazy initialized on first access.
+   * Manages DOM portals for rendering content outside component tree.
+   */
+  get portal(): LfPortalInterface {
+    if (!this.#portal) {
+      this.#portal = new LfPortal(this);
+    }
+    return this.#portal;
+  }
+
+  /**
+   * Syntax module - lazy initialized on first access.
+   * Provides markdown parsing and code syntax highlighting.
+   * Heavy module: loads Prism + Markdown-it only when needed.
+   */
+  get syntax(): LfSyntaxInterface {
+    if (!this.#syntax) {
+      this.#syntax = new LfSyntax(this);
+    }
+    return this.#syntax;
+  }
+  //#endregion
 
   #setupListeners = () => {
     if (typeof document === "undefined") {
