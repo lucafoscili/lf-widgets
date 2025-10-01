@@ -321,11 +321,19 @@ export class LfCode implements LfCodeInterface {
           break;
         }
         case "typescript":
-        default: {
+        case "ts": {
           const { LF_SYNTAX_TYPESCRIPT } = await import(
             "@lf-widgets/framework"
           );
           syntax.registerLanguage(lang, LF_SYNTAX_TYPESCRIPT);
+          break;
+        }
+        default: {
+          this.#framework.debug.logs.new(
+            this,
+            `No syntax highlighter available for language "${lang}". Skipping registration.`,
+            "warning",
+          );
           break;
         }
       }
@@ -481,7 +489,7 @@ export class LfCode implements LfCodeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.loadLanguage();
+    await this.loadLanguage();
     this.#updateValue();
   }
   componentDidLoad() {
