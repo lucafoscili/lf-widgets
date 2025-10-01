@@ -297,6 +297,7 @@ export const LF_SHOWCASE_FRAMEWORK = (
     door,
     dragDrop,
     droplet,
+    highlight,
     ikosaedr,
     palette,
     robot,
@@ -352,6 +353,12 @@ export const LF_SHOWCASE_FRAMEWORK = (
         icon: door,
         id: "Portal",
         value: "Portal",
+      },
+      {
+        description: "Provides syntax highlighting and markdown parsing.",
+        icon: highlight,
+        id: "Syntax",
+        value: "Syntax",
       },
       {
         description: "Design system of the library.",
