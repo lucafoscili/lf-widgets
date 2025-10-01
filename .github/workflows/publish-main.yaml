@@ -1,14 +1,33 @@
 name: Publish NPM Package (main)
 
 on:
-  push:
+  # Manual trigger option
+  workflow_dispatch:
+    inputs:
+      force-publish:
+        description: "Force publish even if not from bump PR"
+        required: false
+        type: boolean
+        default: false
+
+  # Trigger on PR merge to main
+  pull_request:
+    types: [closed]
     branches:
       - main
 
 jobs:
   publish:
+    # Only run if:
+    # 1. PR was merged (not just closed)
+    # 2. Has the release:production label OR force-publish is true
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release:production'))
+      || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
+
     runs-on: ubuntu-latest
     environment: Production
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -16,25 +35,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Check if Last Commit is Merge from version-bump-main
-        id: check_merge
-        run: |
-          LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          echo "Last commit message: $LAST_COMMIT_MESSAGE"
-          if [[ "$LAST_COMMIT_MESSAGE" =~ Merge\ pull\ request\ \#.*\ from\ .*/version-bump-main ]]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Stop if Not Merge from version-bump-main
-        if: steps.check_merge.outputs.should_publish != 'true'
-        run: |
-          echo "This push is not a merge from version-bump-main. Exiting."
-          exit 0
-
       - name: Setup and Build
-        if: steps.check_merge.outputs.should_publish == 'true'
         uses: ./.github/actions/setup
         with:
           node-version: "18.x"
@@ -43,21 +44,31 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build Packages
-        if: steps.check_merge.outputs.should_publish == 'true'
         run: yarn build
 
       - name: Discard Uncommitted Changes
-        if: steps.check_merge.outputs.should_publish == 'true'
         run: git reset --hard HEAD
 
       - name: Configure Git
-        if: steps.check_merge.outputs.should_publish == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Check if Packages Need Publishing
+        id: check_publish
+        run: |
+          # Check if there are packages that need publishing
+          PACKAGES=$(npx lerna changed --json 2>/dev/null || echo "[]")
+          if [ "$PACKAGES" = "[]" ]; then
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "No packages need publishing"
+          else
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Packages to publish: $PACKAGES"
+          fi
+
       - name: Publish Packages with Lerna
-        if: steps.check_merge.outputs.should_publish == 'true'
+        if: steps.check_publish.outputs.needs_publish == 'true'
         id: publish
         run: |
           npx lerna publish from-package --yes --dist-tag latest | tee lerna-output.log
@@ -65,14 +76,39 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Extract Version from Lerna Output
-        if: steps.check_merge.outputs.should_publish == 'true'
+        if: steps.check_publish.outputs.needs_publish == 'true'
         id: get_version
         run: |
-          PUBLISHED_VERSION=$(grep -oP '(?<=@lf-widgets/core@)[^ ]+' lerna-output.log | head -1)
-          echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+          PUBLISHED_VERSION=$(grep -oP '(?<=@lf-widgets/core@)[^ ]+' lerna-output.log | head -1 || echo "")
+          if [ -n "$PUBLISHED_VERSION" ]; then
+            echo "version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "No version found in lerna output"
+            exit 1
+          fi
 
       - name: Create and Push Tag
-        if: steps.check_merge.outputs.should_publish == 'true'
+        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         run: |
-          git tag "${{ steps.get_version.outputs.version }}"
+          git tag "v${{ steps.get_version.outputs.version }}"
           git push origin --tags
+
+      - name: Create GitHub Release
+        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            🎉 **Production Release Published**
+
+            Version: `${{ steps.get_version.outputs.version }}`
+
+            Install with:
+            ```bash
+            npm install @lf-widgets/core@latest
+            # or
+            npm install @lf-widgets/core@${{ steps.get_version.outputs.version }}
+            ```
+          prerelease: false
+          generate_release_notes: true
