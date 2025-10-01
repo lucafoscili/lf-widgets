@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_CSS = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_CSS = (Prism: typeof import("prismjs")) => {
   var e =
     /(?:"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n])*')/;
   ((Prism.languages.css = {

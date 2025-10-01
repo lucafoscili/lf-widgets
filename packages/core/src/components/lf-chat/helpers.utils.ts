@@ -6,7 +6,6 @@ import {
   LfLLMRole,
 } from "@lf-widgets/foundations";
 import { VNode } from "@stencil/core";
-import MarkdownIt, { type Token } from "markdown-it";
 import { LfChat } from "./lf-chat";
 
 //#region Api call
@@ -340,27 +339,26 @@ export const parseMessageContent = (
   content: string,
   role: LfLLMRole,
 ): VNode[] => {
-  const { elements } = adapter;
+  const { elements, controller } = adapter;
+  const { manager } = controller.get;
+  const { syntax } = manager;
   const { messageBlock } = elements.jsx.chat;
   const contentElements = elements.jsx.content;
 
-  const md = new MarkdownIt({
-    html: false,
-    linkify: false,
-    typographer: false,
-  });
-  const tokens = md.parse(content || "", {});
+  const tokens = syntax.parseMarkdown(content || "");
 
   const vnodes: VNode[] = [];
 
-  const renderInlineTokens = (inlineTokens: Token[]): VNode[] => {
-    const out: VNode[] = [];
+  const renderInlineTokens = (
+    inlineTokens: ReturnType<typeof syntax.parseMarkdown>,
+  ): (VNode | string)[] => {
+    const out: (VNode | string)[] = [];
 
     for (let i = 0; i < inlineTokens.length; i++) {
       const t = inlineTokens[i];
 
       if (t.type === "text") {
-        out.push(messageBlock(t.content, role));
+        out.push(t.content);
         continue;
       }
 
@@ -370,7 +368,7 @@ export const parseMessageContent = (
       }
 
       if (t.type === "strong_open") {
-        const inner: Token[] = [];
+        const inner: typeof inlineTokens = [];
         i++;
         while (
           i < inlineTokens.length &&
@@ -384,7 +382,7 @@ export const parseMessageContent = (
       }
 
       if (t.type === "em_open") {
-        const inner: Token[] = [];
+        const inner: typeof inlineTokens = [];
         i++;
         while (i < inlineTokens.length && inlineTokens[i].type !== "em_close") {
           inner.push(inlineTokens[i]);
@@ -396,7 +394,7 @@ export const parseMessageContent = (
 
       if (t.type === "link_open") {
         const href = t.attrGet("href") || "#";
-        const inner: Token[] = [];
+        const inner: typeof inlineTokens = [];
         i++;
         while (
           i < inlineTokens.length &&
@@ -434,19 +432,17 @@ export const parseMessageContent = (
 
     if (token.type === "heading_open") {
       const level = parseInt(token.tag?.replace("h", "") || "1", 10);
-      // Next token should be inline with heading content
       i++;
       if (i < tokens.length && tokens[i].type === "inline") {
         const headingContent = renderInlineTokens(tokens[i].children || []);
         vnodes.push(contentElements.heading(level, headingContent));
       }
-      // Skip heading_close
       i++;
       continue;
     }
 
     if (token.type === "blockquote_open") {
-      const blockContent: VNode[] = [];
+      const blockContent: (VNode | string)[] = [];
       i++;
       while (i < tokens.length && tokens[i].type !== "blockquote_close") {
         if (tokens[i].type === "inline") {
@@ -463,7 +459,7 @@ export const parseMessageContent = (
       i++;
       while (i < tokens.length && tokens[i].type !== "bullet_list_close") {
         if (tokens[i].type === "list_item_open") {
-          const itemContent: VNode[] = [];
+          const itemContent: (VNode | string)[] = [];
           i++;
           while (i < tokens.length && tokens[i].type !== "list_item_close") {
             if (tokens[i].type === "inline") {
@@ -484,7 +480,7 @@ export const parseMessageContent = (
       i++;
       while (i < tokens.length && tokens[i].type !== "ordered_list_close") {
         if (tokens[i].type === "list_item_open") {
-          const itemContent: VNode[] = [];
+          const itemContent: (VNode | string)[] = [];
           i++;
           while (i < tokens.length && tokens[i].type !== "list_item_close") {
             if (tokens[i].type === "inline") {
@@ -506,18 +502,25 @@ export const parseMessageContent = (
     }
 
     if (token.type === "paragraph_open") {
-      // Next token should be inline
+      i++;
+      if (i < tokens.length && tokens[i].type === "inline") {
+        const paragraphContent = renderInlineTokens(tokens[i].children || []);
+        vnodes.push(contentElements.paragraph(paragraphContent));
+      }
+      i++;
       continue;
     }
 
     if (token.type === "inline") {
-      vnodes.push(...renderInlineTokens(token.children || []));
+      const inlineContent = renderInlineTokens(token.children || []);
+      vnodes.push(contentElements.inlineContainer(inlineContent));
       continue;
     }
 
-    // For any other block types, try to render their children
     if (token.children) {
-      vnodes.push(...renderInlineTokens(token.children));
+      vnodes.push(
+        contentElements.inlineContainer(renderInlineTokens(token.children)),
+      );
     } else if (token.content) {
       vnodes.push(messageBlock(token.content, role));
     }

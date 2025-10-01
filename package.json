@@ -26,6 +26,7 @@
     "cypress": "^14",
     "echarts": "^5",
     "lerna": "^8",
+    "markdown-it": "^14",
     "prettier": "^3",
     "prismjs": "^1",
     "puppeteer": "^24",

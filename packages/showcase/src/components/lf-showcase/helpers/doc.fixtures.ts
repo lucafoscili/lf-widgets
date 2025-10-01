@@ -17,8 +17,8 @@ import { getDebugFixtures } from "../assets/data/debug";
 import { getDragFixtures } from "../assets/data/drag";
 import { getDrawerFixtures } from "../assets/data/drawer";
 import { getEffectsFixtures } from "../assets/data/effects";
-import { getHeaderFixtures } from "../assets/data/header";
 import { getFrameworkFixtures } from "../assets/data/framework";
+import { getHeaderFixtures } from "../assets/data/header";
 import { getImageFixtures } from "../assets/data/image";
 import { getImageviewerFixtures } from "../assets/data/imageviewer";
 import { getListFixtures } from "../assets/data/list";
@@ -32,6 +32,7 @@ import { getProgressbarFixtures } from "../assets/data/progressbar";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
+import { getSyntaxFixtures } from "../assets/data/syntax";
 import { getTabbarFixtures } from "../assets/data/tabbar";
 import { getTextfieldFixtures } from "../assets/data/textfield";
 import { getThemeFixtures } from "../assets/data/theme";
@@ -112,9 +113,9 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getTypewriterFixtures(framework);
     case "lf-upload":
       return getUploadFixtures(framework);
+    default:
+      return null;
   }
-
-  return null;
 };
 
 export const getAllFrameworkFixtures = (framework: string) => {
@@ -135,9 +136,11 @@ export const getAllFrameworkFixtures = (framework: string) => {
       return getLlmFixtures();
     case "portal":
       return getPortalFixtures();
+    case "syntax":
+      return getSyntaxFixtures();
     case "theme":
       return getThemeFixtures();
+    default:
+      return null;
   }
-
-  return null;
 };

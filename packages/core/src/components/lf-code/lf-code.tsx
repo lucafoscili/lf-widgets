@@ -29,19 +29,7 @@ import {
   State,
   Watch,
 } from "@stencil/core";
-import Prism from "prismjs";
 import { awaitFramework } from "../../utils/setup";
-import { LF_CODE_CSS } from "./prism.css.highlight";
-import { LF_CODE_JAVASCRIPT } from "./prism.javascript.highlight";
-import { LF_CODE_JSON } from "./prism.json.highlight";
-import { LF_CODE_JSX } from "./prism.jsx.highlight.js";
-import { LF_CODE_MARKDOWN } from "./prism.markdown.highlight";
-import { LF_CODE_MARKUP } from "./prism.markup.highlight";
-import { LF_CODE_PYTHON } from "./prism.python.highlight";
-import { LF_CODE_REGEX } from "./prism.regex.highlight";
-import { LF_CODE_SCSS } from "./prism.scss.highlight";
-import { LF_CODE_TSX } from "./prism.tsx.highlight";
-import { LF_CODE_TYPESCRIPT } from "./prism.typescript.highlight";
 
 /**
  * The code component displays a snippet of code in a styled container with
@@ -264,46 +252,97 @@ export class LfCode implements LfCodeInterface {
 
   //#region Watchers
   @Watch("lfLanguage")
-  loadLanguage() {
+  async loadLanguage() {
     if (!this.#framework) {
       return;
     }
 
-    switch (this.lfLanguage.toLowerCase()) {
-      case "css":
-        LF_CODE_CSS(Prism);
-        break;
-      case "javascript":
-        LF_CODE_JAVASCRIPT(Prism);
-        break;
-      case "json":
-        LF_CODE_JSON(Prism);
-        break;
-      case "jsx":
-        LF_CODE_JSX(Prism);
-        break;
-      case "markdown":
-        LF_CODE_MARKDOWN(Prism);
-        break;
-      case "markup":
-        LF_CODE_MARKUP(Prism);
-        break;
-      case "python":
-        LF_CODE_PYTHON(Prism);
-        break;
-      case "regex":
-        LF_CODE_REGEX(Prism);
-        break;
-      case "scss":
-        LF_CODE_SCSS(Prism);
-        break;
-      case "tsx":
-        LF_CODE_TSX(Prism);
-        break;
-      default:
-      case "typescript":
-        LF_CODE_TYPESCRIPT(Prism);
-        break;
+    const { syntax } = this.#framework;
+    const lang = this.lfLanguage.toLowerCase();
+
+    // Check if language is already loaded
+    if (syntax.isLanguageLoaded(lang)) {
+      return;
+    }
+
+    // Dynamically import and register the language
+    try {
+      switch (lang) {
+        case "css": {
+          const { LF_SYNTAX_CSS } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_CSS);
+          break;
+        }
+        case "javascript": {
+          const { LF_SYNTAX_JAVASCRIPT } = await import(
+            "@lf-widgets/framework"
+          );
+          syntax.registerLanguage(lang, LF_SYNTAX_JAVASCRIPT);
+          break;
+        }
+        case "json": {
+          const { LF_SYNTAX_JSON } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_JSON);
+          break;
+        }
+        case "jsx": {
+          const { LF_SYNTAX_JSX } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_JSX);
+          break;
+        }
+        case "markdown": {
+          const { LF_SYNTAX_MARKDOWN } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_MARKDOWN);
+          break;
+        }
+        case "markup": {
+          const { LF_SYNTAX_MARKUP } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_MARKUP);
+          break;
+        }
+        case "python": {
+          const { LF_SYNTAX_PYTHON } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_PYTHON);
+          break;
+        }
+        case "regex": {
+          const { LF_SYNTAX_REGEX } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_REGEX);
+          break;
+        }
+        case "scss": {
+          const { LF_SYNTAX_SCSS } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_SCSS);
+          break;
+        }
+        case "tsx": {
+          const { LF_SYNTAX_TSX } = await import("@lf-widgets/framework");
+          syntax.registerLanguage(lang, LF_SYNTAX_TSX);
+          break;
+        }
+        case "typescript":
+        case "ts": {
+          const { LF_SYNTAX_TYPESCRIPT } = await import(
+            "@lf-widgets/framework"
+          );
+          syntax.registerLanguage(lang, LF_SYNTAX_TYPESCRIPT);
+          break;
+        }
+        default: {
+          this.#framework.debug.logs.new(
+            this,
+            `No syntax highlighter available for language "${lang}". Skipping registration.`,
+            "warning",
+          );
+          break;
+        }
+      }
+    } catch (error) {
+      this.#framework.debug.logs.new(
+        this,
+        `Failed to load language "${lang}": ${error}`,
+        "error",
+      );
     }
   }
   //#endregion
@@ -450,7 +489,7 @@ export class LfCode implements LfCodeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.loadLanguage();
+    await this.loadLanguage();
     this.#updateValue();
   }
   componentDidLoad() {
@@ -469,9 +508,10 @@ export class LfCode implements LfCodeInterface {
   }
   componentDidRender() {
     const { info } = this.#framework.debug;
+    const { syntax } = this.#framework;
 
     if (this.#el) {
-      Prism.highlightElement(this.#el);
+      syntax.highlightElement(this.#el);
     }
 
     info.update(this, "did-render");

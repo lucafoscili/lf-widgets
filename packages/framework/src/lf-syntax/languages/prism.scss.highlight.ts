@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_SCSS = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_SCSS = (Prism: typeof import("prismjs")) => {
   ((Prism.languages.scss = Prism.languages.extend("css", {
     comment: {
       pattern: /(^|[^\\])(?:\/\*[\s\S]*?\*\/|\/\/.*)/,

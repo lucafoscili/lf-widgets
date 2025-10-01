@@ -15,6 +15,7 @@ import {
 } from "./framework.constants";
 import { LfLLMInterface } from "./llm.declarations";
 import { LfPortalInterface } from "./portal.declarations";
+import { LfSyntaxInterface } from "./syntax.declarations";
 import { LfThemeInterface } from "./theme.declarations";
 
 //#region Class
@@ -30,6 +31,7 @@ export interface LfFrameworkInterface {
   effects: LfEffectsInterface;
   llm: LfLLMInterface;
   portal: LfPortalInterface;
+  syntax: LfSyntaxInterface;
   utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
   addClickCallback: (cb: LfFrameworkClickCb, async?: boolean) => void;
