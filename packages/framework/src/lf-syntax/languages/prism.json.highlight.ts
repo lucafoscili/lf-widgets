@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_JSON = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_JSON = (Prism: Prism.Environment) => {
   ((Prism.languages.json = {
     property: {
       pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/,

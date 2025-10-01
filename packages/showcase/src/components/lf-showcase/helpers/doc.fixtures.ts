@@ -32,6 +32,7 @@ import { getProgressbarFixtures } from "../assets/data/progressbar";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
+import { getSyntaxFixtures } from "../assets/data/syntax";
 import { getTabbarFixtures } from "../assets/data/tabbar";
 import { getTextfieldFixtures } from "../assets/data/textfield";
 import { getThemeFixtures } from "../assets/data/theme";
@@ -135,9 +136,11 @@ export const getAllFrameworkFixtures = (framework: string) => {
       return getLlmFixtures();
     case "portal":
       return getPortalFixtures();
+    case "syntax":
+      return getSyntaxFixtures();
     case "theme":
       return getThemeFixtures();
+    default:
+      return null;
   }
-
-  return null;
 };

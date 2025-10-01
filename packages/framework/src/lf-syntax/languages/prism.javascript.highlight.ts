@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_JAVASCRIPT = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_JAVASCRIPT = (Prism: Prism.Environment) => {
   ((Prism.languages.javascript = Prism.languages.extend("clike", {
     "class-name": [
       Prism.languages.clike["class-name"],

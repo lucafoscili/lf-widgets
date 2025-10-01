@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_CODE_MARKUP = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_MARKUP = (Prism: Prism.Environment) => {
   ((Prism.languages.markup = {
     comment: { pattern: /<!--(?:(?!<!--)[\s\S])*?-->/, greedy: !0 },
     prolog: { pattern: /<\?[\s\S]+?\?>/, greedy: !0 },
