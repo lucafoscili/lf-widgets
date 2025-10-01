@@ -1265,12 +1265,13 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "scrollToBottom",
-        docs: "Scrolls the chat area to the bottom.",
+        docs: 'Scrolls the chat message list to the bottom.\r\n\r\nThe method first checks the component controller status via this.#adapter.controller.get;\r\nif the controller is not in the "ready" state the method returns early without performing any scrolling.\r\n\r\nBehavior:\r\n- If blockOrScroll === true, performs a passive scroll of the messages container by calling\r\n  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).\r\n  This path is intended for initial loads where a container-level scroll is sufficient.\r\n- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })\r\n  to bring the last message element into view for active user interactions. The block argument is\r\n  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").\r\n\r\nNotes:\r\n- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling\r\n  animation to complete; the promise resolves after issuing the scroll command.\r\n- If the messages container or last message element is not present, the corresponding scroll call\r\n  is a no-op.\r\n- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend\r\n  to use scrollIntoView should pass a valid ScrollLogicalPosition value.',
         returns: {
           type: "Promise<void>",
-          docs: "",
+          docs: "Promise<void> that resolves after issuing the scroll command.",
         },
-        signature: "(block?: ScrollLogicalPosition) => Promise<void>",
+        signature:
+          "(blockOrScroll?: ScrollLogicalPosition | boolean) => Promise<void>",
       },
       {
         name: "setHistory",
@@ -1436,12 +1437,16 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the opacity for horizontal rules. Defaults to => 0.2",
       },
       {
-        name: "--lf-chat-inner-padding",
-        docs: "Sets the inner padding for the messages area. Defaults to => 1em",
+        name: "--lf-chat-inline-code-border-radius",
+        docs: "Sets the border radius for inline code. Defaults to => var(--lf-border-radius, 0.25em)",
       },
       {
-        name: "--lf-chat-link-color",
-        docs: "Sets the color for links. Defaults to => currentColor",
+        name: "--lf-chat-inline-code-padding",
+        docs: "Sets the padding for inline code. Defaults to => 0.2em 0.4em",
+      },
+      {
+        name: "--lf-chat-inner-padding",
+        docs: "Sets the inner padding for the messages area. Defaults to => 1em",
       },
       {
         name: "--lf-chat-list-item-margin",

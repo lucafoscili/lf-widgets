@@ -99,21 +99,40 @@ Type: `Promise<void>`
 
 
 
-### `scrollToBottom(block?: ScrollLogicalPosition) => Promise<void>`
+### `scrollToBottom(blockOrScroll?: ScrollLogicalPosition | boolean) => Promise<void>`
 
-Scrolls the chat area to the bottom.
+Scrolls the chat message list to the bottom.
+
+The method first checks the component controller status via this.#adapter.controller.get;
+if the controller is not in the "ready" state the method returns early without performing any scrolling.
+
+Behavior:
+- If blockOrScroll === true, performs a passive scroll of the messages container by calling
+  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).
+  This path is intended for initial loads where a container-level scroll is sufficient.
+- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })
+  to bring the last message element into view for active user interactions. The block argument is
+  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").
+
+Notes:
+- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling
+  animation to complete; the promise resolves after issuing the scroll command.
+- If the messages container or last message element is not present, the corresponding scroll call
+  is a no-op.
+- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend
+  to use scrollIntoView should pass a valid ScrollLogicalPosition value.
 
 #### Parameters
 
-| Name    | Type                                        | Description                                                                                       |
-| ------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `block` | `"start" \| "end" \| "center" \| "nearest"` | - Defines vertical alignment. Options: "start", "center", "end", "nearest". Default is "nearest". |
+| Name            | Type                               | Description                                                                                                                                               |
+| --------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `blockOrScroll` | `boolean \| ScrollLogicalPosition` | - If true, scroll the container to the bottom. Otherwise, a ScrollLogicalPosition   used as the `block` option for scrollIntoView. Defaults to "nearest". |
 
 #### Returns
 
 Type: `Promise<void>`
 
-
+Promise<void> that resolves after issuing the scroll command.
 
 ### `setHistory(history: string) => Promise<void>`
 
@@ -171,8 +190,9 @@ Type: `Promise<void>`
 | `--lf-chat-hr-border-width`           | Sets the border width for horizontal rules. Defaults to => 1px                                    |
 | `--lf-chat-hr-margin`                 | Sets the margin for horizontal rules. Defaults to => 1em 0                                        |
 | `--lf-chat-hr-opacity`                | Sets the opacity for horizontal rules. Defaults to => 0.2                                         |
+| `--lf-chat-inline-code-border-radius` | Sets the border radius for inline code. Defaults to => var(--lf-border-radius, 0.25em)            |
+| `--lf-chat-inline-code-padding`       | Sets the padding for inline code. Defaults to => 0.2em 0.4em                                      |
 | `--lf-chat-inner-padding`             | Sets the inner padding for the messages area. Defaults to => 1em                                  |
-| `--lf-chat-link-color`                | Sets the color for links. Defaults to => currentColor                                             |
 | `--lf-chat-list-item-margin`          | Sets the margin for list items. Defaults to => 0.25em 0                                           |
 | `--lf-chat-list-margin`               | Sets the margin for lists. Defaults to => 0.5em 0                                                 |
 | `--lf-chat-list-padding-left`         | Sets the left padding for lists. Defaults to => 2em                                               |
