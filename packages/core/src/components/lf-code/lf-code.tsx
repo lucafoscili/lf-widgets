@@ -257,6 +257,10 @@ export class LfCode implements LfCodeInterface {
       return;
     }
 
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
     const { syntax } = this.#framework;
     const lang = this.lfLanguage.toLowerCase();
 
@@ -265,85 +269,7 @@ export class LfCode implements LfCodeInterface {
       return;
     }
 
-    // Dynamically import and register the language
-    try {
-      switch (lang) {
-        case "css": {
-          const { LF_SYNTAX_CSS } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_CSS);
-          break;
-        }
-        case "javascript": {
-          const { LF_SYNTAX_JAVASCRIPT } = await import(
-            "@lf-widgets/framework"
-          );
-          syntax.registerLanguage(lang, LF_SYNTAX_JAVASCRIPT);
-          break;
-        }
-        case "json": {
-          const { LF_SYNTAX_JSON } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_JSON);
-          break;
-        }
-        case "jsx": {
-          const { LF_SYNTAX_JSX } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_JSX);
-          break;
-        }
-        case "markdown": {
-          const { LF_SYNTAX_MARKDOWN } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_MARKDOWN);
-          break;
-        }
-        case "markup": {
-          const { LF_SYNTAX_MARKUP } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_MARKUP);
-          break;
-        }
-        case "python": {
-          const { LF_SYNTAX_PYTHON } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_PYTHON);
-          break;
-        }
-        case "regex": {
-          const { LF_SYNTAX_REGEX } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_REGEX);
-          break;
-        }
-        case "scss": {
-          const { LF_SYNTAX_SCSS } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_SCSS);
-          break;
-        }
-        case "tsx": {
-          const { LF_SYNTAX_TSX } = await import("@lf-widgets/framework");
-          syntax.registerLanguage(lang, LF_SYNTAX_TSX);
-          break;
-        }
-        case "typescript":
-        case "ts": {
-          const { LF_SYNTAX_TYPESCRIPT } = await import(
-            "@lf-widgets/framework"
-          );
-          syntax.registerLanguage(lang, LF_SYNTAX_TYPESCRIPT);
-          break;
-        }
-        default: {
-          this.#framework.debug.logs.new(
-            this,
-            `No syntax highlighter available for language "${lang}". Skipping registration.`,
-            "warning",
-          );
-          break;
-        }
-      }
-    } catch (error) {
-      this.#framework.debug.logs.new(
-        this,
-        `Failed to load language "${lang}": ${error}`,
-        "error",
-      );
-    }
+    await syntax.loadLanguage(lang);
   }
   //#endregion
 

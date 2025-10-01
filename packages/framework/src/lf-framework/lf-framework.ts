@@ -97,12 +97,16 @@ export class LfFramework implements LfFrameworkInterface {
         }
 
         const { getAssetPath } = this.#MODULES.get(module);
+        const resolveGetAssetPath =
+          typeof getAssetPath === "function"
+            ? getAssetPath
+            : fallbackGetAssetPath;
 
         if (ICON_STYLE_CACHE.has(value)) {
           return ICON_STYLE_CACHE.get(value);
         }
 
-        const path = getAssetPath(value);
+        const path = resolveGetAssetPath(value);
         const style = {
           mask: `url('${path}') no-repeat center`,
           webkitMask: `url('${path}') no-repeat center`,
@@ -115,10 +119,20 @@ export class LfFramework implements LfFrameworkInterface {
       },
       set: (value, module?) => {
         if (!module) {
-          this.#MODULES.forEach(({ setAssetPath }) => setAssetPath(value));
+          this.#MODULES.forEach(({ setAssetPath }) => {
+            if (typeof setAssetPath === "function") {
+              setAssetPath(value);
+            } else {
+              fallbackSetAssetPath(value);
+            }
+          });
         } else if (this.#MODULES.has(module)) {
           const { setAssetPath } = this.#MODULES.get(module);
-          setAssetPath(value);
+          if (typeof setAssetPath === "function") {
+            setAssetPath(value);
+          } else {
+            fallbackSetAssetPath(value);
+          }
         }
       },
     };
@@ -298,7 +312,20 @@ export class LfFramework implements LfFrameworkInterface {
       return;
     }
 
-    this.#MODULES.set(module, { name: module, ...options });
+    const safeGet =
+      typeof options.getAssetPath === "function"
+        ? options.getAssetPath
+        : fallbackGetAssetPath;
+    const safeSet =
+      typeof options.setAssetPath === "function"
+        ? options.setAssetPath
+        : fallbackSetAssetPath;
+
+    this.#MODULES.set(module, {
+      name: module,
+      getAssetPath: safeGet,
+      setAssetPath: safeSet,
+    });
 
     this.debug.logs.new(this, `Module ${module} registered.`);
   };
