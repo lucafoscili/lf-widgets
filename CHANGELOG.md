@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.1-rc.0...0.6.0-rc.0) (2025-10-01)
+
+### Bug Fixes
+
+- Fix possible undefined error in image src access ([1116f08](https://github.com/lucafoscili/lf-widgets/commit/1116f08cbc5658dd284de404aa0504021d4e2a47))
+- Update character prompt guidelines in helpers.utils.ts ([24ebd7a](https://github.com/lucafoscili/lf-widgets/commit/24ebd7a7ca3dd4d75857d852b8b6ba48504b1d27))
+- Update lf-chat props and add scrollToBottom method ([e5d7f82](https://github.com/lucafoscili/lf-widgets/commit/e5d7f820879a74f87882dead63ad1df4e7366c9f))
+- Update prompt handling in regenerate and reset functions ([a18572f](https://github.com/lucafoscili/lf-widgets/commit/a18572fac676af6ddf611be383043a9427ce6792))
+
+### Features
+
+- Add getElement method to LfTextfield component ([17aab9b](https://github.com/lucafoscili/lf-widgets/commit/17aab9b39cf99bcafaac8994219667b9d718ab9e))
+
 ## [0.5.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/0.5.0-rc.3...0.5.1-rc.0) (2025-09-30)
 
 **Note:** Version bump only for package @lf-widgets/root
