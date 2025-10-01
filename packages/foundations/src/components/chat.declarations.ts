@@ -43,7 +43,12 @@ export interface LfChatInterface
     LfChatPropsInterface {}
 export interface LfChatElement
   extends HTMLStencilElement,
-    Omit<LfChatInterface, LfComponentClassProperties> {}
+    Omit<LfChatInterface, LfComponentClassProperties> {
+  getHistory: () => Promise<string>;
+  getLastMessage: () => Promise<string>;
+  scrollToBottom: () => Promise<void>;
+  setHistory: (value: string) => Promise<void>;
+}
 //#endregion
 
 //#region Adapter
@@ -200,7 +205,7 @@ export interface LfChatPropsInterface {
   lfStyle?: string;
   lfSystem?: string;
   lfTemperature?: number;
-  lfTypewriterProps?: LfTypewriterPropsInterface;
+  lfTypewriterProps?: LfTypewriterPropsInterface | false;
   lfUiSize?: LfThemeUISize;
   lfValue?: LfChatHistory;
 }

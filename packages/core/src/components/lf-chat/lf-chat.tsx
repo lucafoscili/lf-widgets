@@ -144,15 +144,15 @@ export class LfChat implements LfChatInterface {
    * The maximum amount of tokens allowed in the LLM's answer.
    *
    * @type {number}
-   * @default 250
+   * @default 2048
    * @mutable
    *
    * @example
    * ```tsx
-   * <lf-chat lfMaxTokens={250}></lf-chat>
+   * <lf-chat lfMaxTokens={2048}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfMaxTokens: number = 250;
+  @Prop({ mutable: true }) lfMaxTokens: number = 2048;
   /**
    * How often the component checks whether the LLM endpoint is online or not.
    *
@@ -222,8 +222,8 @@ export class LfChat implements LfChatInterface {
   /**
    * Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element.
    *
-   * @type {LfTypewriterPropsInterface}
-   * @default  { lfDeleteSpeed: 10, lfTag: "p", lfSpeed: 20 }
+   * @type {LfTypewriterPropsInterface | false}
+   * @default false
    * @mutable
    *
    * @example
@@ -231,11 +231,9 @@ export class LfChat implements LfChatInterface {
    * <lf-chat lfTypewriterProps={{ lfDeleteSpeed: 10, lfTag: "p", lfSpeed: 20 }}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfTypewriterProps: LfTypewriterPropsInterface = {
-    lfDeleteSpeed: 10,
-    lfTag: "p",
-    lfSpeed: 20,
-  };
+  @Prop({ mutable: true }) lfTypewriterProps:
+    | LfTypewriterPropsInterface
+    | false = false;
   /**
    * The size of the component.
    *
@@ -273,6 +271,7 @@ export class LfChat implements LfChatInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #interval: NodeJS.Timeout;
+  #lastMessage: HTMLDivElement | null = null;
   #adapter: LfChatAdapter;
   //#endregion
 
@@ -391,6 +390,22 @@ export class LfChat implements LfChatInterface {
     forceUpdate(this);
   }
   /**
+   * Scrolls the chat area to the bottom.
+   */
+  @Method()
+  async scrollToBottom(): Promise<void> {
+    const { status } = this.#adapter.controller.get;
+
+    if (status() !== "ready") {
+      return;
+    }
+
+    this.#lastMessage?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }
+  /**
    * Sets the history of the component through a string.
    */
   @Method()
@@ -493,11 +508,17 @@ export class LfChat implements LfChatInterface {
         </div>
         <div class={bemClass(messages._)}>
           {history?.length ? (
-            history.map((m) => (
+            history.map((m, index) => (
               <div
                 class={bemClass(messages._, messages.container, {
                   [m.role]: true,
                 })}
+                key={index}
+                ref={(el) => {
+                  if (el && index === history.length - 1) {
+                    this.#lastMessage = el;
+                  }
+                }}
               >
                 <div
                   class={bemClass(messages._, messages.content, {
@@ -671,6 +692,7 @@ export class LfChat implements LfChatInterface {
     );
     this.onLfEvent(new CustomEvent("ready"), "ready");
     this.#checkLLMStatus();
+    this.scrollToBottom();
     info.update(this, "did-load");
   }
   componentWillRender() {
