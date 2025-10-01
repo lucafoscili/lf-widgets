@@ -84,6 +84,31 @@ $comp: null !default;
     padding: 0.75em 0;
   }
 
+  &__inline-code {
+    @include lf-el-text("code");
+    /**
+    * @prop --lf-#{$comp}-inline-code-bg: Sets the background color for inline code.
+    *                                     Defaults to => rgba(var(--lf-color-surface), 0.125)
+    */
+    background-color: var(
+      --lf-#{$comp}-inline-code-bg,
+      rgba(var(--lf-color-surface), 0.125)
+    );
+    /**
+    * @prop --lf-#{$comp}-inline-code-border-radius: Sets the border radius for inline code.
+    *                                                Defaults to => var(--lf-border-radius, 0.25em)
+    */
+    border-radius: var(
+      --lf-#{$comp}-inline-code-border-radius,
+      var(--lf-border-radius, 0.25em)
+    );
+    /**
+    * @prop --lf-#{$comp}-inline-code-padding: Sets the padding for inline code.
+    *                                          Defaults to => 0.2em 0.4em
+    */
+    padding: var(--lf-#{$comp}-inline-code-padding, 0.2em 0.4em);
+  }
+
   &__heading {
     @include lf-el-text("title");
     /**
@@ -113,7 +138,7 @@ $comp: null !default;
     * @prop --lf-#{$comp}-blockquote-border-opacity: Sets the border opacity for blockquotes.
     *                                                Defaults to => 0.3
     */
-    border-left-color: currentColor;
+    border-left-color: rgba(var(--lf-color-surface), 0.3);
     opacity: var(--lf-#{$comp}-blockquote-border-opacity, 0.3);
     /**
     * @prop --lf-#{$comp}-blockquote-padding: Sets the padding for blockquotes.
@@ -153,9 +178,9 @@ $comp: null !default;
     @include lf-el-transition("fade-in-out", "opacity");
     /**
     * @prop --lf-#{$comp}-link-color: Sets the color for links.
-    *                                 Defaults to => currentColor
+    *                                 Defaults to => var(--lf-color-info)
     */
-    color: var(--lf-#{$comp}-link-color, currentColor);
+    color: var(--lf-#{$comp}-link-color, var(--lf-color-info));
     text-decoration: underline;
     opacity: 0.85;
 
@@ -172,7 +197,7 @@ $comp: null !default;
     */
     border-top-width: var(--lf-#{$comp}-hr-border-width, 1px);
     border-top-style: solid;
-    border-top-color: currentColor;
+    border-top-color: rgba(var(--lf-color-surface), 0.125);
     /**
     * @prop --lf-#{$comp}-hr-opacity: Sets the opacity for horizontal rules.
     *                                 Defaults to => 0.2
