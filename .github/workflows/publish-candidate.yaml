@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       force-publish:
-        description: 'Force publish even if not from bump PR'
+        description: "Force publish even if not from bump PR"
         required: false
         type: boolean
         default: false
-  
+
   # Trigger on PR merge to candidate
   pull_request:
     types: [closed]
@@ -22,12 +22,12 @@ jobs:
     # 1. PR was merged (not just closed)
     # 2. Has the release:rc label OR force-publish is true
     if: |
-      github.event.pull_request.merged == true &&
-      (contains(github.event.pull_request.labels.*.name, 'release:rc') || inputs.force-publish)
-    
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release:rc'))
+      || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
+
     runs-on: ubuntu-latest
     environment: Development
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -101,14 +101,14 @@ jobs:
           name: Release Candidate v${{ steps.get_version.outputs.version }}
           body: |
             🚀 **Release Candidate Published**
-            
+
             Version: `${{ steps.get_version.outputs.version }}`
-            
+
             Install with:
             ```bash
             npm install @lf-widgets/core@rc
             ```
-            
+
             This is a pre-release version for testing.
           prerelease: true
           generate_release_notes: true
