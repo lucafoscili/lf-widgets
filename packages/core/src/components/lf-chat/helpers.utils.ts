@@ -89,7 +89,9 @@ export const apiCall = async (adapter: LfChatAdapter) => {
       set.history(() => history().push(llmMessage));
     }
   } catch (error) {
-    debug.logs.new(compInstance, `Error calling LLM: ${error}`, "error");
+    const errMessage =
+      error instanceof Error ? error.message : String(error ?? "Unknown error");
+    debug.logs.new(compInstance, `Error calling LLM: ${errMessage}`, "error");
   }
 };
 
