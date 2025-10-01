@@ -14,4 +14,5 @@ export interface LfSyntaxInterface {
     loader: (prism: typeof PrismNamespace) => void,
   ) => void;
   isLanguageLoaded: (name: string) => boolean;
+  loadLanguage: (name: string) => Promise<boolean>;
 }

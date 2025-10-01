@@ -96,29 +96,58 @@ export class LfFramework implements LfFrameworkInterface {
           };
         }
 
-        const { getAssetPath } = this.#MODULES.get(module);
+        const normalizeRequest = (raw: string): string => {
+          if (raw.startsWith("./assets/")) {
+            return `./${raw.slice(9)}`;
+          }
+          if (raw.startsWith("assets/")) {
+            return `./${raw.slice(7)}`;
+          }
+          if (raw.startsWith("/assets/")) {
+            return `./${raw.slice(8)}`;
+          }
+          return raw;
+        };
 
-        if (ICON_STYLE_CACHE.has(value)) {
-          return ICON_STYLE_CACHE.get(value);
+        const request = normalizeRequest(value);
+
+        if (ICON_STYLE_CACHE.has(request)) {
+          return ICON_STYLE_CACHE.get(request);
         }
 
-        const path = getAssetPath(value);
+        const { getAssetPath } = this.#MODULES.get(module);
+        const resolveGetAssetPath =
+          typeof getAssetPath === "function"
+            ? getAssetPath
+            : fallbackGetAssetPath;
+
+        const path = resolveGetAssetPath(request);
         const style = {
           mask: `url('${path}') no-repeat center`,
           webkitMask: `url('${path}') no-repeat center`,
         };
         const cached = { path, style };
 
-        ICON_STYLE_CACHE.set(value, cached);
+        ICON_STYLE_CACHE.set(request, cached);
 
         return cached;
       },
       set: (value, module?) => {
         if (!module) {
-          this.#MODULES.forEach(({ setAssetPath }) => setAssetPath(value));
+          this.#MODULES.forEach(({ setAssetPath }) => {
+            if (typeof setAssetPath === "function") {
+              setAssetPath(value);
+            } else {
+              fallbackSetAssetPath(value);
+            }
+          });
         } else if (this.#MODULES.has(module)) {
           const { setAssetPath } = this.#MODULES.get(module);
-          setAssetPath(value);
+          if (typeof setAssetPath === "function") {
+            setAssetPath(value);
+          } else {
+            fallbackSetAssetPath(value);
+          }
         }
       },
     };
@@ -298,7 +327,20 @@ export class LfFramework implements LfFrameworkInterface {
       return;
     }
 
-    this.#MODULES.set(module, { name: module, ...options });
+    const safeGet =
+      typeof options.getAssetPath === "function"
+        ? options.getAssetPath
+        : fallbackGetAssetPath;
+    const safeSet =
+      typeof options.setAssetPath === "function"
+        ? options.setAssetPath
+        : fallbackSetAssetPath;
+
+    this.#MODULES.set(module, {
+      name: module,
+      getAssetPath: safeGet,
+      setAssetPath: safeSet,
+    });
 
     this.debug.logs.new(this, `Module ${module} registered.`);
   };

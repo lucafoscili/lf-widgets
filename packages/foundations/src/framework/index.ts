@@ -10,6 +10,7 @@ export * from "./effects.constants";
 export * from "./effects.declarations";
 export * from "./framework.constants";
 export * from "./framework.declarations";
+export * from "./stencil-assets";
 export * from "./llm.constants";
 export * from "./llm.declarations";
 export * from "./portal.constants";
