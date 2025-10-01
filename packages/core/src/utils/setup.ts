@@ -1,9 +1,11 @@
 import { LfComponent, onFrameworkReady } from "@lf-widgets/foundations";
 
+// Conditionally load Stencil asset path helpers
+// Only available during Stencil component build, not in SSR frameworks like Next.js
+// When unavailable, the framework uses its built-in fallback asset path functions
 let getAssetPath: ((path: string) => string) | undefined;
 let setAssetPath: ((path: string) => void) | undefined;
 
-// Check if we're in a Stencil component build (not browser runtime)
 if (typeof window === "undefined") {
   try {
     // @ts-ignore - dynamic require for build-time only

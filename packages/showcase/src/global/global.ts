@@ -1,24 +1,25 @@
 import { onFrameworkReady } from "@lf-widgets/foundations";
 
-// Conditional import to prevent browser errors when Stencil is not available
-let getAssetPath: ((path: string) => string) | undefined;
-let setAssetPath: ((path: string) => void) | undefined;
-
+// Conditionally load Stencil asset path helpers
+// Only available during Stencil component build, not in SSR frameworks like Next.js
+// When unavailable, the framework uses its built-in fallback asset path functions
 if (typeof window === "undefined") {
   try {
+    // @ts-ignore - dynamic require for build-time only
     const stencil = require("@stencil/core");
-    getAssetPath = stencil.getAssetPath;
-    setAssetPath = stencil.setAssetPath;
-  } catch (e) {
-    // Stencil not available, functions will be undefined
+    const getAssetPath = stencil?.getAssetPath;
+    const setAssetPath = stencil?.setAssetPath;
+
+    // Register with framework if Stencil is available
+    if (getAssetPath && setAssetPath) {
+      onFrameworkReady.then((framework) => {
+        framework.register("lf-showcase", {
+          getAssetPath,
+          setAssetPath,
+        });
+      });
+    }
+  } catch {
+    // Stencil not available - framework will use fallbacks
   }
 }
-
-onFrameworkReady.then((framework) => {
-  if (getAssetPath && setAssetPath) {
-    framework.register("lf-showcase", {
-      getAssetPath,
-      setAssetPath,
-    });
-  }
-});
