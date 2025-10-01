@@ -66,8 +66,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
-      - name: Create working branch
-        run: git checkout -b version-bump-main-work
+      - name: Ensure working tree is on main
+        run: git checkout main
 
       - name: Detect current and target version
         id: version_meta
