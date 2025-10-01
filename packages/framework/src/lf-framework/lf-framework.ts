@@ -30,6 +30,7 @@ import { LfDrag } from "../lf-drag/lf-drag";
 import { LfEffects } from "../lf-effects/lf-effects";
 import { LfLLM } from "../lf-llm/lf-llm";
 import { LfPortal } from "../lf-portal/lf-portal";
+import { LfSyntax } from "../lf-syntax/lf-syntax";
 import { LfTheme } from "../lf-theme/lf-theme";
 
 export class LfFramework implements LfFrameworkInterface {
@@ -57,6 +58,7 @@ export class LfFramework implements LfFrameworkInterface {
   effects: LfEffectsInterface;
   llm: LfLLMInterface;
   portal: LfPortalInterface;
+  syntax: LfSyntax;
   utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
 
@@ -114,6 +116,7 @@ export class LfFramework implements LfFrameworkInterface {
     this.effects = new LfEffects(this);
     this.llm = new LfLLM(this);
     this.portal = new LfPortal(this);
+    this.syntax = new LfSyntax(this);
     this.theme = new LfTheme(this);
     this.utilities = {
       clickCallbacks: new Set(),

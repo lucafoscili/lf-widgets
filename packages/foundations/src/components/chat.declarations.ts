@@ -77,17 +77,17 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     textarea: () => VNode;
   };
   content: {
-    bold: (children: VNode[]) => VNode;
-    blockquote: (children: VNode[]) => VNode;
+    bold: (children: (VNode | string)[]) => VNode;
+    blockquote: (children: (VNode | string)[]) => VNode;
     bulletList: (children: VNode[]) => VNode;
     codeFence: (language: string, code: string) => VNode;
-    heading: (level: number, children: VNode[]) => VNode;
+    heading: (level: number, children: (VNode | string)[]) => VNode;
     horizontalRule: () => VNode;
     inlineCode: (content: string) => VNode;
-    italic: (children: VNode[]) => VNode;
+    italic: (children: (VNode | string)[]) => VNode;
     lineBreak: () => VNode;
-    link: (href: string, children: VNode[]) => VNode;
-    listItem: (children: VNode[]) => VNode;
+    link: (href: string, children: (VNode | string)[]) => VNode;
+    listItem: (children: (VNode | string)[]) => VNode;
     orderedList: (children: VNode[]) => VNode;
   };
   settings: {
@@ -174,7 +174,7 @@ export interface LfChatAdapterControllerGetters
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
   currentAbortStreaming: () => AbortController | null;
-  currentPrompt: () => LfLLMChoiceMessage;
+  currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
   cyAttributes: typeof CY_ATTRIBUTES;
   history: () => LfChatHistory;
@@ -189,7 +189,7 @@ export interface LfChatAdapterControllerGetters
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentAbortStreaming: (value: AbortController | null) => void;
-  currentPrompt: (value: LfLLMChoiceMessage) => void;
+  currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;

@@ -30,9 +30,7 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "dependencies": {
-    "echarts": "^5",
-    "markdown-it": "^14",
-    "prismjs": "^1"
+    "echarts": "^5"
   },
   "peerDependencies": {
     "@lf-widgets/foundations": "workspace:*",

@@ -14,5 +14,6 @@ export * from "./llm.constants";
 export * from "./llm.declarations";
 export * from "./portal.constants";
 export * from "./portal.declarations";
+export * from "./syntax.declarations";
 export * from "./theme.constants";
 export * from "./theme.declarations";

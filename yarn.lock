@@ -426,8 +426,6 @@ __metadata:
   dependencies:
     "@lf-widgets/assets": "workspace:*"
     echarts: "npm:^5"
-    markdown-it: "npm:^14"
-    prismjs: "npm:^1"
   peerDependencies:
     "@lf-widgets/foundations": "workspace:*"
     "@lf-widgets/framework": "workspace:*"
@@ -446,6 +444,9 @@ __metadata:
 "@lf-widgets/framework@workspace:*, @lf-widgets/framework@workspace:packages/framework":
   version: 0.0.0-use.local
   resolution: "@lf-widgets/framework@workspace:packages/framework"
+  dependencies:
+    markdown-it: "npm:^14"
+    prismjs: "npm:^1"
   peerDependencies:
     "@lf-widgets/foundations": "workspace:*"
   languageName: unknown
@@ -489,6 +490,7 @@ __metadata:
     cypress: "npm:^14"
     echarts: "npm:^5"
     lerna: "npm:^8"
+    markdown-it: "npm:^14"
     prettier: "npm:^3"
     prismjs: "npm:^1"
     puppeteer: "npm:^24"

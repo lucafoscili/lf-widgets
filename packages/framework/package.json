@@ -28,6 +28,10 @@
   "files": [
     "dist/"
   ],
+  "dependencies": {
+    "markdown-it": "^14",
+    "prismjs": "^1"
+  },
   "peerDependencies": {
     "@lf-widgets/foundations": "workspace:*"
   },
