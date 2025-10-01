@@ -83,4 +83,105 @@ $comp: null !default;
     height: auto;
     padding: 0.75em 0;
   }
+
+  &__heading {
+    @include lf-el-text("title");
+    /**
+    * @prop --lf-#{$comp}-heading-margin-top: Sets the top margin for headings.
+    *                                         Defaults to => 1em
+    */
+    margin-top: var(--lf-#{$comp}-heading-margin-top, 1em);
+    /**
+    * @prop --lf-#{$comp}-heading-margin-bottom: Sets the bottom margin for headings.
+    *                                            Defaults to => 0.5em
+    */
+    margin-bottom: var(--lf-#{$comp}-heading-margin-bottom, 0.5em);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__blockquote {
+    /**
+    * @prop --lf-#{$comp}-blockquote-border-width: Sets the border width for blockquotes.
+    *                                              Defaults to => 3px
+    */
+    border-left-width: var(--lf-#{$comp}-blockquote-border-width, 3px);
+    border-left-style: solid;
+    /**
+    * @prop --lf-#{$comp}-blockquote-border-opacity: Sets the border opacity for blockquotes.
+    *                                                Defaults to => 0.3
+    */
+    border-left-color: currentColor;
+    opacity: var(--lf-#{$comp}-blockquote-border-opacity, 0.3);
+    /**
+    * @prop --lf-#{$comp}-blockquote-padding: Sets the padding for blockquotes.
+    *                                         Defaults to => 0.5em 1em
+    */
+    padding: var(--lf-#{$comp}-blockquote-padding, 0.5em 1em);
+    /**
+    * @prop --lf-#{$comp}-blockquote-margin: Sets the margin for blockquotes.
+    *                                        Defaults to => 1em 0
+    */
+    margin: var(--lf-#{$comp}-blockquote-margin, 1em 0);
+    font-style: italic;
+  }
+
+  &__list {
+    /**
+    * @prop --lf-#{$comp}-list-margin: Sets the margin for lists.
+    *                                  Defaults to => 0.5em 0
+    */
+    margin: var(--lf-#{$comp}-list-margin, 0.5em 0);
+    /**
+    * @prop --lf-#{$comp}-list-padding-left: Sets the left padding for lists.
+    *                                        Defaults to => 2em
+    */
+    padding-left: var(--lf-#{$comp}-list-padding-left, 2em);
+  }
+
+  &__list-item {
+    /**
+    * @prop --lf-#{$comp}-list-item-margin: Sets the margin for list items.
+    *                                       Defaults to => 0.25em 0
+    */
+    margin: var(--lf-#{$comp}-list-item-margin, 0.25em 0);
+  }
+
+  &__link {
+    @include lf-el-transition("fade-in-out", "opacity");
+    /**
+    * @prop --lf-#{$comp}-link-color: Sets the color for links.
+    *                                 Defaults to => currentColor
+    */
+    color: var(--lf-#{$comp}-link-color, currentColor);
+    text-decoration: underline;
+    opacity: 0.85;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__hr {
+    border: none;
+    /**
+    * @prop --lf-#{$comp}-hr-border-width: Sets the border width for horizontal rules.
+    *                                      Defaults to => 1px
+    */
+    border-top-width: var(--lf-#{$comp}-hr-border-width, 1px);
+    border-top-style: solid;
+    border-top-color: currentColor;
+    /**
+    * @prop --lf-#{$comp}-hr-opacity: Sets the opacity for horizontal rules.
+    *                                 Defaults to => 0.2
+    */
+    opacity: var(--lf-#{$comp}-hr-opacity, 0.2);
+    /**
+    * @prop --lf-#{$comp}-hr-margin: Sets the margin for horizontal rules.
+    *                                Defaults to => 1em 0
+    */
+    margin: var(--lf-#{$comp}-hr-margin, 1em 0);
+  }
 }

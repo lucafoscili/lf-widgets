@@ -76,6 +76,20 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     stt: () => VNode;
     textarea: () => VNode;
   };
+  content: {
+    bold: (children: VNode[]) => VNode;
+    blockquote: (children: VNode[]) => VNode;
+    bulletList: (children: VNode[]) => VNode;
+    codeFence: (language: string, code: string) => VNode;
+    heading: (level: number, children: VNode[]) => VNode;
+    horizontalRule: () => VNode;
+    inlineCode: (content: string) => VNode;
+    italic: (children: VNode[]) => VNode;
+    lineBreak: () => VNode;
+    link: (href: string, children: VNode[]) => VNode;
+    listItem: (children: VNode[]) => VNode;
+    orderedList: (children: VNode[]) => VNode;
+  };
   settings: {
     back: () => VNode;
     endpoint: () => VNode;

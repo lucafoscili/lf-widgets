@@ -40,7 +40,7 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { calcTokens, submitPrompt } from "./helpers.utils";
+import { calcTokens, parseMessageContent, submitPrompt } from "./helpers.utils";
 import { createAdapter } from "./lf-chat-adapter";
 
 /**
@@ -79,11 +79,11 @@ export class LfChat implements LfChatInterface {
   @Element() rootElement: LfChatElement;
 
   //#region States
-  @State() debugInfo: LfDebugLifecycleInfo;
-  @State() history: LfChatHistory = [];
   @State() currentAbortStreaming: AbortController | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
+  @State() debugInfo: LfDebugLifecycleInfo;
+  @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
   @State() view: LfChatView = "main";
   //#endregion
@@ -493,10 +493,12 @@ export class LfChat implements LfChatInterface {
       if (!response.ok) {
         this.status = "offline";
       } else {
+        if (this.status !== "ready") {
+          requestAnimationFrame(() => {
+            this.scrollToBottom("end");
+          });
+        }
         this.status = "ready";
-        requestAnimationFrame(() => {
-          this.scrollToBottom("end");
-        });
       }
     } catch (error) {
       this.status = "offline";
@@ -575,46 +577,7 @@ export class LfChat implements LfChatInterface {
     );
   };
   #prepContent = (message: LfLLMChoiceMessage): VNode[] => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
-
-    const { messages } = this.#b;
-    const { messageBlock } = this.#adapter.elements.jsx.chat;
-    const { role } = message;
-
-    const elements: VNode[] = [];
-    const messageContent = message.content;
-
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    let lastIndex = 0;
-
-    let match: RegExpExecArray | null;
-    while ((match = codeBlockRegex.exec(messageContent)) !== null) {
-      if (match.index > lastIndex) {
-        const text = messageContent.slice(lastIndex, match.index);
-        elements.push(messageBlock(text, role));
-      }
-
-      const language = match[1] ? match[1].trim() : "text";
-      const codePart = match[2].trim();
-
-      elements.push(
-        <lf-code
-          class={bemClass(messages._, messages.code)}
-          lfLanguage={language}
-          lfValue={codePart}
-        ></lf-code>,
-      );
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < messageContent.length) {
-      const remainingText = messageContent.slice(lastIndex);
-      elements.push(messageBlock(remainingText, role));
-    }
-
-    return elements;
+    return parseMessageContent(this.#adapter, message.content, message.role);
   };
   #prepOffline: () => VNode[] = () => {
     const { bemClass, get } = this.#framework.theme;
