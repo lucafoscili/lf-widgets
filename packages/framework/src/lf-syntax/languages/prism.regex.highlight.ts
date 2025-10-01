@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_SYNTAX_REGEX = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_REGEX = (Prism: typeof import("prismjs")) => {
   var e = { pattern: /\\[\\(){}[\]^$+*?|.]/, alias: "escape" },
     n =
       /\\(?:x[\da-fA-F]{2}|u[\da-fA-F]{4}|u\{[\da-fA-F]+\}|0[0-7]{0,2}|[123][0-7]{2}|c[a-zA-Z]|.)/,

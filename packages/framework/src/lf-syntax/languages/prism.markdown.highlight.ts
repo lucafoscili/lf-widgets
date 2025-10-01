@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_SYNTAX_MARKDOWN = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_MARKDOWN = (Prism: typeof import("prismjs")) => {
   function e(reg: string) {
     return (
       (reg = reg.replace(/<inner>/g, function () {

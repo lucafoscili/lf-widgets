@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const LF_SYNTAX_PYTHON = (Prism: Prism.Environment) => {
+export const LF_SYNTAX_PYTHON = (Prism: typeof import("prismjs")) => {
   ((Prism.languages.python = {
     comment: { pattern: /(^|[^\\])#.*/, lookbehind: !0, greedy: !0 },
     "string-interpolation": {
