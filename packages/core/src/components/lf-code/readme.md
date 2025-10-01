@@ -15,7 +15,8 @@ options for formatting, preserving spaces, and showing a copy button.
 
 | Property           | Attribute            | Description                                                              | Type                                                                                     | Default        |
 | ------------------ | -------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | -------------- |
-| `lfFormat`         | `lf-format`          | Automatically formats the value.                                         | `boolean`                                                                                | `true`         |
+| `lfFadeIn`         | `lf-fade-in`         | Whether to fade in the component on mount.                               | `boolean`                                                                                | `true`         |
+| `lfFormat`         | `lf-format`          |                                                                          | `boolean`                                                                                | `true`         |
 | `lfLanguage`       | `lf-language`        | Sets the language of the snippet.                                        | `string`                                                                                 | `"javascript"` |
 | `lfPreserveSpaces` | `lf-preserve-spaces` | Whether to preserve spaces or not. When missing it is set automatically. | `boolean`                                                                                | `undefined`    |
 | `lfShowCopy`       | `lf-show-copy`       | Whether to show the copy button or not.                                  | `boolean`                                                                                | `true`         |

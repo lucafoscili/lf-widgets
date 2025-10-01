@@ -150,24 +150,37 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                       |
-| ----------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-chat-border-color`      | Sets the border color for the chat component. Defaults to => var(--lf-color-border)               |
-| `--lf-chat-border-radius`     | Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-chat-buttons-padding`   | Sets the padding for the buttons of the chat component. Defaults to => 1em 0                      |
-| `--lf-chat-color-bg`          | Sets the color-bg color for the chat component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-chat-color-on-bg`       | Sets the color-on-bg color for the chat component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-chat-color-on-surface`  | Sets the color-on-surface color for the chat component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-chat-color-surface`     | Sets the color-surface color for the chat component. Defaults to => var(--lf-color-surface)       |
-| `--lf-chat-font-family`       | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-chat-font-size`         | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
-| `--lf-chat-grid-gap`          | Sets the grid gap for the messages area. Defaults to => 0.75em                                    |
-| `--lf-chat-inner-padding`     | Sets the inner padding for the messages area. Defaults to => 1em                                  |
-| `--lf-chat-margin-bottom`     | Sets the margin bottom for the messages area. Defaults to => 1em                                  |
-| `--lf-chat-margin-top`        | Sets the margin top for the messages area. Defaults to => 1em                                     |
-| `--lf-chat-message-max-width` | Sets the max width for each message in the messages area. Defaults to => 75%                      |
-| `--lf-chat-outer-grid-gap`    | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |
-| `--lf-chat-padding`           | Sets the padding for the chat component. Defaults to => 1em                                       |
+| Name                                  | Description                                                                                       |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--lf-chat-blockquote-border-opacity` | Sets the border opacity for blockquotes. Defaults to => 0.3                                       |
+| `--lf-chat-blockquote-border-width`   | Sets the border width for blockquotes. Defaults to => 3px                                         |
+| `--lf-chat-blockquote-margin`         | Sets the margin for blockquotes. Defaults to => 1em 0                                             |
+| `--lf-chat-blockquote-padding`        | Sets the padding for blockquotes. Defaults to => 0.5em 1em                                        |
+| `--lf-chat-border-color`              | Sets the border color for the chat component. Defaults to => var(--lf-color-border)               |
+| `--lf-chat-border-radius`             | Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-chat-buttons-padding`           | Sets the padding for the buttons of the chat component. Defaults to => 1em 0                      |
+| `--lf-chat-color-bg`                  | Sets the color-bg color for the chat component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-chat-color-on-bg`               | Sets the color-on-bg color for the chat component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-chat-color-on-surface`          | Sets the color-on-surface color for the chat component. Defaults to => var(--lf-color-on-surface) |
+| `--lf-chat-color-surface`             | Sets the color-surface color for the chat component. Defaults to => var(--lf-color-surface)       |
+| `--lf-chat-font-family`               | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-chat-font-size`                 | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
+| `--lf-chat-grid-gap`                  | Sets the grid gap for the messages area. Defaults to => 0.75em                                    |
+| `--lf-chat-heading-margin-bottom`     | Sets the bottom margin for headings. Defaults to => 0.5em                                         |
+| `--lf-chat-heading-margin-top`        | Sets the top margin for headings. Defaults to => 1em                                              |
+| `--lf-chat-hr-border-width`           | Sets the border width for horizontal rules. Defaults to => 1px                                    |
+| `--lf-chat-hr-margin`                 | Sets the margin for horizontal rules. Defaults to => 1em 0                                        |
+| `--lf-chat-hr-opacity`                | Sets the opacity for horizontal rules. Defaults to => 0.2                                         |
+| `--lf-chat-inner-padding`             | Sets the inner padding for the messages area. Defaults to => 1em                                  |
+| `--lf-chat-link-color`                | Sets the color for links. Defaults to => currentColor                                             |
+| `--lf-chat-list-item-margin`          | Sets the margin for list items. Defaults to => 0.25em 0                                           |
+| `--lf-chat-list-margin`               | Sets the margin for lists. Defaults to => 0.5em 0                                                 |
+| `--lf-chat-list-padding-left`         | Sets the left padding for lists. Defaults to => 2em                                               |
+| `--lf-chat-margin-bottom`             | Sets the margin bottom for the messages area. Defaults to => 1em                                  |
+| `--lf-chat-margin-top`                | Sets the margin top for the messages area. Defaults to => 1em                                     |
+| `--lf-chat-message-max-width`         | Sets the max width for each message in the messages area. Defaults to => 75%                      |
+| `--lf-chat-outer-grid-gap`            | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |
+| `--lf-chat-padding`                   | Sets the padding for the chat component. Defaults to => 1em                                       |
 
 
 ## Dependencies
@@ -186,24 +199,24 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-spinner](../lf-spinner)
-- [lf-code](../lf-code)
 - [lf-button](../lf-button)
 - [lf-typewriter](../lf-typewriter)
 - [lf-progressbar](../lf-progressbar)
 - [lf-textfield](../lf-textfield)
+- [lf-code](../lf-code)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-chat --> lf-spinner
-  lf-chat --> lf-code
   lf-chat --> lf-button
   lf-chat --> lf-typewriter
   lf-chat --> lf-progressbar
   lf-chat --> lf-textfield
-  lf-code --> lf-button
+  lf-chat --> lf-code
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-code --> lf-button
   lf-accordion --> lf-chat
   lf-article --> lf-chat
   lf-card --> lf-chat
