@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.1-rc.0) (2025-10-01)
+
+
+### Bug Fixes
+
+* Add --no-git-tag-version to lerna version in workflows ([2a85890](https://github.com/lucafoscili/lf-widgets/commit/2a858901b75d9be0202bfa2c44a267e7f8d32bbe))
+* Improve error handling in apiCall helper ([d792171](https://github.com/lucafoscili/lf-widgets/commit/d792171e00da05e1913c2641bb731c9a4fe9ca58))
+
+
+
+
+
 # [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-01)
 
 
