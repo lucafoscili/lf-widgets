@@ -96,24 +96,39 @@ export class LfFramework implements LfFrameworkInterface {
           };
         }
 
+        const normalizeRequest = (raw: string): string => {
+          if (raw.startsWith("./assets/")) {
+            return `./${raw.slice(9)}`;
+          }
+          if (raw.startsWith("assets/")) {
+            return `./${raw.slice(7)}`;
+          }
+          if (raw.startsWith("/assets/")) {
+            return `./${raw.slice(8)}`;
+          }
+          return raw;
+        };
+
+        const request = normalizeRequest(value);
+
+        if (ICON_STYLE_CACHE.has(request)) {
+          return ICON_STYLE_CACHE.get(request);
+        }
+
         const { getAssetPath } = this.#MODULES.get(module);
         const resolveGetAssetPath =
           typeof getAssetPath === "function"
             ? getAssetPath
             : fallbackGetAssetPath;
 
-        if (ICON_STYLE_CACHE.has(value)) {
-          return ICON_STYLE_CACHE.get(value);
-        }
-
-        const path = resolveGetAssetPath(value);
+        const path = resolveGetAssetPath(request);
         const style = {
           mask: `url('${path}') no-repeat center`,
           webkitMask: `url('${path}') no-repeat center`,
         };
         const cached = { path, style };
 
-        ICON_STYLE_CACHE.set(value, cached);
+        ICON_STYLE_CACHE.set(request, cached);
 
         return cached;
       },
