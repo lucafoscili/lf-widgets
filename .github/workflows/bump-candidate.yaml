@@ -58,7 +58,7 @@ jobs:
 
       - name: Bump Versions with Lerna
         run: |
-          npx lerna version --conventional-prerelease --preid=rc --no-push --yes
+          npx lerna version --conventional-prerelease --preid=rc --no-push --no-git-tag-version --yes
 
       - name: Build Packages
         run: yarn build
