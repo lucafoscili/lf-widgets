@@ -298,6 +298,14 @@ export class LfTextfield implements LfTextfieldInterface {
     return this.debugInfo;
   }
   /**
+   * Fetches the HTML element of the component.
+   * @returns {Promise<HTMLTextAreaElement | HTMLInputElement>} A promise that resolves with the component's root HTML element.
+   */
+  @Method()
+  async getElement(): Promise<HTMLTextAreaElement | HTMLInputElement> {
+    return this.#input;
+  }
+  /**
    * Used to retrieve component's properties and descriptions.
    * @returns {Promise<LfTextfieldPropsInterface>} Promise resolved with an object containing the component's properties.
    */
