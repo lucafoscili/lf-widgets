@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.2) (2025-10-01)
+
+### Bug Fixes
+
+- Add conditional Stencil asset path registration and lazy module loading ([99c41d2](https://github.com/lucafoscili/lf-widgets/commit/99c41d21e1f261cf8415f60b864db3e4a5ab6d3e))
+- Improve language registration and async handling in LfCode ([6abb5e5](https://github.com/lucafoscili/lf-widgets/commit/6abb5e50dce6caadd4a5f89e57082b79bb24dcd1))
+- Refactor asset path and syntax language loading ([d9620f2](https://github.com/lucafoscili/lf-widgets/commit/d9620f20ace0c6379b05e1382cf59ae05427f5a7))
+- Use CSS variable for blockquote border opacity ([463046f](https://github.com/lucafoscili/lf-widgets/commit/463046f5416a92e22b007d6526b2993b6f469109))
+
+### Features
+
+- Add centralized syntax module for markdown and code highlighting ([7e99e8d](https://github.com/lucafoscili/lf-widgets/commit/7e99e8d679fc840174cb2e994e7ff2762727a53e))
+- Add inlineContainer and paragraph support to chat content ([0589c21](https://github.com/lucafoscili/lf-widgets/commit/0589c215d011c2580b31c8cd8203ed42bc125ac2))
+- Refactor syntax highlighting to framework package ([6240cd7](https://github.com/lucafoscili/lf-widgets/commit/6240cd7603dd39670000acdab545349f122dfd36))
+
 # [1.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.1) (2025-10-01)
 
 **Note:** Version bump only for package @lf-widgets/core
