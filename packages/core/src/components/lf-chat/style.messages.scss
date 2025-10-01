@@ -131,8 +131,10 @@ $comp: null !default;
     * @prop --lf-#{$comp}-blockquote-border-opacity: Sets the border opacity for blockquotes.
     *                                                Defaults to => 0.3
     */
-    border-left-color: rgba(var(--lf-color-surface), 0.3);
-    opacity: var(--lf-#{$comp}-blockquote-border-opacity, 0.3);
+    border-left-color: rgba(
+      var(--lf-color-surface),
+      var(--lf-#{$comp}-blockquote-border-opacity, 0.3)
+    );
     /**
     * @prop --lf-#{$comp}-blockquote-padding: Sets the padding for blockquotes.
     *                                         Defaults to => 0.5em 1em
