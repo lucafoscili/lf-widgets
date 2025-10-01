@@ -58,6 +58,7 @@ export const apiCall = async (adapter: LfChatAdapter) => {
 
       try {
         let lastIndex = history().length - 1;
+        let chunkCount = 0;
         for await (const chunk of llm.stream(request, lfEndpointUrl, {
           signal: abortController?.signal,
         })) {
@@ -66,11 +67,15 @@ export const apiCall = async (adapter: LfChatAdapter) => {
               const h = history();
               if (h[lastIndex]) {
                 h[lastIndex].content += chunk.contentDelta;
-                comp.scrollToBottom("end");
+                if (chunkCount % 5 === 0) {
+                  requestAnimationFrame(() => comp.scrollToBottom("nearest"));
+                }
+                chunkCount++;
               }
             });
           }
         }
+        requestAnimationFrame(() => comp.scrollToBottom("end"));
       } finally {
         set.currentAbortStreaming(null);
       }

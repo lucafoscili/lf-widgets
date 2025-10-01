@@ -31,7 +31,6 @@ $comp: null !default;
     *                                    Defaults to => 1em
     */
     padding: var(--lf-#{$comp}-inner-padding, 0 1em);
-    white-space: pre-line;
     width: 100%;
     word-break: normal;
   }
@@ -77,6 +76,7 @@ $comp: null !default;
     margin: 0;
     max-width: 100%;
     padding: 0.75em;
+    white-space: pre-line;
   }
 
   &__code {
@@ -85,15 +85,8 @@ $comp: null !default;
   }
 
   &__inline-code {
+    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125, 4px);
     @include lf-el-text("code");
-    /**
-    * @prop --lf-#{$comp}-inline-code-bg: Sets the background color for inline code.
-    *                                     Defaults to => rgba(var(--lf-color-surface), 0.125)
-    */
-    background-color: var(
-      --lf-#{$comp}-inline-code-bg,
-      rgba(var(--lf-color-surface), 0.125)
-    );
     /**
     * @prop --lf-#{$comp}-inline-code-border-radius: Sets the border radius for inline code.
     *                                                Defaults to => var(--lf-border-radius, 0.25em)
@@ -175,18 +168,8 @@ $comp: null !default;
   }
 
   &__link {
+    @include lf-el-text("link");
     @include lf-el-transition("fade-in-out", "opacity");
-    /**
-    * @prop --lf-#{$comp}-link-color: Sets the color for links.
-    *                                 Defaults to => var(--lf-color-info)
-    */
-    color: var(--lf-#{$comp}-link-color, var(--lf-color-info));
-    text-decoration: underline;
-    opacity: 0.85;
-
-    &:hover {
-      opacity: 1;
-    }
   }
 
   &__hr {
