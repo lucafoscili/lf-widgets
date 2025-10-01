@@ -82,30 +82,55 @@ jobs:
             echo "target=" >> $GITHUB_OUTPUT
           fi
 
+      - name: Decide if bump is required
+        id: bump_control
+        run: |
+          if [ "${{ inputs.bump-type }}" != "auto" ] && [ -n "${{ inputs.bump-type }}" ]; then
+            echo "Manual bump requested (${{ inputs.bump-type }})"
+            echo "should=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if [ -n "${{ steps.version_meta.outputs.target }}" ]; then
+            echo "Graduating release candidate to ${{ steps.version_meta.outputs.target }}"
+            echo "should=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "No bump required (auto mode with stable version)"
+          echo "should=false" >> $GITHUB_OUTPUT
+
       - name: Bump Versions with Lerna
+        if: ${{ steps.bump_control.outputs.should == 'true' }}
         run: |
           if [ "${{ inputs.bump-type }}" = "auto" ] || [ -z "${{ inputs.bump-type }}" ]; then
             if [ -n "${{ steps.version_meta.outputs.target }}" ]; then
-              echo "Graduating pre-release to ${{ steps.version_meta.outputs.target }}"
               npx lerna version ${{ steps.version_meta.outputs.target }} --force-publish --no-push --no-git-tag-version --yes
-            elif git tag --list 'v*' | grep -q .; then
-              npx lerna version --conventional-graduate --no-push --no-git-tag-version --yes
             else
-              npx lerna version --conventional-commits --no-push --no-git-tag-version --yes
+              npx lerna version --conventional-commits --force-publish --no-push --no-git-tag-version --yes
             fi
           else
-            # Use specified bump type
             npx lerna version ${{ inputs.bump-type }} --no-push --no-git-tag-version --yes
           fi
 
       - name: Convert Lerna commit to staged changes
-        run: |
-          git reset --soft HEAD~1 || true
+        if: ${{ steps.bump_control.outputs.should == 'true' }}
+        run: git reset --soft HEAD~1 || true
 
       - name: Build Packages
+        if: ${{ steps.bump_control.outputs.should == 'true' }}
         run: yarn build
 
+      - name: Check for Changes
+        if: ${{ steps.bump_control.outputs.should == 'true' }}
+        id: check_changes
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create or Update Pull Request
+        if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: "chore: bump versions for release [skip ci]"
