@@ -68,7 +68,7 @@ export const apiCall = async (adapter: LfChatAdapter) => {
               if (h[lastIndex]) {
                 h[lastIndex].content += chunk.contentDelta;
                 if (chunkCount % 5 === 0) {
-                  requestAnimationFrame(() => comp.scrollToBottom("nearest"));
+                  requestAnimationFrame(() => comp.scrollToBottom(true));
                 }
                 chunkCount++;
               }

@@ -273,6 +273,7 @@ export class LfChat implements LfChatInterface {
   #w = LF_WRAPPER_ID;
   #interval: NodeJS.Timeout;
   #lastMessage: HTMLDivElement | null = null;
+  #messagesContainer: HTMLDivElement | null = null;
   #adapter: LfChatAdapter;
   //#endregion
 
@@ -400,13 +401,34 @@ export class LfChat implements LfChatInterface {
     forceUpdate(this);
   }
   /**
-   * Scrolls the chat area to the bottom.
+   * Scrolls the chat message list to the bottom.
    *
-   * @param {ScrollLogicalPosition} block - Defines vertical alignment. Options: "start", "center", "end", "nearest". Default is "nearest".
+   * The method first checks the component controller status via this.#adapter.controller.get;
+   * if the controller is not in the "ready" state the method returns early without performing any scrolling.
+   *
+   * Behavior:
+   * - If blockOrScroll === true, performs a passive scroll of the messages container by calling
+   *   this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).
+   *   This path is intended for initial loads where a container-level scroll is sufficient.
+   * - Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })
+   *   to bring the last message element into view for active user interactions. The block argument is
+   *   treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").
+   *
+   * Notes:
+   * - The method is async and returns a Promise<void>, but it does not wait for the visual scrolling
+   *   animation to complete; the promise resolves after issuing the scroll command.
+   * - If the messages container or last message element is not present, the corresponding scroll call
+   *   is a no-op.
+   * - The signature accepts a boolean union for convenience (true = container scroll). Callers who intend
+   *   to use scrollIntoView should pass a valid ScrollLogicalPosition value.
+   *
+   * @param blockOrScroll - If true, scroll the container to the bottom. Otherwise, a ScrollLogicalPosition
+   *                        used as the `block` option for scrollIntoView. Defaults to "nearest".
+   * @returns Promise<void> that resolves after issuing the scroll command.
    */
   @Method()
   async scrollToBottom(
-    block: ScrollLogicalPosition = "nearest",
+    blockOrScroll: ScrollLogicalPosition | boolean = "nearest",
   ): Promise<void> {
     const { status } = this.#adapter.controller.get;
 
@@ -414,9 +436,21 @@ export class LfChat implements LfChatInterface {
       return;
     }
 
+    // If true, just scroll the container to the bottom (passive scroll for initial loads)
+    if (blockOrScroll === true) {
+      if (this.#messagesContainer) {
+        this.#messagesContainer.scrollTo({
+          top: this.#messagesContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+      return;
+    }
+
+    // Otherwise, use scrollIntoView for active user interactions
     this.#lastMessage?.scrollIntoView({
       behavior: "smooth",
-      block,
+      block: blockOrScroll as ScrollLogicalPosition,
     });
   }
   /**
@@ -495,7 +529,7 @@ export class LfChat implements LfChatInterface {
       } else {
         if (this.status !== "ready") {
           requestAnimationFrame(() => {
-            this.scrollToBottom("end");
+            this.scrollToBottom(true); // Container-only scroll for initial load
           });
         }
         this.status = "ready";
@@ -527,7 +561,10 @@ export class LfChat implements LfChatInterface {
             {send()}
           </div>
         </div>
-        <div class={bemClass(messages._)}>
+        <div
+          class={bemClass(messages._)}
+          ref={(el) => (this.#messagesContainer = el)}
+        >
           {history?.length ? (
             history.map((m, index) => (
               <div

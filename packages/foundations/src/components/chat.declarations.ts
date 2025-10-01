@@ -47,7 +47,7 @@ export interface LfChatElement
   abortStreaming: () => Promise<void>;
   getHistory: () => Promise<string>;
   getLastMessage: () => Promise<string>;
-  scrollToBottom: (block?: ScrollLogicalPosition) => Promise<void>;
+  scrollToBottom: (block?: ScrollLogicalPosition | boolean) => Promise<void>;
   setHistory: (value: string) => Promise<void>;
 }
 //#endregion
