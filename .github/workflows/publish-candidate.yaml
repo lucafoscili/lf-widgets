@@ -93,23 +93,3 @@ jobs:
         run: |
           git tag "v${{ steps.get_version.outputs.version }}"
           git push origin --tags
-
-      - name: Create GitHub Release
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: Release Candidate v${{ steps.get_version.outputs.version }}
-          body: |
-            🚀 **Release Candidate Published**
-
-            Version: `${{ steps.get_version.outputs.version }}`
-
-            Install with:
-            ```bash
-            npm install @lf-widgets/core@rc
-            ```
-
-            This is a pre-release version for testing.
-          prerelease: true
-          generate_release_notes: true
