@@ -35,6 +35,8 @@ import {
 export interface LfMasonryInterface
   extends LfComponent<"LfMasonry">,
     LfMasonryPropsInterface {
+  getSelectedShape: () => Promise<LfMasonrySelectedShape>;
+  redecorateShapes: () => Promise<void>;
   setSelectedShape: (index: number) => Promise<void>;
 }
 export interface LfMasonryElement
