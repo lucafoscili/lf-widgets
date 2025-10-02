@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-rc.7](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0-rc.7) (2025-10-02)
+
+
+### Bug Fixes
+
+* Add --no-git-tag-version to lerna version in workflows ([2a85890](https://github.com/lucafoscili/lf-widgets/commit/2a858901b75d9be0202bfa2c44a267e7f8d32bbe))
+* Bump version to 1.0.0-rc.4 across all packages ([371b1a2](https://github.com/lucafoscili/lf-widgets/commit/371b1a2ccb02ec6961b2e01eb2a97a65e65dfa81))
+* Enhance version bump workflow for release candidates ([5c387bc](https://github.com/lucafoscili/lf-widgets/commit/5c387bc613e73e4aecf3596c255faa2ab6ef893d))
+* Improve error handling in apiCall helper ([d792171](https://github.com/lucafoscili/lf-widgets/commit/d792171e00da05e1913c2641bb731c9a4fe9ca58))
+* Refactor version bump workflows for improved automation ([dc93784](https://github.com/lucafoscili/lf-widgets/commit/dc93784f575dde42f0482ec07da310f5c51e49b9))
+* Remove environment settings from bump workflows ([7494c7d](https://github.com/lucafoscili/lf-widgets/commit/7494c7ddf9eb8372ace5fd6207688cd03aba7466))
+* Update workflow to checkout main branch before version bump ([cad0e21](https://github.com/lucafoscili/lf-widgets/commit/cad0e2143fd7ee28c6c1fbfa196ade79679dbb5c))
+
+
+
+
+
+# [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-02)
+
+
+### Bug Fixes
+
+* Add --no-git-tag-version to lerna version in workflows ([2a85890](https://github.com/lucafoscili/lf-widgets/commit/2a858901b75d9be0202bfa2c44a267e7f8d32bbe))
+* Bump version to 1.0.0-rc.4 across all packages ([371b1a2](https://github.com/lucafoscili/lf-widgets/commit/371b1a2ccb02ec6961b2e01eb2a97a65e65dfa81))
+* Enhance version bump workflow for release candidates ([5c387bc](https://github.com/lucafoscili/lf-widgets/commit/5c387bc613e73e4aecf3596c255faa2ab6ef893d))
+* Improve error handling in apiCall helper ([d792171](https://github.com/lucafoscili/lf-widgets/commit/d792171e00da05e1913c2641bb731c9a4fe9ca58))
+* Refactor version bump workflows for improved automation ([dc93784](https://github.com/lucafoscili/lf-widgets/commit/dc93784f575dde42f0482ec07da310f5c51e49b9))
+* Remove environment settings from bump workflows ([7494c7d](https://github.com/lucafoscili/lf-widgets/commit/7494c7ddf9eb8372ace5fd6207688cd03aba7466))
+* Update workflow to checkout main branch before version bump ([cad0e21](https://github.com/lucafoscili/lf-widgets/commit/cad0e2143fd7ee28c6c1fbfa196ade79679dbb5c))
+
+
+
+
+
 # [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-01)
 
 
