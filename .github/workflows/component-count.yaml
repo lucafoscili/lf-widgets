@@ -24,38 +24,31 @@ jobs:
       - name: Count Components
         id: count
         run: |
-          COUNT=$(ls -l packages/components/src/components | grep '^d' | wc -l)
+          COUNT=$(ls -l packages/core/src/components | grep '^d' | wc -l)
           echo "{ \"components\": $COUNT }" > count.json
           echo "components=$COUNT" >> $GITHUB_OUTPUT
 
       - name: Check for Changes
         id: git-check
         run: |
-          if git diff --quiet; then
+          git add count.json
+          if git diff --cached --quiet; then
             echo "changes=false" >> $GITHUB_OUTPUT
           else
             echo "changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Component Count Update Branch and Commit Changes
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          # Create (or update) branch 'component-count-update' from candidate HEAD
-          git checkout -B component-count-update
-          git add count.json
-          git commit -m "Update component count to ${{ steps.count.outputs.components }} [skip ci]" || echo "No changes to commit"
-
-      - name: Push Changes to Branch
-        if: steps.git-check.outputs.changes == 'true'
-        run: git push origin component-count-update --force
-
       - name: Create or Update Pull Request
         if: steps.git-check.outputs.changes == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "Update component count"
+          commit-message: "Update component count to ${{ steps.count.outputs.components }} [skip ci]"
           branch: "component-count-update"
-          title: "Update component count"
-          body: "Automatically updates the component count."
+          title: "📊 Update component count"
+          body: |
+            Automatically updates the component count to **${{ steps.count.outputs.components }}** components.
+
+            This PR was created by the component-count workflow.
           base: "candidate"
           labels: "automated PR"
+          delete-branch: true
