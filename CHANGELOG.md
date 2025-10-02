@@ -3,18 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.0.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0-rc.3) (2025-10-02)
-
-### Bug Fixes
-
-* Improve error handling in apiCall helper ([d792171](https://github.com/lucafoscili/lf-widgets/commit/d792171e00da05e1913c2641bb731c9a4fe9ca58))
-* Refactor version bump workflows for improved automation ([dc93784](https://github.com/lucafoscili/lf-widgets/commit/dc93784f575dde42f0482ec07da310f5c51e49b9))
-* Update workflow configurations for smoother PR creation
-
-
-
-
-
 # [1.0.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.0...1.0.0-rc.2) (2025-10-01)
 
 ### Bug Fixes
