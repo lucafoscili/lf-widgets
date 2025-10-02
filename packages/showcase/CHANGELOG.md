@@ -5,6 +5,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-01)
 
+
+### Bug Fixes
+
+* Bump version to 1.0.0-rc.4 across all packages ([371b1a2](https://github.com/lucafoscili/lf-widgets/commit/371b1a2ccb02ec6961b2e01eb2a97a65e65dfa81))
+
+
+
+
+
+# [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-01)
+
 **Note:** Version bump only for package @lf-widgets/showcase
 
 
