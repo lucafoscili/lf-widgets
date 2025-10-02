@@ -78,7 +78,7 @@ jobs:
         with:
           commit-message: "chore: bump versions for release candidate [skip ci]"
           branch: "version-bump-rc"
-          title: "🚀 Release Candidate Version Bump"
+          title: "Release Candidate Version Bump"
           body: |
             ## 📦 Version Bump for Release Candidate
 
