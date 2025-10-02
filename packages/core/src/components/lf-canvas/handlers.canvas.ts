@@ -136,7 +136,7 @@ export const prepCanvasHandlers = (
           if (image instanceof HTMLImageElement) {
             const { naturalWidth, naturalHeight } = image;
             const orientation: LfCanvasOrientation =
-              naturalWidth >= naturalHeight ? "landscape" : "portrait";
+              naturalWidth > naturalHeight ? "landscape" : "portrait";
 
             set.orientation(orientation);
           } else if (image instanceof SVGElement) {
