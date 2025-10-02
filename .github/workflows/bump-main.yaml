@@ -133,7 +133,7 @@ jobs:
         with:
           commit-message: "chore: bump versions for release [skip ci]"
           branch: "version-bump-main"
-          title: "🚀 Production Release Version Bump"
+          title: "Production Release Version Bump"
           body: |
             ## 📦 Version Bump for Production Release
 
