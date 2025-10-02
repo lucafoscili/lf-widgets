@@ -33,7 +33,6 @@ jobs:
       )
 
     runs-on: ubuntu-latest
-    environment: Development
 
     steps:
       - name: Checkout code
@@ -56,8 +55,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
-      - name: Create working branch
-        run: git checkout -b version-bump-rc-work
+      - name: Ensure working tree is on candidate
+        run: git checkout candidate
 
       - name: Bump Versions with Lerna
         run: |
