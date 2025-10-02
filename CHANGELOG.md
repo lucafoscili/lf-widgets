@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0...1.0.1-rc.0) (2025-10-02)
+
+
+### Bug Fixes
+
+* Fix orientation detection for square images ([3c0318f](https://github.com/lucafoscili/lf-widgets/commit/3c0318f8abd5d9a5a38318c51b02f1e286935071))
+
+
+
+
+
 # [1.0.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.0-rc.2...1.0.0) (2025-10-02)
 
 
