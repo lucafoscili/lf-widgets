@@ -135,6 +135,8 @@ export const prepCanvasHandlers = (
         if (image) {
           const orientation = calcOrientation(image);
           set.orientation(orientation);
+          // Recalculate boxing now that image dimensions are available
+          await (compInstance as LfCanvas).resizeCanvas();
         }
         (compInstance as LfCanvas).onLfEvent(e, "lf-event");
       },

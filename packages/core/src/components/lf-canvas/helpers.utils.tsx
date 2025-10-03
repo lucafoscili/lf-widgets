@@ -1,23 +1,5 @@
 import { LfCanvasBoxing, LfCanvasOrientation } from "@lf-widgets/foundations";
 
-/**
- * Determine the canvas orientation from its width and height.
- *
- * @param w - The width of the canvas (in pixels or units).
- * @param h - The height of the canvas (in pixels or units).
- * @returns Returns "landscape" when width is greater than height, "portrait" when width is less than height,
- *          or null when width and height are equal (square).
- */
-const _calcOrientation = (w: number, h: number): LfCanvasOrientation => {
-  if (w > h) {
-    return "landscape";
-  } else if (w < h) {
-    return "portrait";
-  } else {
-    return null;
-  }
-};
-
 //#region calcBoxing
 /**
  * Determines the boxing type (letterbox or pillarbox) based on the aspect ratios
@@ -138,8 +120,8 @@ export const getImageDimensions = (
 /**
  * Determine the canvas orientation for a given image-like DOM element.
  *
- * Uses `getImageDimensions()` to extract the width and height, then delegates to
- * `_calcOrientation()` to determine the orientation.
+ * Uses `getImageDimensions()` to extract the width and height, then compares them
+ * to determine if the image is landscape, portrait, or square.
  *
  * @param image - The element to inspect (may be `HTMLImageElement`, `SVGElement`,
  *                other element-like objects, or `null`).
@@ -149,7 +131,12 @@ export const calcOrientation = (image: Element | null): LfCanvasOrientation => {
   const { width, height } = getImageDimensions(image);
 
   if (width > 0 && height > 0) {
-    return _calcOrientation(width, height);
+    if (width > height) {
+      return "landscape";
+    } else if (width < height) {
+      return "portrait";
+    }
+    return null; // Square images (width === height)
   }
 
   return null;
