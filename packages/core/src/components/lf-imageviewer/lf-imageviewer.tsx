@@ -18,8 +18,12 @@ import {
   LfImageviewerHistory,
   LfImageviewerInterface,
   LfImageviewerLoadCallback,
+  LfImageviewerNavigationTreeOptions,
+  LfImageviewerNavigationTreeState,
   LfImageviewerPropsInterface,
   LfMasonrySelectedShape,
+  LfThemeBEMModifier,
+  LfTreePropsInterface,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -32,6 +36,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
@@ -42,6 +47,35 @@ import {
   updateValue,
 } from "./helpers.utils";
 import { createAdapter } from "./lf-imageviewer-adapter";
+
+type NavigationTreeLayoutMode = "accordion" | "grid";
+interface NavigationTreeOptionsNormalized {
+  collapsedWidth: number;
+  defaultOpen: boolean;
+  enabled: boolean;
+  layout: {
+    columns: number;
+    mode: NavigationTreeLayoutMode;
+  };
+  maxWidth: number;
+  minWidth: number;
+  position: "start" | "end";
+  width: number;
+}
+
+const NAVIGATION_TREE_DEFAULTS: NavigationTreeOptionsNormalized = {
+  collapsedWidth: 48,
+  defaultOpen: true,
+  enabled: false,
+  layout: {
+    columns: 1,
+    mode: "accordion",
+  },
+  maxWidth: 420,
+  minWidth: 240,
+  position: "start",
+  width: 320,
+};
 
 /**
  * Represents an image viewer component that displays a collection of images in a masonry layout.
@@ -106,6 +140,10 @@ export class LfImageviewer implements LfImageviewerInterface {
    * When true, displays a loading spinner while the image is being loaded.
    */
   @State() isSpinnerActive = false;
+  /**
+   * Tracks whether the navigation tree panel is currently expanded.
+   */
+  @State() isNavigationTreeOpen = false;
   //#endregion
 
   //#region Props
@@ -127,6 +165,16 @@ export class LfImageviewer implements LfImageviewerInterface {
    */
   @Prop({ mutable: true }) lfLoadCallback: LfImageviewerLoadCallback = null;
   /**
+   * Configuration options for the navigation tree.
+   * Accepts a boolean to toggle visibility or an object to customize layout.
+   *
+   * @type {boolean | LfImageviewerNavigationTreeOptions}
+   * @default false
+   * @mutable
+   */
+  @Prop({ mutable: true })
+  lfNavigationTree: boolean | LfImageviewerNavigationTreeOptions = false;
+  /**
    * Custom styling for the component.
    *
    * @type {string}
@@ -135,6 +183,14 @@ export class LfImageviewer implements LfImageviewerInterface {
    */
   @Prop({ mutable: true }) lfStyle: string = "";
   /**
+   * Overrides the default tree props applied to the navigation tree instance.
+   *
+   * @type {Partial<LfTreePropsInterface>}
+   * @default {}
+   * @mutable
+   */
+  @Prop({ mutable: true }) lfTreeProps: Partial<LfTreePropsInterface> = {};
+  /**
    * Configuration parameters of the detail view.
    *
    * @type {LfDataDataset}
@@ -142,6 +198,15 @@ export class LfImageviewer implements LfImageviewerInterface {
    * @mutable
    */
   @Prop({ mutable: true }) lfValue: LfDataDataset = {};
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfNavigationTree")
+  onLfNavigationTreeChange(
+    value: boolean | LfImageviewerNavigationTreeOptions,
+  ) {
+    this.#updateNavigationTreeOptions(value, true);
+  }
   //#endregion
 
   //#region Internal variables
@@ -153,6 +218,8 @@ export class LfImageviewer implements LfImageviewerInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #adapter: LfImageviewerAdapter;
+  #navigationTreeOptions: NavigationTreeOptionsNormalized =
+    this.#cloneNavigationTreeDefaults();
   //#endregion
 
   //#region Events
@@ -290,6 +357,194 @@ export class LfImageviewer implements LfImageviewerInterface {
   //#endregion
 
   //#region Private methods
+  #cloneNavigationTreeDefaults(): NavigationTreeOptionsNormalized {
+    const {
+      collapsedWidth,
+      defaultOpen,
+      enabled,
+      layout,
+      maxWidth,
+      minWidth,
+      position,
+      width,
+    } = NAVIGATION_TREE_DEFAULTS;
+
+    return {
+      collapsedWidth,
+      defaultOpen,
+      enabled,
+      layout: { ...layout },
+      maxWidth,
+      minWidth,
+      position,
+      width,
+    };
+  }
+  #normalizeNavigationTreeOptions(
+    value: boolean | LfImageviewerNavigationTreeOptions,
+  ): NavigationTreeOptionsNormalized {
+    const defaults = this.#cloneNavigationTreeDefaults();
+
+    if (value === true) {
+      defaults.enabled = true;
+      return defaults;
+    }
+
+    if (!value) {
+      defaults.enabled = false;
+      return defaults;
+    }
+
+    defaults.enabled = value.enabled ?? true;
+
+    if (typeof value.defaultOpen === "boolean") {
+      defaults.defaultOpen = value.defaultOpen;
+    }
+
+    if (value.position === "end") {
+      defaults.position = "end";
+    }
+
+    defaults.minWidth = this.#parseSize(value.minWidth, defaults.minWidth);
+    defaults.maxWidth = this.#parseSize(value.maxWidth, defaults.maxWidth);
+
+    if (defaults.minWidth > defaults.maxWidth) {
+      const swap = defaults.minWidth;
+      defaults.minWidth = defaults.maxWidth;
+      defaults.maxWidth = swap;
+    }
+
+    defaults.width = this.#parseSize(value.width, defaults.width);
+    defaults.width = this.#clamp(
+      defaults.width,
+      defaults.minWidth,
+      defaults.maxWidth,
+    );
+
+    if (value.layout) {
+      const { mode, columns } = value.layout;
+
+      if (mode === "grid" || mode === "accordion") {
+        defaults.layout.mode = mode;
+      }
+
+      if (
+        typeof columns === "number" &&
+        Number.isFinite(columns) &&
+        columns > 0
+      ) {
+        defaults.layout.columns = Math.max(1, Math.floor(columns));
+      }
+    }
+
+    return defaults;
+  }
+  #parseSize(value: number | string, fallback: number): number {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return Math.max(0, value);
+    }
+
+    if (typeof value === "string") {
+      const parsed = Number.parseFloat(value);
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, parsed);
+      }
+    }
+
+    return fallback;
+  }
+  #clamp(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max);
+  }
+  #updateNavigationTreeOptions(
+    value: boolean | LfImageviewerNavigationTreeOptions,
+    preserveState = false,
+  ) {
+    const previous = this.#navigationTreeOptions;
+    const next = this.#normalizeNavigationTreeOptions(value);
+
+    this.#navigationTreeOptions = next;
+
+    if (!next.enabled) {
+      this.isNavigationTreeOpen = false;
+      return;
+    }
+
+    if (!preserveState || !previous.enabled) {
+      this.isNavigationTreeOpen = next.defaultOpen;
+    }
+  }
+  #getNavigationTreeState(): LfImageviewerNavigationTreeState {
+    const {
+      collapsedWidth,
+      defaultOpen,
+      enabled,
+      layout,
+      maxWidth,
+      minWidth,
+      position,
+      width,
+    } = this.#navigationTreeOptions;
+
+    const open = enabled && this.isNavigationTreeOpen;
+
+    return {
+      collapsedWidth,
+      defaultOpen,
+      enabled,
+      layout: { ...layout },
+      maxWidth,
+      minWidth,
+      open,
+      position,
+      width,
+    };
+  }
+  #getTreeProps(): Partial<LfTreePropsInterface> {
+    const { layout } = this.#navigationTreeOptions;
+
+    const defaults: Partial<LfTreePropsInterface> = {
+      lfAccordionLayout: layout.mode === "accordion",
+      lfFilter: false,
+      lfSelectable: true,
+      lfUiSize: "small",
+    };
+
+    if (layout.mode === "grid") {
+      defaults.lfAccordionLayout = false;
+      defaults.lfGrid = true;
+    }
+
+    const custom = this.lfTreeProps ?? {};
+    const props = { ...defaults, ...custom } as Partial<LfTreePropsInterface>;
+
+    if (!props.lfDataset) {
+      props.lfDataset = this.lfDataset;
+    }
+
+    return props;
+  }
+  #getNavigationTreeShellStyle(
+    tree: LfImageviewerNavigationTreeState,
+  ): Record<string, string> {
+    const width = this.#computeNavigationTreeWidth(tree);
+    const collapsed = tree.collapsedWidth;
+    const minWidth = tree.open ? tree.minWidth : collapsed;
+    const maxWidth = tree.open ? tree.maxWidth : collapsed;
+
+    return {
+      maxWidth: `${maxWidth}px`,
+      minWidth: `${minWidth}px`,
+      width: `${width}px`,
+    };
+  }
+  #computeNavigationTreeWidth(tree: LfImageviewerNavigationTreeState): number {
+    if (!tree.open) {
+      return tree.collapsedWidth;
+    }
+
+    return this.#clamp(tree.width, tree.minWidth, tree.maxWidth);
+  }
   #initAdapter = () => {
     this.#adapter = createAdapter(
       {
@@ -314,8 +569,10 @@ export class LfImageviewer implements LfImageviewerInterface {
         },
         lfAttribute: this.#lf,
         manager: this.#framework,
+        navigationTree: () => this.#getNavigationTreeState(),
         parts: this.#p,
         spinnerStatus: () => this.isSpinnerActive,
+        treeProps: () => this.#getTreeProps(),
       },
       {
         currentShape: (node) => (this.currentShape = node),
@@ -351,6 +608,8 @@ export class LfImageviewer implements LfImageviewerInterface {
             }
           },
         },
+        navigationTreeOpen: (open: boolean) =>
+          (this.isNavigationTreeOpen = open),
       },
       () => this.#adapter,
     );
@@ -426,13 +685,63 @@ export class LfImageviewer implements LfImageviewerInterface {
   #prepExplorer(): VNode {
     const { bemClass } = this.#framework.theme;
 
-    const { load, masonry, textfield } = this.#adapter.elements.jsx.navigation;
+    const { load, masonry, textfield, tree, treeToggle } =
+      this.#adapter.elements.jsx.navigation;
+    const navigationTree = this.#adapter.controller.get.navigationTree();
+    const navBlock = this.#b.navigationGrid;
 
-    return (
-      <div class={bemClass(this.#b.navigationGrid._)} part={this.#p.navigation}>
+    const modifiers: Partial<LfThemeBEMModifier> = {
+      "with-tree": navigationTree.enabled,
+      "tree-closed": navigationTree.enabled && !navigationTree.open,
+      "tree-end": navigationTree.enabled && navigationTree.position === "end",
+    };
+
+    const wrapperClass = bemClass(navBlock._, undefined, modifiers);
+
+    const content = (
+      <div class={bemClass(navBlock._, navBlock.content)}>
         {textfield()}
         {load()}
         {masonry()}
+      </div>
+    );
+
+    if (!navigationTree.enabled) {
+      return (
+        <div class={wrapperClass} part={this.#p.navigation}>
+          {content}
+        </div>
+      );
+    }
+
+    const treeShellModifiers: Partial<LfThemeBEMModifier> | undefined =
+      navigationTree.position === "end"
+        ? ({ "tree-end": true } as Partial<LfThemeBEMModifier>)
+        : undefined;
+
+    const renderTreeSection = () => (
+      <div
+        class={bemClass(navBlock._, navBlock.treeShell, treeShellModifiers)}
+        style={this.#getNavigationTreeShellStyle(navigationTree)}
+      >
+        <div class={bemClass(navBlock._, navBlock.treeHeader)}>
+          {treeToggle()}
+        </div>
+        <div
+          aria-hidden={!navigationTree.open ? "true" : "false"}
+          class={bemClass(navBlock._, navBlock.treeContent)}
+          style={{ display: navigationTree.open ? "block" : "none" }}
+        >
+          {tree()}
+        </div>
+      </div>
+    );
+
+    return (
+      <div class={wrapperClass} part={this.#p.navigation}>
+        {navigationTree.position === "start" && renderTreeSection()}
+        {content}
+        {navigationTree.position === "end" && renderTreeSection()}
       </div>
     );
   }
@@ -446,6 +755,7 @@ export class LfImageviewer implements LfImageviewerInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#updateNavigationTreeOptions(this.lfNavigationTree);
     this.#initAdapter();
   }
   componentDidLoad() {

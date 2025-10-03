@@ -74,5 +74,36 @@ export const prepNavigationHandlers = (
       comp.onLfEvent(e, "lf-event");
     },
     //#endregion
+
+    //#region Tree handler
+    tree: (e) => {
+      const adapter = getAdapter();
+      const { compInstance } = adapter.controller.get;
+
+      const comp = compInstance as LfImageviewer;
+
+      comp.onLfEvent(e, "lf-event");
+    },
+    //#endregion
+
+    //#region Tree toggle handler
+    treeToggle: (e) => {
+      const { eventType } = e.detail;
+
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const { get, set } = controller;
+      const { compInstance, navigationTree } = get;
+
+      const comp = compInstance as LfImageviewer;
+
+      comp.onLfEvent(e, "lf-event");
+
+      if (eventType === "click") {
+        const config = navigationTree();
+        set.navigationTreeOpen(!config.open);
+      }
+    },
+    //#endregion
   };
 };

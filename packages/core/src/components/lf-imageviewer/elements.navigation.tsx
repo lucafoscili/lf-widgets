@@ -96,5 +96,80 @@ export const prepNavigation = (
       );
     },
     // #endregion
+
+    // #region Tree
+    tree: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, navigationTree, treeProps } =
+        controller.get;
+      const { navigation } = elements.refs;
+      const { tree } = handlers.navigation;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const config = navigationTree();
+      if (!config.enabled) {
+        return;
+      }
+
+      const props = treeProps();
+
+      return (
+        <lf-tree
+          class={bemClass(blocks.navigationGrid._, blocks.navigationGrid.tree)}
+          data-cy={cyAttributes.input}
+          id={IDS.navigation.tree}
+          onLf-tree-event={tree}
+          ref={assignRef(navigation, "tree")}
+          {...props}
+        ></lf-tree>
+      );
+    },
+    // #endregion
+
+    //#region treeToggle
+    treeToggle: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, navigationTree } = controller.get;
+      const { navigation } = elements.refs;
+      const { treeToggle } = handlers.navigation;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      const config = navigationTree();
+      if (!config.enabled) {
+        return;
+      }
+
+      const { variables } = get.current();
+      const isStart = config.position === "start";
+      const iconKeyOpen = isStart ? "--lf-icon-previous" : "--lf-icon-next";
+      const iconKeyClosed = isStart ? "--lf-icon-next" : "--lf-icon-previous";
+      const icon = config.open
+        ? variables[iconKeyOpen]
+        : variables[iconKeyClosed];
+
+      return (
+        <lf-button
+          class={bemClass(
+            blocks.navigationGrid._,
+            blocks.navigationGrid.treeToggle,
+          )}
+          data-cy={cyAttributes.button}
+          id={IDS.navigation.treeToggle}
+          lfAriaLabel={
+            config.open ? "Collapse navigation tree" : "Expand navigation tree"
+          }
+          lfIcon={icon}
+          lfStretchX={true}
+          lfStyling="flat"
+          lfUiSize="small"
+          lfUiState={config.open ? "primary" : "secondary"}
+          onLf-button-event={treeToggle}
+          ref={assignRef(navigation, "treeToggle")}
+        ></lf-button>
+      );
+    },
+    //#endregion
   };
 };

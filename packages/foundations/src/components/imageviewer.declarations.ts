@@ -36,7 +36,40 @@ import {
   LfTextfieldElement,
   LfTextfieldEventPayload,
 } from "./textfield.declarations";
-import { LfTreeElement, LfTreeEventPayload } from "./tree.declarations";
+import {
+  LfTreeElement,
+  LfTreeEventPayload,
+  LfTreePropsInterface,
+} from "./tree.declarations";
+
+// #region Navigation tree
+export interface LfImageviewerNavigationTreeOptions {
+  defaultOpen?: boolean;
+  enabled?: boolean;
+  layout?: {
+    columns?: number;
+    mode?: "accordion" | "grid";
+  };
+  maxWidth?: number | string;
+  minWidth?: number | string;
+  position?: "start" | "end";
+  width?: number | string;
+}
+export interface LfImageviewerNavigationTreeState {
+  collapsedWidth: number;
+  defaultOpen: boolean;
+  enabled: boolean;
+  layout: {
+    columns: number;
+    mode: "accordion" | "grid";
+  };
+  maxWidth: number;
+  minWidth: number;
+  open: boolean;
+  position: "start" | "end";
+  width: number;
+}
+// #endregion
 
 //#region Class
 export interface LfImageviewerInterface
@@ -86,6 +119,8 @@ export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
     load: () => VNode;
     masonry: () => VNode;
     textfield: () => VNode;
+    tree: () => VNode;
+    treeToggle: () => VNode;
   };
 }
 export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
@@ -102,6 +137,8 @@ export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
   navigation: {
     load: LfButtonElement;
     masonry: LfMasonryElement;
+    tree: LfTreeElement;
+    treeToggle: LfButtonElement;
     textfield: LfTextfieldElement;
   };
 }
@@ -115,6 +152,8 @@ export interface LfImageviewerAdapterHandlers
   navigation: {
     button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
     masonry: (e: CustomEvent<LfMasonryEventPayload>) => void;
+    tree: (e: CustomEvent<LfTreeEventPayload>) => void;
+    treeToggle: (e: CustomEvent<LfButtonEventPayload>) => void;
     textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
 }
@@ -127,12 +166,14 @@ export type LfImageviewerAdapterInitializerGetters = Pick<
   | "history"
   | "lfAttribute"
   | "manager"
+  | "navigationTree"
   | "parts"
   | "spinnerStatus"
+  | "treeProps"
 >;
 export type LfImageviewerAdapterInitializerSetters = Pick<
   LfImageviewerAdapterControllerSetters,
-  "currentShape" | "history"
+  "currentShape" | "history" | "navigationTreeOpen"
 >;
 export interface LfImageviewerAdapterControllerGetters
   extends LfComponentAdapterGetters<LfImageviewerInterface> {
@@ -151,8 +192,10 @@ export interface LfImageviewerAdapterControllerGetters
   };
   lfAttribute: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
+  navigationTree: () => LfImageviewerNavigationTreeState;
   parts: typeof LF_IMAGEVIEWER_PARTS;
   spinnerStatus: () => boolean;
+  treeProps: () => Partial<LfTreePropsInterface>;
 }
 export interface LfImageviewerAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -162,6 +205,7 @@ export interface LfImageviewerAdapterControllerSetters
     new: (shape: LfMasonrySelectedShape, isSnapshot?: boolean) => void;
     pop: (index?: number) => void;
   };
+  navigationTreeOpen: (open: boolean) => void;
   spinnerStatus: (active: boolean) => void;
 }
 //#endregion
@@ -182,7 +226,9 @@ export type LfImageviewerHistory = {
 export interface LfImageviewerPropsInterface {
   lfDataset?: LfDataDataset;
   lfLoadCallback?: LfImageviewerLoadCallback;
+  lfNavigationTree?: boolean | LfImageviewerNavigationTreeOptions;
   lfStyle?: string;
+  lfTreeProps?: Partial<LfTreePropsInterface>;
   lfValue?: LfDataDataset;
 }
 export type LfImageviewerLoadCallback = (

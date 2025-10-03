@@ -38,9 +38,24 @@ $borderC: 1px solid var(--lf-color-border);
 .navigation-grid {
   & {
     @include lf-el-stretch;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+  }
+
+  &--with-tree {
+    grid-template-columns: auto 1fr;
+  }
+
+  &--with-tree#{&}--tree-end {
+    grid-template-columns: 1fr auto;
+  }
+
+  &__content {
     display: grid;
     grid-template-rows: auto auto 1fr;
-    overflow: auto;
+    overflow: hidden;
   }
 
   &__textfield {
@@ -54,6 +69,42 @@ $borderC: 1px solid var(--lf-color-border);
   &__masonry {
     overflow: auto;
     position: relative;
+  }
+
+  &__tree-shell {
+    border-right: $borderC;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    transition: width 150ms ease-in-out;
+  }
+
+  &__tree-shell--tree-end {
+    border-left: $borderC;
+    border-right: none;
+  }
+
+  &--tree-closed &__tree-shell {
+    border-left: none;
+    border-right: none;
+  }
+
+  &__tree-header {
+    border-bottom: $borderC;
+    display: flex;
+    gap: 0.25em;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5em;
+  }
+
+  &__tree-content {
+    overflow: auto;
+  }
+
+  &__tree-toggle {
+    margin: 0;
+    width: 100%;
   }
 }
 

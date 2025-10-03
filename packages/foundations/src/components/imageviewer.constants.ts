@@ -20,8 +20,14 @@ export const LF_IMAGEVIEWER_BLOCKS = {
   mainGrid: { _: "main-grid" },
   navigationGrid: {
     _: "navigation-grid",
+    content: "content",
     button: "button",
     masonry: "masonry",
+    tree: "tree",
+    treeContent: "tree-content",
+    treeHeader: "tree-header",
+    treeShell: "tree-shell",
+    treeToggle: "tree-toggle",
     textfield: "textfield",
   },
 } as const;
@@ -46,6 +52,8 @@ export const IDS = {
   navigation: {
     load: "navigation-load",
     masonry: "navigation-masonry",
+    tree: "navigation-tree",
+    treeToggle: "navigation-tree-toggle",
     textfield: "navigation-textfield",
   },
 } as const;
@@ -63,7 +71,9 @@ export const LF_IMAGEVIEWER_PARTS = {
 export const LF_IMAGEVIEWER_PROPS = [
   "lfDataset",
   "lfLoadCallback",
+  "lfNavigationTree",
   "lfStyle",
+  "lfTreeProps",
   "lfValue",
 ] as const satisfies (keyof LfImageviewerPropsInterface)[];
 //#endregion

@@ -232,11 +232,14 @@ export const LF_THEME_MODIFIERS = [
   "sticky",
   "temporary",
   "textarea",
+  "tree-closed",
+  "tree-end",
   "toggable",
   "top",
   "trailing",
   "user",
   "vertical",
+  "with-tree",
 ] as const;
 //#endregion;
 

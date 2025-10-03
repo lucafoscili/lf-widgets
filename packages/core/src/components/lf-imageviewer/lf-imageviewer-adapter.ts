@@ -88,6 +88,8 @@ export const createRefs = (): LfImageviewerAdapterRefs => {
     navigation: {
       load: null,
       masonry: null,
+      tree: null,
+      treeToggle: null,
       textfield: null,
     },
   };
