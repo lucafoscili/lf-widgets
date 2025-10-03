@@ -11,11 +11,11 @@ $comp: "canvas";
   position: relative;
 }
 
-:host([data-orientation="landscape"]) {
+:host([data-boxing="letterbox"]) {
   height: max-content;
 }
 
-:host([data-orientation="portrait"]) {
+:host([data-boxing="pillarbox"]) {
   width: max-content;
 }
 

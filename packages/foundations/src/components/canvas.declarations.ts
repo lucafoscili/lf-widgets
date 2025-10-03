@@ -61,6 +61,7 @@ export interface LfCanvasAdapter extends LfComponentAdapter<LfCanvasInterface> {
 export type LfCanvasAdapterInitializerGetters = Pick<
   LfCanvasAdapterControllerGetters,
   | "blocks"
+  | "boxing"
   | "compInstance"
   | "cyAttributes"
   | "isCursorPreview"
@@ -72,7 +73,7 @@ export type LfCanvasAdapterInitializerGetters = Pick<
 >;
 export type LfCanvasAdapterInitializerSetters = Pick<
   LfCanvasAdapterControllerSetters,
-  "isPainting" | "orientation" | "points"
+  "boxing" | "isPainting" | "orientation" | "points"
 >;
 export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
   board: {
@@ -89,6 +90,7 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
 export interface LfCanvasAdapterControllerGetters
   extends LfComponentAdapterGetters<LfCanvasInterface> {
   blocks: typeof LF_CANVAS_BLOCKS;
+  boxing: () => LfCanvasBoxing;
   compInstance: LfCanvasInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
   isCursorPreview: () => boolean;
@@ -100,6 +102,7 @@ export interface LfCanvasAdapterControllerGetters
 }
 export interface LfCanvasAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  boxing: (value: LfCanvasBoxing) => void;
   isPainting: (value: boolean) => void;
   orientation: (value: LfCanvasOrientation) => void;
   points: (value: LfCanvasPoints) => void;
@@ -162,6 +165,7 @@ export interface LfCanvasEventPayload
 //#endregion
 
 //#region States
+export type LfCanvasBoxing = "letterbox" | "pillarbox" | null;
 export type LfCanvasOrientation = "portrait" | "landscape" | null;
 export type LfCanvasPoints = Array<{ x: number; y: number }>;
 //#endregion

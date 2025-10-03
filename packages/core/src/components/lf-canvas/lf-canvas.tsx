@@ -6,6 +6,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfCanvasAdapter,
+  LfCanvasBoxing,
   LfCanvasBrush,
   LfCanvasCursor,
   LfCanvasElement,
@@ -34,6 +35,11 @@ import {
   State,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import {
+  calcBoxing,
+  calcOrientation,
+  getImageDimensions,
+} from "./helpers.utils";
 import { createAdapter } from "./lf-canvas-adapter";
 
 /**
@@ -70,10 +76,11 @@ export class LfCanvas implements LfCanvasInterface {
   @Element() rootElement: LfCanvasElement;
 
   //#region States
+  @State() boxing: LfCanvasBoxing = null;
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() isPainting = false;
-  @State() points: LfCanvasPoints = [];
   @State() orientation: LfCanvasOrientation = null;
+  @State() points: LfCanvasPoints = [];
   //#endregion
 
   //#region Props
@@ -308,14 +315,54 @@ export class LfCanvas implements LfCanvasInterface {
   /**
    * Resizes the canvas elements to match the container's dimensions.
    *
-   * This method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)
-   * to match the current container's height and width obtained via getBoundingClientRect().
+   * This method performs the following operations:
+   * 1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)
+   * 2. Extracts image dimensions using `getImageDimensions()` helper
+   * 3. Determines image orientation and updates state
+   * 4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch
+   * 5. Waits for next frame to ensure boxing CSS is applied
+   * 6. Sets canvas dimensions to match the final rendered container size
+   *
+   * The boxing calculation helps correctly map pointer coordinates to image coordinates
+   * when the image aspect ratio differs from the available space.
    *
    * @returns A Promise that resolves when the resize operation is complete
    */
   @Method()
   async resizeCanvas(): Promise<void> {
-    const { board, preview } = this.#adapter.elements.refs;
+    const { set } = this.#adapter.controller;
+    const { board, image, preview } = this.#adapter.elements.refs;
+
+    // Get available space from parent to calculate boxing correctly
+    const parent = this.rootElement.parentElement;
+    const availableWidth = parent
+      ? parent.getBoundingClientRect().width
+      : this.#container.getBoundingClientRect().width;
+    const availableHeight = parent
+      ? parent.getBoundingClientRect().height
+      : this.#container.getBoundingClientRect().height;
+
+    const img = await image.getImage();
+    const imgOri = calcOrientation(img);
+    set.orientation(imgOri);
+
+    // Calculate boxing type to correctly map pointer coordinates to image coordinates
+    const { width: imgWidth, height: imgHeight } = getImageDimensions(img);
+
+    const newBoxing = calcBoxing(
+      availableWidth,
+      availableHeight,
+      imgWidth,
+      imgHeight,
+    );
+    // Only update boxing if it changed to prevent infinite resize loop
+    if (this.boxing !== newBoxing) {
+      set.boxing(newBoxing);
+    }
+
+    // After boxing is determined, set canvas dimensions to match actual rendered size
+    // Use requestAnimationFrame to ensure CSS has been applied
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
     const { height, width } = this.#container.getBoundingClientRect();
     board.height = height;
@@ -395,10 +442,16 @@ export class LfCanvas implements LfCanvasInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Initializes the canvas adapter with getters, setters, and toolkit references.
+   * Creates the adapter that manages component state and provides helper methods
+   * for canvas operations, coordinate calculations, and drawing.
+   */
   #initAdapter = () => {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
+        boxing: () => this.boxing,
         compInstance: this,
         cyAttributes: this.#cy,
         isCursorPreview: () => this.#isCursorPreview(),
@@ -409,6 +462,7 @@ export class LfCanvas implements LfCanvasInterface {
         points: () => this.points,
       },
       {
+        boxing: (value) => (this.boxing = value),
         isPainting: (value) => (this.isPainting = value),
         orientation: (value) => (this.orientation = value),
         points: (value) => (this.points = value),
@@ -416,6 +470,31 @@ export class LfCanvas implements LfCanvasInterface {
       () => this.#adapter,
     );
   };
+  /**
+   * Initializes the ResizeObserver to monitor dimension changes.
+   *
+   * Observes the parent element (not the Host element itself) to prevent infinite loops
+   * that would occur if the Host's boxing CSS changes triggered the observer, which would
+   * recalculate boxing, triggering CSS changes again, etc.
+   *
+   * The observer debounces resize events with a 100ms timeout to avoid excessive
+   * recalculations during continuous resize operations.
+   */
+  #initResizeObserver = () => {
+    const observeTarget = this.rootElement.parentElement || this.rootElement;
+
+    this.#resizeObserver = new ResizeObserver(() => {
+      clearTimeout(this.#resizeTimeout);
+      this.#resizeTimeout = setTimeout(() => {
+        this.resizeCanvas();
+      }, 100);
+    });
+    this.#resizeObserver.observe(observeTarget);
+  };
+  /**
+   * Checks if the cursor preview mode is enabled.
+   * @returns True if cursor preview is enabled, false otherwise
+   */
   #isCursorPreview() {
     return this.lfCursor === "preview";
   }
@@ -435,14 +514,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { info } = this.#framework.debug;
 
     this.resizeCanvas();
-
-    this.#resizeObserver = new ResizeObserver(() => {
-      clearTimeout(this.#resizeTimeout);
-      this.#resizeTimeout = setTimeout(() => {
-        this.resizeCanvas();
-      }, 100);
-    });
-    this.#resizeObserver.observe(this.#container);
+    this.#initResizeObserver();
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
@@ -467,7 +539,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { canvas } = this.#b;
 
     return (
-      <Host data-orientation={this.orientation}>
+      <Host data-orientation={this.orientation} data-boxing={this.boxing}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div

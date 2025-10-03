@@ -113,8 +113,16 @@ Type: `Promise<void>`
 
 Resizes the canvas elements to match the container's dimensions.
 
-This method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)
-to match the current container's height and width obtained via getBoundingClientRect().
+This method performs the following operations:
+1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)
+2. Extracts image dimensions using `getImageDimensions()` helper
+3. Determines image orientation and updates state
+4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch
+5. Waits for next frame to ensure boxing CSS is applied
+6. Sets canvas dimensions to match the final rendered container size
+
+The boxing calculation helps correctly map pointer coordinates to image coordinates
+when the image aspect ratio differs from the available space.
 
 #### Returns
 

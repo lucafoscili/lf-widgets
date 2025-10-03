@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1...1.0.2-rc.0) (2025-10-03)
+
+
+### Bug Fixes
+
+* Add boxing calculation and orientation helpers to lf-canvas ([a2d2bff](https://github.com/lucafoscili/lf-widgets/commit/a2d2bff95b41a28923401ca3259a819adc745fcf))
+* Improve canvas orientation and resizing logic ([67b0f51](https://github.com/lucafoscili/lf-widgets/commit/67b0f5184229263044f54ed0e9df318d9c986b13))
+
+
+
+
+
 ## [1.0.1](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1-rc.0...1.0.1) (2025-10-02)
 
 **Note:** Version bump only for package @lf-widgets/root
