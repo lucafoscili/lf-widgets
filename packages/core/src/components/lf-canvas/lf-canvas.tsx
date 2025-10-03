@@ -357,7 +357,7 @@ export class LfCanvas implements LfCanvasInterface {
     );
     // Only update boxing if it changed to prevent infinite resize loop
     if (this.boxing !== newBoxing) {
-      this.boxing = newBoxing;
+      set.boxing(newBoxing);
     }
 
     // After boxing is determined, set canvas dimensions to match actual rendered size
