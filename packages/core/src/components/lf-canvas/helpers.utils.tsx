@@ -117,14 +117,8 @@ export const getImageDimensions = (
     return (
       typeof obj === "object" &&
       obj !== null &&
-      (
-        "naturalWidth" in obj ||
-        "width" in obj
-      ) &&
-      (
-        "naturalHeight" in obj ||
-        "height" in obj
-      )
+      ("naturalWidth" in obj || "width" in obj) &&
+      ("naturalHeight" in obj || "height" in obj)
     );
   }
 
