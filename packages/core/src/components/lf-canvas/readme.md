@@ -116,6 +116,9 @@ Resizes the canvas elements to match the container's dimensions.
 This method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)
 to match the current container's height and width obtained via getBoundingClientRect().
 
+It also calculates the boxing type (letterbox/pillarbox) to correctly map pointer coordinates
+to image coordinates when the image aspect ratio differs from the container.
+
 #### Returns
 
 Type: `Promise<void>`

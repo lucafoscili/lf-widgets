@@ -6,6 +6,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfCanvasAdapter,
+  LfCanvasBoxing,
   LfCanvasBrush,
   LfCanvasCursor,
   LfCanvasElement,
@@ -34,6 +35,7 @@ import {
   State,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { calcBoxing, calcOrientation } from "./helpers.utils";
 import { createAdapter } from "./lf-canvas-adapter";
 
 /**
@@ -70,10 +72,11 @@ export class LfCanvas implements LfCanvasInterface {
   @Element() rootElement: LfCanvasElement;
 
   //#region States
+  @State() boxing: LfCanvasBoxing = null;
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() isPainting = false;
-  @State() points: LfCanvasPoints = [];
   @State() orientation: LfCanvasOrientation = null;
+  @State() points: LfCanvasPoints = [];
   //#endregion
 
   //#region Props
@@ -311,11 +314,73 @@ export class LfCanvas implements LfCanvasInterface {
    * This method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)
    * to match the current container's height and width obtained via getBoundingClientRect().
    *
+   * It also calculates the boxing type (letterbox/pillarbox) to correctly map pointer coordinates
+   * to image coordinates when the image aspect ratio differs from the container.
+   *
    * @returns A Promise that resolves when the resize operation is complete
    */
   @Method()
   async resizeCanvas(): Promise<void> {
-    const { board, preview } = this.#adapter.elements.refs;
+    const { set } = this.#adapter.controller;
+    const { board, image, preview } = this.#adapter.elements.refs;
+
+    // Get available space from parent to calculate boxing correctly
+    const parent = this.rootElement.parentElement;
+    const availableWidth = parent
+      ? parent.getBoundingClientRect().width
+      : this.#container.getBoundingClientRect().width;
+    const availableHeight = parent
+      ? parent.getBoundingClientRect().height
+      : this.#container.getBoundingClientRect().height;
+
+    const img = await image.getImage();
+    const imgOri = calcOrientation(img);
+    set.orientation(imgOri);
+
+    // Calculate boxing type to correctly map pointer coordinates to image coordinates
+    let imgWidth = 0;
+    let imgHeight = 0;
+
+    if (img instanceof HTMLImageElement) {
+      imgWidth = img.naturalWidth;
+      imgHeight = img.naturalHeight;
+    } else if (img instanceof SVGElement) {
+      const svgGraphics = img as SVGGraphicsElement;
+      try {
+        const bbox =
+          typeof svgGraphics.getBBox === "function"
+            ? svgGraphics.getBBox()
+            : null;
+        if (bbox && bbox.width && bbox.height) {
+          imgWidth = bbox.width;
+          imgHeight = bbox.height;
+        }
+      } catch {
+        // getBBox can throw for certain SVGs, fall back to attributes
+      }
+
+      if (imgWidth === 0 || imgHeight === 0) {
+        const attrW = (img as SVGElement).getAttribute("width");
+        const attrH = (img as SVGElement).getAttribute("height");
+        imgWidth = imgWidth || parseFloat(attrW ?? "0");
+        imgHeight = imgHeight || parseFloat(attrH ?? "0");
+      }
+    }
+
+    const newBoxing = calcBoxing(
+      availableWidth,
+      availableHeight,
+      imgWidth,
+      imgHeight,
+    );
+    // Only update boxing if it changed to prevent infinite resize loop
+    if (this.boxing !== newBoxing) {
+      this.boxing = newBoxing;
+    }
+
+    // After boxing is determined, set canvas dimensions to match actual rendered size
+    // Use requestAnimationFrame to ensure CSS has been applied
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
     const { height, width } = this.#container.getBoundingClientRect();
     board.height = height;
@@ -399,6 +464,7 @@ export class LfCanvas implements LfCanvasInterface {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
+        boxing: () => this.boxing,
         compInstance: this,
         cyAttributes: this.#cy,
         isCursorPreview: () => this.#isCursorPreview(),
@@ -409,6 +475,7 @@ export class LfCanvas implements LfCanvasInterface {
         points: () => this.points,
       },
       {
+        boxing: (value) => (this.boxing = value),
         isPainting: (value) => (this.isPainting = value),
         orientation: (value) => (this.orientation = value),
         points: (value) => (this.points = value),
@@ -436,13 +503,17 @@ export class LfCanvas implements LfCanvasInterface {
 
     this.resizeCanvas();
 
+    // Observe the parent element to avoid infinite loops caused by
+    // the boxing CSS modifying the Host element's dimensions
+    const observeTarget = this.rootElement.parentElement || this.rootElement;
+
     this.#resizeObserver = new ResizeObserver(() => {
       clearTimeout(this.#resizeTimeout);
       this.#resizeTimeout = setTimeout(() => {
         this.resizeCanvas();
       }, 100);
     });
-    this.#resizeObserver.observe(this.#container);
+    this.#resizeObserver.observe(observeTarget);
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
@@ -467,7 +538,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { canvas } = this.#b;
 
     return (
-      <Host data-orientation={this.orientation}>
+      <Host data-orientation={this.orientation} data-boxing={this.boxing}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div
