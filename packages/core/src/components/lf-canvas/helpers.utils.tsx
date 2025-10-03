@@ -66,79 +66,90 @@ export const calcBoxing = (
 };
 //#endregion
 
+//#region getImageDimensions
+/**
+ * Extracts the width and height from an image-like DOM element.
+ *
+ * Behavior:
+ * - If `image` is an HTMLImageElement, returns `naturalWidth` and `naturalHeight`.
+ * - If `image` is an SVGElement, first tries `getBBox()` (wrapped in a try/catch),
+ *   then falls back to the `width` and `height` attributes.
+ * - For any other element-like object, attempts to read `naturalWidth`/`naturalHeight`
+ *   or `width`/`height` properties.
+ *
+ * @param image - The element to inspect (may be `HTMLImageElement`, `SVGElement`,
+ *                other element-like objects, or `null`).
+ * @returns An object with `width` and `height` properties (0 if dimensions cannot be determined).
+ */
+export const getImageDimensions = (
+  image: Element | null,
+): { width: number; height: number } => {
+  if (!image) {
+    return { width: 0, height: 0 };
+  }
+
+  if (image instanceof HTMLImageElement) {
+    return {
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+    };
+  }
+
+  if (image instanceof SVGElement) {
+    const svgGraphics = image as SVGGraphicsElement;
+    let w = 0;
+    let h = 0;
+
+    try {
+      const bbox =
+        typeof svgGraphics.getBBox === "function"
+          ? svgGraphics.getBBox()
+          : null;
+      if (bbox && bbox.width && bbox.height) {
+        w = bbox.width;
+        h = bbox.height;
+      }
+    } catch {
+      // getBBox can throw for certain SVGs, fall back to attributes
+    }
+
+    if (w === 0 || h === 0) {
+      const attrW = (image as SVGElement).getAttribute("width");
+      const attrH = (image as SVGElement).getAttribute("height");
+      w = w || parseFloat(attrW ?? "0");
+      h = h || parseFloat(attrH ?? "0");
+    }
+
+    return { width: w, height: h };
+  }
+
+  // Fallback for other element-like objects
+  const elementWithDimensions = image as any;
+  const nw =
+    elementWithDimensions.naturalWidth ?? elementWithDimensions.width ?? 0;
+  const nh =
+    elementWithDimensions.naturalHeight ?? elementWithDimensions.height ?? 0;
+
+  return { width: nw, height: nh };
+};
+//#endregion
+
 //#region calcOrientation
 /**
  * Determine the canvas orientation for a given image-like DOM element.
  *
- * The function attempts to derive numeric width and height from the provided element and then
- * delegates to an internal helper `_calcOrientation(width, height)` to produce an LfCanvasOrientation.
+ * Uses `getImageDimensions()` to extract the width and height, then delegates to
+ * `_calcOrientation()` to determine the orientation.
  *
- * Behavior:
- * - If `image` is an HTMLImageElement, `naturalWidth` / `naturalHeight` are used.
- * - If `image` is an SVGElement, the function first tries `getBBox()` (wrapped in a try/catch because
- *   some SVGs may throw), and if that yields no valid dimensions it falls back to the `width` and
- *   `height` attributes on the SVG element.
- * - For any other element-like object, the function attempts to read `naturalWidth` / `naturalHeight`
- *   or `width` / `height` properties.
- *
- * The first valid positive numeric width and height found are passed to `_calcOrientation`. If no
- * usable dimensions can be determined (or if `image` is `null`), the function returns `null`.
- *
- * Notes:
- * - This function is synchronous and has no side effects.
- * - It is tolerant to missing or zero dimensions and explicitly handles the case where `getBBox`
- *   may throw for certain SVG content.
- *
- * @param image - The element to inspect (may be `HTMLImageElement`, `SVGElement`, other element-like objects,
- *                or `null`).
+ * @param image - The element to inspect (may be `HTMLImageElement`, `SVGElement`,
+ *                other element-like objects, or `null`).
  * @returns The computed LfCanvasOrientation, or `null` if the orientation cannot be determined.
  */
 export const calcOrientation = (image: Element | null): LfCanvasOrientation => {
-  if (image) {
-    if (image instanceof HTMLImageElement) {
-      const { naturalWidth, naturalHeight } = image;
-      return _calcOrientation(naturalWidth, naturalHeight);
-    } else if (image instanceof SVGElement) {
-      const svgGraphics = image as SVGGraphicsElement;
-      let w = 0;
-      let h = 0;
+  const { width, height } = getImageDimensions(image);
 
-      try {
-        const bbox =
-          typeof svgGraphics.getBBox === "function"
-            ? svgGraphics.getBBox()
-            : null;
-        if (bbox && bbox.width && bbox.height) {
-          w = bbox.width;
-          h = bbox.height;
-        }
-      } catch {
-        // getBBox can throw for certain SVGs, fall back to attributes
-      }
-
-      if (w === 0 || h === 0) {
-        const attrW = (image as SVGElement).getAttribute("width");
-        const attrH = (image as SVGElement).getAttribute("height");
-        w = w || parseFloat(attrW ?? "0");
-        h = h || parseFloat(attrH ?? "0");
-      }
-
-      if (w > 0 && h > 0) {
-        return _calcOrientation(w, h);
-      }
-    } else {
-      // fallback for other element-like objects
-      const elementWithDimensions = image as any;
-      const nw =
-        elementWithDimensions.naturalWidth ?? elementWithDimensions.width ?? 0;
-      const nh =
-        elementWithDimensions.naturalHeight ??
-        elementWithDimensions.height ??
-        0;
-      if (nw > 0 && nh > 0) {
-        return _calcOrientation(nw, nh);
-      }
-    }
+  if (width > 0 && height > 0) {
+    return _calcOrientation(width, height);
   }
 
   return null;

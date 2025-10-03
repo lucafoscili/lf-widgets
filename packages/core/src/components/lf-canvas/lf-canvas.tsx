@@ -35,7 +35,11 @@ import {
   State,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { calcBoxing, calcOrientation } from "./helpers.utils";
+import {
+  calcBoxing,
+  calcOrientation,
+  getImageDimensions,
+} from "./helpers.utils";
 import { createAdapter } from "./lf-canvas-adapter";
 
 /**
@@ -311,11 +315,16 @@ export class LfCanvas implements LfCanvasInterface {
   /**
    * Resizes the canvas elements to match the container's dimensions.
    *
-   * This method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)
-   * to match the current container's height and width obtained via getBoundingClientRect().
+   * This method performs the following operations:
+   * 1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)
+   * 2. Extracts image dimensions using `getImageDimensions()` helper
+   * 3. Determines image orientation and updates state
+   * 4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch
+   * 5. Waits for next frame to ensure boxing CSS is applied
+   * 6. Sets canvas dimensions to match the final rendered container size
    *
-   * It also calculates the boxing type (letterbox/pillarbox) to correctly map pointer coordinates
-   * to image coordinates when the image aspect ratio differs from the container.
+   * The boxing calculation helps correctly map pointer coordinates to image coordinates
+   * when the image aspect ratio differs from the available space.
    *
    * @returns A Promise that resolves when the resize operation is complete
    */
@@ -338,34 +347,7 @@ export class LfCanvas implements LfCanvasInterface {
     set.orientation(imgOri);
 
     // Calculate boxing type to correctly map pointer coordinates to image coordinates
-    let imgWidth = 0;
-    let imgHeight = 0;
-
-    if (img instanceof HTMLImageElement) {
-      imgWidth = img.naturalWidth;
-      imgHeight = img.naturalHeight;
-    } else if (img instanceof SVGElement) {
-      const svgGraphics = img as SVGGraphicsElement;
-      try {
-        const bbox =
-          typeof svgGraphics.getBBox === "function"
-            ? svgGraphics.getBBox()
-            : null;
-        if (bbox && bbox.width && bbox.height) {
-          imgWidth = bbox.width;
-          imgHeight = bbox.height;
-        }
-      } catch {
-        // getBBox can throw for certain SVGs, fall back to attributes
-      }
-
-      if (imgWidth === 0 || imgHeight === 0) {
-        const attrW = (img as SVGElement).getAttribute("width");
-        const attrH = (img as SVGElement).getAttribute("height");
-        imgWidth = imgWidth || parseFloat(attrW ?? "0");
-        imgHeight = imgHeight || parseFloat(attrH ?? "0");
-      }
-    }
+    const { width: imgWidth, height: imgHeight } = getImageDimensions(img);
 
     const newBoxing = calcBoxing(
       availableWidth,
@@ -460,6 +442,11 @@ export class LfCanvas implements LfCanvasInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Initializes the canvas adapter with getters, setters, and toolkit references.
+   * Creates the adapter that manages component state and provides helper methods
+   * for canvas operations, coordinate calculations, and drawing.
+   */
   #initAdapter = () => {
     this.#adapter = createAdapter(
       {
@@ -483,6 +470,31 @@ export class LfCanvas implements LfCanvasInterface {
       () => this.#adapter,
     );
   };
+  /**
+   * Initializes the ResizeObserver to monitor dimension changes.
+   *
+   * Observes the parent element (not the Host element itself) to prevent infinite loops
+   * that would occur if the Host's boxing CSS changes triggered the observer, which would
+   * recalculate boxing, triggering CSS changes again, etc.
+   *
+   * The observer debounces resize events with a 100ms timeout to avoid excessive
+   * recalculations during continuous resize operations.
+   */
+  #initResizeObserver = () => {
+    const observeTarget = this.rootElement.parentElement || this.rootElement;
+
+    this.#resizeObserver = new ResizeObserver(() => {
+      clearTimeout(this.#resizeTimeout);
+      this.#resizeTimeout = setTimeout(() => {
+        this.resizeCanvas();
+      }, 100);
+    });
+    this.#resizeObserver.observe(observeTarget);
+  };
+  /**
+   * Checks if the cursor preview mode is enabled.
+   * @returns True if cursor preview is enabled, false otherwise
+   */
   #isCursorPreview() {
     return this.lfCursor === "preview";
   }
@@ -502,18 +514,7 @@ export class LfCanvas implements LfCanvasInterface {
     const { info } = this.#framework.debug;
 
     this.resizeCanvas();
-
-    // Observe the parent element to avoid infinite loops caused by
-    // the boxing CSS modifying the Host element's dimensions
-    const observeTarget = this.rootElement.parentElement || this.rootElement;
-
-    this.#resizeObserver = new ResizeObserver(() => {
-      clearTimeout(this.#resizeTimeout);
-      this.#resizeTimeout = setTimeout(() => {
-        this.resizeCanvas();
-      }, 100);
-    });
-    this.#resizeObserver.observe(observeTarget);
+    this.#initResizeObserver();
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
