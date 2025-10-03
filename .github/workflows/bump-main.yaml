@@ -67,6 +67,10 @@ jobs:
       - name: Ensure working tree is on main
         run: git checkout main
 
+      - name: Delete existing PR branch if it exists
+        run: |
+          git push origin --delete version-bump-main 2>/dev/null || echo "Branch version-bump-main does not exist on remote, continuing..."
+
       - name: Detect current and target version
         id: version_meta
         run: |
