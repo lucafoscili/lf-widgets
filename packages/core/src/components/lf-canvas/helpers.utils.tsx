@@ -106,13 +106,35 @@ export const getImageDimensions = (
   }
 
   // Fallback for other element-like objects
-  const elementWithDimensions = image as any;
-  const nw =
-    elementWithDimensions.naturalWidth ?? elementWithDimensions.width ?? 0;
-  const nh =
-    elementWithDimensions.naturalHeight ?? elementWithDimensions.height ?? 0;
+  interface HasDimensions {
+    naturalWidth?: number;
+    naturalHeight?: number;
+    width?: number;
+    height?: number;
+  }
 
-  return { width: nw, height: nh };
+  function hasDimensions(obj: unknown): obj is HasDimensions {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      (
+        "naturalWidth" in obj ||
+        "width" in obj
+      ) &&
+      (
+        "naturalHeight" in obj ||
+        "height" in obj
+      )
+    );
+  }
+
+  if (hasDimensions(image)) {
+    const nw = image.naturalWidth ?? image.width ?? 0;
+    const nh = image.naturalHeight ?? image.height ?? 0;
+    return { width: nw, height: nh };
+  }
+
+  return { width: 0, height: 0 };
 };
 //#endregion
 
