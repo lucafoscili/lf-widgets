@@ -720,7 +720,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "resizeCanvas",
-        docs: "Resizes the canvas elements to match the container's dimensions.\n\nThis method adjusts both the main board canvas and preview canvas (if cursor preview is enabled)\nto match the current container's height and width obtained via getBoundingClientRect().",
+        docs: "Resizes the canvas elements to match the container's dimensions.\n\nThis method performs the following operations:\n1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)\n2. Extracts image dimensions using `getImageDimensions()` helper\n3. Determines image orientation and updates state\n4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch\n5. Waits for next frame to ensure boxing CSS is applied\n6. Sets canvas dimensions to match the final rendered container size\n\nThe boxing calculation helps correctly map pointer coordinates to image coordinates\nwhen the image aspect ratio differs from the available space.",
         returns: {
           type: "Promise<void>",
           docs: "A Promise that resolves when the resize operation is complete",
