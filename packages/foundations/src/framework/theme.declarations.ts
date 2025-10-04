@@ -19,7 +19,21 @@ import {
 
 //#region Class
 /**
- * Primary interface exposing the theme system.
+ * Interface representing the theme system for LF Widgets.
+ *
+ * Provides methods and properties for managing theme variables, custom styles, icons, sprites, and theme switching.
+ *
+ * @remarks
+ * This interface is designed to facilitate theme management, including BEM class generation, theme retrieval and setting, icon management, and component registration for style updates.
+ *
+ * @property bemClass - Generates a BEM (Block Element Modifier) class string based on the provided block, element, and optional modifiers.
+ * @property get - An object containing methods to retrieve current theme data, icons, sprite information, and available themes.
+ * @property set - Sets the current theme by name and optionally updates the theme list.
+ * @property refresh - Forces a refresh of the theme, reapplying styles as needed.
+ * @property setLfStyle - Returns the style string for a given component.
+ * @property randomize - Randomizes the current theme (useful for testing or demo purposes).
+ * @property register - Registers a component to receive theme/style updates.
+ * @property unregister - Unregisters a component from receiving theme/style updates.
  */
 export interface LfThemeInterface {
   bemClass: (

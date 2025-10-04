@@ -68,9 +68,24 @@ export interface LfEventPayload<
   C extends LfComponentName = LfComponentName,
   T extends LfEventType<LfComponent<C>> = LfEventType<LfComponent<C>>,
 > {
+  /**
+   * Component instance that dispatched the event. Allows listeners to reach
+   * component methods without re-querying the DOM.
+   */
   comp: LfComponentType<C>;
+  /**
+   * Discriminant identifying which logical event fired (for example `ready`).
+   */
   eventType: T;
+  /**
+   * `id` attribute value of the emitting element, useful for correlating events
+   * when multiple instances are present.
+   */
   id: string;
+  /**
+   * Raw DOM event that triggered the adapter-level emission. Consumers can use
+   * this to inspect native browser details or stop propagation.
+   */
   originalEvent: CustomEvent | Event;
 }
 /**

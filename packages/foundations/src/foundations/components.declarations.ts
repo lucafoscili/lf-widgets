@@ -178,6 +178,11 @@ import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
  */
 export interface LfComponent<T extends LfComponentName = LfComponentName>
   extends LfComponentCommon {
+  /**
+   * Reference to the rendered custom element associated with the component
+   * implementation. Consumers can tap into DOM APIs or imperative Stencil
+   * helpers through this handle.
+   */
   rootElement: LfComponentElementMap[T];
 }
 /**
@@ -278,13 +283,36 @@ export type LfComponentClassMap = {
  * The framework relies on these methods to provide debugging, prop inspection and lifecycle control.
  */
 interface LfComponentCommon {
+  /**
+   * Lifecycle metrics collected by the framework debug service. Updated during
+   * render hooks to help visualise state transitions.
+   */
   debugInfo: LfDebugLifecycleInfo;
+  /**
+   * Async accessor returning the latest debug information snapshot. Useful when
+   * debugging outside the component instance (e.g. dev tools overlays).
+   */
   getDebugInfo: () => Promise<LfDebugLifecycleInfo>;
+  /**
+   * Retrieves the public props for the component. Passing `true` requests any
+   * available descriptions alongside the raw values, enabling documentation views.
+   */
   getProps: (
     descriptions?: boolean,
   ) => Promise<LfComponentPropsFor<LfComponentName>>;
+  /**
+   * Inline CSS string applied to the shadow root when present. Typically set by
+   * adapter layers or storybook-style tooling.
+   */
   lfStyle?: string;
+  /**
+   * Forces a re-render of the component so prop or state mutations become visible.
+   */
   refresh: () => Promise<void>;
+  /**
+   * Starts the teardown flow and removes the element from the DOM after the
+   * optional delay. Shared by adapters that animate component exits.
+   */
   unmount: (ms?: number) => Promise<void>;
 }
 /**
@@ -323,14 +351,41 @@ export interface LfComponentBaseProps {
  * @template S Data shape identifier that controls the specialised callback and payload types.
  */
 export interface LfShapePropsInterface<S extends LfDataShapes = LfDataShapes> {
+  /**
+   * Runtime framework instance used to access helpers such as `sanitizeProps`,
+   * dataset utilities, and theme helpers when rendering shapes.
+   */
   framework: LfFrameworkInterface;
+  /**
+   * Identifier describing which renderer should be invoked (for example `text`,
+   * `badge`, `card`).
+   */
   shape: S;
+  /**
+   * Position of the cell within the parent dataset. Helps the renderer produce
+   * deterministic keys and slot names.
+   */
   index: number;
+  /**
+   * Data payload powering the shape. May be partial when upstream providers only
+   * supply select fields (value, metadata, etc.).
+   */
   cell: Partial<LfDataCell<S>>;
+  /**
+   * Function invoked after rendering to bubble component events back to the host.
+   */
   eventDispatcher: LfDataShapeEventDispatcher;
+  /**
+   * Optional pre-dispatch hook executed before forwarding events to the dispatcher.
+   * Useful for instrumentation or analytics.
+   */
   defaultCb?: S extends "text"
     ? never
     : LfDataShapeCallback<LfComponentName, S>;
+  /**
+   * Ref callback that receives the rendered element for integrations that need
+   * direct DOM access.
+   */
   refCallback?: LfDataShapeRefCallback<LfComponentName>;
 }
 /**

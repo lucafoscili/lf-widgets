@@ -5,20 +5,37 @@ import { LF_COLOR_CODES } from "./color.constants";
  * Primary interface exposing the color utilities.
  */
 export interface LfColorInterface {
+  /**
+   * Resolves a readable contrast color (black/white) for the supplied input.
+   */
   autoContrast: (color: LfColorInput) => string;
+  /**
+   * Produces the full set of derived color values (hex, RGB, HSL, etc.).
+   */
   compute: (color: string) => LfColorValues;
   convert: {
+    /**
+     * Converts a named color reference or shorthand code (for example `primary`) into a hex string.
+     */
     codeToHex: (color: string) => string;
+    /** Converts a hex string into numeric RGB components. */
     hexToRgb: (hex: string) => LfColorRGBValues;
+    /** Converts numeric HSL values (0-360, 0-1, 0-1) into an RGB triplet. */
     hslToRgb: (h: number, s: number, l: number) => LfColorRGBValues;
+    /** Converts an RGB triplet into a hex string. */
     rgbToHex: (r: number, g: number, b: number) => LfColorHexString;
+    /** Converts an RGB triplet into HSL values (degrees, saturation %, lightness %). */
     rgbToHsl: (
       r: number,
       g: number,
       b: number,
     ) => { h: number; s: number; l: number };
+    /** Normalises an individual channel into a two-character hex pair. */
     valueToHex: (c: number) => string;
   };
+  /**
+   * Generates a random hex color constrained by the provided brightness.
+   */
   random: (brightness: number) => LfColorHexString;
 }
 //#endregion
@@ -38,6 +55,7 @@ export type LfColorInput =
  * Collection of color values produced by the color utilities.
  */
 export interface LfColorValues {
+  /** Hex representation with leading `#`. */
   hexColor: LfColorHexString;
   hslColor: LfColorHSLString;
   hslValues: LfColorHSLValuesString;

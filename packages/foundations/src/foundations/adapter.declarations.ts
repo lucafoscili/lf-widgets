@@ -23,13 +23,28 @@ export interface LfComponentAdapter<
   CSet = LfComponentAdapterSetters,
 > {
   controller?: {
+    /**
+     * Collection of read-only hooks surfaced to host frameworks.
+     */
     get: CGet;
+    /**
+     * Optional namespace containing imperative entry points exposed to the host.
+     */
     set?: CSet;
   };
   elements?: {
+    /**
+     * Lazy JSX factories responsible for rendering adapter-managed fragments.
+     */
     jsx: J;
+    /**
+     * Structured registry of DOM references captured during render.
+     */
     refs: R;
   };
+  /**
+   * Event handlers and callbacks wired by the adapter.
+   */
   handlers?: H;
 }
 //#endregion
@@ -83,6 +98,10 @@ export type LfComponentAdapterRefs = {
  */
 export type LfComponentAdapterGetters<C extends LfComponent> = {
   [key: string]: unknown;
+  /**
+   * Live component instance forwarded to external controllers for direct access
+   * to public methods or state.
+   */
   compInstance: C;
 };
 /**
@@ -91,6 +110,10 @@ export type LfComponentAdapterGetters<C extends LfComponent> = {
  * Setter namespaces allow hierarchical grouping of imperative entry points.
  */
 export type LfComponentAdapterSetters = {
+  /**
+   * Functions exposed to the host. Nested namespaces allow grouping related
+   * actions (for example `dialog.open`).
+   */
   [key: string]: ((...args: unknown[]) => void) | LfComponentAdapterSetters;
 };
 //#endregion
