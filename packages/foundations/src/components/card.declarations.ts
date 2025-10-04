@@ -35,15 +35,24 @@ import { LfListEventPayload } from "./list.declarations";
 import { LfToggleElement, LfToggleEventPayload } from "./toggle.declarations";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-card` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfCardInterface
   extends LfComponent<"LfCard">,
     LfCardPropsInterface {}
+/**
+ * DOM element type for the custom element registered as `lf-card`.
+ */
 export interface LfCardElement
   extends HTMLStencilElement,
     Omit<LfCardInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-card` into host integrations.
+ */
 export interface LfCardAdapter extends LfComponentAdapter<LfCardInterface> {
   controller: {
     get: LfCardAdapterControllerGetters;
@@ -54,9 +63,15 @@ export interface LfCardAdapter extends LfComponentAdapter<LfCardInterface> {
   };
   handlers: LfCardAdapterHandlers;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfCardAdapterJsx extends LfComponentAdapterJsx {
   layouts: { [K in LfCardLayout]: () => VNode };
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfCardAdapterRefs extends LfComponentAdapterRefs {
   layouts: {
     debug: {
@@ -70,6 +85,9 @@ export interface LfCardAdapterRefs extends LfComponentAdapterRefs {
     };
   };
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfCardAdapterHandlers extends LfComponentAdapterHandlers {
   layouts: {
     debug: {
@@ -83,6 +101,9 @@ export interface LfCardAdapterHandlers extends LfComponentAdapterHandlers {
     };
   };
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfCardAdapterInitializerGetters = Pick<
   LfCardAdapterControllerGetters,
   | "blocks"
@@ -93,6 +114,9 @@ export type LfCardAdapterInitializerGetters = Pick<
   | "parts"
   | "shapes"
 >;
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfCardAdapterControllerGetters
   extends LfComponentAdapterGetters<LfCardInterface> {
   blocks: typeof LF_CARD_BLOCKS;
@@ -104,18 +128,30 @@ export interface LfCardAdapterControllerGetters
   parts: typeof LF_CARD_PARTS;
   shapes: () => LfDataShapesMap;
 }
+/**
+ * Component-specific defaults used when instantiating adapter-managed layouts.
+ */
 export type LfCardAdapterDefaults = {
   [K in LfCardLayout]: LfDataShapeDefaults;
 };
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-card`.
+ */
 export type LfCardEvent = (typeof LF_CARD_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-card` events.
+ */
 export interface LfCardEventPayload
   extends LfEventPayload<"LfCard", LfCardEvent> {}
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-card` component.
+ */
 export interface LfCardPropsInterface {
   lfDataset?: LfDataDataset;
   lfLayout?: LfCardLayout;
@@ -123,5 +159,8 @@ export interface LfCardPropsInterface {
   lfSizeY?: string;
   lfStyle?: string;
 }
+/**
+ * Union of layouts listed in `LF_CARD_LAYOUTS`.
+ */
 export type LfCardLayout = (typeof LF_CARD_LAYOUTS)[number];
 //#endregion

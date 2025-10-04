@@ -43,6 +43,9 @@ import {
 } from "./tree.declarations";
 
 // #region Navigation tree
+/**
+ * Configuration options for the navigation tree within `lf-imageviewer`.
+ */
 export interface LfImageviewerNavigationTreeOptions {
   defaultOpen?: boolean;
   enabled?: boolean;
@@ -55,6 +58,9 @@ export interface LfImageviewerNavigationTreeOptions {
   position?: "start" | "end";
   width?: number | string;
 }
+/**
+ * Runtime state snapshot for the navigation tree within `lf-imageviewer`.
+ */
 export interface LfImageviewerNavigationTreeState {
   collapsedWidth: number;
   defaultOpen: boolean;
@@ -72,6 +78,9 @@ export interface LfImageviewerNavigationTreeState {
 // #endregion
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-imageviewer` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfImageviewerInterface
   extends LfComponent<"LfImageviewer">,
     LfImageviewerPropsInterface {
@@ -86,12 +95,18 @@ export interface LfImageviewerInterface
   reset: () => Promise<void>;
   setSpinnerStatus: (status: boolean) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-imageviewer`.
+ */
 export interface LfImageviewerElement
   extends HTMLStencilElement,
     Omit<LfImageviewerInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-imageviewer` into host integrations.
+ */
 export interface LfImageviewerAdapter
   extends LfComponentAdapter<LfImageviewerInterface> {
   controller: {
@@ -104,6 +119,9 @@ export interface LfImageviewerAdapter
   };
   handlers: LfImageviewerAdapterHandlers;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
   details: {
     canvas: () => VNode;
@@ -123,6 +141,9 @@ export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
     treeToggle: () => VNode;
   };
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
   details: {
     canvas: LfCanvasElement;
@@ -142,6 +163,9 @@ export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
     textfield: LfTextfieldElement;
   };
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfImageviewerAdapterHandlers
   extends LfComponentAdapterHandlers {
   details: {
@@ -157,6 +181,9 @@ export interface LfImageviewerAdapterHandlers
     textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfImageviewerAdapterInitializerGetters = Pick<
   LfImageviewerAdapterControllerGetters,
   | "blocks"
@@ -171,10 +198,16 @@ export type LfImageviewerAdapterInitializerGetters = Pick<
   | "spinnerStatus"
   | "treeProps"
 >;
+/**
+ * Subset of adapter setters required during initialisation.
+ */
 export type LfImageviewerAdapterInitializerSetters = Pick<
   LfImageviewerAdapterControllerSetters,
   "currentShape" | "history" | "navigationTreeOpen"
 >;
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfImageviewerAdapterControllerGetters
   extends LfComponentAdapterGetters<LfImageviewerInterface> {
   blocks: typeof LF_IMAGEVIEWER_BLOCKS;
@@ -197,6 +230,9 @@ export interface LfImageviewerAdapterControllerGetters
   spinnerStatus: () => boolean;
   treeProps: () => Partial<LfTreePropsInterface>;
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfImageviewerAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentShape: (node: LfMasonrySelectedShape) => void;
@@ -211,18 +247,30 @@ export interface LfImageviewerAdapterControllerSetters
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-imageviewer`.
+ */
 export type LfImageviewerEvent = (typeof LF_IMAGEVIEWER_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-imageviewer` events.
+ */
 export interface LfImageviewerEventPayload
   extends LfEventPayload<"LfImageviewer", LfImageviewerEvent> {}
 //#endregion
 
 //#region State
+/**
+ * History snapshot maintained by the component to enable undo/redo flows.
+ */
 export type LfImageviewerHistory = {
   [index: number]: Array<LfMasonrySelectedShape>;
 };
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-imageviewer` component.
+ */
 export interface LfImageviewerPropsInterface {
   lfDataset?: LfDataDataset;
   lfLoadCallback?: LfImageviewerLoadCallback;
@@ -231,6 +279,9 @@ export interface LfImageviewerPropsInterface {
   lfTreeProps?: Partial<LfTreePropsInterface>;
   lfValue?: LfDataDataset;
 }
+/**
+ * Callback invoked when the component finishes loading assets or data.
+ */
 export type LfImageviewerLoadCallback = (
   imageviewer: LfImageviewerInterface,
   dir: string,

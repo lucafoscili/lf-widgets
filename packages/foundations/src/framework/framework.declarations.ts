@@ -19,6 +19,9 @@ import { LfSyntaxInterface } from "./syntax.declarations";
 import { LfThemeInterface } from "./theme.declarations";
 
 //#region Class
+/**
+ * Primary interface exposing the core runtime framework.
+ */
 export interface LfFrameworkInterface {
   assets: {
     get: LfFrameworkGetAssetPath;
@@ -58,14 +61,26 @@ export interface LfFrameworkInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Internal utilities registry maintained by the core runtime framework.
+ */
 export interface LfFrameworkUtilities {
   clickCallbacks?: Set<LfFrameworkClickCb>;
 }
+/**
+ * Click callback metadata tracked by the core runtime framework.
+ */
 export interface LfFrameworkClickCb {
   cb: () => unknown;
   element?: HTMLElement;
 }
+/**
+ * Union of module identifiers recognised by the core runtime framework.
+ */
 export type LfFrameworkModuleKey = (typeof LF_FRAMEWORK_MODULES)[number];
+/**
+ * Resolver used by the core runtime framework to compute module asset paths.
+ */
 export type LfFrameworkGetAssetPath = (
   value: string,
   module?: LfFrameworkModuleKey,
@@ -73,19 +88,34 @@ export type LfFrameworkGetAssetPath = (
   path: string;
   style: { mask: string; webkitMask: string };
 };
+/**
+ * Setter used by the core runtime framework to override module asset paths.
+ */
 export type LfFrameworkSetAssetPath = (
   value: string,
   module?: LfFrameworkModuleKey,
 ) => void;
+/**
+ * Configuration options for the module in the core runtime framework.
+ */
 export interface LfFrameworkModuleOptions {
   name: LfFrameworkModuleKey;
   getAssetPath?: (value: string) => string;
   setAssetPath?: (value: string) => void;
 }
+/**
+ * Utility type used by the core runtime framework.
+ */
 export type LfFrameworkEvent = CustomEvent<LfFrameworkEventPayload>;
+/**
+ * Payload definition dispatched with events from the core runtime framework.
+ */
 export interface LfFrameworkEventPayload {
   lfFramework: LfFrameworkInterface;
 }
+/**
+ * Dictionary mapping allowed keys within the core runtime framework.
+ */
 export type LfFrameworkAllowedKeysMap = {
   [P in (typeof LF_FRAMEWORK_ALLOWED_PREFIXES)[number] as
     | `${P}-`
@@ -94,9 +124,15 @@ export type LfFrameworkAllowedKeysMap = {
         typeof getComponentProps
       >][number]]: any;
 };
+/**
+ * Dictionary mapping shapes within the core runtime framework.
+ */
 export type LfFrameworkShapesMap = WeakMap<
   LfFrameworkInterface,
   Record<LfDataShapes, string>
 >;
+/**
+ * Data shape helper describing framework for the core runtime framework.
+ */
 export type LfFrameworkShapes = Record<LfDataShapes, string>;
 //#endregion

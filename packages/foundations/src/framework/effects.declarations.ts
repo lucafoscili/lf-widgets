@@ -1,6 +1,9 @@
 import { LF_EFFECTS_LIST } from "./effects.constants";
 
 //#region Class
+/**
+ * Primary interface exposing the visual effects helpers.
+ */
 export interface LfEffectsInterface {
   backdrop: {
     hide: () => void;
@@ -32,11 +35,20 @@ export interface LfEffectsInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Utility type used by the visual effects helpers.
+ */
 export type LfEffectsIntensities = Partial<{
   [index: LfEffectsValues[number]]: number;
 }>;
+/**
+ * Utility type used by the visual effects helpers.
+ */
 export type LfEffectsTimeouts = Partial<{
   [index: LfEffectsValues[number]]: number;
 }>;
+/**
+ * Collection of effects values produced by the visual effects helpers.
+ */
 export type LfEffectsValues = (typeof LF_EFFECTS_LIST)[number];
 //#endregion

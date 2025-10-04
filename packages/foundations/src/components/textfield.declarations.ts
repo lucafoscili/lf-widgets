@@ -13,6 +13,9 @@ import {
 } from "./textfield.constants";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-textfield` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfTextfieldInterface
   extends LfComponent<"LfTextfield">,
     LfTextfieldPropsInterface {
@@ -22,13 +25,22 @@ export interface LfTextfieldInterface
   setFocus: () => Promise<void>;
   setValue: (value: string) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-textfield`.
+ */
 export interface LfTextfieldElement
   extends HTMLStencilElement,
     Omit<LfTextfieldInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-textfield`.
+ */
 export type LfTextfieldEvent = (typeof LF_TEXTFIELD_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-textfield` events.
+ */
 export interface LfTextfieldEventPayload
   extends LfEventPayload<"LfTextfield", LfTextfieldEvent> {
   inputValue?: string;
@@ -38,10 +50,16 @@ export interface LfTextfieldEventPayload
 //#endregion
 
 //#region States
+/**
+ * Utility type used by the `lf-textfield` component.
+ */
 export type LfTextfieldModifiers = (typeof LF_TEXTFIELD_MODIFIERS)[number];
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-textfield` component.
+ */
 export interface LfTextfieldPropsInterface {
   lfHelper?: LfTextfieldHelper;
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
@@ -55,9 +73,15 @@ export interface LfTextfieldPropsInterface {
   lfUiState?: LfThemeUIState;
   lfValue?: string;
 }
+/**
+ * Utility interface used by the `lf-textfield` component.
+ */
 export interface LfTextfieldHelper {
   showWhenFocused?: boolean;
   value: string;
 }
+/**
+ * Union of styling tokens listed in `LF_TEXTFIELD_STYLINGS`.
+ */
 export type LfTextfieldStyling = (typeof LF_TEXTFIELD_STYLINGS)[number];
 //#endregion

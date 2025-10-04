@@ -24,6 +24,9 @@ import { LfTextfieldEventPayload } from "./textfield.declarations";
 import { LF_TREE_EVENTS } from "./tree.constants";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-tree` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfTreeInterface
   extends LfComponent<"LfTree">,
     LfTreePropsInterface {
@@ -34,12 +37,18 @@ export interface LfTreeInterface
   ) => void;
   _filterTimeout?: any;
 }
+/**
+ * DOM element type for the custom element registered as `lf-tree`.
+ */
 export interface LfTreeElement
   extends HTMLStencilElement,
     Omit<LfTreeInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-tree` into host integrations.
+ */
 export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
   controller: {
     get: LfTreeAdapterControllerGetters;
@@ -48,6 +57,9 @@ export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
   elements: { jsx: LfTreeAdapterJsx; refs: LfTreeAdapterRefs };
   handlers: LfTreeAdapterHandlers;
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export interface LfTreeAdapterInitializerGetters {
   blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
   compInstance: LfTreeInterface;
@@ -63,11 +75,17 @@ export interface LfTreeAdapterInitializerGetters {
   isSelected: (node: LfDataNode) => boolean;
   filterValue: () => string; // kept as function to always reflect latest value
 }
+/**
+ * Subset of adapter setters required during initialisation.
+ */
 export interface LfTreeAdapterInitializerSetters {
   expansion: { toggle: (node: LfDataNode) => void };
   selection: { set: (node: LfDataNode) => void };
   filter: { setValue: (value: string) => void; apply: (value: string) => void };
 }
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfTreeAdapterControllerGetters
   extends LfComponentAdapterGetters<LfTreeInterface> {
   blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
@@ -84,22 +102,34 @@ export interface LfTreeAdapterControllerGetters
   isSelected: (node: LfDataNode) => boolean;
   filterValue: () => string;
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {
   expansion: { toggle: (node: LfDataNode) => void };
   selection: { set: (node: LfDataNode) => void };
   filter: { setValue: (value: string) => void; apply: (value: string) => void };
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfTreeAdapterJsx extends LfComponentAdapterJsx {
   filter: () => VNode;
   header: () => VNode;
   nodes: () => VNode;
   empty: () => VNode;
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
   rippleSurfaces: Record<string, HTMLElement>;
   filterField: HTMLElement | null;
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfTreeAdapterHandlers extends LfComponentAdapterHandlers {
   node: {
     click: (e: Event, node: LfDataNode) => void;
@@ -113,11 +143,20 @@ export interface LfTreeAdapterHandlers extends LfComponentAdapterHandlers {
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-tree`.
+ */
 export type LfTreeEvent = (typeof LF_TREE_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-tree` events.
+ */
 export interface LfTreeEventPayload
   extends LfEventPayload<"LfTree", LfTreeEvent> {
   node?: LfDataNode;
 }
+/**
+ * Utility interface used by the `lf-tree` component.
+ */
 export interface LfTreeEventArguments {
   expansion?: boolean;
   node?: LfDataNode;
@@ -126,6 +165,9 @@ export interface LfTreeEventArguments {
 //#endregion
 
 //#region Internal usage
+/**
+ * Props helper describing the node for `lf-tree`.
+ */
 export interface LfTreeNodeProps {
   accordionLayout: boolean;
   depth: number;
@@ -140,6 +182,9 @@ export interface LfTreeNodeProps {
   node: LfDataNode;
   selected: boolean;
 }
+/**
+ * Tree node description used by the traversed in `lf-tree`.
+ */
 export interface LfTreeTraversedNode {
   node: LfDataNode;
   depth: number;
@@ -150,6 +195,9 @@ export interface LfTreeTraversedNode {
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-tree` component.
+ */
 export interface LfTreePropsInterface {
   lfAccordionLayout?: boolean;
   lfDataset?: LfDataDataset;

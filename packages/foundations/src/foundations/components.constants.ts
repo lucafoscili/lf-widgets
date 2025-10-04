@@ -35,7 +35,17 @@ import {
   LfComponentPropsMap,
 } from "./components.declarations";
 
+/**
+ * Prefix applied to every CSS custom property emitted by the design system.
+ * Keeps style tokens grouped under the `lf-` namespace and avoids collisions.
+ */
 export const CSS_VAR_PREFIX = "--lf-" as const;
+/**
+ * Canonical collection of `data-cy` attribute values used by end-to-end tests.
+ *
+ * Keys describe the semantic target and values are the identifiers written to
+ * the DOM to keep selectors consistent across packages.
+ */
 export const CY_ATTRIBUTES = {
   button: "button",
   canvas: "canvas",
@@ -54,6 +64,12 @@ export const CY_ATTRIBUTES = {
   showcaseExample: "showcase-example",
   showcaseGridWrapper: "showcase-grid-wrapper",
 } as const;
+/**
+ * Shared set of boolean host attributes that influence component styling or behaviour.
+ *
+ * The dictionary centralises the attribute names so they can be reused without
+ * hard-coding string literals.
+ */
 export const LF_ATTRIBUTES = {
   backdrop: "backdrop",
   danger: "danger",
@@ -72,8 +88,20 @@ export const LF_ATTRIBUTES = {
   tilt: "tilt",
   warning: "warning",
 } as const;
+/**
+ * DOM id assigned to the global `<style>` element injected by the runtime.
+ */
 export const LF_STYLE_ID = "lf-style" as const;
+/**
+ * DOM id prefix applied to wrapper elements that host Lightning Fast components.
+ */
 export const LF_WRAPPER_ID = "lf-component" as const;
+/**
+ * Returns the list of public property names supported by each component.
+ *
+ * Keys correspond to canonical component names and values contain the literal
+ * property identifiers surfaced by their declarations.
+ */
 export const getComponentProps = (): {
   [K in LfComponentName]: (keyof LfComponentPropsMap[K])[];
 } => {

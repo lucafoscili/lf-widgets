@@ -27,6 +27,9 @@ import { LF_DATA_SHAPE_MAP, LF_DATA_SHAPES } from "./data.constants";
 import { LfFrameworkAllowedKeysMap } from "./framework.declarations";
 
 //#region Class
+/**
+ * Primary interface exposing the data framework.
+ */
 export interface LfDataInterface {
   cell: {
     exists: (node: LfDataNode) => boolean;
@@ -50,14 +53,23 @@ export interface LfDataInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Dataset container consumed by the data framework.
+ */
 export interface LfDataDataset {
   columns?: LfDataColumn[];
   nodes?: LfDataNode[];
 }
+/**
+ * Column descriptor used by the data framework dataset utilities.
+ */
 export interface LfDataColumn {
   id: LfDataShapes | string;
   title: string;
 }
+/**
+ * Data node representation managed by the data framework.
+ */
 export interface LfDataNode {
   id: string;
   cells?: LfDataCellContainer;
@@ -68,11 +80,17 @@ export interface LfDataNode {
   isDisabled?: boolean;
   value?: string | number;
 }
+/**
+ * Cell descriptor storing typed values for the data framework.
+ */
 export interface LfDataBaseCell {
   value: string;
   shape?: LfDataShapes;
   htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
 }
+/**
+ * Cell descriptor storing typed values for the data framework.
+ */
 export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
   T extends "badge"
     ? Partial<LfBadgePropsInterface> & {
@@ -171,9 +189,18 @@ export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
                                       htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                     }
                                   : LfDataBaseCell;
+/**
+ * Data shape helper describing cell name to for the data framework.
+ */
 export type LfDataCellNameToShape = typeof LF_DATA_SHAPE_MAP;
+/**
+ * Utility type used by the data framework.
+ */
 export type LfDataCellFromName<T extends keyof LfDataCellNameToShape> =
   LfDataCell<LfDataCellNameToShape[T]>;
+/**
+ * Container holding typed cell values consumed by the data framework.
+ */
 export interface LfDataCellContainer {
   lfBadge?: LfDataCellFromName<"lfBadge">;
   lfButton?: LfDataCellFromName<"lfButton">;
@@ -191,16 +218,31 @@ export interface LfDataCellContainer {
   lfToggle?: LfDataCellFromName<"lfToggle">;
   lfUpload?: LfDataCellFromName<"lfUpload">;
 }
+/**
+ * Container holding typed cell values consumed by the data framework.
+ */
 export interface LfDataCellContainer {
   [index: string]: LfDataCell<LfDataShapes>;
 }
+/**
+ * Data shape helper describing data for the data framework.
+ */
 export type LfDataShapes = (typeof LF_DATA_SHAPES)[number];
+/**
+ * Dictionary mapping shapes within the data framework.
+ */
 export type LfDataShapesMap = {
   [K in LfDataShapes]?: LfDataCell<K>[];
 };
+/**
+ * Dictionary mapping shape component within the data framework.
+ */
 export type LfDataShapeComponentMap = {
   [K in LfDataShapes]: LfComponentName;
 };
+/**
+ * Operations helper manipulating data nodes inside the data framework.
+ */
 export interface LfDataNodeOperations {
   exists: (dataset: LfDataDataset) => boolean;
   filter: (
@@ -241,34 +283,58 @@ export interface LfDataNodeOperations {
     selected?: boolean;
   }>;
 }
+/**
+ * Utility interface used by the data framework.
+ */
 export interface LfDataNodeDrilldownInfo {
   maxChildren?: number;
   maxDepth?: number;
 }
+/**
+ * Utility interface used by the data framework.
+ */
 export interface LfDataFindCellFilters {
   columns?: string[];
   range?: LfDataFilterRange;
   value?: string;
 }
+/**
+ * Utility interface used by the data framework.
+ */
 export interface LfDataFilterRange {
   min?: number | string;
   max?: number | string;
 }
+/**
+ * Callback signature invoked by the data framework when handling shape.
+ */
 export type LfDataShapeCallback<
   C extends LfComponentName,
   S extends LfDataShapes | "text",
 > = S extends "text"
   ? never
   : (e: CustomEvent<LfEventPayload<C, LfEventType<LfComponent<C>>>>) => void;
+/**
+ * Default configuration applied to the shape inside the data framework.
+ */
 export type LfDataShapeDefaults = Partial<{
   [S in LfDataShapes]: () => LfDataCell<S>[];
 }>;
+/**
+ * Promise-based helper used by the data framework for shape event.
+ */
 export type LfDataShapeEventDispatcher = <T extends LfComponentName>(
   e: CustomEvent<LfEventPayload<T, LfEventType<LfComponent<T>>>>,
 ) => Promise<void>;
+/**
+ * Callback signature invoked by the data framework when handling shape ref.
+ */
 export type LfDataShapeRefCallback<C extends LfComponentName> = (
   ref: LfComponentRootElement<C>,
 ) => void;
+/**
+ * Configuration options for the random dataset in the data framework.
+ */
 export interface LfDataRandomDatasetOptions {
   columnCount?: number;
   nodeCount?: number;

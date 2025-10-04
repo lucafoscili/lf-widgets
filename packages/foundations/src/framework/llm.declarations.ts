@@ -3,6 +3,9 @@ import { LfTextfieldElement } from "../components/textfield.declarations";
 import { LF_LLM_ROLES } from "./llm.constants";
 
 //#region Class
+/**
+ * Primary interface exposing the LLM integration helpers.
+ */
 export interface LfLLMInterface {
   createAbort: () => AbortController;
   fetch: (request: LfLLMRequest, url: string) => Promise<LfLLMCompletionObject>;
@@ -25,16 +28,25 @@ export interface LfLLMInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMChoice {
   index: number;
   message: LfLLMChoiceMessage;
   finish_reason: string;
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMChoiceMessage {
   role: LfLLMRole;
   content: string;
   tool_calls?: unknown[];
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMCompletionObject {
   id: string;
   object: string;
@@ -42,6 +54,9 @@ export interface LfLLMCompletionObject {
   model: string;
   choices: LfLLMChoice[];
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMRequest {
   model?: string;
   prompt?: string;
@@ -66,6 +81,9 @@ export interface LfLLMRequest {
     content: string;
   }>;
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMRetryPolicy {
   baseDelayMs: number;
   jitter?: boolean;
@@ -73,17 +91,29 @@ export interface LfLLMRetryPolicy {
   retriableErrorNames?: string[];
   retriableStatus?: number[];
 }
+/**
+ * Utility type used by the LLM integration helpers.
+ */
 export type LfLLMRole = (typeof LF_LLM_ROLES)[number];
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMStreamChunk {
   contentDelta?: string;
   done?: boolean;
   raw?: unknown;
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMUsage {
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
 }
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMUtils {
   hash: (request: LfLLMRequest) => string;
   estimateTokens: (messages: NonNullable<LfLLMRequest["messages"]>) => number;

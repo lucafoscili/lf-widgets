@@ -19,6 +19,9 @@ import {
 } from "./debug.constants";
 
 //#region Class
+/**
+ * Primary interface exposing the debug tooling.
+ */
 export interface LfDebugInterface {
   info: {
     create: () => LfDebugLifecycleInfo;
@@ -36,6 +39,9 @@ export interface LfDebugInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Utility interface used by the debug tooling.
+ */
 export interface LfDebugLifecycleInfo {
   endTime: number;
   renderCount: number;
@@ -43,6 +49,9 @@ export interface LfDebugLifecycleInfo {
   renderStart: number;
   startTime: number;
 }
+/**
+ * Utility interface used by the debug tooling.
+ */
 export interface LfDebugLogFactory {
   dump: () => void;
   fromComponent(comp: LfDebugLogClass): comp is LfComponent;
@@ -53,7 +62,13 @@ export interface LfDebugLogFactory {
   ) => Promise<void>;
   print: () => void;
 }
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugManagedComponents = LfCodeInterface | LfToggleInterface;
+/**
+ * Utility interface used by the debug tooling.
+ */
 export interface LfDebugLog {
   category: LfDebugCategory;
   class: LfDebugLogClass;
@@ -62,11 +77,17 @@ export interface LfDebugLog {
   message: string;
   type: LfDebugLogType;
 }
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugLogToPrintEntry = {
   class: LfDebugLogClass;
   date: string;
   message: string;
 };
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugLogClass =
   | LfColorInterface
   | LfComponent
@@ -78,10 +99,22 @@ export type LfDebugLogClass =
   | LfPortalInterface
   | LfEffectsInterface
   | LfThemeInterface;
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugLogsToPrint = {
   [index in LfDebugLogType]: LfDebugLogToPrintEntry[];
 };
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugCategory = (typeof LF_DEBUG_CATEGORIES)[number];
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugLifecycles = (typeof LF_DEBUG_LIFECYCLES)[number];
+/**
+ * Utility type used by the debug tooling.
+ */
 export type LfDebugLogType = (typeof LF_DEBUG_LOG_TYPES)[number];
 //#endregion

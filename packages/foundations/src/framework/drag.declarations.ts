@@ -4,6 +4,9 @@ import {
 } from "./drag.constants";
 
 //#region Class
+/**
+ * Primary interface exposing the drag-and-drop helpers.
+ */
 export interface LfDragInterface {
   register: {
     customDrag: (
@@ -37,6 +40,9 @@ export interface LfDragInterface {
 //#endregion
 
 //#region Utilities
+/**
+ * Utility interface used by the drag-and-drop helpers.
+ */
 export interface LfDragSession {
   cleanupCb: () => void;
   element: HTMLElement;
@@ -44,6 +50,9 @@ export interface LfDragSession {
   dragData?: LfDragData;
   swipeData?: LfSwipeData;
 }
+/**
+ * Utility interface used by the drag-and-drop helpers.
+ */
 export interface LfDragData {
   startX: number;
   startY: number;
@@ -59,14 +68,26 @@ export interface LfDragData {
   velocityX?: number;
   velocityY?: number;
 }
+/**
+ * Utility interface used by the drag-and-drop helpers.
+ */
 export interface LfSwipeData {
   direction?: LfDragSwipeDirection;
 }
+/**
+ * Callback signature invoked by the drag-and-drop helpers when handling drag.
+ */
 export interface LfDragCallbacks {
   onStart?: (e: PointerEvent, session: LfDragSession) => void;
   onMove?: (e: PointerEvent, session: LfDragSession) => void;
   onEnd?: (e: PointerEvent, session: LfDragSession) => void;
 }
+/**
+ * Utility type used by the drag-and-drop helpers.
+ */
 export type LfDragScrollDirection = (typeof LF_DRAG_SCROLL_DIRECTION)[number];
+/**
+ * Utility type used by the drag-and-drop helpers.
+ */
 export type LfDragSwipeDirection = (typeof LF_DRAG_SWIPE_DIRECTION)[number];
 //#endregion
