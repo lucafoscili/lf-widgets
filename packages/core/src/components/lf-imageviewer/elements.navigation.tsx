@@ -100,11 +100,10 @@ export const prepNavigation = (
     // #region Tree
     tree: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, navigationTree, treeProps } =
-        controller.get;
+      const { blocks, manager, navigationTree, treeProps } = controller.get;
       const { navigation } = elements.refs;
       const { tree } = handlers.navigation;
-      const { assignRef, theme } = manager;
+      const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
 
       const config = navigationTree();
@@ -117,11 +116,10 @@ export const prepNavigation = (
       return (
         <lf-tree
           class={bemClass(blocks.navigationGrid._, blocks.navigationGrid.tree)}
-          data-cy={cyAttributes.input}
           id={IDS.navigation.tree}
           onLf-tree-event={tree}
           ref={assignRef(navigation, "tree")}
-          {...props}
+          {...sanitizeProps(props)}
         ></lf-tree>
       );
     },
