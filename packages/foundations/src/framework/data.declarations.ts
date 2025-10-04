@@ -110,8 +110,55 @@ export interface LfDataNode {
   icon?: string;
   /** Flag used by components to disable interactions on the node. */
   isDisabled?: boolean;
+  /** Flag indicating the node can expand even when child data hasn't been materialised yet. */
+  hasChildren?: boolean;
   /** Primary content displayed for the node (text or numeric). */
   value?: string | number;
+}
+
+/**
+ * Predicate applied to data nodes when searching within hierarchical datasets.
+ */
+export type LfDataNodePredicate = (node: LfDataNode) => boolean;
+
+/**
+ * Configuration object controlling placeholder node generation for lazily loaded trees.
+ */
+export interface LfDataNodePlaceholderOptions {
+  /**
+   * Factory invoked to create a placeholder child for the supplied parent node.
+   */
+  create: (context: { parent: LfDataNode }) => LfDataNode;
+  /**
+   * Predicate that identifies placeholder nodes. When omitted, placeholders must be guarded by the caller.
+   */
+  isPlaceholder?: (node: LfDataNode) => boolean;
+  /**
+   * Predicate that determines whether the algorithm should attempt to decorate the node with a placeholder.
+   * Defaults to checking `node.hasChildren === true` when available.
+   */
+  shouldDecorate?: (node: LfDataNode) => boolean;
+}
+
+/**
+ * Options applied when merging an asynchronous branch into an existing dataset tree.
+ */
+export interface LfDataNodeMergeChildrenOptions {
+  /** Identifier of the node that should receive the new children. */
+  parentId: string;
+  /** Replacement child nodes for the target parent. */
+  children?: LfDataNode[];
+  /** Optional column definitions to merge alongside the new branch. */
+  columns?: LfDataColumn[];
+  /** Optional placeholder handling configuration executed during the merge operation. */
+  placeholder?: {
+    /** When true, existing placeholder children are removed before attaching the new branch. */
+    removeExisting?: boolean;
+    /** When true, placeholder decoration is re-applied to the mutated subtree after merging. */
+    reapply?: boolean;
+    /** Placeholder configuration shared with the decoration helper. */
+    config: LfDataNodePlaceholderOptions;
+  };
 }
 /**
  * Cell descriptor storing typed values for the data framework.
@@ -329,6 +376,21 @@ export interface LfDataNodeOperations {
     hidden?: boolean;
     selected?: boolean;
   }>;
+  /** Applies placeholder decoration across a dataset, producing a cloned instance with synthetic nodes when needed. */
+  decoratePlaceholders: <T extends LfDataDataset | undefined>(
+    dataset: T,
+    options: LfDataNodePlaceholderOptions,
+  ) => T;
+  /** Finds the first node that satisfies the supplied predicate. */
+  find: (
+    dataset: LfDataDataset | undefined,
+    predicate: LfDataNodePredicate,
+  ) => LfDataNode | undefined;
+  /** Replaces the children of a parent node with the provided branch, returning a cloned dataset. */
+  mergeChildren: <T extends LfDataDataset | undefined>(
+    dataset: T,
+    options: LfDataNodeMergeChildrenOptions,
+  ) => T;
 }
 /**
  * Utility interface used by the data framework.

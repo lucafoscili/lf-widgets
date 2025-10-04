@@ -1,5 +1,215 @@
-import { LfDataCell, LfDataDataset, LfDataNode } from "@lf-widgets/foundations";
+import {
+  LfDataCell,
+  LfDataColumn,
+  LfDataDataset,
+  LfDataNode,
+  LfDataNodeMergeChildrenOptions,
+  LfDataNodePlaceholderOptions,
+  LfDataNodePredicate,
+} from "@lf-widgets/foundations";
 import { cellStringify } from "./helpers.cell";
+
+/**
+ * Produces a structured clone of the supplied value using JSON serialization. Intended for
+ * dataset snapshots where rich instances (Dates, Maps) are not expected.
+ */
+const deepClone = <T>(value: T): T => {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  return JSON.parse(JSON.stringify(value)) as T;
+};
+
+/**
+ * Traverses a node subtree and ensures placeholder children are attached where required.
+ */
+const ensurePlaceholderRecursively = (
+  node: LfDataNode,
+  options: LfDataNodePlaceholderOptions,
+) => {
+  const {
+    create,
+    isPlaceholder = () => false,
+    shouldDecorate = (candidate: LfDataNode) => candidate.hasChildren === true,
+  } = options;
+
+  const currentChildren = Array.isArray(node.children) ? node.children : [];
+  const hasRealChildren = currentChildren.some(
+    (child) => !isPlaceholder(child),
+  );
+  const hasPlaceholder = currentChildren.some((child) => isPlaceholder(child));
+
+  if (shouldDecorate(node) && !hasRealChildren && !hasPlaceholder) {
+    const placeholderNode = deepClone(create({ parent: node }));
+    node.children = [...currentChildren, placeholderNode];
+  } else if (!Array.isArray(node.children)) {
+    node.children = currentChildren;
+  }
+
+  if (Array.isArray(node.children)) {
+    node.children = node.children.map((child) => {
+      ensurePlaceholderRecursively(child, options);
+      return child;
+    });
+  }
+
+  return node;
+};
+
+/**
+ * Removes placeholder children from a node while preserving real, user-provided entries.
+ */
+const stripPlaceholderChildren = (
+  children: LfDataNode[] | undefined,
+  isPlaceholder: ((node: LfDataNode) => boolean) | undefined,
+) => {
+  if (!Array.isArray(children)) {
+    return [];
+  }
+
+  if (!isPlaceholder) {
+    return [...children];
+  }
+
+  return children.filter((child) => !isPlaceholder(child));
+};
+
+/**
+ * Returns a deep-cloned copy of the provided children array, defaulting to an empty array.
+ */
+const cloneChildren = (children: LfDataNode[] | undefined) => {
+  if (!Array.isArray(children)) {
+    return [];
+  }
+  return children.map((child) => deepClone(child));
+};
+
+//#region nodeDecoratePlaceholders
+/**
+ * Clones a dataset and injects placeholder nodes for tree branches that advertise missing child
+ * data. This is particularly useful for lazy-loading user interfaces that should display an
+ * immediate loading indicator while the real data is fetched.
+ */
+export const nodeDecoratePlaceholders = <
+  T extends
+    | LfDataDataset
+    | (LfDataDataset & Record<string, unknown>)
+    | undefined,
+>(
+  dataset: T,
+  options: LfDataNodePlaceholderOptions,
+) => {
+  if (!dataset) {
+    return dataset;
+  }
+
+  if (typeof options?.create !== "function") {
+    return dataset;
+  }
+
+  const clonedDataset = deepClone(dataset) as LfDataDataset &
+    Record<string, unknown>;
+  const nodes = Array.isArray(clonedDataset.nodes) ? clonedDataset.nodes : [];
+
+  clonedDataset.nodes = nodes.map((node) => {
+    const clonedNode = deepClone(node);
+    ensurePlaceholderRecursively(clonedNode, options);
+    return clonedNode;
+  });
+
+  return clonedDataset as T;
+};
+//#endregion
+
+//#region nodeFind
+/**
+ * Performs a breadth-first search across the dataset nodes and returns the first match for the
+ * supplied predicate.
+ */
+export const nodeFind = (
+  dataset: LfDataDataset | undefined,
+  predicate: LfDataNodePredicate,
+) => {
+  if (!dataset || !Array.isArray(dataset.nodes) || !predicate) {
+    return undefined;
+  }
+
+  const queue: LfDataNode[] = [...dataset.nodes];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) {
+      continue;
+    }
+
+    if (predicate(current)) {
+      return current;
+    }
+
+    if (Array.isArray(current.children) && current.children.length) {
+      queue.unshift(...current.children);
+    }
+  }
+
+  return undefined;
+};
+//#endregion
+
+//#region nodeMergeChildren
+/**
+ * Returns a cloned dataset where the target parent node is replaced with the supplied branch.
+ * Optional placeholder configuration allows consumers to strip eager placeholders before merging
+ * and re-apply them afterwards.
+ */
+export const nodeMergeChildren = <
+  T extends
+    | LfDataDataset
+    | (LfDataDataset & Record<string, unknown>)
+    | undefined,
+>(
+  dataset: T,
+  options: LfDataNodeMergeChildrenOptions,
+) => {
+  if (!dataset) {
+    return dataset;
+  }
+
+  const { parentId, children, columns, placeholder } = options ?? {};
+  if (!parentId) {
+    return dataset;
+  }
+
+  const clonedDataset = deepClone(dataset) as (LfDataDataset &
+    Record<string, unknown>) & { columns?: LfDataColumn[] };
+
+  if (Array.isArray(columns) && columns.length) {
+    clonedDataset.columns = columns.map((column) => deepClone(column));
+  }
+
+  const parentNode = nodeFind(
+    clonedDataset,
+    (node: LfDataNode) => node.id === parentId,
+  );
+  if (!parentNode) {
+    return clonedDataset as T;
+  }
+
+  if (placeholder?.removeExisting) {
+    const isPlaceholder = placeholder?.config?.isPlaceholder;
+    parentNode.children = stripPlaceholderChildren(
+      parentNode.children,
+      isPlaceholder,
+    );
+  }
+
+  parentNode.children = cloneChildren(children);
+
+  if (placeholder?.reapply && placeholder?.config) {
+    ensurePlaceholderRecursively(parentNode, placeholder.config);
+  }
+
+  return clonedDataset as T;
+};
+//#endregion
 
 //#region findNodeByCell
 /**
