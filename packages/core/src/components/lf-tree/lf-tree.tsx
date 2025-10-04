@@ -65,7 +65,7 @@ export class LfTree implements LfTreeInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() expandedNodes: Set<LfDataNode> = new Set();
+  @State() expandedNodes: Set<string> = new Set();
   @State() hiddenNodes: Set<LfDataNode> = new Set();
   @State() selectedNode: LfDataNode = null;
   //#endregion
@@ -220,16 +220,16 @@ export class LfTree implements LfTreeInterface {
   //#region Watchers
   @Watch("lfDataset")
   handleDatasetChange() {
-    this.expandedNodes = new Set();
+    const previousExpanded = new Set(this.expandedNodes);
     this.hiddenNodes = new Set();
     this.selectedNode = null;
     this._filterValue = "";
-    this.#applyInitialExpansion();
+    this.#applyInitialExpansion(previousExpanded);
   }
   @Watch("lfInitialExpansionDepth")
   handleInitialDepthChange() {
-    this.expandedNodes = new Set();
-    this.#applyInitialExpansion();
+    const previousExpanded = new Set(this.expandedNodes);
+    this.#applyInitialExpansion(previousExpanded);
   }
   //#endregion
 
@@ -318,23 +318,46 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
-  #applyInitialExpansion() {
+  #applyInitialExpansion(previouslyExpanded?: Set<string>) {
     const depth = this.lfInitialExpansionDepth;
-    const nodes = this.lfDataset?.nodes || [];
+    const nodes = (this.lfDataset?.nodes as LfDataNode[]) ?? [];
+    const retainedExpanded =
+      previouslyExpanded ?? this.expandedNodes ?? new Set<string>();
+    const nextExpanded = new Set<string>();
+
     const walk = (list: LfDataNode[], currentDepth: number) => {
       for (const n of list) {
-        if (depth == null) {
-          this.expandedNodes.add(n);
-        } else if (currentDepth < depth) {
-          this.expandedNodes.add(n);
+        const nodeId = this.#getNodeId(n);
+        if (nodeId) {
+          if (
+            depth == null ||
+            currentDepth < depth ||
+            retainedExpanded.has(nodeId)
+          ) {
+            nextExpanded.add(nodeId);
+          }
         }
-        if (n.children?.length) {
+
+        if (Array.isArray(n.children) && n.children.length > 0) {
           walk(n.children as LfDataNode[], currentDepth + 1);
         }
       }
     };
     walk(nodes, 0);
-    this.expandedNodes = new Set(this.expandedNodes);
+    this.expandedNodes = nextExpanded;
+  }
+
+  #getNodeId(node: LfDataNode | null | undefined): string | null {
+    if (!node) {
+      return null;
+    }
+
+    const idCandidate = node.id;
+    if (idCandidate == null) {
+      return null;
+    }
+
+    return String(idCandidate);
   }
   //#endregion
 
@@ -357,7 +380,10 @@ export class LfTree implements LfTreeInterface {
         lfAttributes: LF_ATTRIBUTES,
         manager: this.#framework,
         parts: this.#p,
-        isExpanded: (node) => this.expandedNodes.has(node),
+        isExpanded: (node) => {
+          const nodeId = this.#getNodeId(node);
+          return nodeId ? this.expandedNodes.has(nodeId) : false;
+        },
         isHidden: (node) => this.hiddenNodes.has(node),
         isSelected: (node) => this.selectedNode === node,
         filterValue: () => this._filterValue,
@@ -365,8 +391,14 @@ export class LfTree implements LfTreeInterface {
       {
         expansion: {
           toggle: (node) => {
-            if (this.expandedNodes.has(node)) this.expandedNodes.delete(node);
-            else this.expandedNodes.add(node);
+            const nodeId = this.#getNodeId(node);
+            if (!nodeId) {
+              return;
+            }
+
+            if (this.expandedNodes.has(nodeId))
+              this.expandedNodes.delete(nodeId);
+            else this.expandedNodes.add(nodeId);
             this.expandedNodes = new Set(this.expandedNodes);
           },
         },

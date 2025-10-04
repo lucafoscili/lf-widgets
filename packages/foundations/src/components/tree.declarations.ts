@@ -25,7 +25,48 @@ import { LF_TREE_EVENTS } from "./tree.constants";
 
 //#region Class
 /**
- * Primary interface implemented by the `lf-tree` component. It merges the shared component contract with the component-specific props.
+ * Public interface for the LfTree component.
+ *
+ * Represents the API surface of a tree widget that manages hierarchical data,
+ * selection and expansion state, and emits component-specific events.
+ *
+ * This interface extends the generic component contract (LfComponent<"LfTree">)
+ * and the tree-specific properties (LfTreePropsInterface).
+ *
+ * Members
+ * - onLfEvent: Callback used by the component to dispatch or handle internal
+ *   events. It receives a native Event or CustomEvent, a typed LfTreeEvent
+ *   identifier, and optional event-specific arguments (LfTreeEventArguments).
+ *   Consumers can implement this to centralize event handling and to react to
+ *   user interactions or programmatic changes.
+ *
+ * - _filterTimeout: Optional internal timer handle used to debounce or delay
+ *   filtering operations. The value is intentionally untyped (any) to allow
+ *   different timer implementations across environments (number, NodeJS.Timeout, etc.).
+ *
+ * - setExpandedNodes(nodes): Asynchronously sets which nodes are expanded.
+ *   The `nodes` argument accepts:
+ *     - a single node ID (string),
+ *     - a single LfDataNode object,
+ *     - an array of node IDs,
+ *     - an array of LfDataNode objects,
+ *     - or `null` to collapse every node.
+ *   The method normalizes inputs, updates internal expansion state, and resolves
+ *   when the operation (including any resulting UI updates) is complete.
+ *
+ * - setSelectedNodes(nodes): Asynchronously sets the current selection.
+ *   The `nodes` argument accepts the same shapes as setExpandedNodes:
+ *     - string | LfDataNode | Array<string | LfDataNode> | null
+ *   Passing `null` clears the selection. The method updates internal selection
+ *   state, triggers any selection-related side effects, and returns a Promise
+ *   that resolves once the action has been applied.
+ *
+ * Notes
+ * - Both setExpandedNodes and setSelectedNodes are asynchronous (Promise<void>).
+ *   Callers should await their completion when subsequent logic depends on the
+ *   updated tree state.
+ *
+ * @public
  */
 export interface LfTreeInterface
   extends LfComponent<"LfTree">,
@@ -36,6 +77,20 @@ export interface LfTreeInterface
     args?: LfTreeEventArguments,
   ) => void;
   _filterTimeout?: any;
+  /**
+   * Sets the expanded nodes in the tree.
+   * @param nodes - The nodes to expand, which can be a single node ID, a single LfDataNode object, an array of node IDs, an array of LfDataNode objects, or null to collapse all nodes.
+   */
+  setExpandedNodes: (
+    nodes: string | LfDataNode | Array<string | LfDataNode> | null,
+  ) => Promise<void>;
+  /**
+   * Sets the selected nodes in the tree.
+   * @param nodes - The nodes to select, which can be a single node ID, a single LfDataNode object, an array of node IDs, an array of LfDataNode objects, or null to clear the selection.
+   */
+  setSelectedNodes: (
+    nodes: string | LfDataNode | Array<string | LfDataNode> | null,
+  ) => Promise<void>;
 }
 /**
  * DOM element type for the custom element registered as `lf-tree`.
