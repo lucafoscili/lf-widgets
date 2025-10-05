@@ -1,17 +1,14 @@
-import { LfDataNode, LfTreeAdapter } from "@lf-widgets/foundations";
+import {
+  LfDataNode,
+  LfTreeAdapter,
+  LfTreeStateCommitOptions,
+} from "@lf-widgets/foundations";
 import {
   arraysEqual,
   extractIdCandidates,
   normalizeIdInput,
   normalizeTargetInput,
 } from "./state.utils";
-
-type SelectionOptions = {
-  emit?: boolean;
-  updateProp?: boolean;
-  event?: Event | CustomEvent | null;
-  node?: LfDataNode | null;
-};
 
 export const createSelectionState = (
   getAdapter: () => LfTreeAdapter | undefined,
@@ -38,7 +35,7 @@ export const createSelectionState = (
   const commit = (
     ids: string[],
     nodes: LfDataNode[],
-    options: SelectionOptions = {},
+    options: LfTreeStateCommitOptions = {},
   ): string[] => {
     const nextIds = controller.get.allowsMultiSelect() ? ids : ids.slice(0, 1);
     const changed = !arraysEqual(selectionIds, nextIds);
@@ -60,7 +57,7 @@ export const createSelectionState = (
   //#endregion
 
   //#region clearSelection
-  const clearSelection = (options: SelectionOptions = {}): string[] => {
+  const clearSelection = (options: LfTreeStateCommitOptions = {}): string[] => {
     pendingIds = undefined;
     selectionIds = [];
     controller.set.state.selection.setNode(null);
@@ -81,7 +78,7 @@ export const createSelectionState = (
   //#region applyIds
   const applyIds = (
     ids: string[],
-    options: SelectionOptions = {},
+    options: LfTreeStateCommitOptions = {},
   ): string[] => {
     const candidates = normalizeIdInput(ids);
     const framework = controller.get.manager;
@@ -134,7 +131,7 @@ export const createSelectionState = (
   //#region applyTargets
   const applyTargets = (
     target: string | LfDataNode | Array<string | LfDataNode> | null,
-    options: SelectionOptions = {},
+    options: LfTreeStateCommitOptions = {},
   ): string[] => {
     if (target == null) {
       return applyIds([], options);

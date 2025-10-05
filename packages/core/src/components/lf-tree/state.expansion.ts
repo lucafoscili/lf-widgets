@@ -1,12 +1,9 @@
-import { LfDataNode, LfTreeAdapter } from "@lf-widgets/foundations";
+import {
+  LfDataNode,
+  LfTreeAdapter,
+  LfTreeStateCommitOptions,
+} from "@lf-widgets/foundations";
 import { arraysEqual, getNodeId, normalizeIdInput } from "./state.utils";
-
-type ExpansionCommitOptions = {
-  emit?: boolean;
-  updateProp?: boolean;
-  node?: LfDataNode | null;
-  event?: Event | CustomEvent | null;
-};
 
 export const createExpansionState = (
   getAdapter: () => LfTreeAdapter | undefined,
@@ -38,7 +35,7 @@ export const createExpansionState = (
   //#region commit
   const commit = (
     ids: string[],
-    options: ExpansionCommitOptions = {},
+    options: LfTreeStateCommitOptions = {},
   ): void => {
     const currentIds = getCurrentIds();
     const changed = !arraysEqual(currentIds, ids);
@@ -59,7 +56,7 @@ export const createExpansionState = (
   //#region applyIds
   const applyIds = (
     ids: string[],
-    options: ExpansionCommitOptions = {},
+    options: LfTreeStateCommitOptions = {},
   ): string[] => {
     const candidates = normalizeIdInput(ids);
     const framework = controller.get.manager;

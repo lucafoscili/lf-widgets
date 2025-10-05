@@ -1,4 +1,8 @@
-import type { LfTreeAdapter } from "@lf-widgets/foundations";
+import type {
+  LfTreeAdapter,
+  LfTreeExpansionState,
+  LfTreeSelectionState,
+} from "@lf-widgets/foundations";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -41,9 +45,6 @@ import {
   getNodeId,
   normalizeTargetInput,
 } from "./state.utils";
-
-type TreeExpansionState = ReturnType<typeof createExpansionState>;
-type TreeSelectionState = ReturnType<typeof createSelectionState>;
 
 /**
  * The tree component displays a hierarchical dataset in a tree structure.
@@ -256,8 +257,8 @@ export class LfTree implements LfTreeInterface {
   _filterValue = "";
   _filterTimeout: ReturnType<typeof setTimeout> | null;
   #adapter: LfTreeAdapter;
-  #expansionState: TreeExpansionState;
-  #selectionState: TreeSelectionState;
+  #expansionState: LfTreeExpansionState;
+  #selectionState: LfTreeSelectionState;
   //#endregion
 
   //#region Watchers
