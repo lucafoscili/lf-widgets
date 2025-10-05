@@ -2182,7 +2182,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the image element.\r\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
-        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfMode",
@@ -2374,7 +2374,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTreeProps",
         docs: "Overrides the default tree props applied to the navigation tree instance.",
-        type: '{ lfAccordionLayout?: boolean; lfDataset?: LfDataDataset; lfEmpty?: string; lfFilter?: boolean; lfInitialExpansionDepth?: number; lfGrid?: boolean; lfRipple?: boolean; lfSelectable?: boolean; lfStyle?: string; lfUiSize?: "small" | "large" | "medium" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; }',
+        type: '{ lfAccordionLayout?: boolean; lfDataset?: LfDataDataset; lfExpandedNodeIds?: string[]; lfEmpty?: string; lfFilter?: boolean; lfInitialExpansionDepth?: number; lfGrid?: boolean; lfSelectedNodeIds?: string[]; lfRipple?: boolean; lfSelectable?: boolean; lfStyle?: string; lfUiSize?: "small" | "large" | "medium" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; }',
       },
       {
         name: "lfValue",
@@ -2961,7 +2961,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPlaceholder",
         docs: "Html attributes of the picture before the component enters the viewport.",
-        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfStyle",
@@ -2976,7 +2976,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Html attributes of the picture after the component enters the viewport.",
-        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
     ],
     styles: [
@@ -3880,7 +3880,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input or textarea element through additional HTML attributes.\r\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ class?: any; title?: any; name?: any; href?: any; autofocus?: any; id?: any; role?: any; src?: any; alt?: any; disabled?: any; type?: any; value?: any; autocomplete?: any; srcset?: any; checked?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; placeholder?: any; readonly?: any; step?: any; dataset?: any; lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; htmlProps?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfNavigationTree?: any; lfTreeProps?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfIcon",
@@ -4290,6 +4290,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfDebugLifecycleInfo>",
       },
       {
+        name: "getExpandedNodeIds",
+        docs: "Retrieves the identifiers for nodes currently expanded within the tree.",
+        returns: {
+          type: "Promise<string[]>",
+          docs: "",
+        },
+        signature: "() => Promise<string[]>",
+      },
+      {
         name: "getProps",
         docs: "Used to retrieve component's properties and descriptions.",
         returns: {
@@ -4299,6 +4308,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfTreePropsInterface>",
       },
       {
+        name: "getSelectedNodeIds",
+        docs: "Retrieves the identifiers for nodes currently selected within the tree.",
+        returns: {
+          type: "Promise<string[]>",
+          docs: "",
+        },
+        signature: "() => Promise<string[]>",
+      },
+      {
         name: "refresh",
         docs: "Triggers a re-render of the component to reflect any state changes.",
         returns: {
@@ -4306,6 +4324,26 @@ export const LF_DOC: LfShowcaseDoc = {
           docs: "",
         },
         signature: "() => Promise<void>",
+      },
+      {
+        name: "setExpandedNodes",
+        docs: "Sets the expanded nodes in the tree.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(nodes: string | LfDataNode | Array<string | LfDataNode> | null) => Promise<void>",
+      },
+      {
+        name: "setSelectedNodes",
+        docs: "Sets the selected nodes in the tree.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(nodes: string | LfDataNode | Array<string | LfDataNode> | null) => Promise<void>",
       },
       {
         name: "unmount",
@@ -4334,6 +4372,11 @@ export const LF_DOC: LfShowcaseDoc = {
         type: "string",
       },
       {
+        name: "lfExpandedNodeIds",
+        docs: "Identifiers of the nodes that are expanded.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        type: "string[]",
+      },
+      {
         name: "lfFilter",
         docs: "When true, displays a text field which enables filtering the dataset of the tree.",
         type: "boolean",
@@ -4345,7 +4388,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfInitialExpansionDepth",
-        docs: "Sets the initial expanded nodes based on the specified depth.\r\nIf the property is not provided, all nodes in the tree will be expanded.",
+        docs: "The initial depth to which the tree should be expanded upon first render.\r\nA value of 0 means all nodes are collapsed, 1 means only the root nodes are expanded, and so on.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "number",
       },
       {
@@ -4357,6 +4400,11 @@ export const LF_DOC: LfShowcaseDoc = {
         name: "lfSelectable",
         docs: "When true, nodes can be selected.",
         type: "boolean",
+      },
+      {
+        name: "lfSelectedNodeIds",
+        docs: "Identifiers of the nodes that are selected.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        type: "string[]",
       },
       {
         name: "lfStyle",

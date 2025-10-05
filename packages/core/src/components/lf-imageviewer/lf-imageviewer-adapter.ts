@@ -13,6 +13,7 @@ import { prepNavigation } from "./elements.navigation";
 import { prepDetailsHandlers } from "./handlers.details";
 import { prepNavigationHandlers } from "./handlers.navigation";
 
+//#region Adapter
 export const createAdapter = (
   getters: LfImageviewerAdapterInitializerGetters,
   setters: LfImageviewerAdapterInitializerSetters,
