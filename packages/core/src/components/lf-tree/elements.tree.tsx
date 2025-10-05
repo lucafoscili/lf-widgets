@@ -16,6 +16,7 @@ import { TreeNode } from "./components.node";
 export const createJsx = (
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapterJsx => ({
+  //#region filter
   filter: () => {
     const { controller, handlers } = getAdapter();
     const { compInstance, manager } = controller.get;
@@ -42,6 +43,9 @@ export const createJsx = (
       ></lf-textfield>
     );
   },
+  //#endregion
+
+  //#region header
   header: () => {
     const { controller } = getAdapter();
     const columns = controller.get.columns();
@@ -73,6 +77,9 @@ export const createJsx = (
       </div>
     );
   },
+  //#endregion
+
+  //#region nodes
   nodes: () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
@@ -233,6 +240,9 @@ export const createJsx = (
 
     return <div class={bemClass(tree._, tree.nodesWrapper)}></div>;
   },
+  //#endregion
+
+  //#region empty
   empty: () => {
     const { controller } = getAdapter();
     const { compInstance, manager } = controller.get;
@@ -250,4 +260,5 @@ export const createJsx = (
       </div>
     );
   },
+  //#endregion
 });

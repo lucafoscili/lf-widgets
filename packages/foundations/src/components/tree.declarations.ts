@@ -21,7 +21,11 @@ import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import { LfTextfieldEventPayload } from "./textfield.declarations";
-import { LF_TREE_EVENTS } from "./tree.constants";
+import {
+  LF_TREE_BLOCKS,
+  LF_TREE_EVENTS,
+  LF_TREE_PARTS,
+} from "./tree.constants";
 
 //#region Class
 /**
@@ -91,6 +95,14 @@ export interface LfTreeInterface
   setSelectedNodes: (
     nodes: string | LfDataNode | Array<string | LfDataNode> | null,
   ) => Promise<void>;
+  /**
+   * Retrieves the identifiers for nodes currently expanded within the tree.
+   */
+  getExpandedNodeIds: () => Promise<string[]>;
+  /**
+   * Retrieves the identifiers for nodes currently selected within the tree.
+   */
+  getSelectedNodeIds: () => Promise<string[]>;
 }
 /**
  * DOM element type for the custom element registered as `lf-tree`.
@@ -115,57 +127,98 @@ export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
 /**
  * Subset of adapter getters required during initialisation.
  */
-export interface LfTreeAdapterInitializerGetters {
-  blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
+export interface LfTreeAdapterControllerGetters
+  extends LfComponentAdapterGetters<LfTreeInterface> {
+  allowsMultiSelect: () => boolean;
+  blocks: typeof LF_TREE_BLOCKS;
+  canSelectNode: (node: LfDataNode | null | undefined) => boolean;
+  columns: () => NonNullable<LfDataDataset["columns"]>;
   compInstance: LfTreeInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
   dataset: () => LfDataDataset;
-  columns: () => NonNullable<LfDataDataset["columns"]>;
-  isGrid: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: import("../framework/framework.declarations").LfFrameworkInterface;
-  parts: typeof import("./tree.constants").LF_TREE_PARTS;
+  expandedProp: () => string[] | undefined;
+  filterValue: () => string;
+  initialExpansionDepth: () => number | undefined;
   isExpanded: (node: LfDataNode) => boolean;
+  isGrid: () => boolean;
   isHidden: (node: LfDataNode) => boolean;
   isSelected: (node: LfDataNode) => boolean;
-  filterValue: () => string; // kept as function to always reflect latest value
+  lfAttributes: typeof LF_ATTRIBUTES;
+  manager: LfFrameworkInterface;
+  parts: typeof LF_TREE_PARTS;
+  selectable: () => boolean;
+  selectedProp: () => string[] | undefined;
+  state: {
+    expansion: { ids: () => string[]; nodes: () => Set<string> };
+    selection: { ids: () => string[]; node: () => LfDataNode };
+  };
 }
 /**
  * Subset of adapter setters required during initialisation.
  */
-export interface LfTreeAdapterInitializerSetters {
-  expansion: { toggle: (node: LfDataNode) => void };
-  selection: { set: (node: LfDataNode) => void };
-  filter: { setValue: (value: string) => void; apply: (value: string) => void };
-}
-/**
- * Read-only controller surface exposed by the adapter for integration code.
- */
-export interface LfTreeAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfTreeInterface> {
-  blocks: typeof import("./tree.constants").LF_TREE_BLOCKS;
-  compInstance: LfTreeInterface;
-  manager: import("../framework/framework.declarations").LfFrameworkInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  dataset: () => LfDataDataset;
-  columns: () => NonNullable<LfDataDataset["columns"]>;
-  isGrid: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  parts: typeof import("./tree.constants").LF_TREE_PARTS;
-  isExpanded: (node: LfDataNode) => boolean;
-  isHidden: (node: LfDataNode) => boolean;
-  isSelected: (node: LfDataNode) => boolean;
-  filterValue: () => string;
-}
-/**
- * Imperative controller callbacks exposed by the adapter.
- */
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {
-  expansion: { toggle: (node: LfDataNode) => void };
-  selection: { set: (node: LfDataNode) => void };
   filter: { setValue: (value: string) => void; apply: (value: string) => void };
+  state: {
+    expansion: {
+      apply: () => void;
+      toggle: (node: LfDataNode) => void;
+      setNodes: (nodes: Iterable<string>) => void;
+      setProp: (ids: string[]) => void;
+      emitChange: (
+        event: Event | CustomEvent | null,
+        node: LfDataNode | null,
+        ids: string[],
+      ) => void;
+    };
+    selection: {
+      apply: () => void;
+      set: (node: LfDataNode) => void;
+      clear: () => void;
+      setNode: (node: LfDataNode | null) => void;
+      setProp: (ids: string[]) => void;
+      emitChange: (
+        event: Event | CustomEvent | null,
+        node: LfDataNode | null,
+        ids: string[],
+      ) => void;
+    };
+  };
 }
+
+/**
+ * Subset of adapter getters required during initialisation.
+ */
+export type LfTreeAdapterInitializerGetters = Pick<
+  LfTreeAdapterControllerGetters,
+  | "allowsMultiSelect"
+  | "blocks"
+  | "canSelectNode"
+  | "columns"
+  | "compInstance"
+  | "cyAttributes"
+  | "dataset"
+  | "expandedProp"
+  | "filterValue"
+  | "initialExpansionDepth"
+  | "isExpanded"
+  | "isGrid"
+  | "isHidden"
+  | "isSelected"
+  | "lfAttributes"
+  | "manager"
+  | "parts"
+  | "selectedProp"
+  | "selectable"
+  | "state"
+>;
+/**
+ * Subset of adapter setters required during initialisation.
+ */
+export type LfTreeAdapterInitializerSetters = Pick<
+  LfTreeAdapterControllerSetters,
+  "filter" | "state"
+>;
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
  */
@@ -207,15 +260,19 @@ export type LfTreeEvent = (typeof LF_TREE_EVENTS)[number];
  */
 export interface LfTreeEventPayload
   extends LfEventPayload<"LfTree", LfTreeEvent> {
+  expandedNodeIds?: string[];
   node?: LfDataNode;
+  selectedNodeIds?: string[];
 }
 /**
  * Utility interface used by the `lf-tree` component.
  */
 export interface LfTreeEventArguments {
+  expandedNodeIds?: string[];
   expansion?: boolean;
   node?: LfDataNode;
   selected?: boolean;
+  selectedNodeIds?: string[];
 }
 //#endregion
 
@@ -256,10 +313,12 @@ export interface LfTreeTraversedNode {
 export interface LfTreePropsInterface {
   lfAccordionLayout?: boolean;
   lfDataset?: LfDataDataset;
+  lfExpandedNodeIds?: string[];
   lfEmpty?: string;
   lfFilter?: boolean;
   lfInitialExpansionDepth?: number;
   lfGrid?: boolean;
+  lfSelectedNodeIds?: string[];
   lfRipple?: boolean;
   lfSelectable?: boolean;
   lfStyle?: string;

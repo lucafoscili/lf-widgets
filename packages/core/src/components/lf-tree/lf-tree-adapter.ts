@@ -1,10 +1,11 @@
 import {
   LfTreeAdapter,
+  LfTreeAdapterControllerGetters,
+  LfTreeAdapterControllerSetters,
   LfTreeAdapterInitializerGetters,
   LfTreeAdapterInitializerSetters,
   LfTreeAdapterRefs,
 } from "@lf-widgets/foundations";
-import { createGetters, createSetters } from "./controller.tree";
 import { createJsx } from "./elements.tree";
 import { createHandlers } from "./handlers.tree";
 
@@ -21,6 +22,19 @@ export const createAdapter = (
   elements: { jsx: createJsx(getAdapter), refs: createRefs() },
   handlers: createHandlers(getAdapter),
 });
+//#endregion
+
+//#region Controller
+export const createGetters = (
+  getters: LfTreeAdapterInitializerGetters,
+): LfTreeAdapterControllerGetters => {
+  return getters;
+};
+export const createSetters = (
+  setters: LfTreeAdapterInitializerSetters,
+): LfTreeAdapterControllerSetters => {
+  return setters;
+};
 //#endregion
 
 //#region Refs
