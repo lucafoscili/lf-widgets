@@ -6,6 +6,10 @@ import {
   LfDataNodeMergeChildrenOptions,
   LfDataNodePlaceholderOptions,
   LfDataNodePredicate,
+  LfDataNodeResolutionResult,
+  LfDataNodeSanitizeIdsOptions,
+  LfDataNodeSanitizeIdsResult,
+  LfDataNodeTarget,
 } from "@lf-widgets/foundations";
 import { cellStringify } from "./helpers.cell";
 
@@ -82,6 +86,39 @@ const cloneChildren = (children: LfDataNode[] | undefined) => {
     return [];
   }
   return children.map((child) => deepClone(child));
+};
+
+const buildNodeLookup = (dataset: LfDataDataset | undefined) => {
+  const lookup = new Map<string, LfDataNode>();
+  if (!dataset?.nodes?.length) {
+    return lookup;
+  }
+
+  const queue: LfDataNode[] = [...dataset.nodes];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) {
+      continue;
+    }
+
+    if (current.id != null) {
+      lookup.set(String(current.id), current);
+    }
+
+    if (Array.isArray(current.children) && current.children.length) {
+      queue.unshift(...current.children);
+    }
+  }
+
+  return lookup;
+};
+
+const normaliseTargetInput = (target: LfDataNodeTarget) => {
+  if (target == null) {
+    return [] as Array<string | LfDataNode>;
+  }
+
+  return Array.isArray(target) ? target : [target];
 };
 
 //#region nodeDecoratePlaceholders
@@ -208,6 +245,145 @@ export const nodeMergeChildren = <
   }
 
   return clonedDataset as T;
+};
+//#endregion
+
+//#region nodeResolveTargets
+/**
+ * Converts arbitrary node targets (ids, references, arrays) into a de-duplicated set of identifiers
+ * and dataset-aligned node references when available.
+ */
+export const nodeResolveTargets = (
+  dataset: LfDataDataset | undefined,
+  target: LfDataNodeTarget,
+): LfDataNodeResolutionResult => {
+  const lookup = buildNodeLookup(dataset);
+  const inputs = normaliseTargetInput(target);
+
+  if (!inputs.length) {
+    return { ids: [], nodes: [] };
+  }
+
+  const ids: string[] = [];
+  const seenIds = new Set<string>();
+  const nodesById = new Map<string, LfDataNode>();
+
+  for (const entry of inputs) {
+    if (entry == null) {
+      continue;
+    }
+
+    let id: string | null = null;
+    let resolvedNode: LfDataNode | undefined;
+
+    if (typeof entry === "string") {
+      if (!entry) {
+        continue;
+      }
+      id = entry;
+      resolvedNode = lookup.get(entry);
+    } else {
+      const candidateId = entry.id;
+      if (candidateId == null) {
+        continue;
+      }
+      id = String(candidateId);
+      resolvedNode = lookup.get(id) ?? entry;
+    }
+
+    if (!id) {
+      continue;
+    }
+
+    if (!nodesById.has(id) && resolvedNode) {
+      nodesById.set(id, resolvedNode);
+    } else if (!nodesById.has(id)) {
+      const datasetNode = lookup.get(id);
+      if (datasetNode) {
+        nodesById.set(id, datasetNode);
+      }
+    } else if (lookup.has(id)) {
+      nodesById.set(id, lookup.get(id));
+    }
+
+    if (!seenIds.has(id)) {
+      seenIds.add(id);
+      ids.push(id);
+    }
+  }
+
+  const nodes: LfDataNode[] = [];
+  for (const id of ids) {
+    const resolved = nodesById.get(id) ?? lookup.get(id);
+    if (resolved) {
+      nodes.push(resolved);
+    }
+  }
+
+  return { ids, nodes };
+};
+//endregion
+
+//#region nodeSanitizeIds
+/**
+ * Validates a collection of candidate identifiers (or node references) against the supplied dataset,
+ * returning only the identifiers that map to existing nodes. Optional predicates allow selective
+ * filtering (e.g. excluding disabled nodes) while the limit guard supports single-selection scenarios.
+ */
+export const nodeSanitizeIds = (
+  dataset: LfDataDataset | undefined,
+  candidates: Iterable<string | number | LfDataNode> | null | undefined,
+  options: LfDataNodeSanitizeIdsOptions = {},
+): LfDataNodeSanitizeIdsResult => {
+  const empty: LfDataNodeSanitizeIdsResult = { ids: [], nodes: [] };
+  if (!dataset?.nodes?.length || !candidates) {
+    return empty;
+  }
+
+  const lookup = buildNodeLookup(dataset);
+  const { predicate, limit } = options;
+  const ids: string[] = [];
+  const nodes: LfDataNode[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of candidates) {
+    if (entry == null) {
+      continue;
+    }
+
+    let id: string | null = null;
+    let resolvedNode: LfDataNode | undefined;
+
+    if (typeof entry === "string" || typeof entry === "number") {
+      id = String(entry);
+      resolvedNode = lookup.get(id);
+    } else {
+      const candidateId = entry.id;
+      if (candidateId == null) {
+        continue;
+      }
+      id = String(candidateId);
+      resolvedNode = lookup.get(id);
+    }
+
+    if (!id || seen.has(id) || !resolvedNode) {
+      continue;
+    }
+
+    if (predicate && !predicate(resolvedNode)) {
+      continue;
+    }
+
+    ids.push(id);
+    nodes.push(resolvedNode);
+    seen.add(id);
+
+    if (limit && ids.length >= limit) {
+      break;
+    }
+  }
+
+  return { ids, nodes };
 };
 //#endregion
 

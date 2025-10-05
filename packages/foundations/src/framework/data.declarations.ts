@@ -122,6 +122,25 @@ export interface LfDataNode {
 export type LfDataNodePredicate = (node: LfDataNode) => boolean;
 
 /**
+ * Union of inputs accepted by node resolution helpers.
+ */
+export type LfDataNodeTarget =
+  | string
+  | LfDataNode
+  | Array<string | LfDataNode>
+  | null;
+
+/**
+ * Resolution result carrying node identifiers and concrete references derived from caller input.
+ */
+export interface LfDataNodeResolutionResult {
+  /** Ordered, de-duplicated list of node identifiers. */
+  ids: string[];
+  /** Dataset-aligned node references whenever available. */
+  nodes: LfDataNode[];
+}
+
+/**
  * Configuration object controlling placeholder node generation for lazily loaded trees.
  */
 export interface LfDataNodePlaceholderOptions {
@@ -159,6 +178,26 @@ export interface LfDataNodeMergeChildrenOptions {
     /** Placeholder configuration shared with the decoration helper. */
     config: LfDataNodePlaceholderOptions;
   };
+}
+
+/**
+ * Options controlling how node identifiers are validated when restoring persisted state.
+ */
+export interface LfDataNodeSanitizeIdsOptions {
+  /** Optional limit applied to the amount of identifiers returned. */
+  limit?: number;
+  /** Predicate that determines whether a node should be included in the sanitised results. */
+  predicate?: (node: LfDataNode) => boolean;
+}
+
+/**
+ * Result returned by sanitisation helpers when validating persisted node identifiers.
+ */
+export interface LfDataNodeSanitizeIdsResult {
+  /** Sanitised list of identifiers that exist within the provided dataset. */
+  ids: string[];
+  /** Dataset-aligned node references matching the sanitised identifiers. */
+  nodes: LfDataNode[];
 }
 /**
  * Cell descriptor storing typed values for the data framework.
@@ -391,6 +430,19 @@ export interface LfDataNodeOperations {
     dataset: T,
     options: LfDataNodeMergeChildrenOptions,
   ) => T;
+  /** Normalises arbitrary node targets into dataset-aware identifiers and node references. */
+  resolveTargets: (
+    dataset: LfDataDataset | undefined,
+    target: LfDataNodeTarget,
+  ) => LfDataNodeResolutionResult;
+  /**
+   * Validates persisted node identifiers against the current dataset, returning dataset-aligned nodes and ids.
+   */
+  sanitizeIds: (
+    dataset: LfDataDataset | undefined,
+    candidates: Iterable<string | number | LfDataNode> | null | undefined,
+    options?: LfDataNodeSanitizeIdsOptions,
+  ) => LfDataNodeSanitizeIdsResult;
 }
 /**
  * Utility interface used by the data framework.
