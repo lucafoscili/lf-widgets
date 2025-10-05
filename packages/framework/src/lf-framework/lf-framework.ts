@@ -377,14 +377,14 @@ export class LfFramework implements LfFrameworkInterface {
    * - Checks for potentially malicious values containing 'javascript:' or '<script>'
    */
   sanitizeProps<C extends LfComponentName>(
-    props: { [key: string]: any },
+    props: Partial<LfComponentPropsFor<C>>,
     compName: C,
-  ): LfComponentPropsFor<C>;
+  ): Partial<LfComponentPropsFor<C>>;
   sanitizeProps<P extends { [key: string]: any }>(props: P): P;
   sanitizeProps<P extends { [key: string]: any }, C extends LfComponentName>(
     props: P,
     compName?: C,
-  ): LfComponentPropsFor<C> | P {
+  ): Partial<LfComponentPropsFor<C>> | P {
     const ALLOWED_ATTRS = new Set<string>(LF_FRAMEWORK_ALLOWED_ATTRS);
     const ALLOWED_PREFIXES = new Set<string>(LF_FRAMEWORK_ALLOWED_PREFIXES);
     const PROPS = getComponentProps();
@@ -421,10 +421,29 @@ export class LfFramework implements LfFrameworkInterface {
     }
 
     if (compName) {
-      return sanitized as unknown as LfComponentPropsFor<C>;
-    } else {
-      return sanitized as P;
+      return sanitized as Partial<LfComponentPropsFor<C>>;
     }
+
+    if (
+      typeof process !== "undefined" &&
+      process?.env?.NODE_ENV !== "production"
+    ) {
+      const droppedKeys: string[] = [];
+      for (const key in props) {
+        if (!Object.prototype.hasOwnProperty.call(props, key)) continue;
+        if (key in sanitized) continue;
+        if (!key.startsWith("lf")) continue;
+        droppedKeys.push(key);
+      }
+
+      if (droppedKeys.length) {
+        console.warn(
+          `[lf-framework] sanitizeProps called without component name. Dropped lf-prefixed attributes: ${droppedKeys.join(", ")}. Pass the target component name as the second argument to keep them.`,
+        );
+      }
+    }
+
+    return sanitized as P;
   }
   //#endregion
 

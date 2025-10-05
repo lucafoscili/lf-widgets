@@ -50,9 +50,9 @@ export interface LfFrameworkInterface {
   removeClickCallback: (cb: LfFrameworkClickCb) => void;
   sanitizeProps<P extends { [key: string]: any }>(props: P): P;
   sanitizeProps<C extends LfComponentName>(
-    props: { [key: string]: any },
+    props: Partial<LfComponentPropsFor<C>>,
     compName: C,
-  ): LfComponentPropsFor<C>;
+  ): Partial<LfComponentPropsFor<C>>;
   shapes: {
     get: () => LfFrameworkShapes;
     set: (value: LfFrameworkShapes) => void;
