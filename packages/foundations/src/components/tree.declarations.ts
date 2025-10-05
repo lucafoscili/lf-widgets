@@ -259,11 +259,8 @@ export type LfTreeEvent = (typeof LF_TREE_EVENTS)[number];
  * Detail payload structure dispatched with `lf-tree` events.
  */
 export interface LfTreeEventPayload
-  extends LfEventPayload<"LfTree", LfTreeEvent> {
-  expandedNodeIds?: string[];
-  node?: LfDataNode;
-  selectedNodeIds?: string[];
-}
+  extends LfEventPayload<"LfTree", LfTreeEvent>,
+    LfTreeEventArguments {}
 /**
  * Utility interface used by the `lf-tree` component.
  */
