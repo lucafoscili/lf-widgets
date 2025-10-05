@@ -119,7 +119,7 @@ export const prepNavigation = (
           id={IDS.navigation.tree}
           onLf-tree-event={tree}
           ref={assignRef(navigation, "tree")}
-          {...sanitizeProps(props)}
+          {...sanitizeProps(props, "LfTree")}
         ></lf-tree>
       );
     },
