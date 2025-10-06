@@ -75,12 +75,29 @@ import {
 export interface LfTreeInterface
   extends LfComponent<"LfTree">,
     LfTreePropsInterface {
+  _filterTimeout?: any;
+  /**
+   * Retrieves the identifiers for nodes currently expanded within the tree.
+   */
+  getExpandedNodeIds: () => Promise<string[]>;
+  /**
+   * Retrieves the identifiers for nodes currently selected within the tree.
+   */
+  getSelectedNodeIds: () => Promise<string[]>;
   onLfEvent: (
     e: Event | CustomEvent,
     eventType: LfTreeEvent,
     args?: LfTreeEventArguments,
   ) => void;
-  _filterTimeout?: any;
+  /**
+   * Selects the first node matching the provided predicate. If no match is found, selection is cleared.
+   * This method combines node.find with setSelectedNodes for common selection-by-criteria workflows.
+   * @param predicate - Function that returns true for the node to select
+   * @returns Promise resolving to the selected node, or undefined if no match was found
+   */
+  selectByPredicate: (
+    predicate: (node: LfDataNode) => boolean,
+  ) => Promise<LfDataNode | undefined>;
   /**
    * Sets the expanded nodes in the tree.
    * @param nodes - The nodes to expand, which can be a single node ID, a single LfDataNode object, an array of node IDs, an array of LfDataNode objects, or null to collapse all nodes.
@@ -95,14 +112,6 @@ export interface LfTreeInterface
   setSelectedNodes: (
     nodes: string | LfDataNode | Array<string | LfDataNode> | null,
   ) => Promise<void>;
-  /**
-   * Retrieves the identifiers for nodes currently expanded within the tree.
-   */
-  getExpandedNodeIds: () => Promise<string[]>;
-  /**
-   * Retrieves the identifiers for nodes currently selected within the tree.
-   */
-  getSelectedNodeIds: () => Promise<string[]>;
 }
 /**
  * DOM element type for the custom element registered as `lf-tree`.

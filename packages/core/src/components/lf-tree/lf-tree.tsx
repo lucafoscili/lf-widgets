@@ -445,6 +445,29 @@ export class LfTree implements LfTreeInterface {
       updateProp: true,
     });
   }
+
+  @Method()
+  async selectByPredicate(
+    predicate: (node: LfDataNode) => boolean,
+  ): Promise<LfDataNode | undefined> {
+    if (!this.#framework || !this.lfDataset) {
+      return undefined;
+    }
+
+    const matchingNode = this.#framework.data.node.find(
+      this.lfDataset,
+      predicate,
+    );
+
+    if (matchingNode) {
+      await this.setSelectedNodes(matchingNode);
+      return matchingNode;
+    }
+
+    // Clear selection if no match found
+    await this.setSelectedNodes(null);
+    return undefined;
+  }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
    * @param {number} ms - Number of milliseconds

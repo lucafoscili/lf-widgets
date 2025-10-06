@@ -4326,6 +4326,16 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<void>",
       },
       {
+        name: "selectByPredicate",
+        docs: "Selects the first node matching the provided predicate. If no match is found, selection is cleared.\nThis method combines node.find with setSelectedNodes for common selection-by-criteria workflows.",
+        returns: {
+          type: "Promise<LfDataNode>",
+          docs: "Promise resolving to the selected node, or undefined if no match was found",
+        },
+        signature:
+          "(predicate: (node: LfDataNode) => boolean) => Promise<LfDataNode | undefined>",
+      },
+      {
         name: "setExpandedNodes",
         docs: "Sets the expanded nodes in the tree.",
         returns: {

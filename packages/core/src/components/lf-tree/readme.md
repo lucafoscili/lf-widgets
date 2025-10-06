@@ -87,6 +87,23 @@ Type: `Promise<void>`
 
 
 
+### `selectByPredicate(predicate: (node: LfDataNode) => boolean) => Promise<LfDataNode | undefined>`
+
+Selects the first node matching the provided predicate. If no match is found, selection is cleared.
+This method combines node.find with setSelectedNodes for common selection-by-criteria workflows.
+
+#### Parameters
+
+| Name        | Type                            | Description |
+| ----------- | ------------------------------- | ----------- |
+| `predicate` | `(node: LfDataNode) => boolean` |             |
+
+#### Returns
+
+Type: `Promise<LfDataNode>`
+
+Promise resolving to the selected node, or undefined if no match was found
+
 ### `setExpandedNodes(nodes: string | LfDataNode | Array<string | LfDataNode> | null) => Promise<void>`
 
 Sets the expanded nodes in the tree.
