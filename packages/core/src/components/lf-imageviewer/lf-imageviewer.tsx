@@ -466,8 +466,8 @@ export class LfImageviewer implements LfImageviewerInterface {
 
     return (
       <div class={wrapperClass} part={this.#p.navigation}>
-        {shouldShowTree && tree()}
-        {shouldShowNavToggle && navToggle()}
+        {tree()}
+        {navToggle()}
         {textfield()}
         {load()}
         {masonry()}

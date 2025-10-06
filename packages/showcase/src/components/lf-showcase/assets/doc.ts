@@ -2404,7 +2404,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-imageviewer-nav-width",
-        docs: "Sets the width for the navigation panel. Defaults to => 180px",
+        docs: "Sets the width for the navigation panel. Defaults to => auto",
       },
     ],
   },

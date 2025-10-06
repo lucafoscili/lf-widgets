@@ -50,23 +50,35 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   }
 
   &--has-nav {
-    grid-template-areas:
-      "nav-toggle textfield"
-      "nav-toggle button"
-      "nav-toggle masonry";
-    grid-template-columns: auto 1fr;
+    & {
+      grid-template-areas:
+        "nav-toggle textfield"
+        "nav-toggle button"
+        "nav-toggle masonry";
+      grid-template-columns: auto 1fr;
+    }
+
+    .navigation-grid__nav-toggle {
+      display: block;
+    }
   }
 
   &--has-drawer {
-    grid-template-areas:
-      "tree nav-toggle textfield"
-      "tree nav-toggle button"
-      "tree nav-toggle masonry";
-    /**
+    & {
+      grid-template-areas:
+        "tree nav-toggle textfield"
+        "tree nav-toggle button"
+        "tree nav-toggle masonry";
+      /**
       * @prop --lf-#{$comp}-nav-width: Sets the width for the navigation panel.
       *                              Defaults to => auto
       */
-    grid-template-columns: var(--lf-#{$comp}-nav-width, auto) auto 1fr;
+      grid-template-columns: var(--lf-#{$comp}-nav-width, auto) auto 1fr;
+    }
+
+    .navigation-grid__tree {
+      display: grid;
+    }
   }
 
   &__button {
@@ -83,6 +95,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   &__nav-toggle {
     border-right: $borderC;
     box-sizing: border-box;
+    display: none;
     grid-area: nav-toggle;
   }
 
@@ -92,7 +105,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   }
 
   &__tree {
-    display: grid;
+    display: none;
     grid-area: tree;
     overflow: hidden;
   }

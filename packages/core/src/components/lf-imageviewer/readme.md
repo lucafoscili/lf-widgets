@@ -178,7 +178,7 @@ Type: `Promise<void>`
 | `--lf-imageviewer-color-on-bg`   | Sets the color-on-bg color for the imageviewer component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-imageviewer-font-family`   | Sets the primary font family for the imageviewer component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-imageviewer-font-size`     | Sets the font size for the imageviewer component. Defaults to => var(--lf-font-size)                     |
-| `--lf-imageviewer-nav-width`     | Sets the width for the navigation panel. Defaults to => 180px                                            |
+| `--lf-imageviewer-nav-width`     | Sets the width for the navigation panel. Defaults to => auto                                             |
 
 
 ## Dependencies
