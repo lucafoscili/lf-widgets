@@ -228,6 +228,7 @@ graph TD;
   lf-card --> lf-image
   lf-card --> lf-photoframe
   lf-card --> lf-progressbar
+  lf-card --> lf-textfield
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload
