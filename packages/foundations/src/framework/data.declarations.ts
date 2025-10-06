@@ -12,6 +12,7 @@ import { LfCodePropsInterface } from "../components/code.declarations";
 import { LfImagePropsInterface } from "../components/image.declarations";
 import { LfPhotoframePropsInterface } from "../components/photoframe.declarations";
 import { LfProgressbarPropsInterface } from "../components/progressbar.declarations";
+import { LfTextfieldPropsInterface } from "../components/textfield.declarations";
 import { LfTogglePropsInterface } from "../components/toggle.declarations";
 import { LfTypewriterPropsInterface } from "../components/typewriter.declarations";
 import { LfUploadPropsInterface } from "../components/upload.declarations";
@@ -253,31 +254,37 @@ export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
                                 value: string;
                                 htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                               }
-                            : T extends "toggle"
-                              ? Partial<LfTogglePropsInterface> & {
-                                  shape: "toggle";
-                                  value: boolean;
+                            : T extends "textfield"
+                              ? Partial<LfTextfieldPropsInterface> & {
+                                  shape: "textfield";
+                                  value: string;
                                   htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                 }
-                              : T extends "upload"
-                                ? Partial<LfUploadPropsInterface> & {
-                                    shape: "upload";
-                                    value: string;
+                              : T extends "toggle"
+                                ? Partial<LfTogglePropsInterface> & {
+                                    shape: "toggle";
+                                    value: boolean;
                                     htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                   }
-                                : T extends "typewriter"
-                                  ? Partial<LfTypewriterPropsInterface> & {
-                                      shape: "typewriter";
+                                : T extends "upload"
+                                  ? Partial<LfUploadPropsInterface> & {
+                                      shape: "upload";
                                       value: string;
                                       htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                     }
-                                  : T extends "text"
-                                    ? {
-                                        shape?: "text";
+                                  : T extends "typewriter"
+                                    ? Partial<LfTypewriterPropsInterface> & {
+                                        shape: "typewriter";
                                         value: string;
                                         htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                       }
-                                    : LfDataBaseCell;
+                                    : T extends "text"
+                                      ? {
+                                          shape?: "text";
+                                          value: string;
+                                          htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
+                                        }
+                                      : LfDataBaseCell;
 /**
  * Data shape helper describing cell name to for the data framework.
  */
@@ -305,6 +312,7 @@ export interface LfDataCellContainer {
   lfProgressbar?: LfDataCellFromName<"lfProgressbar">;
   lfSlot?: LfDataCellFromName<"lfSlot">;
   lfText?: LfDataCellFromName<"lfText">;
+  lfTextfield?: LfDataCellFromName<"lfTextfield">;
   lfToggle?: LfDataCellFromName<"lfToggle">;
   lfUpload?: LfDataCellFromName<"lfUpload">;
 }
