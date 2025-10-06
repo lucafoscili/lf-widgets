@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.2...1.1.0-rc.0) (2025-10-06)
+
+
+### Bug Fixes
+
+* Update sanitizeProps to return partial component props ([ca3467b](https://github.com/lucafoscili/lf-widgets/commit/ca3467b0539ec7f549cb53ff327877b017f54dee))
+
+
+### Features
+
+* Add extractCellMetadata helper for typed cell metadata ([a9345f2](https://github.com/lucafoscili/lf-widgets/commit/a9345f298ed38d85f7de0626d2caa35bd4a78340))
+* Add node resolution and sanitization helpers ([5186cd5](https://github.com/lucafoscili/lf-widgets/commit/5186cd54a810cfb940e2aad9b18d2f10c1d55c5c))
+* Add placeholder and merge utilities for data nodes ([ca5fe43](https://github.com/lucafoscili/lf-widgets/commit/ca5fe43587dab97cfcea6721a64228feb9290909))
+* Add support for progressbar shape in data framework ([6852bc2](https://github.com/lucafoscili/lf-widgets/commit/6852bc23ff6f3e6084b7d68d440d87b77a098fb6))
+
+
+
+
+
 ## [1.0.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1...1.0.2) (2025-10-03)
 
 **Note:** Version bump only for package @lf-widgets/framework

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.2...1.1.0-rc.0) (2025-10-06)
+
+
+### Bug Fixes
+
+* Pass component name to sanitizeProps in navigation ([16bce75](https://github.com/lucafoscili/lf-widgets/commit/16bce75d9d25285dc3df89da3fe1d62729baec47))
+* Refactor cell value handling in tree ([00ed6f1](https://github.com/lucafoscili/lf-widgets/commit/00ed6f1792edb2fdb4f856da0f01309e8272a65c))
+* Refactor lf-tree grid layout to use CSS grid ([8fa410a](https://github.com/lucafoscili/lf-widgets/commit/8fa410a94c180ef0ac11e160c879187602c436d5))
+* Refactor navigation button and update imageviewer styles ([02eaf40](https://github.com/lucafoscili/lf-widgets/commit/02eaf40ddc7878d481a0a121f2c9bf7e24553a35))
+* Refactor navigation tree layout in image viewer ([5de2669](https://github.com/lucafoscili/lf-widgets/commit/5de26692a0d7a2e0b4e8ed8fc5405844edd189c8))
+* Remove selection and expansion change event emissions ([c760c12](https://github.com/lucafoscili/lf-widgets/commit/c760c12ed37b9d7a975954428a27660936d3378f))
+* Sanitize props in navigation tree component ([0b9be91](https://github.com/lucafoscili/lf-widgets/commit/0b9be91ad3e3d719a8e46ecf84ee6c896aaff81b))
+
+
+### Features
+
+* Add navigation tree panel to image viewer ([475bc95](https://github.com/lucafoscili/lf-widgets/commit/475bc950213c92cd7434c0b9bb6c433dfd6b6066))
+* Add selectByPredicate method to LfTree component ([bbdf5b0](https://github.com/lucafoscili/lf-widgets/commit/bbdf5b0298dac61d9bc94c18f28dae9dee457b45))
+* Add support for progressbar shape in data framework ([6852bc2](https://github.com/lucafoscili/lf-widgets/commit/6852bc23ff6f3e6084b7d68d440d87b77a098fb6))
+* Refactor lf-tree expansion to use node IDs and update docs ([4a40a58](https://github.com/lucafoscili/lf-widgets/commit/4a40a583be7e758ef9fb157b2ef2ccafc8deefb1))
+* Refactor lf-tree to support controlled expansion and selection ([c7d3081](https://github.com/lucafoscili/lf-widgets/commit/c7d308156cf1b3bc271ae315145909a7151dd92f))
+
+
+
+
+
 ## [1.0.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1...1.0.2) (2025-10-03)
 
 **Note:** Version bump only for package @lf-widgets/core
