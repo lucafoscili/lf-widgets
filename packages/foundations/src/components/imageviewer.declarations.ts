@@ -42,41 +42,6 @@ import {
   LfTreePropsInterface,
 } from "./tree.declarations";
 
-// #region Navigation tree
-/**
- * Configuration options for the navigation tree within `lf-imageviewer`.
- */
-export interface LfImageviewerNavigationTreeOptions {
-  defaultOpen?: boolean;
-  enabled?: boolean;
-  layout?: {
-    columns?: number;
-    mode?: "accordion" | "grid";
-  };
-  maxWidth?: number | string;
-  minWidth?: number | string;
-  position?: "start" | "end";
-  width?: number | string;
-}
-/**
- * Runtime state snapshot for the navigation tree within `lf-imageviewer`.
- */
-export interface LfImageviewerNavigationTreeState {
-  collapsedWidth: number;
-  defaultOpen: boolean;
-  enabled: boolean;
-  layout: {
-    columns: number;
-    mode: "accordion" | "grid";
-  };
-  maxWidth: number;
-  minWidth: number;
-  open: boolean;
-  position: "start" | "end";
-  width: number;
-}
-// #endregion
-
 //#region Class
 /**
  * Primary interface implemented by the `lf-imageviewer` component. It merges the shared component contract with the component-specific props.
@@ -136,9 +101,9 @@ export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
   navigation: {
     load: () => VNode;
     masonry: () => VNode;
+    navToggle: () => VNode;
     textfield: () => VNode;
     tree: () => VNode;
-    treeToggle: () => VNode;
   };
 }
 /**
@@ -158,8 +123,8 @@ export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
   navigation: {
     load: LfButtonElement;
     masonry: LfMasonryElement;
+    navToggle: LfButtonElement;
     tree: LfTreeElement;
-    treeToggle: LfButtonElement;
     textfield: LfTextfieldElement;
   };
 }
@@ -176,8 +141,8 @@ export interface LfImageviewerAdapterHandlers
   navigation: {
     button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
     masonry: (e: CustomEvent<LfMasonryEventPayload>) => void;
+    navToggle: (e: CustomEvent<LfButtonEventPayload>) => void;
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
-    treeToggle: (e: CustomEvent<LfButtonEventPayload>) => void;
     textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
 }
@@ -193,17 +158,16 @@ export type LfImageviewerAdapterInitializerGetters = Pick<
   | "history"
   | "lfAttribute"
   | "manager"
-  | "navigationTree"
+  | "navigation"
   | "parts"
   | "spinnerStatus"
-  | "treeProps"
 >;
 /**
  * Subset of adapter setters required during initialisation.
  */
 export type LfImageviewerAdapterInitializerSetters = Pick<
   LfImageviewerAdapterControllerSetters,
-  "currentShape" | "history" | "navigationTreeOpen"
+  "currentShape" | "history" | "navigation"
 >;
 /**
  * Read-only controller surface exposed by the adapter for integration code.
@@ -225,10 +189,9 @@ export interface LfImageviewerAdapterControllerGetters
   };
   lfAttribute: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
-  navigationTree: () => LfImageviewerNavigationTreeState;
+  navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
   parts: typeof LF_IMAGEVIEWER_PARTS;
   spinnerStatus: () => boolean;
-  treeProps: () => Partial<LfTreePropsInterface>;
 }
 /**
  * Imperative controller callbacks exposed by the adapter.
@@ -241,7 +204,7 @@ export interface LfImageviewerAdapterControllerSetters
     new: (shape: LfMasonrySelectedShape, isSnapshot?: boolean) => void;
     pop: (index?: number) => void;
   };
-  navigationTreeOpen: (open: boolean) => void;
+  navigation: { isTreeOpen: (open: boolean) => void; toggleTree: () => void };
   spinnerStatus: (active: boolean) => void;
 }
 //#endregion
@@ -274,9 +237,8 @@ export type LfImageviewerHistory = {
 export interface LfImageviewerPropsInterface {
   lfDataset?: LfDataDataset;
   lfLoadCallback?: LfImageviewerLoadCallback;
-  lfNavigationTree?: boolean | LfImageviewerNavigationTreeOptions;
+  lfNavigation?: LfImageviewerNavigation;
   lfStyle?: string;
-  lfTreeProps?: Partial<LfTreePropsInterface>;
   lfValue?: LfDataDataset;
 }
 /**
@@ -286,4 +248,14 @@ export type LfImageviewerLoadCallback = (
   imageviewer: LfImageviewerInterface,
   dir: string,
 ) => Promise<void>;
+/**
+ * Configuration options for the navigation panel.
+ * @property defaultDirectory - The initial directory to load in the navigation tree.
+ * @property isTreeOpen - When true, the navigation tree panel is expanded by default.
+ * @property treeProps - Additional props to pass to the underlying `lf-tree` component.
+ */
+export interface LfImageviewerNavigation {
+  isTreeOpen?: boolean;
+  treeProps?: Partial<LfTreePropsInterface>;
+}
 //#endregion

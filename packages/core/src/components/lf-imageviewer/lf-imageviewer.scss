@@ -40,56 +40,61 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     @include lf-el-stretch;
     box-sizing: border-box;
     display: grid;
+    grid-template-areas:
+      "textfield"
+      "button"
+      "masonry";
     grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, auto) 1fr;
     overflow: hidden;
   }
 
-  &--with-tree {
+  &--has-nav {
+    grid-template-areas:
+      "nav-toggle textfield"
+      "nav-toggle button"
+      "nav-toggle masonry";
     grid-template-columns: auto 1fr;
   }
 
-  &--with-tree#{&}--tree-end {
-    grid-template-columns: 1fr auto;
-  }
-
-  &__content {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    overflow: hidden;
-  }
-
-  &__textfield {
-    padding: 0;
+  &--has-drawer {
+    grid-template-areas:
+      "tree nav-toggle textfield"
+      "tree nav-toggle button"
+      "tree nav-toggle masonry";
+    /**
+      * @prop --lf-#{$comp}-nav-width: Sets the width for the navigation panel.
+      *                              Defaults to => auto
+      */
+    grid-template-columns: var(--lf-#{$comp}-nav-width, auto) auto 1fr;
   }
 
   &__button {
+    grid-area: button;
     padding-bottom: 0.75em;
   }
 
   &__masonry {
+    grid-area: masonry;
     overflow: auto;
     position: relative;
   }
 
-  &__tree-shell {
-    & {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      overflow: hidden;
-    }
-
-    &--tree-end {
-      border-left: $borderC;
-      border-right: none;
-    }
-  }
-
-  &__tree-header {
+  &__nav-toggle {
     border-right: $borderC;
+    box-sizing: border-box;
+    grid-area: nav-toggle;
   }
 
-  &__tree-content {
-    overflow: auto;
+  &__textfield {
+    grid-area: textfield;
+    padding: 0;
+  }
+
+  &__tree {
+    display: grid;
+    grid-area: tree;
+    overflow: hidden;
   }
 }
 

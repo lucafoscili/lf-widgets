@@ -64,6 +64,27 @@ export const prepNavigationHandlers = (
     },
     //#endregion
 
+    //#region navToggle handler
+    navToggle: (e) => {
+      const { eventType } = e.detail;
+
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const { get, set } = controller;
+      const { compInstance } = get;
+
+      const comp = compInstance as LfImageviewer;
+
+      comp.onLfEvent(e, "lf-event");
+
+      switch (eventType) {
+        case "click":
+          set.navigation.toggleTree();
+          break;
+      }
+    },
+    //#endregion
+
     //#region Textfield handler
     textfield: (e) => {
       const adapter = getAdapter();
@@ -83,26 +104,6 @@ export const prepNavigationHandlers = (
       const comp = compInstance as LfImageviewer;
 
       comp.onLfEvent(e, "lf-event");
-    },
-    //#endregion
-
-    //#region Tree toggle handler
-    treeToggle: (e) => {
-      const { eventType } = e.detail;
-
-      const adapter = getAdapter();
-      const { controller } = adapter;
-      const { get, set } = controller;
-      const { compInstance, navigationTree } = get;
-
-      const comp = compInstance as LfImageviewer;
-
-      comp.onLfEvent(e, "lf-event");
-
-      if (eventType === "click") {
-        const config = navigationTree();
-        set.navigationTreeOpen(!config.open);
-      }
     },
     //#endregion
   };

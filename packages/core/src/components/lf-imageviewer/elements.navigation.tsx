@@ -69,6 +69,40 @@ export const prepNavigation = (
     },
     // #endregion
 
+    //#region navToggle
+    navToggle: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager } = controller.get;
+      const { navigation } = elements.refs;
+      const { navToggle } = handlers.navigation;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+      const { "--lf-icon-next": right, "--lf-icon-previous": left } =
+        theme.get.current().variables;
+
+      const isOpen = controller.get.navigation.isTreeOpen();
+
+      return (
+        <lf-button
+          class={bemClass(
+            blocks.navigationGrid._,
+            blocks.navigationGrid.navToggle,
+          )}
+          data-cy={cyAttributes.button}
+          id={IDS.navigation.navToggle}
+          lfAriaLabel={
+            isOpen ? "Collapse navigation tree" : "Expand navigation tree"
+          }
+          lfIcon={isOpen ? left : right}
+          lfStretchY={true}
+          onLf-button-event={navToggle}
+          ref={assignRef(navigation, "navToggle")}
+          title={isOpen ? "Collapse" : "Expand"}
+        ></lf-button>
+      );
+    },
+    //#endregion
+
     // #region Textfield
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -100,18 +134,13 @@ export const prepNavigation = (
     // #region Tree
     tree: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, manager, navigationTree, treeProps } = controller.get;
+      const { blocks, compInstance, manager } = controller.get;
       const { navigation } = elements.refs;
       const { tree } = handlers.navigation;
       const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
 
-      const config = navigationTree();
-      if (!config.enabled) {
-        return;
-      }
-
-      const props = treeProps();
+      const nav = compInstance.lfNavigation || {};
 
       return (
         <lf-tree
@@ -119,51 +148,10 @@ export const prepNavigation = (
           id={IDS.navigation.tree}
           onLf-tree-event={tree}
           ref={assignRef(navigation, "tree")}
-          {...sanitizeProps(props, "LfTree")}
+          {...sanitizeProps(nav.treeProps, "LfTree")}
         ></lf-tree>
       );
     },
     // #endregion
-
-    //#region treeToggle
-    treeToggle: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, navigationTree } = controller.get;
-      const { navigation } = elements.refs;
-      const { treeToggle } = handlers.navigation;
-      const { assignRef, theme } = manager;
-      const { bemClass } = theme;
-      const { "--lf-icon-next": right, "--lf-icon-previous": left } =
-        theme.get.current().variables;
-
-      const config = navigationTree();
-      if (!config.enabled) {
-        return;
-      }
-
-      const isStart = config.position === "start";
-      const iconKeyOpen = isStart ? left : right;
-      const iconKeyClosed = isStart ? right : left;
-      const icon = config.open ? iconKeyOpen : iconKeyClosed || "folder";
-
-      return (
-        <lf-button
-          class={bemClass(
-            blocks.navigationGrid._,
-            blocks.navigationGrid.treeToggle,
-          )}
-          data-cy={cyAttributes.button}
-          id={IDS.navigation.treeToggle}
-          lfAriaLabel={
-            config.open ? "Collapse navigation tree" : "Expand navigation tree"
-          }
-          lfIcon={icon}
-          lfStretchY={true}
-          onLf-button-event={treeToggle}
-          ref={assignRef(navigation, "treeToggle")}
-        ></lf-button>
-      );
-    },
-    //#endregion
   };
 };

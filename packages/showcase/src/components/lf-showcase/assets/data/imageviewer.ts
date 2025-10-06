@@ -101,41 +101,6 @@ export const getImageviewerFixtures = (
     },
   };
 
-  const navigationTreeDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "library",
-        value: "Media Library",
-        children: [
-          {
-            id: "library/portraits",
-            value: "Portraits",
-            children: [
-              { id: "library/portraits/raw", value: "Raw Shots" },
-              { id: "library/portraits/edited", value: "Edited" },
-            ],
-          },
-          {
-            id: "library/locations",
-            value: "Locations",
-            children: [
-              { id: "library/locations/forest", value: "Forest" },
-              { id: "library/locations/city", value: "City" },
-            ],
-          },
-          {
-            id: "library/concepts",
-            value: "Concept Boards",
-            children: [
-              { id: "library/concepts/color", value: "Color Studies" },
-              { id: "library/concepts/light", value: "Lighting" },
-            ],
-          },
-        ],
-      },
-    ],
-  };
-
   const navigationTreeGridDataset: LfDataDataset = {
     columns: [
       { id: "name", title: "Name" },
@@ -291,40 +256,31 @@ export const getImageviewerFixtures = (
             lfValue: data.lfValue,
           },
         },
-      },
-      //#endregion
-
-      //#region Positions
-      positions: {
-        start: {
-          description: "Navigation tree docked to the start side",
+        navigationClosed: {
+          description: "Imageviewer with navigation tree closed by default",
           props: {
             lfLoadCallback: loadImageDataset,
-            lfNavigationTree: true,
-            lfTreeProps: {
-              lfDataset: navigationTreeDataset,
+            lfNavigation: {
+              isTreeOpen: false,
+              treeProps: {
+                lfDataset: navigationTreeGridDataset,
+                lfFilter: true,
+                lfGrid: true,
+              },
             },
             lfValue: data.lfValue,
           },
         },
-        endGrid: {
-          description: "Navigation tree on the end side with grid layout",
+        navigation: {
+          description: "Imageviewer with navigation tree and grid layout",
           props: {
             lfLoadCallback: loadImageDataset,
-            lfNavigationTree: {
-              layout: {
-                columns: 2,
-                mode: "grid",
+            lfNavigation: {
+              treeProps: {
+                lfDataset: navigationTreeGridDataset,
+                lfFilter: true,
+                lfGrid: true,
               },
-              maxWidth: 420,
-              minWidth: 260,
-              position: "end",
-              width: 340,
-            },
-            lfTreeProps: {
-              lfDataset: navigationTreeGridDataset,
-              lfFilter: true,
-              lfGrid: true,
             },
             lfValue: data.lfValue,
           },

@@ -206,6 +206,7 @@ export const LF_THEME_MODIFIERS = [
   "has-header",
   "has-icon",
   "has-label",
+  "has-nav",
   "has-spinner",
   "has-value",
   "hidden",
@@ -232,14 +233,11 @@ export const LF_THEME_MODIFIERS = [
   "sticky",
   "temporary",
   "textarea",
-  "tree-closed",
-  "tree-end",
   "toggable",
   "top",
   "trailing",
   "user",
   "vertical",
-  "with-tree",
 ] as const;
 //#endregion;
 
