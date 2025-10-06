@@ -4,10 +4,7 @@ import {
   LfTreeStateCommitOptions,
 } from "@lf-widgets/foundations";
 import { createStateSynchronizer } from "./state.synchronizer";
-import {
-  extractIdCandidates,
-  normalizeTargetInput,
-} from "./state.utils";
+import { extractIdCandidates, normalizeTargetInput } from "./state.utils";
 
 export const createSelectionState = (
   getAdapter: () => LfTreeAdapter | undefined,
@@ -61,33 +58,25 @@ export const createSelectionState = (
       return clearSelection(options);
     }
 
-    return sync.applyIdsWithSanitization(
-      ids,
-      options,
-      (sanitized, opts) => {
-        const framework = controller.get.manager;
-        const dataset = controller.get.dataset();
+    return sync.applyIdsWithSanitization(ids, options, (sanitized, opts) => {
+      const framework = controller.get.manager;
+      const dataset = controller.get.dataset();
 
-        // If framework exists and dataset is available, apply full sanitization with predicates
-        if (framework && dataset) {
-          const result = framework.data.node.sanitizeIds(
-            dataset,
-            sanitized,
-            {
-              predicate: (node: LfDataNode) => controller.get.canSelectNode(node),
-              limit: controller.get.allowsMultiSelect() ? undefined : 1,
-            },
-          );
-          commit(result.ids, result.nodes, opts);
-        } else {
-          // Framework or dataset not ready - commit pending IDs (already stored by synchronizer)
-          const pendingIds = controller.get.allowsMultiSelect()
-            ? sanitized
-            : sanitized.slice(0, 1);
-          commit(pendingIds, [], opts);
-        }
-      },
-    );
+      // If framework exists and dataset is available, apply full sanitization with predicates
+      if (framework && dataset) {
+        const result = framework.data.node.sanitizeIds(dataset, sanitized, {
+          predicate: (node: LfDataNode) => controller.get.canSelectNode(node),
+          limit: controller.get.allowsMultiSelect() ? undefined : 1,
+        });
+        commit(result.ids, result.nodes, opts);
+      } else {
+        // Framework or dataset not ready - commit pending IDs (already stored by synchronizer)
+        const pendingIds = controller.get.allowsMultiSelect()
+          ? sanitized
+          : sanitized.slice(0, 1);
+        commit(pendingIds, [], opts);
+      }
+    });
   };
   //#endregion
 
