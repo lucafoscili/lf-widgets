@@ -37,22 +37,66 @@ import {
   LfComponentType,
 } from "./components.declarations";
 
+/**
+ * Typed alias for the custom events emitted by Lightning Fast components.
+ *
+ * @template P Payload type carried by the event `detail` property.
+ */
 export type LfEvent<P extends LfEventPayload = LfEventPayload> = CustomEvent<P>;
+/**
+ * Produces the DOM event name exposed by a component (for example `lf-button-event`).
+ *
+ * @template C Component name whose event identifier is requested.
+ */
 export type LfEventName<C extends LfComponentName = LfComponentName> =
   `${LfComponentTag<C>}-event`;
+/**
+ * Resolves the event payload type associated with a component instance.
+ *
+ * @template C Component whose event type union should be returned.
+ */
 export type LfEventType<
   C extends LfComponent<LfComponentName> = LfComponent<LfComponentName>,
 > = ComponentEventMap[ExtractComponentName<C>];
+/**
+ * Standard payload delivered through the `detail` property of Lightning Fast events.
+ *
+ * @template C Component name emitting the event.
+ * @template T Event type discriminator associated with the component.
+ */
 export interface LfEventPayload<
   C extends LfComponentName = LfComponentName,
   T extends LfEventType<LfComponent<C>> = LfEventType<LfComponent<C>>,
 > {
+  /**
+   * Component instance that dispatched the event. Allows listeners to reach
+   * component methods without re-querying the DOM.
+   */
   comp: LfComponentType<C>;
+  /**
+   * Discriminant identifying which logical event fired (for example `ready`).
+   */
   eventType: T;
+  /**
+   * `id` attribute value of the emitting element, useful for correlating events
+   * when multiple instances are present.
+   */
   id: string;
+  /**
+   * Raw DOM event that triggered the adapter-level emission. Consumers can use
+   * this to inspect native browser details or stop propagation.
+   */
   originalEvent: CustomEvent | Event;
 }
+/**
+ * Compile-time alias yielding the conventional type name for a component's event payload.
+ */
 export type LfEventPayloadName<C extends LfComponentName> = `${C}EventPayload`;
+/**
+ * Maps each component to the strongly typed event payload it emits.
+ *
+ * Consumers can index this map with a component name to obtain the correct payload contract.
+ */
 export type ComponentEventMap = {
   LfAccordion: LfAccordionEvent;
   LfArticle: LfArticleEvent;
@@ -87,4 +131,7 @@ export type ComponentEventMap = {
   LfTypewriter: LfTypewriterEvent;
   LfUpload: LfUploadEvent;
 };
+/**
+ * Helper type that extracts the canonical component name from a generic `LfComponent`.
+ */
 type ExtractComponentName<C> = C extends LfComponent<infer N> ? N : never;

@@ -56,10 +56,13 @@ export const LF_TREE_PROPS = [
   "lfAccordionLayout",
   "lfDataset",
   "lfEmpty",
+  "lfExpandedNodeIds",
   "lfFilter",
+  "lfGrid",
   "lfInitialExpansionDepth",
   "lfRipple",
   "lfSelectable",
+  "lfSelectedNodeIds",
   "lfStyle",
   "lfUiSize",
 ] as const satisfies (keyof LfTreePropsInterface)[];

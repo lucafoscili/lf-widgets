@@ -1,5 +1,361 @@
-import { LfDataCell, LfDataDataset, LfDataNode } from "@lf-widgets/foundations";
+import {
+  LfDataCell,
+  LfDataDataset,
+  LfDataNode,
+  LfDataNodePredicate,
+  LfDataNodeResolutionResult,
+  LfDataNodeSanitizeIdsOptions,
+  LfDataNodeSanitizeIdsResult,
+  LfDataNodeTarget,
+} from "@lf-widgets/foundations";
 import { cellStringify } from "./helpers.cell";
+
+//#region buildNodeLookup
+/**
+ * Build a lookup map of nodes by their id from a dataset.
+ *
+ * Traverses the top-level nodes in the provided dataset and all reachable
+ * descendants (via each node's `children` array) and returns a Map that
+ * maps each node's id (stringified) to the corresponding node object.
+ *
+ * - If `dataset` is `undefined` or contains no top-level `nodes`, an empty
+ *   Map is returned.
+ * - Nodes with `null` or `undefined` ids are skipped and not included in the
+ *   returned Map.
+ * - The function does not mutate nodes or the dataset; it only reads node
+ *   properties and builds a new Map.
+ *
+ * @param dataset - Optional dataset containing a `nodes` array of `LfDataNode`.
+ * @returns A Map where keys are node ids converted to strings and values are
+ *          the corresponding `LfDataNode` objects. The Map will be empty if
+ *          the dataset has no nodes.
+ *
+ * @remarks
+ * - Traversal is performed with an explicit queue/stack mechanism; all nodes
+ *   reachable via `children` arrays are visited exactly once. Time complexity
+ *   is O(n) and space complexity is O(n), where n is the total number of
+ *   visited nodes.
+ */
+const buildNodeLookup = (dataset: LfDataDataset | undefined) => {
+  const lookup = new Map<string, LfDataNode>();
+  if (!dataset?.nodes?.length) {
+    return lookup;
+  }
+
+  const queue: LfDataNode[] = [...dataset.nodes];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) {
+      continue;
+    }
+
+    if (current.id != null) {
+      lookup.set(String(current.id), current);
+    }
+
+    if (Array.isArray(current.children) && current.children.length) {
+      queue.unshift(...current.children);
+    }
+  }
+
+  return lookup;
+};
+//#endregion
+
+//#region normaliseTargetInput
+/**
+ * Normalize the provided target input into an array of targets.
+ *
+ * This helper accepts a single target, an array of targets, or a nullish value
+ * and returns an array suitable for downstream processing.
+ * Behaviour:
+ * - If `target` is `null` or `undefined`, an empty array is returned.
+ * - If `target` is already an array, that array is returned unchanged.
+ * - Otherwise a new single-element array containing the provided target is returned.
+ *
+ * @param target - The input target(s) to normalize. May be `null`/`undefined`, a single target (e.g. `string` or `LfDataNode`), or an array of such targets.
+ * @returns An array of `string | LfDataNode` representing the normalized target(s).
+ *
+ * @example
+ * // single value
+ * normaliseTargetInput('foo'); // -> ['foo']
+ *
+ * @example
+ * // array value
+ * const arr = ['a', 'b'];
+ * normaliseTargetInput(arr) === arr; // -> true (returned as-is)
+ *
+ * @example
+ * // nullish value
+ * normaliseTargetInput(null); // -> []
+ */
+const normaliseTargetInput = (target: LfDataNodeTarget) => {
+  if (target == null) {
+    return [] as Array<string | LfDataNode>;
+  }
+
+  return Array.isArray(target) ? target : [target];
+};
+//#endregion
+
+//#region extractCellMetadata
+/**
+ * Extracts and validates typed metadata from a cell within a node.
+ *
+ * This helper provides a standardized pattern for extracting structured data from cells
+ * that store metadata in their `value` property. Typical use cases include navigation
+ * directories, selection payloads, or custom application state stored in cells.
+ *
+ * The extraction follows this flow:
+ * 1. Validates the node and cell existence
+ * 2. Attempts to extract the raw value from cell.value
+ * 3. Validates the value matches expected schema (if provided)
+ * 4. Applies optional transformation
+ * 5. Returns typed result or undefined/null based on schema.nullable
+ *
+ * @template T - The expected type of the metadata after validation and transformation
+ * @param node - The node containing the cell to extract metadata from
+ * @param cellId - The identifier of the cell within node.cells (e.g., 'lfCode', 'lfText')
+ * @param schema - Optional validation and transformation configuration
+ * @returns The extracted and validated metadata, undefined if invalid, or null if schema.nullable
+ *
+ * @example
+ * // Extract directory metadata from navigation cell
+ * const dirMetadata = extractCellMetadata<DirectoryInfo>(
+ *   node,
+ *   'lfCode',
+ *   {
+ *     validate: (val): val is DirectoryInfo =>
+ *       typeof val === 'object' && val !== null && 'path' in val,
+ *     transform: (val) => ({ ...val, normalized: normalizePath(val.path) })
+ *   }
+ * );
+ *
+ * @example
+ * // Simple extraction without validation
+ * const rawMeta = extractCellMetadata(node, 'lfText');
+ */
+export const extractCellMetadata = <T = unknown>(
+  node: LfDataNode | null | undefined,
+  cellId: string,
+  schema?: {
+    validate?: (value: unknown) => value is T;
+    transform?: (value: T) => T;
+    nullable?: boolean;
+  },
+): T | undefined | null => {
+  // Guard: node must exist and have cells
+  if (!node || typeof node !== "object" || !node.cells) {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // Guard: cell must exist within node.cells
+  const cell = node.cells[cellId];
+  if (!cell || typeof cell !== "object") {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // Extract raw value from cell
+  const rawValue = (cell as { value?: unknown }).value;
+  if (rawValue === undefined || rawValue === null) {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // If no schema provided, return raw value cast to T
+  if (!schema) {
+    return rawValue as T;
+  }
+
+  // Validate against schema if provided
+  if (schema.validate && !schema.validate(rawValue)) {
+    return schema.nullable ? null : undefined;
+  }
+
+  // Apply transformation if provided
+  const validated = rawValue as T;
+  if (schema.transform) {
+    try {
+      return schema.transform(validated);
+    } catch {
+      return schema.nullable ? null : undefined;
+    }
+  }
+
+  return validated;
+};
+//#endregion
+
+//#region nodeFind
+/**
+ * Performs a breadth-first search across the dataset nodes and returns the first match for the
+ * supplied predicate.
+ */
+export const nodeFind = (
+  dataset: LfDataDataset | undefined,
+  predicate: LfDataNodePredicate,
+) => {
+  if (!dataset || !Array.isArray(dataset.nodes) || !predicate) {
+    return undefined;
+  }
+
+  const queue: LfDataNode[] = [...dataset.nodes];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) {
+      continue;
+    }
+
+    if (predicate(current)) {
+      return current;
+    }
+
+    if (Array.isArray(current.children) && current.children.length) {
+      queue.unshift(...current.children);
+    }
+  }
+
+  return undefined;
+};
+//#endregion
+
+//#region nodeResolveTargets
+/**
+ * Converts arbitrary node targets (ids, references, arrays) into a de-duplicated set of identifiers
+ * and dataset-aligned node references when available.
+ */
+export const nodeResolveTargets = (
+  dataset: LfDataDataset | undefined,
+  target: LfDataNodeTarget,
+): LfDataNodeResolutionResult => {
+  const lookup = buildNodeLookup(dataset);
+  const inputs = normaliseTargetInput(target);
+
+  if (!inputs.length) {
+    return { ids: [], nodes: [] };
+  }
+
+  const ids: string[] = [];
+  const seenIds = new Set<string>();
+  const nodesById = new Map<string, LfDataNode>();
+
+  for (const entry of inputs) {
+    if (entry == null) {
+      continue;
+    }
+
+    let id: string | null = null;
+    let resolvedNode: LfDataNode | undefined;
+
+    if (typeof entry === "string") {
+      if (!entry) {
+        continue;
+      }
+      id = entry;
+      resolvedNode = lookup.get(entry);
+    } else {
+      const candidateId = entry.id;
+      if (candidateId == null) {
+        continue;
+      }
+      id = String(candidateId);
+      resolvedNode = lookup.get(id) ?? entry;
+    }
+
+    if (!id) {
+      continue;
+    }
+
+    if (!nodesById.has(id) && resolvedNode) {
+      nodesById.set(id, resolvedNode);
+    } else if (!nodesById.has(id)) {
+      const datasetNode = lookup.get(id);
+      if (datasetNode) {
+        nodesById.set(id, datasetNode);
+      }
+    } else if (lookup.has(id)) {
+      nodesById.set(id, lookup.get(id));
+    }
+
+    if (!seenIds.has(id)) {
+      seenIds.add(id);
+      ids.push(id);
+    }
+  }
+
+  const nodes: LfDataNode[] = [];
+  for (const id of ids) {
+    const resolved = nodesById.get(id) ?? lookup.get(id);
+    if (resolved) {
+      nodes.push(resolved);
+    }
+  }
+
+  return { ids, nodes };
+};
+//endregion
+
+//#region nodeSanitizeIds
+/**
+ * Validates a collection of candidate identifiers (or node references) against the supplied dataset,
+ * returning only the identifiers that map to existing nodes. Optional predicates allow selective
+ * filtering (e.g. excluding disabled nodes) while the limit guard supports single-selection scenarios.
+ */
+export const nodeSanitizeIds = (
+  dataset: LfDataDataset | undefined,
+  candidates: Iterable<string | number | LfDataNode> | null | undefined,
+  options: LfDataNodeSanitizeIdsOptions = {},
+): LfDataNodeSanitizeIdsResult => {
+  const empty: LfDataNodeSanitizeIdsResult = { ids: [], nodes: [] };
+  if (!dataset?.nodes?.length || !candidates) {
+    return empty;
+  }
+
+  const lookup = buildNodeLookup(dataset);
+  const { predicate, limit } = options;
+  const ids: string[] = [];
+  const nodes: LfDataNode[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of candidates) {
+    if (entry == null) {
+      continue;
+    }
+
+    let id: string | null = null;
+    let resolvedNode: LfDataNode | undefined;
+
+    if (typeof entry === "string" || typeof entry === "number") {
+      id = String(entry);
+      resolvedNode = lookup.get(id);
+    } else {
+      const candidateId = entry.id;
+      if (candidateId == null) {
+        continue;
+      }
+      id = String(candidateId);
+      resolvedNode = lookup.get(id);
+    }
+
+    if (!id || seen.has(id) || !resolvedNode) {
+      continue;
+    }
+
+    if (predicate && !predicate(resolvedNode)) {
+      continue;
+    }
+
+    ids.push(id);
+    nodes.push(resolvedNode);
+    seen.add(id);
+
+    if (limit && ids.length >= limit) {
+      break;
+    }
+  }
+
+  return { ids, nodes };
+};
+//#endregion
 
 //#region findNodeByCell
 /**
@@ -201,67 +557,6 @@ export const nodeGetAncestors = (node: LfDataNode, nodes: LfDataNode[]) => {
   ancestors.reverse();
   return ancestors;
 };
-
-//#endregion
-
-//#region nodeGetDrilldownInfo
-/**
- * Analyzes a tree of nodes to determine its maximum depth and the maximum number of children for any node.
- *
- * @param nodes - The array of root nodes to analyze
- * @returns An object containing:
- *          - maxChildren: The maximum number of children found in any single node
- *          - maxDepth: The maximum depth level reached in the tree structure
- *
- * @example
- * ```typescript
- * const nodes = [
- *   {
- *     children: [
- *       { children: [] },
- *       { children: [] }
- *     ]
- *   }
- * ];
- * const info = nodeGetDrilldownInfo(nodes);
- * // Returns { maxChildren: 2, maxDepth: 2 }
- * ```
- */
-export const nodeGetDrilldownInfo = (nodes: LfDataNode[]) => {
-  let maxChildren = 0;
-  let maxDepth = 0;
-
-  const getDepth = function (n: LfDataNode) {
-    const depth = 0;
-    if (n.children) {
-      n.children.forEach(function (d) {
-        const tmpDepth = getDepth(d);
-        if (tmpDepth > depth) {
-          maxDepth = tmpDepth;
-        }
-      });
-    }
-    return depth;
-  };
-
-  const recursive = (arr: LfDataNode[]) => {
-    maxDepth++;
-    for (let index = 0; index < arr.length; index++) {
-      const node = arr[index];
-      getDepth(node);
-      if (Array.isArray(node.children) && maxChildren < node.children.length) {
-        maxChildren = node.children.length;
-        recursive(node.children);
-      }
-    }
-  };
-
-  recursive(nodes);
-  return {
-    maxChildren,
-    maxDepth,
-  };
-};
 //#endregion
 
 //#region nodeGetParent
@@ -379,42 +674,6 @@ export const nodeSort = (
 };
 //#endregion
 
-//#region nodeSetProperties
-/**
- * Sets properties on the specified nodes, optionally recursively.
- * @param nodes - Array of nodes to update
- * @param properties - Object containing the properties to set on the nodes
- * @param recursively - If true, applies properties to all descendant nodes
- * @param exclude - Optional array of nodes to exclude from property updates
- * @returns Array of nodes that were updated
- */
-export const nodeSetProperties = (
-  nodes: LfDataNode[],
-  properties: Partial<LfDataNode>,
-  recursively?: boolean,
-  exclude?: LfDataNode[],
-) => {
-  const updated: LfDataNode[] = [];
-  if (!exclude) {
-    exclude = [];
-  }
-  if (recursively) {
-    nodes = nodeToStream(nodes);
-  }
-  for (let index = 0; index < nodes.length; index++) {
-    const node = nodes[index];
-    for (const key in properties) {
-      if (!exclude.includes(node)) {
-        (node[key as keyof LfDataNode] as any) =
-          properties[key as keyof LfDataNode];
-        updated.push(node);
-      }
-    }
-  }
-  return updated;
-};
-//#endregion
-
 //#region nodeToStream
 /**
  * Converts a nested tree structure of LfDataNodes into a flattened array.
@@ -498,50 +757,5 @@ export const nodeTraverseVisible = (
   };
   for (const n of nodes) walk(n, 0);
   return out;
-};
-//#endregion
-
-//#region removeNodeByCell
-/**
- * Removes a node from a dataset by finding the node that contains the specified cell.
- * The function traverses the dataset tree recursively to find and remove the node.
- *
- * @param dataset - The dataset containing the nodes to search through
- * @param targetCell - The cell used to identify the node to remove
- * @returns The removed node if found and removed successfully, null otherwise
- *
- * @example
- * ```typescript
- * const dataset = {nodes: [...]};
- * const cell = {value: 'test'};
- * const removedNode = removeNodeByCell(dataset, cell);
- * ```
- */
-export const removeNodeByCell = (
-  dataset: LfDataDataset,
-  targetCell: LfDataCell,
-) => {
-  function recursive(nodes: LfDataNode[], nodeToRemove: LfDataNode): boolean {
-    const index = nodes.indexOf(nodeToRemove);
-    if (index !== -1) {
-      nodes.splice(index, 1);
-      return true;
-    }
-
-    for (const node of nodes) {
-      if (node.children && recursive(node.children, nodeToRemove)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  const targetNode = findNodeByCell(dataset, targetCell);
-  if (!targetNode) {
-    return null;
-  }
-
-  return recursive(dataset.nodes, targetNode) ? targetNode : null;
 };
 //#endregion

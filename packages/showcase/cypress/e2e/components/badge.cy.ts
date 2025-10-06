@@ -1,6 +1,7 @@
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
+  LF_BADGE_CSS_VARS,
   LfBadgeEvent,
   LfComponentName,
   LfComponentTag,
@@ -74,54 +75,70 @@ describe(CY_CATEGORIES.methods, () => {
 
 //#region Props
 describe(CY_CATEGORIES.props, () => {
+  let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
   const { success } = LF_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(badge);
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
+    });
   });
   it(`lfImageProps: should check for the presence of the correct <lf-image>, as an icon, inside <${badgeTag}>.`, () => {
+    const imageIconClass = framework.theme.bemClass("image", "icon");
+
     cy.get(lfComponentShowcase)
       .find(`${badgeTag}#uncategorized-icon`)
+      .as("badgeWithIcon");
+
+    cy.get("@badgeWithIcon")
       .invoke("prop", "lfImageProps")
       .then((lfImageProps: LfImagePropsInterface) => {
-        cy.get(lfComponentShowcase)
-          .get(`${badgeTag}#uncategorized-icon`)
+        cy.get("@badgeWithIcon")
           .shadow()
           .find("lf-image")
           .should("have.prop", "lfValue", lfImageProps.lfValue)
           .shadow()
-          .find(".image__icon")
+          .find(`.${imageIconClass}`)
           .should("exist");
       });
   });
-  it(`lfImageProps: should check for the presence of the correct <lf-image, as an image, inside <${badgeTag}>.`, () => {
+  it(`lfImageProps: should check for the presence of the correct <lf-image>, as an image, inside <${badgeTag}>.`, () => {
+    const imageImgClass = framework.theme.bemClass("image", "img");
+
     cy.get(lfComponentShowcase)
       .find(`${badgeTag}#uncategorized-image`)
+      .as("badgeWithImage");
+
+    cy.get("@badgeWithImage")
       .invoke("prop", "lfImageProps")
       .then((lfImageProps: LfImagePropsInterface) => {
-        cy.get(lfComponentShowcase)
-          .find(`${badgeTag}#uncategorized-image`)
+        cy.get("@badgeWithImage")
           .shadow()
           .find("lf-image")
           .should("have.prop", "lfValue", lfImageProps.lfValue)
           .shadow()
-          .find("img")
+          .find(`.${imageImgClass}`)
           .should("exist");
       });
   });
-  it(`lfLabel: Should check that .${badge} inside the empty <${badgeTag}> is actually empty.`, () => {
+  it(`lfLabel: Should check that the badge block inside the empty <${badgeTag}> is actually empty.`, () => {
+    const badgeBlock = framework.theme.bemClass("badge");
+
     cy.get(lfComponentShowcase)
       .find(`${badgeTag}#uncategorized-empty`)
       .shadow()
-      .find(`.${badge}`)
+      .find(`.${badgeBlock}`)
       .should("be.empty");
   });
-  it(`lfLabel: should check that .${badge} inside the <${badgeTag}> is not empty.`, () => {
+  it(`lfLabel: should check that the badge block inside the <${badgeTag}> is not empty.`, () => {
+    const badgeBlock = framework.theme.bemClass("badge");
+
     cy.get(lfComponentShowcase)
       .find(`${badgeTag}#uncategorized-label`)
       .shadow()
-      .find(`.${badge}`)
+      .find(`.${badgeBlock}`)
       .should("not.be.empty");
   });
   it("lfPosition: reflected as host attribute", () => {
@@ -129,6 +146,41 @@ describe(CY_CATEGORIES.props, () => {
       .find(`${badgeTag}#positions-top-right`)
       .should("exist")
       .should("have.attr", "lf-position", "top-right");
+  });
+  it("lfPosition: inline positions disable transforms", () => {
+    const transformVar = LF_BADGE_CSS_VARS.transform;
+
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#positions-inline`)
+      .should("exist")
+      .as("inlineBadge");
+
+    cy.get("@inlineBadge")
+      .should("have.attr", "lf-position", "inline")
+      .shadow()
+      .find("style#lf-style")
+      .invoke("text")
+      .then((styleContent) => {
+        expect(styleContent).to.include(`${transformVar}: none`);
+      });
+  });
+  it("lfPosition: anchored positions set offsets", () => {
+    const transformVar = LF_BADGE_CSS_VARS.transform;
+
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#positions-top-right`)
+      .should("exist")
+      .as("anchoredBadge");
+
+    cy.get("@anchoredBadge")
+      .shadow()
+      .find("style#lf-style")
+      .invoke("text")
+      .then((styleContent) => {
+        expect(styleContent).to.include("top: 0");
+        expect(styleContent).to.include("right: 0");
+        expect(styleContent).to.include(`${transformVar}: translate(50%, -50%)`);
+      });
   });
   it("lfStyle: Should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
@@ -139,13 +191,68 @@ describe(CY_CATEGORIES.props, () => {
       .should("exist")
       .should("have.attr", "lf-ui-size", "small");
   });
-  it("lfUiState: reflected on badge via data-lf", () => {
+  it("lfUiState: reflected on badge via data-lf and renders themed icon", () => {
+    const badgeBlock = framework.theme.bemClass("badge");
+    const imageIconClass = framework.theme.bemClass("image", "icon");
+
     cy.get(lfComponentShowcase)
       .find(`${badgeTag}#states-${success}`)
       .should("exist")
+      .as("stateBadge");
+
+    cy.get("@stateBadge")
       .shadow()
-      .find(`.${badge}`)
+      .find(`.${badgeBlock}`)
       .should("have.attr", "data-lf", success);
+
+    cy.get("@stateBadge")
+      .invoke("prop", "lfImageProps")
+      .then((lfImageProps: LfImagePropsInterface) => {
+        expect(lfImageProps?.lfValue).to.be.a("string").and.not.be.empty;
+
+        cy.get("@stateBadge")
+          .shadow()
+          .find("lf-image")
+          .should("have.prop", "lfValue", lfImageProps.lfValue)
+          .shadow()
+          .find(`.${imageIconClass}`)
+          .should("exist");
+      });
+  });
+});
+//#endregion
+
+//#region e2e
+describe(CY_CATEGORIES.e2e, () => {
+  const { lfComponentShowcase } = CY_ALIASES;
+  const transformVar = LF_BADGE_CSS_VARS.transform;
+
+  beforeEach(() => {
+    cy.navigate(badge).waitForWebComponents([badgeTag]);
+  });
+  it(`lfPosition: updates placement when changed at runtime.`, () => {
+    cy.get(lfComponentShowcase)
+      .find(`${badgeTag}#positions-top-left`)
+      .should("exist")
+      .as("runtimeBadge");
+
+    cy.get("@runtimeBadge")
+      .then(($badge) => {
+        cy.wrap($badge).should(async ($b) => {
+          const badgeElement = $b[0] as HTMLLfBadgeElement;
+          badgeElement.lfPosition = "inline";
+          await badgeElement.refresh();
+        });
+      });
+
+    cy.get("@runtimeBadge")
+      .should("have.attr", "lf-position", "inline")
+      .shadow()
+      .find("style#lf-style")
+      .invoke("text")
+      .then((styleContent) => {
+        expect(styleContent).to.include(`${transformVar}: none`);
+      });
   });
 });
 //#endregion

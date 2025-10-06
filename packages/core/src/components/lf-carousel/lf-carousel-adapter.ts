@@ -1,6 +1,5 @@
 import {
   LfCarouselAdapter,
-  LfCarouselAdapterControllerGetters,
   LfCarouselAdapterControllerSetters,
   LfCarouselAdapterHandlers,
   LfCarouselAdapterInitializerGetters,
@@ -20,7 +19,7 @@ export const createAdapter = (
 ): LfCarouselAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
+      get: getters,
       set: createSetters(setters, getAdapter),
     },
     elements: {
@@ -33,11 +32,6 @@ export const createAdapter = (
 //#endregion
 
 //#region Controller
-export const createGetters = (
-  getters: LfCarouselAdapterInitializerGetters,
-): LfCarouselAdapterControllerGetters => {
-  return getters;
-};
 export const createSetters = (
   setters: LfCarouselAdapterInitializerSetters,
   getAdapter: () => LfCarouselAdapter,

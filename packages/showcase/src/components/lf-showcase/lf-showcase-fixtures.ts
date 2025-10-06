@@ -4,7 +4,10 @@ import {
   LfFrameworkInterface,
   LfThemeIconRegistry,
 } from "@lf-widgets/foundations";
+import { version as LF_WIDGETS_VERSION } from "../../../package.json";
 import { DOC_IDS } from "./helpers/constants";
+
+// version is now imported directly as LF_WIDGETS_VERSION
 
 /**
  * Creates a dataset of component definitions for the LF Showcase.
@@ -374,7 +377,7 @@ export const LF_DOC = (framework: LfFrameworkInterface): LfArticleDataset => {
     nodes: [
       {
         id: DOC_IDS.root,
-        value: "LF Widgets",
+        value: `LF Widgets`,
         children: [
           {
             id: DOC_IDS.section,
@@ -401,7 +404,7 @@ export const LF_DOC = (framework: LfFrameworkInterface): LfArticleDataset => {
               },
               {
                 id: DOC_IDS.paragraph,
-                value: "",
+                value: `v${LF_WIDGETS_VERSION}`,
                 children: [
                   {
                     id: DOC_IDS.contentWrapper,

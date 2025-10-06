@@ -69,6 +69,40 @@ export const prepNavigation = (
     },
     // #endregion
 
+    //#region navToggle
+    navToggle: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager } = controller.get;
+      const { navigation } = elements.refs;
+      const { navToggle } = handlers.navigation;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+      const { "--lf-icon-next": right, "--lf-icon-previous": left } =
+        theme.get.current().variables;
+
+      const isOpen = controller.get.navigation.isTreeOpen();
+
+      return (
+        <lf-button
+          class={bemClass(
+            blocks.navigationGrid._,
+            blocks.navigationGrid.navToggle,
+          )}
+          data-cy={cyAttributes.button}
+          id={IDS.navigation.navToggle}
+          lfAriaLabel={
+            isOpen ? "Collapse navigation tree" : "Expand navigation tree"
+          }
+          lfIcon={isOpen ? left : right}
+          lfStretchY={true}
+          onLf-button-event={navToggle}
+          ref={assignRef(navigation, "navToggle")}
+          title={isOpen ? "Collapse" : "Expand"}
+        ></lf-button>
+      );
+    },
+    //#endregion
+
     // #region Textfield
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -93,6 +127,29 @@ export const prepNavigation = (
           onLf-textfield-event={textfield}
           ref={assignRef(navigation, "textfield")}
         ></lf-textfield>
+      );
+    },
+    // #endregion
+
+    // #region Tree
+    tree: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, manager } = controller.get;
+      const { navigation } = elements.refs;
+      const { tree } = handlers.navigation;
+      const { assignRef, sanitizeProps, theme } = manager;
+      const { bemClass } = theme;
+
+      const nav = compInstance.lfNavigation || {};
+
+      return (
+        <lf-tree
+          class={bemClass(blocks.navigationGrid._, blocks.navigationGrid.tree)}
+          id={IDS.navigation.tree}
+          onLf-tree-event={tree}
+          ref={assignRef(navigation, "tree")}
+          {...sanitizeProps(nav.treeProps, "LfTree")}
+        ></lf-tree>
       );
     },
     // #endregion
