@@ -1040,7 +1040,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",
@@ -1848,7 +1848,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",
@@ -2676,7 +2676,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",

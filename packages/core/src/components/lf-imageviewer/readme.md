@@ -215,6 +215,7 @@ graph TD;
   lf-tree --> lf-code
   lf-tree --> lf-image
   lf-tree --> lf-photoframe
+  lf-tree --> lf-progressbar
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
@@ -229,6 +230,7 @@ graph TD;
   lf-card --> lf-code
   lf-card --> lf-image
   lf-card --> lf-photoframe
+  lf-card --> lf-progressbar
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload
@@ -250,6 +252,7 @@ graph TD;
   lf-masonry --> lf-code
   lf-masonry --> lf-image
   lf-masonry --> lf-photoframe
+  lf-masonry --> lf-progressbar
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
