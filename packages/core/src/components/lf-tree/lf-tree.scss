@@ -69,9 +69,11 @@ $comp: "tree";
 
   &--grid {
     & {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      align-content: start;
+      display: grid;
+      height: 100%;
+      overflow: auto;
+      width: 100%;
     }
 
     .header {

@@ -111,6 +111,7 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
     image: [],
     number: [],
     photoframe: [],
+    progressbar: [],
     slot: [],
     text: [],
     toggle: [],
@@ -158,6 +159,9 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
             break;
           case "photoframe":
             shapes.photoframe.push(extracted as LfDataCell<"photoframe">);
+            break;
+          case "progressbar":
+            shapes.progressbar.push(extracted as LfDataCell<"progressbar">);
             break;
           case "toggle":
             shapes.toggle.push(extracted as LfDataCell<"toggle">);

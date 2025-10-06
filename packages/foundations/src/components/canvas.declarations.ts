@@ -30,6 +30,9 @@ import {
 } from "./image.declarations";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-canvas` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfCanvasInterface
   extends LfComponent<"LfCanvas">,
     LfCanvasPropsInterface {
@@ -40,12 +43,18 @@ export interface LfCanvasInterface
   setCanvasHeight: (value?: number) => Promise<void>;
   setCanvasWidth: (value?: number) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-canvas`.
+ */
 export interface LfCanvasElement
   extends HTMLStencilElement,
     Omit<LfCanvasInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-canvas` into host integrations.
+ */
 export interface LfCanvasAdapter extends LfComponentAdapter<LfCanvasInterface> {
   controller: {
     get: LfCanvasAdapterControllerGetters;
@@ -58,6 +67,9 @@ export interface LfCanvasAdapter extends LfComponentAdapter<LfCanvasInterface> {
   handlers: LfCanvasAdapterHandlers;
   toolkit: LfCanvasAdapterToolkit;
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfCanvasAdapterInitializerGetters = Pick<
   LfCanvasAdapterControllerGetters,
   | "blocks"
@@ -71,10 +83,16 @@ export type LfCanvasAdapterInitializerGetters = Pick<
   | "parts"
   | "points"
 >;
+/**
+ * Subset of adapter setters required during initialisation.
+ */
 export type LfCanvasAdapterInitializerSetters = Pick<
   LfCanvasAdapterControllerSetters,
   "boxing" | "isPainting" | "orientation" | "points"
 >;
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
   board: {
     endCapture: (e: PointerEvent) => void;
@@ -87,6 +105,9 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
     onLoad: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
   };
 }
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfCanvasAdapterControllerGetters
   extends LfComponentAdapterGetters<LfCanvasInterface> {
   blocks: typeof LF_CANVAS_BLOCKS;
@@ -100,6 +121,9 @@ export interface LfCanvasAdapterControllerGetters
   parts: typeof LF_CANVAS_PARTS;
   points: () => LfCanvasPoints;
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfCanvasAdapterControllerSetters
   extends LfComponentAdapterSetters {
   boxing: (value: LfCanvasBoxing) => void;
@@ -107,16 +131,25 @@ export interface LfCanvasAdapterControllerSetters
   orientation: (value: LfCanvasOrientation) => void;
   points: (value: LfCanvasPoints) => void;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfCanvasAdapterJsx extends LfComponentAdapterJsx {
   board: () => VNode;
   image: () => VNode;
   preview: () => VNode;
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfCanvasAdapterRefs extends LfComponentAdapterRefs {
   board: HTMLCanvasElement;
   image: LfImageElement;
   preview: HTMLCanvasElement;
 }
+/**
+ * Utility interface used by the `lf-canvas` component.
+ */
 export interface LfCanvasAdapterToolkitCtx {
   clear(type: LfCanvasType): void;
   get(type: LfCanvasType): {
@@ -127,6 +160,9 @@ export interface LfCanvasAdapterToolkitCtx {
   redraw(type: LfCanvasType): void;
   setup(type: LfCanvasType, isFill?: boolean): void;
 }
+/**
+ * Utility interface used by the `lf-canvas` component.
+ */
 export interface LfCanvasAdapterToolkitCoordinates {
   get: (
     e: PointerEvent,
@@ -144,11 +180,17 @@ export interface LfCanvasAdapterToolkitCoordinates {
   };
   simplify: (points: LfCanvasPoints, tolerance: number) => LfCanvasPoints;
 }
+/**
+ * Utility interface used by the `lf-canvas` component.
+ */
 export interface LfCanvasAdapterToolkitDraw {
   cursor: (e: PointerEvent) => void;
   shape: (type: LfCanvasType, x: number, y: number, isFill?: boolean) => void;
   point: (e: PointerEvent) => void;
 }
+/**
+ * Utility interface used by the `lf-canvas` component.
+ */
 export interface LfCanvasAdapterToolkit {
   ctx: LfCanvasAdapterToolkitCtx;
   coordinates: LfCanvasAdapterToolkitCoordinates;
@@ -157,7 +199,13 @@ export interface LfCanvasAdapterToolkit {
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-canvas`.
+ */
 export type LfCanvasEvent = (typeof LF_CANVAS_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-canvas` events.
+ */
 export interface LfCanvasEventPayload
   extends LfEventPayload<"LfCanvas", LfCanvasEvent> {
   points: Array<{ x: number; y: number }>;
@@ -165,12 +213,24 @@ export interface LfCanvasEventPayload
 //#endregion
 
 //#region States
+/**
+ * Utility type used by the `lf-canvas` component.
+ */
 export type LfCanvasBoxing = "letterbox" | "pillarbox" | null;
+/**
+ * Utility type used by the `lf-canvas` component.
+ */
 export type LfCanvasOrientation = "portrait" | "landscape" | null;
+/**
+ * Utility type used by the `lf-canvas` component.
+ */
 export type LfCanvasPoints = Array<{ x: number; y: number }>;
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-canvas` component.
+ */
 export interface LfCanvasPropsInterface {
   lfBrush?: LfCanvasBrush;
   lfColor?: string;
@@ -182,7 +242,16 @@ export interface LfCanvasPropsInterface {
   lfStrokeTolerance?: number;
   lfStyle?: string;
 }
+/**
+ * Utility type used by the `lf-canvas` component.
+ */
 export type LfCanvasBrush = (typeof LF_CANVAS_BRUSH)[number];
+/**
+ * Utility type used by the `lf-canvas` component.
+ */
 export type LfCanvasCursor = (typeof LF_CANVAS_CURSOR)[number];
+/**
+ * Union of type identifiers defined in `LF_CANVAS_TYPES`.
+ */
 export type LfCanvasType = (typeof LF_CANVAS_TYPES)[number];
 //#endregion

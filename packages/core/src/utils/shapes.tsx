@@ -142,6 +142,17 @@ export const LfShape: FunctionalComponent<LfShapePropsInterface> = ({
           ref={refCallback}
         ></lf-photoframe>
       );
+    case "progressbar":
+      return (
+        <lf-progressbar
+          {...sanitizeProps(
+            decorator("LfProgressbar", shape, cell, index),
+            "LfProgressbar",
+          )}
+          onLf-progressbar-event={handler}
+          ref={refCallback}
+        ></lf-progressbar>
+      );
     case "toggle":
       return (
         <lf-toggle

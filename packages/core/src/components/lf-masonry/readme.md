@@ -13,15 +13,15 @@ The component allows users to interact with shapes, view details, and customize 
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                                                                                       | Type                                                                                                                                                                                    | Default                                           |
-| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `lfActions`    | `lf-actions`    | When true displays floating buttons to customize the view.                                                                                        | `boolean`                                                                                                                                                                               | `false`                                           |
-| `lfColumns`    | `lf-columns`    | Number of columns of the masonry, doesn't affect sequential views. Can be set with a number or an array of numbers that identify each breakpoint. | `number \| number[]`                                                                                                                                                                    | `Array.from(     LF_MASONRY_DEFAULT_COLUMNS,   )` |
-| `lfDataset`    | `lf-dataset`    | Actual data of the masonry.                                                                                                                       | `LfDataDataset`                                                                                                                                                                         | `null`                                            |
-| `lfSelectable` | `lf-selectable` | Allows for the selection of elements.                                                                                                             | `boolean`                                                                                                                                                                               | `false`                                           |
-| `lfShape`      | `lf-shape`      | Sets the type of shapes to compare.                                                                                                               | `"badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "slot" \| "text" \| "toggle" \| "typewriter" \| "upload"` | `"image"`                                         |
-| `lfStyle`      | `lf-style`      | Custom styling for the component.                                                                                                                 | `string`                                                                                                                                                                                | `""`                                              |
-| `lfView`       | `lf-view`       | Sets the type of view, either the actual masonry or a sequential view.                                                                            | `"horizontal" \| "main" \| "vertical"`                                                                                                                                                  | `"main"`                                          |
+| Property       | Attribute       | Description                                                                                                                                       | Type                                                                                                                                                                                                     | Default                                           |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `lfActions`    | `lf-actions`    | When true displays floating buttons to customize the view.                                                                                        | `boolean`                                                                                                                                                                                                | `false`                                           |
+| `lfColumns`    | `lf-columns`    | Number of columns of the masonry, doesn't affect sequential views. Can be set with a number or an array of numbers that identify each breakpoint. | `number \| number[]`                                                                                                                                                                                     | `Array.from(     LF_MASONRY_DEFAULT_COLUMNS,   )` |
+| `lfDataset`    | `lf-dataset`    | Actual data of the masonry.                                                                                                                       | `LfDataDataset`                                                                                                                                                                                          | `null`                                            |
+| `lfSelectable` | `lf-selectable` | Allows for the selection of elements.                                                                                                             | `boolean`                                                                                                                                                                                                | `false`                                           |
+| `lfShape`      | `lf-shape`      | Sets the type of shapes to compare.                                                                                                               | `"badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "progressbar" \| "slot" \| "text" \| "toggle" \| "typewriter" \| "upload"` | `"image"`                                         |
+| `lfStyle`      | `lf-style`      | Custom styling for the component.                                                                                                                 | `string`                                                                                                                                                                                                 | `""`                                              |
+| `lfView`       | `lf-view`       | Sets the type of view, either the actual masonry or a sequential view.                                                                            | `"horizontal" \| "main" \| "vertical"`                                                                                                                                                                   | `"main"`                                          |
 
 
 ## Events
@@ -158,6 +158,7 @@ Type: `Promise<void>`
 - [lf-code](../lf-code)
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
+- [lf-progressbar](../lf-progressbar)
 - [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
@@ -175,6 +176,7 @@ graph TD;
   lf-masonry --> lf-code
   lf-masonry --> lf-image
   lf-masonry --> lf-photoframe
+  lf-masonry --> lf-progressbar
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
@@ -192,6 +194,7 @@ graph TD;
   lf-card --> lf-code
   lf-card --> lf-image
   lf-card --> lf-photoframe
+  lf-card --> lf-progressbar
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload

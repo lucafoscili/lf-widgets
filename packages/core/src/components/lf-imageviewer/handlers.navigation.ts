@@ -64,8 +64,40 @@ export const prepNavigationHandlers = (
     },
     //#endregion
 
+    //#region navToggle handler
+    navToggle: (e) => {
+      const { eventType } = e.detail;
+
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const { get, set } = controller;
+      const { compInstance } = get;
+
+      const comp = compInstance as LfImageviewer;
+
+      comp.onLfEvent(e, "lf-event");
+
+      switch (eventType) {
+        case "click":
+          set.navigation.toggleTree();
+          break;
+      }
+    },
+    //#endregion
+
     //#region Textfield handler
     textfield: (e) => {
+      const adapter = getAdapter();
+      const { compInstance } = adapter.controller.get;
+
+      const comp = compInstance as LfImageviewer;
+
+      comp.onLfEvent(e, "lf-event");
+    },
+    //#endregion
+
+    //#region Tree handler
+    tree: (e) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 

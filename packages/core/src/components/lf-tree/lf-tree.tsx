@@ -1,4 +1,8 @@
-import type { LfTreeAdapter } from "@lf-widgets/foundations";
+import type {
+  LfTreeAdapter,
+  LfTreeExpansionState,
+  LfTreeSelectionState,
+} from "@lf-widgets/foundations";
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
@@ -34,6 +38,13 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-tree-adapter";
+import { createExpansionState } from "./state.expansion";
+import { createSelectionState } from "./state.selection";
+import {
+  extractIdCandidates,
+  getNodeId,
+  normalizeTargetInput,
+} from "./state.utils";
 
 /**
  * The tree component displays a hierarchical dataset in a tree structure.
@@ -65,7 +76,7 @@ export class LfTree implements LfTreeInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() expandedNodes: Set<LfDataNode> = new Set();
+  @State() expandedNodes: Set<string> = new Set();
   @State() hiddenNodes: Set<LfDataNode> = new Set();
   @State() selectedNode: LfDataNode = null;
   //#endregion
@@ -112,6 +123,20 @@ export class LfTree implements LfTreeInterface {
    */
   @Prop({ mutable: true }) lfEmpty: string = "Empty data.";
   /**
+   * Identifiers of the nodes that are expanded.
+   * This property is mutable, meaning it can be changed after the component is initialized.
+   *
+   * @type {string[]}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-tree lfExpandedNodeIds={['node1', 'node2']}></lf-tree>
+   * ```
+   */
+  @Prop({ mutable: true }) lfExpandedNodeIds?: string[];
+  /**
    * When true, displays a text field which enables filtering the dataset of the tree.
    *
    * @type {boolean}
@@ -139,10 +164,11 @@ export class LfTree implements LfTreeInterface {
    */
   @Prop({ mutable: true, reflect: true }) lfGrid: boolean = false;
   /**
-   * Sets the initial expanded nodes based on the specified depth.
-   * If the property is not provided, all nodes in the tree will be expanded.
+   * The initial depth to which the tree should be expanded upon first render.
+   * A value of 0 means all nodes are collapsed, 1 means only the root nodes are expanded, and so on.
+   * This property is mutable, meaning it can be changed after the component is initialized.
    *
-   * @type {number}
+   * @type {number | undefined}
    * @default undefined
    * @mutable
    *
@@ -152,6 +178,20 @@ export class LfTree implements LfTreeInterface {
    * ```
    */
   @Prop({ mutable: true }) lfInitialExpansionDepth: number;
+  /**
+   * Identifiers of the nodes that are selected.
+   * This property is mutable, meaning it can be changed after the component is initialized.
+   *
+   * @type {string[]}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-tree lfSelectedNodeIds={['node1', 'node2']}></lf-tree>
+   * ```
+   */
+  @Prop({ mutable: true }) lfSelectedNodeIds?: string[];
   /**
    * When set to true, the pointerdown event will trigger a ripple effect.
    *
@@ -210,26 +250,71 @@ export class LfTree implements LfTreeInterface {
   #framework: LfFrameworkInterface;
   #b = LF_TREE_BLOCKS;
   #p = LF_TREE_PARTS;
+  #cy = CY_ATTRIBUTES;
+  #lf = LF_ATTRIBUTES;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   _filterValue = "";
   _filterTimeout: ReturnType<typeof setTimeout> | null;
   #adapter: LfTreeAdapter;
+  #expansionState: LfTreeExpansionState;
+  #selectionState: LfTreeSelectionState;
   //#endregion
 
   //#region Watchers
   @Watch("lfDataset")
-  handleDatasetChange() {
-    this.expandedNodes = new Set();
-    this.hiddenNodes = new Set();
-    this.selectedNode = null;
-    this._filterValue = "";
-    this.#applyInitialExpansion();
+  protected handleDatasetChange(): void {
+    if (!this.#framework || !this.#expansionState || !this.#selectionState) {
+      return;
+    }
+
+    const previousExpanded = new Set(this.expandedNodes);
+    const previousSelectedId = getNodeId(this.selectedNode);
+
+    this.#expansionState.reconcileAfterDatasetChange(previousExpanded);
+    this.#selectionState.reconcileAfterDatasetChange(previousSelectedId);
+
+    this.hiddenNodes = new Set<LfDataNode>();
   }
+
+  @Watch("lfExpandedNodeIds")
+  protected handleExpandedPropChange(value: string[] | undefined): void {
+    if (!this.#expansionState) {
+      return;
+    }
+    this.#expansionState.handlePropChange(value);
+  }
+
+  @Watch("lfSelectedNodeIds")
+  protected handleSelectedPropChange(value: string[] | undefined): void {
+    if (!this.#selectionState) {
+      return;
+    }
+    this.#selectionState.handlePropChange(value);
+  }
+
   @Watch("lfInitialExpansionDepth")
-  handleInitialDepthChange() {
-    this.expandedNodes = new Set();
-    this.#applyInitialExpansion();
+  protected handleInitialDepthChange(): void {
+    if (!this.#expansionState) {
+      return;
+    }
+    this.#expansionState.handleInitialDepthChange(new Set(this.expandedNodes));
+  }
+
+  @Watch("lfSelectable")
+  protected handleSelectableChange(selectable: boolean): void {
+    if (!this.#selectionState) {
+      return;
+    }
+    this.#selectionState.handleSelectableChange(!!selectable);
+  }
+
+  @Watch("lfFilter")
+  protected handleFilterToggle(enabled: boolean): void {
+    if (!enabled) {
+      this._filterValue = "";
+      this.hiddenNodes = new Set<LfDataNode>();
+    }
   }
   //#endregion
 
@@ -249,26 +334,36 @@ export class LfTree implements LfTreeInterface {
   onLfEvent(
     e: Event | CustomEvent,
     eventType: LfTreeEvent,
-    args?: LfTreeEventArguments,
-  ) {
-    const { effects } = this.#framework;
-    const { node, selected } = args || {};
-    if (eventType === "pointerdown" && node && this.lfRipple) {
-      const rippleEl = this.#adapter?.elements.refs.rippleSurfaces[node.id];
-      if (rippleEl) {
-        effects.ripple(e as PointerEvent, rippleEl);
+    args: LfTreeEventArguments = {},
+  ): void {
+    const framework = this.#framework;
+    const node = args.node ?? null;
+
+    if (framework && eventType === "pointerdown" && this.lfRipple) {
+      const nodeId = getNodeId(node);
+      const surface = nodeId
+        ? this.#adapter?.elements.refs.rippleSurfaces[nodeId]
+        : undefined;
+      if (surface) {
+        framework.effects.ripple(e as PointerEvent, surface);
       }
     }
 
-    this.lfEvent.emit({
+    const payload: LfTreeEventPayload = {
       comp: this,
       eventType,
-      id: this.rootElement.id,
+      id: this.rootElement?.id,
       originalEvent: e,
-      node,
-      ...(args?.expansion ? { expansion: true } : {}),
-      ...(selected != null ? { selected } : {}),
-    });
+      node: node ?? undefined,
+      expandedNodeIds:
+        args.expandedNodeIds ??
+        (this.#expansionState ? this.#expansionState.getIds() : []),
+      selectedNodeIds:
+        args.selectedNodeIds ??
+        (this.#selectionState ? this.#selectionState.getIds() : []),
+    };
+
+    this.lfEvent.emit(payload);
   }
   //#endregion
 
@@ -304,6 +399,75 @@ export class LfTree implements LfTreeInterface {
   async refresh(): Promise<void> {
     forceUpdate(this);
   }
+
+  @Method()
+  async getExpandedNodeIds(): Promise<string[]> {
+    return this.#expansionState ? this.#expansionState.getIds() : [];
+  }
+
+  @Method()
+  async getSelectedNodeIds(): Promise<string[]> {
+    return this.#selectionState ? this.#selectionState.getIds() : [];
+  }
+
+  @Method()
+  async setExpandedNodes(
+    nodes: string | LfDataNode | Array<string | LfDataNode> | null,
+  ): Promise<void> {
+    if (!this.#expansionState) {
+      return;
+    }
+    if (nodes == null) {
+      this.#expansionState.applyIds([], { emit: true, updateProp: true });
+      return;
+    }
+    const targets = normalizeTargetInput(nodes);
+    const candidateIds = extractIdCandidates(targets);
+    this.#expansionState.applyIds(candidateIds, {
+      emit: true,
+      updateProp: true,
+    });
+  }
+
+  @Method()
+  async setSelectedNodes(
+    nodes: string | LfDataNode | Array<string | LfDataNode> | null,
+  ): Promise<void> {
+    if (!this.#selectionState) {
+      return;
+    }
+    if (nodes == null) {
+      this.#selectionState.applyIds([], { emit: true, updateProp: true });
+      return;
+    }
+    this.#selectionState.applyTargets(nodes, {
+      emit: true,
+      updateProp: true,
+    });
+  }
+
+  @Method()
+  async selectByPredicate(
+    predicate: (node: LfDataNode) => boolean,
+  ): Promise<LfDataNode | undefined> {
+    if (!this.#framework || !this.lfDataset) {
+      return undefined;
+    }
+
+    const matchingNode = this.#framework.data.node.find(
+      this.lfDataset,
+      predicate,
+    );
+
+    if (matchingNode) {
+      await this.setSelectedNodes(matchingNode);
+      return matchingNode;
+    }
+
+    // Clear selection if no match found
+    await this.setSelectedNodes(null);
+    return undefined;
+  }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
    * @param {number} ms - Number of milliseconds
@@ -318,89 +482,162 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Private methods
-  #applyInitialExpansion() {
-    const depth = this.lfInitialExpansionDepth;
-    const nodes = this.lfDataset?.nodes || [];
-    const walk = (list: LfDataNode[], currentDepth: number) => {
-      for (const n of list) {
-        if (depth == null) {
-          this.expandedNodes.add(n);
-        } else if (currentDepth < depth) {
-          this.expandedNodes.add(n);
-        }
-        if (n.children?.length) {
-          walk(n.children as LfDataNode[], currentDepth + 1);
-        }
-      }
-    };
-    walk(nodes, 0);
-    this.expandedNodes = new Set(this.expandedNodes);
+  #allowsMultiSelect(): boolean {
+    return false;
+  }
+
+  #canSelectNode(node: LfDataNode | null | undefined): boolean {
+    if (!node) {
+      return false;
+    }
+    if (!this.lfSelectable) {
+      return false;
+    }
+    return node.isDisabled !== true;
   }
   //#endregion
 
-  //#region Lifecycle hooks
-  connectedCallback() {
+  //#region Lifecycle
+  connectedCallback(): void {
     if (this.#framework) {
       this.#framework.theme.register(this);
     }
   }
-  async componentWillLoad() {
+
+  async componentWillLoad(): Promise<void> {
     this.#framework = await awaitFramework(this);
+
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
-        compInstance: this,
-        cyAttributes: CY_ATTRIBUTES,
-        dataset: () => this.lfDataset,
         columns: () => this.lfDataset?.columns || [],
+        compInstance: this,
+        cyAttributes: this.#cy,
+        dataset: () => this.lfDataset,
+        filterValue: () => this._filterValue,
+        isExpanded: (node) => {
+          const nodeId = getNodeId(node);
+          return nodeId ? this.expandedNodes.has(nodeId) : false;
+        },
         isGrid: () => !!(this.lfGrid && this.lfDataset?.columns?.length),
-        lfAttributes: LF_ATTRIBUTES,
-        manager: this.#framework,
-        parts: this.#p,
-        isExpanded: (node) => this.expandedNodes.has(node),
         isHidden: (node) => this.hiddenNodes.has(node),
         isSelected: (node) => this.selectedNode === node,
-        filterValue: () => this._filterValue,
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+        state: {
+          expansion: {
+            ids: () =>
+              this.#expansionState?.getIds() ?? Array.from(this.expandedNodes),
+            nodes: () => this.expandedNodes,
+          },
+          selection: {
+            ids: () => {
+              if (this.#selectionState) {
+                return this.#selectionState.getIds();
+              }
+              const nodeId = getNodeId(this.selectedNode);
+              return nodeId ? [nodeId] : [];
+            },
+            node: () => this.selectedNode,
+          },
+        },
+        expandedProp: () => this.lfExpandedNodeIds,
+        selectedProp: () => this.lfSelectedNodeIds,
+        initialExpansionDepth: () => this.lfInitialExpansionDepth,
+        selectable: () => this.lfSelectable,
+        allowsMultiSelect: () => this.#allowsMultiSelect(),
+        canSelectNode: (node: LfDataNode | null | undefined) =>
+          this.#canSelectNode(node),
       },
       {
-        expansion: {
-          toggle: (node) => {
-            if (this.expandedNodes.has(node)) this.expandedNodes.delete(node);
-            else this.expandedNodes.add(node);
-            this.expandedNodes = new Set(this.expandedNodes);
-          },
-        },
-        selection: {
-          set: (node) => {
-            if (this.lfSelectable) {
-              this.selectedNode = node;
-            }
-          },
-        },
         filter: {
-          setValue: (value: string) => {
-            this._filterValue = value;
-          },
           apply: (value: string) => {
-            const { filter } = this.#framework.data.node;
-            if (!value) {
-              this.hiddenNodes = new Set();
+            if (!this.#framework || !this.lfDataset) {
+              this.hiddenNodes = new Set<LfDataNode>();
               return;
             }
+            if (!value) {
+              this.hiddenNodes = new Set<LfDataNode>();
+              return;
+            }
+            const { filter } = this.#framework.data.node;
             const { ancestorNodes, remainingNodes } = filter(
               this.lfDataset,
               { value },
               true,
             );
             const hidden = new Set(remainingNodes);
-            if (ancestorNodes) ancestorNodes.forEach((a) => hidden.delete(a));
+            if (ancestorNodes) {
+              ancestorNodes.forEach((ancestor) => hidden.delete(ancestor));
+            }
             this.hiddenNodes = hidden;
+          },
+          setValue: (value: string) => {
+            this._filterValue = value;
+          },
+        },
+        state: {
+          expansion: {
+            apply: () => {
+              const ids = this.#expansionState?.getIds();
+              if (ids !== undefined) {
+                this.#expansionState?.applyIds(ids, {
+                  emit: false,
+                  updateProp: true,
+                });
+              }
+            },
+            toggle: (node) => this.#expansionState?.toggle(node),
+            setNodes: (nodes: Iterable<string>) => {
+              this.expandedNodes = new Set(nodes);
+            },
+            setProp: (ids: string[]) => {
+              this.lfExpandedNodeIds = ids;
+            },
+          },
+          selection: {
+            apply: () => {
+              const ids = this.#selectionState?.getIds();
+              if (ids !== undefined) {
+                this.#selectionState?.applyIds(ids, {
+                  emit: false,
+                  updateProp: true,
+                });
+              }
+            },
+            set: (node) =>
+              this.#selectionState?.applyTargets(node, {
+                emit: true,
+                updateProp: true,
+                node,
+              }),
+            clear: () => {
+              this.#selectionState?.clearSelection({
+                emit: true,
+                updateProp: true,
+              });
+            },
+            setNode: (node: LfDataNode | null) => {
+              this.selectedNode = node ?? null;
+            },
+            setProp: (ids: string[]) => {
+              this.lfSelectedNodeIds = ids;
+            },
           },
         },
       },
       () => this.#adapter,
     );
-    this.#applyInitialExpansion();
+
+    this.#expansionState = createExpansionState(() => this.#adapter);
+    this.#selectionState = createSelectionState(() => this.#adapter);
+
+    this.#expansionState.initialisePersistentState(this.lfExpandedNodeIds);
+    this.#selectionState.initialisePersistentState(this.lfSelectedNodeIds);
+
+    this.#selectionState.handleSelectableChange(this.lfSelectable);
+    this.handleDatasetChange();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

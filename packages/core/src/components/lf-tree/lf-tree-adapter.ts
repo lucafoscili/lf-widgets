@@ -4,7 +4,6 @@ import {
   LfTreeAdapterInitializerSetters,
   LfTreeAdapterRefs,
 } from "@lf-widgets/foundations";
-import { createGetters, createSetters } from "./controller.tree";
 import { createJsx } from "./elements.tree";
 import { createHandlers } from "./handlers.tree";
 
@@ -15,8 +14,8 @@ export const createAdapter = (
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapter => ({
   controller: {
-    get: createGetters(getters),
-    set: createSetters(setters),
+    get: getters,
+    set: setters,
   },
   elements: { jsx: createJsx(getAdapter), refs: createRefs() },
   handlers: createHandlers(getAdapter),

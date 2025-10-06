@@ -31,6 +31,9 @@ import {
 import { LfListElement, LfListEventPayload } from "./list.declarations";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-button` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfButtonInterface
   extends LfComponent<"LfButton">,
     LfButtonPropsInterface {
@@ -40,12 +43,18 @@ export interface LfButtonInterface
     timeout?: number,
   ) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-button`.
+ */
 export interface LfButtonElement
   extends HTMLStencilElement,
     Omit<LfButtonInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-button` into host integrations.
+ */
 export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
   controller: {
     get: LfButtonAdapterControllerGetters;
@@ -57,6 +66,9 @@ export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
   };
   handlers: LfButtonAdapterHandlers;
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfButtonAdapterRefs extends LfComponentAdapterRefs {
   button: HTMLButtonElement;
   dropdown: HTMLButtonElement;
@@ -65,14 +77,23 @@ export interface LfButtonAdapterRefs extends LfComponentAdapterRefs {
   list: LfListElement;
   ripple: HTMLDivElement;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfButtonAdapterJsx extends LfComponentAdapterJsx {
   button: () => VNode;
   dropdown: () => VNode;
   icon: () => VNode;
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfButtonAdapterHandlers extends LfComponentAdapterHandlers {
   list: (e: LfEvent<LfListEventPayload>) => void;
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfButtonAdapterInitializerGetters = Pick<
   LfButtonAdapterControllerGetters,
   | "blocks"
@@ -86,6 +107,9 @@ export type LfButtonAdapterInitializerGetters = Pick<
   | "parts"
   | "styling"
 >;
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfButtonAdapterControllerGetters
   extends LfComponentAdapterGetters<LfButtonInterface> {
   blocks: typeof LF_BUTTON_BLOCKS;
@@ -99,6 +123,9 @@ export interface LfButtonAdapterControllerGetters
   parts: typeof LF_BUTTON_PARTS;
   styling: () => LfButtonStyling;
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfButtonAdapterControllerSetters
   extends LfComponentAdapterSetters {
   list: (state?: "close" | "open" | "toggle") => void;
@@ -106,7 +133,13 @@ export interface LfButtonAdapterControllerSetters
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-button`.
+ */
 export type LfButtonEvent = (typeof LF_BUTTON_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-button` events.
+ */
 export interface LfButtonEventPayload
   extends LfEventPayload<"LfButton", LfButtonEvent> {
   value: string;
@@ -115,10 +148,16 @@ export interface LfButtonEventPayload
 //#endregion
 
 //#region States
+/**
+ * Union of runtime states declared in `LF_BUTTON_STATE`.
+ */
 export type LfButtonState = (typeof LF_BUTTON_STATE)[number];
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-button` component.
+ */
 export interface LfButtonPropsInterface {
   lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
@@ -138,6 +177,12 @@ export interface LfButtonPropsInterface {
   lfUiState?: LfThemeUIState;
   lfValue?: boolean;
 }
+/**
+ * Union of styling tokens listed in `LF_BUTTON_STYLINGS`.
+ */
 export type LfButtonStyling = (typeof LF_BUTTON_STYLINGS)[number];
+/**
+ * Union of type identifiers defined in `LF_BUTTON_TYPES`.
+ */
 export type LfButtonType = (typeof LF_BUTTON_TYPES)[number];
 //#endregion
