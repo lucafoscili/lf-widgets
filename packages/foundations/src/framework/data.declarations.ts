@@ -443,6 +443,26 @@ export interface LfDataNodeOperations {
     candidates: Iterable<string | number | LfDataNode> | null | undefined,
     options?: LfDataNodeSanitizeIdsOptions,
   ) => LfDataNodeSanitizeIdsResult;
+  /**
+   * Extracts typed metadata from a cell within a node. Supports optional schema validation.
+   * Returns undefined when the cell is missing, invalid, or fails schema validation.
+   */
+  extractCellMetadata: <T = unknown>(
+    node: LfDataNode | null | undefined,
+    cellId: string,
+    schema?: LfDataCellMetadataSchema<T>,
+  ) => T | undefined;
+}
+/**
+ * Schema for validating and transforming cell metadata during extraction.
+ */
+export interface LfDataCellMetadataSchema<T = unknown> {
+  /** Optional validation predicate that returns true if the parsed value is acceptable. */
+  validate?: (value: unknown) => value is T;
+  /** Optional transformation function applied after successful validation. */
+  transform?: (value: T) => T;
+  /** When true, returns null instead of undefined for missing/invalid cells. */
+  nullable?: boolean;
 }
 /**
  * Utility interface used by the data framework.

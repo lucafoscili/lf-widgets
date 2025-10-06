@@ -13,9 +13,26 @@ import {
 } from "@lf-widgets/foundations";
 import { cellStringify } from "./helpers.cell";
 
+//#region deepClone
 /**
  * Produces a structured clone of the supplied value using JSON serialization. Intended for
  * dataset snapshots where rich instances (Dates, Maps) are not expected.
+ *
+ * Returns the input unchanged when it is `null` or `undefined`.
+ *
+ * Notes and limitations:
+ * - This approach relies on `JSON.stringify`/`JSON.parse`, so functions, symbols,
+ *   and non-enumerable properties are not preserved.
+ * - Instances of custom classes lose their prototype; they become plain objects.
+ * - Built-in objects that are not representable in JSON (e.g. `Map`, `Set`, `RegExp`)
+ *   are not preserved. `Date` objects become ISO strings. `undefined`, `Infinity`,
+ *   `-Infinity`, and `NaN` are handled according to JSON semantics.
+ * - Circular references will cause `JSON.stringify` to throw.
+ *
+ * @typeParam T - The expected type of the input and returned value.
+ * @param value - The value to deep-clone.
+ * @returns A deep clone of `value` (typed as `T`), or the original `null`/`undefined` value.
+ * @throws {TypeError} If the value contains circular references or cannot be serialized to JSON.
  */
 const deepClone = <T>(value: T): T => {
   if (value === undefined || value === null) {
@@ -23,9 +40,49 @@ const deepClone = <T>(value: T): T => {
   }
   return JSON.parse(JSON.stringify(value)) as T;
 };
+//#endregion
 
+//#region ensurePlaceholderRecursively
 /**
- * Traverses a node subtree and ensures placeholder children are attached where required.
+ * Ensure that a placeholder child node exists for the given node and its descendants.
+ *
+ * This function walks the provided node tree recursively and, for each node that
+ * should be "decorated" (as determined by options.shouldDecorate), guarantees that
+ * there is at least one placeholder child when the node has no real children and no
+ * existing placeholder. If those conditions are met, it appends a deep-cloned placeholder
+ * node created via the options.create factory (the factory is invoked with an object
+ * containing the parent node).
+ *
+ * The function mutates the input node in-place (it normalizes `node.children` to an array
+ * when necessary, may append a placeholder, and recurses into each child). The same
+ * node reference is returned for convenience.
+ *
+ * @param node - The root node to process. Its `children` property may be normalized to an array.
+ * @param options - Configuration for placeholder handling:
+ *   - create: factory invoked to produce a placeholder node ({ parent: node } is passed).
+ *   - isPlaceholder: predicate to identify placeholder nodes (default: () => false).
+ *   - shouldDecorate: predicate to decide whether a node should have placeholder logic
+ *     applied (default: candidate => candidate.hasChildren === true).
+ *
+ * @returns The same `node` instance passed in, after placeholders have been ensured for
+ *          the node and its descendants.
+ *
+ * @remarks
+ * - A placeholder is only appended when:
+ *   1) `shouldDecorate(node)` is true,
+ *   2) the node has no "real" children (no child for which `isPlaceholder` returns false),
+ *   3) the node has no existing placeholder child (`isPlaceholder` returns true for none).
+ * - The placeholder appended is a deep clone of the object returned by `create({ parent: node })`
+ *   to avoid sharing references with the factory return value.
+ * - Non-array `children` values are normalized to an empty array before processing.
+ * - The operation is synchronous and may be used prior to UI rendering to ensure tree shape.
+ *
+ * @example
+ * // ensurePlaceholderRecursively(rootNode, {
+ * //   create: ({ parent }) => ({ id: 'placeholder', parent, isPlaceholder: true }),
+ * //   isPlaceholder: child => !!child.isPlaceholder,
+ * //   shouldDecorate: node => node.hasChildren === true,
+ * // });
  */
 const ensurePlaceholderRecursively = (
   node: LfDataNode,
@@ -59,9 +116,30 @@ const ensurePlaceholderRecursively = (
 
   return node;
 };
+//#endregion
 
+//#region stripPlaceholderChildren
 /**
- * Removes placeholder children from a node while preserving real, user-provided entries.
+ * Returns a new array of children with any placeholder nodes removed.
+ *
+ * Behaviour:
+ * - If `children` is not an array (including `undefined`), an empty array is returned.
+ * - If `isPlaceholder` is not provided, a shallow copy of the `children` array is returned.
+ * - If `isPlaceholder` is provided, each child for which `isPlaceholder(child)` returns `true`
+ *   is excluded from the returned array.
+ *
+ * @param children - The array of `LfDataNode` items to process, or `undefined`.
+ * @param isPlaceholder - Optional predicate function that identifies placeholder nodes.
+ * @returns A new array containing the non-placeholder children, or an empty array when `children`
+ *          is not an array.
+ *
+ * @example
+ * // Returns a shallow copy when no predicate is given
+ * stripPlaceholderChildren([nodeA, nodeB], undefined);
+ *
+ * @example
+ * // Filters out nodes identified as placeholders
+ * stripPlaceholderChildren(nodes, (n) => n.type === 'placeholder');
  */
 const stripPlaceholderChildren = (
   children: LfDataNode[] | undefined,
@@ -77,9 +155,23 @@ const stripPlaceholderChildren = (
 
   return children.filter((child) => !isPlaceholder(child));
 };
+//#endregion
 
+//#region cloneChildren
 /**
- * Returns a deep-cloned copy of the provided children array, defaulting to an empty array.
+ * Creates a new array containing deep-cloned copies of the provided child nodes.
+ *
+ * If the input is not an array, an empty array is returned. Each element from the
+ * input array is cloned using `deepClone` to ensure callers receive new object
+ * references (no mutation of the original nodes).
+ *
+ * @param children - The array of `LfDataNode` objects to clone, or `undefined`.
+ * @returns A new array of deep-cloned `LfDataNode` objects. Returns `[]` when the
+ *          argument is not an array.
+ *
+ * @remarks
+ * - This function is pure and does not mutate the provided input array or its elements.
+ * - The exact cloning semantics and depth are determined by the implementation of `deepClone`.
  */
 const cloneChildren = (children: LfDataNode[] | undefined) => {
   if (!Array.isArray(children)) {
@@ -87,7 +179,34 @@ const cloneChildren = (children: LfDataNode[] | undefined) => {
   }
   return children.map((child) => deepClone(child));
 };
+//#endregion
 
+//#region buildNodeLookup
+/**
+ * Build a lookup map of nodes by their id from a dataset.
+ *
+ * Traverses the top-level nodes in the provided dataset and all reachable
+ * descendants (via each node's `children` array) and returns a Map that
+ * maps each node's id (stringified) to the corresponding node object.
+ *
+ * - If `dataset` is `undefined` or contains no top-level `nodes`, an empty
+ *   Map is returned.
+ * - Nodes with `null` or `undefined` ids are skipped and not included in the
+ *   returned Map.
+ * - The function does not mutate nodes or the dataset; it only reads node
+ *   properties and builds a new Map.
+ *
+ * @param dataset - Optional dataset containing a `nodes` array of `LfDataNode`.
+ * @returns A Map where keys are node ids converted to strings and values are
+ *          the corresponding `LfDataNode` objects. The Map will be empty if
+ *          the dataset has no nodes.
+ *
+ * @remarks
+ * - Traversal is performed with an explicit queue/stack mechanism; all nodes
+ *   reachable via `children` arrays are visited exactly once. Time complexity
+ *   is O(n) and space complexity is O(n), where n is the total number of
+ *   visited nodes.
+ */
 const buildNodeLookup = (dataset: LfDataDataset | undefined) => {
   const lookup = new Map<string, LfDataNode>();
   if (!dataset?.nodes?.length) {
@@ -112,7 +231,35 @@ const buildNodeLookup = (dataset: LfDataDataset | undefined) => {
 
   return lookup;
 };
+//#endregion
 
+//#region normaliseTargetInput
+/**
+ * Normalize the provided target input into an array of targets.
+ *
+ * This helper accepts a single target, an array of targets, or a nullish value
+ * and returns an array suitable for downstream processing.
+ * Behaviour:
+ * - If `target` is `null` or `undefined`, an empty array is returned.
+ * - If `target` is already an array, that array is returned unchanged.
+ * - Otherwise a new single-element array containing the provided target is returned.
+ *
+ * @param target - The input target(s) to normalize. May be `null`/`undefined`, a single target (e.g. `string` or `LfDataNode`), or an array of such targets.
+ * @returns An array of `string | LfDataNode` representing the normalized target(s).
+ *
+ * @example
+ * // single value
+ * normaliseTargetInput('foo'); // -> ['foo']
+ *
+ * @example
+ * // array value
+ * const arr = ['a', 'b'];
+ * normaliseTargetInput(arr) === arr; // -> true (returned as-is)
+ *
+ * @example
+ * // nullish value
+ * normaliseTargetInput(null); // -> []
+ */
 const normaliseTargetInput = (target: LfDataNodeTarget) => {
   if (target == null) {
     return [] as Array<string | LfDataNode>;
@@ -120,6 +267,94 @@ const normaliseTargetInput = (target: LfDataNodeTarget) => {
 
   return Array.isArray(target) ? target : [target];
 };
+//#endregion
+
+//#region extractCellMetadata
+/**
+ * Extracts and validates typed metadata from a cell within a node.
+ *
+ * This helper provides a standardized pattern for extracting structured data from cells
+ * that store metadata in their `value` property. Typical use cases include navigation
+ * directories, selection payloads, or custom application state stored in cells.
+ *
+ * The extraction follows this flow:
+ * 1. Validates the node and cell existence
+ * 2. Attempts to extract the raw value from cell.value
+ * 3. Validates the value matches expected schema (if provided)
+ * 4. Applies optional transformation
+ * 5. Returns typed result or undefined/null based on schema.nullable
+ *
+ * @template T - The expected type of the metadata after validation and transformation
+ * @param node - The node containing the cell to extract metadata from
+ * @param cellId - The identifier of the cell within node.cells (e.g., 'lfCode', 'lfText')
+ * @param schema - Optional validation and transformation configuration
+ * @returns The extracted and validated metadata, undefined if invalid, or null if schema.nullable
+ *
+ * @example
+ * // Extract directory metadata from navigation cell
+ * const dirMetadata = extractCellMetadata<DirectoryInfo>(
+ *   node,
+ *   'lfCode',
+ *   {
+ *     validate: (val): val is DirectoryInfo =>
+ *       typeof val === 'object' && val !== null && 'path' in val,
+ *     transform: (val) => ({ ...val, normalized: normalizePath(val.path) })
+ *   }
+ * );
+ *
+ * @example
+ * // Simple extraction without validation
+ * const rawMeta = extractCellMetadata(node, 'lfText');
+ */
+export const extractCellMetadata = <T = unknown>(
+  node: LfDataNode | null | undefined,
+  cellId: string,
+  schema?: {
+    validate?: (value: unknown) => value is T;
+    transform?: (value: T) => T;
+    nullable?: boolean;
+  },
+): T | undefined | null => {
+  // Guard: node must exist and have cells
+  if (!node || typeof node !== "object" || !node.cells) {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // Guard: cell must exist within node.cells
+  const cell = node.cells[cellId];
+  if (!cell || typeof cell !== "object") {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // Extract raw value from cell
+  const rawValue = (cell as { value?: unknown }).value;
+  if (rawValue === undefined || rawValue === null) {
+    return schema?.nullable ? null : undefined;
+  }
+
+  // If no schema provided, return raw value cast to T
+  if (!schema) {
+    return rawValue as T;
+  }
+
+  // Validate against schema if provided
+  if (schema.validate && !schema.validate(rawValue)) {
+    return schema.nullable ? null : undefined;
+  }
+
+  // Apply transformation if provided
+  const validated = rawValue as T;
+  if (schema.transform) {
+    try {
+      return schema.transform(validated);
+    } catch {
+      return schema.nullable ? null : undefined;
+    }
+  }
+
+  return validated;
+};
+//#endregion
 
 //#region nodeDecoratePlaceholders
 /**

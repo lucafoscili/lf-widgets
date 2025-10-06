@@ -22,6 +22,7 @@ import {
 } from "./helpers.cell";
 import { columnFind } from "./helpers.column";
 import {
+  extractCellMetadata,
   findNodeByCell,
   nodeDecoratePlaceholders,
   nodeExists,
@@ -147,6 +148,15 @@ export class LfData implements LfDataInterface {
       candidates: Iterable<string | number | LfDataNode> | null | undefined,
       options?: LfDataNodeSanitizeIdsOptions,
     ) => nodeSanitizeIds(dataset, candidates, options),
+    extractCellMetadata: <T = unknown>(
+      node: LfDataNode | null | undefined,
+      cellId: string,
+      schema?: {
+        validate?: (value: unknown) => value is T;
+        transform?: (value: T) => T;
+        nullable?: boolean;
+      },
+    ) => extractCellMetadata<T>(node, cellId, schema),
   };
   //#endregion
 }
