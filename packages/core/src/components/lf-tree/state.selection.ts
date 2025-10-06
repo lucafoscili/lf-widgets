@@ -6,7 +6,6 @@ import {
 import { createStateSynchronizer } from "./state.synchronizer";
 import {
   extractIdCandidates,
-  normalizeIdInput,
   normalizeTargetInput,
 } from "./state.utils";
 
@@ -58,35 +57,37 @@ export const createSelectionState = (
     ids: string[],
     options: LfTreeStateCommitOptions = {},
   ): string[] => {
-    const candidates = normalizeIdInput(ids);
-    const framework = controller.get.manager;
-
-    if (!framework) {
-      // Framework not ready - store as pending
-      selectionIds = controller.get.allowsMultiSelect()
-        ? [...candidates]
-        : candidates.slice(0, 1);
-      controller.set.state.selection.setNode(null);
-      if (options.updateProp !== false) {
-        sync.syncProp(selectionIds);
-      }
-      return selectionIds;
-    }
-
     if (!controller.get.selectable()) {
       return clearSelection(options);
     }
 
-    const result = framework.data.node.sanitizeIds(
-      controller.get.dataset(),
-      candidates,
-      {
-        predicate: (node: LfDataNode) => controller.get.canSelectNode(node),
-        limit: controller.get.allowsMultiSelect() ? undefined : 1,
+    return sync.applyIdsWithSanitization(
+      ids,
+      options,
+      (sanitized, opts) => {
+        const framework = controller.get.manager;
+        const dataset = controller.get.dataset();
+
+        // If framework exists and dataset is available, apply full sanitization with predicates
+        if (framework && dataset) {
+          const result = framework.data.node.sanitizeIds(
+            dataset,
+            sanitized,
+            {
+              predicate: (node: LfDataNode) => controller.get.canSelectNode(node),
+              limit: controller.get.allowsMultiSelect() ? undefined : 1,
+            },
+          );
+          commit(result.ids, result.nodes, opts);
+        } else {
+          // Framework or dataset not ready - commit pending IDs (already stored by synchronizer)
+          const pendingIds = controller.get.allowsMultiSelect()
+            ? sanitized
+            : sanitized.slice(0, 1);
+          commit(pendingIds, [], opts);
+        }
       },
     );
-
-    return commit(result.ids, result.nodes, options);
   };
   //#endregion
 
