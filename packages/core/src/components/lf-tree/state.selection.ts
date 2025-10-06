@@ -38,19 +38,11 @@ export const createSelectionState = (
     options: LfTreeStateCommitOptions = {},
   ): string[] => {
     const nextIds = controller.get.allowsMultiSelect() ? ids : ids.slice(0, 1);
-    const changed = !arraysEqual(selectionIds, nextIds);
     selectionIds = [...nextIds];
     const nextNode = selectionIds.length ? (nodes[0] ?? null) : null;
     controller.set.state.selection.setNode(nextNode);
     if (options.updateProp !== false) {
       syncProp(selectionIds);
-    }
-    if (options.emit !== false && changed) {
-      controller.set.state.selection.emitChange(
-        options.event ?? null,
-        options.node ?? nextNode,
-        [...selectionIds],
-      );
     }
     return selectionIds;
   };
@@ -63,13 +55,6 @@ export const createSelectionState = (
     controller.set.state.selection.setNode(null);
     if (options.updateProp !== false) {
       syncProp([]);
-    }
-    if (options.emit !== false) {
-      controller.set.state.selection.emitChange(
-        options.event ?? null,
-        options.node ?? null,
-        [],
-      );
     }
     return selectionIds;
   };

@@ -595,20 +595,6 @@ export class LfTree implements LfTreeInterface {
             setProp: (ids: string[]) => {
               this.lfExpandedNodeIds = ids;
             },
-            emitChange: (
-              event: Event | CustomEvent | null,
-              node: LfDataNode | null,
-              ids: string[],
-            ) => {
-              this.onLfEvent(
-                event ?? new CustomEvent("expanded-change"),
-                "expanded-change",
-                {
-                  node: node ?? undefined,
-                  expandedNodeIds: ids,
-                },
-              );
-            },
           },
           selection: {
             apply: () => {
@@ -637,20 +623,6 @@ export class LfTree implements LfTreeInterface {
             },
             setProp: (ids: string[]) => {
               this.lfSelectedNodeIds = ids;
-            },
-            emitChange: (
-              event: Event | CustomEvent | null,
-              node: LfDataNode | null,
-              ids: string[],
-            ) => {
-              this.onLfEvent(
-                event ?? new CustomEvent("selection-change"),
-                "selection-change",
-                {
-                  node: node ?? undefined,
-                  selectedNodeIds: ids,
-                },
-              );
             },
           },
         },

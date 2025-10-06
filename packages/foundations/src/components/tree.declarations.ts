@@ -174,11 +174,6 @@ export interface LfTreeAdapterControllerSetters
       toggle: (node: LfDataNode) => void;
       setNodes: (nodes: Iterable<string>) => void;
       setProp: (ids: string[]) => void;
-      emitChange: (
-        event: Event | CustomEvent | null,
-        node: LfDataNode | null,
-        ids: string[],
-      ) => void;
     };
     selection: {
       apply: () => void;
@@ -186,11 +181,6 @@ export interface LfTreeAdapterControllerSetters
       clear: () => void;
       setNode: (node: LfDataNode | null) => void;
       setProp: (ids: string[]) => void;
-      emitChange: (
-        event: Event | CustomEvent | null,
-        node: LfDataNode | null,
-        ids: string[],
-      ) => void;
     };
   };
 }
@@ -275,9 +265,7 @@ export interface LfTreeEventPayload
  */
 export interface LfTreeEventArguments {
   expandedNodeIds?: string[];
-  expansion?: boolean;
   node?: LfDataNode;
-  selected?: boolean;
   selectedNodeIds?: string[];
 }
 //#endregion

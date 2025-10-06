@@ -37,18 +37,9 @@ export const createExpansionState = (
     ids: string[],
     options: LfTreeStateCommitOptions = {},
   ): void => {
-    const currentIds = getCurrentIds();
-    const changed = !arraysEqual(currentIds, ids);
     controller.set.state.expansion.setNodes(ids);
     if (options.updateProp !== false) {
       syncProp(ids);
-    }
-    if (options.emit !== false && changed) {
-      controller.set.state.expansion.emitChange(
-        options.event ?? null,
-        options.node ?? null,
-        [...ids],
-      );
     }
   };
   //#endregion

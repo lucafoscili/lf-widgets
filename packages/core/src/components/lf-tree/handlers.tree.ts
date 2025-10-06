@@ -36,9 +36,10 @@ export const createHandlers = (
       const comp = controller.get.compInstance;
 
       controller.set.state.selection.set(node);
-      const nowSelected = controller.get.isSelected(node);
 
-      comp.onLfEvent?.(e, "click", { node, selected: nowSelected });
+      comp.onLfEvent?.(e, "click", {
+        node,
+      });
     },
     expand: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
@@ -47,7 +48,7 @@ export const createHandlers = (
 
       controller.set.state.expansion.toggle(node);
 
-      comp.onLfEvent?.(e, "click", { node, expansion: true });
+      comp.onLfEvent?.(e, "click", { node });
     },
     pointerDown: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();

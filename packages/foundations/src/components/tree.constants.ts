@@ -34,11 +34,9 @@ export const LF_TREE_BLOCKS = {
 //#region Events
 export const LF_TREE_EVENTS = [
   "click",
-  "expanded-change",
   "lf-event",
   "pointerdown",
   "ready",
-  "selection-change",
   "unmount",
 ] as const;
 //#endregion
