@@ -724,15 +724,15 @@ export class LfImageviewer implements LfImageviewerInterface {
         class={bemClass(navBlock._, navBlock.treeShell, treeShellModifiers)}
         style={this.#getNavigationTreeShellStyle(navigationTree)}
       >
-        <div class={bemClass(navBlock._, navBlock.treeHeader)}>
-          {treeToggle()}
-        </div>
         <div
           aria-hidden={!navigationTree.open ? "true" : "false"}
           class={bemClass(navBlock._, navBlock.treeContent)}
           style={{ display: navigationTree.open ? "block" : "none" }}
         >
           {tree()}
+        </div>
+        <div class={bemClass(navBlock._, navBlock.treeHeader)}>
+          {treeToggle()}
         </div>
       </div>
     );

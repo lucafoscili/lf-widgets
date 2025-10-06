@@ -72,16 +72,17 @@ $borderC: 1px solid var(--lf-color-border);
   }
 
   &__tree-shell {
-    border-right: $borderC;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    overflow: hidden;
-    transition: width 150ms ease-in-out;
-  }
+    & {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      overflow: hidden;
+      transition: width 150ms ease-in-out;
+    }
 
-  &__tree-shell--tree-end {
-    border-left: $borderC;
-    border-right: none;
+    &--tree-end {
+      border-left: $borderC;
+      border-right: none;
+    }
   }
 
   &--tree-closed &__tree-shell {
@@ -100,11 +101,6 @@ $borderC: 1px solid var(--lf-color-border);
 
   &__tree-content {
     overflow: auto;
-  }
-
-  &__tree-toggle {
-    margin: 0;
-    width: 100%;
   }
 }
 

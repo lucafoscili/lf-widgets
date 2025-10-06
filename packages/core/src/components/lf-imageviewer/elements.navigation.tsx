@@ -159,7 +159,7 @@ export const prepNavigation = (
             config.open ? "Collapse navigation tree" : "Expand navigation tree"
           }
           lfIcon={icon}
-          lfStretchX={true}
+          lfStretchY={true}
           lfStyling="flat"
           lfUiSize="small"
           lfUiState={config.open ? "primary" : "secondary"}
