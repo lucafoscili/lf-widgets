@@ -3,8 +3,8 @@ import {
   LfTreeAdapter,
   LfTreeStateCommitOptions,
 } from "@lf-widgets/foundations";
+import { createStateSynchronizer } from "./state.synchronizer";
 import {
-  arraysEqual,
   extractIdCandidates,
   normalizeIdInput,
   normalizeTargetInput,
@@ -15,21 +15,14 @@ export const createSelectionState = (
 ) => {
   const { controller } = getAdapter();
 
-  let suppressPropChange = false;
-  let pendingIds: string[] | undefined;
-  let selectionIds: string[] = [];
+  const sync = createStateSynchronizer(getAdapter, {
+    getProp: () => controller.get.selectedProp(),
+    setProp: (ids) => controller.set.state.selection.setProp(ids),
+    getDataset: () => controller.get.dataset(),
+    getManager: () => controller.get.manager,
+  });
 
-  //#region syncProp
-  const syncProp = (ids: string[]) => {
-    const current = normalizeIdInput(controller.get.selectedProp());
-    if (arraysEqual(current, ids)) {
-      return;
-    }
-    suppressPropChange = true;
-    controller.set.state.selection.setProp([...ids]);
-    suppressPropChange = false;
-  };
-  //#endregion
+  let selectionIds: string[] = [];
 
   //#region commit
   const commit = (
@@ -42,7 +35,7 @@ export const createSelectionState = (
     const nextNode = selectionIds.length ? (nodes[0] ?? null) : null;
     controller.set.state.selection.setNode(nextNode);
     if (options.updateProp !== false) {
-      syncProp(selectionIds);
+      sync.syncProp(selectionIds);
     }
     return selectionIds;
   };
@@ -50,11 +43,11 @@ export const createSelectionState = (
 
   //#region clearSelection
   const clearSelection = (options: LfTreeStateCommitOptions = {}): string[] => {
-    pendingIds = undefined;
+    sync.clearPendingIds();
     selectionIds = [];
     controller.set.state.selection.setNode(null);
     if (options.updateProp !== false) {
-      syncProp([]);
+      sync.syncProp([]);
     }
     return selectionIds;
   };
@@ -67,14 +60,15 @@ export const createSelectionState = (
   ): string[] => {
     const candidates = normalizeIdInput(ids);
     const framework = controller.get.manager;
+
     if (!framework) {
-      pendingIds = [...candidates];
+      // Framework not ready - store as pending
       selectionIds = controller.get.allowsMultiSelect()
         ? [...candidates]
         : candidates.slice(0, 1);
       controller.set.state.selection.setNode(null);
       if (options.updateProp !== false) {
-        syncProp(selectionIds);
+        sync.syncProp(selectionIds);
       }
       return selectionIds;
     }
@@ -92,7 +86,6 @@ export const createSelectionState = (
       },
     );
 
-    pendingIds = undefined;
     return commit(result.ids, result.nodes, options);
   };
   //#endregion
@@ -101,15 +94,7 @@ export const createSelectionState = (
   const handlePropChange = (
     value: string[] | string | null | undefined,
   ): void => {
-    if (suppressPropChange) {
-      return;
-    }
-    const candidates = normalizeIdInput(value);
-    const sanitized = applyIds(candidates, {
-      emit: false,
-      updateProp: false,
-    });
-    syncProp(sanitized);
+    sync.handlePropChange(value, applyIds);
   };
   //#endregion
 
@@ -131,28 +116,10 @@ export const createSelectionState = (
   const reconcileAfterDatasetChange = (
     previousSelectedId?: string | null,
   ): void => {
-    const persisted = normalizeIdInput(controller.get.selectedProp());
-    if (persisted.length) {
-      const sanitized = applyIds(persisted, {
-        emit: false,
-        updateProp: false,
-      });
-      syncProp(sanitized);
-      return;
-    }
-
-    if (previousSelectedId) {
-      const sanitized = applyIds([previousSelectedId], {
-        emit: false,
-        updateProp: false,
-      });
-      syncProp(sanitized);
-      if (sanitized.length) {
-        return;
-      }
-    }
-
-    clearSelection({ emit: false, updateProp: true });
+    const previousIds = previousSelectedId ? [previousSelectedId] : null;
+    sync.reconcileAfterDatasetChange(previousIds, applyIds, () => {
+      clearSelection({ emit: false, updateProp: true });
+    });
   };
   //#endregion
 
@@ -160,20 +127,9 @@ export const createSelectionState = (
   const initialisePersistentState = (
     value: string[] | string | null | undefined,
   ): void => {
-    const propCandidates = normalizeIdInput(value);
-    if (propCandidates.length) {
-      applyIds(propCandidates, { emit: false, updateProp: true });
-      pendingIds = undefined;
-      return;
-    }
-
-    if (pendingIds && pendingIds.length) {
-      applyIds(pendingIds, { emit: false, updateProp: true });
-      pendingIds = undefined;
-      return;
-    }
-
-    clearSelection({ emit: false, updateProp: true });
+    sync.initialisePersistentState(value, applyIds, () => {
+      clearSelection({ emit: false, updateProp: true });
+    });
   };
   //#endregion
 

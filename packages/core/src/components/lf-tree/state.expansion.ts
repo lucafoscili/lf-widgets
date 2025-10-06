@@ -3,32 +3,25 @@ import {
   LfTreeAdapter,
   LfTreeStateCommitOptions,
 } from "@lf-widgets/foundations";
-import { arraysEqual, getNodeId, normalizeIdInput } from "./state.utils";
+import { createStateSynchronizer } from "./state.synchronizer";
+import { getNodeId } from "./state.utils";
 
 export const createExpansionState = (
   getAdapter: () => LfTreeAdapter | undefined,
 ) => {
   const { controller } = getAdapter();
 
-  let suppressPropChange = false;
-  let pendingIds: string[] | undefined;
+  const sync = createStateSynchronizer(getAdapter, {
+    getProp: () => controller.get.expandedProp(),
+    setProp: (ids) => controller.set.state.expansion.setProp(ids),
+    getDataset: () => controller.get.dataset(),
+    getManager: () => controller.get.manager,
+  });
 
   //#region getCurrentIds
   const getCurrentIds = (): string[] => {
     const expanded = controller.get.state.expansion.nodes();
     return Array.from(expanded ?? new Set<string>());
-  };
-  //#endregion
-
-  //#region syncProp
-  const syncProp = (ids: string[]) => {
-    const current = normalizeIdInput(controller.get.expandedProp());
-    if (arraysEqual(current, ids)) {
-      return;
-    }
-    suppressPropChange = true;
-    controller.set.state.expansion.setProp([...ids]);
-    suppressPropChange = false;
   };
   //#endregion
 
@@ -39,7 +32,7 @@ export const createExpansionState = (
   ): void => {
     controller.set.state.expansion.setNodes(ids);
     if (options.updateProp !== false) {
-      syncProp(ids);
+      sync.syncProp(ids);
     }
   };
   //#endregion
@@ -49,24 +42,9 @@ export const createExpansionState = (
     ids: string[],
     options: LfTreeStateCommitOptions = {},
   ): string[] => {
-    const candidates = normalizeIdInput(ids);
-    const framework = controller.get.manager;
-    if (!framework) {
-      pendingIds = [...candidates];
-      controller.set.state.expansion.setNodes(candidates);
-      if (options.updateProp !== false) {
-        syncProp(candidates);
-      }
-      return candidates;
-    }
-
-    const { ids: sanitized } = framework.data.node.sanitizeIds(
-      controller.get.dataset(),
-      candidates,
-    );
-    pendingIds = undefined;
-    commit(sanitized, options);
-    return sanitized;
+    return sync.applyIdsWithSanitization(ids, options, (sanitized, opts) => {
+      commit(sanitized, opts);
+    });
   };
   //#endregion
 
@@ -108,29 +86,12 @@ export const createExpansionState = (
   const reconcileAfterDatasetChange = (
     previouslyExpanded?: Set<string>,
   ): void => {
-    const persisted = normalizeIdInput(controller.get.expandedProp());
-    if (persisted.length) {
-      const sanitized = applyIds(persisted, {
-        emit: false,
-        updateProp: false,
-      });
-      syncProp(sanitized);
-      return;
-    }
-
-    const retained = previouslyExpanded ? Array.from(previouslyExpanded) : [];
-    if (retained.length) {
-      const sanitized = applyIds(retained, {
-        emit: false,
-        updateProp: false,
-      });
-      syncProp(sanitized);
-      if (sanitized.length) {
-        return;
-      }
-    }
-
-    applyInitialExpansion(previouslyExpanded);
+    const previousIds = previouslyExpanded
+      ? Array.from(previouslyExpanded)
+      : null;
+    sync.reconcileAfterDatasetChange(previousIds, applyIds, () => {
+      applyInitialExpansion(previouslyExpanded);
+    });
   };
   //#endregion
 
@@ -138,15 +99,7 @@ export const createExpansionState = (
   const handlePropChange = (
     value: string[] | string | null | undefined,
   ): void => {
-    if (suppressPropChange) {
-      return;
-    }
-    const candidates = normalizeIdInput(value);
-    const sanitized = applyIds(candidates, {
-      emit: false,
-      updateProp: false,
-    });
-    syncProp(sanitized);
+    sync.handlePropChange(value, applyIds);
   };
   //#endregion
 
@@ -174,20 +127,9 @@ export const createExpansionState = (
   const initialisePersistentState = (
     value: string[] | string | null | undefined,
   ): void => {
-    const propCandidates = normalizeIdInput(value);
-    if (propCandidates.length) {
-      applyIds(propCandidates, { emit: false, updateProp: true });
-      pendingIds = undefined;
-      return;
-    }
-
-    if (pendingIds && pendingIds.length) {
-      applyIds(pendingIds, { emit: false, updateProp: true });
-      pendingIds = undefined;
-      return;
-    }
-
-    applyInitialExpansion(new Set(getCurrentIds()));
+    sync.initialisePersistentState(value, applyIds, () => {
+      applyInitialExpansion(new Set(getCurrentIds()));
+    });
   };
   //#endregion
 
