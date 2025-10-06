@@ -41,11 +41,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(imageviewer);
     const eventType: LfImageviewerEvent = "lf-event";
     cy.checkEvent(imageviewer, eventType);
-    cy.get(eventElement)
-      .findCyElement(button)
-      .find("#navigation-load")
-      .first()
-      .click();
+    cy.get(eventElement).findCyElement(button).contains("Load").click();
     cy.get(eventElement).findCyElement(shape).first().scrollIntoView().click();
     cy.getCyElement(check).should("exist");
   });
