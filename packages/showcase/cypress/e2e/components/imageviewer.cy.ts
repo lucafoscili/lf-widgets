@@ -43,7 +43,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.checkEvent(imageviewer, eventType);
     cy.get(eventElement)
       .findCyElement(button)
-      .get("#navigation-load")
+      .find("#navigation-load")
       .first()
       .click();
     cy.get(eventElement).findCyElement(shape).first().scrollIntoView().click();
