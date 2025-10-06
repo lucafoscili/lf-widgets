@@ -231,6 +231,7 @@ graph TD;
   lf-card --> lf-image
   lf-card --> lf-photoframe
   lf-card --> lf-progressbar
+  lf-card --> lf-textfield
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload
@@ -253,6 +254,7 @@ graph TD;
   lf-masonry --> lf-image
   lf-masonry --> lf-photoframe
   lf-masonry --> lf-progressbar
+  lf-masonry --> lf-textfield
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload

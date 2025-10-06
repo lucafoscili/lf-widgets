@@ -128,6 +128,7 @@ Type: `Promise<void>`
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
 - [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 - [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)

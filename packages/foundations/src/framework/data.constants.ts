@@ -14,6 +14,7 @@ export const LF_DATA_SHAPE_MAP = {
   lfProgressbar: "progressbar",
   lfSlot: "slot",
   lfText: "text",
+  lfTextfield: "textfield",
   lfToggle: "toggle",
   lfTypewriter: "typewriter",
   lfUpload: "upload",
@@ -32,8 +33,9 @@ export const LF_DATA_SHAPES = [
   "photoframe",
   "progressbar",
   "slot",
-  "toggle",
   "text",
+  "textfield",
+  "toggle",
   "typewriter",
   "upload",
 ] as const;

@@ -14,6 +14,7 @@ import {
   LfImagePropsInterface,
   LfPhotoframePropsInterface,
   LfProgressbarPropsInterface,
+  LfTextfieldPropsInterface,
   LfTogglePropsInterface,
   LfTypewriterPropsInterface,
   LfUploadPropsInterface,
@@ -168,6 +169,18 @@ function randomTextCell(): LfDataCell<"text"> {
   };
 }
 
+function randomTextFieldCell(): LfDataCell<"textfield"> {
+  const partialProps: Partial<LfTextfieldPropsInterface> = {
+    lfLabel: randomString(),
+    lfUiState: randomState(),
+  };
+  return {
+    shape: "textfield",
+    value: "",
+    ...partialProps,
+  };
+}
+
 function randomToggleCell(): LfDataCell<"toggle"> {
   const partialProps: Partial<LfTogglePropsInterface> = {};
   return {
@@ -210,6 +223,7 @@ const shapeRandomizers: Record<LfDataShapes, () => LfDataCell<LfDataShapes>> = {
   progressbar: randomProgressbarCell,
   slot: randomSlotCell,
   text: randomTextCell,
+  textfield: randomTextFieldCell,
   toggle: randomToggleCell,
   typewriter: randomTypewriterCell,
   upload: randomUploadCell,

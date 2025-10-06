@@ -157,16 +157,28 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-accordion](../lf-accordion)
+ - [lf-article](../lf-article)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
+ - [lf-compare](../lf-compare)
  - [lf-imageviewer](../lf-imageviewer)
+ - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-accordion --> lf-textfield
+  lf-article --> lf-textfield
+  lf-card --> lf-textfield
+  lf-carousel --> lf-textfield
   lf-chat --> lf-textfield
+  lf-compare --> lf-textfield
   lf-imageviewer --> lf-textfield
+  lf-masonry --> lf-textfield
   lf-messenger --> lf-textfield
   lf-tree --> lf-textfield
   style lf-textfield fill:#f9f,stroke:#333,stroke-width:4px
