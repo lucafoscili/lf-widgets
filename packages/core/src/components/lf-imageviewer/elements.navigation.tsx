@@ -132,20 +132,19 @@ export const prepNavigation = (
       const { navigation } = elements.refs;
       const { treeToggle } = handlers.navigation;
       const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { bemClass } = theme;
+      const { "--lf-icon-next": right, "--lf-icon-previous": left } =
+        theme.get.current().variables;
 
       const config = navigationTree();
       if (!config.enabled) {
         return;
       }
 
-      const { variables } = get.current();
       const isStart = config.position === "start";
-      const iconKeyOpen = isStart ? "--lf-icon-previous" : "--lf-icon-next";
-      const iconKeyClosed = isStart ? "--lf-icon-next" : "--lf-icon-previous";
-      const icon = config.open
-        ? variables[iconKeyOpen]
-        : variables[iconKeyClosed];
+      const iconKeyOpen = isStart ? left : right;
+      const iconKeyClosed = isStart ? right : left;
+      const icon = config.open ? iconKeyOpen : iconKeyClosed || "folder";
 
       return (
         <lf-button
@@ -160,9 +159,6 @@ export const prepNavigation = (
           }
           lfIcon={icon}
           lfStretchY={true}
-          lfStyling="flat"
-          lfUiSize="small"
-          lfUiState={config.open ? "primary" : "secondary"}
           onLf-button-event={treeToggle}
           ref={assignRef(navigation, "treeToggle")}
         ></lf-button>

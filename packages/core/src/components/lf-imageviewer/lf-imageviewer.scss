@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "imageviewer";
-$borderC: 1px solid var(--lf-color-border);
+$borderC: 1px solid rgba(var(--lf-color-border));
 @include lf-comp-setup($comp, "false", "false", "true");
 
 :host {
@@ -74,9 +74,8 @@ $borderC: 1px solid var(--lf-color-border);
   &__tree-shell {
     & {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 1fr auto;
       overflow: hidden;
-      transition: width 150ms ease-in-out;
     }
 
     &--tree-end {
@@ -85,18 +84,8 @@ $borderC: 1px solid var(--lf-color-border);
     }
   }
 
-  &--tree-closed &__tree-shell {
-    border-left: none;
-    border-right: none;
-  }
-
   &__tree-header {
-    border-bottom: $borderC;
-    display: flex;
-    gap: 0.25em;
-    justify-content: center;
-    align-items: center;
-    padding: 0.5em;
+    border-right: $borderC;
   }
 
   &__tree-content {
