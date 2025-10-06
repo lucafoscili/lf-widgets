@@ -1,10 +1,7 @@
 import {
   LfDataCell,
-  LfDataColumn,
   LfDataDataset,
   LfDataNode,
-  LfDataNodeMergeChildrenOptions,
-  LfDataNodePlaceholderOptions,
   LfDataNodePredicate,
   LfDataNodeResolutionResult,
   LfDataNodeSanitizeIdsOptions,
@@ -12,174 +9,6 @@ import {
   LfDataNodeTarget,
 } from "@lf-widgets/foundations";
 import { cellStringify } from "./helpers.cell";
-
-//#region deepClone
-/**
- * Produces a structured clone of the supplied value using JSON serialization. Intended for
- * dataset snapshots where rich instances (Dates, Maps) are not expected.
- *
- * Returns the input unchanged when it is `null` or `undefined`.
- *
- * Notes and limitations:
- * - This approach relies on `JSON.stringify`/`JSON.parse`, so functions, symbols,
- *   and non-enumerable properties are not preserved.
- * - Instances of custom classes lose their prototype; they become plain objects.
- * - Built-in objects that are not representable in JSON (e.g. `Map`, `Set`, `RegExp`)
- *   are not preserved. `Date` objects become ISO strings. `undefined`, `Infinity`,
- *   `-Infinity`, and `NaN` are handled according to JSON semantics.
- * - Circular references will cause `JSON.stringify` to throw.
- *
- * @typeParam T - The expected type of the input and returned value.
- * @param value - The value to deep-clone.
- * @returns A deep clone of `value` (typed as `T`), or the original `null`/`undefined` value.
- * @throws {TypeError} If the value contains circular references or cannot be serialized to JSON.
- */
-const deepClone = <T>(value: T): T => {
-  if (value === undefined || value === null) {
-    return value;
-  }
-  return JSON.parse(JSON.stringify(value)) as T;
-};
-//#endregion
-
-//#region ensurePlaceholderRecursively
-/**
- * Ensure that a placeholder child node exists for the given node and its descendants.
- *
- * This function walks the provided node tree recursively and, for each node that
- * should be "decorated" (as determined by options.shouldDecorate), guarantees that
- * there is at least one placeholder child when the node has no real children and no
- * existing placeholder. If those conditions are met, it appends a deep-cloned placeholder
- * node created via the options.create factory (the factory is invoked with an object
- * containing the parent node).
- *
- * The function mutates the input node in-place (it normalizes `node.children` to an array
- * when necessary, may append a placeholder, and recurses into each child). The same
- * node reference is returned for convenience.
- *
- * @param node - The root node to process. Its `children` property may be normalized to an array.
- * @param options - Configuration for placeholder handling:
- *   - create: factory invoked to produce a placeholder node ({ parent: node } is passed).
- *   - isPlaceholder: predicate to identify placeholder nodes (default: () => false).
- *   - shouldDecorate: predicate to decide whether a node should have placeholder logic
- *     applied (default: candidate => candidate.hasChildren === true).
- *
- * @returns The same `node` instance passed in, after placeholders have been ensured for
- *          the node and its descendants.
- *
- * @remarks
- * - A placeholder is only appended when:
- *   1) `shouldDecorate(node)` is true,
- *   2) the node has no "real" children (no child for which `isPlaceholder` returns false),
- *   3) the node has no existing placeholder child (`isPlaceholder` returns true for none).
- * - The placeholder appended is a deep clone of the object returned by `create({ parent: node })`
- *   to avoid sharing references with the factory return value.
- * - Non-array `children` values are normalized to an empty array before processing.
- * - The operation is synchronous and may be used prior to UI rendering to ensure tree shape.
- *
- * @example
- * // ensurePlaceholderRecursively(rootNode, {
- * //   create: ({ parent }) => ({ id: 'placeholder', parent, isPlaceholder: true }),
- * //   isPlaceholder: child => !!child.isPlaceholder,
- * //   shouldDecorate: node => node.hasChildren === true,
- * // });
- */
-const ensurePlaceholderRecursively = (
-  node: LfDataNode,
-  options: LfDataNodePlaceholderOptions,
-) => {
-  const {
-    create,
-    isPlaceholder = () => false,
-    shouldDecorate = (candidate: LfDataNode) => candidate.hasChildren === true,
-  } = options;
-
-  const currentChildren = Array.isArray(node.children) ? node.children : [];
-  const hasRealChildren = currentChildren.some(
-    (child) => !isPlaceholder(child),
-  );
-  const hasPlaceholder = currentChildren.some((child) => isPlaceholder(child));
-
-  if (shouldDecorate(node) && !hasRealChildren && !hasPlaceholder) {
-    const placeholderNode = deepClone(create({ parent: node }));
-    node.children = [...currentChildren, placeholderNode];
-  } else if (!Array.isArray(node.children)) {
-    node.children = currentChildren;
-  }
-
-  if (Array.isArray(node.children)) {
-    node.children = node.children.map((child) => {
-      ensurePlaceholderRecursively(child, options);
-      return child;
-    });
-  }
-
-  return node;
-};
-//#endregion
-
-//#region stripPlaceholderChildren
-/**
- * Returns a new array of children with any placeholder nodes removed.
- *
- * Behaviour:
- * - If `children` is not an array (including `undefined`), an empty array is returned.
- * - If `isPlaceholder` is not provided, a shallow copy of the `children` array is returned.
- * - If `isPlaceholder` is provided, each child for which `isPlaceholder(child)` returns `true`
- *   is excluded from the returned array.
- *
- * @param children - The array of `LfDataNode` items to process, or `undefined`.
- * @param isPlaceholder - Optional predicate function that identifies placeholder nodes.
- * @returns A new array containing the non-placeholder children, or an empty array when `children`
- *          is not an array.
- *
- * @example
- * // Returns a shallow copy when no predicate is given
- * stripPlaceholderChildren([nodeA, nodeB], undefined);
- *
- * @example
- * // Filters out nodes identified as placeholders
- * stripPlaceholderChildren(nodes, (n) => n.type === 'placeholder');
- */
-const stripPlaceholderChildren = (
-  children: LfDataNode[] | undefined,
-  isPlaceholder: ((node: LfDataNode) => boolean) | undefined,
-) => {
-  if (!Array.isArray(children)) {
-    return [];
-  }
-
-  if (!isPlaceholder) {
-    return [...children];
-  }
-
-  return children.filter((child) => !isPlaceholder(child));
-};
-//#endregion
-
-//#region cloneChildren
-/**
- * Creates a new array containing deep-cloned copies of the provided child nodes.
- *
- * If the input is not an array, an empty array is returned. Each element from the
- * input array is cloned using `deepClone` to ensure callers receive new object
- * references (no mutation of the original nodes).
- *
- * @param children - The array of `LfDataNode` objects to clone, or `undefined`.
- * @returns A new array of deep-cloned `LfDataNode` objects. Returns `[]` when the
- *          argument is not an array.
- *
- * @remarks
- * - This function is pure and does not mutate the provided input array or its elements.
- * - The exact cloning semantics and depth are determined by the implementation of `deepClone`.
- */
-const cloneChildren = (children: LfDataNode[] | undefined) => {
-  if (!Array.isArray(children)) {
-    return [];
-  }
-  return children.map((child) => deepClone(child));
-};
-//#endregion
 
 //#region buildNodeLookup
 /**
@@ -356,43 +185,6 @@ export const extractCellMetadata = <T = unknown>(
 };
 //#endregion
 
-//#region nodeDecoratePlaceholders
-/**
- * Clones a dataset and injects placeholder nodes for tree branches that advertise missing child
- * data. This is particularly useful for lazy-loading user interfaces that should display an
- * immediate loading indicator while the real data is fetched.
- */
-export const nodeDecoratePlaceholders = <
-  T extends
-    | LfDataDataset
-    | (LfDataDataset & Record<string, unknown>)
-    | undefined,
->(
-  dataset: T,
-  options: LfDataNodePlaceholderOptions,
-) => {
-  if (!dataset) {
-    return dataset;
-  }
-
-  if (typeof options?.create !== "function") {
-    return dataset;
-  }
-
-  const clonedDataset = deepClone(dataset) as LfDataDataset &
-    Record<string, unknown>;
-  const nodes = Array.isArray(clonedDataset.nodes) ? clonedDataset.nodes : [];
-
-  clonedDataset.nodes = nodes.map((node) => {
-    const clonedNode = deepClone(node);
-    ensurePlaceholderRecursively(clonedNode, options);
-    return clonedNode;
-  });
-
-  return clonedDataset as T;
-};
-//#endregion
-
 //#region nodeFind
 /**
  * Performs a breadth-first search across the dataset nodes and returns the first match for the
@@ -423,63 +215,6 @@ export const nodeFind = (
   }
 
   return undefined;
-};
-//#endregion
-
-//#region nodeMergeChildren
-/**
- * Returns a cloned dataset where the target parent node is replaced with the supplied branch.
- * Optional placeholder configuration allows consumers to strip eager placeholders before merging
- * and re-apply them afterwards.
- */
-export const nodeMergeChildren = <
-  T extends
-    | LfDataDataset
-    | (LfDataDataset & Record<string, unknown>)
-    | undefined,
->(
-  dataset: T,
-  options: LfDataNodeMergeChildrenOptions,
-) => {
-  if (!dataset) {
-    return dataset;
-  }
-
-  const { parentId, children, columns, placeholder } = options ?? {};
-  if (!parentId) {
-    return dataset;
-  }
-
-  const clonedDataset = deepClone(dataset) as (LfDataDataset &
-    Record<string, unknown>) & { columns?: LfDataColumn[] };
-
-  if (Array.isArray(columns) && columns.length) {
-    clonedDataset.columns = columns.map((column) => deepClone(column));
-  }
-
-  const parentNode = nodeFind(
-    clonedDataset,
-    (node: LfDataNode) => node.id === parentId,
-  );
-  if (!parentNode) {
-    return clonedDataset as T;
-  }
-
-  if (placeholder?.removeExisting) {
-    const isPlaceholder = placeholder?.config?.isPlaceholder;
-    parentNode.children = stripPlaceholderChildren(
-      parentNode.children,
-      isPlaceholder,
-    );
-  }
-
-  parentNode.children = cloneChildren(children);
-
-  if (placeholder?.reapply && placeholder?.config) {
-    ensurePlaceholderRecursively(parentNode, placeholder.config);
-  }
-
-  return clonedDataset as T;
 };
 //#endregion
 
@@ -822,67 +557,6 @@ export const nodeGetAncestors = (node: LfDataNode, nodes: LfDataNode[]) => {
   ancestors.reverse();
   return ancestors;
 };
-
-//#endregion
-
-//#region nodeGetDrilldownInfo
-/**
- * Analyzes a tree of nodes to determine its maximum depth and the maximum number of children for any node.
- *
- * @param nodes - The array of root nodes to analyze
- * @returns An object containing:
- *          - maxChildren: The maximum number of children found in any single node
- *          - maxDepth: The maximum depth level reached in the tree structure
- *
- * @example
- * ```typescript
- * const nodes = [
- *   {
- *     children: [
- *       { children: [] },
- *       { children: [] }
- *     ]
- *   }
- * ];
- * const info = nodeGetDrilldownInfo(nodes);
- * // Returns { maxChildren: 2, maxDepth: 2 }
- * ```
- */
-export const nodeGetDrilldownInfo = (nodes: LfDataNode[]) => {
-  let maxChildren = 0;
-  let maxDepth = 0;
-
-  const getDepth = function (n: LfDataNode) {
-    const depth = 0;
-    if (n.children) {
-      n.children.forEach(function (d) {
-        const tmpDepth = getDepth(d);
-        if (tmpDepth > depth) {
-          maxDepth = tmpDepth;
-        }
-      });
-    }
-    return depth;
-  };
-
-  const recursive = (arr: LfDataNode[]) => {
-    maxDepth++;
-    for (let index = 0; index < arr.length; index++) {
-      const node = arr[index];
-      getDepth(node);
-      if (Array.isArray(node.children) && maxChildren < node.children.length) {
-        maxChildren = node.children.length;
-        recursive(node.children);
-      }
-    }
-  };
-
-  recursive(nodes);
-  return {
-    maxChildren,
-    maxDepth,
-  };
-};
 //#endregion
 
 //#region nodeGetParent
@@ -1000,42 +674,6 @@ export const nodeSort = (
 };
 //#endregion
 
-//#region nodeSetProperties
-/**
- * Sets properties on the specified nodes, optionally recursively.
- * @param nodes - Array of nodes to update
- * @param properties - Object containing the properties to set on the nodes
- * @param recursively - If true, applies properties to all descendant nodes
- * @param exclude - Optional array of nodes to exclude from property updates
- * @returns Array of nodes that were updated
- */
-export const nodeSetProperties = (
-  nodes: LfDataNode[],
-  properties: Partial<LfDataNode>,
-  recursively?: boolean,
-  exclude?: LfDataNode[],
-) => {
-  const updated: LfDataNode[] = [];
-  if (!exclude) {
-    exclude = [];
-  }
-  if (recursively) {
-    nodes = nodeToStream(nodes);
-  }
-  for (let index = 0; index < nodes.length; index++) {
-    const node = nodes[index];
-    for (const key in properties) {
-      if (!exclude.includes(node)) {
-        (node[key as keyof LfDataNode] as any) =
-          properties[key as keyof LfDataNode];
-        updated.push(node);
-      }
-    }
-  }
-  return updated;
-};
-//#endregion
-
 //#region nodeToStream
 /**
  * Converts a nested tree structure of LfDataNodes into a flattened array.
@@ -1119,50 +757,5 @@ export const nodeTraverseVisible = (
   };
   for (const n of nodes) walk(n, 0);
   return out;
-};
-//#endregion
-
-//#region removeNodeByCell
-/**
- * Removes a node from a dataset by finding the node that contains the specified cell.
- * The function traverses the dataset tree recursively to find and remove the node.
- *
- * @param dataset - The dataset containing the nodes to search through
- * @param targetCell - The cell used to identify the node to remove
- * @returns The removed node if found and removed successfully, null otherwise
- *
- * @example
- * ```typescript
- * const dataset = {nodes: [...]};
- * const cell = {value: 'test'};
- * const removedNode = removeNodeByCell(dataset, cell);
- * ```
- */
-export const removeNodeByCell = (
-  dataset: LfDataDataset,
-  targetCell: LfDataCell,
-) => {
-  function recursive(nodes: LfDataNode[], nodeToRemove: LfDataNode): boolean {
-    const index = nodes.indexOf(nodeToRemove);
-    if (index !== -1) {
-      nodes.splice(index, 1);
-      return true;
-    }
-
-    for (const node of nodes) {
-      if (node.children && recursive(node.children, nodeToRemove)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  const targetNode = findNodeByCell(dataset, targetCell);
-  if (!targetNode) {
-    return null;
-  }
-
-  return recursive(dataset.nodes, targetNode) ? targetNode : null;
 };
 //#endregion

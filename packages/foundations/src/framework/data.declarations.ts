@@ -141,46 +141,6 @@ export interface LfDataNodeResolutionResult {
 }
 
 /**
- * Configuration object controlling placeholder node generation for lazily loaded trees.
- */
-export interface LfDataNodePlaceholderOptions {
-  /**
-   * Factory invoked to create a placeholder child for the supplied parent node.
-   */
-  create: (context: { parent: LfDataNode }) => LfDataNode;
-  /**
-   * Predicate that identifies placeholder nodes. When omitted, placeholders must be guarded by the caller.
-   */
-  isPlaceholder?: (node: LfDataNode) => boolean;
-  /**
-   * Predicate that determines whether the algorithm should attempt to decorate the node with a placeholder.
-   * Defaults to checking `node.hasChildren === true` when available.
-   */
-  shouldDecorate?: (node: LfDataNode) => boolean;
-}
-
-/**
- * Options applied when merging an asynchronous branch into an existing dataset tree.
- */
-export interface LfDataNodeMergeChildrenOptions {
-  /** Identifier of the node that should receive the new children. */
-  parentId: string;
-  /** Replacement child nodes for the target parent. */
-  children?: LfDataNode[];
-  /** Optional column definitions to merge alongside the new branch. */
-  columns?: LfDataColumn[];
-  /** Optional placeholder handling configuration executed during the merge operation. */
-  placeholder?: {
-    /** When true, existing placeholder children are removed before attaching the new branch. */
-    removeExisting?: boolean;
-    /** When true, placeholder decoration is re-applied to the mutated subtree after merging. */
-    reapply?: boolean;
-    /** Placeholder configuration shared with the decoration helper. */
-    config: LfDataNodePlaceholderOptions;
-  };
-}
-
-/**
  * Options controlling how node identifiers are validated when restoring persisted state.
  */
 export interface LfDataNodeSanitizeIdsOptions {
@@ -382,21 +342,10 @@ export interface LfDataNodeOperations {
   findNodeByCell: (dataset: LfDataDataset, cell: LfDataCell) => LfDataNode;
   /** Normalises node ids, filling gaps after mutations. */
   fixIds: (nodes: LfDataNode[]) => LfDataNode[];
-  /** Derives statistics (max depth, child counts) for analytics or drilldown UIs. */
-  getDrilldownInfo: (nodes: LfDataNode[]) => LfDataNodeDrilldownInfo;
   /** Finds the parent node for the supplied child reference. */
   getParent: (nodes: LfDataNode[], child: LfDataNode) => LfDataNode;
   /** Removes the target node from the tree and returns it. */
   pop: (nodes: LfDataNode[], node2remove: LfDataNode) => LfDataNode;
-  /** Shortcut that removes the node associated with a specific cell. */
-  removeNodeByCell: (dataset: LfDataDataset, cell: LfDataCell) => LfDataNode;
-  /** Batch updates nodes with the provided property bag; can recurse and skip exclusions. */
-  setProperties: (
-    nodes: LfDataNode[],
-    properties: Partial<LfDataNode>,
-    recursively?: boolean,
-    exclude?: LfDataNode[],
-  ) => LfDataNode[];
   /** Flattens the hierarchical structure into an array stream. */
   toStream: (nodes: LfDataNode[]) => LfDataNode[];
   /** Depth-first traversal utility that honours visibility/selection predicates. */
@@ -415,21 +364,11 @@ export interface LfDataNodeOperations {
     hidden?: boolean;
     selected?: boolean;
   }>;
-  /** Applies placeholder decoration across a dataset, producing a cloned instance with synthetic nodes when needed. */
-  decoratePlaceholders: <T extends LfDataDataset | undefined>(
-    dataset: T,
-    options: LfDataNodePlaceholderOptions,
-  ) => T;
   /** Finds the first node that satisfies the supplied predicate. */
   find: (
     dataset: LfDataDataset | undefined,
     predicate: LfDataNodePredicate,
   ) => LfDataNode | undefined;
-  /** Replaces the children of a parent node with the provided branch, returning a cloned dataset. */
-  mergeChildren: <T extends LfDataDataset | undefined>(
-    dataset: T,
-    options: LfDataNodeMergeChildrenOptions,
-  ) => T;
   /** Normalises arbitrary node targets into dataset-aware identifiers and node references. */
   resolveTargets: (
     dataset: LfDataDataset | undefined,
@@ -463,15 +402,6 @@ export interface LfDataCellMetadataSchema<T = unknown> {
   transform?: (value: T) => T;
   /** When true, returns null instead of undefined for missing/invalid cells. */
   nullable?: boolean;
-}
-/**
- * Utility interface used by the data framework.
- */
-export interface LfDataNodeDrilldownInfo {
-  /** Maximum number of children encountered while traversing nodes. */
-  maxChildren?: number;
-  /** Deepest depth reached within the inspected node tree. */
-  maxDepth?: number;
 }
 /**
  * Utility interface used by the data framework.

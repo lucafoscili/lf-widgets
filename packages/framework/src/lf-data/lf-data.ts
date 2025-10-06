@@ -4,9 +4,7 @@ import {
   LfDataDataset,
   LfDataInterface,
   LfDataNode,
-  LfDataNodeMergeChildrenOptions,
   LfDataNodeOperations,
-  LfDataNodePlaceholderOptions,
   LfDataNodePredicate,
   LfDataNodeSanitizeIdsOptions,
   LfDataNodeTarget,
@@ -24,21 +22,16 @@ import { columnFind } from "./helpers.column";
 import {
   extractCellMetadata,
   findNodeByCell,
-  nodeDecoratePlaceholders,
   nodeExists,
   nodeFilter,
   nodeFind,
   nodeFixIds,
-  nodeGetDrilldownInfo,
   nodeGetParent,
-  nodeMergeChildren,
   nodePop,
   nodeResolveTargets,
   nodeSanitizeIds,
-  nodeSetProperties,
   nodeToStream,
   nodeTraverseVisible,
-  removeNodeByCell,
 } from "./helpers.node";
 
 export class LfData implements LfDataInterface {
@@ -111,12 +104,8 @@ export class LfData implements LfDataInterface {
       nodeFilter(dataset, filters, partialMatch),
     findNodeByCell: (dataset, cell) => findNodeByCell(dataset, cell),
     fixIds: (nodes) => nodeFixIds(nodes),
-    getDrilldownInfo: (nodes) => nodeGetDrilldownInfo(nodes),
     getParent: (nodes, child) => nodeGetParent(nodes, child),
     pop: (nodes, node2remove) => nodePop(nodes, node2remove),
-    removeNodeByCell: (dataset, cell) => removeNodeByCell(dataset, cell),
-    setProperties: (nodes, properties, recursively?, exclude?) =>
-      nodeSetProperties(nodes, properties, recursively, exclude),
     toStream: (nodes) => nodeToStream(nodes),
     traverseVisible: (
       nodes: LfDataNode[] | undefined,
@@ -127,18 +116,10 @@ export class LfData implements LfDataInterface {
         forceExpand?: boolean;
       },
     ) => nodeTraverseVisible(nodes, predicates),
-    decoratePlaceholders: <T extends LfDataDataset | undefined>(
-      dataset: T,
-      options: LfDataNodePlaceholderOptions,
-    ) => nodeDecoratePlaceholders(dataset, options),
     find: (
       dataset: LfDataDataset | undefined,
       predicate: LfDataNodePredicate,
     ) => nodeFind(dataset, predicate),
-    mergeChildren: <T extends LfDataDataset | undefined>(
-      dataset: T,
-      options: LfDataNodeMergeChildrenOptions,
-    ) => nodeMergeChildren(dataset, options),
     resolveTargets: (
       dataset: LfDataDataset | undefined,
       target: LfDataNodeTarget,
