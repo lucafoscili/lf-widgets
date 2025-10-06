@@ -1,7 +1,5 @@
 import {
   LfTreeAdapter,
-  LfTreeAdapterControllerGetters,
-  LfTreeAdapterControllerSetters,
   LfTreeAdapterInitializerGetters,
   LfTreeAdapterInitializerSetters,
   LfTreeAdapterRefs,
@@ -16,25 +14,12 @@ export const createAdapter = (
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapter => ({
   controller: {
-    get: createGetters(getters),
-    set: createSetters(setters),
+    get: getters,
+    set: setters,
   },
   elements: { jsx: createJsx(getAdapter), refs: createRefs() },
   handlers: createHandlers(getAdapter),
 });
-//#endregion
-
-//#region Controller
-export const createGetters = (
-  getters: LfTreeAdapterInitializerGetters,
-): LfTreeAdapterControllerGetters => {
-  return getters;
-};
-export const createSetters = (
-  setters: LfTreeAdapterInitializerSetters,
-): LfTreeAdapterControllerSetters => {
-  return setters;
-};
 //#endregion
 
 //#region Refs

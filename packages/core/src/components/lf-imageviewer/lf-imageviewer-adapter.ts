@@ -1,6 +1,5 @@
 import {
   LfImageviewerAdapter,
-  LfImageviewerAdapterControllerGetters,
   LfImageviewerAdapterControllerSetters,
   LfImageviewerAdapterHandlers,
   LfImageviewerAdapterInitializerGetters,
@@ -21,7 +20,7 @@ export const createAdapter = (
 ): LfImageviewerAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
+      get: getters,
       set: createSetters(setters, getAdapter),
     },
     elements: {
@@ -34,11 +33,6 @@ export const createAdapter = (
 //#endregion
 
 //#region Controller
-export const createGetters = (
-  getters: LfImageviewerAdapterInitializerGetters,
-): LfImageviewerAdapterControllerGetters => {
-  return getters;
-};
 export const createSetters = (
   setters: LfImageviewerAdapterInitializerSetters,
   getAdapter: () => LfImageviewerAdapter,
