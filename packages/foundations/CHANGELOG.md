@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.1...1.1.0-rc.3) (2025-10-06)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
+
+
+
+
+# [1.1.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.1...1.1.0-rc.2) (2025-10-06)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
+
+
+
+
+# [1.1.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.0...1.1.0-rc.1) (2025-10-06)
+
+
+### Features
+
+* Add support for textfield shape in data framework ([21dcfb1](https://github.com/lucafoscili/lf-widgets/commit/21dcfb1c8b106fcd2ba12160b35fef5114cb10ae))
+
+
+
+
+
+# [1.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.2...1.1.0-rc.0) (2025-10-06)
+
+
+### Bug Fixes
+
+* Refactor LfTreeEventPayload to extend LfTreeEventArguments ([fd7707d](https://github.com/lucafoscili/lf-widgets/commit/fd7707d8afceb1740cc77ad68820f7a79246efd4))
+* Remove selection and expansion change event emissions ([c760c12](https://github.com/lucafoscili/lf-widgets/commit/c760c12ed37b9d7a975954428a27660936d3378f))
+* Update sanitizeProps to return partial component props ([ca3467b](https://github.com/lucafoscili/lf-widgets/commit/ca3467b0539ec7f549cb53ff327877b017f54dee))
+
+
+### Features
+
+* Add extractCellMetadata helper for typed cell metadata ([a9345f2](https://github.com/lucafoscili/lf-widgets/commit/a9345f298ed38d85f7de0626d2caa35bd4a78340))
+* Add navigation tree panel to image viewer ([475bc95](https://github.com/lucafoscili/lf-widgets/commit/475bc950213c92cd7434c0b9bb6c433dfd6b6066))
+* Add node resolution and sanitization helpers ([5186cd5](https://github.com/lucafoscili/lf-widgets/commit/5186cd54a810cfb940e2aad9b18d2f10c1d55c5c))
+* Add placeholder and merge utilities for data nodes ([ca5fe43](https://github.com/lucafoscili/lf-widgets/commit/ca5fe43587dab97cfcea6721a64228feb9290909))
+* Add selectByPredicate method to LfTree component ([bbdf5b0](https://github.com/lucafoscili/lf-widgets/commit/bbdf5b0298dac61d9bc94c18f28dae9dee457b45))
+* Add support for progressbar shape in data framework ([6852bc2](https://github.com/lucafoscili/lf-widgets/commit/6852bc23ff6f3e6084b7d68d440d87b77a098fb6))
+* Refactor lf-tree expansion to use node IDs and update docs ([4a40a58](https://github.com/lucafoscili/lf-widgets/commit/4a40a583be7e758ef9fb157b2ef2ccafc8deefb1))
+* Refactor lf-tree to support controlled expansion and selection ([c7d3081](https://github.com/lucafoscili/lf-widgets/commit/c7d308156cf1b3bc271ae315145909a7151dd92f))
+
+
+
+
+
 ## [1.0.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1...1.0.2) (2025-10-03)
 
 **Note:** Version bump only for package @lf-widgets/foundations

@@ -1,6 +1,5 @@
 import {
   LfMasonryAdapter,
-  LfMasonryAdapterGetters,
   LfMasonryAdapterHandlers,
   LfMasonryAdapterInitializerGetters,
   LfMasonryAdapterJsx,
@@ -15,7 +14,7 @@ export const createAdapter = (
 ): LfMasonryAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
+      get: getters,
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -24,14 +23,6 @@ export const createAdapter = (
     handlers: createHandlers(getAdapter),
   };
 };
-
-//#region Controller
-export const createGetters = (
-  getters: LfMasonryAdapterInitializerGetters,
-): LfMasonryAdapterGetters => {
-  return getters;
-};
-//#endregion
 
 //#region Elements
 export const createJsx = (

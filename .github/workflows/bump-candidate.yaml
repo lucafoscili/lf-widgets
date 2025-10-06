@@ -59,6 +59,10 @@ jobs:
       - name: Ensure working tree is on candidate
         run: git checkout candidate
 
+      - name: Delete existing PR branch if it exists
+        run: |
+          git push origin --delete version-bump-rc 2>/dev/null || echo "Branch version-bump-rc does not exist on remote, continuing..."
+
       - name: Bump Versions with Lerna
         run: |
           npx lerna version --conventional-prerelease --preid=rc --no-push --no-git-tag-version --yes

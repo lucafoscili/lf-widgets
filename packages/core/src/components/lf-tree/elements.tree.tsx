@@ -16,6 +16,7 @@ import { TreeNode } from "./components.node";
 export const createJsx = (
   getAdapter: () => LfTreeAdapter,
 ): LfTreeAdapterJsx => ({
+  //#region filter
   filter: () => {
     const { controller, handlers } = getAdapter();
     const { compInstance, manager } = controller.get;
@@ -42,6 +43,9 @@ export const createJsx = (
       ></lf-textfield>
     );
   },
+  //#endregion
+
+  //#region header
   header: () => {
     const { controller } = getAdapter();
     const columns = controller.get.columns();
@@ -73,6 +77,9 @@ export const createJsx = (
       </div>
     );
   },
+  //#endregion
+
+  //#region nodes
   nodes: () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
@@ -121,28 +128,31 @@ export const createJsx = (
 
       if (!Object.prototype.hasOwnProperty.call(shapeProps, "lfValue")) {
         shapeProps.lfValue = cell.value;
-
-        return (
-          <div
-            class={bemClass(nodeBlock._, nodeBlock.gridCell)}
-            data-column={col.id as string}
-          >
-            {simple ? (
-              stringify(cell.value)
-            ) : (
-              <LfShape
-                framework={manager}
-                shape={shape}
-                index={0}
-                cell={shapeProps}
-                eventDispatcher={async (e: Event) =>
-                  get.compInstance.onLfEvent(e, "lf-event", { node })
-                }
-              ></LfShape>
-            )}
-          </div>
-        );
       }
+
+      const displayValue = (shapeProps.lfValue ??
+        cell.value) as LfDataCell<LfDataShapes>["value"];
+
+      return (
+        <div
+          class={bemClass(nodeBlock._, nodeBlock.gridCell)}
+          data-column={col.id as string}
+        >
+          {simple ? (
+            stringify(displayValue)
+          ) : (
+            <LfShape
+              framework={manager}
+              shape={shape}
+              index={0}
+              cell={shapeProps}
+              eventDispatcher={async (e: Event) =>
+                get.compInstance.onLfEvent(e, "lf-event", { node })
+              }
+            ></LfShape>
+          )}
+        </div>
+      );
     };
 
     const renderGridCells = (node: LfDataNode) => {
@@ -230,6 +240,9 @@ export const createJsx = (
 
     return <div class={bemClass(tree._, tree.nodesWrapper)}></div>;
   },
+  //#endregion
+
+  //#region empty
   empty: () => {
     const { controller } = getAdapter();
     const { compInstance, manager } = controller.get;
@@ -247,4 +260,5 @@ export const createJsx = (
       </div>
     );
   },
+  //#endregion
 });

@@ -1,7 +1,5 @@
 import {
   LfCanvasAdapter,
-  LfCanvasAdapterControllerGetters,
-  LfCanvasAdapterControllerSetters,
   LfCanvasAdapterHandlers,
   LfCanvasAdapterInitializerGetters,
   LfCanvasAdapterInitializerSetters,
@@ -23,8 +21,8 @@ export const createAdapter = (
 ): LfCanvasAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
-      set: createSetters(setters),
+      get: getters,
+      set: setters,
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -33,19 +31,6 @@ export const createAdapter = (
     handlers: createHandlers(getAdapter),
     toolkit: getToolkit(getAdapter),
   };
-};
-//#endregion
-
-//#region Controller
-export const createGetters = (
-  getters: LfCanvasAdapterControllerGetters,
-): LfCanvasAdapterControllerGetters => {
-  return getters;
-};
-export const createSetters = (
-  setters: LfCanvasAdapterControllerSetters,
-): LfCanvasAdapterControllerSetters => {
-  return setters;
 };
 //#endregion
 

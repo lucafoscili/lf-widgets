@@ -13,12 +13,13 @@ The component supports various customization options, including image loading, n
 
 ## Properties
 
-| Property         | Attribute          | Description                                                                                                                            | Type                                                                  | Default |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------- |
-| `lfDataset`      | `lf-dataset`       | The data set for the LF Imageviewer component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                       | `{}`    |
-| `lfLoadCallback` | `lf-load-callback` | Callback invoked when the load button is clicked.                                                                                      | `(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>` | `null`  |
-| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                      | `string`                                                              | `""`    |
-| `lfValue`        | `lf-value`         | Configuration parameters of the detail view.                                                                                           | `LfDataDataset`                                                       | `{}`    |
+| Property         | Attribute          | Description                                                                                                                            | Type                                                                  | Default     |
+| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------- |
+| `lfDataset`      | `lf-dataset`       | The data set for the LF Imageviewer component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                       | `{}`        |
+| `lfLoadCallback` | `lf-load-callback` | Callback invoked when the load button is clicked.                                                                                      | `(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>` | `null`      |
+| `lfNavigation`   | `lf-navigation`    | Configuration options for the navigation panel.                                                                                        | `LfImageviewerNavigation`                                             | `undefined` |
+| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                      | `string`                                                              | `""`        |
+| `lfValue`        | `lf-value`         | Configuration parameters of the detail view.                                                                                           | `LfDataDataset`                                                       | `{}`        |
 
 
 ## Events
@@ -177,6 +178,7 @@ Type: `Promise<void>`
 | `--lf-imageviewer-color-on-bg`   | Sets the color-on-bg color for the imageviewer component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-imageviewer-font-family`   | Sets the primary font family for the imageviewer component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-imageviewer-font-size`     | Sets the font size for the imageviewer component. Defaults to => var(--lf-font-size)                     |
+| `--lf-imageviewer-nav-width`     | Sets the width for the navigation panel. Defaults to => auto                                             |
 
 
 ## Dependencies
@@ -213,6 +215,7 @@ graph TD;
   lf-tree --> lf-code
   lf-tree --> lf-image
   lf-tree --> lf-photoframe
+  lf-tree --> lf-progressbar
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
@@ -227,6 +230,8 @@ graph TD;
   lf-card --> lf-code
   lf-card --> lf-image
   lf-card --> lf-photoframe
+  lf-card --> lf-progressbar
+  lf-card --> lf-textfield
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload
@@ -248,6 +253,8 @@ graph TD;
   lf-masonry --> lf-code
   lf-masonry --> lf-image
   lf-masonry --> lf-photoframe
+  lf-masonry --> lf-progressbar
+  lf-masonry --> lf-textfield
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload

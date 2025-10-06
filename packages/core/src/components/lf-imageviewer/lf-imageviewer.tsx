@@ -18,6 +18,7 @@ import {
   LfImageviewerHistory,
   LfImageviewerInterface,
   LfImageviewerLoadCallback,
+  LfImageviewerNavigation,
   LfImageviewerPropsInterface,
   LfMasonrySelectedShape,
 } from "@lf-widgets/foundations";
@@ -102,6 +103,10 @@ export class LfImageviewer implements LfImageviewerInterface {
    */
   @State() historyIndex: number = null;
   /**
+   * Tracks whether the navigation tree panel is currently expanded.
+   */
+  @State() isNavigationTreeOpen = false;
+  /**
    * Represents the loading state of the image viewer.
    * When true, displays a loading spinner while the image is being loaded.
    */
@@ -126,6 +131,14 @@ export class LfImageviewer implements LfImageviewerInterface {
    * @mutable
    */
   @Prop({ mutable: true }) lfLoadCallback: LfImageviewerLoadCallback = null;
+  /**
+   * Configuration options for the navigation panel.
+   *
+   * @type {LfImageviewerNavigation}
+   * @default undefined
+   * @mutable
+   */
+  @Prop({ mutable: true }) lfNavigation?: LfImageviewerNavigation;
   /**
    * Custom styling for the component.
    *
@@ -314,6 +327,10 @@ export class LfImageviewer implements LfImageviewerInterface {
         },
         lfAttribute: this.#lf,
         manager: this.#framework,
+        navigation: {
+          hasNav: () => Boolean(this.lfNavigation?.treeProps?.lfDataset),
+          isTreeOpen: () => this.isNavigationTreeOpen,
+        },
         parts: this.#p,
         spinnerStatus: () => this.isSpinnerActive,
       },
@@ -349,6 +366,14 @@ export class LfImageviewer implements LfImageviewerInterface {
               this.history = {};
               this.historyIndex = null;
             }
+          },
+        },
+        navigation: {
+          isTreeOpen: (open: boolean) => {
+            this.isNavigationTreeOpen = open;
+          },
+          toggleTree: () => {
+            this.isNavigationTreeOpen = !this.isNavigationTreeOpen;
           },
         },
       },
@@ -426,10 +451,23 @@ export class LfImageviewer implements LfImageviewerInterface {
   #prepExplorer(): VNode {
     const { bemClass } = this.#framework.theme;
 
-    const { load, masonry, textfield } = this.#adapter.elements.jsx.navigation;
+    const { load, masonry, navToggle, textfield, tree } =
+      this.#adapter.elements.jsx.navigation;
+    const navBlock = this.#b.navigationGrid;
+    const hasNav = Boolean(this.lfNavigation?.treeProps?.lfDataset);
+
+    const shouldShowNavToggle =
+      hasNav && Boolean(this.lfNavigation?.treeProps?.lfDataset);
+    const shouldShowTree = shouldShowNavToggle && this.isNavigationTreeOpen;
+    const wrapperClass = bemClass(navBlock._, undefined, {
+      "has-drawer": shouldShowTree,
+      "has-nav": shouldShowNavToggle,
+    });
 
     return (
-      <div class={bemClass(this.#b.navigationGrid._)} part={this.#p.navigation}>
+      <div class={wrapperClass} part={this.#p.navigation}>
+        {tree()}
+        {navToggle()}
         {textfield()}
         {load()}
         {masonry()}
@@ -447,6 +485,9 @@ export class LfImageviewer implements LfImageviewerInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
+    if (this.#adapter.controller.get.navigation.hasNav()) {
+      this.isNavigationTreeOpen = true;
+    }
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

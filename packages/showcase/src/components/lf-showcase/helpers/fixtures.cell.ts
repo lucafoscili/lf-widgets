@@ -13,6 +13,8 @@ import {
   LfDataShapes,
   LfImagePropsInterface,
   LfPhotoframePropsInterface,
+  LfProgressbarPropsInterface,
+  LfTextfieldPropsInterface,
   LfTogglePropsInterface,
   LfTypewriterPropsInterface,
   LfUploadPropsInterface,
@@ -144,6 +146,15 @@ function randomPhotoframeCell(): LfDataCell<"photoframe"> {
   };
 }
 
+function randomProgressbarCell(): LfDataCell<"progressbar"> {
+  const partialProps: Partial<LfProgressbarPropsInterface> = {};
+  return {
+    shape: "progressbar",
+    value: randomNumber(0, 100),
+    ...partialProps,
+  };
+}
+
 function randomSlotCell(): LfDataCell<"slot"> {
   return {
     shape: "slot",
@@ -155,6 +166,18 @@ function randomTextCell(): LfDataCell<"text"> {
   return {
     shape: "text",
     value: `Random text: ${randomString()}`,
+  };
+}
+
+function randomTextFieldCell(): LfDataCell<"textfield"> {
+  const partialProps: Partial<LfTextfieldPropsInterface> = {
+    lfLabel: randomString(),
+    lfUiState: randomState(),
+  };
+  return {
+    shape: "textfield",
+    value: "",
+    ...partialProps,
   };
 }
 
@@ -197,8 +220,10 @@ const shapeRandomizers: Record<LfDataShapes, () => LfDataCell<LfDataShapes>> = {
   image: randomImageCell,
   number: randomNumberCell,
   photoframe: randomPhotoframeCell,
+  progressbar: randomProgressbarCell,
   slot: randomSlotCell,
   text: randomTextCell,
+  textfield: randomTextFieldCell,
   toggle: randomToggleCell,
   typewriter: randomTypewriterCell,
   upload: randomUploadCell,

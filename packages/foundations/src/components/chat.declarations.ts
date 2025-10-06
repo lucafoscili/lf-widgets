@@ -38,9 +38,15 @@ import {
 import { LfTypewriterPropsInterface } from "./typewriter.declarations";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-chat` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfChatInterface
   extends LfComponent<"LfChat">,
     LfChatPropsInterface {}
+/**
+ * DOM element type for the custom element registered as `lf-chat`.
+ */
 export interface LfChatElement
   extends HTMLStencilElement,
     Omit<LfChatInterface, LfComponentClassProperties> {
@@ -53,6 +59,9 @@ export interface LfChatElement
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-chat` into host integrations.
+ */
 export interface LfChatAdapter extends LfComponentAdapter<LfChatInterface> {
   controller: {
     get: LfChatAdapterControllerGetters;
@@ -64,6 +73,9 @@ export interface LfChatAdapter extends LfComponentAdapter<LfChatInterface> {
   };
   handlers: LfChatAdapterHandlers;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
   chat: {
     clear: () => VNode;
@@ -106,6 +118,9 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     regenerate: (m: LfLLMChoiceMessage) => VNode;
   };
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
   chat: {
     clear: LfButtonElement;
@@ -131,6 +146,9 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     regenerate: LfButtonElement;
   };
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   chat: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
@@ -146,6 +164,9 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
     ) => void;
   };
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfChatAdapterInitializerGetters = Pick<
   LfChatAdapterControllerGetters,
   | "blocks"
@@ -162,6 +183,9 @@ export type LfChatAdapterInitializerGetters = Pick<
   | "status"
   | "view"
 >;
+/**
+ * Subset of adapter setters required during initialisation.
+ */
 export type LfChatAdapterInitializerSetters = Pick<
   LfChatAdapterControllerSetters,
   | "currentAbortStreaming"
@@ -171,6 +195,9 @@ export type LfChatAdapterInitializerSetters = Pick<
   | "status"
   | "view"
 >;
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfChatAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChatInterface> {
   blocks: typeof LF_CHAT_BLOCKS;
@@ -188,6 +215,9 @@ export interface LfChatAdapterControllerGetters
   status: () => LfChatStatus;
   view: () => LfChatView;
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentAbortStreaming: (value: AbortController | null) => void;
@@ -200,7 +230,13 @@ export interface LfChatAdapterControllerSetters
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-chat`.
+ */
 export type LfChatEvent = (typeof LF_CHAT_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-chat` events.
+ */
 export interface LfChatEventPayload
   extends LfEventPayload<"LfChat", LfChatEvent> {
   history: string;
@@ -209,16 +245,31 @@ export interface LfChatEventPayload
 //#endregion
 
 //#region States
+/**
+ * Utility interface used by the `lf-chat` component.
+ */
 export interface LfChatCurrentTokens {
   current: number;
   percentage: number;
 }
+/**
+ * History snapshot maintained by the component to enable undo/redo flows.
+ */
 export type LfChatHistory = LfLLMChoiceMessage[];
+/**
+ * Utility type used by the `lf-chat` component.
+ */
 export type LfChatStatus = (typeof LF_CHAT_STATUS)[number];
+/**
+ * Utility type used by the `lf-chat` component.
+ */
 export type LfChatView = (typeof LF_CHAT_VIEW)[number];
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-chat` component.
+ */
 export interface LfChatPropsInterface {
   lfContextWindow?: number;
   lfEmpty?: string;
@@ -234,5 +285,8 @@ export interface LfChatPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfValue?: LfChatHistory;
 }
+/**
+ * Union of layouts listed in `LF_CHAT_LAYOUT`.
+ */
 export type LfChatLayout = (typeof LF_CHAT_LAYOUT)[number];
 //#endregion

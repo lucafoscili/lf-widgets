@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-rc.3](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.1...1.1.0-rc.3) (2025-10-06)
+
+**Note:** Version bump only for package @lf-widgets/showcase
+
+
+
+
+
+# [1.1.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.1...1.1.0-rc.2) (2025-10-06)
+
+**Note:** Version bump only for package @lf-widgets/showcase
+
+
+
+
+
+# [1.1.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.0...1.1.0-rc.1) (2025-10-06)
+
+
+### Features
+
+* Add support for textfield shape in data framework ([21dcfb1](https://github.com/lucafoscili/lf-widgets/commit/21dcfb1c8b106fcd2ba12160b35fef5114cb10ae))
+
+
+
+
+
+# [1.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.0.2...1.1.0-rc.0) (2025-10-06)
+
+
+### Features
+
+* Add navigation tree panel to image viewer ([475bc95](https://github.com/lucafoscili/lf-widgets/commit/475bc950213c92cd7434c0b9bb6c433dfd6b6066))
+* Add selectByPredicate method to LfTree component ([bbdf5b0](https://github.com/lucafoscili/lf-widgets/commit/bbdf5b0298dac61d9bc94c18f28dae9dee457b45))
+* Add support for progressbar shape in data framework ([6852bc2](https://github.com/lucafoscili/lf-widgets/commit/6852bc23ff6f3e6084b7d68d440d87b77a098fb6))
+* Refactor lf-tree expansion to use node IDs and update docs ([4a40a58](https://github.com/lucafoscili/lf-widgets/commit/4a40a583be7e758ef9fb157b2ef2ccafc8deefb1))
+
+
+
+
+
 ## [1.0.2](https://github.com/lucafoscili/lf-widgets/compare/v1.0.1...1.0.2) (2025-10-03)
 
 **Note:** Version bump only for package @lf-widgets/showcase

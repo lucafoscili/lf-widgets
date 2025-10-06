@@ -6,6 +6,7 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
+  LfImageviewerLoadCallback,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -99,6 +100,81 @@ export const getImageviewerFixtures = (
       ],
     },
   };
+
+  const navigationTreeGridDataset: LfDataDataset = {
+    columns: [
+      { id: "name", title: "Name" },
+      { id: "items", title: "Items" },
+      { id: "updated", title: "Updated" },
+    ],
+    nodes: [
+      {
+        id: "projects",
+        value: "Projects",
+        cells: {
+          name: { shape: "text", value: "Projects" },
+          items: { shape: "number", value: 12 },
+          updated: { shape: "text", value: "2 days ago" },
+        },
+        children: [
+          {
+            id: "projects/alpha",
+            value: "Project Alpha",
+            cells: {
+              name: { shape: "text", value: "Project Alpha" },
+              items: { shape: "number", value: 5 },
+              updated: { shape: "text", value: "Yesterday" },
+            },
+          },
+          {
+            id: "projects/beta",
+            value: "Project Beta",
+            cells: {
+              name: { shape: "text", value: "Project Beta" },
+              items: { shape: "number", value: 7 },
+              updated: { shape: "text", value: "3 days ago" },
+            },
+          },
+        ],
+      },
+      {
+        id: "reviews",
+        value: "Reviews",
+        cells: {
+          name: { shape: "text", value: "Reviews" },
+          items: { shape: "number", value: 8 },
+          updated: { shape: "text", value: "Today" },
+        },
+        children: [
+          {
+            id: "reviews/internal",
+            value: "Internal",
+            cells: {
+              name: { shape: "text", value: "Internal" },
+              items: { shape: "number", value: 3 },
+              updated: { shape: "text", value: "4 hours ago" },
+            },
+          },
+          {
+            id: "reviews/client",
+            value: "Client",
+            cells: {
+              name: { shape: "text", value: "Client" },
+              items: { shape: "number", value: 5 },
+              updated: { shape: "text", value: "Last week" },
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  const loadImageDataset: LfImageviewerLoadCallback = async (
+    imageviewer,
+    _dir,
+  ) => {
+    imageviewer.lfDataset = data.lfDataset;
+  };
   //#endregion
 
   //#region documentation
@@ -168,19 +244,44 @@ export const getImageviewerFixtures = (
         simple: {
           description: "Simple imageviewer",
           props: {
-            lfLoadCallback: async (imageviewer, _val) => {
-              imageviewer.lfDataset = data.lfDataset;
-            },
+            lfLoadCallback: loadImageDataset,
             lfValue: data.lfValue,
           },
         },
         style: {
           description: "Imageviewer with custom style",
           props: {
-            lfLoadCallback: async (imageviewer, _val) => {
-              imageviewer.lfDataset = data.lfDataset;
-            },
+            lfLoadCallback: loadImageDataset,
             lfStyle: randomStyle(),
+            lfValue: data.lfValue,
+          },
+        },
+        navigationClosed: {
+          description: "Imageviewer with navigation tree closed by default",
+          props: {
+            lfLoadCallback: loadImageDataset,
+            lfNavigation: {
+              isTreeOpen: false,
+              treeProps: {
+                lfDataset: navigationTreeGridDataset,
+                lfFilter: true,
+                lfGrid: true,
+              },
+            },
+            lfValue: data.lfValue,
+          },
+        },
+        navigation: {
+          description: "Imageviewer with navigation tree and grid layout",
+          props: {
+            lfLoadCallback: loadImageDataset,
+            lfNavigation: {
+              treeProps: {
+                lfDataset: navigationTreeGridDataset,
+                lfFilter: true,
+                lfGrid: true,
+              },
+            },
             lfValue: data.lfValue,
           },
         },

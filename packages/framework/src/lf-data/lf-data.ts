@@ -5,6 +5,9 @@ import {
   LfDataInterface,
   LfDataNode,
   LfDataNodeOperations,
+  LfDataNodePredicate,
+  LfDataNodeSanitizeIdsOptions,
+  LfDataNodeTarget,
   LfDataShapes,
   LfDataShapesMap,
   LfFrameworkInterface,
@@ -17,14 +20,16 @@ import {
 } from "./helpers.cell";
 import { columnFind } from "./helpers.column";
 import {
+  extractCellMetadata,
   findNodeByCell,
   nodeExists,
   nodeFilter,
+  nodeFind,
   nodeFixIds,
-  nodeGetDrilldownInfo,
   nodeGetParent,
   nodePop,
-  nodeSetProperties,
+  nodeResolveTargets,
+  nodeSanitizeIds,
   nodeToStream,
   nodeTraverseVisible,
 } from "./helpers.node";
@@ -78,16 +83,20 @@ export class LfData implements LfDataInterface {
   //#region Node
   /**
    * Object containing operations for manipulating and querying node data structures.
-   * @property {(dataset: LfDataDataset) => boolean} exists - Checks if a node exists in the dataset.
-   * @property {(dataset: LfDataDataset, filters: Partial<LfDataNode>, partialMatch?: boolean) => any} filter - Filters nodes based on given criteria.
+   * @property {(dataset: LfDataDataset) => boolean} exists - Checks whether a dataset exposes any nodes.
+   * @property {(dataset: LfDataDataset, filters: Partial<LfDataNode>, partialMatch?: boolean) => ReturnType<typeof nodeFilter>} filter - Filters nodes based on given criteria.
    * @property {(dataset: LfDataDataset, cell: LfDataCell) => LfDataNode} findNodeByCell - Finds a node by cell reference.
    * @property {(nodes: LfDataNode[]) => LfDataNode[]} fixIds - Fixes/normalizes node IDs.
    * @property {(nodes: LfDataNode[]) => LfDataNodeDrilldownInfo} getDrilldownInfo - Retrieves drilldown information from nodes.
    * @property {(nodes: LfDataNode[], child: LfDataNode) => LfDataNode} getParent - Gets the parent node of a given child node.
    * @property {(nodes: LfDataNode[], node2remove: LfDataNode) => LfDataNode} pop - Removes a specific node from the node structure.
-   * @property {(dataset: LfDataDataset, cell: LfDataCell) => LfDataNode} removeNodeByCell - Removes a node identified by cell reference.
+   * @property {(dataset: LfDataDataset, cell: LfDataCell) => LfDataNode | null} removeNodeByCell - Removes a node identified by cell reference.
    * @property {(nodes: LfDataNode[], properties: Partial<LfDataNode>, recursively?: boolean, exclude?: LfDataNode[]) => LfDataNode[]} setProperties - Sets properties on nodes.
-   * @property {(nodes: LfDataNode[]) => LfDataNode[]} toStream - Converts nodes structure to a stream format.
+   * @property {(nodes: LfDataNode[]) => LfDataNode[]} toStream - Converts a hierarchical set of nodes to a flat array.
+   * @property {(nodes: LfDataNode[] | undefined, predicates: Parameters<typeof nodeTraverseVisible>[1]) => ReturnType<typeof nodeTraverseVisible>} traverseVisible - Walks the dataset honouring UI predicates.
+   * @property {<T extends LfDataDataset | undefined>(dataset: T, options: LfDataNodePlaceholderOptions) => T} decoratePlaceholders - Injects placeholder nodes when lazy loading is required.
+   * @property {(dataset: LfDataDataset | undefined, predicate: LfDataNodePredicate) => LfDataNode | undefined} find - Finds the first node matching the predicate.
+   * @property {<T extends LfDataDataset | undefined>(dataset: T, options: LfDataNodeMergeChildrenOptions) => T} mergeChildren - Replaces a parent's children with the provided branch.
    */
   node: LfDataNodeOperations = {
     exists: (dataset) => nodeExists(dataset),
@@ -95,12 +104,8 @@ export class LfData implements LfDataInterface {
       nodeFilter(dataset, filters, partialMatch),
     findNodeByCell: (dataset, cell) => findNodeByCell(dataset, cell),
     fixIds: (nodes) => nodeFixIds(nodes),
-    getDrilldownInfo: (nodes) => nodeGetDrilldownInfo(nodes),
     getParent: (nodes, child) => nodeGetParent(nodes, child),
     pop: (nodes, node2remove) => nodePop(nodes, node2remove),
-    removeNodeByCell: (dataset, cell) => findNodeByCell(dataset, cell),
-    setProperties: (nodes, properties, recursively?, exclude?) =>
-      nodeSetProperties(nodes, properties, recursively, exclude),
     toStream: (nodes) => nodeToStream(nodes),
     traverseVisible: (
       nodes: LfDataNode[] | undefined,
@@ -111,6 +116,28 @@ export class LfData implements LfDataInterface {
         forceExpand?: boolean;
       },
     ) => nodeTraverseVisible(nodes, predicates),
+    find: (
+      dataset: LfDataDataset | undefined,
+      predicate: LfDataNodePredicate,
+    ) => nodeFind(dataset, predicate),
+    resolveTargets: (
+      dataset: LfDataDataset | undefined,
+      target: LfDataNodeTarget,
+    ) => nodeResolveTargets(dataset, target),
+    sanitizeIds: (
+      dataset: LfDataDataset | undefined,
+      candidates: Iterable<string | number | LfDataNode> | null | undefined,
+      options?: LfDataNodeSanitizeIdsOptions,
+    ) => nodeSanitizeIds(dataset, candidates, options),
+    extractCellMetadata: <T = unknown>(
+      node: LfDataNode | null | undefined,
+      cellId: string,
+      schema?: {
+        validate?: (value: unknown) => value is T;
+        transform?: (value: T) => T;
+        nullable?: boolean;
+      },
+    ) => extractCellMetadata<T>(node, cellId, schema),
   };
   //#endregion
 }

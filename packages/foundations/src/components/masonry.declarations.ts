@@ -32,6 +32,9 @@ import {
 } from "./masonry.constants";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-masonry` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfMasonryInterface
   extends LfComponent<"LfMasonry">,
     LfMasonryPropsInterface {
@@ -39,12 +42,18 @@ export interface LfMasonryInterface
   redecorateShapes: () => Promise<void>;
   setSelectedShape: (index: number) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-masonry`.
+ */
 export interface LfMasonryElement
   extends HTMLStencilElement,
     Omit<LfMasonryInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-masonry` into host integrations.
+ */
 export interface LfMasonryAdapter
   extends LfComponentAdapter<LfMasonryInterface> {
   controller: {
@@ -56,19 +65,31 @@ export interface LfMasonryAdapter
   };
   handlers: LfMasonryAdapterHandlers;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfMasonryAdapterJsx extends LfComponentAdapterJsx {
   addColumn: () => VNode;
   removeColumn: () => VNode;
   changeView: () => VNode;
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfMasonryAdapterRefs extends LfComponentAdapterRefs {
   addColumn: LfButtonElement;
   removeColumn: LfButtonElement;
   changeView: LfButtonElement;
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfMasonryAdapterHandlers extends LfComponentAdapterHandlers {
   button: (e: CustomEvent<LfButtonEventPayload>) => void;
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfMasonryAdapterInitializerGetters = Pick<
   LfMasonryAdapterGetters,
   | "blocks"
@@ -82,6 +103,9 @@ export type LfMasonryAdapterInitializerGetters = Pick<
   | "parts"
   | "shapes"
 >;
+/**
+ * Utility interface used by the `lf-masonry` component.
+ */
 export interface LfMasonryAdapterGetters
   extends LfComponentAdapterGetters<LfMasonryInterface> {
   blocks: typeof LF_MASONRY_BLOCKS;
@@ -98,7 +122,13 @@ export interface LfMasonryAdapterGetters
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-masonry`.
+ */
 export type LfMasonryEvent = (typeof LF_MASONRY_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-masonry` events.
+ */
 export interface LfMasonryEventPayload
   extends LfEventPayload<"LfMasonry", LfMasonryEvent> {
   selectedShape: LfMasonrySelectedShape;
@@ -106,6 +136,9 @@ export interface LfMasonryEventPayload
 //#endregion
 
 //#region States
+/**
+ * Utility type used by the `lf-masonry` component.
+ */
 export type LfMasonrySelectedShape = {
   index?: number;
   shape?: Partial<LfDataCell<LfDataShapes>>;
@@ -113,6 +146,9 @@ export type LfMasonrySelectedShape = {
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-masonry` component.
+ */
 export interface LfMasonryPropsInterface {
   lfActions?: boolean;
   lfColumns?: LfMasonryColumns;
@@ -122,6 +158,12 @@ export interface LfMasonryPropsInterface {
   lfStyle?: string;
   lfView?: LfMasonryView;
 }
+/**
+ * Utility type used by the `lf-masonry` component.
+ */
 export type LfMasonryColumns = number[] | number;
+/**
+ * Utility type used by the `lf-masonry` component.
+ */
 export type LfMasonryView = (typeof LF_MASONRY_VIEWS)[number];
 //#endregion

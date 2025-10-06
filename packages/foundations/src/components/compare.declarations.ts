@@ -35,15 +35,24 @@ import {
 import { LfTreeElement, LfTreeEventPayload } from "./tree.declarations";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-compare` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfCompareInterface
   extends LfComponent<"LfCompare">,
     LfComparePropsInterface {}
+/**
+ * DOM element type for the custom element registered as `lf-compare`.
+ */
 export interface LfCompareElement
   extends HTMLStencilElement,
     Omit<LfCompareInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-compare` into host integrations.
+ */
 export interface LfCompareAdapter
   extends LfComponentAdapter<LfCompareInterface> {
   controller: {
@@ -56,6 +65,9 @@ export interface LfCompareAdapter
   };
   handlers: LfCompareAdapterHandlers;
 }
+/**
+ * Subset of adapter getters required during initialisation.
+ */
 export type LfCompareAdapterInitializerGetters = Pick<
   LfCompareAdapterControllerGetters,
   | "blocks"
@@ -67,6 +79,9 @@ export type LfCompareAdapterInitializerGetters = Pick<
   | "parts"
   | "shapes"
 >;
+/**
+ * Subset of adapter setters required during initialisation.
+ */
 export type LfCompareAdapterInitializerSetters = Pick<
   LfCompareAdapterControllerSetters,
   | "leftPanelOpened"
@@ -75,6 +90,9 @@ export type LfCompareAdapterInitializerSetters = Pick<
   | "rightShape"
   | "splitView"
 >;
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ */
 export interface LfCompareAdapterControllerGetters
   extends LfComponentAdapterGetters<LfCompareInterface> {
   blocks: typeof LF_COMPARE_BLOCKS;
@@ -87,6 +105,9 @@ export interface LfCompareAdapterControllerGetters
   parts: typeof LF_COMPARE_PARTS;
   shapes: () => LfDataShapesMap[LfDataShapes];
 }
+/**
+ * Imperative controller callbacks exposed by the adapter.
+ */
 export interface LfCompareAdapterControllerSetters
   extends LfComponentAdapterSetters {
   leftPanelOpened: (value?: boolean) => void;
@@ -95,6 +116,9 @@ export interface LfCompareAdapterControllerSetters
   rightShape: (shape: LfDataCell) => void;
   splitView: (value: boolean) => void;
 }
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfCompareAdapterJsx extends LfComponentAdapterJsx {
   changeView: () => VNode;
   leftButton: () => VNode;
@@ -102,6 +126,9 @@ export interface LfCompareAdapterJsx extends LfComponentAdapterJsx {
   rightButton: () => VNode;
   rightTree: () => VNode;
 }
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
 export interface LfCompareAdapterRefs extends LfComponentAdapterRefs {
   changeView: LfButtonElement;
   leftButton: LfButtonElement;
@@ -110,10 +137,16 @@ export interface LfCompareAdapterRefs extends LfComponentAdapterRefs {
   rightTree: LfTreeElement;
   slider: HTMLDivElement;
 }
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfCompareAdapterHandlers extends LfComponentAdapterHandlers {
   button: (e: CustomEvent<LfButtonEventPayload>) => void;
   tree: (e: CustomEvent<LfTreeEventPayload>) => void;
 }
+/**
+ * Component-specific defaults used when instantiating adapter-managed layouts.
+ */
 export interface LfCompareAdapterDefaults {
   left: LfDataShapeDefaults;
   right: LfDataShapeDefaults;
@@ -121,17 +154,29 @@ export interface LfCompareAdapterDefaults {
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-compare`.
+ */
 export type LfCompareEvent = (typeof LF_COMPARE_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-compare` events.
+ */
 export interface LfCompareEventPayload
   extends LfEventPayload<"LfCompare", LfCompareEvent> {}
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-compare` component.
+ */
 export interface LfComparePropsInterface {
   lfDataset?: LfDataDataset;
   lfShape?: LfDataShapes;
   lfStyle?: string;
   lfView?: LfCompareView;
 }
+/**
+ * Utility type used by the `lf-compare` component.
+ */
 export type LfCompareView = (typeof LF_COMPARE_VIEWS)[number];
 //#endregion

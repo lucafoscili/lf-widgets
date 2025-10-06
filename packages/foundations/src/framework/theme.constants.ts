@@ -206,6 +206,7 @@ export const LF_THEME_MODIFIERS = [
   "has-header",
   "has-icon",
   "has-label",
+  "has-nav",
   "has-spinner",
   "has-value",
   "hidden",

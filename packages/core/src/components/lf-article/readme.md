@@ -127,6 +127,8 @@ Type: `Promise<void>`
 - [lf-code](../lf-code)
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
+- [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 - [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
@@ -144,6 +146,8 @@ graph TD;
   lf-article --> lf-code
   lf-article --> lf-image
   lf-article --> lf-photoframe
+  lf-article --> lf-progressbar
+  lf-article --> lf-textfield
   lf-article --> lf-toggle
   lf-article --> lf-typewriter
   lf-article --> lf-upload
@@ -161,6 +165,8 @@ graph TD;
   lf-card --> lf-code
   lf-card --> lf-image
   lf-card --> lf-photoframe
+  lf-card --> lf-progressbar
+  lf-card --> lf-textfield
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload

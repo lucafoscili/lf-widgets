@@ -168,15 +168,42 @@ import {
 } from "../framework";
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
 
+/**
+ * Strongly typed runtime contract implemented by every Lightning Fast component.
+ *
+ * The interface exposes the component-specific root HTMLElement alongside the
+ * shared lifecycle API inherited from `LfComponentCommon`.
+ *
+ * @template T Canonical component name used to resolve the concrete root element type.
+ */
 export interface LfComponent<T extends LfComponentName = LfComponentName>
   extends LfComponentCommon {
+  /**
+   * Reference to the rendered custom element associated with the component
+   * implementation. Consumers can tap into DOM APIs or imperative Stencil
+   * helpers through this handle.
+   */
   rootElement: LfComponentElementMap[T];
 }
+/**
+ * Property keys that exist on every component class and can therefore be safely
+ * inspected by framework utilities.
+ */
 export type LfComponentClassProperties = "rootElement" | "debugInfo";
+/**
+ * Resolves the public interface for a component based on its canonical name.
+ *
+ * @template T Component name whose class interface should be returned.
+ */
 export type LfComponentType<T extends LfComponentName = LfComponentName> =
   T extends keyof LfComponentClassMap
     ? LfComponentClassMap[T]
     : LfComponentCommon;
+/**
+ * Maps canonical component names to the HTMLElement subclass representing their root node.
+ *
+ * Enables tag-based lookups without sacrificing type safety.
+ */
 export type LfComponentElementMap = {
   LfAccordion: LfAccordionElement;
   LfArticle: LfArticleElement;
@@ -211,6 +238,11 @@ export type LfComponentElementMap = {
   LfTypewriter: LfTypewriterElement;
   LfUpload: LfUploadElement;
 };
+/**
+ * Maps component names to the interfaces implemented by their component classes.
+ *
+ * Used when dynamically working with components while preserving strong typing.
+ */
 export type LfComponentClassMap = {
   LfAccordion: LfAccordionInterface;
   LfArticle: LfArticleInterface;
@@ -245,40 +277,128 @@ export type LfComponentClassMap = {
   LfTypewriter: LfTypewriterInterface;
   LfUpload: LfUploadInterface;
 };
+/**
+ * Lifecycle contract shared by every component implementation.
+ *
+ * The framework relies on these methods to provide debugging, prop inspection and lifecycle control.
+ */
 interface LfComponentCommon {
+  /**
+   * Lifecycle metrics collected by the framework debug service. Updated during
+   * render hooks to help visualise state transitions.
+   */
   debugInfo: LfDebugLifecycleInfo;
+  /**
+   * Async accessor returning the latest debug information snapshot. Useful when
+   * debugging outside the component instance (e.g. dev tools overlays).
+   */
   getDebugInfo: () => Promise<LfDebugLifecycleInfo>;
+  /**
+   * Retrieves the public props for the component. Passing `true` requests any
+   * available descriptions alongside the raw values, enabling documentation views.
+   */
   getProps: (
     descriptions?: boolean,
   ) => Promise<LfComponentPropsFor<LfComponentName>>;
+  /**
+   * Inline CSS string applied to the shadow root when present. Typically set by
+   * adapter layers or storybook-style tooling.
+   */
   lfStyle?: string;
+  /**
+   * Forces a re-render of the component so prop or state mutations become visible.
+   */
   refresh: () => Promise<void>;
+  /**
+   * Starts the teardown flow and removes the element from the DOM after the
+   * optional delay. Shared by adapters that animate component exits.
+   */
   unmount: (ms?: number) => Promise<void>;
 }
+/**
+ * Helper alias that extracts the root element type for a given component name.
+ *
+ * @template C Component name whose root element type should be returned.
+ */
 export type LfComponentRootElement<
   C extends LfComponentName = LfComponentName,
 > = LfComponentElementMap[C];
+/**
+ * Convenience alias that returns the props interface associated with a component name.
+ *
+ * @template C Component name whose props interface is requested.
+ */
 export type LfComponentPropsFor<C extends LfComponentName> =
   LfComponentPropsMap[C];
+/**
+ * Resolves the HTML tag name registered for a component.
+ *
+ * @template C Component name whose custom element tag is requested.
+ */
 export type LfComponentTag<C extends LfComponentName = LfComponentName> =
   LfComponentTagMap[C];
+/**
+ * Props shared by every Lightning Fast component instance.
+ *
+ * Currently exposes the `lfStyle` string used to inject per-instance CSS.
+ */
 export interface LfComponentBaseProps {
   lfStyle?: string;
 }
+/**
+ * Input contract provided to data-shape render callbacks inside framework-driven components.
+ *
+ * @template S Data shape identifier that controls the specialised callback and payload types.
+ */
 export interface LfShapePropsInterface<S extends LfDataShapes = LfDataShapes> {
+  /**
+   * Runtime framework instance used to access helpers such as `sanitizeProps`,
+   * dataset utilities, and theme helpers when rendering shapes.
+   */
   framework: LfFrameworkInterface;
+  /**
+   * Identifier describing which renderer should be invoked (for example `text`,
+   * `badge`, `card`).
+   */
   shape: S;
+  /**
+   * Position of the cell within the parent dataset. Helps the renderer produce
+   * deterministic keys and slot names.
+   */
   index: number;
+  /**
+   * Data payload powering the shape. May be partial when upstream providers only
+   * supply select fields (value, metadata, etc.).
+   */
   cell: Partial<LfDataCell<S>>;
+  /**
+   * Function invoked after rendering to bubble component events back to the host.
+   */
   eventDispatcher: LfDataShapeEventDispatcher;
+  /**
+   * Optional pre-dispatch hook executed before forwarding events to the dispatcher.
+   * Useful for instrumentation or analytics.
+   */
   defaultCb?: S extends "text"
     ? never
     : LfDataShapeCallback<LfComponentName, S>;
+  /**
+   * Ref callback that receives the rendered element for integrations that need
+   * direct DOM access.
+   */
   refCallback?: LfDataShapeRefCallback<LfComponentName>;
 }
+/**
+ * Utility type describing the attribute dictionary produced by dynamic component wrappers.
+ *
+ * Keys follow the `lf*` naming convention and values are not constrained at compile time.
+ */
 export type LfDynamicComponentProps = {
   [K in `lf${Capitalize<string>}`]?: any;
 };
+/**
+ * Union of all canonical component names exposed by the foundations package.
+ */
 export type LfComponentName =
   | "LfAccordion"
   | "LfArticle"
@@ -312,6 +432,11 @@ export type LfComponentName =
   | "LfTree"
   | "LfTypewriter"
   | "LfUpload";
+/**
+ * Union of the strongly typed props interfaces for every component.
+ *
+ * Useful when the exact component is unknown but validation of the props shape is required.
+ */
 export type LfComponentProps =
   | LfAccordionPropsInterface
   | LfArticlePropsInterface
@@ -345,6 +470,9 @@ export type LfComponentProps =
   | LfTreePropsInterface
   | LfTypewriterPropsInterface
   | LfUploadPropsInterface;
+/**
+ * Maps component names to their corresponding props interfaces for indexed access.
+ */
 export type LfComponentPropsMap = {
   LfAccordion: LfAccordionPropsInterface;
   LfArticle: LfArticlePropsInterface;
@@ -379,6 +507,9 @@ export type LfComponentPropsMap = {
   LfTypewriter: LfTypewriterPropsInterface;
   LfUpload: LfUploadPropsInterface;
 };
+/**
+ * Maps each component name to the custom element tag it registers.
+ */
 export type LfComponentTagMap = {
   LfAccordion: "lf-accordion";
   LfArticle: "lf-article";
@@ -413,6 +544,9 @@ export type LfComponentTagMap = {
   LfTypewriter: "lf-typewriter";
   LfUpload: "lf-upload";
 };
+/**
+ * Reverse lookup that resolves the canonical component name from a custom element tag.
+ */
 export type LfComponentReverseTagMap = {
   "lf-accordion": "LfAccordion";
   "lf-article": "LfArticle";
@@ -449,6 +583,11 @@ export type LfComponentReverseTagMap = {
 };
 
 //#region Third-party declarations (Stencil)
+/**
+ * Minimal representation of a Stencil virtual node used by render helpers.
+ *
+ * Field names follow Stencil's internal `$`-prefixed conventions.
+ */
 export interface VNode {
   $flags$: number;
   $tag$: string | number | Function;
@@ -459,6 +598,11 @@ export interface VNode {
   $name$?: string;
   $key$?: string | number;
 }
+/**
+ * Base interface implemented by every Stencil-generated HTML element.
+ *
+ * Combines the native `HTMLElement` contract with the shared Lightning Fast lifecycle utilities.
+ */
 export interface HTMLStencilElement
   extends HTMLElement,
     Pick<

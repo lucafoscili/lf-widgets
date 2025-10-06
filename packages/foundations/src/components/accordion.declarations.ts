@@ -9,21 +9,36 @@ import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import { LF_ACCORDION_EVENTS } from "./accordion.constants";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-accordion` component. It merges the shared component contract with the component-specific props.
+ */
 export interface LfAccordionInterface
   extends LfComponent<"LfAccordion">,
     LfAccordionPropsInterface {}
+/**
+ * DOM element type for the custom element registered as `lf-accordion`.
+ */
 export interface LfAccordionElement
   extends HTMLStencilElement,
     Omit<LfAccordionInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Events
+/**
+ * Union of event identifiers emitted by `lf-accordion`.
+ */
 export type LfAccordionEvent = (typeof LF_ACCORDION_EVENTS)[number];
+/**
+ * Detail payload structure dispatched with `lf-accordion` events.
+ */
 export interface LfAccordionEventPayload
   extends LfEventPayload<"LfAccordion", LfAccordionEvent> {}
 //#endregion
 
 //#region Props
+/**
+ * Public props accepted by the `lf-accordion` component.
+ */
 export interface LfAccordionPropsInterface {
   lfDataset?: LfDataDataset;
   lfRipple?: boolean;

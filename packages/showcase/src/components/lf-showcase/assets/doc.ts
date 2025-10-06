@@ -1040,7 +1040,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "textfield" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",
@@ -1848,7 +1848,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "textfield" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",
@@ -2182,7 +2182,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the image element.\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfMode",
@@ -2362,6 +2362,11 @@ export const LF_DOC: LfShowcaseDoc = {
         type: "(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>",
       },
       {
+        name: "lfNavigation",
+        docs: "Configuration options for the navigation panel.",
+        type: "LfImageviewerNavigation",
+      },
+      {
         name: "lfStyle",
         docs: "Custom styling for the component.",
         type: "string",
@@ -2396,6 +2401,10 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-imageviewer-font-size",
         docs: "Sets the font size for the imageviewer component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-imageviewer-nav-width",
+        docs: "Sets the width for the navigation panel. Defaults to => auto",
       },
     ],
   },
@@ -2667,7 +2676,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfShape",
         docs: "Sets the type of shapes to compare.",
-        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "slot" | "text" | "toggle" | "typewriter" | "upload"',
+        type: '"badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "textfield" | "toggle" | "typewriter" | "upload"',
       },
       {
         name: "lfStyle",
@@ -2951,7 +2960,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPlaceholder",
         docs: "Html attributes of the picture before the component enters the viewport.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfStyle",
@@ -2966,7 +2975,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Html attributes of the picture after the component enters the viewport.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
     ],
     styles: [
@@ -3870,7 +3879,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input or textarea element through additional HTML attributes.\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
+        type: '{ lfDataset?: any; lfRipple?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; name?: any; id?: any; type?: any; placeholder?: any; multiple?: any; value?: any; min?: any; max?: any; dataset?: any; title?: any; disabled?: any; alt?: any; step?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfValue?: any; lfAriaLabel?: any; lfLabel?: any; lfLeadingLabel?: any; lfHelper?: any; lfHtmlAttributes?: any; lfIcon?: any; lfStretchY?: any; lfStyling?: any; lfTrailingIcon?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; href?: any; htmlProps?: any; maxLength?: any; minLength?: any; readonly?: any; role?: any; src?: any; srcset?: any; lfEmpty?: any; lfImageProps?: any; lfPosition?: any; lfIconOff?: any; lfShowSpinner?: any; lfStretchX?: any; lfToggable?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfNavigation?: any; lfShape?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfContextWindow?: any; lfEndpointUrl?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTypewriterProps?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfMode?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfSelectable?: any; lfActions?: any; lfColumns?: any; lfAutosave?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfProps?: any; lfTrigger?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfFilter?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; "data-"?: any; "aria-"?: any; }',
       },
       {
         name: "lfIcon",
@@ -4280,6 +4289,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfDebugLifecycleInfo>",
       },
       {
+        name: "getExpandedNodeIds",
+        docs: "Retrieves the identifiers for nodes currently expanded within the tree.",
+        returns: {
+          type: "Promise<string[]>",
+          docs: "",
+        },
+        signature: "() => Promise<string[]>",
+      },
+      {
         name: "getProps",
         docs: "Used to retrieve component's properties and descriptions.",
         returns: {
@@ -4289,6 +4307,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfTreePropsInterface>",
       },
       {
+        name: "getSelectedNodeIds",
+        docs: "Retrieves the identifiers for nodes currently selected within the tree.",
+        returns: {
+          type: "Promise<string[]>",
+          docs: "",
+        },
+        signature: "() => Promise<string[]>",
+      },
+      {
         name: "refresh",
         docs: "Triggers a re-render of the component to reflect any state changes.",
         returns: {
@@ -4296,6 +4323,36 @@ export const LF_DOC: LfShowcaseDoc = {
           docs: "",
         },
         signature: "() => Promise<void>",
+      },
+      {
+        name: "selectByPredicate",
+        docs: "Selects the first node matching the provided predicate. If no match is found, selection is cleared.\nThis method combines node.find with setSelectedNodes for common selection-by-criteria workflows.",
+        returns: {
+          type: "Promise<LfDataNode>",
+          docs: "Promise resolving to the selected node, or undefined if no match was found",
+        },
+        signature:
+          "(predicate: (node: LfDataNode) => boolean) => Promise<LfDataNode | undefined>",
+      },
+      {
+        name: "setExpandedNodes",
+        docs: "Sets the expanded nodes in the tree.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(nodes: string | LfDataNode | Array<string | LfDataNode> | null) => Promise<void>",
+      },
+      {
+        name: "setSelectedNodes",
+        docs: "Sets the selected nodes in the tree.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(nodes: string | LfDataNode | Array<string | LfDataNode> | null) => Promise<void>",
       },
       {
         name: "unmount",
@@ -4324,6 +4381,11 @@ export const LF_DOC: LfShowcaseDoc = {
         type: "string",
       },
       {
+        name: "lfExpandedNodeIds",
+        docs: "Identifiers of the nodes that are expanded.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        type: "string[]",
+      },
+      {
         name: "lfFilter",
         docs: "When true, displays a text field which enables filtering the dataset of the tree.",
         type: "boolean",
@@ -4335,7 +4397,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfInitialExpansionDepth",
-        docs: "Sets the initial expanded nodes based on the specified depth.\nIf the property is not provided, all nodes in the tree will be expanded.",
+        docs: "The initial depth to which the tree should be expanded upon first render.\nA value of 0 means all nodes are collapsed, 1 means only the root nodes are expanded, and so on.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "number",
       },
       {
@@ -4347,6 +4409,11 @@ export const LF_DOC: LfShowcaseDoc = {
         name: "lfSelectable",
         docs: "When true, nodes can be selected.",
         type: "boolean",
+      },
+      {
+        name: "lfSelectedNodeIds",
+        docs: "Identifiers of the nodes that are selected.\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        type: "string[]",
       },
       {
         name: "lfStyle",
