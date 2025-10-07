@@ -10,20 +10,25 @@ on:
         type: boolean
         default: false
 
-  # Trigger on PR merge to main
-  pull_request:
-    types: [closed]
+  # Trigger after merge: push to main (merge commit will be on main)
+  push:
     branches:
       - main
 
 jobs:
   publish:
     # Only run if:
-    # 1. PR was merged (not just closed)
-    # 2. Has the release:production label OR force-publish is true
+    # 1. This is a push to main that looks like a bump merge commit (commit message check),
+    #    or 2. workflow_dispatch with force-publish.
     if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release:production'))
-      || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
+      (
+        github.event_name == 'push' &&
+        (
+          contains(github.event.head_commit.message, 'chore: bump versions') ||
+          contains(github.event.head_commit.message, 'Version Bump') ||
+          contains(github.event.head_commit.message, 'version-bump-main')
+        )
+      ) || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
 
     runs-on: ubuntu-latest
     environment: Production

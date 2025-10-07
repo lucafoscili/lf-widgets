@@ -10,20 +10,24 @@ on:
         type: boolean
         default: false
 
-  # Trigger on PR merge to candidate
-  pull_request:
-    types: [closed]
+  # Trigger after merge: push to candidate (merge commit will be on candidate)
+  push:
     branches:
       - candidate
 
 jobs:
   publish-rc:
-    # Only run if:
-    # 1. PR was merged (not just closed)
-    # 2. Has the release:rc label OR force-publish is true
+    # Only run if this is a push to candidate that looks like a bump merge commit
+    # (commit message check), or workflow_dispatch with force-publish.
     if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release:rc'))
-      || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
+      (
+        github.event_name == 'push' &&
+        (
+          contains(github.event.head_commit.message, 'chore: bump versions') ||
+          contains(github.event.head_commit.message, 'Version Bump') ||
+          contains(github.event.head_commit.message, 'version-bump-rc')
+        )
+      ) || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
 
     runs-on: ubuntu-latest
     environment: Development
