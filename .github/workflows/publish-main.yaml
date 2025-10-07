@@ -75,6 +75,13 @@ jobs:
             echo "Packages to publish: $PACKAGES"
           fi
 
+      - name: Get Previous Tag
+        if: steps.check_publish.outputs.needs_publish == 'true'
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1 || echo "")
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
       - name: Publish Packages with Lerna
         if: steps.check_publish.outputs.needs_publish == 'true'
         id: publish
@@ -95,19 +102,13 @@ jobs:
             exit 1
           fi
 
-      - name: Get Previous Tag
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
-        id: previous_tag
-        run: |
-          PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1)
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
-
       - name: Generate Release Notes from Commits
         if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         id: generate_notes
         run: |
-          if [ -n "${{ steps.previous_tag.outputs.previous_tag }}" ]; then
-            COMMITS=$(git log --oneline --no-merges ${{ steps.previous_tag.outputs.previous_tag }}..HEAD)
+          PREV_TAG='${{ steps.previous_tag.outputs.previous_tag }}'
+          if [ -n "$PREV_TAG" ] && git rev-parse --verify "$PREV_TAG" >/dev/null 2>&1; then
+            COMMITS=$(git log --oneline --no-merges "$PREV_TAG"..HEAD)
           else
             COMMITS=$(git log --oneline --no-merges --max-count=50)
           fi
