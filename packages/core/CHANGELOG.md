@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0...1.1.1-rc.1) (2025-10-07)
+
+**Note:** Version bump only for package @lf-widgets/core
+
+
+
+
+
+## [1.1.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0...1.1.1-rc.0) (2025-10-07)
+
+
+### Bug Fixes
+
+* Change tree overflow to auto in navigation grid ([67b5277](https://github.com/lucafoscili/lf-widgets/commit/67b5277f500c5384b11340f7ede89969822607e6))
+
+
+
+
+
 # [1.1.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0-rc.1...1.1.0) (2025-10-06)
 
 
