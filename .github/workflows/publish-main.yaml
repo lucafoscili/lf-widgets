@@ -75,6 +75,13 @@ jobs:
             echo "Packages to publish: $PACKAGES"
           fi
 
+      - name: Get Previous Tag
+        if: steps.check_publish.outputs.needs_publish == 'true'
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1 || echo "")
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
       - name: Publish Packages with Lerna
         if: steps.check_publish.outputs.needs_publish == 'true'
         id: publish
@@ -94,13 +101,6 @@ jobs:
             echo "No version found in lerna output"
             exit 1
           fi
-
-      - name: Get Previous Tag
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
-        id: previous_tag
-        run: |
-          PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1)
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes from Commits
         if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
