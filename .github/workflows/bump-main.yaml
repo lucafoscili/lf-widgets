@@ -27,7 +27,6 @@ on:
     paths:
       - "packages/*/src/**"
       - "packages/*/package.json"
-      - "lerna.json"
 
 jobs:
   version-bump:
@@ -38,7 +37,8 @@ jobs:
         !github.event.head_commit ||
         (
           !contains(github.event.head_commit.message, '[skip bump]') &&
-          !contains(github.event.head_commit.message, 'chore: bump versions')
+          !contains(github.event.head_commit.message, 'chore: bump versions') &&
+          !contains(github.event.head_commit.message, 'version-bump-main')
         )
       )
     runs-on: ubuntu-latest

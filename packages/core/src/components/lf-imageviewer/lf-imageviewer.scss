@@ -107,7 +107,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   &__tree {
     display: none;
     grid-area: tree;
-    overflow: hidden;
+    overflow: auto;
   }
 }
 
