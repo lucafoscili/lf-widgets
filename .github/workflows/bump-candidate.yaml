@@ -17,7 +17,6 @@ on:
     paths:
       - "packages/*/src/**"
       - "packages/*/package.json"
-      - "lerna.json"
 
 jobs:
   version-bump:
@@ -77,6 +76,13 @@ jobs:
       - name: Format Code with Prettier
         run: yarn format
 
+      - name: Update Component Count
+        id: count
+        run: |
+          COUNT=$(find packages/core/src/components -mindepth 1 -maxdepth 1 -type d | wc -l)
+          echo "{ \"components\": $COUNT }" > count.json
+          echo "components=$COUNT" >> $GITHUB_OUTPUT
+
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -91,6 +97,7 @@ jobs:
             ### Changes
             - Updated package versions using Lerna
             - Ran build and formatting
+            - Updated component count to ${{ steps.count.outputs.components }} components
 
             **Merge this PR to trigger publishing to npm with `rc` tag.**
           base: "candidate"
