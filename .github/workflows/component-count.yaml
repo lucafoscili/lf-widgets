@@ -24,7 +24,7 @@ jobs:
       - name: Count Components
         id: count
         run: |
-          COUNT=$(ls -l packages/core/src/components | grep '^d' | wc -l)
+          COUNT=$(find packages/core/src/components -mindepth 1 -maxdepth 1 -type d | wc -l)
           echo "{ \"components\": $COUNT }" > count.json
           echo "components=$COUNT" >> $GITHUB_OUTPUT
 
