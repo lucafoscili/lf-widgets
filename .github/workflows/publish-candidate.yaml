@@ -121,8 +121,9 @@ jobs:
         if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         id: generate_notes
         run: |
-          if [ -n "${{ steps.previous_tag.outputs.previous_tag }}" ]; then
-            COMMITS=$(git log --oneline --no-merges ${{ steps.previous_tag.outputs.previous_tag }}..HEAD)
+          PREV_TAG='${{ steps.previous_tag.outputs.previous_tag }}'
+          if [ -n "$PREV_TAG" ] && git rev-parse --verify "$PREV_TAG" >/dev/null 2>&1; then
+            COMMITS=$(git log --oneline --no-merges "$PREV_TAG"..HEAD)
           else
             COMMITS=$(git log --oneline --no-merges --max-count=50)
           fi
