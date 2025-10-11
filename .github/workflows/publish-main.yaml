@@ -17,17 +17,11 @@ on:
 
 jobs:
   publish:
-    # Only run if:
-    # 1. This is a push to main that looks like a bump merge commit (commit message check),
-    #    or 2. workflow_dispatch with force-publish.
+    # Skip loopback runs from automation; allow manual force publish.
     if: |
       (
         github.event_name == 'push' &&
-        (
-          contains(github.event.head_commit.message, 'chore: bump versions') ||
-          contains(github.event.head_commit.message, 'Version Bump') ||
-          contains(github.event.head_commit.message, 'version-bump-main')
-        )
+        github.actor != 'github-actions[bot]'
       ) || (github.event_name == 'workflow_dispatch' && inputs.force-publish)
 
     runs-on: ubuntu-latest
@@ -41,6 +35,49 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Verify Release Label
+        id: verify_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.force-publish }}" = "true" ]; then
+              echo "should_publish=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_publish=false" >> $GITHUB_OUTPUT
+            fi
+            exit 0
+          fi
+
+          SHA="${{ github.sha }}"
+          REPO="${{ github.repository }}"
+          API="${{ github.api_url }}"
+
+          PRS=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.groot-preview+json" \
+            "$API/repos/$REPO/commits/$SHA/pulls")
+
+          PR_NUMBER=$(echo "$PRS" | jq -r '.[0].number // empty')
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No associated pull request found for commit $SHA"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          LABELS=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/repos/$REPO/issues/$PR_NUMBER/labels")
+
+          if echo "$LABELS" | jq -e --arg label 'release:production' 'map(.name) | index($label)' >/dev/null; then
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "Pull request #$PR_NUMBER does not have the release:production label"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup and Build
         uses: ./.github/actions/setup
         with:
@@ -48,17 +85,21 @@ jobs:
           install-immutable: "true"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Build Packages
         run: yarn build
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Discard Uncommitted Changes
         run: git reset --hard HEAD
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Setup NPM Authentication
         run: |
@@ -66,6 +107,7 @@ jobs:
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "always-auth=true" >> ~/.npmrc
           chmod 600 ~/.npmrc
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Check if Packages Need Publishing
         id: check_publish
@@ -79,16 +121,17 @@ jobs:
             echo "needs_publish=true" >> $GITHUB_OUTPUT
             echo "Packages to publish: $PACKAGES"
           fi
+        if: steps.verify_release.outputs.should_publish == 'true'
 
       - name: Get Previous Tag
-        if: steps.check_publish.outputs.needs_publish == 'true'
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true'
         id: previous_tag
         run: |
           PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1 || echo "")
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
       - name: Publish Packages with Lerna
-        if: steps.check_publish.outputs.needs_publish == 'true'
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true'
         id: publish
         run: |
           npx lerna publish from-package --yes --dist-tag latest | tee lerna-output.log
@@ -96,7 +139,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Extract Version from Lerna Output
-        if: steps.check_publish.outputs.needs_publish == 'true'
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true'
         id: get_version
         run: |
           PUBLISHED_VERSION=$(grep -oP '(?<=@lf-widgets/core@)[^ ]+' lerna-output.log | head -1 || echo "")
@@ -108,7 +151,7 @@ jobs:
           fi
 
       - name: Generate Release Notes from Commits
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         id: generate_notes
         run: |
           PREV_TAG='${{ steps.previous_tag.outputs.previous_tag }}'
@@ -122,13 +165,13 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create and Push Tag
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         run: |
           git tag "v${{ steps.get_version.outputs.version }}"
           git push origin --tags
 
       - name: Create GitHub Release
-        if: steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
+        if: steps.verify_release.outputs.should_publish == 'true' && steps.check_publish.outputs.needs_publish == 'true' && steps.get_version.outputs.version != ''
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
