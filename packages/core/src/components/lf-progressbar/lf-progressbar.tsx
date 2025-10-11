@@ -266,6 +266,23 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Private methods
+  #normalizePercent(value: number): number {
+    if (
+      typeof value !== "number" ||
+      Number.isNaN(value) ||
+      !Number.isFinite(value)
+    ) {
+      return 0;
+    }
+    if (value <= 0) {
+      return 0;
+    }
+    if (value >= 100) {
+      return 100;
+    }
+    return value;
+  }
+
   #prepIcon() {
     const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
@@ -393,6 +410,11 @@ export class LfProgressbar implements LfProgressbarInterface {
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
+
+    const sanitizedValue = this.#normalizePercent(this.lfValue);
+    if (sanitizedValue !== this.lfValue) {
+      this.lfValue = sanitizedValue;
+    }
 
     info.update(this, "will-render");
   }
