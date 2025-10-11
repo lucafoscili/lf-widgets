@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.1...1.1.2-rc.0) (2025-10-11)
+
+
+### Bug Fixes
+
+* Add percent normalization to progress bar value ([5bcb5d7](https://github.com/lucafoscili/lf-widgets/commit/5bcb5d764d15e269127aa5f9b6756326e74c6962))
+
+
+
+
+
 ## [1.1.1](https://github.com/lucafoscili/lf-widgets/compare/v1.1.0...1.1.1) (2025-10-07)
 
 **Note:** Version bump only for package @lf-widgets/core
