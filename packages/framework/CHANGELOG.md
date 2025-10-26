@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2...1.2.0-rc.0) (2025-10-26)
+
+
+### Bug Fixes
+
+* Update parse and unescape logic for JSON handling ([d650321](https://github.com/lucafoscili/lf-widgets/commit/d650321b1d53d558938677b3db5d0d113c59b91b))
+
+
+### Features
+
+* Add JSON utility helpers to lf-syntax module ([1f6e30c](https://github.com/lucafoscili/lf-widgets/commit/1f6e30cbdd038a70a032ed3c5da9fd99de23419f))
+
+
+
+
+
 ## [1.1.2](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2-rc.0...1.1.2) (2025-10-11)
 
 **Note:** Version bump only for package @lf-widgets/framework
