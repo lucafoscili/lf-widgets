@@ -7,6 +7,7 @@ import {
   LF_UPLOAD_PROPS,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
+  LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
   LfUploadElement,
   LfUploadEvent,
@@ -62,6 +63,20 @@ export class LfUpload {
   //#endregion
 
   //#region Props
+  /**
+   * Allows customization of the input element through additional HTML attributes.
+   * This can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.
+   *
+   * @type {Partial<LfFrameworkAllowedKeysMap>}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-upload lfHtmlAttributes={{ accept: "image/*" }} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfHtmlAttributes: Partial<LfFrameworkAllowedKeysMap>;
   /**
    * Sets the button's label.
    *
@@ -366,7 +381,8 @@ export class LfUpload {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { sanitizeProps, theme } = this.#framework;
+    const { bemClass, setLfStyle } = theme;
 
     const { fileInfo, fileUpload, upload } = this.#b;
     const { lfLabel, lfRipple, lfStyle, selectedFiles } = this;
@@ -386,6 +402,7 @@ export class LfUpload {
               onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
             >
               <input
+                {...sanitizeProps(this.lfHtmlAttributes)}
                 class={bemClass(fileUpload._, fileUpload.input)}
                 data-cy={this.#cy.input}
                 id="upload-input"
