@@ -149,13 +149,21 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     .textfield__input {
-      box-sizing: border-box;
-      flex-grow: 1;
-      height: auto;
-      overflow-x: hidden;
-      overflow-y: auto;
-      padding: 1em;
-      resize: none;
+      & {
+        box-shadow: inset 0px 0px 0px 0px rgba(var(--lf-color-border), 0);
+        box-sizing: border-box;
+        flex-grow: 1;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 1em;
+        resize: none;
+        transition: box-shadow 0.2s ease-in-out;
+      }
+
+      &--error {
+        box-shadow: inset 0px 0px 4px 1px rgba(var(--lf-color-danger), 0.775);
+      }
     }
 
     .textfield__label {
