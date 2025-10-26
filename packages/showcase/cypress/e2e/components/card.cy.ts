@@ -14,7 +14,7 @@ const cardTag: LfComponentTag<typeof cardName> = "lf-card";
 const card = cardTag.replace("lf-", "");
 
 //#region Basic
-describe("Basic", () => {
+describe(CY_CATEGORIES.basic, () => {
   let framework: LfFrameworkInterface;
 
   beforeEach(() => {
@@ -96,11 +96,148 @@ describe(CY_CATEGORIES.methods, () => {
 
 //#region Props
 describe(CY_CATEGORIES.props, () => {
+  let framework: LfFrameworkInterface;
+  const { lfComponentShowcase } = CY_ALIASES;
+  const { shape } = CY_ATTRIBUTES;
+
   beforeEach(() => {
     cy.navigate(card);
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
+    });
   });
+
+  it("lfDataset: should expose shapes via API and render shape elements.", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#material-material-0`)
+      .should("exist")
+      .then(($comp) => {
+        cy.wrap($comp)
+          .should(async ($c) => {
+            const comp = $c[0] as HTMLLfCardElement;
+            const shapes = await comp.getShapes();
+            expect(Object.keys(shapes || {}).length).to.be.greaterThan(0);
+          })
+          .shadow()
+          .find(`[data-cy="${shape}"]`)
+          .should("exist");
+      });
+  });
+
+  it("lfLayout: should render the correct layout wrapper for each layout.", () => {
+    const layoutRoots = [
+      { id: "#debug-debug-0", root: framework.theme.bemClass("debug-layout") },
+      {
+        id: "#keywords-keywords-0",
+        root: framework.theme.bemClass("keywords-layout"),
+      },
+      {
+        id: "#material-material-0",
+        root: framework.theme.bemClass("material-layout"),
+      },
+      { id: "#upload-upload-0", root: framework.theme.bemClass("upload-layout") },
+    ];
+
+    for (const { id, root } of layoutRoots) {
+      cy.get(lfComponentShowcase)
+        .find(`${cardTag}${id}`)
+        .should("exist")
+        .shadow()
+        .find(`.${root}`)
+        .should("exist");
+    }
+  });
+
+  it("lfSizeX/lfSizeY: should reflect as CSS custom properties on host.", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#material-material-0`)
+      .should("exist")
+      .then(($comp) => {
+        cy.wrap($comp).should(($c) => {
+          const host = $c[0] as HTMLLfCardElement;
+          const styles = getComputedStyle(host);
+          expect(styles.getPropertyValue("--lf_card_width").trim()).to.eq(
+            "320px",
+          );
+          expect(styles.getPropertyValue("--lf_card_height").trim()).to.eq(
+            "320px",
+          );
+        });
+      });
+  });
+
   it("lfStyle: should check for the presence of a <style> element with id lf-style.", () => {
     cy.checkLfStyle();
+  });
+
+  it("lfUiSize: reflected as host attribute.", () => {
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#sizes-small`)
+      .should("exist")
+      .should("have.attr", "lf-ui-size", "small");
+  });
+
+  it("lfUiState: reflected on material layout via data-lf.", () => {
+    const rootClass = framework.theme.bemClass("material-layout");
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#states-success`)
+      .should("exist")
+      .shadow()
+      .find(`.${rootClass}`)
+      .should("have.attr", "data-lf", "success");
+  });
+});
+//#endregion
+
+//#region e2e
+describe(CY_CATEGORIES.e2e, () => {
+  let framework: LfFrameworkInterface;
+  const { lfComponentShowcase } = CY_ALIASES;
+  const { rippleSurface } = CY_ATTRIBUTES;
+
+  beforeEach(() => {
+    cy.navigate(card);
+    cy.getLfFramework().then((lfFramework) => {
+      framework = lfFramework;
+    });
+  });
+
+  it("Material layout renders text sections and actions.", () => {
+    const materialRoot = framework.theme.bemClass("material-layout");
+    const title = framework.theme.bemClass("text-content", "title");
+    const subtitle = framework.theme.bemClass("text-content", "subtitle");
+    const description = framework.theme.bemClass(
+      "text-content",
+      "description",
+    );
+
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#material-material-0`)
+      .should("exist")
+      .shadow()
+      .within(() => {
+        cy.get(`.${materialRoot}`).should("exist");
+        cy.get(`.${title}`).should("exist");
+        cy.get(`.${subtitle}`).should("exist");
+        cy.get(`.${description}`).should("exist");
+        cy.getCyElement(rippleSurface).should("exist");
+      });
+  });
+
+  it("Upload layout shows upload and button sections.", () => {
+    const uploadRoot = framework.theme.bemClass("upload-layout");
+    const section1 = framework.theme.bemClass("upload-layout", "section-1");
+    const section2 = framework.theme.bemClass("upload-layout", "section-2");
+
+    cy.get(lfComponentShowcase)
+      .find(`${cardTag}#upload-upload-0`)
+      .should("exist")
+      .shadow()
+      .within(() => {
+        cy.get(`.${uploadRoot}`).should("exist");
+        cy.get(`.${section1}`).should("exist");
+        cy.get(`.${section2}`).should("exist");
+      });
   });
 });
 //#endregion
