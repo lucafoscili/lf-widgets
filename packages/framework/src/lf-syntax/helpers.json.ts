@@ -131,10 +131,24 @@ export const unescapeJson = (input: any): LfSyntaxUnescapeJSONPayload => {
   };
 
   try {
-    parsedJSON = isJSONLikeString(input) ? JSON.parse(input) : input;
-    isValidJSON = true;
-    parsedJSON = deepParse(parsedJSON) as Record<string, unknown>;
+    let parsed: unknown;
+    let parsedFromJson = false;
+
+    if (isJSONLikeString(input)) {
+      parsed = JSON.parse(input);
+      parsedFromJson = true;
+    } else if (typeof input === "object" && input !== null) {
+      parsed = input;
+      parsedFromJson = true;
+    } else {
+      parsed = input;
+      parsedFromJson = false;
+    }
+
+    parsedJSON = deepParse(parsed) as Record<string, unknown>;
     unescapedString = JSON.stringify(parsedJSON, null, 2);
+
+    isValidJSON = parsedFromJson;
   } catch (error) {
     if (typeof input === "object" && input !== null) {
       try {

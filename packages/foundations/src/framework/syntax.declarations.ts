@@ -25,7 +25,9 @@ export interface LfSyntaxInterface {
     areEqual: (a: unknown, b: unknown) => boolean;
     isLikeString: (value: unknown) => value is string;
     isValid: (value: unknown) => boolean;
-    parse: <T>(response: Response) => Promise<T | Record<string, unknown>>;
+    parse: <T>(
+      response: Response,
+    ) => Promise<T | Record<string, unknown>> | null;
     unescape: (input: any) => LfSyntaxUnescapeJSONPayload;
   };
   /** Parses markdown into tokens using the shared markdown-it parser. */
