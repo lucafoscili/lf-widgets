@@ -4,6 +4,13 @@ import {
 } from "@lf-widgets/foundations";
 import MarkdownIt from "markdown-it";
 import * as Prism from "prismjs";
+import {
+  areJSONEqual,
+  isJSONLikeString,
+  isValidJSON,
+  parseJson,
+  unescapeJson,
+} from "./helpers.json";
 
 type SyntaxLoaderModule = Record<string, (prism: typeof Prism) => void>;
 
@@ -103,6 +110,16 @@ export class LfSyntax implements LfSyntaxInterface {
     // Store Prism reference
     this.#prism = Prism;
   }
+
+  //#region JSON
+  json = {
+    areEqual: areJSONEqual,
+    isLikeString: isJSONLikeString,
+    isValid: isValidJSON,
+    parse: parseJson,
+    unescape: unescapeJson,
+  };
+  //#endregion
 
   //#region Markdown
   /**

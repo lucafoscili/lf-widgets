@@ -1,5 +1,13 @@
 import type MarkdownIt from "markdown-it";
 import type * as PrismNamespace from "prismjs";
+export interface LfSyntaxUnescapeJSONPayload {
+  /** Indicates whether the unescaped string is valid JSON. */
+  isValidJSON: boolean;
+  /** The unescaped string representation. */
+  unescapedString: string;
+  /** The parsed JSON object, if applicable; otherwise undefined. */
+  parsedJSON?: Record<string, unknown>;
+}
 /**
  * Tokens representing the markdown inside the syntax highlighting utilities.
  */
@@ -12,6 +20,14 @@ export interface LfSyntaxInterface {
   readonly markdown: MarkdownIt;
   /** Prism namespace used to register languages and run highlighting. */
   readonly prism: typeof PrismNamespace;
+  /** JSON utility functions for syntax processing. */
+  json: {
+    areEqual: (a: unknown, b: unknown) => boolean;
+    isLikeString: (value: unknown) => value is string;
+    isValid: (value: unknown) => boolean;
+    parse: <T>(response: Response) => Promise<T | Record<string, unknown>>;
+    unescape: (input: any) => LfSyntaxUnescapeJSONPayload;
+  };
   /** Parses markdown into tokens using the shared markdown-it parser. */
   parseMarkdown: (content: string) => MarkdownToken[];
   /** Highlights a DOM element containing code (expects `language-*` class). */
