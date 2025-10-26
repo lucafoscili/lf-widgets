@@ -40,6 +40,7 @@ export const LF_UPLOAD_PARTS = {
 
 //#region Props
 export const LF_UPLOAD_PROPS = [
+  "lfHtmlAttributes",
   "lfLabel",
   "lfRipple",
   "lfStyle",
