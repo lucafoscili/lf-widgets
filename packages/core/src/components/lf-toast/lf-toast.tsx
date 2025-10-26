@@ -339,7 +339,7 @@ export class LfToast implements LfToastInterface {
         <style id={this.#s}>
           {`
           :host {
-            ${lfTimer ? `--${this.#v.timer}: ${lfTimer}ms;` : ""}
+            ${lfTimer ? `${this.#v.timer}: ${lfTimer}ms;` : ""}
           }
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
