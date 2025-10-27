@@ -607,6 +607,7 @@ export class LfTextfield implements LfTextfieldInterface {
               clearTimeout(this.#debounceTimeout);
               const ms = Math.max(0, Math.floor(onInput));
               this.#debounceTimeout = setTimeout(() => {
+                this.value = (e.currentTarget as HTMLTextAreaElement).value;
                 this.formatJSON();
               }, ms);
             }
