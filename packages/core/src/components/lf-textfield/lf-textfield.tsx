@@ -588,12 +588,12 @@ export class LfTextfield implements LfTextfieldInterface {
           id="input"
           onBlur={(e) => {
             this.onLfEvent(e, "blur");
-            if (shouldFormat && onBlur) {
-              this.formatJSON();
-            }
           }}
           onChange={(e) => {
             this.#updateState((e.currentTarget as HTMLInputElement).value);
+            if (shouldFormat && onBlur) {
+              this.formatJSON();
+            }
           }}
           onClick={(e) => {
             this.onLfEvent(e, "click");
