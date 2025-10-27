@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.2.1-rc.0) (2025-10-27)
+
+**Note:** Version bump only for package @lf-widgets/root
+
+
+
+
+
+# [1.2.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0-rc.0...1.2.0) (2025-10-27)
+
+
+### Bug Fixes
+
+* Move JSON formatting from onBlur to onChange ([e0444ab](https://github.com/lucafoscili/lf-widgets/commit/e0444ab8005490b8374935b7440dcd991cc3e91b))
+* Set value before formatting in debounced input ([ef1091c](https://github.com/lucafoscili/lf-widgets/commit/ef1091c848f18b807c331fe482421977ecb5bd88))
+
+
+
+
+
 # [1.2.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2...1.2.0-rc.0) (2025-10-26)
 
 
