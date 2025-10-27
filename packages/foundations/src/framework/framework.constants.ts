@@ -2,6 +2,8 @@ import { LfFrameworkInterface } from "./framework.declarations";
 
 //#region Allowed attributes
 export const LF_FRAMEWORK_ALLOWED_ATTRS = [
+  "accept",
+  "accept-charset",
   "alt",
   "autocomplete",
   "autofocus",
