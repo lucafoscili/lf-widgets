@@ -19,6 +19,7 @@ import {
 export interface LfTextfieldInterface
   extends LfComponent<"LfTextfield">,
     LfTextfieldPropsInterface {
+  formatJSON: () => Promise<void>;
   getElement: () => Promise<HTMLTextAreaElement | HTMLInputElement>;
   getValue: () => Promise<string>;
   setBlur: () => Promise<void>;
@@ -61,6 +62,7 @@ export type LfTextfieldModifiers = (typeof LF_TEXTFIELD_MODIFIERS)[number];
  * Public props accepted by the `lf-textfield` component.
  */
 export interface LfTextfieldPropsInterface {
+  lfFormatJSON?: LfTextfieldFormatJSON | null;
   lfHelper?: LfTextfieldHelper;
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
   lfIcon?: string;
@@ -72,6 +74,17 @@ export interface LfTextfieldPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
+}
+/**
+ * Configuration interface for JSON formatting in the `lf-textfield` component.
+ * Only applicable to textfields with `lfStyling="textarea"`.
+ */
+export interface LfTextfieldFormatJSON {
+  displayBorderOnError?: boolean;
+  displayErrorAsTitle?: boolean;
+  indentSpaces?: number;
+  onBlur?: boolean;
+  onInput?: number;
 }
 /**
  * Utility interface used by the `lf-textfield` component.

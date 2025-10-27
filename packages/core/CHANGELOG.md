@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2...1.2.0-rc.0) (2025-10-26)
+
+
+### Bug Fixes
+
+* Fix CSS custom property assignment in lf-toast ([ddafeed](https://github.com/lucafoscili/lf-widgets/commit/ddafeed5a6489da7879f4a1b29e786a48d6765bb))
+
+
+### Features
+
+* Add JSON formatting support to lf-textfield ([060d479](https://github.com/lucafoscili/lf-widgets/commit/060d4790b48d0fed02e4485061da5d8130f7675a))
+* Add lfHtmlAttributes prop to lf-upload component ([4e9b270](https://github.com/lucafoscili/lf-widgets/commit/4e9b270b9765f8e2d67673ddc739d8a9fe9b2825))
+
+
+
+
+
 ## [1.1.2](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2-rc.0...1.1.2) (2025-10-11)
 
 **Note:** Version bump only for package @lf-widgets/core

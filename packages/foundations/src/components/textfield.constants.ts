@@ -47,6 +47,7 @@ export const LF_TEXTFIELD_PARTS = {
 
 //#region Props
 export const LF_TEXTFIELD_PROPS = [
+  "lfFormatJSON",
   "lfHelper",
   "lfHtmlAttributes",
   "lfIcon",

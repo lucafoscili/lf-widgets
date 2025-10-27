@@ -12,6 +12,7 @@ import {
   LfTextfieldElement,
   LfTextfieldEvent,
   LfTextfieldEventPayload,
+  LfTextfieldFormatJSON,
   LfTextfieldHelper,
   LfTextfieldInterface,
   LfTextfieldModifiers,
@@ -34,9 +35,7 @@ import {
   VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-
 /**
- * Represents the text field component, which allows users to input text or data.
  * The text field may include an icon, label, helper text, and a character counter.
  *
  * @component
@@ -70,6 +69,19 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Props
+  /**
+   * Automatically formats textarea content to prettier JSON structure.
+   *
+   * @type {LfTextfieldFormatJSON | null}
+   * @default null
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-textfield lfFormatJSON={{ onBlur: false, onInput: 750 }} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfFormatJSON: LfTextfieldFormatJSON | null = null;
   /**
    * Sets the helper text for the text field.
    * The helper text can provide additional information or instructions to the user.
@@ -238,6 +250,8 @@ export class LfTextfield implements LfTextfieldInterface {
   #p = LF_TEXTFIELD_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
+  #debounceTimeout: NodeJS.Timeout;
+  #formattingError: string;
   #hasOutline: boolean;
   #icon: HTMLDivElement;
   #input: HTMLInputElement | HTMLTextAreaElement;
@@ -289,6 +303,24 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Public methods
+  /**
+   * Formats the content of the textarea as JSON programmatically and on-demand.
+   */
+  @Method()
+  async formatJSON(): Promise<void> {
+    try {
+      const indentSpaces = this.lfFormatJSON?.indentSpaces || 2;
+      const trimmed = (this.value ?? "").trim();
+      const parsed = JSON.parse(trimmed);
+      this.value = JSON.stringify(parsed, null, indentSpaces);
+      this.#formattingError = "";
+      forceUpdate(this);
+    } catch (err) {
+      this.#formattingError = err?.message || "Invalid JSON format";
+      forceUpdate(this);
+      return;
+    }
+  }
   /**
    * Fetches debug information of the component's current state.
    * @returns {Promise<LfDebugLifecycleInfo>} A promise that resolves with the debug information object.
@@ -539,11 +571,19 @@ export class LfTextfield implements LfTextfieldInterface {
 
     const { textfield } = this.#b;
 
+    const { displayBorderOnError, displayErrorAsTitle, onBlur, onInput } =
+      this.lfFormatJSON || {};
+
+    const hasError = Boolean(this.#formattingError);
+    const shouldFormat = this.lfFormatJSON !== null;
+
     return (
       <span class={bemClass(textfield._, textfield.resizer)}>
         <textarea
           {...sanitizeProps(this.lfHtmlAttributes)}
-          class={bemClass(textfield._, textfield.input)}
+          class={bemClass(textfield._, textfield.input, {
+            error: shouldFormat && hasError && displayBorderOnError,
+          })}
           data-cy={this.#cy.input}
           id="input"
           onBlur={(e) => {
@@ -551,6 +591,9 @@ export class LfTextfield implements LfTextfieldInterface {
           }}
           onChange={(e) => {
             this.#updateState((e.currentTarget as HTMLInputElement).value);
+            if (shouldFormat && onBlur) {
+              this.formatJSON();
+            }
           }}
           onClick={(e) => {
             this.onLfEvent(e, "click");
@@ -560,6 +603,14 @@ export class LfTextfield implements LfTextfieldInterface {
           }}
           onInput={(e) => {
             this.onLfEvent(e, "input");
+            if (shouldFormat && typeof onInput === "number") {
+              clearTimeout(this.#debounceTimeout);
+              const ms = Math.max(0, Math.floor(onInput));
+              this.#debounceTimeout = setTimeout(() => {
+                this.value = (e.currentTarget as HTMLTextAreaElement).value;
+                this.formatJSON();
+              }, ms);
+            }
           }}
           part={this.#p.input}
           placeholder={(this.#isOutlined() && this.lfLabel) || ""}
@@ -568,6 +619,11 @@ export class LfTextfield implements LfTextfieldInterface {
               this.#input = el;
             }
           }}
+          title={
+            shouldFormat && hasError && displayErrorAsTitle
+              ? this.#formattingError
+              : ""
+          }
           value={this.value}
         ></textarea>
       </span>
@@ -606,6 +662,9 @@ export class LfTextfield implements LfTextfieldInterface {
     if (this.lfValue) {
       this.status.add("filled");
       this.value = this.lfValue;
+      if (this.lfFormatJSON) {
+        await this.formatJSON();
+      }
     }
   }
   componentDidLoad() {
@@ -662,6 +721,9 @@ export class LfTextfield implements LfTextfieldInterface {
     );
   }
   disconnectedCallback() {
+    try {
+      clearTimeout(this.#debounceTimeout);
+    } catch (e) {}
     this.#framework?.theme.unregister(this);
   }
   //#endregion

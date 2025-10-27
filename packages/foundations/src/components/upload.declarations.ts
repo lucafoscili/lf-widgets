@@ -4,6 +4,7 @@ import {
   LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkAllowedKeysMap } from "../framework";
 import { LF_UPLOAD_EVENTS } from "./upload.constants";
 
 //#region Class
@@ -40,6 +41,7 @@ export interface LfUploadEventPayload
  * Public props accepted by the `lf-upload` component.
  */
 export interface LfUploadPropsInterface {
+  lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
   lfLabel?: string;
   lfRipple?: boolean;
   lfStyle?: string;

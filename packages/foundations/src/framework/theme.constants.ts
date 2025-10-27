@@ -191,6 +191,7 @@ export const LF_THEME_MODIFIERS = [
   "disabled",
   "dropdown",
   "empty",
+  "error",
   "expanded",
   "filled",
   "filter",

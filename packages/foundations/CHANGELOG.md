@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2...1.2.0-rc.0) (2025-10-26)
+
+
+### Bug Fixes
+
+* Update parse and unescape logic for JSON handling ([d650321](https://github.com/lucafoscili/lf-widgets/commit/d650321b1d53d558938677b3db5d0d113c59b91b))
+
+
+### Features
+
+* Add JSON formatting support to lf-textfield ([060d479](https://github.com/lucafoscili/lf-widgets/commit/060d4790b48d0fed02e4485061da5d8130f7675a))
+* Add JSON utility helpers to lf-syntax module ([1f6e30c](https://github.com/lucafoscili/lf-widgets/commit/1f6e30cbdd038a70a032ed3c5da9fd99de23419f))
+* Add lfHtmlAttributes prop to lf-upload component ([4e9b270](https://github.com/lucafoscili/lf-widgets/commit/4e9b270b9765f8e2d67673ddc739d8a9fe9b2825))
+
+
+
+
+
 ## [1.1.2](https://github.com/lucafoscili/lf-widgets/compare/v1.1.2-rc.0...1.1.2) (2025-10-11)
 
 **Note:** Version bump only for package @lf-widgets/foundations
