@@ -81,9 +81,8 @@ describe(CY_CATEGORIES.props, () => {
 
   it("lfAutoPlay: should advance slides automatically using the fixture.", () => {
     const slideBar = framework.theme.bemClass("slide-bar");
-    const segmentActive = framework.theme.bemClass("slide-bar", "segment", {
-      active: true,
-    });
+    const segment = framework.theme.bemClass("slide-bar", "segment");
+    const segmentActive = segment + "--active";
 
     let initialIndex: string;
 
@@ -129,21 +128,19 @@ describe(CY_CATEGORIES.props, () => {
 
   it("lfInterval: should be honored when set on a programmatically added element.", () => {
     const slideBar = framework.theme.bemClass("slide-bar");
-    const segmentActive = framework.theme.bemClass("slide-bar", "segment", {
-      active: true,
-    });
+    const segment = framework.theme.bemClass("slide-bar", "segment");
+    const segmentActive = segment + "--active";
 
     cy.get(lfComponentShowcase).then(($showcase) => {
-      const el = document.createElement(carouselTag) as HTMLLfCarouselElement;
+      const el = document.createElement(carouselTag);
       el.id = "cy-interval";
 
       const fixtures = getCarouselFixtures(framework);
       const ds = fixtures.examples.uncategorized.lightbox.props.lfDataset!;
 
+      el.lfAutoPlay = true;
       el.lfDataset = ds;
-      // set before connect; these props are immutable after init
-      (el as any).lfAutoPlay = true;
-      (el as any).lfInterval = 200;
+      el.lfInterval = 200;
 
       ($showcase[0] as HTMLElement).appendChild(el);
     });
@@ -189,8 +186,12 @@ describe(CY_CATEGORIES.props, () => {
           })
           .shadow()
           .find(`#back-button`)
-          .should("exist")
-          .end()
+          .should("exist");
+      })
+      .then(() => {
+        cy.get(lfComponentShowcase)
+          .find(`${carouselTag}#uncategorized-code`)
+          .first()
           .shadow()
           .find(`#forward-button`)
           .should("exist");
@@ -223,9 +224,7 @@ describe(CY_CATEGORIES.e2e, () => {
   it("Clicking an indicator segment changes the slide.", () => {
     const slideBar = framework.theme.bemClass("slide-bar");
     const segment = framework.theme.bemClass("slide-bar", "segment");
-    const segmentActive = framework.theme.bemClass("slide-bar", "segment", {
-      active: true,
-    });
+    const segmentActive = segment + "--active";
 
     let beforeIdx: string;
     cy.get(lfComponentShowcase)
