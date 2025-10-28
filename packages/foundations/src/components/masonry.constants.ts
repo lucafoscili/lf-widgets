@@ -49,6 +49,7 @@ export const LF_MASONRY_PARTS = {
 //#region Props
 export const LF_MASONRY_PROPS = [
   "lfActions",
+  "lfCollapseColumns",
   "lfColumns",
   "lfDataset",
   "lfSelectable",
