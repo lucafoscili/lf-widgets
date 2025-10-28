@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0) (2025-10-28)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+
+
+
+
+# [1.3.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0-rc.0) (2025-10-28)
+
+**Note:** Version bump only for package @lf-widgets/framework
+
+
+
+
+
 # [1.2.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0-rc.0...1.2.0) (2025-10-27)
 
 **Note:** Version bump only for package @lf-widgets/framework

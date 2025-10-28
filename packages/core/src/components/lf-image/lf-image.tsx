@@ -205,7 +205,7 @@ export class LfImage implements LfImageInterface {
 
   //#region Watchers
   @Watch("lfValue")
-  async resetState() {
+  async resetState(newVal?: string, _oldVal?: string) {
     if (!this.#framework) {
       return;
     }
@@ -214,6 +214,32 @@ export class LfImage implements LfImageInterface {
     this.isLoaded = false;
     this.resolvedSpriteName = undefined;
     this.#resolvedFor = undefined;
+
+    if (!newVal) {
+      return;
+    }
+
+    const isUrl = this.#isResourceUrl();
+    if (isUrl) {
+      return;
+    }
+
+    if (this.lfMode === "sprite") {
+      this.isLoaded = true;
+      try {
+        const { theme } = this.#framework;
+        theme.get.sprite.ids();
+      } catch (err) {}
+    }
+
+    if (this.lfMode === "mask") {
+      try {
+        await this.#preloadIcon(newVal);
+        this.isLoaded = true;
+      } catch (err) {
+        this.error = true;
+      }
+    }
   }
   //#endregion
 
