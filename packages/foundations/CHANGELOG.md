@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0-rc.0) (2025-10-28)
+
+
+### Bug Fixes
+
+* Add lfUiSize and lfUiState to LfCardPropsInterface ([1eb0184](https://github.com/lucafoscili/lf-widgets/commit/1eb01842c07256cbbd7983da45896a8b9334b713))
+
+
+### Features
+
+* Add lfCollapseColumns prop to LfMasonry component ([a59d017](https://github.com/lucafoscili/lf-widgets/commit/a59d0170af7c71cc6c8a237d2179cd53306e7a9d))
+
+
+
+
+
 # [1.2.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0-rc.0...1.2.0) (2025-10-27)
 
 **Note:** Version bump only for package @lf-widgets/foundations
