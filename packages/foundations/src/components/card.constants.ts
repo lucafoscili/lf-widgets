@@ -207,5 +207,7 @@ export const LF_CARD_PROPS = [
   "lfSizeX",
   "lfSizeY",
   "lfStyle",
+  "lfUiSize",
+  "lfUiState",
 ] as const satisfies (keyof LfCardPropsInterface)[];
 //#endregion

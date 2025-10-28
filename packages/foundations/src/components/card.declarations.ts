@@ -16,6 +16,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfThemeUISize, LfThemeUIState } from "../framework";
 import {
   LfDataDataset,
   LfDataShapeDefaults,
@@ -158,6 +159,8 @@ export interface LfCardPropsInterface {
   lfSizeX?: string;
   lfSizeY?: string;
   lfStyle?: string;
+  lfUiSize?: LfThemeUISize;
+  lfUiState?: LfThemeUIState;
 }
 /**
  * Union of layouts listed in `LF_CARD_LAYOUTS`.

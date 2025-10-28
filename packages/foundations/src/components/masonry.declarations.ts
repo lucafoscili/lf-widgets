@@ -151,6 +151,7 @@ export type LfMasonrySelectedShape = {
  */
 export interface LfMasonryPropsInterface {
   lfActions?: boolean;
+  lfCollapseColumns?: boolean;
   lfColumns?: LfMasonryColumns;
   lfDataset?: LfDataDataset;
   lfSelectable?: boolean;
