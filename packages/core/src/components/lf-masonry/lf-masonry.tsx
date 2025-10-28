@@ -98,6 +98,21 @@ export class LfMasonry implements LfMasonryInterface {
    */
   @Prop({ mutable: true }) lfActions: boolean = false;
   /**
+   * When true the masonry will collapse the number of columns to the number of items
+   * when the number of items is less than the configured columns. Set to false to
+   * preserve the configured column count even if there are fewer items.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-masonry lfCollapseColumns={false}></lf-masonry>
+   * ```
+   */
+  @Prop({ mutable: true }) lfCollapseColumns: boolean = true;
+  /**
    * Number of columns of the masonry, doesn't affect sequential views.
    * Can be set with a number or an array of numbers that identify each breakpoint.
    *
@@ -407,7 +422,9 @@ export class LfMasonry implements LfMasonryInterface {
     }
 
     if (typeof lfColumns === "number") {
-      return Math.min(lfColumns, shapes[lfShape]?.length || 0);
+      return this.lfCollapseColumns
+        ? Math.min(lfColumns, shapes[lfShape]?.length || 0)
+        : lfColumns;
     }
 
     if (Array.isArray(lfColumns)) {
@@ -423,7 +440,9 @@ export class LfMasonry implements LfMasonryInterface {
         }
       }
 
-      return Math.min(columnCount, shapes?.[lfShape]?.length || 0);
+      return this.lfCollapseColumns
+        ? Math.min(columnCount, shapes?.[lfShape]?.length || 0)
+        : columnCount;
     }
 
     return 1;
