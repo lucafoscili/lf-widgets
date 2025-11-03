@@ -78,8 +78,6 @@ $comp: "masonry";
     align-items: var(--lf-#{$comp}-grid-items-alignment, start);
     column-gap: var(--lf-#{$comp}-grid-gap, 0.5em);
     display: grid;
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 
   &--horizontal {
