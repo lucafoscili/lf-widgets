@@ -566,10 +566,12 @@ export class LfButton implements LfButtonInterface {
     );
   }
   disconnectedCallback() {
-    const { list } = this.#adapter.elements.refs;
+    if (this.#adapter) {
+      const { list } = this.#adapter.elements.refs;
 
-    if (list && this.#framework?.portal.isInPortal(list)) {
-      this.#framework?.portal.close(list);
+      if (list && this.#framework?.portal.isInPortal(list)) {
+        this.#framework?.portal.close(list);
+      }
     }
     this.#framework?.theme.unregister(this);
   }
