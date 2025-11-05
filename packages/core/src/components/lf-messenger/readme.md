@@ -161,9 +161,9 @@ graph TD;
   lf-button --> lf-spinner
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-tabbar --> lf-button
   style lf-messenger fill:#f9f,stroke:#333,stroke-width:4px

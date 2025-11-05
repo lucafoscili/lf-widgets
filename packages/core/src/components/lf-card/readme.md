@@ -143,9 +143,9 @@ graph TD;
   lf-canvas --> lf-image
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image
