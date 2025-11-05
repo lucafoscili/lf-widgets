@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
+import { LfLLMTool } from "../framework/llm.declarations";
 import {
   LfLLMAttachment,
   LfLLMChoiceMessage,
@@ -318,30 +319,172 @@ export type LfChatView = (typeof LF_CHAT_VIEW)[number];
 
 //#region Props
 /**
+ * Configuration object for `lf-chat` component. Provides structured grouping
+ * of related settings for LLM behavior, UI preferences, and feature toggles.
+ */
+export interface LfChatConfig {
+  /**
+   * LLM provider and API configuration.
+   */
+  llm?: {
+    /**
+     * OpenAI-compatible API endpoint URL.
+     */
+    endpointUrl?: string;
+    /**
+     * Context window size (max tokens in history).
+     */
+    contextWindow?: number;
+    /**
+     * Maximum tokens to generate in response.
+     */
+    maxTokens?: number;
+    /**
+     * Polling interval for non-streaming requests (ms).
+     */
+    pollingInterval?: number;
+    /**
+     * System prompt defining assistant behavior.
+     */
+    systemPrompt?: string;
+    /**
+     * Sampling temperature (0.0-2.0). Lower is more deterministic.
+     */
+    temperature?: number;
+    /**
+     * Top-p nucleus sampling (0.0-1.0).
+     */
+    topP?: number;
+    /**
+     * Frequency penalty (-2.0 to 2.0). Reduces repetition.
+     */
+    frequencyPenalty?: number;
+    /**
+     * Presence penalty (-2.0 to 2.0). Encourages new topics.
+     */
+    presencePenalty?: number;
+    /**
+     * Random seed for deterministic sampling.
+     */
+    seed?: number;
+  };
+  /**
+   * Tool calling configuration.
+   */
+  tools?: {
+    /**
+     * Array of available tools with OpenAI function calling schema.
+     */
+    definitions?: LfLLMTool[];
+  };
+  /**
+   * User interface and display preferences.
+   */
+  ui?: {
+    /**
+     * Layout mode for the chat interface.
+     */
+    layout?: LfChatLayout;
+    /**
+     * Message to display when history is empty.
+     */
+    emptyMessage?: string;
+  };
+  /**
+   * Attachment handling configuration.
+   */
+  attachments?: {
+    /**
+     * Timeout for upload callback (ms). Default: 60000.
+     */
+    uploadTimeout?: number;
+    /**
+     * Maximum file size in bytes.
+     */
+    maxSize?: number;
+    /**
+     * Allowed MIME types (e.g., ["image/*", "application/pdf"]).
+     */
+    allowedTypes?: string[];
+    /**
+     * Optional callback for uploading files to external storage.
+     */
+    uploadCallback?: (files: File[]) => Promise<LfLLMAttachment[]>;
+  };
+}
+
+/**
  * Public props accepted by the `lf-chat` component.
  */
 export interface LfChatPropsInterface {
   /**
+   * Configuration object for LLM, tools, UI, and attachments.
+   * Recommended for new implementations; legacy individual props remain supported.
+   */
+  lfConfig?: LfChatConfig;
+  /**
+   * @deprecated Use `lfConfig.attachments.uploadTimeout` instead.
    * Timeout in milliseconds to apply to the upload callback. If the callback does
    * not resolve within this time it will be considered failed. Default is 60000 (60s).
    */
   lfAttachmentUploadTimeout?: number;
+  /**
+   * @deprecated Use `lfConfig.llm.contextWindow` instead.
+   */
   lfContextWindow?: number;
+  /**
+   * @deprecated Use `lfConfig.ui.emptyMessage` instead.
+   */
   lfEmpty?: string;
+  /**
+   * @deprecated Use `lfConfig.llm.endpointUrl` instead.
+   */
   lfEndpointUrl?: string;
+  /**
+   * @deprecated Use `lfConfig.llm.frequencyPenalty` instead.
+   */
   lfFrequencyPenalty?: number;
+  /**
+   * @deprecated Use `lfConfig.ui.layout` instead.
+   */
   lfLayout?: LfChatLayout;
+  /**
+   * @deprecated Use `lfConfig.llm.maxTokens` instead.
+   */
   lfMaxTokens?: number;
+  /**
+   * @deprecated Use `lfConfig.llm.pollingInterval` instead.
+   */
   lfPollingInterval?: number;
+  /**
+   * @deprecated Use `lfConfig.llm.presencePenalty` instead.
+   */
   lfPresencePenalty?: number;
+  /**
+   * @deprecated Use `lfConfig.llm.seed` instead.
+   */
   lfSeed?: number;
   lfStyle?: string;
+  /**
+   * @deprecated Use `lfConfig.llm.systemPrompt` instead.
+   */
   lfSystem?: string;
+  /**
+   * @deprecated Use `lfConfig.llm.temperature` instead.
+   */
   lfTemperature?: number;
+  /**
+   * @deprecated Use `lfConfig.tools.definitions` instead.
+   */
+  lfTools?: LfLLMTool[];
+  /**
+   * @deprecated Use `lfConfig.llm.topP` instead.
+   */
   lfTopP?: number;
   lfUiSize?: LfThemeUISize;
   lfValue?: LfChatHistory;
   /**
+   * @deprecated Use `lfConfig.attachments.uploadCallback` instead.
    * Optional callback provided by the host to upload files. If present the component
    * will call this function with the selected File[] and expect a Promise resolving
    * to an array of `LfLLMAttachment` objects describing uploaded files (including

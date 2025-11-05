@@ -1,93 +1,182 @@
 import {
   LfChatAdapter,
+  LfChatConfig,
   LfChatCurrentTokens,
   LfLLMChoiceMessage,
   LfLLMContentPart,
   LfLLMRequest,
   LfLLMRole,
+  LfLLMTool,
 } from "@lf-widgets/foundations";
 import { VNode } from "@stencil/core";
 import { LfChat } from "./lf-chat";
 
-//#region Api call
+//#region Config merge utility
 /**
- * Perform an API call to the configured LLM using the provided chat adapter and
- * update the adapter's history/state with the assistant's response.
+ * Merges the new lfConfig prop with legacy individual props.
+ * Legacy props take precedence if set (for backward compatibility).
+ * Logs warnings for deprecated props via LfDebug.
  *
- * This function:
- * - Builds a request using `newRequest(adapter)`.
- * - Selects streaming or non-streaming call depending on `manager.llm.stream`.
- * - For streaming mode:
- *   - Optionally creates an AbortController via `manager.llm.createAbort`.
- *   - Sets `controller.set.currentAbortStreaming` to a function that aborts the stream.
- *   - Inserts a placeholder assistant message with empty content into history.
- *   - Iterates over the async stream returned by `manager.llm.stream(request, lfEndpointUrl, { signal })`
- *     and appends `chunk.contentDelta` to the placeholder assistant message as chunks arrive.
- *   - Ensures `controller.set.currentAbortStreaming` is cleared after streaming completes or errors.
- * - For non-streaming mode:
- *   - Awaits `manager.llm.fetch(request, lfEndpointUrl)`.
- *   - Extracts the assistant content from `response.choices?.[0]?.message?.content` and pushes
- *     an assistant message into history.
- * - Catches any error thrown during request/streaming and logs it via `manager.debug.logs.new`.
- *
- * Important implementation/side-effect notes:
- * - Mutates adapter controller state through `get`/`set` (e.g. history and currentAbortStreaming).
- * - Assumes `lfEndpointUrl` is provided on the component instance (`compInstance`).
- * - Assumes `manager.llm` exposes `stream` or `fetch` and (optionally) `createAbort`.
- * - Errors are logged and not re-thrown by this function.
- *
- * @param adapter - The LfChatAdapter which exposes `controller` (get/set), component instance,
- *                  history accessor, and the manager with `llm` and `debug`.
- * @returns A promise that resolves when the API call and history updates have completed.
+ * @param adapter - The chat adapter instance
+ * @returns Effective config object with all settings resolved
  */
+export const getEffectiveConfig = (
+  adapter: LfChatAdapter,
+): Required<LfChatConfig> => {
+  const { get } = adapter.controller;
+  const { compInstance, manager } = get;
+  const { debug } = manager;
+  const component = compInstance as LfChat;
+  const config = component.lfConfig || {};
+  const hasConfig = !!component.lfConfig;
+
+  // Helper to log deprecation warnings
+  const warnDeprecated = (oldProp: string, newPath: string) => {
+    if (!hasConfig) return; // Only warn if using both config and legacy props
+    debug.logs.new(
+      component,
+      `Prop "${oldProp}" is deprecated. Use "lfConfig.${newPath}" instead. Legacy prop takes precedence.`,
+      "warning",
+    );
+  };
+
+  // LLM config with legacy prop overrides
+  const endpointUrl =
+    component.lfEndpointUrl !== "http://localhost:5001"
+      ? (warnDeprecated("lfEndpointUrl", "llm.endpointUrl"),
+        component.lfEndpointUrl)
+      : (config.llm?.endpointUrl ?? "http://localhost:5001");
+
+  const contextWindow =
+    component.lfContextWindow !== 8192
+      ? (warnDeprecated("lfContextWindow", "llm.contextWindow"),
+        component.lfContextWindow)
+      : (config.llm?.contextWindow ?? 8192);
+
+  const maxTokens =
+    component.lfMaxTokens !== 2048
+      ? (warnDeprecated("lfMaxTokens", "llm.maxTokens"), component.lfMaxTokens)
+      : (config.llm?.maxTokens ?? 2048);
+
+  const pollingInterval =
+    component.lfPollingInterval !== 10000
+      ? (warnDeprecated("lfPollingInterval", "llm.pollingInterval"),
+        component.lfPollingInterval)
+      : (config.llm?.pollingInterval ?? 10000);
+
+  const systemPrompt =
+    component.lfSystem !==
+    "You are a helpful and cheerful assistant eager to help the user out with his tasks."
+      ? (warnDeprecated("lfSystem", "llm.systemPrompt"), component.lfSystem)
+      : (config.llm?.systemPrompt ??
+        "You are a helpful and cheerful assistant eager to help the user out with his tasks.");
+
+  const temperature =
+    component.lfTemperature !== 0.7
+      ? (warnDeprecated("lfTemperature", "llm.temperature"),
+        component.lfTemperature)
+      : (config.llm?.temperature ?? 0.7);
+
+  const topP =
+    component.lfTopP !== 0.9
+      ? (warnDeprecated("lfTopP", "llm.topP"), component.lfTopP)
+      : (config.llm?.topP ?? 0.9);
+
+  const frequencyPenalty =
+    component.lfFrequencyPenalty !== 0
+      ? (warnDeprecated("lfFrequencyPenalty", "llm.frequencyPenalty"),
+        component.lfFrequencyPenalty)
+      : (config.llm?.frequencyPenalty ?? 0);
+
+  const presencePenalty =
+    component.lfPresencePenalty !== 0
+      ? (warnDeprecated("lfPresencePenalty", "llm.presencePenalty"),
+        component.lfPresencePenalty)
+      : (config.llm?.presencePenalty ?? 0);
+
+  const seed =
+    component.lfSeed !== -1
+      ? (warnDeprecated("lfSeed", "llm.seed"), component.lfSeed)
+      : (config.llm?.seed ?? -1);
+
+  // Tools config
+  const tools =
+    component.lfTools?.length > 0
+      ? (warnDeprecated("lfTools", "tools.definitions"), component.lfTools)
+      : (config.tools?.definitions ?? []);
+
+  // UI config
+  const layout =
+    component.lfLayout !== "top"
+      ? (warnDeprecated("lfLayout", "ui.layout"), component.lfLayout)
+      : (config.ui?.layout ?? "top");
+
+  const emptyMessage =
+    component.lfEmpty !== "Your chat history is empty!"
+      ? (warnDeprecated("lfEmpty", "ui.emptyMessage"), component.lfEmpty)
+      : (config.ui?.emptyMessage ?? "Your chat history is empty!");
+
+  // Attachments config
+  const uploadTimeout =
+    component.lfAttachmentUploadTimeout !== 60000
+      ? (warnDeprecated(
+          "lfAttachmentUploadTimeout",
+          "attachments.uploadTimeout",
+        ),
+        component.lfAttachmentUploadTimeout!)
+      : (config.attachments?.uploadTimeout ?? 60000);
+
+  const uploadCallback = component.lfUploadCallback
+    ? (warnDeprecated("lfUploadCallback", "attachments.uploadCallback"),
+      component.lfUploadCallback)
+    : config.attachments?.uploadCallback;
+
+  const maxSize = config.attachments?.maxSize;
+  const allowedTypes = config.attachments?.allowedTypes;
+
+  return {
+    llm: {
+      endpointUrl,
+      contextWindow,
+      maxTokens,
+      pollingInterval,
+      systemPrompt,
+      temperature,
+      topP,
+      frequencyPenalty,
+      presencePenalty,
+      seed,
+    },
+    tools: {
+      definitions: tools,
+    },
+    ui: {
+      layout,
+      emptyMessage,
+    },
+    attachments: {
+      uploadTimeout,
+      maxSize,
+      allowedTypes,
+      uploadCallback,
+    },
+  };
+};
+//#endregion
+
+//#region Api call
 export const apiCall = async (adapter: LfChatAdapter) => {
-  const { get, set } = adapter.controller;
-  const { compInstance, history, manager } = get;
-  const { lfEndpointUrl } = compInstance;
+  const { get } = adapter.controller;
+  const { compInstance, manager } = get;
   const { debug, llm } = manager;
-  const comp = compInstance as LfChat;
 
   try {
     const request = newRequest(adapter);
 
     if (llm.stream) {
-      const abortController = llm.createAbort?.();
-
-      set.currentAbortStreaming(abortController);
-      set.history(() => history().push({ role: "assistant", content: "" }));
-
-      try {
-        let lastIndex = history().length - 1;
-        let chunkCount = 0;
-        for await (const chunk of llm.stream(request, lfEndpointUrl, {
-          signal: abortController?.signal,
-        })) {
-          if (chunk?.contentDelta) {
-            set.history(() => {
-              const h = history();
-              if (h[lastIndex]) {
-                h[lastIndex].content += chunk.contentDelta;
-                if (chunkCount % 5 === 0) {
-                  requestAnimationFrame(() => comp.scrollToBottom(true));
-                }
-                chunkCount++;
-              }
-            });
-          }
-        }
-        requestAnimationFrame(() => comp.scrollToBottom("end"));
-      } finally {
-        set.currentAbortStreaming(null);
-      }
+      await handleStreamingResponse(adapter, request);
     } else {
-      const response = await llm.fetch(request, lfEndpointUrl);
-
-      const message = response.choices?.[0]?.message?.content;
-      const llmMessage: LfLLMChoiceMessage = {
-        role: "assistant",
-        content: message,
-      };
-      set.history(() => history().push(llmMessage));
+      await handleFetchResponse(adapter, request);
     }
   } catch (error) {
     const errMessage =
@@ -95,6 +184,281 @@ export const apiCall = async (adapter: LfChatAdapter) => {
     debug.logs.new(compInstance, `Error calling LLM: ${errMessage}`, "error");
   }
 };
+//#endregion
+
+//#region Execute tools
+export const executeTools = async (
+  toolCalls: unknown[],
+  availableTools: LfLLMTool[] = [],
+): Promise<LfLLMChoiceMessage[]> => {
+  const results: LfLLMChoiceMessage[] = [];
+
+  if (!Array.isArray(toolCalls)) {
+    return results;
+  }
+
+  for (const call of toolCalls) {
+    if (!call || typeof call !== "object") {
+      continue;
+    }
+
+    const callObj = call as any;
+    const func = callObj.function;
+    if (!func || !func.name) {
+      continue;
+    }
+
+    let result = "";
+
+    const matchingTool = availableTools.find(
+      (tool) => tool.function?.name === func.name,
+    );
+
+    if (matchingTool) {
+      // Valid tool found - try to execute
+      try {
+        const args = JSON.parse(func.arguments || "{}");
+
+        if (matchingTool.function.execute) {
+          result = await matchingTool.function.execute(args);
+        } else {
+          result = `Error: Tool "${func.name}" has no execute function defined. This is a configuration error.`;
+        }
+      } catch (parseError) {
+        result = `Error: Failed to parse arguments for tool "${func.name}". ${parseError instanceof Error ? parseError.message : String(parseError)}. Please check the argument format and try again.`;
+      }
+    } else {
+      // Tool not found - provide helpful error message
+      const availableToolNames = availableTools
+        .map((t) => `"${t.function?.name}"`)
+        .join(", ");
+
+      result = `Error: Tool "${func.name}" is not available. Available tools are: ${availableToolNames}. Please use one of these tool names exactly as shown.`;
+    }
+
+    results.push({
+      role: "tool",
+      content: result,
+      tool_call_id: callObj.id,
+    });
+  }
+
+  return results;
+};
+//#endregion
+
+//#region Handle tool calls
+/**
+ * Handles tool calls received from the LLM, executes valid tools, and continues the conversation.
+ *
+ * @param adapter - The chat adapter instance
+ * @param toolCalls - Array of tool calls from the LLM
+ * @returns Promise that resolves when tool handling is complete
+ */
+const handleToolCalls = async (
+  adapter: LfChatAdapter,
+  toolCalls: unknown[],
+): Promise<void> => {
+  const { get, set } = adapter.controller;
+  const { compInstance, history } = get;
+  const { debug } = get.manager;
+  const effectiveConfig = getEffectiveConfig(adapter);
+
+  if (!toolCalls || toolCalls.length === 0) {
+    return;
+  }
+
+  debug.logs.new(
+    compInstance,
+    `Tool calls received: ${JSON.stringify(toolCalls, null, 2)}`,
+    "informational",
+  );
+
+  // Execute tools
+  const toolResults = await executeTools(
+    toolCalls,
+    effectiveConfig.tools.definitions,
+  );
+
+  debug.logs.new(
+    compInstance,
+    `Tool execution completed. Results: ${JSON.stringify(toolResults, null, 2)}`,
+    "informational",
+  );
+
+  // Check if any tools were successfully executed
+  const hasValidToolResults = toolResults.some(
+    (result) =>
+      result.content &&
+      !result.content.startsWith('Tool "') &&
+      !result.content.includes("is not available"),
+  );
+
+  const hasErrors = toolResults.some(
+    (result) =>
+      result.content &&
+      (result.content.startsWith('Tool "') ||
+        result.content.includes("is not available")),
+  );
+
+  if (hasValidToolResults) {
+    // At least one tool executed successfully
+    debug.logs.new(
+      compInstance,
+      `${toolResults.length} tool result(s) added to history`,
+      "informational",
+    );
+
+    for (const result of toolResults) {
+      set.history(() => history().push(result));
+    }
+
+    debug.logs.new(
+      compInstance,
+      "Making follow-up request after successful tool execution",
+      "informational",
+    );
+    await apiCall(adapter);
+  } else if (hasErrors) {
+    // All tools failed - still add error messages to history so LLM can see them
+    debug.logs.new(
+      compInstance,
+      "All tool calls failed. Adding error messages to history for LLM recovery.",
+      "warning",
+    );
+
+    for (const result of toolResults) {
+      set.history(() => history().push(result));
+    }
+
+    // Make follow-up request so LLM can see the errors and respond
+    debug.logs.new(
+      compInstance,
+      "Making follow-up request after tool errors (LLM will see error messages)",
+      "informational",
+    );
+    await apiCall(adapter);
+  } else {
+    // No tool results at all (shouldn't happen, but handle it)
+    debug.logs.new(
+      compInstance,
+      "No tool results generated (unexpected)",
+      "error",
+    );
+  }
+};
+//#endregion
+
+//#region Handle streaming response
+/**
+ * Handles streaming response from the LLM, including content deltas and tool calls.
+ *
+ * @param adapter - The chat adapter instance
+ * @param request - The LLM request configuration
+ * @returns Promise that resolves when streaming is complete
+ */
+const handleStreamingResponse = async (
+  adapter: LfChatAdapter,
+  request: LfLLMRequest,
+): Promise<void> => {
+  const { get, set } = adapter.controller;
+  const { compInstance, history, manager } = get;
+  const { lfEndpointUrl } = compInstance;
+  const { llm } = manager;
+  const comp = compInstance as LfChat;
+
+  const abortController = llm.createAbort?.();
+  set.currentAbortStreaming(abortController);
+  set.history(() => history().push({ role: "assistant", content: "" }));
+
+  try {
+    let lastIndex = history().length - 1;
+    let chunkCount = 0;
+    let accumulatedToolCalls: unknown[] = [];
+
+    for await (const chunk of llm.stream(request, lfEndpointUrl, {
+      signal: abortController?.signal,
+    })) {
+      if (chunk?.contentDelta) {
+        set.history(() => {
+          const h = history();
+          if (h[lastIndex]) {
+            h[lastIndex].content += chunk.contentDelta;
+            if (chunkCount % 5 === 0) {
+              requestAnimationFrame(() => comp.scrollToBottom(true));
+            }
+            chunkCount++;
+          }
+        });
+      }
+
+      if (chunk?.toolCalls && Array.isArray(chunk.toolCalls)) {
+        accumulatedToolCalls.push(...chunk.toolCalls);
+        manager.debug.logs.new(
+          compInstance,
+          `Tool call chunk received: ${JSON.stringify(chunk.toolCalls)}`,
+          "informational",
+        );
+      }
+    }
+
+    if (accumulatedToolCalls.length > 0) {
+      manager.debug.logs.new(
+        compInstance,
+        `Streaming complete. Total tool calls accumulated: ${accumulatedToolCalls.length}`,
+        "informational",
+      );
+      set.history(() => {
+        const h = history();
+        if (h[lastIndex]) {
+          h[lastIndex].tool_calls = accumulatedToolCalls;
+        }
+      });
+
+      await handleToolCalls(adapter, accumulatedToolCalls);
+    }
+
+    requestAnimationFrame(() => comp.scrollToBottom("end"));
+  } finally {
+    set.currentAbortStreaming(null);
+  }
+};
+//#endregion
+
+//#region Handle non-streaming response
+/**
+ * Handles non-streaming (fetch) response from the LLM, including tool calls.
+ *
+ * @param adapter - The chat adapter instance
+ * @param request - The LLM request configuration
+ * @returns Promise that resolves when the response is processed
+ */
+const handleFetchResponse = async (
+  adapter: LfChatAdapter,
+  request: LfLLMRequest,
+): Promise<void> => {
+  const { get, set } = adapter.controller;
+  const { compInstance, history, manager } = get;
+  const { lfEndpointUrl } = compInstance;
+  const { llm } = manager;
+
+  const response = await llm.fetch(request, lfEndpointUrl);
+
+  const message = response.choices?.[0]?.message?.content;
+  const toolCalls = response.choices?.[0]?.message?.tool_calls;
+  const llmMessage: LfLLMChoiceMessage = {
+    role: "assistant",
+    content: message,
+    tool_calls: toolCalls,
+  };
+  set.history(() => history().push(llmMessage));
+
+  // Handle tool calls if any
+  if (toolCalls && toolCalls.length > 0) {
+    await handleToolCalls(adapter, toolCalls);
+  }
+};
+//#endregion
 
 //#region calcTokens
 /**
@@ -112,23 +476,24 @@ export const apiCall = async (adapter: LfChatAdapter) => {
 export const calcTokens = async (
   adapter: LfChatAdapter,
 ): Promise<LfChatCurrentTokens> => {
-  const { compInstance, history } = adapter.controller.get;
-  const { lfContextWindow, lfSystem } = compInstance;
+  const { history } = adapter.controller.get;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const { contextWindow, systemPrompt } = effectiveConfig.llm;
 
-  if (!lfContextWindow) {
+  if (!contextWindow) {
     return {
       current: 0,
       percentage: 0,
     };
   }
 
-  let count = lfSystem ? lfSystem.length : 0;
+  let count = systemPrompt ? systemPrompt.length : 0;
   history().forEach((m) => (count += m.content.length));
   const estimated = count / 4;
 
   return {
     current: estimated,
-    percentage: (estimated / lfContextWindow) * 100,
+    percentage: (estimated / contextWindow) * 100,
   };
 };
 //#endregion
@@ -208,23 +573,15 @@ export const editMessage = (adapter: LfChatAdapter, m: LfLLMChoiceMessage) => {
  * ```
  */
 export const newRequest = (adapter: LfChatAdapter): LfLLMRequest => {
-  const { compInstance, history } = adapter.controller.get;
-  const {
-    lfFrequencyPenalty,
-    lfMaxTokens,
-    lfPresencePenalty,
-    lfSeed,
-    lfSystem,
-    lfTemperature,
-    lfTopP,
-  } = compInstance;
+  const { history } = adapter.controller.get;
+  const effectiveConfig = getEffectiveConfig(adapter);
 
   const messages: LfLLMRequest["messages"] = [];
 
-  if (lfSystem) {
+  if (effectiveConfig.llm.systemPrompt) {
     messages.push({
       role: "system",
-      content: lfSystem,
+      content: effectiveConfig.llm.systemPrompt,
     });
   }
 
@@ -272,13 +629,14 @@ export const newRequest = (adapter: LfChatAdapter): LfLLMRequest => {
   }
 
   return {
-    frequency_penalty: lfFrequencyPenalty,
-    max_tokens: lfMaxTokens,
+    frequency_penalty: effectiveConfig.llm.frequencyPenalty,
+    max_tokens: effectiveConfig.llm.maxTokens,
     messages,
-    presence_penalty: lfPresencePenalty,
-    seed: lfSeed,
-    temperature: lfTemperature,
-    top_p: lfTopP,
+    presence_penalty: effectiveConfig.llm.presencePenalty,
+    seed: effectiveConfig.llm.seed,
+    temperature: effectiveConfig.llm.temperature,
+    tools: effectiveConfig.tools.definitions,
+    top_p: effectiveConfig.llm.topP,
   };
 };
 //#endregion

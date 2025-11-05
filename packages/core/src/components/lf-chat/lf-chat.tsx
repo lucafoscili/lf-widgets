@@ -7,6 +7,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatAdapter,
+  LfChatConfig,
   LfChatCurrentTokens,
   LfChatElement,
   LfChatEvent,
@@ -21,6 +22,7 @@ import {
   LfFrameworkInterface,
   LfLLMAttachment,
   LfLLMChoiceMessage,
+  LfLLMTool,
   LfThemeUISize,
 } from "@lf-widgets/foundations";
 import {
@@ -92,6 +94,7 @@ export class LfChat implements LfChatInterface {
 
   //#region Props
   /**
+   * @deprecated Use lfConfig.attachments.uploadTimeout instead.
    * Timeout (ms) to apply to the upload callback. Default 60000ms.
    *
    * @type {number}
@@ -104,6 +107,25 @@ export class LfChat implements LfChatInterface {
    * ```
    */
   @Prop({ mutable: true }) lfAttachmentUploadTimeout?: number = 60000;
+  /**
+   * Configuration object for LLM, tools, UI, and attachments.
+   * Recommended for new implementations; legacy individual props remain supported.
+   *
+   * @type {LfChatConfig}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfConfig={{
+   *   llm: { endpointUrl: "http://localhost:5001", temperature: 0.7 },
+   *   tools: { definitions: [...] },
+   *   ui: { layout: "top", emptyMessage: "Start chatting!" },
+   *   attachments: { maxSize: 10485760, allowedTypes: ["image/*"] }
+   * }}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfConfig?: LfChatConfig;
   /**
    * How many tokens the context window can handle, used to calculate the occupied space.
    *
@@ -144,11 +166,25 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true }) lfEndpointUrl: string = "http://localhost:5001";
   /**
+   * The tools available for the LLM to use during the conversation.
+   * These enable the model to perform actions like web searches or data fetching.
+   *
+   * @type {LfLLMTool[]}
+   * @default []
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfTools='[{"type": "function", "function": {"name": "web_search", "description": "Search the web", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}}}}]'></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfTools: LfLLMTool[] = [];
+  /**
    * The frequency penalty for the LLM's answer.
    * This parameter is used to reduce the likelihood of the model repeating the same tokens.
    *
    * @type {number}
-   * @default undefined
+   * @default 0
    * @mutable
    *
    * @example
@@ -880,31 +916,43 @@ export class LfChat implements LfChatInterface {
           ref={(el) => (this.#messagesContainer = el)}
         >
           {history?.length ? (
-            history.map((m, index) => {
-              const isEditing = this.currentEditingIndex === index;
-              return (
-                <div
-                  class={bemClass(messages._, messages.container, {
-                    [m.role]: true,
-                  })}
-                  key={index}
-                  ref={(el) => {
-                    if (el && index === history.length - 1) {
-                      this.#lastMessage = el;
-                    }
-                  }}
-                >
+            history
+              .filter((m) => {
+                // Hide assistant messages with no content (tool-only calls)
+                if (m.role === "assistant" && !m.content?.trim()) {
+                  return false;
+                }
+                // Hide tool messages (internal only)
+                if (m.role === "tool") {
+                  return false;
+                }
+                return true;
+              })
+              .map((m, index) => {
+                const isEditing = this.currentEditingIndex === index;
+                return (
                   <div
-                    class={bemClass(messages._, messages.content, {
+                    class={bemClass(messages._, messages.container, {
                       [m.role]: true,
                     })}
+                    key={index}
+                    ref={(el) => {
+                      if (el && index === history.length - 1) {
+                        this.#lastMessage = el;
+                      }
+                    }}
                   >
-                    {isEditing ? editableMessage(m) : this.#prepContent(m)}
+                    <div
+                      class={bemClass(messages._, messages.content, {
+                        [m.role]: true,
+                      })}
+                    >
+                      {isEditing ? editableMessage(m) : this.#prepContent(m)}
+                    </div>
+                    {this.#prepToolbar(m)}
                   </div>
-                  {this.#prepToolbar(m)}
-                </div>
-              );
-            })
+                );
+              })
           ) : (
             <div class={bemClass(messages._, messages.empty)}>{lfEmpty}</div>
           )}

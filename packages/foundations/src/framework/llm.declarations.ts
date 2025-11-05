@@ -73,6 +73,7 @@ export interface LfLLMChoiceMessage {
   role: LfLLMRole;
   content: string;
   tool_calls?: unknown[];
+  tool_call_id?: string;
 }
 /**
  * Represents an attachment in a chat message
@@ -132,6 +133,22 @@ export type LfLLMContentPart = LfLLMContentPartText | LfLLMContentPartImage;
 /**
  * Utility interface used by the LLM integration helpers.
  */
+export interface LfLLMTool {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: string[];
+    };
+    execute?: (args: Record<string, unknown>) => Promise<string> | string;
+  };
+}
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
 export interface LfLLMRequest {
   model?: string;
   prompt?: string;
@@ -155,6 +172,7 @@ export interface LfLLMRequest {
     role: LfLLMRole;
     content: string | LfLLMContentPart[];
   }>;
+  tools?: LfLLMTool[];
 }
 /**
  * Utility interface used by the LLM integration helpers.
@@ -177,6 +195,7 @@ export interface LfLLMStreamChunk {
   contentDelta?: string;
   done?: boolean;
   raw?: unknown;
+  toolCalls?: unknown[];
 }
 /**
  * Utility interface used by the LLM integration helpers.

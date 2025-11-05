@@ -144,6 +144,142 @@ export const getChatFixtures = (
             lfStyle: ":host { filter: monochrome(0.5) contrast(1.5); }",
           },
         },
+        tools: {
+          description: "Chat with tools for external actions (PoC)",
+          props: {
+            lfTools: [
+              {
+                type: "function",
+                function: {
+                  name: "get_showcase_docs",
+                  description:
+                    "Get information about the lf-widgets showcase documentation",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      topic: {
+                        type: "string",
+                        description:
+                          "The topic to query (e.g., 'components', 'framework')",
+                      },
+                    },
+                    required: ["topic"],
+                  },
+                  execute: async (args: Record<string, unknown>) => {
+                    const topic = (args.topic as string) || "general";
+                    return `Showcase documentation for topic "${topic}": This is a PoC response. The lf-widgets showcase includes various components like buttons, chats, and more. For full docs, visit the repository.`;
+                  },
+                },
+              },
+              {
+                type: "function",
+                function: {
+                  name: "get_weather",
+                  description: "Get current weather information for a location",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      location: {
+                        type: "string",
+                        description: "The city or location to get weather for",
+                      },
+                    },
+                    required: ["location"],
+                  },
+                  execute: async (args: Record<string, unknown>) => {
+                    const location = (args.location as string) || "unknown";
+                    // In a real implementation, this would call a weather API
+                    return `Weather for ${location}: Sunny, 72°F (22°C). This is a mock response - integrate with a real weather API for actual data.`;
+                  },
+                },
+              },
+            ],
+          },
+        },
+        configCreative: {
+          description: "Config preset: Creative (high temperature, diverse)",
+          props: {
+            lfConfig: {
+              llm: {
+                temperature: 1.2,
+                topP: 0.95,
+                frequencyPenalty: 0.5,
+                presencePenalty: 0.5,
+                systemPrompt:
+                  "You are a creative and imaginative assistant. Feel free to think outside the box!",
+              },
+              ui: {
+                layout: "top",
+                emptyMessage: "Start a creative conversation...",
+              },
+            },
+          },
+        },
+        configPrecise: {
+          description: "Config preset: Precise (low temperature, focused)",
+          props: {
+            lfConfig: {
+              llm: {
+                temperature: 0.2,
+                topP: 0.8,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
+                systemPrompt:
+                  "You are a precise and factual assistant. Provide accurate, concise answers.",
+              },
+              ui: {
+                layout: "top",
+                emptyMessage: "Ask a question...",
+              },
+            },
+          },
+        },
+        configWithTools: {
+          description: "Config preset: Tools enabled with attachments config",
+          props: {
+            lfConfig: {
+              llm: {
+                temperature: 0.7,
+                systemPrompt:
+                  "You are a helpful assistant with access to tools. Use them when needed!",
+              },
+              tools: {
+                definitions: [
+                  {
+                    type: "function",
+                    function: {
+                      name: "calculate",
+                      description: "Perform a mathematical calculation",
+                      parameters: {
+                        type: "object",
+                        properties: {
+                          expression: {
+                            type: "string",
+                            description: "The math expression to evaluate",
+                          },
+                        },
+                        required: ["expression"],
+                      },
+                      execute: async (args: Record<string, unknown>) => {
+                        const expr = (args.expression as string) || "0";
+                        // Mock calculator - in production, use a safe math parser library
+                        return `Calculated "${expr}": This is a mock result. Use a safe math parser like math.js in production.`;
+                      },
+                    },
+                  },
+                ],
+              },
+              attachments: {
+                uploadTimeout: 30000,
+                maxSize: 5242880, // 5MB
+                allowedTypes: ["image/*", "application/pdf"],
+              },
+              ui: {
+                emptyMessage: "Chat with tool-enabled assistant...",
+              },
+            },
+          },
+        },
       },
       //#endregion
     },
