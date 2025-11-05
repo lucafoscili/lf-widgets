@@ -86,6 +86,7 @@ export class LfChat implements LfChatInterface {
   @State() currentEditingIndex: number | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
+  @State() currentToolExecution: any = null; // LfDataDataset for tool execution chip
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
@@ -820,6 +821,7 @@ export class LfChat implements LfChatInterface {
         currentEditingIndex: () => this.currentEditingIndex,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
+        currentToolExecution: () => this.currentToolExecution,
         cyAttributes: this.#cy,
         history: () => this.history,
         lastMessage: (role = "user") => {
@@ -840,6 +842,7 @@ export class LfChat implements LfChatInterface {
         currentEditingIndex: (value) => (this.currentEditingIndex = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
+        currentToolExecution: (value) => (this.currentToolExecution = value),
         history: async (cb) => {
           cb();
           this.currentTokens = await calcTokens(this.#adapter);
@@ -891,6 +894,7 @@ export class LfChat implements LfChatInterface {
       spinner,
       stt,
       textarea,
+      toolExecutionChip,
     } = this.#adapter.elements.jsx.chat;
     const { history, lfEmpty } = this;
 
@@ -956,6 +960,7 @@ export class LfChat implements LfChatInterface {
           ) : (
             <div class={bemClass(messages._, messages.empty)}>{lfEmpty}</div>
           )}
+          {toolExecutionChip()}
         </div>
         <div class={bemClass(chat._, chat.spinnerBar)}>{spinner()}</div>
       </Fragment>

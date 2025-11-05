@@ -112,6 +112,7 @@ export const createRefs = (): LfChatAdapterRefs => {
       spinner: null,
       stt: null,
       textarea: null,
+      toolExecutionChip: null,
     },
     settings: {
       back: null,

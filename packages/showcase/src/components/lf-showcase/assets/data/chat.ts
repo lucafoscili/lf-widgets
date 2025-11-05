@@ -145,7 +145,7 @@ export const getChatFixtures = (
           },
         },
         tools: {
-          description: "Chat with tools for external actions (PoC)",
+          description: "Chat with tools for external actions (real APIs)",
           props: {
             lfTools: [
               {
@@ -153,21 +153,76 @@ export const getChatFixtures = (
                 function: {
                   name: "get_showcase_docs",
                   description:
-                    "Get information about the lf-widgets showcase documentation",
+                    "Retrieves documentation about lf-widgets components and framework. Use this to answer questions about components, their props, events, methods, or usage examples.",
                   parameters: {
                     type: "object",
                     properties: {
-                      topic: {
+                      component: {
                         type: "string",
                         description:
-                          "The topic to query (e.g., 'components', 'framework')",
+                          "The component name to query (e.g., 'lf-button', 'lf-chat', 'lf-tree'). Leave empty for general framework docs.",
                       },
                     },
-                    required: ["topic"],
                   },
                   execute: async (args: Record<string, unknown>) => {
-                    const topic = (args.topic as string) || "general";
-                    return `Showcase documentation for topic "${topic}": This is a PoC response. The lf-widgets showcase includes various components like buttons, chats, and more. For full docs, visit the repository.`;
+                    const component = (args.component as string) || "";
+
+                    try {
+                      // Fetch the actual doc.json file from the core package
+                      const fetchResponse = await fetch("/build/doc.json");
+                      if (!fetchResponse.ok) {
+                        return `Documentation fetch failed. The doc.json file might not be available. Status: ${fetchResponse.status}`;
+                      }
+
+                      const docData = await fetchResponse.json();
+
+                      if (!component) {
+                        // Return general framework overview
+                        const componentCount = docData.components?.length || 0;
+                        const componentList =
+                          docData.components
+                            ?.map((c: any) => c.tag)
+                            .join(", ") || "none";
+                        return `lf-widgets Framework Overview:\n- Total Components: ${componentCount}\n- Available Components: ${componentList}\n- Documentation includes props, events, methods, and styling for each component.\n\nAsk about a specific component for detailed information.`;
+                      }
+
+                      // Find specific component documentation
+                      const comp = docData.components?.find(
+                        (c: any) =>
+                          c.tag === component ||
+                          c.tag === `lf-${component.replace("lf-", "")}`,
+                      );
+
+                      if (!comp) {
+                        return `Component "${component}" not found. Available components: ${docData.components?.map((c: any) => c.tag).join(", ")}`;
+                      }
+
+                      // Build comprehensive response
+                      let result = `${comp.tag} Documentation:\n\n`;
+                      result += `Description: ${comp.overview || "No description available"}\n\n`;
+
+                      if (comp.props?.length) {
+                        result += `Props (${comp.props.length}):\n`;
+                        comp.props.slice(0, 5).forEach((prop: any) => {
+                          result += `- ${prop.name}: ${prop.type} ${prop.required ? "(required)" : ""}\n  ${prop.docs || ""}\n`;
+                        });
+                        if (comp.props.length > 5) {
+                          result += `... and ${comp.props.length - 5} more props\n`;
+                        }
+                      }
+
+                      if (comp.events?.length) {
+                        result += `\nEvents: ${comp.events.map((e: any) => e.event).join(", ")}\n`;
+                      }
+
+                      if (comp.methods?.length) {
+                        result += `\nMethods: ${comp.methods.map((m: any) => m.name).join(", ")}\n`;
+                      }
+
+                      return result;
+                    } catch (error) {
+                      return `Error fetching documentation: ${error instanceof Error ? error.message : String(error)}`;
+                    }
                   },
                 },
               },
@@ -175,21 +230,63 @@ export const getChatFixtures = (
                 type: "function",
                 function: {
                   name: "get_weather",
-                  description: "Get current weather information for a location",
+                  description:
+                    "Get real-time weather information for any city or location worldwide. Returns temperature, conditions, humidity, and wind speed.",
                   parameters: {
                     type: "object",
                     properties: {
                       location: {
                         type: "string",
-                        description: "The city or location to get weather for",
+                        description:
+                          "The city name or location (e.g., 'London', 'New York', 'Tokyo')",
                       },
                     },
                     required: ["location"],
                   },
                   execute: async (args: Record<string, unknown>) => {
-                    const location = (args.location as string) || "unknown";
-                    // In a real implementation, this would call a weather API
-                    return `Weather for ${location}: Sunny, 72°F (22°C). This is a mock response - integrate with a real weather API for actual data.`;
+                    const location = (args.location as string) || "London";
+
+                    try {
+                      // Using wttr.in - a free weather API that doesn't require API key
+                      // Format: simple text output, easy to parse
+                      const response = await fetch(
+                        `https://wttr.in/${encodeURIComponent(location)}?format=j1`,
+                      );
+
+                      if (!response.ok) {
+                        return `Unable to fetch weather for "${location}". Please check the location name and try again.`;
+                      }
+
+                      const data = await response.json();
+                      const current = data.current_condition?.[0];
+                      const area = data.nearest_area?.[0];
+
+                      if (!current) {
+                        return `Weather data unavailable for "${location}".`;
+                      }
+
+                      const locationName =
+                        area?.areaName?.[0]?.value || location;
+                      const country = area?.country?.[0]?.value || "";
+                      const temp_c = current.temp_C;
+                      const temp_f = current.temp_F;
+                      const condition =
+                        current.weatherDesc?.[0]?.value || "Unknown";
+                      const humidity = current.humidity;
+                      const windSpeed = current.windspeedKmph;
+                      const windDir = current.winddir16Point;
+                      const feelsLike_c = current.FeelsLikeC;
+                      const feelsLike_f = current.FeelsLikeF;
+
+                      return `Weather for ${locationName}${country ? ", " + country : ""}:
+🌡️ Temperature: ${temp_c}°C (${temp_f}°F)
+🌤️ Conditions: ${condition}
+🤔 Feels like: ${feelsLike_c}°C (${feelsLike_f}°F)
+💧 Humidity: ${humidity}%
+🌬️ Wind: ${windSpeed} km/h ${windDir}`;
+                    } catch (error) {
+                      return `Error fetching weather data: ${error instanceof Error ? error.message : String(error)}. Please try again.`;
+                    }
                   },
                 },
               },

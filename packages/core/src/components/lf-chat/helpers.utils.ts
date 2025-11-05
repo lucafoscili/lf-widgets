@@ -2,6 +2,7 @@ import {
   LfChatAdapter,
   LfChatConfig,
   LfChatCurrentTokens,
+  LfDataDataset,
   LfLLMChoiceMessage,
   LfLLMContentPart,
   LfLLMRequest,
@@ -10,6 +11,108 @@ import {
 } from "@lf-widgets/foundations";
 import { VNode } from "@stencil/core";
 import { LfChat } from "./lf-chat";
+
+//#region Tool execution dataset builders
+/**
+ * Creates initial dataset for tool execution visualization.
+ * Root node shows "Working..." with spinner icon.
+ *
+ * @returns LfDataDataset with root node for tool execution tracking
+ */
+export const createToolExecutionDataset = (): LfDataDataset => ({
+  nodes: [
+    {
+      id: "tool-exec-root",
+      value: "⚙️ Working...",
+      children: [],
+    },
+  ],
+});
+
+/**
+ * Adds a tool call as a child node to the execution dataset.
+ *
+ * @param dataset - The current tool execution dataset
+ * @param toolName - Name of the tool being called
+ * @param toolId - Unique identifier for this tool call
+ * @returns Updated dataset with new tool node
+ */
+export const addToolToDataset = (
+  dataset: LfDataDataset,
+  toolName: string,
+  toolId: string,
+): LfDataDataset => {
+  const root = dataset.nodes[0];
+  if (!root.children) {
+    root.children = [];
+  }
+
+  root.children.push({
+    id: toolId,
+    value: `🔧 ${toolName}`,
+  });
+
+  return { nodes: [{ ...root }] };
+};
+
+/**
+ * Updates a tool node with its execution result.
+ *
+ * @param dataset - The current tool execution dataset
+ * @param toolId - ID of the tool to update
+ * @param result - Result text or error message
+ * @param success - Whether the tool executed successfully
+ * @returns Updated dataset with tool result
+ */
+export const updateToolResult = (
+  dataset: LfDataDataset,
+  toolId: string,
+  result: string,
+  success: boolean,
+): LfDataDataset => {
+  const root = dataset.nodes[0];
+  if (!root.children) return dataset;
+
+  const toolNode = root.children.find((n) => n.id === toolId);
+  if (toolNode) {
+    const icon = success ? "✓" : "✗";
+    const preview =
+      result.length > 50 ? result.substring(0, 47) + "..." : result;
+    const currentValue = String(toolNode.value || "");
+    toolNode.value = `${icon} ${currentValue.replace("🔧 ", "")}`;
+
+    // Add result as child if there's meaningful content
+    if (result && result.trim()) {
+      toolNode.children = [
+        {
+          id: `${toolId}-result`,
+          value: preview,
+        },
+      ];
+    }
+  }
+
+  return { nodes: [{ ...root }] };
+};
+
+/**
+ * Finalizes the tool execution dataset by updating the root node.
+ *
+ * @param dataset - The current tool execution dataset
+ * @param success - Whether all tools executed successfully
+ * @returns Final dataset with completion message
+ */
+export const finalizeToolDataset = (
+  dataset: LfDataDataset,
+  success: boolean,
+): LfDataDataset => {
+  const root = dataset.nodes[0];
+  root.value = success ? "✓ Finished working" : "⚠️ Completed with errors";
+  // Set icon to collapsed state so it can be expanded to review
+  root.icon = "collapse";
+  return { nodes: [{ ...root }] };
+};
+//#endregion
 
 //#region Config merge utility
 /**
@@ -116,6 +219,9 @@ export const getEffectiveConfig = (
       ? (warnDeprecated("lfEmpty", "ui.emptyMessage"), component.lfEmpty)
       : (config.ui?.emptyMessage ?? "Your chat history is empty!");
 
+  const showToolExecutionIndicator =
+    config.ui?.showToolExecutionIndicator ?? true;
+
   // Attachments config
   const uploadTimeout =
     component.lfAttachmentUploadTimeout !== 60000
@@ -153,6 +259,7 @@ export const getEffectiveConfig = (
     ui: {
       layout,
       emptyMessage,
+      showToolExecutionIndicator,
     },
     attachments: {
       uploadTimeout,
@@ -260,7 +367,7 @@ const handleToolCalls = async (
   toolCalls: unknown[],
 ): Promise<void> => {
   const { get, set } = adapter.controller;
-  const { compInstance, history } = get;
+  const { compInstance, currentToolExecution, history } = get;
   const { debug } = get.manager;
   const effectiveConfig = getEffectiveConfig(adapter);
 
@@ -274,6 +381,28 @@ const handleToolCalls = async (
     "informational",
   );
 
+  // Initialize tool execution dataset if config allows
+  const showIndicator = effectiveConfig.ui.showToolExecutionIndicator !== false;
+  if (showIndicator) {
+    set.currentToolExecution(createToolExecutionDataset());
+  }
+
+  // Add each tool call to the dataset
+  if (showIndicator && Array.isArray(toolCalls)) {
+    for (const call of toolCalls) {
+      if (call && typeof call === "object") {
+        const callObj = call as any;
+        const func = callObj.function;
+        if (func?.name && callObj.id) {
+          const current = currentToolExecution();
+          set.currentToolExecution(
+            addToolToDataset(current, func.name, callObj.id),
+          );
+        }
+      }
+    }
+  }
+
   // Execute tools
   const toolResults = await executeTools(
     toolCalls,
@@ -285,6 +414,26 @@ const handleToolCalls = async (
     `Tool execution completed. Results: ${JSON.stringify(toolResults, null, 2)}`,
     "informational",
   );
+
+  // Update dataset with results
+  if (showIndicator && currentToolExecution()) {
+    for (const result of toolResults) {
+      const isSuccess =
+        result.content &&
+        !result.content.startsWith('Tool "') &&
+        !result.content.startsWith("Error:");
+
+      const current = currentToolExecution();
+      set.currentToolExecution(
+        updateToolResult(
+          current,
+          result.tool_call_id || "",
+          result.content || "",
+          isSuccess,
+        ),
+      );
+    }
+  }
 
   // Check if any tools were successfully executed
   const hasValidToolResults = toolResults.some(
@@ -309,6 +458,12 @@ const handleToolCalls = async (
       "informational",
     );
 
+    // Finalize dataset
+    if (showIndicator && currentToolExecution()) {
+      const current = currentToolExecution();
+      set.currentToolExecution(finalizeToolDataset(current, true));
+    }
+
     for (const result of toolResults) {
       set.history(() => history().push(result));
     }
@@ -319,6 +474,8 @@ const handleToolCalls = async (
       "informational",
     );
     await apiCall(adapter);
+
+    // Chip stays visible and collapsed - user can expand to review tool execution details
   } else if (hasErrors) {
     // All tools failed - still add error messages to history so LLM can see them
     debug.logs.new(
@@ -326,6 +483,12 @@ const handleToolCalls = async (
       "All tool calls failed. Adding error messages to history for LLM recovery.",
       "warning",
     );
+
+    // Finalize dataset with error state
+    if (showIndicator && currentToolExecution()) {
+      const current = currentToolExecution();
+      set.currentToolExecution(finalizeToolDataset(current, false));
+    }
 
     for (const result of toolResults) {
       set.history(() => history().push(result));
@@ -338,6 +501,8 @@ const handleToolCalls = async (
       "informational",
     );
     await apiCall(adapter);
+
+    // Chip stays visible and collapsed - user can expand to review error details
   } else {
     // No tool results at all (shouldn't happen, but handle it)
     debug.logs.new(
@@ -345,6 +510,11 @@ const handleToolCalls = async (
       "No tool results generated (unexpected)",
       "error",
     );
+
+    // Clear indicator
+    if (showIndicator) {
+      set.currentToolExecution(null);
+    }
   }
 };
 //#endregion

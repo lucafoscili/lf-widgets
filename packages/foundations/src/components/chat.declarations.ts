@@ -102,6 +102,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     spinner: () => VNode;
     stt: () => VNode;
     textarea: () => VNode;
+    toolExecutionChip: () => VNode | null;
   };
   content: {
     bold: (children: (VNode | string)[]) => VNode;
@@ -163,6 +164,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     spinner: LfSpinnerElement | null;
     stt: LfButtonElement | null;
     textarea: LfTextfieldElement | null;
+    toolExecutionChip: LfChipElement | null;
   };
   settings: {
     back: LfButtonElement | null;
@@ -218,6 +220,7 @@ export type LfChatAdapterInitializerGetters = Pick<
   | "currentEditingIndex"
   | "currentPrompt"
   | "currentTokens"
+  | "currentToolExecution"
   | "cyAttributes"
   | "history"
   | "lastMessage"
@@ -238,6 +241,7 @@ export type LfChatAdapterInitializerSetters = Pick<
   | "currentEditingIndex"
   | "currentPrompt"
   | "currentTokens"
+  | "currentToolExecution"
   | "history"
   | "status"
   | "view"
@@ -254,6 +258,7 @@ export interface LfChatAdapterControllerGetters
   currentEditingIndex: () => number;
   currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
+  currentToolExecution: () => any;
   cyAttributes: typeof CY_ATTRIBUTES;
   history: () => LfChatHistory;
   lastMessage: (role?: LfLLMRole) => LfLLMChoiceMessage;
@@ -274,6 +279,7 @@ export interface LfChatAdapterControllerSetters
   currentEditingIndex: (value: number) => void;
   currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
+  currentToolExecution: (value: any) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
   view: (view: LfChatView) => void;
@@ -389,6 +395,10 @@ export interface LfChatConfig {
      * Message to display when history is empty.
      */
     emptyMessage?: string;
+    /**
+     * Show visual indicator during tool execution. Default: true.
+     */
+    showToolExecutionIndicator?: boolean;
   };
   /**
    * Attachment handling configuration.

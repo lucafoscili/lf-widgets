@@ -395,5 +395,31 @@ export const prepChat = (
       );
     },
     //#endregion
+
+    //#region Tool Execution Chip
+    toolExecutionChip: () => {
+      const { controller, elements } = getAdapter();
+      const { blocks, compInstance, currentToolExecution, manager } =
+        controller.get;
+      const { chat } = elements.refs;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const dataset = currentToolExecution();
+      if (!dataset) {
+        return null;
+      }
+
+      return (
+        <div class={bemClass(blocks.messages._, blocks.messages.container)}>
+          <lf-chip
+            lfDataset={dataset}
+            lfUiSize={compInstance.lfUiSize}
+            ref={assignRef(chat, "toolExecutionChip")}
+          />
+        </div>
+      );
+    },
+    //#endregion
   };
 };
