@@ -1,7 +1,6 @@
 import {
   LfCodeInterface,
   LfComponent,
-  LfFrameworkInterface,
   LfDebugInterface,
   LfDebugLifecycles,
   LfDebugLog,
@@ -10,6 +9,7 @@ import {
   LfDebugLogsToPrint,
   LfDebugLogToPrintEntry,
   LfDebugManagedComponents,
+  LfFrameworkInterface,
   LfToggleInterface,
 } from "@lf-widgets/foundations";
 
@@ -40,6 +40,7 @@ import {
  * @see {@link LfFramework} For the main framework manager
  */
 export class LfDebug implements LfDebugInterface {
+  #AUTO_PRINT = false;
   #COMPONENTS = {
     codes: new Set<LfCodeInterface>(),
     toggles: new Set<LfToggleInterface>(),
@@ -330,6 +331,21 @@ export class LfDebug implements LfDebugInterface {
     }
 
     return this.#IS_ENABLED;
+  };
+  //#endregion
+
+  //#region Toggle auto-print
+  /**
+   * Toggles or sets the auto-print feature.
+   *
+   * @param value - Optional boolean value to set auto-print to. If not provided, toggles the current state.
+   */
+  toggleAutoPrint = (value?: boolean) => {
+    if (value === false || value === true) {
+      this.#AUTO_PRINT = value;
+    } else {
+      this.#AUTO_PRINT = !this.#AUTO_PRINT;
+    }
   };
   //#endregion
 

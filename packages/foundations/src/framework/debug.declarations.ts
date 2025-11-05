@@ -44,6 +44,8 @@ export interface LfDebugInterface {
   register: (comp: LfDebugManagedComponents) => void;
   /** Enables or disables debug mode; optionally dispatches state to registered components. */
   toggle: (value?: boolean, dispatch?: boolean) => boolean;
+  /** Toggles or sets the auto-print feature. */
+  toggleAutoPrint: (value?: boolean) => void;
   /** Unregisters a previously registered debug component. */
   unregister: (comp: LfDebugManagedComponents) => void;
 }
