@@ -36,6 +36,37 @@ export const prepSettings = (
     },
     //#endregion
 
+    //#region Context Window
+    contextWindow: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, cyAttributes, manager, parts } =
+        controller.get;
+      const { settings } = elements.refs;
+      const { textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-textfield
+          class={bemClass(blocks.settings._, blocks.settings.textfield)}
+          data-cy={cyAttributes.input}
+          id={LF_CHAT_IDS.options.contextWindow}
+          lfHtmlAttributes={{
+            min: 1024,
+            type: "number",
+          }}
+          lfIcon={get.icon("arrowAutofitContent")}
+          lfLabel="Context Window Size"
+          lfValue={stringify(compInstance.lfContextWindow)}
+          onLf-textfield-event={textfield}
+          part={parts.contextWindow}
+          ref={assignRef(settings, "contextWindow")}
+        ></lf-textfield>
+      );
+    },
+    //#endregion
+
     //#region Endpoint
     endpoint: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -58,6 +89,87 @@ export const prepSettings = (
           part={parts.endpointUrl}
           ref={assignRef(settings, "endpoint")}
         ></lf-textfield>
+      );
+    },
+    //#endregion
+
+    //#region Export History
+    exportHistory: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { settings } = elements.refs;
+      const { button } = handlers.settings;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-button
+          class={bemClass(blocks.settings._, blocks.settings.exportHistory)}
+          data-cy={cyAttributes.button}
+          id={LF_CHAT_IDS.options.exportHistory}
+          lfIcon={get.icon("download")}
+          lfLabel="Export history"
+          lfStretchX={true}
+          onLf-button-event={button}
+          part={parts.exportHistory}
+          ref={assignRef(settings, "exportHistory")}
+        ></lf-button>
+      );
+    },
+    //#endregion
+
+    //#region Frequency penalty
+    frequencyPenalty: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, cyAttributes, manager, parts } =
+        controller.get;
+      const { settings } = elements.refs;
+      const { textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-textfield
+          class={bemClass(blocks.settings._, blocks.settings.textfield)}
+          data-cy={cyAttributes.input}
+          id={LF_CHAT_IDS.options.frequencyPenalty}
+          lfHtmlAttributes={{
+            min: 0,
+            type: "number",
+          }}
+          lfIcon={get.icon("codeCircle2")}
+          lfLabel="Frequency Penalty"
+          lfValue={stringify(compInstance.lfFrequencyPenalty)}
+          onLf-textfield-event={textfield}
+          part={parts.frequencyPenalty}
+          ref={assignRef(settings, "frequencyPenalty")}
+        ></lf-textfield>
+      );
+    },
+    //#endregion
+
+    //#region Import History
+    importHistory: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { settings } = elements.refs;
+      const { button } = handlers.settings;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-button
+          class={bemClass(blocks.settings._, blocks.settings.importHistory)}
+          data-cy={cyAttributes.button}
+          id={LF_CHAT_IDS.options.importHistory}
+          lfIcon={get.icon("upload")}
+          lfLabel="Import history"
+          lfStretchX={true}
+          onLf-button-event={button}
+          part={parts.importHistory}
+          ref={assignRef(settings, "importHistory")}
+        ></lf-button>
       );
     },
     //#endregion
@@ -124,6 +236,67 @@ export const prepSettings = (
     },
     //#endregion
 
+    //#region Presence penalty
+    presencePenalty: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, cyAttributes, manager, parts } =
+        controller.get;
+      const { settings } = elements.refs;
+      const { textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-textfield
+          class={bemClass(blocks.settings._, blocks.settings.textfield)}
+          data-cy={cyAttributes.input}
+          id={LF_CHAT_IDS.options.presencePenalty}
+          lfHtmlAttributes={{
+            min: -2,
+            type: "number",
+          }}
+          lfIcon={get.icon("schema")}
+          lfLabel="Presence penalty"
+          lfValue={stringify(compInstance.lfPresencePenalty)}
+          onLf-textfield-event={textfield}
+          part={parts.presencePenalty}
+          ref={assignRef(settings, "presencePenalty")}
+        ></lf-textfield>
+      );
+    },
+    //#endregion
+
+    //#region Seed
+    seed: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, cyAttributes, manager, parts } =
+        controller.get;
+      const { settings } = elements.refs;
+      const { textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-textfield
+          class={bemClass(blocks.settings._, blocks.settings.textfield)}
+          data-cy={cyAttributes.input}
+          id={LF_CHAT_IDS.options.seed}
+          lfHtmlAttributes={{
+            type: "number",
+          }}
+          lfIcon={get.icon("ikosaedr")}
+          lfLabel="Random Seed (-1 for random)"
+          lfValue={stringify(compInstance.lfSeed)}
+          onLf-textfield-event={textfield}
+          part={parts.seed}
+          ref={assignRef(settings, "seed")}
+        ></lf-textfield>
+      );
+    },
+    //#endregion
+
     //#region System
     system: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -178,6 +351,39 @@ export const prepSettings = (
           onLf-textfield-event={textfield}
           part={parts.temperature}
           ref={assignRef(settings, "temperature")}
+        ></lf-textfield>
+      );
+    },
+    //#endregion
+
+    //#region Top P
+    topP: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, compInstance, cyAttributes, manager, parts } =
+        controller.get;
+      const { settings } = elements.refs;
+      const { textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+
+      return (
+        <lf-textfield
+          class={bemClass(blocks.settings._, blocks.settings.textfield)}
+          data-cy={cyAttributes.input}
+          id={LF_CHAT_IDS.options.topP}
+          lfHtmlAttributes={{
+            max: 1,
+            min: 0,
+            step: 0.1,
+            type: "number",
+          }}
+          lfIcon={get.icon("template")}
+          lfLabel="Top P"
+          lfValue={stringify(compInstance.lfTopP)}
+          onLf-textfield-event={textfield}
+          part={parts.topP}
+          ref={assignRef(settings, "topP")}
         ></lf-textfield>
       );
     },

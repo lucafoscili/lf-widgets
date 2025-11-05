@@ -96,8 +96,16 @@ export const createHandlers = (
 export const createRefs = (): LfChatAdapterRefs => {
   return {
     chat: {
+      attachFile: null,
+      attachImage: null,
+      attachments: null,
       clear: null,
       configuration: null,
+      editCancel: null,
+      editConfirm: null,
+      editTextarea: null,
+      fileInput: null,
+      imageInput: null,
       progressbar: null,
       send: null,
       settings: null,
@@ -107,15 +115,24 @@ export const createRefs = (): LfChatAdapterRefs => {
     },
     settings: {
       back: null,
+      contextWindow: null,
       endpoint: null,
+      exportHistory: null,
+      frequencyPenalty: null,
+      historyInput: null,
+      importHistory: null,
       maxTokens: null,
       polling: null,
+      presencePenalty: null,
+      seed: null,
       system: null,
       temperature: null,
+      topP: null,
     },
     toolbar: {
       copyContent: null,
       deleteMessage: null,
+      editMessage: null,
       regenerate: null,
     },
   };

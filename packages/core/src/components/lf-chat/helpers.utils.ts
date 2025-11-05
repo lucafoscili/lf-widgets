@@ -2,6 +2,7 @@ import {
   LfChatAdapter,
   LfChatCurrentTokens,
   LfLLMChoiceMessage,
+  LfLLMContentPart,
   LfLLMRequest,
   LfLLMRole,
 } from "@lf-widgets/foundations";
@@ -171,6 +172,24 @@ export const deleteMessage = (
 };
 //#endregion
 
+//#region Edit message
+/**
+ * Enables editing of a specific message in the chat history by setting the editing index and content.
+ *
+ * @param adapter - The chat adapter that provides access to the controller for managing chat state.
+ * @param m - The message object to be edited, which must be present in the history.
+ */
+export const editMessage = (adapter: LfChatAdapter, m: LfLLMChoiceMessage) => {
+  const { get, set } = adapter.controller;
+
+  const h = get.history();
+  const index = h.indexOf(m);
+  if (index !== -1) {
+    set.currentEditingIndex(index);
+  }
+};
+//#endregion
+
 //#region newRequest
 /**
  * Creates a new chat request configuration object based on the provided chat adapter.
@@ -188,9 +207,17 @@ export const deleteMessage = (
  * const request = newRequest(adapter);
  * ```
  */
-export const newRequest = (adapter: LfChatAdapter) => {
+export const newRequest = (adapter: LfChatAdapter): LfLLMRequest => {
   const { compInstance, history } = adapter.controller.get;
-  const { lfMaxTokens, lfSeed, lfSystem, lfTemperature } = compInstance;
+  const {
+    lfFrequencyPenalty,
+    lfMaxTokens,
+    lfPresencePenalty,
+    lfSeed,
+    lfSystem,
+    lfTemperature,
+    lfTopP,
+  } = compInstance;
 
   const messages: LfLLMRequest["messages"] = [];
 
@@ -202,17 +229,56 @@ export const newRequest = (adapter: LfChatAdapter) => {
   }
 
   for (const msg of history()) {
-    messages.push({
-      role: msg.role,
-      content: msg.content,
-    });
+    const parts: LfLLMContentPart[] = [];
+
+    if (msg.attachments && Array.isArray(msg.attachments)) {
+      for (const a of msg.attachments) {
+        if (!a) {
+          continue;
+        }
+
+        const url = a.data ?? a.url;
+        switch (a.type) {
+          case "image_url":
+            parts.push({
+              type: "image_url",
+              image_url: {
+                url,
+                detail: a.image_url?.detail ?? "auto",
+              },
+            });
+            break;
+          case "file":
+          default:
+            const text = a.content ?? `[Attachment: ${a.name}]`;
+            parts.push({ type: "text", text });
+            break;
+        }
+      }
+    }
+
+    if (msg.content) {
+      if (parts.length > 0) {
+        parts.push({ type: "text", text: msg.content });
+        messages.push({ role: msg.role, content: parts });
+      } else {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    } else if (parts.length > 0) {
+      messages.push({ role: msg.role, content: parts });
+    } else {
+      messages.push({ role: msg.role, content: "" });
+    }
   }
 
   return {
-    temperature: lfTemperature,
+    frequency_penalty: lfFrequencyPenalty,
     max_tokens: lfMaxTokens,
-    seed: lfSeed,
     messages,
+    presence_penalty: lfPresencePenalty,
+    seed: lfSeed,
+    temperature: lfTemperature,
+    top_p: lfTopP,
   };
 };
 //#endregion
@@ -291,7 +357,8 @@ export const resetPrompt = async (adapter: LfChatAdapter) => {
  */
 export const submitPrompt = async (adapter: LfChatAdapter) => {
   const { get, set } = adapter.controller;
-  const { history } = get;
+  const { history, compInstance } = get;
+  const comp = compInstance as LfChat;
 
   const userMessage = await get.newPrompt();
 
@@ -301,6 +368,13 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
 
   if (userMessage) {
     const h = history();
+
+    if (comp?.currentAttachments && comp.currentAttachments.length > 0) {
+      const userWithAttachments = userMessage;
+      userWithAttachments.attachments = comp.currentAttachments;
+      comp.currentAttachments = [];
+    }
+
     set.history(() => h.push(userMessage));
     await apiCall(adapter);
   }
@@ -338,7 +412,7 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
  */
 export const parseMessageContent = (
   adapter: LfChatAdapter,
-  content: string,
+  content: any,
   role: LfLLMRole,
 ): VNode[] => {
   const { elements, controller } = adapter;
@@ -346,6 +420,22 @@ export const parseMessageContent = (
   const { syntax } = manager;
   const { messageBlock } = elements.jsx.chat;
   const contentElements = elements.jsx.content;
+
+  if (Array.isArray(content)) {
+    const nodes: VNode[] = [];
+    for (const part of content) {
+      if (part?.type === "text") {
+        nodes.push(...parseMessageContent(adapter, part.text, role));
+      } else if (part?.type === "image_url") {
+        if (contentElements.image) {
+          nodes.push(
+            contentElements.image(part.image_url.url, part.image_url.detail),
+          );
+        }
+      }
+    }
+    return nodes;
+  }
 
   const tokens = syntax.parseMarkdown(content || "");
 

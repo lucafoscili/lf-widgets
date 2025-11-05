@@ -144,6 +144,7 @@ export const LF_THEME_UI = {
 export const LF_THEME_ICONS_PREFIX = "--lf-icon-" as const;
 export const LF_THEME_ICONS = {
   add: `${LF_THEME_ICONS_PREFIX}add`,
+  attachment: `${LF_THEME_ICONS_PREFIX}attachment`,
   brokenImage: `${LF_THEME_ICONS_PREFIX}broken-image`,
   clear: `${LF_THEME_ICONS_PREFIX}clear`,
   copy: `${LF_THEME_ICONS_PREFIX}copy`,
@@ -156,6 +157,7 @@ export const LF_THEME_ICONS = {
   dropdown: `${LF_THEME_ICONS_PREFIX}dropdown`,
   edit: `${LF_THEME_ICONS_PREFIX}edit`,
   expanded: `${LF_THEME_ICONS_PREFIX}expanded`,
+  image: `${LF_THEME_ICONS_PREFIX}image`,
   info: `${LF_THEME_ICONS_PREFIX}info`,
   minus: `${LF_THEME_ICONS_PREFIX}minus`,
   next: `${LF_THEME_ICONS_PREFIX}next`,
@@ -257,6 +259,7 @@ export const LF_THEME_BASE_VARS = {
   "--lf-font-family-secondary": "Oswald, sans-serif",
   "--lf-font-size": "16px",
   "--lf-icon-add": `hexagon-plus`,
+  "--lf-icon-attachment": `file`,
   "--lf-icon-broken-image": `photo-x`,
   "--lf-icon-clear": `x`,
   "--lf-icon-collapsed": `chevron-right`,
@@ -269,6 +272,7 @@ export const LF_THEME_BASE_VARS = {
   "--lf-icon-dropdown": `chevron-down`,
   "--lf-icon-edit": `edit`,
   "--lf-icon-expanded": `chevron-down`,
+  "--lf-icon-image": `photo`,
   "--lf-icon-info": `info-hexagon`,
   "--lf-icon-minus": `hexagon-minus`,
   "--lf-icon-next": `chevron-right`,

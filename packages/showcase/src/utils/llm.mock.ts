@@ -3,12 +3,12 @@ import {
   LfFrameworkInterface,
   LfLLMChoiceMessage,
   LfLLMCompletionObject,
+  LfLLMContentPartText,
   LfLLMRequest,
-  LfTextfieldElement,
   LfLLMStreamChunk,
+  LfTextfieldElement,
 } from "@lf-widgets/foundations";
 
-// Internal key to store original methods (string literal for simpler typing)
 const ORIGINALS_KEY = "__lf_llm_originals__" as const;
 
 interface OriginalLlmMethods {
@@ -104,6 +104,17 @@ const transformContent = (
   }
 };
 
+//#region enableMockLLM
+/**
+ * Enables a mock implementation for the LLM (Large Language Model) interface within the given framework.
+ * This function overrides the original LLM methods (`fetch`, `poll`, `speechToText`, and `stream`) to simulate
+ * responses based on the specified mode, allowing for testing and development without real API calls.
+ * The original methods are stored and can be restored if needed.
+ *
+ * @param framework - The framework interface containing the LLM instance and debug utilities.
+ * @param options - Optional configuration object for the mock behavior, including mode, streaming options, etc.
+ *                  Defaults to an empty object if not provided.
+ */
 export const enableMockLLM = (
   framework: LfFrameworkInterface,
   options: EnableMockLlmOptions = {},
@@ -127,13 +138,27 @@ export const enableMockLLM = (
     request: LfLLMRequest,
     _url: string,
   ): Promise<LfLLMCompletionObject> => {
-    const lastContent =
-      request.messages
-        ?.slice()
-        .reverse()
-        .find((m) => m.content)?.content ||
-      request.prompt ||
-      "";
+    const lastMessage = request.messages
+      ?.slice()
+      .reverse()
+      .find((m) => m.content);
+
+    let lastContent = "";
+    if (lastMessage?.content) {
+      if (typeof lastMessage.content === "string") {
+        lastContent = lastMessage.content;
+      } else if (Array.isArray(lastMessage.content)) {
+        lastContent = lastMessage.content
+          .filter((part): part is LfLLMContentPartText => part.type === "text")
+          .map((part) => part.text)
+          .join(" ");
+      }
+    }
+
+    if (!lastContent) {
+      lastContent = request.prompt || "";
+    }
+
     const content = transformContent(mode, lastContent, request, options);
     return buildMockResponse(request, content);
   };
@@ -157,19 +182,33 @@ export const enableMockLLM = (
     button.lfShowSpinner = false;
   };
 
-  // Streaming simulation; yields incremental word slices
   llm.stream = async function* (
     request: LfLLMRequest,
     _url: string,
     opts?: { signal?: AbortSignal },
   ): AsyncGenerator<LfLLMStreamChunk> {
-    const lastContent =
-      request.messages
-        ?.slice()
-        .reverse()
-        .find((m) => m.content)?.content ||
-      request.prompt ||
-      "";
+    const lastMessage = request.messages
+      ?.slice()
+      .reverse()
+      .find((m) => m.content);
+
+    let lastContent = "";
+    if (lastMessage?.content) {
+      if (typeof lastMessage.content === "string") {
+        lastContent = lastMessage.content;
+      } else if (Array.isArray(lastMessage.content)) {
+        // Extract text from content parts
+        lastContent = lastMessage.content
+          .filter((part): part is LfLLMContentPartText => part.type === "text")
+          .map((part) => part.text)
+          .join(" ");
+      }
+    }
+
+    if (!lastContent) {
+      lastContent = request.prompt || "";
+    }
+
     const full = transformContent(mode, lastContent, request, options);
     const words = full.split(/\s+/);
     const chunkWords = Math.max(1, options.streamChunkWords || 1);
@@ -193,7 +232,9 @@ export const enableMockLLM = (
     }
   };
 };
+//#endregion
 
+//#region disableMockLLM
 export const disableMockLLM = (framework: LfFrameworkInterface) => {
   const { llm, debug } = framework;
 
@@ -206,8 +247,11 @@ export const disableMockLLM = (framework: LfFrameworkInterface) => {
   llm.stream = originals.stream;
   debug.logs.new(llm, `[MockLLM] Disabled (restored originals)`);
 };
+//#endregion
 
+//#region isMockLLMEnabled
 export const isMockLLMEnabled = (framework: LfFrameworkInterface) => {
   const store = framework.llm as LlmWithOriginals;
   return Boolean(store[ORIGINALS_KEY]);
 };
+//#endregion

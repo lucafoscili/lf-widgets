@@ -21,6 +21,25 @@ export const prepContentElements = (
     },
     //#endregion
 
+    //#region Image
+    image: (url, alt) => {
+      const { controller } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { theme } = manager;
+      const { bemClass } = theme;
+      const { messages } = blocks;
+
+      return (
+        <img
+          src={url}
+          alt={alt || "Image from assistant"}
+          class={bemClass(messages._, messages.content)}
+          loading="lazy"
+        />
+      );
+    },
+    //#endregion
+
     //#region Bold
     bold: (children) => {
       const { controller } = getAdapter();

@@ -35,6 +35,32 @@ export const prepToolbar = (
       );
     },
     //#endregion
+    //#region Edit message
+    editMessage: (m) => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, currentPrompt, manager, parts } = controller.get;
+      const { toolbar } = elements.refs;
+      const { button } = handlers.toolbar;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      const isDisabled = Boolean(currentPrompt());
+
+      return (
+        <lf-button
+          class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+          id={LF_CHAT_IDS.toolbar.editMessage}
+          lfIcon={get.current().variables["--lf-icon-edit"]}
+          lfStyling="flat"
+          lfUiState={isDisabled ? "disabled" : "primary"}
+          onLf-button-event={(e) => button(e, m)}
+          part={parts.regenerate}
+          ref={assignRef(toolbar, "editMessage")}
+          title="Edit this message"
+        ></lf-button>
+      );
+    },
+    //#endregion
 
     //#region Delete message
     deleteMessage: (m) => {

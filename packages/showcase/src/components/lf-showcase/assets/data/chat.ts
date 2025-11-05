@@ -2,9 +2,9 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -107,6 +107,33 @@ export const getChatFixtures = (
                 role: "user",
                 content:
                   "Can you send me a generic JavaScript code snippet along with a generic Python code snippet?",
+              },
+            ],
+          },
+        },
+        attachmentsEditing: {
+          description:
+            "Demo: attachments (image/file), preview and message editing",
+          props: {
+            lfValue: [
+              { role: "user", content: "Here is an image for context:" },
+              {
+                role: "assistant",
+                content: "I received the image. See preview below.",
+                attachments: [
+                  {
+                    id: "sample-img-1",
+                    type: "image_url",
+                    image_url: {
+                      url: "https://picsum.photos/seed/picsum/320/180",
+                    },
+                    name: "sample.jpg",
+                  },
+                ],
+              },
+              {
+                role: "user",
+                content: "Try editing this message to change its wording.",
               },
             ],
           },

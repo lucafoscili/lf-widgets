@@ -15,14 +15,20 @@ export const prepSettingsHandlers = (
 
       const { get, set } = getAdapter().controller;
       const { compInstance } = get;
+      const comp = compInstance as LfChat;
 
       switch (eventType) {
         case "click":
           switch (id) {
             case LF_CHAT_IDS.options.back:
-              const comp = compInstance as LfChat;
               comp.onLfEvent(e, "config");
               set.view("main");
+              break;
+            case LF_CHAT_IDS.options.exportHistory:
+              await comp.exportHistory();
+              break;
+            case LF_CHAT_IDS.options.importHistory:
+              await comp.setHistory("", true);
               break;
           }
       }
@@ -41,6 +47,18 @@ export const prepSettingsHandlers = (
           switch (id) {
             case LF_CHAT_IDS.options.contextWindow:
               compInstance.lfContextWindow = parseInt(value);
+              break;
+            case LF_CHAT_IDS.options.seed:
+              compInstance.lfSeed = parseInt(value);
+              break;
+            case LF_CHAT_IDS.options.topP:
+              compInstance.lfTopP = parseFloat(value);
+              break;
+            case LF_CHAT_IDS.options.frequencyPenalty:
+              compInstance.lfFrequencyPenalty = parseFloat(value);
+              break;
+            case LF_CHAT_IDS.options.presencePenalty:
+              compInstance.lfPresencePenalty = parseFloat(value);
               break;
             case LF_CHAT_IDS.options.endpointUrl:
               compInstance.lfEndpointUrl = value;
