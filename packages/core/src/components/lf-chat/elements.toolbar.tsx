@@ -115,5 +115,29 @@ export const prepToolbar = (
       );
     },
     //#endregion
+
+    //#region Tool chip
+    toolExecution: (m) => {
+      const { controller, elements } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { toolbar } = elements.refs;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      if (!m.toolExecution) {
+        return null;
+      }
+
+      return (
+        <div class={bemClass(blocks.toolbar._, blocks.toolbar.toolExecution)}>
+          <lf-chip
+            lfDataset={m.toolExecution}
+            lfUiSize="xsmall"
+            ref={assignRef(toolbar, "toolExecution")}
+          />
+        </div>
+      );
+    },
+    //#endregion
   };
 };

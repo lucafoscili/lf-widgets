@@ -1,3 +1,4 @@
+import { LfDataDataset } from ".";
 import { LfButtonElement } from "../components/button.declarations";
 import { LfTextfieldElement } from "../components/textfield.declarations";
 import { LF_LLM_ROLES } from "./llm.constants";
@@ -72,8 +73,13 @@ export interface LfLLMChoiceMessage {
   attachments?: LfLLMAttachment[];
   role: LfLLMRole;
   content: string;
-  tool_calls?: unknown[];
+  tool_calls?: LfLLMToolCall[];
   tool_call_id?: string;
+  /**
+   * Optional dataset for tool execution chip tree visualization
+   * When present, renders chip tree in message toolbar
+   */
+  toolExecution?: LfDataDataset;
 }
 /**
  * Represents an attachment in a chat message
@@ -195,7 +201,18 @@ export interface LfLLMStreamChunk {
   contentDelta?: string;
   done?: boolean;
   raw?: unknown;
-  toolCalls?: unknown[];
+  toolCalls?: LfLLMToolCall[];
+}
+/**
+ * Represents a tool call from the LLM
+ */
+export interface LfLLMToolCall {
+  id: string;
+  type?: "function";
+  function: {
+    name: string;
+    arguments: string;
+  };
 }
 /**
  * Utility interface used by the LLM integration helpers.

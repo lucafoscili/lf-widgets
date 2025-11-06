@@ -33,7 +33,6 @@ export const prepChatHandlers = (
             case LF_CHAT_IDS.chat.clear: {
               clearTextarea(adapter);
               set.currentAttachments([]);
-              set.currentToolExecution(null); // Also clear tool execution chip
               break;
             }
             // Send

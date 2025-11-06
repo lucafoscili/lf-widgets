@@ -18,6 +18,7 @@ import {
   LfChatPropsInterface,
   LfChatStatus,
   LfChatView,
+  LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfLLMAttachment,
@@ -86,7 +87,7 @@ export class LfChat implements LfChatInterface {
   @State() currentEditingIndex: number | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
-  @State() currentToolExecution: any = null; // LfDataDataset for tool execution chip
+  @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
@@ -894,7 +895,6 @@ export class LfChat implements LfChatInterface {
       spinner,
       stt,
       textarea,
-      toolExecutionChip,
     } = this.#adapter.elements.jsx.chat;
     const { history, lfEmpty } = this;
 
@@ -922,10 +922,6 @@ export class LfChat implements LfChatInterface {
           {history?.length ? (
             history
               .filter((m) => {
-                // Hide assistant messages with no content (tool-only calls)
-                if (m.role === "assistant" && !m.content?.trim()) {
-                  return false;
-                }
                 // Hide tool messages (internal only)
                 if (m.role === "tool") {
                   return false;
@@ -960,7 +956,6 @@ export class LfChat implements LfChatInterface {
           ) : (
             <div class={bemClass(messages._, messages.empty)}>{lfEmpty}</div>
           )}
-          {toolExecutionChip()}
         </div>
         <div class={bemClass(chat._, chat.spinnerBar)}>{spinner()}</div>
       </Fragment>
@@ -1058,15 +1053,23 @@ export class LfChat implements LfChatInterface {
     const { bemClass } = this.#framework.theme;
 
     const { toolbar } = this.#b;
-    const { copyContent, deleteMessage, regenerate, editMessage } =
-      this.#adapter.elements.jsx.toolbar;
+    const {
+      copyContent,
+      deleteMessage,
+      regenerate,
+      editMessage,
+      toolExecution,
+    } = this.#adapter.elements.jsx.toolbar;
 
     return (
       <div class={bemClass(toolbar._)} part={this.#p.toolbar}>
-        {deleteMessage(m)}
-        {copyContent(m)}
-        {editMessage(m)}
-        {m.role === "user" && regenerate(m)}
+        <div class={bemClass(toolbar._, toolbar.buttons)}>
+          {deleteMessage(m)}
+          {copyContent(m)}
+          {editMessage(m)}
+          {m.role === "user" && regenerate(m)}
+        </div>
+        {toolExecution(m)}
       </div>
     );
   };

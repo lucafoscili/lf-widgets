@@ -135,6 +135,7 @@ export const createRefs = (): LfChatAdapterRefs => {
       deleteMessage: null,
       editMessage: null,
       regenerate: null,
+      toolExecution: null,
     },
   };
 };

@@ -3,58 +3,18 @@ import {
   LfChatConfig,
   LfChatCurrentTokens,
   LfDataDataset,
+  LfDataNode,
   LfLLMChoiceMessage,
   LfLLMContentPart,
   LfLLMRequest,
   LfLLMRole,
   LfLLMTool,
+  LfLLMToolCall,
 } from "@lf-widgets/foundations";
 import { VNode } from "@stencil/core";
 import { LfChat } from "./lf-chat";
 
-//#region Tool execution dataset builders
-/**
- * Creates initial dataset for tool execution visualization.
- * Root node shows "Working..." with spinner icon.
- *
- * @returns LfDataDataset with root node for tool execution tracking
- */
-export const createToolExecutionDataset = (): LfDataDataset => ({
-  nodes: [
-    {
-      id: "tool-exec-root",
-      value: "⚙️ Working...",
-      children: [],
-    },
-  ],
-});
-
-/**
- * Adds a tool call as a child node to the execution dataset.
- *
- * @param dataset - The current tool execution dataset
- * @param toolName - Name of the tool being called
- * @param toolId - Unique identifier for this tool call
- * @returns Updated dataset with new tool node
- */
-export const addToolToDataset = (
-  dataset: LfDataDataset,
-  toolName: string,
-  toolId: string,
-): LfDataDataset => {
-  const root = dataset.nodes[0];
-  if (!root.children) {
-    root.children = [];
-  }
-
-  root.children.push({
-    id: toolId,
-    value: `🔧 ${toolName}`,
-  });
-
-  return { nodes: [{ ...root }] };
-};
-
+//#region Tool dataset
 /**
  * Updates a tool node with its execution result.
  *
@@ -92,24 +52,6 @@ export const updateToolResult = (
     }
   }
 
-  return { nodes: [{ ...root }] };
-};
-
-/**
- * Finalizes the tool execution dataset by updating the root node.
- *
- * @param dataset - The current tool execution dataset
- * @param success - Whether all tools executed successfully
- * @returns Final dataset with completion message
- */
-export const finalizeToolDataset = (
-  dataset: LfDataDataset,
-  success: boolean,
-): LfDataDataset => {
-  const root = dataset.nodes[0];
-  root.value = success ? "✓ Finished working" : "⚠️ Completed with errors";
-  // Set icon to collapsed state so it can be expanded to review
-  root.icon = "collapse";
   return { nodes: [{ ...root }] };
 };
 //#endregion
@@ -272,7 +214,10 @@ export const getEffectiveConfig = (
 //#endregion
 
 //#region Api call
-export const apiCall = async (adapter: LfChatAdapter) => {
+export const apiCall = async (
+  adapter: LfChatAdapter,
+  updateLastAssistant: boolean = false,
+) => {
   const { get } = adapter.controller;
   const { compInstance, manager } = get;
   const { debug, llm } = manager;
@@ -281,9 +226,9 @@ export const apiCall = async (adapter: LfChatAdapter) => {
     const request = newRequest(adapter);
 
     if (llm.stream) {
-      await handleStreamingResponse(adapter, request);
+      await handleStreamingResponse(adapter, request, updateLastAssistant);
     } else {
-      await handleFetchResponse(adapter, request);
+      await handleFetchResponse(adapter, request, updateLastAssistant);
     }
   } catch (error) {
     const errMessage =
@@ -295,26 +240,16 @@ export const apiCall = async (adapter: LfChatAdapter) => {
 
 //#region Execute tools
 export const executeTools = async (
-  toolCalls: unknown[],
+  toolCalls: LfLLMToolCall[],
   availableTools: LfLLMTool[] = [],
 ): Promise<LfLLMChoiceMessage[]> => {
-  const results: LfLLMChoiceMessage[] = [];
-
-  if (!Array.isArray(toolCalls)) {
-    return results;
-  }
-
-  for (const call of toolCalls) {
-    if (!call || typeof call !== "object") {
-      continue;
+  // Execute all tools in parallel for better performance
+  const executionPromises = toolCalls.map(async (call) => {
+    if (!call || !call.function?.name) {
+      return null;
     }
 
-    const callObj = call as any;
-    const func = callObj.function;
-    if (!func || !func.name) {
-      continue;
-    }
-
+    const func = call.function;
     let result = "";
 
     const matchingTool = availableTools.find(
@@ -343,14 +278,66 @@ export const executeTools = async (
       result = `Error: Tool "${func.name}" is not available. Available tools are: ${availableToolNames}. Please use one of these tool names exactly as shown.`;
     }
 
-    results.push({
-      role: "tool",
+    return {
+      role: "tool" as const,
       content: result,
-      tool_call_id: callObj.id,
-    });
-  }
+      tool_call_id: call.id,
+    };
+  });
+
+  // Wait for all tools to complete and filter out nulls
+  const results = (await Promise.all(executionPromises)).filter(
+    (result) => result !== null,
+  ) as LfLLMChoiceMessage[];
 
   return results;
+};
+//#endregion
+
+//#region Create initial tool dataset
+/**
+ * Creates an initial tool execution dataset to show execution status immediately
+ * when tool calls are detected during streaming.
+ *
+ * @param adapter - The chat adapter instance
+ * @param toolCalls - Array of tool calls detected so far
+ * @returns Initial dataset showing tools in executing state
+ */
+const createInitialToolDataset = (
+  adapter: LfChatAdapter,
+  toolCalls: LfLLMToolCall[],
+): LfDataDataset => {
+  const { get } = adapter.controller;
+  const { manager } = get;
+  const { theme } = manager;
+
+  const children: LfDataNode[] = [];
+
+  for (const call of toolCalls) {
+    if (call && call.function?.name && call.id) {
+      children.push({
+        description: `Tool "${call.function.name}" is being executed...`,
+        icon: theme.get.current().variables["--lf-icon-loading"],
+        id: call.id,
+        value: call.function.name,
+        children: [],
+      });
+    }
+  }
+
+  const dataset: LfDataDataset = {
+    nodes: [
+      {
+        description: "Executing tool...",
+        icon: theme.get.current().variables["--lf-icon-loading"],
+        id: "tool-exec-root",
+        value: "Working...",
+        children,
+      },
+    ],
+  };
+
+  return dataset;
 };
 //#endregion
 
@@ -360,109 +347,85 @@ export const executeTools = async (
  *
  * @param adapter - The chat adapter instance
  * @param toolCalls - Array of tool calls from the LLM
- * @returns Promise that resolves when tool handling is complete
+ * @returns Promise that resolves with the final tool execution dataset (or null if disabled)
  */
 const handleToolCalls = async (
   adapter: LfChatAdapter,
-  toolCalls: unknown[],
-): Promise<void> => {
+  toolCalls: LfLLMToolCall[],
+): Promise<LfDataDataset | null> => {
   const { get, set } = adapter.controller;
-  const { compInstance, currentToolExecution, history } = get;
-  const { debug } = get.manager;
+  const { compInstance, history } = get;
+  const { debug, theme } = get.manager;
   const effectiveConfig = getEffectiveConfig(adapter);
 
-  if (!toolCalls || toolCalls.length === 0) {
-    return;
+  const hasToolCalls = Array.isArray(toolCalls) && toolCalls.length > 0;
+  if (!hasToolCalls) {
+    return null;
   }
 
-  debug.logs.new(
-    compInstance,
-    `Tool calls received: ${JSON.stringify(toolCalls, null, 2)}`,
-    "informational",
-  );
-
-  // Initialize tool execution dataset if config allows
   const showIndicator = effectiveConfig.ui.showToolExecutionIndicator !== false;
-  if (showIndicator) {
-    set.currentToolExecution(createToolExecutionDataset());
-  }
+  const children: LfDataNode[] = [];
+  let dataset: LfDataDataset = { nodes: [] };
 
-  // Add each tool call to the dataset
-  if (showIndicator && Array.isArray(toolCalls)) {
-    for (const call of toolCalls) {
-      if (call && typeof call === "object") {
-        const callObj = call as any;
-        const func = callObj.function;
-        if (func?.name && callObj.id) {
-          const current = currentToolExecution();
-          set.currentToolExecution(
-            addToolToDataset(current, func.name, callObj.id),
-          );
-        }
-      }
+  dataset.nodes.push({
+    description: "Executing tool...",
+    icon: theme.get.current().variables["--lf-icon-loading"],
+    id: "tool-exec-root",
+    value: "Working...",
+    children,
+  });
+
+  for (const call of toolCalls) {
+    if (call && call.function?.name && call.id) {
+      children.push({
+        description: `Tool "${call.function.name}" is being executed...`,
+        icon: theme.get.current().variables["--lf-icon-loading"],
+        id: call.id,
+        value: call.function.name,
+        children: [],
+      });
     }
   }
 
-  // Execute tools
   const toolResults = await executeTools(
     toolCalls,
     effectiveConfig.tools.definitions,
   );
 
-  debug.logs.new(
-    compInstance,
-    `Tool execution completed. Results: ${JSON.stringify(toolResults, null, 2)}`,
-    "informational",
-  );
+  for (const result of toolResults) {
+    const isSuccess =
+      result.content &&
+      !result.content.startsWith('Tool "') &&
+      !result.content.startsWith("Error:");
 
-  // Update dataset with results
-  if (showIndicator && currentToolExecution()) {
-    for (const result of toolResults) {
-      const isSuccess =
-        result.content &&
-        !result.content.startsWith('Tool "') &&
-        !result.content.startsWith("Error:");
-
-      const current = currentToolExecution();
-      set.currentToolExecution(
-        updateToolResult(
-          current,
-          result.tool_call_id || "",
-          result.content || "",
-          isSuccess,
-        ),
-      );
-    }
+    dataset = updateToolResult(
+      dataset,
+      result.tool_call_id || "",
+      result.content || "",
+      isSuccess,
+    );
   }
 
-  // Check if any tools were successfully executed
   const hasValidToolResults = toolResults.some(
-    (result) =>
+    (result: LfLLMChoiceMessage) =>
       result.content &&
       !result.content.startsWith('Tool "') &&
       !result.content.includes("is not available"),
   );
 
   const hasErrors = toolResults.some(
-    (result) =>
+    (result: LfLLMChoiceMessage) =>
       result.content &&
       (result.content.startsWith('Tool "') ||
         result.content.includes("is not available")),
   );
 
   if (hasValidToolResults) {
-    // At least one tool executed successfully
     debug.logs.new(
       compInstance,
       `${toolResults.length} tool result(s) added to history`,
       "informational",
     );
-
-    // Finalize dataset
-    if (showIndicator && currentToolExecution()) {
-      const current = currentToolExecution();
-      set.currentToolExecution(finalizeToolDataset(current, true));
-    }
 
     for (const result of toolResults) {
       set.history(() => history().push(result));
@@ -473,48 +436,48 @@ const handleToolCalls = async (
       "Making follow-up request after successful tool execution",
       "informational",
     );
-    await apiCall(adapter);
+    await apiCall(adapter, true);
 
-    // Chip stays visible and collapsed - user can expand to review tool execution details
+    if (showIndicator && dataset) {
+      const root = dataset.nodes[0];
+      root.icon = theme.get.current().variables["--lf-icon-success"];
+      root.value = "Completed";
+    }
+
+    return dataset;
   } else if (hasErrors) {
-    // All tools failed - still add error messages to history so LLM can see them
     debug.logs.new(
       compInstance,
       "All tool calls failed. Adding error messages to history for LLM recovery.",
       "warning",
     );
 
-    // Finalize dataset with error state
-    if (showIndicator && currentToolExecution()) {
-      const current = currentToolExecution();
-      set.currentToolExecution(finalizeToolDataset(current, false));
+    if (showIndicator && dataset) {
+      const root = dataset.nodes[0];
+      root.icon = theme.get.current().variables["--lf-icon-warning"];
+      root.value = "Failed";
     }
 
     for (const result of toolResults) {
       set.history(() => history().push(result));
     }
 
-    // Make follow-up request so LLM can see the errors and respond
     debug.logs.new(
       compInstance,
       "Making follow-up request after tool errors (LLM will see error messages)",
       "informational",
     );
-    await apiCall(adapter);
+    await apiCall(adapter, true);
 
-    // Chip stays visible and collapsed - user can expand to review error details
+    return dataset;
   } else {
-    // No tool results at all (shouldn't happen, but handle it)
     debug.logs.new(
       compInstance,
       "No tool results generated (unexpected)",
       "error",
     );
 
-    // Clear indicator
-    if (showIndicator) {
-      set.currentToolExecution(null);
-    }
+    return null;
   }
 };
 //#endregion
@@ -530,6 +493,7 @@ const handleToolCalls = async (
 const handleStreamingResponse = async (
   adapter: LfChatAdapter,
   request: LfLLMRequest,
+  updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
@@ -539,27 +503,70 @@ const handleStreamingResponse = async (
 
   const abortController = llm.createAbort?.();
   set.currentAbortStreaming(abortController);
-  set.history(() => history().push({ role: "assistant", content: "" }));
+  // Don't create assistant message yet - wait until we have content or complete response
 
   try {
-    let lastIndex = history().length - 1;
+    let lastIndex = -1; // Will be set when we create the message
     let chunkCount = 0;
-    let accumulatedToolCalls: unknown[] = [];
+    let accumulatedContent = "";
+    let accumulatedToolCalls: LfLLMToolCall[] = [];
+    let toolExecutionShown = false;
+    let messageCreated = false;
 
     for await (const chunk of llm.stream(request, lfEndpointUrl, {
       signal: abortController?.signal,
     })) {
       if (chunk?.contentDelta) {
-        set.history(() => {
-          const h = history();
-          if (h[lastIndex]) {
-            h[lastIndex].content += chunk.contentDelta;
-            if (chunkCount % 5 === 0) {
-              requestAnimationFrame(() => comp.scrollToBottom(true));
+        accumulatedContent += chunk.contentDelta;
+
+        // Create or update message on first content chunk
+        if (!messageCreated) {
+          messageCreated = true;
+          if (updateLastAssistant) {
+            // Find the last assistant message and update it
+            const h = history();
+            lastIndex = h.length - 1;
+            while (lastIndex >= 0 && h[lastIndex].role !== "assistant") {
+              lastIndex--;
             }
-            chunkCount++;
+            if (lastIndex >= 0) {
+              set.history(() => {
+                const h = history();
+                h[lastIndex].content = accumulatedContent;
+              });
+            } else {
+              // Fallback: push new message if no assistant found
+              set.history(() =>
+                history().push({
+                  role: "assistant",
+                  content: accumulatedContent,
+                }),
+              );
+              lastIndex = history().length - 1;
+            }
+          } else {
+            set.history(() =>
+              history().push({
+                role: "assistant",
+                content: accumulatedContent,
+              }),
+            );
+            lastIndex = history().length - 1;
           }
-        });
+        } else {
+          // Update existing message
+          set.history(() => {
+            const h = history();
+            if (h[lastIndex]) {
+              h[lastIndex].content = accumulatedContent;
+            }
+          });
+        }
+
+        if (chunkCount % 5 === 0) {
+          requestAnimationFrame(() => comp.scrollToBottom(true));
+        }
+        chunkCount++;
       }
 
       if (chunk?.toolCalls && Array.isArray(chunk.toolCalls)) {
@@ -569,7 +576,42 @@ const handleStreamingResponse = async (
           `Tool call chunk received: ${JSON.stringify(chunk.toolCalls)}`,
           "informational",
         );
+
+        // Show tool execution chip immediately when first tool call is detected
+        if (accumulatedToolCalls.length > 0 && !toolExecutionShown) {
+          toolExecutionShown = true;
+
+          // If we haven't created a message yet, create one for tool execution
+          if (!messageCreated) {
+            messageCreated = true;
+            set.history(() =>
+              history().push({ role: "assistant", content: "" }),
+            );
+            lastIndex = history().length - 1;
+          }
+
+          // Create and attach tool execution dataset immediately
+          const initialDataset = createInitialToolDataset(
+            adapter,
+            accumulatedToolCalls,
+          );
+          set.history(() => {
+            const h = history();
+            if (h[lastIndex]) {
+              h[lastIndex].toolExecution = initialDataset;
+            }
+          });
+        }
       }
+    }
+
+    // After streaming completes, ensure we have a message if there were tool calls but no content
+    if (!messageCreated && accumulatedToolCalls.length > 0) {
+      messageCreated = true;
+      set.history(() =>
+        history().push({ role: "assistant", content: accumulatedContent }),
+      );
+      lastIndex = history().length - 1;
     }
 
     if (accumulatedToolCalls.length > 0) {
@@ -578,14 +620,19 @@ const handleStreamingResponse = async (
         `Streaming complete. Total tool calls accumulated: ${accumulatedToolCalls.length}`,
         "informational",
       );
-      set.history(() => {
-        const h = history();
-        if (h[lastIndex]) {
-          h[lastIndex].tool_calls = accumulatedToolCalls;
-        }
-      });
 
-      await handleToolCalls(adapter, accumulatedToolCalls);
+      // Execute tools and update the existing toolExecution dataset
+      const finalDataset = await handleToolCalls(adapter, accumulatedToolCalls);
+      if (finalDataset && lastIndex >= 0) {
+        // Update the existing toolExecution dataset and ensure tool_calls are attached
+        set.history(() => {
+          const h = history();
+          if (h[lastIndex]) {
+            h[lastIndex].tool_calls = accumulatedToolCalls;
+            h[lastIndex].toolExecution = finalDataset;
+          }
+        });
+      }
     }
 
     requestAnimationFrame(() => comp.scrollToBottom("end"));
@@ -606,6 +653,7 @@ const handleStreamingResponse = async (
 const handleFetchResponse = async (
   adapter: LfChatAdapter,
   request: LfLLMRequest,
+  updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
@@ -621,11 +669,33 @@ const handleFetchResponse = async (
     content: message,
     tool_calls: toolCalls,
   };
-  set.history(() => history().push(llmMessage));
 
-  // Handle tool calls if any
+  // Handle tool calls if any (attaches toolExecution to message)
   if (toolCalls && toolCalls.length > 0) {
-    await handleToolCalls(adapter, toolCalls);
+    const toolDataset = await handleToolCalls(adapter, toolCalls);
+    if (toolDataset) {
+      llmMessage.toolExecution = toolDataset;
+    }
+  }
+
+  if (updateLastAssistant) {
+    // Find the last assistant message and update it
+    const h = history();
+    let lastIndex = h.length - 1;
+    while (lastIndex >= 0 && h[lastIndex].role !== "assistant") {
+      lastIndex--;
+    }
+    if (lastIndex >= 0) {
+      set.history(() => {
+        const h = history();
+        h[lastIndex] = { ...h[lastIndex], ...llmMessage };
+      });
+    } else {
+      // Fallback: push new message
+      set.history(() => history().push(llmMessage));
+    }
+  } else {
+    set.history(() => history().push(llmMessage));
   }
 };
 //#endregion

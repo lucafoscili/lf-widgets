@@ -66,6 +66,8 @@ export const LF_CHAT_BLOCKS = {
   toolbar: {
     _: "toolbar",
     button: "button",
+    buttons: "buttons",
+    toolExecution: "tool-execution",
   },
 } as const;
 //#endregion

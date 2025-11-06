@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
+import { LfDataDataset } from "../framework/data.declarations";
 import { LfLLMTool } from "../framework/llm.declarations";
 import {
   LfLLMAttachment,
@@ -141,6 +142,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     editMessage: (m: LfLLMChoiceMessage) => VNode;
     regenerate: (m: LfLLMChoiceMessage) => VNode;
+    toolExecution: (m: LfLLMChoiceMessage) => VNode | null;
   };
 }
 /**
@@ -187,6 +189,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     deleteMessage: LfButtonElement | null;
     editMessage: LfButtonElement | null;
     regenerate: LfButtonElement | null;
+    toolExecution: LfChipElement | null;
   };
 }
 /**
@@ -258,7 +261,7 @@ export interface LfChatAdapterControllerGetters
   currentEditingIndex: () => number;
   currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
-  currentToolExecution: () => any;
+  currentToolExecution: () => LfDataDataset | null;
   cyAttributes: typeof CY_ATTRIBUTES;
   history: () => LfChatHistory;
   lastMessage: (role?: LfLLMRole) => LfLLMChoiceMessage;
@@ -279,7 +282,7 @@ export interface LfChatAdapterControllerSetters
   currentEditingIndex: (value: number) => void;
   currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
-  currentToolExecution: (value: any) => void;
+  currentToolExecution: (value: LfDataDataset | null) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
   view: (view: LfChatView) => void;
