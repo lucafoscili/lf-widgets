@@ -17,6 +17,8 @@ export const LF_CHIP_BLOCKS = {
     icon: "icon",
     indent: "indent",
     primaryAction: "primary-action",
+    spinner: "spinner",
+    spinnerContainer: "spinner-container",
     text: "text",
   },
   wrapper: {
@@ -51,7 +53,9 @@ export const LF_CHIP_PARTS = {
 export const LF_CHIP_PROPS = [
   "lfAriaLabel",
   "lfDataset",
+  "lfFlat",
   "lfRipple",
+  "lfShowSpinner",
   "lfStyle",
   "lfStyling",
   "lfUiSize",

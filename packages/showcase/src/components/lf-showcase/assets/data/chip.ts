@@ -79,7 +79,7 @@ export const getChipFixtures = (
         children: [
           SECTION_FACTORY.overview(
             COMPONENT_NAME,
-            "feats a tree-like data visualization with selectable or removable nodes",
+            "features a tree-like data visualization with selectable or removable nodes. Supports spinner indicators for loading states and flat mode for seamless toolbar integration.",
           ),
           SECTION_FACTORY.usage(COMPONENT_NAME, {
             data: JSON.stringify(lfDataset),
@@ -167,6 +167,28 @@ export const getChipFixtures = (
           props: {
             lfDataset,
             lfStyle: randomStyle(),
+          },
+        },
+        spinner: {
+          description: "Chip with spinner enabled",
+          props: {
+            lfDataset,
+            lfShowSpinner: true,
+          },
+        },
+        flat: {
+          description: "Chip in flat mode (no background/border)",
+          props: {
+            lfDataset,
+            lfFlat: true,
+          },
+        },
+        flatWithSpinner: {
+          description: "Flat chip with spinner",
+          props: {
+            lfDataset,
+            lfFlat: true,
+            lfShowSpinner: true,
           },
         },
       },

@@ -132,6 +132,7 @@ export const prepToolbar = (
         <div class={bemClass(blocks.toolbar._, blocks.toolbar.toolExecution)}>
           <lf-chip
             lfDataset={m.toolExecution}
+            lfFlat={true}
             lfUiSize="xsmall"
             ref={assignRef(toolbar, "toolExecution")}
           />

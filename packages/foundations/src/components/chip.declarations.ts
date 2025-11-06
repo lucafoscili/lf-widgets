@@ -60,7 +60,9 @@ export interface LfChipEventArguments {
 export interface LfChipPropsInterface {
   lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
+  lfFlat?: boolean;
   lfRipple?: boolean;
+  lfShowSpinner?: boolean;
   lfStyle?: string;
   lfStyling?: LfChipStyling;
   lfUiSize?: LfThemeUISize;
