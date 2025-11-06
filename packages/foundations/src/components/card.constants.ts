@@ -1,13 +1,13 @@
-import {
-  LfCardAdapter,
-  LfCardLayout,
-  LfCardPropsInterface,
-} from "./card.declarations";
 import { LF_ATTRIBUTES } from "../foundations/components.constants";
 import {
   LfDataCell,
   LfDataShapeDefaults,
 } from "../framework/data.declarations";
+import {
+  LfCardAdapter,
+  LfCardLayout,
+  LfCardPropsInterface,
+} from "./card.declarations";
 
 //#region Automatic CSS variables
 export const LF_CARD_CSS_VARS = {
@@ -48,6 +48,18 @@ export const LF_CARD_BLOCKS = {
     _: "upload-layout",
     section1: "section-1",
     section2: "section-2",
+  },
+  weatherLayout: {
+    _: "weather-layout",
+    header: "header",
+    location: "location",
+    mainSection: "main-section",
+    temperature: "temperature",
+    icon: "icon",
+    detailsGrid: "details-grid",
+    detailItem: "detail-item",
+    detailLabel: "detail-label",
+    detailValue: "detail-value",
   },
 } as const;
 //#endregion
@@ -160,6 +172,16 @@ export const LF_CARD_DEFAULTS: (getAdapter: () => LfCardAdapter) => {
         },
       ],
     },
+    weather: {
+      image: (): LfDataCell<"image">[] => [
+        {
+          lfSizeX: "100%",
+          lfSizeY: "100%",
+          shape: "image",
+          value: "",
+        },
+      ],
+    },
   };
 };
 //#endregion
@@ -188,6 +210,7 @@ export const LF_CARD_LAYOUTS = [
   "keywords",
   "material",
   "upload",
+  "weather",
 ] as const;
 //#endregion
 
@@ -198,6 +221,7 @@ export const LF_CARD_PARTS = {
   keywordsLayout: "keywords-layout",
   materialLayout: "material-layout",
   uploadLayout: "upload-layout",
+  weatherLayout: "weather-layout",
 } as const;
 
 //#region Props

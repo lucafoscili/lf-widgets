@@ -890,7 +890,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfLayout",
         docs: 'The layout style for the card component.\r\nCan be set to different predefined styles like "material" design.',
-        type: '"debug" | "keywords" | "material" | "upload"',
+        type: '"debug" | "keywords" | "material" | "upload" | "weather"',
       },
       {
         name: "lfSizeX",

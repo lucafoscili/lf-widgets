@@ -36,6 +36,7 @@ export const getCardFixtures = (
   const lfDatasets: {
     [K in LfCardLayout]: LfDataDataset[];
   } = {
+    //#region Debug
     debug: [
       {
         nodes: [
@@ -61,6 +62,9 @@ export const getCardFixtures = (
         ],
       },
     ],
+    //#endregion
+
+    //#region Keywords
     keywords: [
       {
         nodes: [
@@ -189,6 +193,9 @@ export const getCardFixtures = (
         ],
       },
     ],
+    //#endregion
+
+    //#region Material
     material: [
       {
         nodes: [
@@ -302,6 +309,9 @@ export const getCardFixtures = (
         ],
       },
     ],
+    //#endregion
+
+    //#region Upload
     upload: [
       {
         nodes: [
@@ -319,6 +329,11 @@ export const getCardFixtures = (
         ],
       },
     ],
+    //#endregion
+
+    //#region Weather
+    weather: [], // TODO: add weather datasets (from free API fetch + mock fallback); 1 example for each weather condition + custom image
+    //#endregion
   };
   //#endregion
 

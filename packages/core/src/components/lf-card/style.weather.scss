@@ -1,0 +1,260 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: null !default;
+
+.weather-layout {
+  & {
+    @include lf-comp-border($comp, "radius");
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+    padding: 1.5em;
+    position: relative;
+    overflow: hidden;
+    animation: weather-fade-in 0.4s ease-out;
+  }
+
+  // Background image (when provided)
+  &[data-has-background="true"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--weather-bg-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px) brightness(0.7);
+    z-index: 0;
+  }
+
+  // Glassmorphism overlay (stronger when image present)
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(12px);
+    background: rgba(var(--lf-color-bg-rgb), 0.7);
+    z-index: 1;
+  }
+
+  &[data-has-background="true"]::after {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(var(--lf-color-bg-rgb), 0.6);
+  }
+
+  // All content above overlays
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Condition-based gradients (when no image)
+  &[data-has-background="false"] {
+    &[data-weather-condition="sunny"] {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 183, 77, 0.3) 0%,
+        rgba(255, 138, 101, 0.2) 100%
+      );
+    }
+    &[data-weather-condition="partly-cloudy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(144, 202, 249, 0.3) 0%,
+        rgba(187, 222, 251, 0.2) 100%
+      );
+    }
+    &[data-weather-condition="cloudy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(158, 158, 158, 0.3) 0%,
+        rgba(189, 189, 189, 0.2) 100%
+      );
+    }
+    &[data-weather-condition="rainy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(66, 165, 245, 0.3) 0%,
+        rgba(100, 181, 246, 0.2) 100%
+      );
+    }
+    &[data-weather-condition="stormy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(69, 90, 100, 0.4) 0%,
+        rgba(84, 110, 122, 0.3) 100%
+      );
+    }
+    &[data-weather-condition="snowy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(179, 229, 252, 0.3) 0%,
+        rgba(225, 245, 254, 0.2) 100%
+      );
+    }
+    &[data-weather-condition="foggy"] {
+      background: linear-gradient(
+        135deg,
+        rgba(176, 190, 197, 0.3) 0%,
+        rgba(207, 216, 220, 0.2) 100%
+      );
+    }
+
+    // Default glassmorphism for non-image cards
+    &::after {
+      backdrop-filter: blur(8px);
+      background: rgba(var(--lf-color-bg-rgb), 0.5);
+    }
+  }
+
+  // Header with location
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: weather-slide-down 0.5s ease-out 0.1s both;
+  }
+
+  &__location {
+    font-size: 1.2em;
+    font-weight: 600;
+    opacity: 0.95;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  // Main section with temperature and icon
+  &__main-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2em;
+    animation: weather-scale-in 0.6s ease-out 0.2s both;
+  }
+
+  &__icon {
+    font-size: 5em;
+    line-height: 1;
+    animation: weather-bounce 0.8s ease-out 0.4s;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  }
+
+  &__temperature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25em;
+
+    // Large temperature in Celsius
+    .text-content__title {
+      font-size: 3.5em;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    // Smaller Fahrenheit
+    .text-content__subtitle {
+      font-size: 1.3em;
+      font-weight: 500;
+      opacity: 0.75;
+    }
+  }
+
+  // Details grid (2x2)
+  &__details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75em;
+    animation: weather-slide-up 0.6s ease-out 0.3s both;
+  }
+
+  &__detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+    padding: 1em;
+    background: rgba(var(--lf-color-primary-rgb), 0.08);
+    border-radius: 0.75em;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(var(--lf-color-primary-rgb), 0.12);
+      transform: translateY(-2px);
+    }
+  }
+
+  &__detail-label {
+    font-size: 0.85em;
+    opacity: 0.65;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__detail-value {
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+}
+
+// Animations
+@keyframes weather-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes weather-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes weather-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes weather-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes weather-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-4px);
+  }
+}

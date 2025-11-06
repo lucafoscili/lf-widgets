@@ -12,6 +12,9 @@
 @use "./style.upload" as su with (
   $comp: "card"
 );
+@use "./style.weather" as sw with (
+  $comp: "card"
+);
 
 $comp: "card";
 @include lf-comp-setup($comp, "true", "true", "true");
