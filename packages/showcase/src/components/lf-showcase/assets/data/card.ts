@@ -332,7 +332,88 @@ export const getCardFixtures = (
     //#endregion
 
     //#region Weather
-    weather: [], // TODO: add weather datasets (from free API fetch + mock fallback); 1 example for each weather condition + custom image
+    weather: [
+      {
+        nodes: [
+          {
+            cells: {
+              0: { value: "London, United Kingdom" },
+              1: { value: "22" }, // Temperature °C
+              2: { value: "72" }, // Temperature °F
+              3: { value: "Partly cloudy" },
+              4: { value: "19" }, // Feels like °C
+              5: { value: "66" }, // Feels like °F
+              6: { value: "65" }, // Humidity %
+              7: { value: "15" }, // Wind speed km/h
+              8: { value: "ENE" }, // Wind direction
+            },
+            description: "London weather - partly cloudy",
+            id: "london-partly-cloudy",
+          },
+        ],
+      },
+      {
+        nodes: [
+          {
+            cells: {
+              0: { value: "New York, United States" },
+              1: { value: "18" }, // Temperature °C
+              2: { value: "64" }, // Temperature °F
+              3: { value: "Sunny" },
+              4: { value: "16" }, // Feels like °C
+              5: { value: "61" }, // Feels like °F
+              6: { value: "45" }, // Humidity %
+              7: { value: "8" }, // Wind speed km/h
+              8: { value: "SW" }, // Wind direction
+              lfImage: {
+                shape: "image",
+                value: get(`./assets/showcase/sunny.jpg`).path,
+              },
+            },
+            description: "New York weather - sunny with background image",
+            id: "new-york-sunny",
+          },
+        ],
+      },
+      {
+        nodes: [
+          {
+            cells: {
+              0: { value: "Tokyo, Japan" },
+              1: { value: "12" }, // Temperature °C
+              2: { value: "54" }, // Temperature °F
+              3: { value: "Rainy" },
+              4: { value: "10" }, // Feels like °C
+              5: { value: "50" }, // Feels like °F
+              6: { value: "85" }, // Humidity %
+              7: { value: "25" }, // Wind speed km/h
+              8: { value: "N" }, // Wind direction
+            },
+            description: "Tokyo weather - rainy",
+            id: "tokyo-rainy",
+          },
+        ],
+      },
+      {
+        nodes: [
+          {
+            cells: {
+              0: { value: "Moscow, Russia" },
+              1: { value: "-5" }, // Temperature °C
+              2: { value: "23" }, // Temperature °F
+              3: { value: "Snowy" },
+              4: { value: "-8" }, // Feels like °C
+              5: { value: "18" }, // Feels like °F
+              6: { value: "75" }, // Humidity %
+              7: { value: "12" }, // Wind speed km/h
+              8: { value: "NW" }, // Wind direction
+            },
+            description: "Moscow weather - snowy",
+            id: "moscow-snowy",
+          },
+        ],
+      },
+    ],
     //#endregion
   };
   //#endregion
@@ -417,6 +498,7 @@ export const getCardFixtures = (
         upload: 2,
         sizes: 4,
         states: 4,
+        weather: 3,
       },
     },
     //#endregion

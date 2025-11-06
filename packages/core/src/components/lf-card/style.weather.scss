@@ -187,6 +187,7 @@ $comp: null !default;
   }
 
   &__detail-label {
+    align-self: center;
     font-size: 0.85em;
     opacity: 0.65;
     font-weight: 500;
