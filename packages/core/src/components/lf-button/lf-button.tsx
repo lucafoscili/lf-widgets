@@ -32,6 +32,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-button-adapter";
@@ -353,6 +354,24 @@ export class LfButton implements LfButtonInterface {
       value: this.value,
       valueAsBoolean: this.value === "on" ? true : false,
     });
+  }
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfDataset")
+  onDatasetChanged(newValue: LfDataDataset) {
+    // Derive icon/label only when absent and framework ready
+    if (!this.#framework || !newValue?.nodes?.[0]) {
+      return;
+    }
+
+    const firstNode = newValue.nodes[0];
+    if (!this.lfIcon) {
+      this.lfIcon = firstNode.icon;
+    }
+    if (!this.lfLabel) {
+      this.lfLabel = this.#framework.data.cell.stringify(firstNode.value);
+    }
   }
   //#endregion
 
