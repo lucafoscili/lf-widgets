@@ -530,7 +530,6 @@ export class LfChat implements LfChatInterface {
       } else {
         for (const file of filesList) {
           try {
-            const data = await fileToDataUrl(file);
             const id =
               typeof crypto !== "undefined" &&
               (crypto as Crypto & { randomUUID?: () => string }).randomUUID
@@ -540,26 +539,13 @@ export class LfChat implements LfChatInterface {
                 : String(Date.now()) + String(Math.random()).slice(2, 8);
             const name = file.name;
             const type = "image_url";
-
-            let content: string | undefined;
-            if (file.size <= 1024 * 1024) {
-              try {
-                content = await new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onerror = () => reject(reader.error);
-                  reader.onload = () => resolve(reader.result as string);
-                  reader.readAsText(file);
-                });
-              } catch {}
-            }
+            const b64Image = await fileToDataUrl(file);
 
             const attachment: LfLLMAttachment = {
               id,
               type,
               name,
-              url: URL.createObjectURL(file),
-              data,
-              content,
+              image_url: { detail: "auto", url: b64Image },
             };
             this.currentAttachments = [...this.currentAttachments, attachment];
           } catch (err) {
