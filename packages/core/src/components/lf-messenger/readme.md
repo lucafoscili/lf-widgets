@@ -16,9 +16,9 @@ The component supports various customization options, including character select
 | Property     | Attribute     | Description                                                                                                                     | Type                 | Default |
 | ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ------- |
 | `lfAutosave` | `lf-autosave` | Automatically saves the dataset when a chat updates.                                                                            | `boolean`            | `true`  |
-| `lfDataset`  | `lf-dataset`  | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfMessengerDataset` | `null`  |
+| `lfDataset`  | --            | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfMessengerDataset` | `null`  |
 | `lfStyle`    | `lf-style`    | Custom styling for the component.                                                                                               | `string`             | `""`    |
-| `lfValue`    | `lf-value`    | Sets the initial configuration, including active character and filters.                                                         | `LfMessengerConfig`  | `null`  |
+| `lfValue`    | --            | Sets the initial configuration, including active character and filters.                                                         | `LfMessengerConfig`  | `null`  |
 
 
 ## Events
@@ -161,9 +161,9 @@ graph TD;
   lf-button --> lf-spinner
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-tabbar --> lf-button
   style lf-messenger fill:#f9f,stroke:#333,stroke-width:4px

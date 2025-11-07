@@ -106,7 +106,6 @@ Type: `Promise<void>`
  - [lf-article](../lf-article)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-chat](../lf-chat)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-tree](../lf-tree)
@@ -118,7 +117,6 @@ graph TD;
   lf-article --> lf-typewriter
   lf-card --> lf-typewriter
   lf-carousel --> lf-typewriter
-  lf-chat --> lf-typewriter
   lf-compare --> lf-typewriter
   lf-masonry --> lf-typewriter
   lf-tree --> lf-typewriter

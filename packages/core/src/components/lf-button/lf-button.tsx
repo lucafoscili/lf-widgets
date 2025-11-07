@@ -32,6 +32,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-button-adapter";
@@ -356,6 +357,24 @@ export class LfButton implements LfButtonInterface {
   }
   //#endregion
 
+  //#region Watchers
+  @Watch("lfDataset")
+  onDatasetChanged(newValue: LfDataDataset) {
+    // Derive icon/label only when absent and framework ready
+    if (!this.#framework || !newValue?.nodes?.[0]) {
+      return;
+    }
+
+    const firstNode = newValue.nodes[0];
+    if (!this.lfIcon) {
+      this.lfIcon = firstNode.icon;
+    }
+    if (!this.lfLabel) {
+      this.lfLabel = this.#framework.data.cell.stringify(firstNode.value);
+    }
+  }
+  //#endregion
+
   //#region Public methods
   /**
    * Fetches debug information of the component's current state.
@@ -566,10 +585,12 @@ export class LfButton implements LfButtonInterface {
     );
   }
   disconnectedCallback() {
-    const { list } = this.#adapter.elements.refs;
+    if (this.#adapter) {
+      const { list } = this.#adapter.elements.refs;
 
-    if (list && this.#framework?.portal.isInPortal(list)) {
-      this.#framework?.portal.close(list);
+      if (list && this.#framework?.portal.isInPortal(list)) {
+        this.#framework?.portal.close(list);
+      }
     }
     this.#framework?.theme.unregister(this);
   }

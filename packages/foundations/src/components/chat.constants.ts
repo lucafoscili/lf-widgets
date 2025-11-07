@@ -4,8 +4,14 @@ import { LfChatPropsInterface } from "./chat.declarations";
 export const LF_CHAT_BLOCKS = {
   chat: {
     _: "chat",
+    attachImage: "attach-image",
+    attachFile: "attach-file",
+    attachments: "attachments",
     clear: "clear",
     configuration: "configuration",
+    editButtons: "edit-buttons",
+    editContainer: "edit-container",
+    editTextarea: "edit-textarea",
     error: "error",
     icon: "icon",
     prompt: "prompt",
@@ -51,12 +57,17 @@ export const LF_CHAT_BLOCKS = {
     _: "settings",
     back: "back",
     configuration: "configuration",
+    exportHistory: "export-history",
+    header: "header",
+    importHistory: "import-history",
     textarea: "textarea",
     textfield: "textfield",
   },
   toolbar: {
     _: "toolbar",
     button: "button",
+    buttons: "buttons",
+    toolExecution: "tool-execution",
   },
 } as const;
 //#endregion
@@ -74,6 +85,12 @@ export const LF_CHAT_EVENTS = [
 //#region Ids
 export const LF_CHAT_IDS = {
   chat: {
+    attachFile: "chat-attach-file",
+    attachImage: "chat-attach-image",
+    attachments: "chat-attachments",
+    editCancel: "chat-edit-cancel",
+    editConfirm: "chat-edit-confirm",
+    editTextarea: "chat-edit-textarea",
     clear: "chat-clear",
     configuration: "chat-configuration",
     prompt: "chat-prompt",
@@ -85,14 +102,21 @@ export const LF_CHAT_IDS = {
     back: "option-back",
     contextWindow: "option-context",
     endpointUrl: "option-endpoint",
+    exportHistory: "option-export-history",
+    frequencyPenalty: "option-frequency-penalty",
+    importHistory: "option-import-history",
     maxTokens: "option-maxtokens",
     polling: "option-polling",
+    presencePenalty: "option-presence-penalty",
+    seed: "option-seed",
     system: "option-system",
     temperature: "option-temperature",
+    topP: "option-top-p",
   },
   toolbar: {
     copyContent: "toolbar-copy-content",
     deleteMessage: "toolbar-delete-message",
+    editMessage: "toolbar-edit-message",
     regenerate: "toolbar-regenerate",
   },
 } as const;
@@ -104,6 +128,9 @@ export const LF_CHAT_LAYOUT = ["bottom", "top"] as const;
 
 //#region Parts
 export const LF_CHAT_PARTS = {
+  attachFile: "attach-file",
+  attachImage: "attach-image",
+  attachments: "attachments",
   back: "back",
   chat: "chat",
   clear: "clear",
@@ -111,35 +138,51 @@ export const LF_CHAT_PARTS = {
   contextWindow: "context-window",
   copyContent: "copy-content",
   deleteMessage: "delete-message",
+  divider: "divider",
+  editButtons: "edit-buttons",
+  editCancel: "edit-cancel",
+  editConfirm: "edit-confirm",
+  editContainer: "edit-container",
+  editTextarea: "edit-textarea",
   endpointUrl: "endpoint-url",
+  exportHistory: "export-history",
+  frequencyPenalty: "frequency-penalty",
+  importHistory: "import-history",
   maxTokens: "max-tokens",
   polling: "polling",
-  regenerate: "regenerate",
+  presencePenalty: "presence-penalty",
   prompt: "prompt",
+  regenerate: "regenerate",
+  seed: "seed",
   send: "send",
   settings: "settings",
   stt: "stt",
   system: "system",
   temperature: "temperature",
   toolbar: "toolbar",
+  topP: "top-p",
 } as const;
 //#endregion
 
 //#region Props
 export const LF_CHAT_PROPS = [
+  "lfAttachmentUploadTimeout",
   "lfContextWindow",
   "lfEmpty",
   "lfEndpointUrl",
+  "lfFrequencyPenalty",
   "lfLayout",
   "lfMaxTokens",
   "lfPollingInterval",
+  "lfPresencePenalty",
   "lfSeed",
   "lfStyle",
   "lfSystem",
   "lfTemperature",
-  "lfTypewriterProps",
+  "lfTopP",
   "lfUiSize",
   "lfValue",
+  "lfUploadCallback",
 ] as const satisfies (keyof LfChatPropsInterface)[];
 //#endregion
 

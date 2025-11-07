@@ -7,6 +7,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatAdapter,
+  LfChatConfig,
   LfChatCurrentTokens,
   LfChatElement,
   LfChatEvent,
@@ -17,11 +18,13 @@ import {
   LfChatPropsInterface,
   LfChatStatus,
   LfChatView,
+  LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfLLMAttachment,
   LfLLMChoiceMessage,
+  LfLLMTool,
   LfThemeUISize,
-  LfTypewriterPropsInterface,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -40,7 +43,10 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { calcTokens, parseMessageContent, submitPrompt } from "./helpers.utils";
+import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
+import { exportH, setH } from "./helpers.history";
+import { calcTokens, submitPrompt } from "./helpers.messages";
+import { parseMessageContent } from "./helpers.parsing";
 import { createAdapter } from "./lf-chat-adapter";
 
 /**
@@ -80,8 +86,11 @@ export class LfChat implements LfChatInterface {
 
   //#region States
   @State() currentAbortStreaming: AbortController | null = null;
+  @State() currentAttachments: LfLLMAttachment[] = [];
+  @State() currentEditingIndex: number | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
+  @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
@@ -89,6 +98,39 @@ export class LfChat implements LfChatInterface {
   //#endregion
 
   //#region Props
+  /**
+   * @deprecated Use lfConfig.attachments.uploadTimeout instead.
+   * Timeout (ms) to apply to the upload callback. Default 60000ms.
+   *
+   * @type {number}
+   * @default 60000
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfAttachmentUploadTimeout={60000}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfAttachmentUploadTimeout?: number = 60000;
+  /**
+   * Configuration object for LLM, tools, UI, and attachments.
+   * Recommended for new implementations; legacy individual props remain supported.
+   *
+   * @type {LfChatConfig}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfConfig={{
+   *   llm: { endpointUrl: "http://localhost:5001", temperature: 0.7 },
+   *   tools: { definitions: [...] },
+   *   ui: { layout: "top", emptyMessage: "Start chatting!" },
+   *   attachments: { maxSize: 10485760, allowedTypes: ["image/*"] }
+   * }}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfConfig?: LfChatConfig;
   /**
    * How many tokens the context window can handle, used to calculate the occupied space.
    *
@@ -129,6 +171,34 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true }) lfEndpointUrl: string = "http://localhost:5001";
   /**
+   * The tools available for the LLM to use during the conversation.
+   * These enable the model to perform actions like web searches or data fetching.
+   *
+   * @type {LfLLMTool[]}
+   * @default []
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfTools='[{"type": "function", "function": {"name": "web_search", "description": "Search the web", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}}}}]'></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfTools: LfLLMTool[] = [];
+  /**
+   * The frequency penalty for the LLM's answer.
+   * This parameter is used to reduce the likelihood of the model repeating the same tokens.
+   *
+   * @type {number}
+   * @default 0
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfFrequencyPenalty={0.5}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFrequencyPenalty: number = 0;
+  /**
    * Sets the layout of the chat.
    *
    * @type {LfChatLayout}
@@ -143,6 +213,7 @@ export class LfChat implements LfChatInterface {
   @Prop({ mutable: true }) lfLayout: LfChatLayout = "top";
   /**
    * The maximum amount of tokens allowed in the LLM's answer.
+   * This parameter is used to control the length of the generated output.
    *
    * @type {number}
    * @default 2048
@@ -168,7 +239,22 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true }) lfPollingInterval: number = 10000;
   /**
+   * The presence penalty for the LLM's answer.
+   * This parameter is used to reduce the likelihood of the model repeating the same information.
+   *
+   * @type {number}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfPresencePenalty={0.5}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfPresencePenalty: number = 0;
+  /**
    * The seed of the LLM's answer.
+   * This parameter is used to control the randomness of the output.
    *
    * @type {number}
    * @default -1
@@ -221,20 +307,20 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true }) lfTemperature: number = 0.7;
   /**
-   * Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element.
+   * The top-p sampling value for the LLM's answer.
+   * This parameter controls the diversity of the generated output by limiting the
+   * model's consideration to the top-p most probable tokens.
    *
-   * @type {LfTypewriterPropsInterface | false}
-   * @default false
+   * @type {number}
+   * @default undefined
    * @mutable
    *
    * @example
    * ```tsx
-   * <lf-chat lfTypewriterProps={{ lfDeleteSpeed: 10, lfTag: "p", lfSpeed: 20 }}></lf-chat>
+   * <lf-chat lfTopP={0.9}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfTypewriterProps:
-    | LfTypewriterPropsInterface
-    | false = false;
+  @Prop({ mutable: true }) lfTopP: number = 0.9;
   /**
    * The size of the component.
    *
@@ -261,6 +347,23 @@ export class LfChat implements LfChatInterface {
    * ```
    */
   @Prop({ mutable: true }) lfValue: LfChatHistory = [];
+  /**
+   * If set, the component will call this
+   * function with the selected File[] and await the returned attachments. If not
+   * provided the component falls back to embedding base64 data in the `data` field.
+   *
+   * @type {(files: File[]) => Promise<LfLLMAttachment[]>}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfUploadCallback={myUploadFunction}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfUploadCallback?: (
+    files: File[],
+  ) => Promise<LfLLMAttachment[]>;
   //#endregion
 
   //#region Internal variables
@@ -394,6 +497,27 @@ export class LfChat implements LfChatInterface {
     return Object.fromEntries(entries);
   }
   /**
+   * Opens file picker for image attachment
+   */
+  @Method()
+  async handleImageAttachment(): Promise<void> {
+    await handleImage(this);
+  }
+  /**
+   * Opens file picker for file attachment
+   */
+  @Method()
+  async handleFileAttachment(): Promise<void> {
+    await handleFile(this);
+  }
+  /**
+   * Removes an attachment from the current message
+   */
+  @Method()
+  async removeAttachment(id: string): Promise<void> {
+    await handleRemove(this, id);
+  }
+  /**
    * Triggers a re-render of the component to reflect any state changes.
    */
   @Method()
@@ -457,12 +581,16 @@ export class LfChat implements LfChatInterface {
    * Sets the history of the component through a string.
    */
   @Method()
-  async setHistory(history: string): Promise<void> {
-    const { set } = this.#adapter.controller;
+  async setHistory(history: string, fromFile: boolean = false): Promise<void> {
+    await setH(this.#adapter, this, history, fromFile);
+  }
 
-    try {
-      set.history(() => (this.history = JSON.parse(history)));
-    } catch {}
+  /**
+   * Exports current history as JSON file
+   */
+  @Method()
+  async exportHistory(): Promise<void> {
+    await exportH(this);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -484,8 +612,11 @@ export class LfChat implements LfChatInterface {
         blocks: this.#b,
         compInstance: this,
         currentAbortStreaming: () => this.currentAbortStreaming,
+        currentAttachments: () => this.currentAttachments,
+        currentEditingIndex: () => this.currentEditingIndex,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
+        currentToolExecution: () => this.currentToolExecution,
         cyAttributes: this.#cy,
         history: () => this.history,
         lastMessage: (role = "user") => {
@@ -502,8 +633,11 @@ export class LfChat implements LfChatInterface {
       },
       {
         currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
+        currentAttachments: (value) => (this.currentAttachments = value),
+        currentEditingIndex: (value) => (this.currentEditingIndex = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
+        currentToolExecution: (value) => (this.currentToolExecution = value),
         history: async (cb) => {
           cb();
           this.currentTokens = await calcTokens(this.#adapter);
@@ -543,14 +677,28 @@ export class LfChat implements LfChatInterface {
     const { bemClass } = this.#framework.theme;
 
     const { chat, commands, input, messages, request } = this.#b;
-    const { clear, progressbar, send, settings, spinner, stt, textarea } =
-      this.#adapter.elements.jsx.chat;
+    const {
+      attachFile,
+      attachImage,
+      attachments,
+      clear,
+      editableMessage,
+      progressbar,
+      send,
+      settings,
+      spinner,
+      stt,
+      textarea,
+    } = this.#adapter.elements.jsx.chat;
     const { history, lfEmpty } = this;
 
     return (
       <Fragment>
         <div class={bemClass(request._)}>
+          {attachments()}
           <div class={bemClass(input._)}>
+            {attachImage()}
+            {attachFile()}
             {settings()}
             {textarea()}
             {progressbar()}
@@ -566,28 +714,39 @@ export class LfChat implements LfChatInterface {
           ref={(el) => (this.#messagesContainer = el)}
         >
           {history?.length ? (
-            history.map((m, index) => (
-              <div
-                class={bemClass(messages._, messages.container, {
-                  [m.role]: true,
-                })}
-                key={index}
-                ref={(el) => {
-                  if (el && index === history.length - 1) {
-                    this.#lastMessage = el;
-                  }
-                }}
-              >
-                <div
-                  class={bemClass(messages._, messages.content, {
-                    [m.role]: true,
-                  })}
-                >
-                  {this.#prepContent(m)}
-                </div>
-                {this.#prepToolbar(m)}
-              </div>
-            ))
+            history
+              .filter((m) => {
+                // Hide tool messages (internal only)
+                if (m.role === "tool") {
+                  return false;
+                }
+                return true;
+              })
+              .map((m, index) => {
+                const isEditing = this.currentEditingIndex === index;
+                return (
+                  <div
+                    class={bemClass(messages._, messages.container, {
+                      [m.role]: true,
+                    })}
+                    key={index}
+                    ref={(el) => {
+                      if (el && index === history.length - 1) {
+                        this.#lastMessage = el;
+                      }
+                    }}
+                  >
+                    <div
+                      class={bemClass(messages._, messages.content, {
+                        [m.role]: true,
+                      })}
+                    >
+                      {isEditing ? editableMessage(m) : this.#prepContent(m)}
+                    </div>
+                    {this.#prepToolbar(m)}
+                  </div>
+                );
+              })
           ) : (
             <div class={bemClass(messages._, messages.empty)}>{lfEmpty}</div>
           )}
@@ -641,12 +800,29 @@ export class LfChat implements LfChatInterface {
     const { bemClass } = this.#framework.theme;
 
     const { settings } = this.#b;
-    const { back, endpoint, maxTokens, polling, system, temperature } =
-      this.#adapter.elements.jsx.settings;
+    const {
+      back,
+      contextWindow,
+      endpoint,
+      exportHistory,
+      frequencyPenalty,
+      importHistory,
+      maxTokens,
+      polling,
+      presencePenalty,
+      system,
+      seed,
+      temperature,
+      topP,
+    } = this.#adapter.elements.jsx.settings;
 
     return (
       <Fragment>
-        {back()}
+        <div class={bemClass(settings._, settings.header)}>
+          {back()}
+          {importHistory()}
+          {exportHistory()}
+        </div>
         <div
           class={bemClass(settings._, settings.configuration)}
           part={this.#p.settings}
@@ -655,7 +831,14 @@ export class LfChat implements LfChatInterface {
           {endpoint()}
           {temperature()}
           {maxTokens()}
+          {topP()}
+          {frequencyPenalty()}
+          {presencePenalty()}
+          <div class={bemClass(settings._, "divider")} />
+          {contextWindow()}
+          {seed()}
           {polling()}
+          <div class={bemClass(settings._, "divider")} />
         </div>
       </Fragment>
     );
@@ -664,18 +847,26 @@ export class LfChat implements LfChatInterface {
     const { bemClass } = this.#framework.theme;
 
     const { toolbar } = this.#b;
-    const { copyContent, deleteMessage, regenerate } =
-      this.#adapter.elements.jsx.toolbar;
+    const {
+      copyContent,
+      deleteMessage,
+      regenerate,
+      editMessage,
+      toolExecution,
+    } = this.#adapter.elements.jsx.toolbar;
 
     return (
       <div class={bemClass(toolbar._)} part={this.#p.toolbar}>
-        {deleteMessage(m)}
-        {copyContent(m)}
-        {m.role === "user" && regenerate(m)}
+        <div class={bemClass(toolbar._, toolbar.buttons)}>
+          {deleteMessage(m)}
+          {copyContent(m)}
+          {editMessage(m)}
+          {m.role === "user" && regenerate(m)}
+        </div>
+        {toolExecution(m)}
       </div>
     );
   };
-  //#endregion
 
   //#region Lifecycle hooks
   connectedCallback() {

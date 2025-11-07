@@ -14,12 +14,12 @@ initiating the unmount sequence. The component may be styled with custom CSS.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                                      | Type                                                                                                                                                                                                                    | Default   |
-| ----------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `lfDataset` | `lf-dataset` | The data set for the LF Chart component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                                                                                                                                                         | `null`    |
-| `lfShape`   | `lf-shape`   | Sets the type of shapes to compare.                                                                                              | `"badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "progressbar" \| "slot" \| "text" \| "textfield" \| "toggle" \| "typewriter" \| "upload"` | `"image"` |
-| `lfStyle`   | `lf-style`   | Custom styling for the component.                                                                                                | `string`                                                                                                                                                                                                                | `""`      |
-| `lfView`    | `lf-view`    | Sets the type of view, either styled as a before-after or a side-by-side comparison.                                             | `"main" \| "split"`                                                                                                                                                                                                     | `"main"`  |
+| Property    | Attribute  | Description                                                                                                                      | Type                                                                                                                                                                                                                    | Default   |
+| ----------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `lfDataset` | --         | The data set for the LF Chart component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                                                                                                                                                         | `null`    |
+| `lfShape`   | `lf-shape` | Sets the type of shapes to compare.                                                                                              | `"badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "progressbar" \| "slot" \| "text" \| "textfield" \| "toggle" \| "typewriter" \| "upload"` | `"image"` |
+| `lfStyle`   | `lf-style` | Custom styling for the component.                                                                                                | `string`                                                                                                                                                                                                                | `""`      |
+| `lfView`    | `lf-view`  | Sets the type of view, either styled as a before-after or a side-by-side comparison.                                             | `"main" \| "split"`                                                                                                                                                                                                     | `"main"`  |
 
 
 ## Events
@@ -158,9 +158,9 @@ graph TD;
   lf-card --> lf-upload
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image

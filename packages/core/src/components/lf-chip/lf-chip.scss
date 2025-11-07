@@ -116,6 +116,21 @@ $comp: "chip";
     }
   }
 
+  &--flat {
+    .item {
+      & {
+        background: transparent;
+        border-radius: var(--lf-ui-border-radius);
+        box-shadow: none;
+        padding: 0.25em 0.5em;
+      }
+
+      &:hover {
+        background: rgba(var(--lf-color-surface), 0.05);
+      }
+    }
+  }
+
   &--input {
     .item__icon {
       &--trailing {
@@ -136,5 +151,3 @@ $comp: "chip";
     }
   }
 }
-
-/* local partials loaded above */

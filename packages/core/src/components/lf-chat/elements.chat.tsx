@@ -10,6 +10,112 @@ export const prepChat = (
   getAdapter: () => LfChatAdapter,
 ): LfChatAdapterJsx["chat"] => {
   return {
+    //#region Attach Image
+    attachImage: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, currentAttachments, currentPrompt, manager, parts } =
+        controller.get;
+      const { chat } = elements.refs;
+      const { button } = handlers.chat;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+      const imgIcon = get.current().variables["--lf-icon-image"];
+
+      const hasAttachments = currentAttachments().length > 0;
+      const title = hasAttachments
+        ? currentAttachments()
+            .map((att) => att.name)
+            .join(", ")
+        : "Attach an image (ensure the model supports image inputs).";
+
+      return (
+        <lf-button
+          class={bemClass(blocks.chat._, blocks.chat.attachImage)}
+          id={LF_CHAT_IDS.chat.attachImage}
+          lfIcon={imgIcon}
+          lfStretchY={true}
+          lfStyling={hasAttachments ? "raised" : "flat"}
+          lfUiState={currentPrompt() ? "disabled" : "primary"}
+          onLf-button-event={button}
+          part={parts.attachImage}
+          ref={assignRef(chat, "attachImage")}
+          title={title}
+        ></lf-button>
+      );
+    },
+    //#endregion
+
+    //#region Attach File
+    attachFile: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, currentAttachments, currentPrompt, manager, parts } =
+        controller.get;
+      const { chat } = elements.refs;
+      const { button } = handlers.chat;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+      const attachIcon = get.current().variables["--lf-icon-attachment"];
+
+      const hasAttachments = currentAttachments().length > 0;
+      const title = hasAttachments
+        ? currentAttachments()
+            .map((att) => att.name)
+            .join(", ")
+        : "Attach a file (ensure the model supports file inputs).";
+
+      return (
+        <lf-button
+          class={bemClass(blocks.chat._, blocks.chat.attachFile)}
+          id={LF_CHAT_IDS.chat.attachFile}
+          lfIcon={attachIcon}
+          lfStretchY={true}
+          lfStyling={hasAttachments ? "raised" : "flat"}
+          lfUiState={currentPrompt() ? "disabled" : "primary"}
+          onLf-button-event={button}
+          part={parts.attachFile}
+          ref={assignRef(chat, "attachFile")}
+          title={title}
+        ></lf-button>
+      );
+    },
+    //#endregion
+
+    //#region Attachments
+    attachments: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { chat } = elements.refs;
+      const { chip } = handlers.chat;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const attachments = controller.get.currentAttachments();
+
+      return (
+        <lf-chip
+          class={bemClass(blocks.chat._, blocks.chat.attachments)}
+          id={LF_CHAT_IDS.chat.attachments}
+          lfDataset={{
+            nodes: attachments.map((att) => ({
+              description: att.name,
+              icon:
+                att.type === "image_url"
+                  ? theme.get.current().variables["--lf-icon-image"]
+                  : theme.get.current().variables["--lf-icon-attachment"],
+              id: att.id,
+              type: att.type,
+              value: att.name,
+            })),
+          }}
+          lfStyling="input"
+          onLf-chip-event={chip}
+          part={blocks.chat.attachments}
+          ref={assignRef(chat, "attachments")}
+        ></lf-chip>
+      );
+    },
+    //#endregion
+
     //#region Clear
     clear: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -67,32 +173,61 @@ export const prepChat = (
     },
     //#endregion
 
-    //#region Message
-    messageBlock: (text, role) => {
-      const { controller } = getAdapter();
-      const { blocks, compInstance, manager } = controller.get;
-      const { lfTypewriterProps } = compInstance;
-      const { sanitizeProps, theme } = manager;
+    //#region Editable Message
+    editableMessage: (m) => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, manager, parts } = controller.get;
+      const { chat } = elements.refs;
+      const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
-      const useTypewriter = !!(
-        role === "assistant" &&
-        typeof lfTypewriterProps === "object" &&
-        lfTypewriterProps !== null
+      return (
+        <div class={bemClass(blocks.chat._, blocks.chat.editContainer)}>
+          <lf-textfield
+            class={bemClass(blocks.chat._, blocks.chat.editTextarea)}
+            lfStretchX={true}
+            lfStyling="textarea"
+            lfUiState="primary"
+            lfValue={m.content}
+            ref={assignRef(chat, "editTextarea")}
+          ></lf-textfield>
+          <div class={bemClass(blocks.chat._, blocks.chat.editButtons)}>
+            <lf-button
+              id={LF_CHAT_IDS.chat.editCancel}
+              lfLabel="Cancel"
+              lfStretchX={true}
+              lfStyling="flat"
+              lfUiState="danger"
+              onLf-button-event={handlers.chat.button}
+              part={parts.editCancel}
+              ref={assignRef(chat, "editCancel")}
+            ></lf-button>
+            <lf-button
+              id={LF_CHAT_IDS.chat.editConfirm}
+              lfLabel="Confirm"
+              lfStretchX={true}
+              lfStyling="flat"
+              lfUiState="success"
+              onLf-button-event={handlers.chat.button}
+              part={parts.editConfirm}
+              ref={assignRef(chat, "editConfirm")}
+            ></lf-button>
+          </div>
+        </div>
       );
+    },
+    //#endregion
+
+    //#region Message
+    messageBlock: (text) => {
+      const { controller } = getAdapter();
+      const { blocks, manager } = controller.get;
+      const { theme } = manager;
+      const { bemClass } = theme;
 
       const className = bemClass(blocks.messages._, blocks.messages.paragraph);
 
-      return useTypewriter ? (
-        <lf-typewriter
-          class={className}
-          {...sanitizeProps(lfTypewriterProps, "LfTypewriter")}
-          lfUpdatable={false}
-          lfValue={text}
-        ></lf-typewriter>
-      ) : (
-        <div class={className}>{text}</div>
-      );
+      return <div class={className}>{text}</div>;
     },
     //#endregion
 
@@ -257,6 +392,32 @@ export const prepChat = (
           part={parts.prompt}
           ref={assignRef(chat, "textarea")}
         ></lf-textfield>
+      );
+    },
+    //#endregion
+
+    //#region Tool Execution Chip
+    toolExecutionChip: () => {
+      const { controller, elements } = getAdapter();
+      const { blocks, compInstance, currentToolExecution, manager } =
+        controller.get;
+      const { chat } = elements.refs;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const dataset = currentToolExecution();
+      if (!dataset) {
+        return null;
+      }
+
+      return (
+        <div class={bemClass(blocks.messages._, blocks.messages.container)}>
+          <lf-chip
+            lfDataset={dataset}
+            lfUiSize={compInstance.lfUiSize}
+            ref={assignRef(chat, "toolExecutionChip")}
+          />
+        </div>
       );
     },
     //#endregion

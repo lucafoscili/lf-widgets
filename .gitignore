@@ -1,3 +1,7 @@
+# Ignore accidental foundations artifacts mirrored inside core
+packages/core/foundations/
+# Ignore compiled or stray JS test artifacts (prefer .ts specs)
+packages/core/tests/*.js
 # Yarn
 .yarn/cache
 .yarn/install-state.gz

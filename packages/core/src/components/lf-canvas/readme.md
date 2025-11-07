@@ -19,7 +19,7 @@ loading an image into the canvas for reference or tracing purposes.
 | `lfBrush`           | `lf-brush`            | The shape of the brush.                                                                                                                            | `"round" \| "square"`    | `"round"`   |
 | `lfColor`           | `lf-color`            | The color of the brush.                                                                                                                            | `string`                 | `"#ff0000"` |
 | `lfCursor`          | `lf-cursor`           | Sets the style of the cursor.                                                                                                                      | `"default" \| "preview"` | `"preview"` |
-| `lfImageProps`      | `lf-image-props`      | The props of the image displayed inside the canvas.                                                                                                | `LfImagePropsInterface`  | `null`      |
+| `lfImageProps`      | --                    | The props of the image displayed inside the canvas.                                                                                                | `LfImagePropsInterface`  | `null`      |
 | `lfOpacity`         | `lf-opacity`          | The opacity of the brush.                                                                                                                          | `number`                 | `1.0`       |
 | `lfPreview`         | `lf-preview`          | Displays the brush track of the current stroke.                                                                                                    | `boolean`                | `true`      |
 | `lfSize`            | `lf-size`             | The size of the brush.                                                                                                                             | `number`                 | `10`        |
@@ -44,7 +44,7 @@ Clears the specified canvas type of all drawn content.
 
 | Name   | Type                   | Description                                         |
 | ------ | ---------------------- | --------------------------------------------------- |
-| `type` | `"board" \| "preview"` | - The type of canvas to clear. Defaults to "board". |
+| `type` | `"preview" \| "board"` | - The type of canvas to clear. Defaults to "board". |
 
 #### Returns
 
@@ -60,7 +60,7 @@ Retrieves the canvas element based on the specified type.
 
 | Name   | Type                   | Description                                            |
 | ------ | ---------------------- | ------------------------------------------------------ |
-| `type` | `"board" \| "preview"` | - The type of canvas to retrieve. Defaults to "board". |
+| `type` | `"preview" \| "board"` | - The type of canvas to retrieve. Defaults to "board". |
 
 #### Returns
 

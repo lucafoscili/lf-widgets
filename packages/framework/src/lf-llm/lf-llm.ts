@@ -244,8 +244,14 @@ export class LfLLM implements LfLLMInterface {
             const delta =
               obj.choices?.[0]?.delta?.content ||
               obj.choices?.[0]?.message?.content;
-            if (delta) {
-              yield { contentDelta: delta, raw: obj };
+            const toolCalls = obj.choices?.[0]?.delta?.tool_calls;
+
+            if (delta || toolCalls) {
+              yield {
+                contentDelta: delta,
+                toolCalls: toolCalls,
+                raw: obj,
+              };
             }
           } catch (_err) {}
         }
@@ -262,8 +268,14 @@ export class LfLLM implements LfLLMInterface {
         const delta =
           obj.choices?.[0]?.delta?.content ||
           obj.choices?.[0]?.message?.content;
-        if (delta) {
-          yield { contentDelta: delta, raw: obj };
+        const toolCalls = obj.choices?.[0]?.delta?.tool_calls;
+
+        if (delta || toolCalls) {
+          yield {
+            contentDelta: delta,
+            toolCalls: toolCalls,
+            raw: obj,
+          };
         }
       } catch {}
     }

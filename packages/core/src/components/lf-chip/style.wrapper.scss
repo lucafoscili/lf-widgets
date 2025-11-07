@@ -5,7 +5,11 @@ $comp: null !default;
 
 .wrapper {
   & {
-    align-items: center;
+    /**
+     * @prop --lf-#{$comp}-align-items: Sets the alignment for the wrapper.
+     * Defaults to => center
+     */
+    align-items: var(--lf-#{$comp}-align-items, center);
     display: flex;
   }
 

@@ -13,21 +13,27 @@ properties can be set to customize the chat component's appearance and behavior.
 
 ## Properties
 
-| Property            | Attribute             | Description                                                                                                                        | Type                                                                               | Default                                                                                 |
-| ------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `lfContextWindow`   | `lf-context-window`   | How many tokens the context window can handle, used to calculate the occupied space.                                               | `number`                                                                           | `8192`                                                                                  |
-| `lfEmpty`           | `lf-empty`            | Empty text displayed when there is no data.                                                                                        | `string`                                                                           | `"Your chat history is empty!"`                                                         |
-| `lfEndpointUrl`     | `lf-endpoint-url`     | The URL endpoint for the chat service.                                                                                             | `string`                                                                           | `"http://localhost:5001"`                                                               |
-| `lfLayout`          | `lf-layout`           | Sets the layout of the chat.                                                                                                       | `"bottom" \| "top"`                                                                | `"top"`                                                                                 |
-| `lfMaxTokens`       | `lf-max-tokens`       | The maximum amount of tokens allowed in the LLM's answer.                                                                          | `number`                                                                           | `2048`                                                                                  |
-| `lfPollingInterval` | `lf-polling-interval` | How often the component checks whether the LLM endpoint is online or not.                                                          | `number`                                                                           | `10000`                                                                                 |
-| `lfSeed`            | `lf-seed`             | The seed of the LLM's answer.                                                                                                      | `number`                                                                           | `-1`                                                                                    |
-| `lfStyle`           | `lf-style`            | Custom styling for the component.                                                                                                  | `string`                                                                           | `""`                                                                                    |
-| `lfSystem`          | `lf-system`           | System message for the LLM.                                                                                                        | `string`                                                                           | `"You are a helpful and cheerful assistant eager to help the user out with his tasks."` |
-| `lfTemperature`     | `lf-temperature`      | Sets the creative boundaries of the LLM.                                                                                           | `number`                                                                           | `0.7`                                                                                   |
-| `lfTypewriterProps` | `lf-typewriter-props` | Sets the props of the assistant typewriter component. Set this prop to false to replace the typewriter with a simple text element. | `LfTypewriterPropsInterface \| boolean`                                            | `false`                                                                                 |
-| `lfUiSize`          | `lf-ui-size`          | The size of the component.                                                                                                         | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`                                                                              |
-| `lfValue`           | `lf-value`            | Sets the initial history of the chat.                                                                                              | `LfLLMChoiceMessage[]`                                                             | `[]`                                                                                    |
+| Property                    | Attribute                      | Description                                                                                                                                                                                       | Type                                                                               | Default                                                                                 |
+| --------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `lfAttachmentUploadTimeout` | `lf-attachment-upload-timeout` | <span style="color:red">**[DEPRECATED]**</span> Use lfConfig.attachments.uploadTimeout instead. Timeout (ms) to apply to the upload callback. Default 60000ms.<br/><br/>                          | `number`                                                                           | `60000`                                                                                 |
+| `lfConfig`                  | --                             | Configuration object for LLM, tools, UI, and attachments. Recommended for new implementations; legacy individual props remain supported.                                                          | `LfChatConfig`                                                                     | `undefined`                                                                             |
+| `lfContextWindow`           | `lf-context-window`            | How many tokens the context window can handle, used to calculate the occupied space.                                                                                                              | `number`                                                                           | `8192`                                                                                  |
+| `lfEmpty`                   | `lf-empty`                     | Empty text displayed when there is no data.                                                                                                                                                       | `string`                                                                           | `"Your chat history is empty!"`                                                         |
+| `lfEndpointUrl`             | `lf-endpoint-url`              | The URL endpoint for the chat service.                                                                                                                                                            | `string`                                                                           | `"http://localhost:5001"`                                                               |
+| `lfFrequencyPenalty`        | `lf-frequency-penalty`         | The frequency penalty for the LLM's answer. This parameter is used to reduce the likelihood of the model repeating the same tokens.                                                               | `number`                                                                           | `0`                                                                                     |
+| `lfLayout`                  | `lf-layout`                    | Sets the layout of the chat.                                                                                                                                                                      | `"bottom" \| "top"`                                                                | `"top"`                                                                                 |
+| `lfMaxTokens`               | `lf-max-tokens`                | The maximum amount of tokens allowed in the LLM's answer. This parameter is used to control the length of the generated output.                                                                   | `number`                                                                           | `2048`                                                                                  |
+| `lfPollingInterval`         | `lf-polling-interval`          | How often the component checks whether the LLM endpoint is online or not.                                                                                                                         | `number`                                                                           | `10000`                                                                                 |
+| `lfPresencePenalty`         | `lf-presence-penalty`          | The presence penalty for the LLM's answer. This parameter is used to reduce the likelihood of the model repeating the same information.                                                           | `number`                                                                           | `0`                                                                                     |
+| `lfSeed`                    | `lf-seed`                      | The seed of the LLM's answer. This parameter is used to control the randomness of the output.                                                                                                     | `number`                                                                           | `-1`                                                                                    |
+| `lfStyle`                   | `lf-style`                     | Custom styling for the component.                                                                                                                                                                 | `string`                                                                           | `""`                                                                                    |
+| `lfSystem`                  | `lf-system`                    | System message for the LLM.                                                                                                                                                                       | `string`                                                                           | `"You are a helpful and cheerful assistant eager to help the user out with his tasks."` |
+| `lfTemperature`             | `lf-temperature`               | Sets the creative boundaries of the LLM.                                                                                                                                                          | `number`                                                                           | `0.7`                                                                                   |
+| `lfTools`                   | --                             | The tools available for the LLM to use during the conversation. These enable the model to perform actions like web searches or data fetching.                                                     | `LfLLMTool[]`                                                                      | `[]`                                                                                    |
+| `lfTopP`                    | `lf-top-p`                     | The top-p sampling value for the LLM's answer. This parameter controls the diversity of the generated output by limiting the model's consideration to the top-p most probable tokens.             | `number`                                                                           | `0.9`                                                                                   |
+| `lfUiSize`                  | `lf-ui-size`                   | The size of the component.                                                                                                                                                                        | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`                                                                              |
+| `lfUploadCallback`          | --                             | If set, the component will call this function with the selected File[] and await the returned attachments. If not provided the component falls back to embedding base64 data in the `data` field. | `(files: File[]) => Promise<LfLLMAttachment[]>`                                    | `undefined`                                                                             |
+| `lfValue`                   | --                             | Sets the initial history of the chat.                                                                                                                                                             | `LfLLMChoiceMessage[]`                                                             | `[]`                                                                                    |
 
 
 ## Events
@@ -42,6 +48,16 @@ properties can be set to customize the chat component's appearance and behavior.
 ### `abortStreaming() => Promise<void>`
 
 Aborts the current streaming response from the LLM.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `exportHistory() => Promise<void>`
+
+Exports current history as JSON file
 
 #### Returns
 
@@ -89,9 +105,45 @@ Type: `Promise<LfChatPropsInterface>`
 
 Promise resolved with an object containing the component's properties.
 
+### `handleFileAttachment() => Promise<void>`
+
+Opens file picker for file attachment
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `handleImageAttachment() => Promise<void>`
+
+Opens file picker for image attachment
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `refresh() => Promise<void>`
 
 Triggers a re-render of the component to reflect any state changes.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `removeAttachment(id: string) => Promise<void>`
+
+Removes an attachment from the current message
+
+#### Parameters
+
+| Name | Type     | Description |
+| ---- | -------- | ----------- |
+| `id` | `string` |             |
 
 #### Returns
 
@@ -134,15 +186,16 @@ Type: `Promise<void>`
 
 Promise<void> that resolves after issuing the scroll command.
 
-### `setHistory(history: string) => Promise<void>`
+### `setHistory(history: string, fromFile?: boolean) => Promise<void>`
 
 Sets the history of the component through a string.
 
 #### Parameters
 
-| Name      | Type     | Description |
-| --------- | -------- | ----------- |
-| `history` | `string` |             |
+| Name       | Type      | Description |
+| ---------- | --------- | ----------- |
+| `history`  | `string`  |             |
+| `fromFile` | `boolean` |             |
 
 #### Returns
 
@@ -171,6 +224,7 @@ Type: `Promise<void>`
 
 | Name                                  | Description                                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--lf-chat-attachments-padding`       | Sets the attachments padding for the chat component. Defaults to => 0 1em                         |
 | `--lf-chat-blockquote-border-opacity` | Sets the border opacity for blockquotes. Defaults to => 0.3                                       |
 | `--lf-chat-blockquote-border-width`   | Sets the border width for blockquotes. Defaults to => 3px                                         |
 | `--lf-chat-blockquote-margin`         | Sets the margin for blockquotes. Defaults to => 1em 0                                             |
@@ -220,9 +274,9 @@ Type: `Promise<void>`
 
 - [lf-spinner](../lf-spinner)
 - [lf-button](../lf-button)
-- [lf-typewriter](../lf-typewriter)
-- [lf-progressbar](../lf-progressbar)
+- [lf-chip](../lf-chip)
 - [lf-textfield](../lf-textfield)
+- [lf-progressbar](../lf-progressbar)
 - [lf-code](../lf-code)
 
 ### Graph
@@ -230,9 +284,9 @@ Type: `Promise<void>`
 graph TD;
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-button --> lf-list
   lf-button --> lf-spinner

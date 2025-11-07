@@ -154,6 +154,7 @@ export const FIXTURES_CATEGORIES = [
   "tags",
   "textarea",
   "upload",
+  "weather",
   "widget",
 ] as const;
 //#endregion

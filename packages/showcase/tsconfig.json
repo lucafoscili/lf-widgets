@@ -20,9 +20,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "target": "ES2020",
     "types": ["@lf-widgets/core", "node"]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "src/tests/**"],
   "include": ["src"]
 }

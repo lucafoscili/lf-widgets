@@ -1,3 +1,4 @@
+import { LfDataDataset } from ".";
 import { LfButtonElement } from "../components/button.declarations";
 import { LfTextfieldElement } from "../components/textfield.declarations";
 import { LF_LLM_ROLES } from "./llm.constants";
@@ -69,9 +70,40 @@ export interface LfLLMChoice {
  * Utility interface used by the LLM integration helpers.
  */
 export interface LfLLMChoiceMessage {
+  attachments?: LfLLMAttachment[];
   role: LfLLMRole;
   content: string;
-  tool_calls?: unknown[];
+  tool_calls?: LfLLMToolCall[];
+  tool_call_id?: string;
+  /**
+   * Optional dataset for tool execution chip tree visualization
+   * When present, renders chip tree in message toolbar
+   */
+  toolExecution?: LfDataDataset;
+}
+/**
+ * Represents an attachment in a chat message
+ */
+export interface LfLLMAttachment {
+  /**
+   * Optional inline file data encoded as a data URL (e.g. "data:image/png;base64,...").
+   * When present the LLM adapter may use this field to include binary content
+   * in the outgoing payload so remote LLM servers can access the attachment.
+   */
+  data?: string;
+  /**
+   * For text-based files (e.g., markdown, code), the file content as a string.
+   * This allows including file contents directly in messages for supported providers.
+   */
+  content?: string;
+  id: string;
+  image_url?: {
+    url: string;
+    detail?: "low" | "high" | "auto";
+  };
+  name: string;
+  type: "image_url" | "file";
+  url?: string;
 }
 /**
  * Utility interface used by the LLM integration helpers.
@@ -82,6 +114,43 @@ export interface LfLLMCompletionObject {
   created: number;
   model: string;
   choices: LfLLMChoice[];
+}
+/**
+ * Content part for text in a message (OpenAI format).
+ */
+export interface LfLLMContentPartText {
+  type: "text";
+  text: string;
+}
+/**
+ * Content part for images in a message (OpenAI format).
+ */
+export interface LfLLMContentPartImage {
+  type: "image_url";
+  image_url: {
+    url: string;
+    detail?: "low" | "high" | "auto";
+  };
+}
+/**
+ * Union type for content parts in a message.
+ */
+export type LfLLMContentPart = LfLLMContentPartText | LfLLMContentPartImage;
+/**
+ * Utility interface used by the LLM integration helpers.
+ */
+export interface LfLLMTool {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: string[];
+    };
+    execute?: (args: Record<string, unknown>) => Promise<string> | string;
+  };
 }
 /**
  * Utility interface used by the LLM integration helpers.
@@ -107,8 +176,9 @@ export interface LfLLMRequest {
   system?: string;
   messages?: Array<{
     role: LfLLMRole;
-    content: string;
+    content: string | LfLLMContentPart[];
   }>;
+  tools?: LfLLMTool[];
 }
 /**
  * Utility interface used by the LLM integration helpers.
@@ -131,6 +201,18 @@ export interface LfLLMStreamChunk {
   contentDelta?: string;
   done?: boolean;
   raw?: unknown;
+  toolCalls?: LfLLMToolCall[];
+}
+/**
+ * Represents a tool call from the LLM
+ */
+export interface LfLLMToolCall {
+  id: string;
+  type?: "function";
+  function: {
+    name: string;
+    arguments: string;
+  };
 }
 /**
  * Utility interface used by the LLM integration helpers.

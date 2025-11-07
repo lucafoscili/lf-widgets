@@ -16,7 +16,7 @@ interactions, and unmounting the component.
 
 | Property    | Attribute    | Description                                                                                                                        | Type                                                                               | Default         |
 | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| `lfDataset` | `lf-dataset` | The data set for the LF Article component. This property is mutable, meaning it can be changed after the component is initialized. | `LfArticleDataset`                                                                 | `null`          |
+| `lfDataset` | --           | The data set for the LF Article component. This property is mutable, meaning it can be changed after the component is initialized. | `LfArticleDataset`                                                                 | `null`          |
 | `lfEmpty`   | `lf-empty`   | Empty text displayed when there is no data.                                                                                        | `string`                                                                           | `"Empty data."` |
 | `lfStyle`   | `lf-style`   | Custom styling for the component.                                                                                                  | `string`                                                                           | `""`            |
 | `lfUiSize`  | `lf-ui-size` | The size of the component.                                                                                                         | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"` | `"medium"`      |
@@ -172,9 +172,9 @@ graph TD;
   lf-card --> lf-upload
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image
