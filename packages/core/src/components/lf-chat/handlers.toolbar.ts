@@ -3,7 +3,11 @@ import {
   LfChatAdapter,
   LfChatAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { deleteMessage, editMessage, regenerateMessage } from "./helpers.utils";
+import {
+  deleteMessage,
+  editMessage,
+  regenerateMessage,
+} from "./helpers.messages";
 
 export const prepToolbarHandlers = (
   getAdapter: () => LfChatAdapter,

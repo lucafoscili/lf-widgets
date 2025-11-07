@@ -7,7 +7,7 @@ import {
   clearTextarea,
   regenerateMessage,
   submitPrompt,
-} from "./helpers.utils";
+} from "./helpers.messages";
 import { LfChat } from "./lf-chat";
 
 export const prepChatHandlers = (

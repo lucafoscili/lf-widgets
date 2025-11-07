@@ -6,7 +6,7 @@ import {
   LfLLMTool,
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
-import { getEffectiveConfig } from "./config.utils";
+import { getEffectiveConfig } from "./helpers.config";
 
 //#region Tool dataset
 /**
@@ -249,7 +249,7 @@ export const handleToolCalls = async (
       "informational",
     );
     // Import apiCall to avoid circular dependency
-    const { apiCall } = await import("./api.utils");
+    const { apiCall } = await import("./helpers.api");
     await apiCall(adapter, true);
 
     if (showIndicator && dataset) {
@@ -282,7 +282,7 @@ export const handleToolCalls = async (
       "informational",
     );
     // Import apiCall to avoid circular dependency
-    const { apiCall } = await import("./api.utils");
+    const { apiCall } = await import("./helpers.api");
     await apiCall(adapter, true);
 
     return dataset;

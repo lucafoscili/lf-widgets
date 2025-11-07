@@ -43,7 +43,10 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { calcTokens, parseMessageContent, submitPrompt } from "./helpers.utils";
+import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
+import { exportH, setH } from "./helpers.history";
+import { calcTokens, submitPrompt } from "./helpers.messages";
+import { parseMessageContent } from "./helpers.parsing";
 import { createAdapter } from "./lf-chat-adapter";
 
 /**
@@ -498,174 +501,21 @@ export class LfChat implements LfChatInterface {
    */
   @Method()
   async handleImageAttachment(): Promise<void> {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = true;
-
-    const fileToDataUrl = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(reader.error);
-        reader.onload = () => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx?.drawImage(img, 0, 0);
-            canvas.toBlob((blob) => {
-              if (blob) {
-                const pngReader = new FileReader();
-                pngReader.onload = () => resolve(pngReader.result as string);
-                pngReader.onerror = () => reject(pngReader.error);
-                pngReader.readAsDataURL(blob);
-              } else {
-                reject(new Error("Failed to convert image to PNG"));
-              }
-            }, "image/png");
-          };
-          img.onerror = () => reject(new Error("Failed to load image"));
-          img.src = reader.result as string;
-        };
-        reader.readAsDataURL(file);
-      });
-
-    input.onchange = async (e) => {
-      const filesList = Array.from((e.target as HTMLInputElement).files || []);
-      if (filesList.length === 0) return;
-
-      const uploader = this.lfUploadCallback;
-
-      if (uploader) {
-        try {
-          const attachments = await uploader(filesList);
-          this.currentAttachments = [
-            ...this.currentAttachments,
-            ...attachments,
-          ];
-        } catch (err) {
-          console.error("Attachment upload failed", err);
-        }
-      } else {
-        for (const file of filesList) {
-          try {
-            const id =
-              typeof crypto !== "undefined" &&
-              (crypto as Crypto & { randomUUID?: () => string }).randomUUID
-                ? (
-                    crypto as Crypto & { randomUUID?: () => string }
-                  ).randomUUID()
-                : String(Date.now()) + String(Math.random()).slice(2, 8);
-            const name = file.name;
-            const type = "image_url";
-            const b64Image = await fileToDataUrl(file);
-
-            const attachment: LfLLMAttachment = {
-              id,
-              type,
-              name,
-              image_url: { url: b64Image },
-            };
-            this.currentAttachments = [...this.currentAttachments, attachment];
-          } catch (err) {
-            console.error("Failed to process file", file.name, err);
-          }
-        }
-      }
-    };
-
-    input.click();
+    await handleImage(this);
   }
   /**
    * Opens file picker for file attachment
    */
   @Method()
   async handleFileAttachment(): Promise<void> {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.multiple = true;
-
-    const fileToDataUrl = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(reader.error);
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
-
-    const fileToText = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(reader.error);
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsText(file);
-      });
-
-    input.onchange = async (e) => {
-      const files = (e.target as HTMLInputElement).files;
-      if (files) {
-        for (const file of Array.from(files)) {
-          const id =
-            typeof crypto !== "undefined" &&
-            (crypto as Crypto & { randomUUID?: () => string }).randomUUID
-              ? (crypto as Crypto & { randomUUID?: () => string }).randomUUID()
-              : String(Date.now());
-
-          let dataUrl: string | undefined;
-          let content: string | undefined;
-
-          try {
-            dataUrl = await fileToDataUrl(file);
-          } catch {
-            dataUrl = undefined;
-          }
-
-          // Try to read as text for small text files
-          if (file.size <= 1024 * 1024) {
-            // 1MB limit
-            try {
-              content = await fileToText(file);
-            } catch {
-              // Not readable as text, keep undefined
-            }
-          }
-
-          const attachment: LfLLMAttachment = {
-            id,
-            type: "file" as const,
-            name: file.name,
-            url: URL.createObjectURL(file),
-            data: dataUrl,
-            content,
-          };
-          this.currentAttachments = [...this.currentAttachments, attachment];
-        }
-      }
-    };
-
-    input.click();
+    await handleFile(this);
   }
-
   /**
    * Removes an attachment from the current message
    */
   @Method()
   async removeAttachment(id: string): Promise<void> {
-    const toRemove = this.currentAttachments.find((a) => a.id === id);
-    if (
-      toRemove &&
-      typeof toRemove.url === "string" &&
-      toRemove.url.startsWith("blob:")
-    ) {
-      try {
-        URL.revokeObjectURL(toRemove.url);
-      } catch {}
-    }
-    this.currentAttachments = this.currentAttachments.filter(
-      (a) => a.id !== id,
-    );
+    await handleRemove(this, id);
   }
   /**
    * Triggers a re-render of the component to reflect any state changes.
@@ -732,61 +582,7 @@ export class LfChat implements LfChatInterface {
    */
   @Method()
   async setHistory(history: string, fromFile: boolean = false): Promise<void> {
-    const { controller } = this.#adapter;
-    const { get, set } = controller;
-    const { debug } = get.manager;
-
-    if (!fromFile) {
-      try {
-        set.history(() => (this.history = JSON.parse(history)));
-      } catch {}
-    } else {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = ".json,application/json";
-
-      input.onchange = async (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (file) {
-          try {
-            const text = await file.text();
-            const importedHistory: LfLLMChoiceMessage[] = JSON.parse(text);
-
-            if (!Array.isArray(importedHistory)) {
-              throw new Error("Invalid history format: expected array");
-            }
-
-            for (const msg of importedHistory) {
-              if (!msg.role || !msg.content) {
-                throw new Error(
-                  "Invalid message format: missing role or content",
-                );
-              }
-            }
-
-            set.history(() => {
-              this.history = importedHistory;
-            });
-
-            debug.logs.new(
-              this,
-              `Successfully imported ${importedHistory.length} messages`,
-              "informational",
-            );
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : "Unknown error";
-            debug.logs.new(
-              this,
-              `Failed to import history: ${errorMessage}`,
-              "error",
-            );
-          }
-        }
-      };
-
-      input.click();
-    }
+    await setH(this.#adapter, this, history, fromFile);
   }
 
   /**
@@ -794,16 +590,7 @@ export class LfChat implements LfChatInterface {
    */
   @Method()
   async exportHistory(): Promise<void> {
-    const historyJson = JSON.stringify(this.history, null, 2);
-    const blob = new Blob([historyJson], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `chat-history-${new Date().toISOString()}.json`;
-    a.click();
-
-    URL.revokeObjectURL(url);
+    await exportH(this);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.

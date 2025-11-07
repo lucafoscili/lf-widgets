@@ -3,9 +3,9 @@ import {
   LfChatCurrentTokens,
   LfLLMChoiceMessage,
 } from "@lf-widgets/foundations";
+import { apiCall } from "./helpers.api";
+import { getEffectiveConfig } from "./helpers.config";
 import { LfChat } from "./lf-chat";
-import { getEffectiveConfig } from "./config.utils";
-import { apiCall } from "./api.utils";
 
 //#region calcTokens
 /**

@@ -4,9 +4,9 @@ import {
   LfLLMRequest,
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
+import { newRequest } from "./helpers.request";
+import { createInitialToolDataset, handleToolCalls } from "./helpers.tools";
 import { LfChat } from "./lf-chat";
-import { createInitialToolDataset, handleToolCalls } from "./tool.utils";
-import { newRequest } from "./request.utils";
 
 //#region Api call
 export const apiCall = async (
@@ -54,7 +54,6 @@ const handleStreamingResponse = async (
 
   const abortController = llm.createAbort?.();
   set.currentAbortStreaming(abortController);
-  // Don't create assistant message yet - wait until we have content or complete response
 
   try {
     let lastIndex = -1; // Will be set when we create the message

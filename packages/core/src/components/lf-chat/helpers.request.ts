@@ -3,7 +3,7 @@ import {
   LfLLMContentPart,
   LfLLMRequest,
 } from "@lf-widgets/foundations";
-import { getEffectiveConfig } from "./config.utils";
+import { getEffectiveConfig } from "./helpers.config";
 
 //#region newRequest
 /**
