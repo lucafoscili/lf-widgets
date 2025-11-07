@@ -14,14 +14,14 @@ The badge can be styled with a theme color and size.
 
 ## Properties
 
-| Property       | Attribute        | Description                                              | Type                                                                                     | Default      |
-| -------------- | ---------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
-| `lfImageProps` | `lf-image-props` | The props of the image displayed inside the badge.       | `LfImagePropsInterface`                                                                  | `null`       |
-| `lfLabel`      | `lf-label`       | The label displayed inside the badge.                    | `string`                                                                                 | `""`         |
-| `lfPosition`   | `lf-position`    | The position of the badge in relation of its container.  | `"bottom-left" \| "bottom-right" \| "inline" \| "top-left" \| "top-right"`               | `"top-left"` |
-| `lfStyle`      | `lf-style`       | Custom styling for the component.                        | `string`                                                                                 | `""`         |
-| `lfUiSize`     | `lf-ui-size`     | The size of the component.                               | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`   |
-| `lfUiState`    | `lf-ui-state`    | Reflects the specified state color defined by the theme. | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`  |
+| Property       | Attribute     | Description                                              | Type                                                                                     | Default      |
+| -------------- | ------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
+| `lfImageProps` | --            | The props of the image displayed inside the badge.       | `LfImagePropsInterface`                                                                  | `null`       |
+| `lfLabel`      | `lf-label`    | The label displayed inside the badge.                    | `string`                                                                                 | `""`         |
+| `lfPosition`   | `lf-position` | The position of the badge in relation of its container.  | `"bottom-left" \| "bottom-right" \| "inline" \| "top-left" \| "top-right"`               | `"top-left"` |
+| `lfStyle`      | `lf-style`    | Custom styling for the component.                        | `string`                                                                                 | `""`         |
+| `lfUiSize`     | `lf-ui-size`  | The size of the component.                               | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`   |
+| `lfUiState`    | `lf-ui-state` | Reflects the specified state color defined by the theme. | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`  |
 
 
 ## Events

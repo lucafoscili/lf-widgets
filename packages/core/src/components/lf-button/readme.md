@@ -18,7 +18,7 @@ The button can be styled with a theme color and size.
 | Property         | Attribute          | Description                                                                                                                                                                           | Type                                                                                     | Default     |
 | ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
 | `lfAriaLabel`    | `lf-aria-label`    | Explicit accessible label for the button. When provided it takes precedence over any derived label (lfLabel / lfIcon / id fallback) and is applied to the internal button element(s). | `string`                                                                                 | `""`        |
-| `lfDataset`      | `lf-dataset`       | The dataset for the button, containing the nodes to be displayed. The first node will be used to set the icon and label if not provided.                                              | `LfDataDataset`                                                                          | `null`      |
+| `lfDataset`      | --                 | The dataset for the button, containing the nodes to be displayed. The first node will be used to set the icon and label if not provided.                                              | `LfDataDataset`                                                                          | `null`      |
 | `lfIcon`         | `lf-icon`          | When set, the button will show this icon.                                                                                                                                             | `string`                                                                                 | `""`        |
 | `lfIconOff`      | `lf-icon-off`      | When set, the icon button off state will show this icon. Otherwise, an outlined version of the icon prop will be displayed.                                                           | `string`                                                                                 | `""`        |
 | `lfLabel`        | `lf-label`         | When set, the button will show this text.                                                                                                                                             | `string`                                                                                 | `""`        |
@@ -71,7 +71,7 @@ Used to retrieve the component's current state.
 
 #### Returns
 
-Type: `Promise<"on" | "off">`
+Type: `Promise<"off" | "on">`
 
 Promise resolved with the current state of the component.
 
@@ -111,7 +111,7 @@ Sets the component's state.
 
 | Name    | Type                       | Description                                 |
 | ------- | -------------------------- | ------------------------------------------- |
-| `value` | `boolean \| "on" \| "off"` | - The new state to be set on the component. |
+| `value` | `boolean \| "off" \| "on"` | - The new state to be set on the component. |
 
 #### Returns
 
