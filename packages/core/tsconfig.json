@@ -24,5 +24,5 @@
     "types": ["markdown-it", "node", "prismjs", "jest"]
   },
   "exclude": ["node_modules"],
-  "include": ["src"]
+  "include": ["src", "tests", "tests/setupTests.ts"]
 }

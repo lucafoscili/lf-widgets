@@ -343,9 +343,9 @@ export class LfDebug implements LfDebugInterface {
   toggleAutoPrint = (value?: boolean) => {
     if (value === false || value === true) {
       this.#AUTO_PRINT = value;
-    } else {
-      this.#AUTO_PRINT = !this.#AUTO_PRINT;
     }
+
+    return this.#AUTO_PRINT;
   };
   //#endregion
 
