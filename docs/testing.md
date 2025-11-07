@@ -1,4 +1,47 @@
-﻿# LFW Cypress Testing Guide (Agent Edition)
+﻿# LFW Testing Guide (Unit + E2E)
+
+This guide covers both our unit/integration tests (Jest + Stencil) and our end‑to‑end tests (Cypress) with a clear separation of concerns so we avoid duplication and drift.
+
+## 0. Testing Strategy Overview
+
+- Unit/Integration (Jest + Stencil):
+  - Location: packages/core
+  - Scope: framework services and component units (adapters, events, props, rendering surface). Fast feedback, no network.
+  - Mapping: tests run against real code with a clean module mapping to avoid ESM/CJS pitfalls:
+    - @lf-widgets/foundations → ../foundations/src/index.ts (source)
+    - @lf-widgets/framework → ../framework/dist/index.cjs.js (CJS build)
+  - Mocks: keep them type‑safe and minimal; prefer the public framework API over deep helper imports. Use the shared mock factory when you truly need it.
+
+- End‑to‑End (Cypress):
+  - Location: packages/showcase/cypress
+  - Scope: user flows through the showcase, public APIs, and documented selectors.
+  - No Jest in showcase. Showcase tests are exclusively E2E with Cypress.
+
+Callout: Do not duplicate unit tests inside the showcase. Unit/integration stays in core; E2E stays in showcase.
+
+## 0.1 Where to put tests
+
+- Framework/service utilities: packages/core/tests
+- Component unit/spec tests: packages/core/src/components/{component}/{component}.spec.ts (Stencil + Jest)
+- E2E scenarios and examples coverage: packages/showcase/cypress/e2e/**
+
+## 0.2 Running tests
+
+- From packages/core (Jest + Stencil):
+  - yarn test (or npm test)
+  - You can filter by file with: `yarn test -- --testPathPattern=lf-button.spec.ts`
+
+- From packages/showcase (Cypress):
+  - Start showcase dev server (root or showcase script), then run Cypress via the provided scripts (headless or open).
+  - Keep tests deterministic by using public selectors and the helper commands described below.
+
+## 0.3 Mocking and module mappings
+
+- Prefer using the public framework API (`getLfFramework()`, `awaitFramework`) in tests over deep imports.
+- When mocking is necessary, use a single, shared, typed mock factory (createMockFramework) in core tests. Avoid per‑suite ad‑hoc duplications.
+- The moduleNameMapper for Jest lives in core’s Stencil configuration and maps foundations to source and framework to CJS build, ensuring consistent runtime behavior in Jest.
+
+---
 
 ## 1. Mission Statement
 
@@ -106,7 +149,7 @@ describe(CY_CATEGORIES.basic, () => {
 - Assert outcomes using BEM selectors or `data-cy` attributes rather than textual content to stay localization-safe.
 - Keep e2e cases atomic—one user journey per `it` block.
 
-## 13. AI-Focused Authoring Checklist
+## 13. AI-Focused Authoring Checklist (E2E)
 
 1. **Gather inputs**: component name, tag, fixtures path, relevant enums.
 2. **Scaffold file**: copy Section 4 template, update identifiers, import statements, and region headers.
@@ -118,7 +161,7 @@ describe(CY_CATEGORIES.basic, () => {
    - e2e: script at least one end-user flow.
 4. **Validate selectors**: ensure every DOM lookup uses `cy.getCyElement`/`findCyElement` or BEM helpers.
 5. **Review async usage**: confirm every component method call sits inside an async `should` block.
-6. **Run locally**: execute `pnpm test:e2e` (or relevant script) to smoke the suite.
+6. **Run locally**: execute your Cypress test script (e.g., `yarn e2e` or `npm run e2e`) to smoke the suite.
 7. **Self-audit**: verify imports are sorted, no unused helpers remain, and all regions are present.
 
 ## 14. Troubleshooting Playbook
@@ -129,3 +172,30 @@ describe(CY_CATEGORIES.basic, () => {
 - **Async assertion timeout**: wrap awaited calls in `cy.wrap(...).should(async ...)`; avoid `await` outside of Cypress commands.
 
 By following these deterministic steps, any assistant—human or AI—can author new showcase specs that align with existing LFW conventions while remaining resilient to implementation changes.
+
+---
+
+## 15. Unit/Integration Testing (Jest + Stencil) Quick Reference
+
+Use this when adding or updating component/framework unit tests in packages/core.
+
+- Location & naming:
+  - Component specs live next to components (e.g., `packages/core/src/components/lf-button/lf-button.spec.ts`).
+  - Cross‑cutting framework tests live under `packages/core/tests/`.
+
+- Runtime mapping:
+  - foundations → source: `@lf-widgets/foundations` → `../foundations/src/index.ts`
+  - framework → CJS: `@lf-widgets/framework` → `../framework/dist/index.cjs.js`
+
+- Preferred patterns:
+  - Initialize framework readiness in tests that mount components.
+  - Use kebab‑case attributes for Stencil props in HTML templates.
+  - Avoid Jest fake timers with Stencil unless strictly necessary; favor real timers + minimal sleeps.
+  - Funnel interactions through public events; avoid deep invoking internal handlers.
+
+- Don’ts:
+  - Don’t create Jest tests in showcase.
+  - Don’t check in duplicate foundations/framework mirrors under core (these are ignored by .gitignore).
+  - Don’t deep‑import framework internals; prefer the public API.
+
+With this split (core = Jest unit/integration, showcase = Cypress E2E), the suite stays fast, clear, and non‑duplicative.

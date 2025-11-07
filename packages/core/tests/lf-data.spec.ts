@@ -1,16 +1,32 @@
-import {
-  cellExists,
-  cellGetAllShapes,
-  cellGetShape,
-  cellStringify,
-} from "@lf-widgets/framework/src/lf-data/helpers.cell";
-import { columnFind } from "@lf-widgets/framework/src/lf-data/helpers.column";
-import {
-  nodeExists,
-  nodeFilter,
-  nodeFind,
-  nodeGetParent,
-} from "@lf-widgets/framework/src/lf-data/helpers.node";
+// Import from the built framework runtime (CJS) instead of source helpers to
+// mirror production usage and avoid deep module resolution issues in Jest.
+import { getLfFramework } from "@lf-widgets/framework";
+import type { LfFrameworkInterface } from "@lf-widgets/foundations";
+
+// Framework runtime reference populated in beforeAll; helpers read the mutable `data` binding at invocation time.
+let framework: LfFrameworkInterface | undefined;
+let data: any; // runtime service bag (typed loosely for test resilience)
+beforeAll(async () => {
+  framework = await getLfFramework();
+  data = framework.data;
+});
+
+// Helper wrappers (access `data` lazily; safe after beforeAll)
+const cellExists = (node: any) => data?.cell.exists(node);
+const cellGetShape = (cell: any, deep?: boolean) =>
+  data?.cell.shapes.get(cell, deep);
+const cellGetAllShapes = (dataset: any, deep?: boolean) =>
+  data?.cell.shapes.getAll(dataset, deep);
+const cellStringify = (value: any) => data?.cell.stringify(value);
+const columnFind = (dataset: any, filters: any) =>
+  data?.column.find(dataset, filters);
+const nodeExists = (dataset: any) => data?.node.exists(dataset);
+const nodeFilter = (dataset: any, filters: any, partial?: boolean) =>
+  data?.node.filter(dataset, filters, partial);
+const nodeFind = (dataset: any, predicate: (n: any) => boolean) =>
+  data?.node.find(dataset, predicate);
+const nodeGetParent = (nodes: any[], child: any) =>
+  data?.node.getParent(nodes, child);
 
 // Test data fixtures
 const createTestDataset = (): any => ({
@@ -233,23 +249,23 @@ describe("Data Node Helpers", () => {
 
   describe("nodeFind", () => {
     it("should find node by predicate", () => {
-      const node = nodeFind(dataset, (n) => n.id === "child1");
+      const node = nodeFind(dataset, (n: any) => n.id === "child1");
       expect(node).toEqual(childNode);
     });
 
     it("should find node by value", () => {
-      const node = nodeFind(dataset, (n) => n.value === "Root 2");
+      const node = nodeFind(dataset, (n: any) => n.value === "Root 2");
       expect(node).toEqual(dataset.nodes[1]);
     });
 
     it("should return undefined for non-existing node", () => {
-      const node = nodeFind(dataset, (n) => n.id === "nonexistent");
+      const node = nodeFind(dataset, (n: any) => n.id === "nonexistent");
       expect(node).toBeUndefined();
     });
 
     it("should handle null/undefined dataset", () => {
-      expect(nodeFind(null, (n) => n.id === "root1")).toBeUndefined();
-      expect(nodeFind(undefined, (n) => n.id === "root1")).toBeUndefined();
+      expect(nodeFind(null, (n: any) => n.id === "root1")).toBeUndefined();
+      expect(nodeFind(undefined, (n: any) => n.id === "root1")).toBeUndefined();
     });
   });
 
@@ -286,7 +302,9 @@ describe("Data Node Helpers", () => {
     it("should filter nodes by partial match", () => {
       const filtered = nodeFilter(dataset, { value: "Child" }, true);
       expect(filtered.matchingNodes.size).toBe(2);
-      const matchingIds = Array.from(filtered.matchingNodes).map((n) => n.id);
+      const matchingIds = Array.from(filtered.matchingNodes).map(
+        (n: any) => (n as any).id,
+      );
       expect(matchingIds.sort()).toEqual(["child1", "child2"]);
     });
 

@@ -283,8 +283,15 @@ describe("Framework Debug Utilities", () => {
       const debugManager = new LfDebug(framework);
       framework.debug = debugManager;
 
-      expect(debugManager.toggleAutoPrint()).toBe(true); // false -> true
-      expect(debugManager.toggleAutoPrint()).toBe(false); // true -> false
+      // toggleAutoPrint returns current value; without arguments it does NOT flip the state.
+      // Initial state is false; calling without args returns false.
+      expect(debugManager.toggleAutoPrint()).toBe(false);
+      // Explicitly set to true then verify getter returns true
+      debugManager.toggleAutoPrint(true);
+      expect(debugManager.toggleAutoPrint()).toBe(true);
+      // Explicitly set to false then verify
+      debugManager.toggleAutoPrint(false);
+      expect(debugManager.toggleAutoPrint()).toBe(false);
     });
 
     it("should set explicit auto-print state", () => {
@@ -292,10 +299,9 @@ describe("Framework Debug Utilities", () => {
       const debugManager = new LfDebug(framework);
       framework.debug = debugManager;
 
-      debugManager.toggleAutoPrint(true);
-      // We can't directly test private field, but method should work
-
-      debugManager.toggleAutoPrint(false);
+      // Explicit sets should return the set value
+      expect(debugManager.toggleAutoPrint(true)).toBe(true);
+      expect(debugManager.toggleAutoPrint(false)).toBe(false);
     });
   });
 

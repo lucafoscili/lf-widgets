@@ -11,13 +11,13 @@ Represents a showcase component for displaying and navigating through multiple s
 
 ## Properties
 
-| Property          | Attribute           | Description                                                          | Type                                         | Default     |
-| ----------------- | ------------------- | -------------------------------------------------------------------- | -------------------------------------------- | ----------- |
-| `lfDrawer`        | `lf-drawer`         | Enables the drawer.                                                  | `boolean`                                    | `false`     |
-| `lfHeader`        | `lf-header`         | Enables the header.                                                  | `boolean`                                    | `false`     |
-| `lfScrollElement` | `lf-scroll-element` | The scroll container, functional to the ScrollToTop floating button. | `HTMLElement`                                | `undefined` |
-| `lfStyle`         | `lf-style`          | Custom styling for the component.                                    | `string`                                     | `""`        |
-| `lfValue`         | `lf-value`          | Sets the initial value of the views.                                 | `{ Components: string; Framework: string; }` | `null`      |
+| Property          | Attribute   | Description                                                          | Type                                         | Default     |
+| ----------------- | ----------- | -------------------------------------------------------------------- | -------------------------------------------- | ----------- |
+| `lfDrawer`        | `lf-drawer` | Enables the drawer.                                                  | `boolean`                                    | `false`     |
+| `lfHeader`        | `lf-header` | Enables the header.                                                  | `boolean`                                    | `false`     |
+| `lfScrollElement` | --          | The scroll container, functional to the ScrollToTop floating button. | `HTMLElement`                                | `undefined` |
+| `lfStyle`         | `lf-style`  | Custom styling for the component.                                    | `string`                                     | `""`        |
+| `lfValue`         | --          | Sets the initial value of the views.                                 | `{ Components: string; Framework: string; }` | `null`      |
 
 
 ## Shadow Parts

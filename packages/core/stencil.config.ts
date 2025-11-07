@@ -38,5 +38,9 @@ export const config: Config = {
   sourceMap: false,
   testing: {
     testPathIgnorePatterns: ["<rootDir>/cypress/"],
+    moduleNameMapper: {
+      "^@lf-widgets/foundations$": "<rootDir>/../foundations/src/index.ts",
+      "^@lf-widgets/framework$": "<rootDir>/../framework/dist/index.cjs.js",
+    },
   },
 };
