@@ -507,7 +507,28 @@ export class LfChat implements LfChatInterface {
       new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => reject(reader.error);
-        reader.onload = () => resolve(reader.result as string);
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx?.drawImage(img, 0, 0);
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const pngReader = new FileReader();
+                pngReader.onload = () => resolve(pngReader.result as string);
+                pngReader.onerror = () => reject(pngReader.error);
+                pngReader.readAsDataURL(blob);
+              } else {
+                reject(new Error("Failed to convert image to PNG"));
+              }
+            }, "image/png");
+          };
+          img.onerror = () => reject(new Error("Failed to load image"));
+          img.src = reader.result as string;
+        };
         reader.readAsDataURL(file);
       });
 
@@ -545,7 +566,7 @@ export class LfChat implements LfChatInterface {
               id,
               type,
               name,
-              image_url: { detail: "auto", url: b64Image },
+              image_url: { url: b64Image },
             };
             this.currentAttachments = [...this.currentAttachments, attachment];
           } catch (err) {
