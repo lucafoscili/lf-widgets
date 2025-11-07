@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.3.0...1.4.0-rc.0) (2025-11-07)
+
+
+### Features
+
+* Add attachments and message editing to chat ([d543e89](https://github.com/lucafoscili/lf-widgets/commit/d543e898b5199097391f8055acb1b30c043fdd55))
+* Add flat and spinner modes to lf-chip component ([90e29b2](https://github.com/lucafoscili/lf-widgets/commit/90e29b296a53e55d5e1a37d30a3bd2dfdfc66665))
+* Add structured config and tool calling to chat component ([c71426f](https://github.com/lucafoscili/lf-widgets/commit/c71426fe3f645490f18e456c96d7f9c384dc9f09))
+* Add tool execution indicator chip to chat UI ([f2773ff](https://github.com/lucafoscili/lf-widgets/commit/f2773ff87d7bfdf80d47738a3aef5fc575ced013))
+* Add weather layout to LfCard component ([972b748](https://github.com/lucafoscili/lf-widgets/commit/972b748c4fdc04fe0a976d517b9920a427c30678))
+
+
+
+
+
 # [1.3.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0) (2025-10-28)
 
 **Note:** Version bump only for package @lf-widgets/showcase
