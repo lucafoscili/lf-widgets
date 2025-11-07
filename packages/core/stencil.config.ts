@@ -36,4 +36,7 @@ export const config: Config = {
     }),
   ],
   sourceMap: false,
+  testing: {
+    testPathIgnorePatterns: ["<rootDir>/cypress/"],
+  },
 };
