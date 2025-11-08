@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0-rc.0...1.4.0) (2025-11-08)
+
+
+### Features
+
+* Add lf-checkbox component and foundation support ([c3766b1](https://github.com/lucafoscili/lf-widgets/commit/c3766b10100ce59b0231a174eb4bf8e438624592))
+
+
+
+
+
 # [1.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.3.0...1.4.0-rc.0) (2025-11-07)
 
 
