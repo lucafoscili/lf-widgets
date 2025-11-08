@@ -1,7 +1,6 @@
 import {
   LfCodeInterface,
   LfComponent,
-  LfFrameworkInterface,
   LfDebugInterface,
   LfDebugLifecycles,
   LfDebugLog,
@@ -10,6 +9,7 @@ import {
   LfDebugLogsToPrint,
   LfDebugLogToPrintEntry,
   LfDebugManagedComponents,
+  LfFrameworkInterface,
   LfToggleInterface,
 } from "@lf-widgets/foundations";
 
@@ -40,13 +40,14 @@ import {
  * @see {@link LfFramework} For the main framework manager
  */
 export class LfDebug implements LfDebugInterface {
+  #AUTO_PRINT = false;
   #COMPONENTS = {
     codes: new Set<LfCodeInterface>(),
     toggles: new Set<LfToggleInterface>(),
   };
   #IS_ENABLED = false;
   #IS_PROD = false;
-  #LOG_LIMIT = 250;
+  #LOG_LIMIT = 50;
   #LOGS: LfDebugLog[] = [];
 
   constructor(_lfFramework: LfFrameworkInterface) {
@@ -104,7 +105,7 @@ export class LfDebug implements LfDebugInterface {
     ): Promise<void> => {
       switch (lifecycle) {
         case "custom":
-          if (this.isEnabled()) {
+          if (this.#IS_ENABLED) {
             this.logs.new(
               comp,
               "Custom breakpoint " +
@@ -116,7 +117,7 @@ export class LfDebug implements LfDebugInterface {
           break;
         case "did-render":
           comp.debugInfo.renderEnd = window.performance.now();
-          if (this.isEnabled()) {
+          if (this.#IS_ENABLED) {
             this.logs.new(
               comp,
               "Render #" +
@@ -198,35 +199,32 @@ export class LfDebug implements LfDebugInterface {
       };
 
       if (this.#LOGS.length > this.#LOG_LIMIT) {
-        if (this.#IS_ENABLED) {
-          console.warn(
-            log.date.toLocaleDateString() +
-              " lf-debug => " +
-              "Too many logs (> " +
-              this.#LOG_LIMIT +
-              ")! Dumping (increase debug.logLimit to store more logs)... .",
-          );
-        }
         this.logs.dump();
       }
+
       this.#LOGS.push(log);
 
-      switch (category) {
-        case "error":
-          console.error(
-            `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
-            log.class,
-          );
-          break;
-        case "warning":
-          console.warn(
-            `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
-            log.class,
-          );
-          break;
+      if (this.#AUTO_PRINT) {
+        switch (category) {
+          case "error":
+            console.error(
+              `${log.date.getMonth() + 1}/${log.date.getDate()}/${log.date.getFullYear()} ${log.id} ${log.message}`,
+              log.class,
+            );
+            break;
+          case "warning":
+            console.warn(
+              `${log.date.getMonth() + 1}/${log.date.getDate()}/${log.date.getFullYear()} ${log.id} ${log.message}`,
+              log.class,
+            );
+            break;
+          default:
+            console.log(log.date, log.id + log.message, log.class);
+            break;
+        }
       }
 
-      if (this.isEnabled()) {
+      if (this.#IS_ENABLED) {
         this.#codeDispatcher(log);
       }
     },
@@ -311,6 +309,22 @@ export class LfDebug implements LfDebugInterface {
   };
   //#endregion
 
+  //#region Set log limit
+  /**
+   * Sets the maximum number of debug logs to retain.
+   * If the new limit is lower than the current number of logs, excess logs will be removed.
+   *
+   * @param limit - The maximum number of logs to retain.
+   */
+  setLogLimit = (limit: number) => {
+    this.#LOG_LIMIT = limit;
+
+    if (this.#LOGS.length > this.#LOG_LIMIT) {
+      this.#LOGS.splice(0, this.#LOGS.length - this.#LOG_LIMIT);
+    }
+  };
+  //#endregion
+
   //#region Toggle
   /**
    * Toggles the debug mode on/off.
@@ -330,6 +344,21 @@ export class LfDebug implements LfDebugInterface {
     }
 
     return this.#IS_ENABLED;
+  };
+  //#endregion
+
+  //#region Toggle auto-print
+  /**
+   * Toggles or sets the auto-print feature.
+   *
+   * @param value - Optional boolean value to set auto-print to. If not provided, toggles the current state.
+   */
+  toggleAutoPrint = (value?: boolean) => {
+    if (value === false || value === true) {
+      this.#AUTO_PRINT = value;
+    }
+
+    return this.#AUTO_PRINT;
   };
   //#endregion
 

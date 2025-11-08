@@ -119,7 +119,7 @@ The `LfColor` class includes a nested `convert` object which exposes helper func
 - **`hslToRgb(h: number, s: number, l: number): LfColorRGBValues`**  
   Converts HSL values to an RGB object.
 
-- **`rgbToHex(r: number, g: number, b: number): `#${string}``**  
+- **`rgbToHex(r: number, g: number, b: number):`#${string}``**  
   Converts RGB values to a hexadecimal string, using `valueToHex` internally.
 
 - **`rgbToHsl(r: number, g: number, b: number)`**  

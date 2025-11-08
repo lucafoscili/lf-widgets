@@ -126,6 +126,10 @@ jobs:
         if: ${{ steps.bump_control.outputs.should == 'true' }}
         run: yarn build
 
+      - name: Run Unit Tests
+        if: ${{ steps.bump_control.outputs.should == 'true' }}
+        run: yarn test:unit
+
       - name: Check for Changes
         if: ${{ steps.bump_control.outputs.should == 'true' }}
         id: check_changes
@@ -135,6 +139,12 @@ jobs:
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
+
+      - name: Fetch latest changes before creating PR
+        if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Create or Update Pull Request
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}

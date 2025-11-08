@@ -26,7 +26,7 @@ $comp: "chat";
     * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
     *                              Defaults to => 1em
     */
-    padding: var(--lf-#{$comp}-padding, 1em);
+    padding: var(--lf-#{$comp}-padding, 1em 0);
   }
 
   &--bottom {
@@ -39,17 +39,19 @@ $comp: "chat";
     grid-template-areas:
       "messages"
       "spinner"
+      "attachments"
       "request";
-    grid-template-rows: 1fr auto auto;
+    grid-template-rows: 1fr repeat(3, auto);
   }
 
   &--top {
     grid-gap: var(--lf-#{$comp}-outer-grid-gap, 0.75em);
     grid-template-areas:
       "request"
+      "attachments"
       "messages"
       "spinner";
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: repeat(2, auto) 1fr auto;
   }
 
   &--connecting,
@@ -58,8 +60,31 @@ $comp: "chat";
     grid-template-rows: repeat(3, auto);
   }
 
+  &__attachments {
+    box-sizing: border-box;
+    grid-area: attachments;
+    height: auto;
+    min-height: 0;
+    /**
+    * @prop --lf-#{$comp}-attachments-padding: Sets the attachments padding for the #{$comp} component.
+    *                                          Defaults to => 0 1em
+    */
+    padding: var(--lf-#{$comp}-attachments-padding, 0);
+    width: 100%;
+  }
+
   &__configuration {
     justify-self: center;
+  }
+
+  &__edit-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  &__edit-buttons {
+    display: flex;
+    justify-content: center;
   }
 
   &__error {
@@ -133,9 +158,17 @@ $comp: "chat";
   & {
     display: grid;
     grid-template-areas:
-      "textarea button"
-      "progressbar button";
-    grid-template-columns: 1fr auto;
+      "image textarea button"
+      "file progressbar button";
+    grid-template-columns: auto 1fr auto;
+  }
+
+  &__attach-file {
+    grid-area: file;
+  }
+
+  &__attach-image {
+    grid-area: image;
   }
 
   &__button {
@@ -162,6 +195,11 @@ $comp: "chat";
 
   &__configuration {
     overflow: auto;
+  }
+
+  &__header {
+    display: flex;
+    width: 100%;
   }
 
   &__textfield {
@@ -192,7 +230,6 @@ $comp: "chat";
       var(--lf-ui-border-radius)
     );
     box-sizing: border-box;
-    display: flex;
     justify-content: flex-end;
     padding: 0.5em;
     width: 100%;
@@ -201,6 +238,16 @@ $comp: "chat";
   &__button {
     margin: 0 2px;
   }
-}
 
-/* local partial loaded above */
+  &__buttons {
+    display: flex;
+    gap: 0.5em;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  &__tool-execution {
+    justify-self: left;
+    overflow: auto;
+  }
+}

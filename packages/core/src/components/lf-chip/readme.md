@@ -14,16 +14,18 @@ and standard. Ripple effects can be enabled or disabled via a property.
 
 ## Properties
 
-| Property      | Attribute       | Description                                                                                                                                                                                    | Type                                                                                     | Default      |
-| ------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
-| `lfAriaLabel` | `lf-aria-label` | Explicit accessible label applied to each chip item when it would otherwise lack a text label. Fallback chain per item: node.value -> lfAriaLabel -> node.icon -> component id -> 'chip item'. | `string`                                                                                 | `""`         |
-| `lfDataset`   | `lf-dataset`    | The data set for the LF Chip component. This property is mutable, meaning it can be changed after the component is initialized.                                                                | `LfDataDataset`                                                                          | `null`       |
-| `lfRipple`    | `lf-ripple`     | When set to true, the pointerdown event will trigger a ripple effect.                                                                                                                          | `boolean`                                                                                | `true`       |
-| `lfStyle`     | `lf-style`      | Custom styling for the component.                                                                                                                                                              | `string`                                                                                 | `""`         |
-| `lfStyling`   | `lf-styling`    | Styling of the chip component, includes: "choice", "input", "filter" and "standard".                                                                                                           | `"choice" \| "filter" \| "input" \| "standard"`                                          | `"standard"` |
-| `lfUiSize`    | `lf-ui-size`    | The size of the component.                                                                                                                                                                     | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`   |
-| `lfUiState`   | `lf-ui-state`   | Reflects the specified state color defined by the theme.                                                                                                                                       | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`  |
-| `lfValue`     | `lf-value`      | Sets the initial state of the chip. Relevant only when the chip can be selected.                                                                                                               | `string[]`                                                                               | `null`       |
+| Property        | Attribute         | Description                                                                                                                                                                                    | Type                                                                                     | Default      |
+| --------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
+| `lfAriaLabel`   | `lf-aria-label`   | Explicit accessible label applied to each chip item when it would otherwise lack a text label. Fallback chain per item: node.value -> lfAriaLabel -> node.icon -> component id -> 'chip item'. | `string`                                                                                 | `""`         |
+| `lfDataset`     | --                | The data set for the LF Chip component. This property is mutable, meaning it can be changed after the component is initialized.                                                                | `LfDataDataset`                                                                          | `null`       |
+| `lfFlat`        | `lf-flat`         | When set to true, renders the chip without distinctive badge styling for use in dense contexts like toolbars.                                                                                  | `boolean`                                                                                | `false`      |
+| `lfRipple`      | `lf-ripple`       | When set to true, the pointerdown event will trigger a ripple effect.                                                                                                                          | `boolean`                                                                                | `true`       |
+| `lfShowSpinner` | `lf-show-spinner` | When set to true, displays a spinner animation in place of the icon/image for loading states.                                                                                                  | `boolean`                                                                                | `false`      |
+| `lfStyle`       | `lf-style`        | Custom styling for the component.                                                                                                                                                              | `string`                                                                                 | `""`         |
+| `lfStyling`     | `lf-styling`      | Styling of the chip component, includes: "choice", "input", "filter" and "standard".                                                                                                           | `"choice" \| "filter" \| "input" \| "standard"`                                          | `"standard"` |
+| `lfUiSize`      | `lf-ui-size`      | The size of the component.                                                                                                                                                                     | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`   |
+| `lfUiState`     | `lf-ui-state`     | Reflects the specified state color defined by the theme.                                                                                                                                       | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`  |
+| `lfValue`       | --                | Sets the initial state of the chip. Relevant only when the chip can be selected.                                                                                                               | `string[]`                                                                               | `null`       |
 
 
 ## Events
@@ -112,6 +114,7 @@ Type: `Promise<void>`
 
 | Name                             | Description                                                                                       |
 | -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--lf-chip-align-items`          | Sets the alignment for the wrapper. Defaults to => center                                         |
 | `--lf-chip-border-radius`        | Sets the border radius for the chip component. Defaults to => var(--lf-ui-border-radius)          |
 | `--lf-chip-color-on-bg`          | Sets the color for the filter layout checkmark. Defaults to => var(--lf-color-on-surface)         |
 | `--lf-chip-color-on-primary`     | Sets the color-on-primary color for the chip component. Defaults to => var(--lf-color-on-primary) |
@@ -138,6 +141,7 @@ Type: `Promise<void>`
  - [lf-article](../lf-article)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
+ - [lf-chat](../lf-chat)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
@@ -150,6 +154,7 @@ graph TD;
   lf-article --> lf-chip
   lf-card --> lf-chip
   lf-carousel --> lf-chip
+  lf-chat --> lf-chip
   lf-compare --> lf-chip
   lf-masonry --> lf-chip
   lf-messenger --> lf-chip

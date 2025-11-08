@@ -44,6 +44,11 @@ import {
   LfChatPropsInterface,
 } from "../components/chat.declarations";
 import {
+  LfCheckboxElement,
+  LfCheckboxInterface,
+  LfCheckboxPropsInterface,
+} from "../components/checkbox.declarations";
+import {
   LfChipElement,
   LfChipInterface,
   LfChipPropsInterface,
@@ -214,6 +219,7 @@ export type LfComponentElementMap = {
   LfCarousel: LfCarouselElement;
   LfChart: LfChartElement;
   LfChat: LfChatElement;
+  LfCheckbox: LfCheckboxElement;
   LfChip: LfChipElement;
   LfCode: LfCodeElement;
   LfCompare: LfCompareElement;
@@ -253,6 +259,7 @@ export type LfComponentClassMap = {
   LfCarousel: LfCarouselInterface;
   LfChart: LfChartInterface;
   LfChat: LfChatInterface;
+  LfCheckbox: LfCheckboxInterface;
   LfChip: LfChipInterface;
   LfCode: LfCodeInterface;
   LfCompare: LfCompareInterface;
@@ -408,7 +415,9 @@ export type LfComponentName =
   | "LfCard"
   | "LfCarousel"
   | "LfChart"
+  | "LfChart"
   | "LfChat"
+  | "LfCheckbox"
   | "LfChip"
   | "LfCode"
   | "LfCompare"
@@ -483,6 +492,7 @@ export type LfComponentPropsMap = {
   LfCarousel: LfCarouselPropsInterface;
   LfChart: LfChartPropsInterface;
   LfChat: LfChatPropsInterface;
+  LfCheckbox: LfCheckboxPropsInterface;
   LfChip: LfChipPropsInterface;
   LfCode: LfCodePropsInterface;
   LfCompare: LfComparePropsInterface;
@@ -520,6 +530,7 @@ export type LfComponentTagMap = {
   LfCarousel: "lf-carousel";
   LfChart: "lf-chart";
   LfChat: "lf-chat";
+  LfCheckbox: "lf-checkbox";
   LfChip: "lf-chip";
   LfCode: "lf-code";
   LfCompare: "lf-compare";
@@ -557,6 +568,7 @@ export type LfComponentReverseTagMap = {
   "lf-carousel": "LfCarousel";
   "lf-chart": "LfChart";
   "lf-chat": "LfChat";
+  "lf-checkbox": "LfCheckbox";
   "lf-chip": "LfChip";
   "lf-code": "LfCode";
   "lf-compare": "LfCompare";

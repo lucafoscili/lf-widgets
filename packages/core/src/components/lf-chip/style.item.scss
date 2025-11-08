@@ -110,4 +110,25 @@ $comp: null !default;
       white-space: nowrap;
     }
   }
+
+  &__spinner {
+    animation: lf-chip-spin 0.8s linear infinite;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top-color: rgba(var(--lf-color-spinner), 1);
+    height: 1em;
+    width: 1em;
+  }
+
+  &__spinner-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@keyframes lf-chip-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

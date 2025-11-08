@@ -85,6 +85,7 @@ cell: {
 - **`cell.exists(node)`** _Checks if a node has any cells defined._
 
   - **Example:**
+
     ```ts
     const hasCells = dataManager.cell.exists(someNode);
     ```
@@ -95,6 +96,7 @@ cell: {
     - For `"text"` or `"number"`, it creates simple `<div>` elements.
     - For other shapes, it creates custom elements (e.g., `<lf-card>`, `<lf-button>`, etc.) and binds event handlers and references.
   - **Usage Example:**
+
     ```ts
     const vnodes = dataManager.cell.shapes.decorate(
       "card",
@@ -105,22 +107,27 @@ cell: {
       refCallbacks,
     );
     ```
+
 - **`cell.shapes.get(cell, deepCopy?)`** _Extracts and processes a cell’s shape properties._
 
   - If `deepCopy` is true, returns a new object with properties merged and prefixed; otherwise, returns the original cell.
   - **Example:**
+
     ```ts
     const processedCell = dataManager.cell.shapes.get(someCell);
     ```
 
 - **`cell.shapes.getAll(dataset, deepCopy?)`** _Traverses a dataset and returns a map (grouped by shape type) of all cell shapes found across nodes._
   - **Example:**
+
     ```ts
     const shapesMap = dataManager.cell.shapes.getAll(myDataset);
     ```
+
 - **`cell.stringify(value)`** _Converts any cell value into a string._
   - Handles special cases (like dates, objects, null/undefined).
   - **Example:**
+
     ```ts
     const stringValue = dataManager.cell.stringify(someValue);
     ```
@@ -142,6 +149,7 @@ column: {
 
 - **`column.find(dataset, filters)`** _Searches for columns in a dataset (or array of columns) matching the specified filter criteria._
   - **Example:**
+
     ```ts
     const idColumns = dataManager.column.find(myDataset, { id: "someId" });
     ```
@@ -158,18 +166,21 @@ node: LfDataNodeOperations = {
   filter: (dataset, filters, partialMatch?) => { matchingNodes, remainingNodes, ancestorNodes },
   findNodeByCell: (dataset, cell) => LfDataNode,
   fixIds: (nodes) => LfDataNode[],
-  getDrilldownInfo: (nodes) => LfDataNodeDrilldownInfo,
   getParent: (nodes, child) => LfDataNode,
   pop: (nodes, node2remove) => LfDataNode,
-  removeNodeByCell: (dataset, cell) => LfDataNode,
-  setProperties: (nodes, properties, recursively?, exclude?) => LfDataNode[],
   toStream: (nodes) => LfDataNode[],
+  traverseVisible: (nodes, predicates) => LfDataNode[],
+  find: (dataset, predicate) => LfDataNode | undefined,
+  resolveTargets: (dataset, target) => LfDataNode[],
+  sanitizeIds: (dataset, candidates, options?) => string[],
+  extractCellMetadata: (node, cellId, schema?) => unknown,
 }
 ```
 
 - **`node.exists(dataset)`** _Checks if a dataset contains any nodes._
 
   - **Example:**
+
     ```ts
     const hasNodes = dataManager.node.exists(myDataset);
     ```
@@ -177,6 +188,7 @@ node: LfDataNodeOperations = {
 - **`node.filter(dataset, filters, partialMatch?)`** _Filters nodes based on given criteria and returns a set of matching nodes, the remaining nodes, and ancestor nodes of matches._
 
   - **Example:**
+
     ```ts
     const { matchingNodes, remainingNodes, ancestorNodes } =
       dataManager.node.filter(myDataset, { description: "test" }, true);
@@ -185,6 +197,7 @@ node: LfDataNodeOperations = {
 - **`node.findNodeByCell(dataset, cell)`** _Recursively searches for and returns the node that contains the specified cell._
 
   - **Example:**
+
     ```ts
     const foundNode = dataManager.node.findNodeByCell(myDataset, targetCell);
     ```
@@ -192,21 +205,15 @@ node: LfDataNodeOperations = {
 - **`node.fixIds(nodes)`** _Normalizes node IDs by assigning each node an ID representing its path in the tree (e.g., "0.1.2")._
 
   - **Example:**
+
     ```ts
     const fixedNodes = dataManager.node.fixIds(myNodes);
-    ```
-
-- **`node.getDrilldownInfo(nodes)`** _Analyzes the node tree to determine maximum depth and the maximum number of children any node has._
-
-  - **Example:**
-    ```ts
-    const drilldownInfo = dataManager.node.getDrilldownInfo(myNodes);
-    // { maxChildren: number, maxDepth: number }
     ```
 
 - **`node.getParent(nodes, child)`** _Finds the parent node of a specified child node within the tree._
 
   - **Example:**
+
     ```ts
     const parentNode = dataManager.node.getParent(myNodes, someChildNode);
     ```
@@ -214,32 +221,58 @@ node: LfDataNodeOperations = {
 - **`node.pop(nodes, node2remove)`** _Removes a specified node from the tree and returns a copy of the removed node._
 
   - **Example:**
+
     ```ts
     const removedNode = dataManager.node.pop(myNodes, nodeToRemove);
     ```
 
-- **`node.removeNodeByCell(dataset, cell)`** _Searches for the node containing the given cell and removes it from the dataset._
-
-  - **Example:**
-    ```ts
-    const removed = dataManager.node.removeNodeByCell(myDataset, targetCell);
-    ```
-
-- **`node.setProperties(nodes, properties, recursively?, exclude?)`** _Sets provided properties on nodes; if `recursively` is true, applies changes to all descendant nodes except those in an optional exclusion list._
-
-  - **Example:**
-    ```ts
-    const updatedNodes = dataManager.node.setProperties(
-      myNodes,
-      { isDisabled: true },
-      true,
-    );
-    ```
-
 - **`node.toStream(nodes)`** _Flattens a hierarchical node structure into a single array (depth-first order)._
   - **Example:**
+
     ```ts
     const flatNodes = dataManager.node.toStream(myNodes);
+    ```
+
+- **`node.traverseVisible(nodes, predicates)`** _Walks the dataset honouring UI predicates such as isExpanded, isHidden, isSelected._
+  - **Example:**
+
+    ```ts
+    const visibleNodes = dataManager.node.traverseVisible(myNodes, {
+      isExpanded: (node) => node.expanded,
+      isHidden: (node) => node.hidden,
+      isSelected: (node) => node.selected,
+    });
+    ```
+
+- **`node.find(dataset, predicate)`** _Finds the first node matching the predicate._
+  - **Example:**
+
+    ```ts
+    const foundNode = dataManager.node.find(myDataset, (node) => node.id === "target");
+    ```
+
+- **`node.resolveTargets(dataset, target)`** _Resolves targets to nodes based on various criteria._
+  - **Example:**
+
+    ```ts
+    const targetNodes = dataManager.node.resolveTargets(myDataset, { ids: ["1", "2"] });
+    ```
+
+- **`node.sanitizeIds(dataset, candidates, options?)`** _Sanitizes and validates node IDs._
+  - **Example:**
+
+    ```ts
+    const validIds = dataManager.node.sanitizeIds(myDataset, ["1", "2"], { allowPartial: true });
+    ```
+
+- **`node.extractCellMetadata(node, cellId, schema?)`** _Extracts metadata from a cell with optional validation and transformation._
+  - **Example:**
+
+    ```ts
+    const metadata = dataManager.node.extractCellMetadata(node, "cellId", {
+      validate: (v) => typeof v === "string",
+      transform: (v) => v.toUpperCase(),
+    });
     ```
 
 ---
@@ -248,12 +281,6 @@ node: LfDataNodeOperations = {
 
 The functionality in **LfData** is implemented via several helper functions. Here’s a brief overview of the key ones:
 
-- ### **cellDecorateShapes**
-  - **Purpose:** Creates an array of virtual nodes (VNodes) based on the cell items and their shape type.
-  - **Behavior:**
-    - For `"slot"` shapes, renders `<slot>` elements with the cell value as the slot name.
-    - For `"text"` and `"number"` shapes, renders `<div>` elements.
-    - For all other shapes, renders custom elements (e.g., `<lf-card>`, `<lf-button>`, etc.) with event handlers and sanitized properties.
 - ### **cellExists**
 
   - **Purpose:** Checks whether a given node has any cells defined (i.e., non-empty `cells` object).
@@ -266,6 +293,7 @@ The functionality in **LfData** is implemented via several helper functions. Her
 
   - **Purpose:** Traverses a dataset’s nodes recursively, grouping cells by their shape type into a map.
   - **Example Return:**
+
     ```json
     {
       "badge": [ ... ],
@@ -279,16 +307,18 @@ The functionality in **LfData** is implemented via several helper functions. Her
 
   - **Purpose:** Converts any input value into its string representation, handling special cases such as `null`, `undefined`, `Date` objects, and JSON objects.
 
-- ### **decorateSpreader**
-
-  - **Purpose:** Merges properties from cell data (including nested `htmlProps`) into a single props object and cleans up redundant keys (e.g., removing `shape` and `value` after merging).
-
 - ### **columnFind**
 
   - **Purpose:** Searches a dataset or an array of columns and returns columns that match a set of filter criteria.
 
+- ### **extractCellMetadata**
+
+  - **Purpose:** Extracts metadata from a cell with optional validation and transformation.
+
 - ### **findNodeByCell**
+
   - **Purpose:** Recursively finds and returns the node that contains the specified cell.
+
 - ### **nodeExists**
 
   - **Purpose:** Validates that a dataset contains nodes (i.e., that the `nodes` array is non-empty).
@@ -300,13 +330,13 @@ The functionality in **LfData** is implemented via several helper functions. Her
     - `remainingNodes`: Nodes that do not satisfy the filters.
     - `ancestorNodes`: Ancestor nodes of matching leaf nodes.
 
+- ### **nodeFind**
+
+  - **Purpose:** Finds the first node matching a predicate.
+
 - ### **nodeFixIds**
 
   - **Purpose:** Updates node IDs to represent their location in the tree (e.g., "0", "0.1", "0.1.2").
-
-- ### **nodeGetDrilldownInfo**
-
-  - **Purpose:** Analyzes the node tree to determine the maximum depth and the maximum number of children found in any node.
 
 - ### **nodeGetParent**
 
@@ -316,20 +346,21 @@ The functionality in **LfData** is implemented via several helper functions. Her
 
   - **Purpose:** Recursively searches for and removes a node from the tree, returning a copy of the removed node.
 
-- ### **nodeSort**
+- ### **nodeResolveTargets**
 
-  - **Purpose:** Sorts an array of nodes based on a string representation of their values. Accepts a direction (ascending or descending).
+  - **Purpose:** Resolves targets to nodes based on various criteria.
 
-- ### **nodeSetProperties**
+- ### **nodeSanitizeIds**
 
-  - **Purpose:** Sets given properties on nodes (optionally recursively) while optionally excluding certain nodes.
+  - **Purpose:** Sanitizes and validates node IDs.
 
 - ### **nodeToStream**
 
   - **Purpose:** Flattens the nested node tree into a single array (depth-first traversal).
 
-- ### **removeNodeByCell**
-  - **Purpose:** Finds and removes a node from the dataset based on the presence of a specific cell.
+- ### **nodeTraverseVisible**
+
+  - **Purpose:** Walks the dataset honouring UI predicates.
 
 ---
 

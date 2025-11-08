@@ -21,8 +21,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "target": "ES2020",
-    "types": ["markdown-it", "node", "prismjs"]
+    "types": ["markdown-it", "node", "prismjs", "jest"],
+    "skipLibCheck": true
   },
   "exclude": ["node_modules"],
-  "include": ["src"]
+  "include": ["src", "tests", "tests/setupTests.ts"]
 }

@@ -16,8 +16,8 @@ The component supports different layout styles, such as material design, and can
 
 | Property    | Attribute     | Description                                                                                                                     | Type                                                                                     | Default      |
 | ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
-| `lfDataset` | `lf-dataset`  | The data set for the LF Card component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`       |
-| `lfLayout`  | `lf-layout`   | The layout style for the card component. Can be set to different predefined styles like "material" design.                      | `"debug" \| "keywords" \| "material" \| "upload"`                                        | `"material"` |
+| `lfDataset` | --            | The data set for the LF Card component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`       |
+| `lfLayout`  | `lf-layout`   | The layout style for the card component. Can be set to different predefined styles like "material" design.                      | `"debug" \| "keywords" \| "material" \| "upload" \| "weather"`                           | `"material"` |
 | `lfSizeX`   | `lf-size-x`   | The width of the card, defaults to 100%. Accepts any valid CSS format (px, %, vw, etc.).                                        | `string`                                                                                 | `"100%"`     |
 | `lfSizeY`   | `lf-size-y`   | The height of the card, defaults to 100%. Accepts any valid CSS format (px, %, vh, etc.).                                       | `string`                                                                                 | `"100%"`     |
 | `lfStyle`   | `lf-style`    | Custom styling for the component.                                                                                               | `string`                                                                                 | `""`         |
@@ -143,9 +143,9 @@ graph TD;
   lf-canvas --> lf-image
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image

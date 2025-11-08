@@ -13,13 +13,13 @@ The component supports various customization options, including image loading, n
 
 ## Properties
 
-| Property         | Attribute          | Description                                                                                                                            | Type                                                                  | Default     |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------- |
-| `lfDataset`      | `lf-dataset`       | The data set for the LF Imageviewer component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                       | `{}`        |
-| `lfLoadCallback` | `lf-load-callback` | Callback invoked when the load button is clicked.                                                                                      | `(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>` | `null`      |
-| `lfNavigation`   | `lf-navigation`    | Configuration options for the navigation panel.                                                                                        | `LfImageviewerNavigation`                                             | `undefined` |
-| `lfStyle`        | `lf-style`         | Custom styling for the component.                                                                                                      | `string`                                                              | `""`        |
-| `lfValue`        | `lf-value`         | Configuration parameters of the detail view.                                                                                           | `LfDataDataset`                                                       | `{}`        |
+| Property         | Attribute  | Description                                                                                                                            | Type                                                                  | Default     |
+| ---------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------- |
+| `lfDataset`      | --         | The data set for the LF Imageviewer component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                       | `{}`        |
+| `lfLoadCallback` | --         | Callback invoked when the load button is clicked.                                                                                      | `(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>` | `null`      |
+| `lfNavigation`   | --         | Configuration options for the navigation panel.                                                                                        | `LfImageviewerNavigation`                                             | `undefined` |
+| `lfStyle`        | `lf-style` | Custom styling for the component.                                                                                                      | `string`                                                              | `""`        |
+| `lfValue`        | --         | Configuration parameters of the detail view.                                                                                           | `LfDataDataset`                                                       | `{}`        |
 
 
 ## Events
@@ -237,9 +237,9 @@ graph TD;
   lf-card --> lf-upload
   lf-chat --> lf-spinner
   lf-chat --> lf-button
-  lf-chat --> lf-typewriter
-  lf-chat --> lf-progressbar
+  lf-chat --> lf-chip
   lf-chat --> lf-textfield
+  lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-code --> lf-button
   lf-photoframe --> lf-image

@@ -11,6 +11,7 @@ import { prepDebug } from "./elements.debug";
 import { prepKeywords } from "./elements.keywords";
 import { prepMaterial } from "./elements.material";
 import { prepUpload } from "./elements.upload";
+import { prepWeather } from "./elements.weather";
 import { prepDebugHandlers } from "./handlers.debug";
 import { prepKeywordsHandlers } from "./handlers.keywords";
 
@@ -52,6 +53,7 @@ export const createJsx = (
     keywords: () => prepKeywords(getAdapter),
     material: () => prepMaterial(getAdapter),
     upload: () => prepUpload(getAdapter),
+    weather: () => prepWeather(getAdapter),
   };
 };
 //#endregion

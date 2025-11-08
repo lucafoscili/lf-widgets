@@ -79,6 +79,9 @@ The `logs` factory provides a set of methods to manage and output debug logs.
 - **`isEnabled(): boolean`**  
   Returns the current state of debug mode.
 
+- **`toggleAutoPrint(value?: boolean): boolean`**  
+  Toggles or sets the auto-print feature. When enabled, debug logs are automatically printed to the console based on their category (error, warning, informational). If no value is provided, toggles the current state.
+
 - **`register(comp: LfDebugManagedComponents): void`**  
   Registers a component with the debug manager:
 

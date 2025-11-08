@@ -111,6 +111,19 @@ export class LfChip implements LfChipInterface {
    */
   @Prop({ mutable: true }) lfDataset: LfDataDataset = null;
   /**
+   * When set to true, renders the chip without distinctive badge styling for use in dense contexts like toolbars.
+   *
+   * @type {boolean}
+   * @default false
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chip lfFlat={true}></lf-chip>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFlat: boolean = false;
+  /**
    * When set to true, the pointerdown event will trigger a ripple effect.
    *
    * @type {boolean}
@@ -123,6 +136,19 @@ export class LfChip implements LfChipInterface {
    * ```
    */
   @Prop({ mutable: true }) lfRipple: boolean = true;
+  /**
+   * When set to true, displays a spinner animation in place of the icon/image for loading states.
+   *
+   * @type {boolean}
+   * @default false
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chip lfShowSpinner={true}></lf-chip>
+   * ```
+   */
+  @Prop({ mutable: true }) lfShowSpinner: boolean = false;
   /**
    * Custom styling for the component.
    *
@@ -400,7 +426,13 @@ export class LfChip implements LfChipInterface {
     const { item } = this.#b;
     const icons: VNode[] = [];
 
-    if (node.icon) {
+    if (this.lfShowSpinner) {
+      icons.push(
+        <div class={bemClass(item._, item.spinnerContainer)}>
+          <div class={bemClass(item._, item.spinner)}></div>
+        </div>,
+      );
+    } else if (node.icon) {
       const { style } = get(`./assets/svg/${node.icon}.svg`);
       icons.push(
         <div
@@ -618,6 +650,7 @@ export class LfChip implements LfChipInterface {
             class={bemClass(this.#b.chip._, null, {
               choice: this.#isChoice(),
               filter: this.#isFilter(),
+              flat: this.lfFlat,
               input: this.#isInput(),
             })}
             part={this.#p.chip}

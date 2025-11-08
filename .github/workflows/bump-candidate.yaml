@@ -68,6 +68,11 @@ jobs:
         run: |
           git push origin --delete version-bump-rc 2>/dev/null || echo "Branch version-bump-rc does not exist on remote, continuing..."
 
+      - name: Ensure we're on the latest candidate commit
+        run: |
+          git fetch origin candidate
+          git reset --hard origin/candidate
+
       - name: Bump Versions with Lerna
         run: |
           npx lerna version --conventional-prerelease --preid=rc --no-push --no-git-tag-version --yes
@@ -79,6 +84,9 @@ jobs:
       - name: Build Packages
         run: yarn build
 
+      - name: Run Unit Tests
+        run: yarn test:unit
+
       - name: Format Code with Prettier
         run: yarn format
 
@@ -88,6 +96,11 @@ jobs:
           COUNT=$(find packages/core/src/components -mindepth 1 -maxdepth 1 -type d | wc -l)
           echo "{ \"components\": $COUNT }" > count.json
           echo "components=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Fetch latest changes before creating PR
+        run: |
+          git fetch origin candidate
+          git reset --hard origin/candidate
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v5

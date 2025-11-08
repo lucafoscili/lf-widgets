@@ -9,6 +9,42 @@ export const getDebugFixtures = (): LfShowcaseFixture => {
   //#region example map
   const CODE = new Map<string, { code: string; description: string }>([
     [
+      "info.create",
+      {
+        code: `const debugInfo = debugManager.info.create(); 
+// Initializes and returns a new debug information object`,
+        description:
+          "The `info.create` method initializes and returns a new debug information object with timing data.",
+      },
+    ],
+    [
+      "info.update",
+      {
+        code: `debugManager.info.update(comp, "did-render"); 
+// Updates debug information based on component lifecycle`,
+        description:
+          "The `info.update` method updates debug information based on component lifecycle phases.",
+      },
+    ],
+    [
+      "logs.dump",
+      {
+        code: `debugManager.logs.dump(); 
+// Clears all stored logs and resets code display`,
+        description:
+          "The `logs.dump` method clears all stored logs and resets the code display for registered components.",
+      },
+    ],
+    [
+      "logs.fromComponent",
+      {
+        code: `const isDebuggable = debugManager.logs.fromComponent(comp); 
+// Checks if the component is debug-enabled`,
+        description:
+          "The `logs.fromComponent` method checks if the given component is debug-enabled.",
+      },
+    ],
+    [
       "logs.new",
       {
         code: `debugManager.logs.new(
@@ -26,6 +62,24 @@ export const getDebugFixtures = (): LfShowcaseFixture => {
 // Prints all stored logs grouped by type to the console`,
         description:
           "The `logs.print` method prints all stored logs grouped by type (`load`, `misc`, `render`, `resize`) to the console.",
+      },
+    ],
+    [
+      "isEnabled",
+      {
+        code: `const enabled = debugManager.isEnabled(); 
+// Returns the current state of debug mode`,
+        description:
+          "The `isEnabled` method returns the current state of debug mode.",
+      },
+    ],
+    [
+      "toggleAutoPrint",
+      {
+        code: `debugManager.toggleAutoPrint(true); 
+// Enables auto-printing of debug logs to console`,
+        description:
+          "The `toggleAutoPrint` method toggles or sets the auto-print feature for debug logs.",
       },
     ],
     [

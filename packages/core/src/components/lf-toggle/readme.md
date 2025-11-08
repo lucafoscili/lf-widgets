@@ -60,7 +60,7 @@ Used to retrieve the component's current state.
 
 #### Returns
 
-Type: `Promise<"on" | "off">`
+Type: `Promise<"off" | "on">`
 
 Promise resolved with the current state of the component.
 
@@ -82,7 +82,7 @@ Sets the component's state.
 
 | Name    | Type                       | Description                                 |
 | ------- | -------------------------- | ------------------------------------------- |
-| `value` | `boolean \| "on" \| "off"` | - The new state to be set on the component. |
+| `value` | `boolean \| "off" \| "on"` | - The new state to be set on the component. |
 
 #### Returns
 
