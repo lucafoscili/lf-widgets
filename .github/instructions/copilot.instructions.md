@@ -8,6 +8,7 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 
 ## TL;DR (Quick Compliance Snapshot)
 
+- **TDD First**: Write tests before implementation. Unit tests (Jest) for framework/adapters, E2E (Cypress) for user flows.
 - Monorepo flow: foundations (types) → framework (services) → core (web components) → showcase → react wrappers.
 - Single outward event (`lf-<name>-event`) via `onLfEvent`.
 - Data: `LfDataDataset`; non‑primitives through `<LfShape/>`, primitives via `stringify`; add `lfValue` if missing.
@@ -16,7 +17,7 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 - Styling: only `theme.bemClass` with `LF_<COMP>_BLOCKS`.
 - State mutation: clone Sets/Maps before reassign; debounce filters (300ms).
 - Avoid: extra events, ad‑hoc traversal duplicated from framework, local shape maps, timers in refs, monolithic >300 line adapters.
-- Pre-PR: build foundations/core, docs sync, run adapter + SoC checklist.
+- Pre-PR: build foundations/core, docs sync, run unit tests (`yarn test:unit`), verify adapter + SoC + TDD checklists.
 
 ## 1. Packages (monorepo)
 
@@ -100,12 +101,17 @@ Pre-PR SoC Checklist (all must be true):
 - [ ] Single outward event per component.
 - [ ] All adapter interfaces imported from foundations directly.
 
-## 2. Build / Dev
+## 2. Build / Dev / Test
 
 - Install: `yarn install` (Yarn v4).
 - Full build: `yarn build` (foundations → framework → core → sync docs/mixins → showcase → react wrappers → markdown).
 - Dev: first `yarn dev:setup`, then `yarn dev` for subsequent runs.
 - Clean: `yarn clean`. Docs/mixins: `yarn sync:showcase` (usually implicit in build).
+- **Testing**:
+  - Unit tests: `yarn test:unit` (Jest, runs in CI on candidate/main pushes).
+  - Unit tests watch mode: `yarn test:unit:watch` (during development).
+  - E2E tests: `yarn test` (Cypress, runs on PRs to main).
+  - E2E open mode: `yarn test:open` (interactive Cypress).
 
 ## 3. Component Patterns
 
@@ -195,16 +201,18 @@ Guidelines (summary – see SoC section for details): no duplicated traversal, n
 
 Single outward event (`lf-<comp>-event`); all interactions route through `onLfEvent(event, eventType, args?)`. Shape events use `<LfShape eventDispatcher>` → `lf-event`. Ripple & side-effects centralized there.
 
-Quick checklist:
+Quick checklist (TDD approach):
 
-1. Add / update foundations declarations (getters, setters, handlers, refs, jsx entries).
-2. Build foundations (`yarn build:foundations`).
-3. Implement adapter with pure pass-through getters (no invocation) for dynamic values.
-4. Use `<LfShape/>` for every non-primitive shape; inline primitives.
-5. Funnel all interactions via `onLfEvent` to emit the single outward event.
-6. Rebuild core and verify docs regenerated.
-7. Add/adjust showcase examples + (optional) Cypress tests.
-8. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
+1. **Write tests first**: Create spec file with failing tests for expected behavior.
+2. Add / update foundations declarations (getters, setters, handlers, refs, jsx entries).
+3. Build foundations (`yarn build:foundations`).
+4. Implement adapter with pure pass-through getters (no invocation) for dynamic values.
+5. Use `<LfShape/>` for every non-primitive shape; inline primitives.
+6. Funnel all interactions via `onLfEvent` to emit the single outward event.
+7. **Verify tests pass**: Run `yarn test:unit` to ensure implementation satisfies tests.
+8. Rebuild core and verify docs regenerated.
+9. Add/adjust showcase examples + (optional) Cypress E2E tests.
+10. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
 
 ## 5.2 Scaling Up (Messenger Pattern Summary)
 
@@ -232,7 +240,49 @@ When complexity grows (see `lf-messenger` for full example):
 
 ## 8. Testing / Docs
 
-- Cypress lives in showcase; new deterministic examples go in `packages/showcase/src/components/lf-showcase/assets/data/`.
+### 8.1 Test-Driven Development (TDD) Workflow
+
+**ALWAYS write tests before implementation**. Follow this sequence:
+
+1. **Unit tests first** (for framework/adapters):
+   - Location: `packages/core/tests/` for framework services, or `packages/core/src/components/<component>/<component>.spec.ts` for components.
+   - Write failing tests that describe expected behavior.
+   - Use Jest + Stencil test utilities.
+   - Framework services: test via `getLfFramework()` from `@lf-widgets/framework`.
+   - Component tests: mount component, assert props/events/methods.
+2. **Implement to pass tests**:
+   - Write minimal code to make tests pass.
+   - Run `yarn test:unit` or `yarn test:unit:watch` during development.
+   - Refactor while keeping tests green.
+
+3. **E2E tests for user flows** (optional, after implementation):
+   - Location: `packages/showcase/cypress/e2e/components/<component>.cy.ts`.
+   - Test complete user interactions through showcase examples.
+   - Use `cy.checkComponentExamples`, `cy.checkEvent`, etc.
+   - Run with `yarn test` or `yarn test:open`.
+
+### 8.2 Testing Strategy
+
+- **Unit/Integration (Jest)**: Fast, isolated, test framework services and component logic.
+  - Framework utilities (data, theme, etc.) → `packages/core/tests/lf-<service>.spec.ts`.
+  - Component behavior → `packages/core/src/components/<component>/<component>.spec.ts`.
+  - Mock only when necessary; prefer real framework API.
+- **E2E (Cypress)**: Slower, integrated, test user flows through showcase.
+  - User interactions → `packages/showcase/cypress/e2e/components/<component>.cy.ts`.
+  - No Jest in showcase; Cypress only.
+  - Deterministic examples in `packages/showcase/src/components/lf-showcase/assets/data/`.
+
+### 8.3 TDD Checklist (enforce before implementation)
+
+- [ ] Tests written first describing expected behavior.
+- [ ] Tests fail initially (red).
+- [ ] Implementation makes tests pass (green).
+- [ ] Code refactored while maintaining green tests.
+- [ ] `yarn test:unit` passes locally.
+- [ ] Coverage includes happy path + edge cases.
+
+### 8.4 Docs Regeneration
+
 - Regenerate docs when component APIs change: `yarn sync:showcase` (or `yarn build`).
 
 ## 9. Common Pitfalls
@@ -244,7 +294,7 @@ When complexity grows (see `lf-messenger` for full example):
 
 ## 10. Quick Commands
 
-`yarn build` · `yarn dev:setup` · `yarn dev` · `yarn sync:showcase` · `yarn clean`.
+`yarn build` · `yarn dev:setup` · `yarn dev` · `yarn sync:showcase` · `yarn clean` · `yarn test:unit` · `yarn test:unit:watch` · `yarn test` · `yarn test:open`.
 
 ## 11. Absolute Don'ts
 
