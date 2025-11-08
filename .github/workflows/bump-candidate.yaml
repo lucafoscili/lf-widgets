@@ -68,18 +68,12 @@ jobs:
         run: |
           git push origin --delete version-bump-rc 2>/dev/null || echo "Branch version-bump-rc does not exist on remote, continuing..."
 
-      - name: Ensure we're on the latest candidate commit
-        run: |
-          git fetch origin candidate
-          git reset --hard origin/candidate
-
       - name: Bump Versions with Lerna
         run: |
           npx lerna version --conventional-prerelease --preid=rc --no-push --no-git-tag-version --yes
 
       - name: Convert Lerna commit to staged changes
-        run: |
-          git reset --soft HEAD~1 || true
+        run: git reset --soft HEAD~1 || true git reset --soft HEAD~1 || true
 
       - name: Build Packages
         run: yarn build
@@ -97,10 +91,15 @@ jobs:
           echo "{ \"components\": $COUNT }" > count.json
           echo "components=$COUNT" >> $GITHUB_OUTPUT
 
-      - name: Fetch latest changes before creating PR
+      - name: Sync changes with latest candidate commit
         run: |
+          # Commit the staged changes temporarily
+          git add .
+          git commit -m "temp: staged version bump changes"
+
+          # Fetch latest changes and rebase onto them
           git fetch origin candidate
-          git reset --hard origin/candidate
+          git rebase origin/candidate
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v5

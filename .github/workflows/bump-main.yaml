@@ -140,11 +140,16 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Fetch latest changes before creating PR
+      - name: Sync changes with latest main commit
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
         run: |
+          # Commit the staged changes temporarily
+          git add .
+          git commit -m "temp: staged version bump changes"
+
+          # Fetch latest changes and rebase onto them
           git fetch origin main
-          git reset --hard origin/main
+          git rebase origin/main
 
       - name: Create or Update Pull Request
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
