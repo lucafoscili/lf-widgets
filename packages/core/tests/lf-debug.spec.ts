@@ -164,6 +164,7 @@ describe("Framework Debug Utilities", () => {
       const { LfDebug } = require("../../framework/src/lf-debug/lf-debug");
       const debugManager = new LfDebug(framework);
       framework.debug = debugManager;
+      debugManager.toggleAutoPrint(true);
 
       const mockComponent = {
         rootElement: { tagName: "LF-MOCK", id: "test" },
@@ -181,6 +182,7 @@ describe("Framework Debug Utilities", () => {
       const { LfDebug } = require("../../framework/src/lf-debug/lf-debug");
       const debugManager = new LfDebug(framework);
       framework.debug = debugManager;
+      debugManager.toggleAutoPrint(true);
 
       const mockComponent = {
         rootElement: { tagName: "LF-MOCK", id: "test" },
@@ -365,6 +367,7 @@ describe("Framework Debug Utilities", () => {
       const { LfDebug } = require("../../framework/src/lf-debug/lf-debug");
       const debugManager = new LfDebug(framework);
       framework.debug = debugManager;
+      debugManager.toggleAutoPrint(true);
 
       const mockComponent = {
         rootElement: { tagName: "LF-MOCK" },

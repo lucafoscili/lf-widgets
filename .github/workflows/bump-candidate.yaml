@@ -79,6 +79,9 @@ jobs:
       - name: Build Packages
         run: yarn build
 
+      - name: Run Unit Tests
+        run: yarn test:unit
+
       - name: Format Code with Prettier
         run: yarn format
 

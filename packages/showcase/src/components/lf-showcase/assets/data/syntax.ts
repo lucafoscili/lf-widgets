@@ -69,6 +69,59 @@ syntax.highlightElement(preElement);
       },
     ],
     [
+      "loadLanguage",
+      {
+        code: `await syntax.loadLanguage('typescript'); 
+// Loads TypeScript language grammar asynchronously`,
+        description:
+          "Load a language grammar asynchronously from the built-in language loaders.",
+      },
+    ],
+    [
+      "json.areEqual",
+      {
+        code: `const equal = syntax.json.areEqual(obj1, obj2); 
+// Compares two JSON objects for deep equality`,
+        description:
+          "Compare two JSON objects for deep equality, handling nested structures.",
+      },
+    ],
+    [
+      "json.isLikeString",
+      {
+        code: `const isLike = syntax.json.isLikeString('{"key": "value"}'); 
+// Checks if a string looks like JSON`,
+        description:
+          "Check if a string appears to be JSON-like without fully parsing it.",
+      },
+    ],
+    [
+      "json.isValid",
+      {
+        code: `const valid = syntax.json.isValid('{"key": "value"}'); 
+// Validates if a string is valid JSON`,
+        description: "Validate if a string contains valid JSON syntax.",
+      },
+    ],
+    [
+      "json.parse",
+      {
+        code: `const obj = syntax.json.parse('{"key": "value"}'); 
+// Parses a JSON string safely`,
+        description:
+          "Parse a JSON string with additional safety checks and error handling.",
+      },
+    ],
+    [
+      "json.unescape",
+      {
+        code: `const unescaped = syntax.json.unescape('{\\"key\\": \\"value\\"}'); 
+// Unescapes JSON string values`,
+        description:
+          "Unescape JSON string values that may contain escaped characters.",
+      },
+    ],
+    [
       "prism",
       {
         code: `const prism = syntax.prism; 

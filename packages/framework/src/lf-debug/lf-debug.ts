@@ -47,7 +47,7 @@ export class LfDebug implements LfDebugInterface {
   };
   #IS_ENABLED = false;
   #IS_PROD = false;
-  #LOG_LIMIT = 250;
+  #LOG_LIMIT = 50;
   #LOGS: LfDebugLog[] = [];
 
   constructor(_lfFramework: LfFrameworkInterface) {
@@ -105,7 +105,7 @@ export class LfDebug implements LfDebugInterface {
     ): Promise<void> => {
       switch (lifecycle) {
         case "custom":
-          if (this.isEnabled()) {
+          if (this.#IS_ENABLED) {
             this.logs.new(
               comp,
               "Custom breakpoint " +
@@ -117,7 +117,7 @@ export class LfDebug implements LfDebugInterface {
           break;
         case "did-render":
           comp.debugInfo.renderEnd = window.performance.now();
-          if (this.isEnabled()) {
+          if (this.#IS_ENABLED) {
             this.logs.new(
               comp,
               "Render #" +
@@ -199,35 +199,32 @@ export class LfDebug implements LfDebugInterface {
       };
 
       if (this.#LOGS.length > this.#LOG_LIMIT) {
-        if (this.#IS_ENABLED) {
-          console.warn(
-            log.date.toLocaleDateString() +
-              " lf-debug => " +
-              "Too many logs (> " +
-              this.#LOG_LIMIT +
-              ")! Dumping (increase debug.logLimit to store more logs)... .",
-          );
-        }
         this.logs.dump();
       }
+
       this.#LOGS.push(log);
 
-      switch (category) {
-        case "error":
-          console.error(
-            `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
-            log.class,
-          );
-          break;
-        case "warning":
-          console.warn(
-            `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
-            log.class,
-          );
-          break;
+      if (this.#AUTO_PRINT) {
+        switch (category) {
+          case "error":
+            console.error(
+              `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
+              log.class,
+            );
+            break;
+          case "warning":
+            console.warn(
+              `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
+              log.class,
+            );
+            break;
+          default:
+            console.log(log.date, log.id + log.message, log.class);
+            break;
+        }
       }
 
-      if (this.isEnabled()) {
+      if (this.#IS_ENABLED) {
         this.#codeDispatcher(log);
       }
     },
@@ -308,6 +305,22 @@ export class LfDebug implements LfDebugInterface {
       this.#COMPONENTS.codes.add(comp as LfCodeInterface);
     } else {
       this.#COMPONENTS.toggles.add(comp as LfToggleInterface);
+    }
+  };
+  //#endregion
+
+  //#region Set log limit
+  /**
+   * Sets the maximum number of debug logs to retain.
+   * If the new limit is lower than the current number of logs, excess logs will be removed.
+   *
+   * @param limit - The maximum number of logs to retain.
+   */
+  setLogLimit = (limit: number) => {
+    this.#LOG_LIMIT = limit;
+
+    if (this.#LOGS.length > this.#LOG_LIMIT) {
+      this.#LOGS.splice(0, this.#LOGS.length - this.#LOG_LIMIT);
     }
   };
   //#endregion

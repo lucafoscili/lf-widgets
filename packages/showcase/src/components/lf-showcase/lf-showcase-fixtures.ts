@@ -43,11 +43,12 @@ export const LF_SHOWCASE_COMPONENTS = (
     brush,
     chartColumn,
     chartHistogram,
+    checkbox,
     code,
     forms,
+    hexagonInfo,
     id,
     imageInPicture,
-    infoHexagon,
     innerShadowBottom,
     layoutBoardSplit,
     layoutList,
@@ -134,6 +135,13 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: messages,
         id: "Chat",
         value: "Chat",
+      },
+      {
+        description:
+          "Checkbox component with three states: on, off, indeterminate.",
+        icon: checkbox,
+        id: "Checkbox",
+        value: "Checkbox",
       },
       {
         description: "Widget that can be used to display multiple items",
@@ -251,7 +259,7 @@ export const LF_SHOWCASE_COMPONENTS = (
       },
       {
         description: "Displays notification messages in a simple format.",
-        icon: infoHexagon,
+        icon: hexagonInfo,
         id: "Toast",
         value: "Toast",
       },
