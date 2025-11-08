@@ -161,7 +161,7 @@ export class LfCheckbox implements LfCheckboxInterface {
 
   onLfEvent(e: Event | CustomEvent, eventType: LfCheckboxEvent) {
     const { effects } = this.#framework;
-    const { lfRipple, value } = this;
+    const { lfRipple } = this;
 
     switch (eventType) {
       case "change": {
@@ -187,9 +187,9 @@ export class LfCheckbox implements LfCheckboxInterface {
       eventType,
       id: this.rootElement.id,
       originalEvent: e,
-      value: value,
-      valueAsBoolean: value === "on",
-      isIndeterminate: value === "indeterminate",
+      value: this.value,
+      valueAsBoolean: this.value === "on",
+      isIndeterminate: this.value === "indeterminate",
     });
   }
   //#endregion
@@ -412,7 +412,6 @@ export class LfCheckbox implements LfCheckboxInterface {
               onClick={(e) => this.onLfEvent(e, "change")}
               onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
               part={this.#p.checkbox}
-              data-cy={this.#cy.input}
             >
               {this.#prepInput()}
               {this.#prepBackground()}
