@@ -32,14 +32,18 @@ describe("lf-checkbox component", () => {
     expect(await page.root.getValue()).toBe("indeterminate");
   });
 
-  it("toggles from off to on on click", async () => {
-    const page = await createPage(`<lf-checkbox></lf-checkbox>`);
-    expect(await page.root.getValue()).toBe("off");
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+  it("toggles from on to off on click", async () => {
+    const page = await createPage(
+      `<lf-checkbox lf-value="true"></lf-checkbox>`,
+    );
+    expect(await page.root.getValue()).toBe("on");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
-    expect(await page.root.getValue()).toBe("on");
+    expect(await page.root.getValue()).toBe("off");
   });
 
   it("toggles from on to off on click", async () => {
@@ -47,7 +51,9 @@ describe("lf-checkbox component", () => {
       `<lf-checkbox lf-value="true"></lf-checkbox>`,
     );
     expect(await page.root.getValue()).toBe("on");
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
@@ -59,7 +65,9 @@ describe("lf-checkbox component", () => {
     await page.root.setValue("indeterminate");
     await page.waitForChanges();
     expect(await page.root.getValue()).toBe("indeterminate");
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
@@ -71,7 +79,9 @@ describe("lf-checkbox component", () => {
       `<lf-checkbox lf-ui-state="disabled"></lf-checkbox>`,
     );
     expect(await page.root.getValue()).toBe("off");
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
@@ -84,7 +94,9 @@ describe("lf-checkbox component", () => {
     page.root.addEventListener("lf-checkbox-event", (e: CustomEvent) => {
       events.push(e.detail);
     });
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
@@ -102,7 +114,9 @@ describe("lf-checkbox component", () => {
     page.root.addEventListener("lf-checkbox-event", (e: CustomEvent) => {
       events.push(e.detail);
     });
-    const checkbox = page.root.shadowRoot.querySelector("div[data-cy='input']");
+    const checkbox = page.root.shadowRoot.querySelector(
+      "input[data-cy='input']",
+    );
     expect(checkbox).not.toBeNull();
     checkbox!.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
     await page.waitForChanges();

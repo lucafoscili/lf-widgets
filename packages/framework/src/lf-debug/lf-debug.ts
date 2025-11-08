@@ -208,13 +208,13 @@ export class LfDebug implements LfDebugInterface {
         switch (category) {
           case "error":
             console.error(
-              `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
+              `${log.date.getMonth() + 1}/${log.date.getDate()}/${log.date.getFullYear()} ${log.id} ${log.message}`,
               log.class,
             );
             break;
           case "warning":
             console.warn(
-              `${log.date.toLocaleDateString()} ${log.id} ${log.message}`,
+              `${log.date.getMonth() + 1}/${log.date.getDate()}/${log.date.getFullYear()} ${log.id} ${log.message}`,
               log.class,
             );
             break;
