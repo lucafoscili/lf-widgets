@@ -1612,7 +1612,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAriaLabel",
-        docs: "Explicit accessible label for the checkbox control. Fallback chain when empty:\r\nlfLabel -> root element id -> 'checkbox'. Applied to the native input element.",
+        docs: "Explicit accessible label for the checkbox control. Fallback chain when empty:\nlfLabel -> root element id -> 'checkbox'. Applied to the native input element.",
         type: "string",
       },
       {
@@ -1647,7 +1647,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial boolean state of the checkbox.\r\nSet to null for indeterminate state.",
+        docs: "Sets the initial boolean state of the checkbox.\nSet to null for indeterminate state.",
         type: "boolean",
       },
     ],
@@ -1714,7 +1714,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-checkbox-size",
-        docs: "Sets the size for the checkbox component. Defaults to => 1.25em",
+        docs: "Sets the size for the checkbox component. Defaults to => 1.5em",
       },
     ],
   },
