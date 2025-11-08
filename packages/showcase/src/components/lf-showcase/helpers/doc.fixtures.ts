@@ -8,6 +8,7 @@ import { getCardFixtures } from "../assets/data/card";
 import { getCarouselFixtures } from "../assets/data/carousel";
 import { getChartFixtures } from "../assets/data/chart";
 import { getChatFixtures } from "../assets/data/chat";
+import { getCheckboxFixtures } from "../assets/data/checkbox";
 import { getChipFixtures } from "../assets/data/chip";
 import { getCodeFixtures } from "../assets/data/code";
 import { getColorFixtures } from "../assets/data/color";
@@ -67,6 +68,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getChartFixtures(framework);
     case "lf-chat":
       return getChatFixtures(framework);
+    case "lf-checkbox":
+      return getCheckboxFixtures(framework);
     case "lf-chip":
       return getChipFixtures(framework);
     case "lf-code":
@@ -113,8 +116,6 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getTypewriterFixtures(framework);
     case "lf-upload":
       return getUploadFixtures(framework);
-    default:
-      return null;
   }
 };
 

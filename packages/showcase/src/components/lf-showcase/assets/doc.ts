@@ -1552,6 +1552,172 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
   },
+  "lf-checkbox": {
+    methods: [
+      {
+        name: "getDebugInfo",
+        docs: "Fetches debug information of the component's current state.",
+        returns: {
+          type: "Promise<LfDebugLifecycleInfo>",
+          docs: "",
+        },
+        signature: "() => Promise<LfDebugLifecycleInfo>",
+      },
+      {
+        name: "getProps",
+        docs: "Used to retrieve component's properties and descriptions.",
+        returns: {
+          type: "Promise<LfCheckboxPropsInterface>",
+          docs: "",
+        },
+        signature: "() => Promise<LfCheckboxPropsInterface>",
+      },
+      {
+        name: "getValue",
+        docs: "Retrieves the current value of the checkbox.",
+        returns: {
+          type: 'Promise<"indeterminate" | "off" | "on">',
+          docs: "",
+        },
+        signature: "() => Promise<LfCheckboxState>",
+      },
+      {
+        name: "refresh",
+        docs: "This method is used to trigger a new render of the component.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "setValue",
+        docs: "Sets the value of the checkbox.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(value: LfCheckboxState | boolean) => Promise<void>",
+      },
+      {
+        name: "unmount",
+        docs: "Initiates the unmount sequence, removing the component from the DOM after a delay.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(ms?: number) => Promise<void>",
+      },
+    ],
+    props: [
+      {
+        name: "lfAriaLabel",
+        docs: "Explicit accessible label for the checkbox control. Fallback chain when empty:\r\nlfLabel -> root element id -> 'checkbox'. Applied to the native input element.",
+        type: "string",
+      },
+      {
+        name: "lfLabel",
+        docs: "Defines text to display along with the checkbox.",
+        type: "string",
+      },
+      {
+        name: "lfLeadingLabel",
+        docs: "When set to true, the label will be displayed before the checkbox.",
+        type: "boolean",
+      },
+      {
+        name: "lfRipple",
+        docs: "When set to true, the pointerdown event will trigger a ripple effect.",
+        type: "boolean",
+      },
+      {
+        name: "lfStyle",
+        docs: "Custom styling for the component.",
+        type: "string",
+      },
+      {
+        name: "lfUiSize",
+        docs: "The size of the component.",
+        type: '"large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"',
+      },
+      {
+        name: "lfUiState",
+        docs: "Reflects the specified state color defined by the theme.",
+        type: '"danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"',
+      },
+      {
+        name: "lfValue",
+        docs: "Sets the initial boolean state of the checkbox.\r\nSet to null for indeterminate state.",
+        type: "boolean",
+      },
+    ],
+    styles: [
+      {
+        name: "--lf-checkbox-animation-duration",
+        docs: "Sets the animation duration for state changes. Defaults to => 90ms",
+      },
+      {
+        name: "--lf-checkbox-border-radius",
+        docs: "Sets the border radius for the checkbox background. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-checkbox-checkmark-stroke-width",
+        docs: "Sets the stroke width for the checkmark. Defaults to => 3.12px",
+      },
+      {
+        name: "--lf-checkbox-color-on-bg",
+        docs: "Sets the color-on-bg color for the checkbox component. Defaults to => var(--lf-color-on-bg)",
+      },
+      {
+        name: "--lf-checkbox-color-on-primary",
+        docs: "Sets the color-on-primary color for the checkbox component. Defaults to => var(--lf-color-on-primary)",
+      },
+      {
+        name: "--lf-checkbox-color-on-surface",
+        docs: "Sets the color-on-surface color for the checkbox component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
+        name: "--lf-checkbox-color-primary",
+        docs: "Sets the color-primary color for the checkbox component. Defaults to => var(--lf-color-primary)",
+      },
+      {
+        name: "--lf-checkbox-font-family",
+        docs: "Sets the primary font family for the checkbox component. Defaults to => var(--lf-font-family-primary)",
+      },
+      {
+        name: "--lf-checkbox-font-size",
+        docs: "Sets the font size for the checkbox component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-checkbox-form-padding",
+        docs: "Sets the padding for the checkbox form field. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-checkbox-label-min-width",
+        docs: "Sets the min-width for the checkbox label. Defaults to => max-content",
+      },
+      {
+        name: "--lf-checkbox-label-padding-left",
+        docs: "Sets the left padding for the checkbox label. Defaults to => 1em",
+      },
+      {
+        name: "--lf-checkbox-label-padding-right",
+        docs: "Sets the right padding for the checkbox label. Defaults to => 1em",
+      },
+      {
+        name: "--lf-checkbox-margin",
+        docs: "Sets the margin for the checkbox component. Defaults to => 1em 0.5em",
+      },
+      {
+        name: "--lf-checkbox-mixedmark-width",
+        docs: "Sets the width for the checkbox mixed mark. Defaults to => 70%",
+      },
+      {
+        name: "--lf-checkbox-size",
+        docs: "Sets the size for the checkbox component. Defaults to => 1.25em",
+      },
+    ],
+  },
   "lf-chip": {
     methods: [
       {
@@ -3154,7 +3320,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Displays an animated SVG placeholder until the component is loaded.",
-        type: '"code" | "upload" | "id" | "article" | "brush" | "bug" | "check" | "copy" | "door" | "download" | "droplet" | "edit" | "file" | "folder" | "forms" | "help" | "highlight" | "ikosaedr" | "json" | "key" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "refresh" | "replace" | "robot" | "schema" | "search" | "send" | "settings" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "info-hexagon" | "inner-shadow-bottom" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "sunset-2" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"code" | "upload" | "id" | "ai" | "article" | "brush" | "bug" | "check" | "checkbox" | "copy" | "door" | "download" | "droplet" | "edit" | "file" | "folder" | "forms" | "help" | "highlight" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "refresh" | "replace" | "robot" | "schema" | "search" | "send" | "settings" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "sunset-2" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfProps",
@@ -3179,7 +3345,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Sets the tag name of the component to be placeholder loaded.",
-        type: '"LfAccordion" | "LfArticle" | "LfBadge" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfImageviewer" | "LfList" | "LfMasonry" | "LfMessenger" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfSlider" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
+        type: '"LfAccordion" | "LfArticle" | "LfBadge" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfCheckbox" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfImageviewer" | "LfList" | "LfMasonry" | "LfMessenger" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfSlider" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
       },
     ],
     styles: [
