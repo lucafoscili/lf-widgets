@@ -7,6 +7,7 @@ import { LfCardEvent } from "../components/card.declarations";
 import { LfCarouselEvent } from "../components/carousel.declarations";
 import { LfChartEvent } from "../components/chart.declarations";
 import { LfChatEvent } from "../components/chat.declarations";
+import { LfCheckboxEvent } from "../components/checkbox.declarations";
 import { LfChipEvent } from "../components/chip.declarations";
 import { LfCodeEvent } from "../components/code.declarations";
 import { LfCompareEvent } from "../components/compare.declarations";
@@ -107,6 +108,7 @@ export type ComponentEventMap = {
   LfCarousel: LfCarouselEvent;
   LfChart: LfChartEvent;
   LfChat: LfChatEvent;
+  LfCheckbox: LfCheckboxEvent;
   LfChip: LfChipEvent;
   LfCode: LfCodeEvent;
   LfCompare: LfCompareEvent;

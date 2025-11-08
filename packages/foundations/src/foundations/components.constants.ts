@@ -7,6 +7,7 @@ import { LF_CARD_PROPS } from "../components/card.constants";
 import { LF_CAROUSEL_PROPS } from "../components/carousel.constants";
 import { LF_CHART_PROPS } from "../components/chart.constants";
 import { LF_CHAT_PROPS } from "../components/chat.constants";
+import { LF_CHECKBOX_PROPS } from "../components/checkbox.constants";
 import { LF_CHIP_PROPS } from "../components/chip.constants";
 import { LF_CODE_PROPS } from "../components/code.constants";
 import { LF_COMPARE_PROPS } from "../components/compare.constants";
@@ -120,6 +121,7 @@ export const getComponentProps = (): {
     LfCarousel: LF_CAROUSEL_PROPS,
     LfChart: LF_CHART_PROPS,
     LfChat: LF_CHAT_PROPS,
+    LfCheckbox: LF_CHECKBOX_PROPS,
     LfChip: LF_CHIP_PROPS,
     LfCode: LF_CODE_PROPS,
     LfCompare: LF_COMPARE_PROPS,
