@@ -32,7 +32,10 @@ global.process = { ...originalProcess, env: { NODE_ENV: "development" } };
 // Mock Date for consistent date formatting in logs
 const mockDate = new Date("2025-07-11");
 global.Date = jest.fn(() => mockDate) as any;
-global.Date.prototype.toLocaleDateString = jest.fn(() => "07/11/2025");
+global.Date.prototype.toLocaleDateString = jest.fn(() => {
+  // Return consistent MM/DD/YYYY format regardless of locale
+  return "7/11/2025";
+});
 global.Date.now = jest.fn(() => mockDate.getTime());
 
 describe("Framework Debug Utilities", () => {
@@ -173,7 +176,7 @@ describe("Framework Debug Utilities", () => {
       await debugManager.logs.new(mockComponent, "Error message", "error");
 
       expect(mockConsole.error).toHaveBeenCalledWith(
-        "11/07/2025 LF-MOCK ( #test ) Error message",
+        "7/11/2025 LF-MOCK ( #test ) Error message",
         null,
       );
     });
@@ -191,7 +194,7 @@ describe("Framework Debug Utilities", () => {
       await debugManager.logs.new(mockComponent, "Warning message", "warning");
 
       expect(mockConsole.warn).toHaveBeenCalledWith(
-        "11/07/2025 LF-MOCK ( #test ) Warning message",
+        "7/11/2025 LF-MOCK ( #test ) Warning message",
         null,
       );
     });
