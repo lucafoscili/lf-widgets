@@ -48,7 +48,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(checkbox);
     const eventType: LfCheckboxEvent = "change";
     cy.checkEvent(checkbox, eventType);
-    cy.get(eventElement).findCyElement(input).first().click();
+    cy.get(eventElement).findCyElement(input).first().click({ force: true });
     cy.getCyElement(check).should("exist");
   });
   it(`focus`, () => {
