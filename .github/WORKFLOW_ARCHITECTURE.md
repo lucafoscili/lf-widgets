@@ -36,7 +36,7 @@ publish-main.yaml (publishes to NPM with "latest" tag)
 - **Actions:**
   - Uses Lerna with `--conventional-prerelease` and `--preid=rc`
   - Creates PR with `release:rc` label
-  - Builds packages and formats code
+  - Builds packages, runs unit tests, and formats code
 - **Skip conditions:** `[skip bump]`, `chore: bump versions`, or manual skip input
 
 #### `bump-main.yaml`
@@ -46,7 +46,7 @@ publish-main.yaml (publishes to NPM with "latest" tag)
 - **Actions:**
   - Removes `-rc.X` suffix if present
   - Creates PR with `release:production` label
-  - Builds packages
+  - Builds packages and runs unit tests
 - **Skip conditions:** Same as candidate workflow
 
 ---
