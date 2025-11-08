@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.3.0...1.4.0-rc.0) (2025-11-07)
+
+
+### Features
+
+* Add structured config and tool calling to chat component ([c71426f](https://github.com/lucafoscili/lf-widgets/commit/c71426fe3f645490f18e456c96d7f9c384dc9f09))
+* Add toggleAutoPrint method to LfDebug ([3c0756c](https://github.com/lucafoscili/lf-widgets/commit/3c0756c8f5a039c4206026aa3c47191edfc8b54d))
+
+
+
+
+
 # [1.3.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0) (2025-10-28)
 
 **Note:** Version bump only for package @lf-widgets/framework

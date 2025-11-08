@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.3.0...1.4.0-rc.0) (2025-11-07)
+
+
+### Bug Fixes
+
+* Add watcher for lfDataset property in LfButton ([a30c25c](https://github.com/lucafoscili/lf-widgets/commit/a30c25cbc7c2b032562e87a7d36c1a915df9080f))
+* Convert uploaded images to PNG before processing ([a46e518](https://github.com/lucafoscili/lf-widgets/commit/a46e51872a40726592216c6249314402c4df9d2f))
+* Fix potential null adapter in disconnectedCallback ([ec5578c](https://github.com/lucafoscili/lf-widgets/commit/ec5578c89dbff71969a537b06a2bbfc0df31e4dc))
+* Refactor image attachment handling in lf-chat ([21360ce](https://github.com/lucafoscili/lf-widgets/commit/21360ceeb13d005a4cfcc4ea5760a1fbc7dfa743))
+* Remove overflow properties from grid class ([4e3e4d5](https://github.com/lucafoscili/lf-widgets/commit/4e3e4d5f7268eeecc19c579a1398e111fff8d9a4))
+
+
+### Features
+
+* Add attachments and message editing to chat ([d543e89](https://github.com/lucafoscili/lf-widgets/commit/d543e898b5199097391f8055acb1b30c043fdd55))
+* Add flat and spinner modes to lf-chip component ([90e29b2](https://github.com/lucafoscili/lf-widgets/commit/90e29b296a53e55d5e1a37d30a3bd2dfdfc66665))
+* Add structured config and tool calling to chat component ([c71426f](https://github.com/lucafoscili/lf-widgets/commit/c71426fe3f645490f18e456c96d7f9c384dc9f09))
+* Add toggleAutoPrint method to LfDebug ([3c0756c](https://github.com/lucafoscili/lf-widgets/commit/3c0756c8f5a039c4206026aa3c47191edfc8b54d))
+* Add tool execution chip to chat message toolbar ([41db3da](https://github.com/lucafoscili/lf-widgets/commit/41db3da7feae7804877a07ee403a0ff9bbbd4df4))
+* Add tool execution indicator chip to chat UI ([f2773ff](https://github.com/lucafoscili/lf-widgets/commit/f2773ff87d7bfdf80d47738a3aef5fc575ced013))
+* Add weather layout to LfCard component ([972b748](https://github.com/lucafoscili/lf-widgets/commit/972b748c4fdc04fe0a976d517b9920a427c30678))
+
+
+
+
+
 # [1.3.0](https://github.com/lucafoscili/lf-widgets/compare/v1.2.0...1.3.0) (2025-10-28)
 
 
