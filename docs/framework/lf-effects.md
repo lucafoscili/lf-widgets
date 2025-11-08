@@ -65,12 +65,15 @@
   - **`intensity(key: keyof LfEffectsIntensities, value: number): void`**  
     Sets the intensity for a given effect (e.g., tilt).  
     **Example:**
+
     ```ts
     effectsManager.set.intensity("tilt", 15);
     ```
+
   - **`timeout(key: keyof LfEffectsTimeouts, value: number): void`**  
     Sets the timeout duration (in milliseconds) for timed effects like the ripple or lightbox dismissal.  
     **Example:**
+
     ```ts
     effectsManager.set.timeout("ripple", 600);
     ```
@@ -150,6 +153,7 @@
   - Appends a `<span>` element with appropriate CSS custom properties to create the ripple effect.
   - Schedules the ripple for removal after a timeout defined in `#TIMEOUT.ripple`.
 - **Example:**
+
   ```ts
   element.addEventListener("pointerdown", (e) => {
     effectsManager.ripple(e, element);

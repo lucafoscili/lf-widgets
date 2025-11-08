@@ -85,15 +85,6 @@ export const getDataFixtures = (): LfShowcaseFixture => {
       },
     ],
     [
-      "node.getDrilldownInfo",
-      {
-        code: `core.data.node.getDrilldownInfo(nodes); 
-// Retrieves drilldown information from nodes`,
-        description:
-          "The `node.getDrilldownInfo` method retrieves drilldown information from nodes.",
-      },
-    ],
-    [
       "node.getParent",
       {
         code: `core.data.node.getParent(nodes, child); 
@@ -112,12 +103,48 @@ export const getDataFixtures = (): LfShowcaseFixture => {
       },
     ],
     [
-      "node.setProperties",
+      "node.traverseVisible",
       {
-        code: `core.data.node.setProperties(nodes, properties); 
-// Sets properties on nodes`,
+        code: `core.data.node.traverseVisible(nodes, predicates); 
+// Walks the dataset honouring UI predicates`,
         description:
-          "The `node.setProperties` method sets properties on nodes.",
+          "The `node.traverseVisible` method walks the dataset honouring UI predicates.",
+      },
+    ],
+    [
+      "node.find",
+      {
+        code: `core.data.node.find(dataset, predicate); 
+// Finds the first node matching the predicate`,
+        description:
+          "The `node.find` method finds the first node matching the predicate.",
+      },
+    ],
+    [
+      "node.resolveTargets",
+      {
+        code: `core.data.node.resolveTargets(dataset, target); 
+// Resolves targets to nodes based on various criteria`,
+        description:
+          "The `node.resolveTargets` method resolves targets to nodes based on various criteria.",
+      },
+    ],
+    [
+      "node.sanitizeIds",
+      {
+        code: `core.data.node.sanitizeIds(dataset, candidates, options); 
+// Sanitizes and validates node IDs`,
+        description:
+          "The `node.sanitizeIds` method sanitizes and validates node IDs.",
+      },
+    ],
+    [
+      "node.extractCellMetadata",
+      {
+        code: `core.data.node.extractCellMetadata(node, cellId, schema); 
+// Extracts metadata from a cell with optional validation and transformation`,
+        description:
+          "The `node.extractCellMetadata` method extracts metadata from a cell with optional validation and transformation.",
       },
     ],
     [
