@@ -44,6 +44,16 @@ Type: `Promise<LfDebugLifecycleInfo>`
 
 A promise that resolves with the debug information object.
 
+### `getProgress() => Promise<number>`
+
+Gets the current progress value.
+
+#### Returns
+
+Type: `Promise<number>`
+
+
+
 ### `getProps() => Promise<LfSpinnerPropsInterface>`
 
 Used to retrieve component's properties and descriptions.
