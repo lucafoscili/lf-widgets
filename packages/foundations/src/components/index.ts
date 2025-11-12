@@ -46,6 +46,8 @@ export * from "./progressbar.constants";
 export * from "./progressbar.declarations";
 export * from "./radio.constants";
 export * from "./radio.declarations";
+export * from "./select.constants";
+export * from "./select.declarations";
 export * from "./slider.constants";
 export * from "./slider.declarations";
 export * from "./spinner.constants";

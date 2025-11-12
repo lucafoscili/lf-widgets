@@ -31,6 +31,7 @@ import { getPlaceholderFixtures } from "../assets/data/placeholder";
 import { getPortalFixtures } from "../assets/data/portal";
 import { getProgressbarFixtures } from "../assets/data/progressbar";
 import { getRadioFixtures } from "../assets/data/radio";
+import { getSelectFixtures } from "../assets/data/select";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
@@ -99,6 +100,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getProgressbarFixtures(framework);
     case "lf-radio":
       return getRadioFixtures(framework);
+    case "lf-select":
+      return getSelectFixtures(framework);
     case "lf-slider":
       return getSliderFixtures(framework);
     case "lf-spinner":

@@ -233,6 +233,13 @@ export const LF_SHOWCASE_COMPONENTS = (
         value: "Radio",
       },
       {
+        description:
+          "Combines textfield styling with list functionality for dropdown selection.",
+        icon: id,
+        id: "Select",
+        value: "Select",
+      },
+      {
         description: "Simple component for selecting a range of values.",
         icon: adjustmentsHorizontal,
         id: "Slider",

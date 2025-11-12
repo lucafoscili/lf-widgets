@@ -119,6 +119,11 @@ import {
   LfRadioPropsInterface,
 } from "../components/radio.declarations";
 import {
+  LfSelectElement,
+  LfSelectInterface,
+  LfSelectPropsInterface,
+} from "../components/select.declarations";
+import {
   LfSliderElement,
   LfSliderInterface,
   LfSliderPropsInterface,
@@ -239,6 +244,7 @@ export type LfComponentElementMap = {
   LfPlaceholder: LfPlaceholderElement;
   LfProgressbar: LfProgressbarElement;
   LfRadio: LfRadioElement;
+  LfSelect: LfSelectElement;
   LfSlider: LfSliderElement;
   LfSpinner: LfSpinnerElement;
   LfSplash: LfSplashElement;
@@ -280,6 +286,7 @@ export type LfComponentClassMap = {
   LfPlaceholder: LfPlaceholderInterface;
   LfProgressbar: LfProgressbarInterface;
   LfRadio: LfRadioInterface;
+  LfSelect: LfSelectInterface;
   LfSlider: LfSliderInterface;
   LfSpinner: LfSpinnerInterface;
   LfSplash: LfSplashInterface;
@@ -439,6 +446,7 @@ export type LfComponentName =
   | "LfPlaceholder"
   | "LfProgressbar"
   | "LfRadio"
+  | "LfSelect"
   | "LfSlider"
   | "LfSpinner"
   | "LfSplash"
@@ -464,6 +472,7 @@ export type LfComponentProps =
   | LfCarouselPropsInterface
   | LfChartPropsInterface
   | LfChatPropsInterface
+  | LfCheckboxPropsInterface
   | LfChipPropsInterface
   | LfCodePropsInterface
   | LfComparePropsInterface
@@ -477,6 +486,8 @@ export type LfComponentProps =
   | LfPhotoframePropsInterface
   | LfPlaceholderPropsInterface
   | LfProgressbarPropsInterface
+  | LfRadioPropsInterface
+  | LfSelectPropsInterface
   | LfSliderPropsInterface
   | LfSpinnerPropsInterface
   | LfSplashPropsInterface
@@ -515,6 +526,7 @@ export type LfComponentPropsMap = {
   LfPlaceholder: LfPlaceholderPropsInterface;
   LfProgressbar: LfProgressbarPropsInterface;
   LfRadio: LfRadioPropsInterface;
+  LfSelect: LfSelectPropsInterface;
   LfSlider: LfSliderPropsInterface;
   LfSpinner: LfSpinnerPropsInterface;
   LfSplash: LfSplashPropsInterface;
@@ -554,6 +566,7 @@ export type LfComponentTagMap = {
   LfPlaceholder: "lf-placeholder";
   LfProgressbar: "lf-progressbar";
   LfRadio: "lf-radio";
+  LfSelect: "lf-select";
   LfSlider: "lf-slider";
   LfSpinner: "lf-spinner";
   LfSplash: "lf-splash";
@@ -593,6 +606,7 @@ export type LfComponentReverseTagMap = {
   "lf-placeholder": "LfPlaceholder";
   "lf-progressbar": "LfProgressbar";
   "lf-radio": "LfRadio";
+  "lf-select": "LfSelect";
   "lf-slider": "LfSlider";
   "lf-spinner": "LfSpinner";
   "lf-splash": "LfSplash";

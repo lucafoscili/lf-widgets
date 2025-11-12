@@ -22,6 +22,7 @@ import { LfPhotoframeEvent } from "../components/photoframe.declarations";
 import { LfPlaceholderEvent } from "../components/placeholder.declarations";
 import { LfProgressbarEvent } from "../components/progressbar.declarations";
 import { LfRadioEvent } from "../components/radio.declarations";
+import { LfSelectEvent } from "../components/select.declarations";
 import { LfSliderEvent } from "../components/slider.declarations";
 import { LfSpinnerEvent } from "../components/spinner.declarations";
 import { LfSplashEvent } from "../components/splash.declarations";
@@ -124,6 +125,7 @@ export type ComponentEventMap = {
   LfPlaceholder: LfPlaceholderEvent;
   LfProgressbar: LfProgressbarEvent;
   LfRadio: LfRadioEvent;
+  LfSelect: LfSelectEvent;
   LfSlider: LfSliderEvent;
   LfSpinner: LfSpinnerEvent;
   LfSplash: LfSplashEvent;

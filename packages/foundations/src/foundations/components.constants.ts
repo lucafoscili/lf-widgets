@@ -22,6 +22,7 @@ import { LF_PHOTOFRAME_PROPS } from "../components/photoframe.constants";
 import { LF_PLACEHOLDER_PROPS } from "../components/placeholder.constants";
 import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
 import { LF_RADIO_PROPS } from "../components/radio.constants";
+import { LF_SELECT_PROPS } from "../components/select.constants";
 import { LF_SLIDER_PROPS } from "../components/slider.constants";
 import { LF_SPINNER_PROPS } from "../components/spinner.constants";
 import { LF_SPLASH_PROPS } from "../components/splash.constants";
@@ -137,6 +138,7 @@ export const getComponentProps = (): {
     LfPlaceholder: LF_PLACEHOLDER_PROPS,
     LfProgressbar: LF_PROGRESSBAR_PROPS,
     LfRadio: LF_RADIO_PROPS,
+    LfSelect: LF_SELECT_PROPS,
     LfSlider: LF_SLIDER_PROPS,
     LfSpinner: LF_SPINNER_PROPS,
     LfSplash: LF_SPLASH_PROPS,
