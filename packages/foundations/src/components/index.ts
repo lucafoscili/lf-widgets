@@ -44,6 +44,8 @@ export * from "./placeholder.constants";
 export * from "./placeholder.declarations";
 export * from "./progressbar.constants";
 export * from "./progressbar.declarations";
+export * from "./radio.constants";
+export * from "./radio.declarations";
 export * from "./slider.constants";
 export * from "./slider.declarations";
 export * from "./spinner.constants";

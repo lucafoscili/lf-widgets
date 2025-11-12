@@ -64,6 +64,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     notification,
     photo,
     photoSearch,
+    playstationCircle,
     progress,
     replace,
     slideshow,
@@ -224,6 +225,12 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: progress,
         id: "Progressbar",
         value: "Progress bar",
+      },
+      {
+        description: "Component for selecting a single option from a list.",
+        icon: playstationCircle,
+        id: "Radio",
+        value: "Radio",
       },
       {
         description: "Simple component for selecting a range of values.",
