@@ -4,6 +4,7 @@ import { LfListPropsInterface } from "./list.declarations";
 export const LF_LIST_BLOCKS = {
   delete: { _: "delete", icon: "icon" },
   emptyData: { _: "empty-data", text: "text" },
+  filter: { _: "filter", textfield: "textfield" }, // NEW
   list: { _: "list", item: "item" },
   node: {
     _: "node",
@@ -20,6 +21,7 @@ export const LF_LIST_EVENTS = [
   "blur",
   "click",
   "delete",
+  "filter", // NEW
   "focus",
   "pointerdown",
   "ready",
@@ -31,6 +33,7 @@ export const LF_LIST_EVENTS = [
 export const LF_LIST_PARTS = {
   delete: "delete",
   emptyData: "empty-data",
+  filter: "filter", // NEW
   list: "list",
   node: "node",
 } as const;
@@ -41,6 +44,8 @@ export const LF_LIST_PROPS = [
   "lfDataset",
   "lfEmpty",
   "lfEnableDeletions",
+  "lfFilter", // NEW
+  "lfFilterPlaceholder", // NEW
   "lfNavigation",
   "lfRipple",
   "lfSelectable",

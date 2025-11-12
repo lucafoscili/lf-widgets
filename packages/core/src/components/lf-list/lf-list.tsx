@@ -10,6 +10,7 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfListAdapter,
   LfListElement,
   LfListEvent,
   LfListEventPayload,
@@ -30,8 +31,10 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { createAdapter } from "./lf-list-adapter";
 
 /**
  * The list component displays a collection of items in a vertical list layout.
@@ -112,6 +115,32 @@ export class LfList implements LfListInterface {
    * ```
    */
   @Prop({ mutable: true }) lfEnableDeletions: boolean = false;
+  /**
+   * When true, displays a filter text field above the list items for searching.
+   *
+   * @type {boolean}
+   * @default false
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-list lfFilter={true}></lf-list>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFilter: boolean = false;
+  /**
+   * Placeholder text for the filter textfield.
+   *
+   * @type {string}
+   * @default "Filter items..."
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-list lfFilter={true} lfFilterPlaceholder="Search..."></lf-list>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFilterPlaceholder: string = "Filter items...";
   /**
    * When true, enables items' navigation through arrow keys.
    *
@@ -205,8 +234,19 @@ export class LfList implements LfListInterface {
   @Prop({ mutable: false }) lfValue: number = null;
   //#endregion
 
+  //#region Watchers
+  @Watch("lfFilter")
+  protected handleFilterToggle(enabled: boolean): void {
+    if (!enabled) {
+      this.#filterValue = "";
+      this.#hiddenNodes = new Set();
+    }
+  }
+  //#endregion
+
   //#region Internal variables
   #framework: LfFrameworkInterface;
+  #adapter: LfListAdapter;
   #b = LF_LIST_BLOCKS;
   #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
@@ -215,6 +255,9 @@ export class LfList implements LfListInterface {
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #listItems: HTMLDivElement[] = [];
+  #filterValue = "";
+  #filterTimeout: ReturnType<typeof setTimeout> | null = null;
+  #hiddenNodes: Set<LfDataNode> = new Set();
   //#endregion
 
   //#region Events
@@ -272,6 +315,25 @@ export class LfList implements LfListInterface {
   }
   //#endregion
 
+  //#region Private methods
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        filterValue: () => this.#filterValue,
+        hiddenNodes: () => this.#hiddenNodes,
+        isDisabled: () => this.lfUiState === "disabled",
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+      },
+      () => this.#adapter,
+    );
+  };
+  //#endregion
+
   //#region Listeners
   @Listen("keydown")
   listenKeydown(e: KeyboardEvent) {
@@ -300,6 +362,36 @@ export class LfList implements LfListInterface {
   //#endregion
 
   //#region Public methods
+  /**
+   * Applies a filter to the list items based on the provided value.
+   * @param value - The filter string to apply
+   */
+  @Method()
+  async applyFilter(value: string): Promise<void> {
+    // Clear existing timeout
+    if (this.#filterTimeout) {
+      clearTimeout(this.#filterTimeout);
+    }
+
+    // Debounce filter application (300ms)
+    this.#filterTimeout = setTimeout(() => {
+      this.#filterValue = value;
+      this.#hiddenNodes = new Set();
+
+      if (value.trim()) {
+        // Simple text-based filtering
+        for (const node of this.lfDataset.nodes) {
+          const nodeText = this.#getNodeText(node);
+          if (!nodeText.toLowerCase().includes(value.toLowerCase())) {
+            this.#hiddenNodes.add(node);
+          }
+        }
+      }
+
+      // Trigger re-render
+      forceUpdate(this);
+    }, 300);
+  }
   /**
    * Moves focus to the next item in the list.
    * If no item is currently focused, focuses the selected item.
@@ -392,6 +484,24 @@ export class LfList implements LfListInterface {
       index = this.focused;
     }
     this.#handleSelection(index);
+  }
+  /**
+   * Selects a node in the list by its ID.
+   * @param id - The ID of the node to select
+   */
+  @Method()
+  async selectNodeById(id: string): Promise<void> {
+    const index = this.lfDataset.nodes.findIndex((node) => node.id === id);
+    this.#handleSelection(index);
+  }
+  /**
+   * Sets the filter value without applying the filter.
+   * @param value - The filter string value
+   */
+  @Method()
+  async setFilterValue(value: string): Promise<void> {
+    this.#filterValue = value;
+    forceUpdate(this);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -534,6 +644,10 @@ export class LfList implements LfListInterface {
       )
     );
   }
+  #getNodeText(node: LfDataNode): string {
+    const { stringify } = this.#framework.data.cell;
+    return stringify(node.value) || stringify(node.description) || "";
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -544,6 +658,7 @@ export class LfList implements LfListInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     if (this.lfValue && typeof this.lfValue === "number") {
       this.selected = this.lfValue;
@@ -569,18 +684,27 @@ export class LfList implements LfListInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { emptyData, list } = this.#b;
-    const { lfDataset, lfEmpty, lfSelectable, lfStyle } = this;
+    const { lfDataset, lfEmpty, lfFilter, lfSelectable, lfStyle } = this;
 
     const isEmpty = !!!lfDataset?.nodes?.length;
     this.#listItems = [];
+
+    // Filter nodes based on hidden nodes set
+    const visibleNodes =
+      lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) || [];
+
+    const isFilteredEmpty = !isEmpty && visibleNodes.length === 0;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          {isEmpty ? (
+          {lfFilter && this.#adapter.elements.jsx.filter()}
+          {isEmpty || isFilteredEmpty ? (
             <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
-              <div class={bemClass(emptyData._, emptyData.text)}>{lfEmpty}</div>
+              <div class={bemClass(emptyData._, emptyData.text)}>
+                {isFilteredEmpty ? "No items match your filter." : lfEmpty}
+              </div>
             </div>
           ) : (
             <ul
@@ -592,9 +716,7 @@ export class LfList implements LfListInterface {
               part={this.#p.list}
               role={"listbox"}
             >
-              {lfDataset.nodes.map((item, index) =>
-                this.#prepNode(item, index),
-              )}
+              {visibleNodes.map((item, index) => this.#prepNode(item, index))}
             </ul>
           )}
         </div>
