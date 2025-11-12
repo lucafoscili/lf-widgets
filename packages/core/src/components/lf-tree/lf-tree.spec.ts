@@ -121,7 +121,7 @@ describe("lf-tree component", () => {
       const page = await createPage(`<lf-tree></lf-tree>`);
       const nodes = [
         { id: "1", value: "Node 1" },
-        { id: "2", value: "Node 2" }
+        { id: "2", value: "Node 2" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -143,7 +143,7 @@ describe("lf-tree component", () => {
       const nodes = [
         { id: "1", value: "Node 1" },
         { id: "2", value: "Node 2" },
-        { id: "3", value: "Node 3" }
+        { id: "3", value: "Node 3" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -165,7 +165,7 @@ describe("lf-tree component", () => {
       const nodes = [
         { id: "1", value: "Node 1" },
         { id: "2", value: "Node 2" },
-        { id: "3", value: "Node 3" }
+        { id: "3", value: "Node 3" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -174,7 +174,7 @@ describe("lf-tree component", () => {
 
       // Select node by predicate
       const selectedNode = await page.rootInstance.selectByPredicate(
-        (node: LfDataNode) => node.value === "Node 2"
+        (node: LfDataNode) => node.value === "Node 2",
       );
       await page.waitForChanges();
 
@@ -189,7 +189,7 @@ describe("lf-tree component", () => {
       const page = await createPage(`<lf-tree></lf-tree>`);
       const nodes = [
         { id: "1", value: "Node 1" },
-        { id: "2", value: "Node 2" }
+        { id: "2", value: "Node 2" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -198,7 +198,7 @@ describe("lf-tree component", () => {
 
       // Try to select non-existent node
       const selectedNode = await page.rootInstance.selectByPredicate(
-        (node: LfDataNode) => node.value === "Non-existent"
+        (node: LfDataNode) => node.value === "Non-existent",
       );
       await page.waitForChanges();
 
@@ -212,7 +212,7 @@ describe("lf-tree component", () => {
       const page = await createPage(`<lf-tree></lf-tree>`);
       const nodes = [
         { id: "1", value: "Node 1" },
-        { id: "2", value: "Node 2" }
+        { id: "2", value: "Node 2" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -263,7 +263,7 @@ describe("lf-tree component", () => {
       const nodes = [
         { id: "1", value: "Apple" },
         { id: "2", value: "Banana" },
-        { id: "3", value: "Orange" }
+        { id: "3", value: "Orange" },
       ];
       page.rootInstance.lfDataset = { nodes };
       await page.waitForChanges();
@@ -287,7 +287,7 @@ describe("lf-tree component", () => {
       await page.waitForChanges();
 
       // Wait for debounce timeout
-      await new Promise(resolve => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
       // Verify event was emitted
       expect(mockOnLfEvent).toHaveBeenCalledWith(inputEvent, "lf-event");
