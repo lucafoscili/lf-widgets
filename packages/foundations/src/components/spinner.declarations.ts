@@ -12,7 +12,9 @@ import { LF_SPINNER_EVENTS } from "./spinner.constants";
  */
 export interface LfSpinnerInterface
   extends LfComponent<"LfSpinner">,
-    LfSpinnerPropsInterface {}
+    LfSpinnerPropsInterface {
+  getProgress(): Promise<number>;
+}
 /**
  * DOM element type for the custom element registered as `lf-spinner`.
  */

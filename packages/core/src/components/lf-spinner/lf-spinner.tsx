@@ -266,6 +266,13 @@ export class LfSpinner implements LfSpinnerInterface {
     return Object.fromEntries(entries);
   }
   /**
+   * Gets the current progress value.
+   */
+  @Method()
+  async getProgress(): Promise<number> {
+    return this.progress;
+  }
+  /**
    * This method is used to trigger a new render of the component.
    */
   @Method()

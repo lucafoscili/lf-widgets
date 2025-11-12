@@ -1,0 +1,287 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "radio";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  display: block;
+}
+
+.radio {
+  & {
+    display: flex;
+    flex-direction: column;
+    /**
+   * @prop --lf-radio-group-gap: Sets the gap between radio items in the group.
+   *                              Defaults to => var(--lf-space-03)
+   */
+    gap: var(--lf-radio-group-gap, 1em);
+  }
+
+  &--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    /**
+     * @prop --lf-radio-group-horizontal-gap: Sets the gap between radio items in horizontal orientation.
+     *                                        Defaults to => var(--lf-space-05)
+     */
+    gap: var(--lf-radio-group-horizontal-gap, 1.25em);
+  }
+}
+
+.item {
+  & {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    /**
+     * @prop --lf-radio-item-gap: Sets the gap between the radio control and label.
+     *                            Defaults to => var(--lf-space-03)
+     */
+    gap: var(--lf-radio-item-gap, var(--lf-space-03));
+    position: relative;
+  }
+
+  &--leading {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  &--selected {
+    /**
+     * @prop --lf-radio-item-selected-color: Sets the color for selected radio items.
+     *                                       Defaults to => rgba(var(--lf-color-primary), 1)
+     */
+    color: var(
+      --lf-radio-item-selected-color,
+      rgba(var(--lf-radio-color-primary), 1)
+    );
+  }
+
+  &__label {
+    & {
+      /**
+     * @prop --lf-radio-label-color: Sets the color of the radio label.
+     *                               Defaults to => rgba(var(--lf-color-on-bg), 0.87)
+     */
+      color: var(
+        --lf-radio-label-color,
+        rgba(var(--lf-radio-color-on-bg), 0.87)
+      );
+      cursor: pointer;
+      /**
+      * @prop --lf-radio-label-font-size: Sets the font size of the radio label.
+      *                                   Defaults to => 1em
+      */
+      font-size: var(--lf-radio-label-font-size, 1em);
+      /**
+      * @prop --lf-radio-label-font-weight: Sets the font weight of the label.
+      *                                             Defaults to => 500
+      */
+      font-weight: var(--lf-radio-label-font-weight, 500);
+      /**
+      * @prop --lf-radio-label-line-height: Sets the line height of the radio label.
+      *                                     Defaults to => 1.5
+      */
+      line-height: var(--lf-radio-label-line-height, 1.5);
+      /**
+       * @prop --lf-radio-label-padding: Sets the padding for the label.
+       *                                         Defaults to => 0.75em
+       */
+      padding-left: var(--lf-radio-label-padding, 0.75em);
+      transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .item--leading & {
+      padding-left: 0;
+      /**
+       * @prop --lf-radio-label-padding-leading: Sets the padding for the label in leading position.
+       *                                         Defaults to => 0.75em
+       */
+      padding-right: var(--lf-radio-label-padding-leading, 0.75em);
+    }
+
+    .item--selected & {
+      /**
+     * @prop --lf-radio-label-selected-color: Sets the color of the label when selected.
+     *                                        Defaults to => rgba(var(--lf-color-primary), 1)
+     */
+      color: var(
+        --lf-radio-label-selected-color,
+        rgba(var(--lf-radio-color-primary), 1)
+      );
+      /**
+       * @prop --lf-radio-label-selected-font-weight: Sets the font weight of the label when selected.
+       *                                             Defaults to => 500
+       */
+      font-weight: var(--lf-radio-label-selected-font-weight, 600);
+    }
+  }
+}
+
+.control {
+  & {
+    border: 1px solid transparent;
+    border-radius: 50%;
+    box-sizing: content-box;
+    cursor: pointer;
+    display: inline-block;
+    flex: 0 0 auto;
+    /**
+     * @prop --lf-radio-control-size: Sets the size of the radio control.
+     *                               Defaults to => 1.25em
+     */
+    height: var(--lf-radio-control-size, 1.25em);
+    overflow: visible;
+    position: relative;
+    transition: border-color 120ms cubic-bezier(0, 0, 0.2, 1);
+    width: var(--lf-radio-control-size, 1.25em);
+  }
+
+  &__circle {
+    & {
+      /**
+   * @prop --lf-radio-circle-border-width: Sets the border width of the radio circle.
+   *                                      Defaults to => 2px
+   */
+      /**
+   * @prop --lf-radio-circle-border-color: Sets the border color of the radio circle.
+   *                                      Defaults to => rgba(var(--lf-color-on-bg), 0.6)
+   */
+      border: var(--lf-radio-circle-border-width, 2px) solid
+        var(--lf-radio-circle-border-color, rgba(var(--lf-color-on-bg), 0.6));
+      border-radius: 50%;
+      box-sizing: border-box;
+      height: 100%;
+      left: 0;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      transition:
+        border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+    }
+
+    .item:hover & {
+      /**
+     * @prop --lf-radio-circle-hover-border-color: Sets the border color of the radio circle on hover.
+     *                                             Defaults to => rgba(var(--lf-color-primary), 0.875)
+     */
+      border-color: var(
+        --lf-radio-circle-hover-border-color,
+        rgba(var(--lf-radio-color-primary), 0.875)
+      );
+    }
+
+    .item--selected & {
+      /**
+     * @prop --lf-radio-circle-selected-border-color: Sets the border color of the radio circle when selected.
+     *                                               Defaults to => rgba(var(--lf-color-primary), 1)
+     */
+      border-color: var(
+        --lf-radio-circle-selected-border-color,
+        rgba(var(--lf-radio-color-primary), 1)
+      );
+    }
+  }
+
+  &__dot {
+    & {
+      /**
+       * @prop --lf-radio-dot-background-color: Sets the background color of the selected radio dot.
+       *                                        Defaults to => rgba(var(--lf-color-primary), 1)
+       */
+      border-color: var(
+        --lf-radio-dot-background-color,
+        rgba(var(--lf-radio-color-primary), 1)
+      );
+      border-radius: 50%;
+      border-style: solid;
+      /**
+       * @prop --lf-radio-dot-border-width: Sets the border width of the selected radio dot.
+       *                                   Defaults to => 10px (creates a filled circle)
+       */
+      border-width: 0;
+      box-sizing: border-box;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      transform: scale(0);
+      transition:
+        transform 120ms cubic-bezier(0, 0, 0.2, 1),
+        border-color 120ms cubic-bezier(0, 0, 0.2, 1);
+      width: 100%;
+    }
+
+    .item:hover &,
+    .item--selected &,
+    .item--selected:hover & {
+      border-width: var(--lf-radio-dot-border-width, 0.5em);
+    }
+
+    .item:hover & {
+      transform: scale(0.25);
+    }
+
+    .item--selected & {
+      transform: scale(0.5);
+    }
+
+    .item--selected:hover & {
+      transform: scale(0.75);
+    }
+  }
+
+  &__input {
+    & {
+      cursor: inherit;
+      left: 0;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &__ripple {
+    border-radius: 50%;
+    /**
+     * @prop --lf-radio-ripple-size: Sets the size of the ripple effect.
+     *                              Defaults to => 2.5em
+     */
+    height: var(--lf-radio-ripple-size, 2.5em);
+    left: 50%;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--lf-radio-ripple-size, 2.5em);
+  }
+
+  .item:hover & {
+    /**
+     * @prop --lf-radio-hover-border-color: Sets the border color on hover.
+     *                                     Defaults to => rgba(var(--lf-color-primary), 0.5)
+     */
+    border-color: var(
+      --lf-radio-hover-border-color,
+      rgba(var(--lf-radio-color-primary), 0.5)
+    );
+  }
+}

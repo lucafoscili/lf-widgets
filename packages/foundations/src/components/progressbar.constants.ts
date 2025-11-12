@@ -19,6 +19,7 @@ export const LF_PROGRESSBAR_BLOCKS = {
     text: "text",
   },
 } as const;
+//#endregion
 
 //#region Events
 export const LF_PROGRESSBAR_EVENTS = ["ready", "unmount"] as const;

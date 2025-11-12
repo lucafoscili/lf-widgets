@@ -1,4 +1,6 @@
 module.exports = {
   preset: "@stencil/core/testing",
-  testEnvironment: "jest-environment-node",
+  transform: {
+    "^.+\\.(ts|tsx)$": "@stencil/core/testing",
+  },
 };

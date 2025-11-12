@@ -322,6 +322,10 @@ export class LfAccordion implements LfAccordionInterface {
 
     const { lfDataset } = this;
 
+    if (!lfDataset || !lfDataset.nodes) {
+      return [];
+    }
+
     const nodes: VNode[] = [];
 
     for (let i = 0; i < lfDataset.nodes.length; i++) {

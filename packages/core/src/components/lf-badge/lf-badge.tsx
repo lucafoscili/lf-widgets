@@ -293,20 +293,22 @@ export class LfBadge implements LfBadgeInterface {
         <style id={this.#s}>{renderStyles()}</style>
         <div id={this.#w}>
           <div
-            class={bemClass(badge._)}
+            class={bemClass(badge._, undefined, { [this.lfPosition]: true })}
             data-lf={this.#lf[this.lfUiState]}
             onClick={(e) => this.onLfEvent(e, "click")}
             part={this.#p.badge}
           >
-            {lfLabel ||
-              (lfImageProps && (
-                <lf-image
-                  class={bemClass(badge._, badge.image)}
-                  part={this.#p.image}
-                  {...sanitizeProps(lfImageProps, "LfImage")}
-                ></lf-image>
-              )) ||
-              null}
+            {lfLabel ? (
+              <span class={bemClass(badge._, badge.label)} part={this.#p.label}>
+                {lfLabel}
+              </span>
+            ) : lfImageProps ? (
+              <lf-image
+                class={bemClass(badge._, badge.image)}
+                part={this.#p.image}
+                {...sanitizeProps(lfImageProps, "LfImage")}
+              ></lf-image>
+            ) : null}
           </div>
         </div>
       </Host>

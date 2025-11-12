@@ -223,7 +223,7 @@ export const LfShape: FunctionalComponent<LfShapePropsInterface> = ({
   }
 };
 
-const decorator = <C extends LfComponentName, S extends LfDataShapes>(
+export const decorator = <C extends LfComponentName, S extends LfDataShapes>(
   component: C | null,
   shape: S,
   cell: Partial<LfDataCell>,
