@@ -184,6 +184,7 @@ Type: `Promise<void>`
 graph TD;
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-accordion --> lf-button
   lf-article --> lf-button
   lf-card --> lf-button

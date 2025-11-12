@@ -12,18 +12,20 @@ The list supports various customization options, including item selection, delet
 
 ## Properties
 
-| Property            | Attribute             | Description                                                                                                                     | Type                                                                                     | Default         |
-| ------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | --------------- |
-| `lfDataset`         | --                    | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`          |
-| `lfEmpty`           | `lf-empty`            | Empty text displayed when there is no data.                                                                                     | `string`                                                                                 | `"Empty data."` |
-| `lfEnableDeletions` | `lf-enable-deletions` | Defines whether items can be removed from the list or not.                                                                      | `boolean`                                                                                | `false`         |
-| `lfNavigation`      | `lf-navigation`       | When true, enables items' navigation through arrow keys.                                                                        | `boolean`                                                                                | `true`          |
-| `lfRipple`          | `lf-ripple`           | When set to true, the pointerdown event will trigger a ripple effect.                                                           | `boolean`                                                                                | `true`          |
-| `lfSelectable`      | `lf-selectable`       | Defines whether items are selectable or not.                                                                                    | `boolean`                                                                                | `true`          |
-| `lfStyle`           | `lf-style`            | Custom styling for the component.                                                                                               | `string`                                                                                 | `""`            |
-| `lfUiSize`          | `lf-ui-size`          | The size of the component.                                                                                                      | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`      |
-| `lfUiState`         | `lf-ui-state`         | Reflects the specified state color defined by the theme.                                                                        | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`     |
-| `lfValue`           | `lf-value`            | Sets the initial state of the list. Relevant only when the list can be selected.                                                | `number`                                                                                 | `null`          |
+| Property              | Attribute               | Description                                                                                                                     | Type                                                                                     | Default             |
+| --------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------- |
+| `lfDataset`           | --                      | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`              |
+| `lfEmpty`             | `lf-empty`              | Empty text displayed when there is no data.                                                                                     | `string`                                                                                 | `"Empty data."`     |
+| `lfEnableDeletions`   | `lf-enable-deletions`   | Defines whether items can be removed from the list or not.                                                                      | `boolean`                                                                                | `false`             |
+| `lfFilter`            | `lf-filter`             | When true, displays a filter text field above the list items for searching.                                                     | `boolean`                                                                                | `false`             |
+| `lfFilterPlaceholder` | `lf-filter-placeholder` | Placeholder text for the filter textfield.                                                                                      | `string`                                                                                 | `"Filter items..."` |
+| `lfNavigation`        | `lf-navigation`         | When true, enables items' navigation through arrow keys.                                                                        | `boolean`                                                                                | `true`              |
+| `lfRipple`            | `lf-ripple`             | When set to true, the pointerdown event will trigger a ripple effect.                                                           | `boolean`                                                                                | `true`              |
+| `lfSelectable`        | `lf-selectable`         | Defines whether items are selectable or not.                                                                                    | `boolean`                                                                                | `true`              |
+| `lfStyle`             | `lf-style`              | Custom styling for the component.                                                                                               | `string`                                                                                 | `""`                |
+| `lfUiSize`            | `lf-ui-size`            | The size of the component.                                                                                                      | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`          |
+| `lfUiState`           | `lf-ui-state`           | Reflects the specified state color defined by the theme.                                                                        | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"`         |
+| `lfValue`             | `lf-value`              | Sets the initial state of the list. Relevant only when the list can be selected.                                                | `number`                                                                                 | `null`              |
 
 
 ## Events
@@ -34,6 +36,22 @@ The list supports various customization options, including item selection, delet
 
 
 ## Methods
+
+### `applyFilter(value: string) => Promise<void>`
+
+Applies a filter to the list items based on the provided value.
+
+#### Parameters
+
+| Name    | Type     | Description                  |
+| ------- | -------- | ---------------------------- |
+| `value` | `string` | - The filter string to apply |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `focusNext() => Promise<void>`
 
@@ -116,6 +134,38 @@ Type: `Promise<void>`
 
 A promise that resolves when the selection is complete.
 
+### `selectNodeById(id: string) => Promise<void>`
+
+Selects a node in the list by its ID.
+
+#### Parameters
+
+| Name | Type     | Description                    |
+| ---- | -------- | ------------------------------ |
+| `id` | `string` | - The ID of the node to select |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setFilterValue(value: string) => Promise<void>`
+
+Sets the filter value without applying the filter.
+
+#### Parameters
+
+| Name    | Type     | Description               |
+| ------- | -------- | ------------------------- |
+| `value` | `string` | - The filter string value |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `unmount(ms?: number) => Promise<void>`
 
 Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -156,11 +206,18 @@ Type: `Promise<void>`
 ### Used by
 
  - [lf-button](../lf-button)
+ - [lf-select](../lf-select)
+
+### Depends on
+
+- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-list --> lf-textfield
   lf-button --> lf-list
+  lf-select --> lf-list
   style lf-list fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
