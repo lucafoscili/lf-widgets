@@ -24,6 +24,7 @@ export const LF_RADIO_EVENTS = [
   "click",
   "focus",
   "pointerdown",
+  "ready",
   "unmount",
 ] as const;
 //#endregion

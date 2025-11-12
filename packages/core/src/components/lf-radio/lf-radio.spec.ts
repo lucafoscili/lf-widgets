@@ -29,7 +29,7 @@ describe("lf-radio component", () => {
     await page.rootInstance.refresh();
     await page.waitForChanges();
     console.log("Shadow root HTML:", page.root.shadowRoot.innerHTML);
-    const radioGroup = page.root.shadowRoot.querySelector(".group");
+    const radioGroup = page.root.shadowRoot.querySelector(".radio");
     expect(radioGroup).not.toBeNull();
   });
 
@@ -157,7 +157,7 @@ describe("lf-radio component", () => {
     );
     page.rootInstance.lfDataset = testDataset;
     await page.waitForChanges();
-    const radioGroup = page.root.shadowRoot.querySelector(".group");
+    const radioGroup = page.root.shadowRoot.querySelector(".radio");
     expect(radioGroup).toHaveClass("horizontal");
   });
 
@@ -168,7 +168,7 @@ describe("lf-radio component", () => {
     // Trigger refresh to ensure watch method runs
     await page.rootInstance.refresh();
     await page.waitForChanges();
-    const radioGroup = page.root.shadowRoot.querySelector(".group");
+    const radioGroup = page.root.shadowRoot.querySelector(".radio");
     expect(radioGroup).not.toHaveClass("horizontal");
   });
 
@@ -227,7 +227,7 @@ describe("lf-radio component", () => {
     page.root.focus();
 
     // Press arrow down on the group
-    const radioGroup = page.root.shadowRoot.querySelector(".group");
+    const radioGroup = page.root.shadowRoot.querySelector(".radio");
     radioGroup.dispatchEvent(
       new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
     );

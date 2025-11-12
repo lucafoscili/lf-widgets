@@ -87,6 +87,15 @@ export const getRadioFixtures = (
                 description:
                   "emitted when a pointer down event occurs on a radio item",
               },
+              {
+                type: "ready",
+                description: "emitted when the component is fully initialized",
+              },
+              {
+                type: "unmount",
+                description:
+                  "emitted when the component is removed from the DOM",
+              },
             ],
             EVENT_NAME,
           ),

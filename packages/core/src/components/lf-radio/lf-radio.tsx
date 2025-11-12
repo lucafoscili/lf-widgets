@@ -350,6 +350,11 @@ export class LfRadio implements LfRadioInterface {
   //#endregion
 
   //#region Lifecycle hooks
+  connectedCallback() {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
+    }
+  }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
 
@@ -431,7 +436,22 @@ export class LfRadio implements LfRadioInterface {
       () => this.#adapter,
     );
   }
+  componentDidLoad() {
+    const { info } = this.#framework.debug;
 
+    this.onLfEvent(new CustomEvent("ready"), "ready");
+    info.update(this, "did-load");
+  }
+  componentWillRender() {
+    const { info } = this.#framework.debug;
+
+    info.update(this, "will-render");
+  }
+  componentDidRender() {
+    const { info } = this.#framework.debug;
+
+    info.update(this, "did-render");
+  }
   render() {
     const { setLfStyle } = this.#framework.theme;
     const { jsx } = this.#adapter.elements;
@@ -450,7 +470,6 @@ export class LfRadio implements LfRadioInterface {
       </Host>
     );
   }
-
   disconnectedCallback() {
     this.#framework.theme.unregister(this);
   }
