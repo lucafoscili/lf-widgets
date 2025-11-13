@@ -21,6 +21,7 @@ import {
 } from "./select.constants";
 import {
   LfTextfieldElement,
+  LfTextfieldEventPayload,
   LfTextfieldInterface,
 } from "./textfield.declarations";
 
@@ -28,10 +29,10 @@ import {
 export interface LfSelectInterface
   extends LfComponent<"LfSelect">,
     LfSelectPropsInterface {
+  getSelectedIndex: () => Promise<number>;
   getValue: () => Promise<LfDataNode>;
   setValue: (id: string) => Promise<void>;
 }
-
 export interface LfSelectElement
   extends HTMLStencilElement,
     Omit<LfSelectInterface, LfComponentClassProperties> {}
@@ -49,68 +50,56 @@ export interface LfSelectAdapter {
   };
   handlers: LfSelectAdapterHandlers;
 }
-
 export interface LfSelectAdapterControllerGetters {
   blocks: typeof LF_SELECT_BLOCKS;
   compInstance: LfSelectInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
+  indexById: (id: string) => number;
   isDisabled: () => boolean;
-  isOpen: () => boolean;
   lfAttributes: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
   parts: typeof LF_SELECT_PARTS;
   selectedNode: () => LfDataNode | null;
 }
-
 export type LfSelectAdapterInitializerGetters = Pick<
   LfSelectAdapterControllerGetters,
   | "blocks"
   | "compInstance"
   | "cyAttributes"
+  | "indexById"
   | "isDisabled"
-  | "isOpen"
   | "lfAttributes"
   | "manager"
   | "parts"
   | "selectedNode"
 >;
-
 export interface LfSelectAdapterControllerSetters {
+  list: (state?: "toggle" | "open" | "close") => void;
   select: {
-    open: (open: boolean) => void;
-    value: (id: string) => void;
+    dataset: (dataset: LfDataDataset | null) => void;
+    value: (id: string) => Promise<void>;
   };
 }
-
 export type LfSelectAdapterInitializerSetters = Pick<
   LfSelectAdapterControllerSetters,
   "select"
 >;
-
 export interface LfSelectAdapterJsx {
   list: () => VNode | null;
   textfield: () => VNode;
 }
-
 export interface LfSelectAdapterRefs {
   list: LfListElement;
   textfield: LfTextfieldElement;
 }
-
 export interface LfSelectAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
-  textfield: (event: LfEvent<LfEventPayload<"LfTextfield">>) => Promise<void>;
+  textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }
 //#endregion
 
 //#region Events
-/**
- * Union of event identifiers emitted by `lf-select`.
- */
 export type LfSelectEvent = (typeof LF_SELECT_EVENTS)[number];
-/**
- * Detail payload structure dispatched with `lf-select` events.
- */
 export interface LfSelectEventPayload
   extends LfEventPayload<"LfSelect", LfSelectEvent> {
   node?: LfDataNode;

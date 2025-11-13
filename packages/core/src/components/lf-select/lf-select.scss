@@ -1,6 +1,26 @@
-// LF Select Component Styles
-// Inherits textfield styling for consistent appearance
+@use "variables" as *;
+@use "mixins" as *;
 
-lf-select {
+$comp: "select";
+@include lf-comp-setup($comp, "true", "true", "true", "true");
+
+:host {
   display: block;
+}
+
+.select {
+  &__textfield {
+    & {
+      --lf-textfield-input-cursor: pointer;
+
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0);
+      @include lf-el-stretch;
+      cursor: var(--lf-textfield-input-cursor, pointer);
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.12);
+    }
+  }
 }

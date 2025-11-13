@@ -9,28 +9,38 @@ export const prepSelectJsx = (
     list: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, compInstance, isOpen, manager, parts } = controller.get;
+      const {
+        blocks,
+        compInstance,
+        cyAttributes,
+        indexById,
+        lfAttributes,
+        manager,
+        parts,
+        selectedNode,
+      } = controller.get;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
       const { list } = handlers;
       const { lfDataset } = compInstance;
 
-      if (!isOpen()) {
-        return null;
-      }
+      const selectedN = selectedNode();
+      const selectedIndex = selectedN ? indexById(selectedN.id) : -1;
 
-      return lfDataset?.nodes ? (
+      return (
         <lf-list
-          class={bemClass(blocks._, blocks.list)}
+          {...compInstance.lfListProps}
+          class={bemClass(blocks.select._, blocks.select.list)}
+          data-cy={cyAttributes.dropdownMenu}
+          data-lf={lfAttributes.portal}
           lfDataset={lfDataset}
-          lfNavigation={false}
-          lfRipple={false}
-          lfSelectable={false}
+          lfSelectable={true}
+          lfValue={selectedIndex !== -1 ? selectedIndex : null}
           onLf-list-event={list}
           part={parts.list}
           ref={assignRef(refs, "list")}
         />
-      ) : null;
+      );
     },
     //#endregion
 
@@ -55,7 +65,8 @@ export const prepSelectJsx = (
 
       return (
         <lf-textfield
-          class={bemClass(blocks._, blocks.textfield)}
+          {...compInstance.lfTextfieldProps}
+          class={bemClass(blocks.select._, blocks.select.textfield)}
           data-cy={cyAttributes.input}
           lfHtmlAttributes={htmlAttrs}
           lfValue={String(selectedNode()?.value || "")}

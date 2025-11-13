@@ -36,6 +36,7 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { createAdapter } from "./lf-select-adapter";
+import { findNodeById, hasNodeWithId } from "./utils.select";
 
 /**
  * The select component provides a dropdown selection interface that combines textfield styling with list functionality.
@@ -68,8 +69,7 @@ export class LfSelect implements LfSelectInterface {
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() focused = false;
-  @State() isOpen = false;
-  @State() value: string = null;
+  @State() value: string | null = null;
   //#endregion
 
   //#region Props
@@ -169,10 +169,8 @@ export class LfSelect implements LfSelectInterface {
 
   //#region Watchers
   @Watch("lfDataset")
-  onLfDatasetChange() {
-    if (this.value && !this.#consistencyCheck(this.value)) {
-      this.value = null;
-    }
+  async onLfDatasetChange() {
+    await this.#adapter.controller.set.select.dataset(this.lfDataset);
   }
   //#endregion
 
@@ -227,14 +225,6 @@ export class LfSelect implements LfSelectInterface {
     return this.debugInfo;
   }
   /**
-   * Returns the currently selected node.
-   * @returns Promise that resolves with the selected node
-   */
-  @Method()
-  async getValue(): Promise<LfDataNode> {
-    return this.#adapter.controller.get.selectedNode();
-  }
-  /**
    * Retrieves the public props for the component.
    * @returns Promise that resolves with the component props
    */
@@ -251,6 +241,26 @@ export class LfSelect implements LfSelectInterface {
     return Object.fromEntries(entries);
   }
   /**
+   * Returns the currently selected node.
+   * @returns Promise that resolves with the selected node
+   */
+  @Method()
+  async getValue(): Promise<LfDataNode> {
+    return this.#adapter.controller.get.selectedNode();
+  }
+  /**
+   * Returns the index of the currently selected node in the dataset.
+   * @returns Promise that resolves with the selected index or -1 if none
+   */
+  @Method()
+  async getSelectedIndex(): Promise<number> {
+    const selectedNode = this.#adapter.controller.get.selectedNode();
+    if (!selectedNode) {
+      return -1;
+    }
+    return this.#adapter.controller.get.indexById(selectedNode.id);
+  }
+  /**
    * Forces a re-render of the component.
    */
   @Method()
@@ -263,9 +273,7 @@ export class LfSelect implements LfSelectInterface {
    */
   @Method()
   async setValue(id: string): Promise<void> {
-    if (this.#consistencyCheck(id)) {
-      this.#adapter.controller.set.select.value(id);
-    }
+    this.#adapter.controller.set.select.value(id);
   }
   /**
    * Initiates the unmount sequence.
@@ -281,50 +289,57 @@ export class LfSelect implements LfSelectInterface {
   //#endregion
 
   //#region Private methods
-  #consistencyCheck(id: string): boolean {
-    return (
-      !id || (this.lfDataset?.nodes?.some((node) => node.id === id) ?? false)
-    );
-  }
   #initAdapter() {
     this.#adapter = createAdapter(
       {
         blocks: this.#b,
         compInstance: this,
         cyAttributes: this.#cy,
+        indexById: (id: string) =>
+          this.lfDataset?.nodes?.findIndex((n) => n.id === id),
         isDisabled: () => this.lfUiState === "disabled",
-        isOpen: () => this.isOpen,
         lfAttributes: this.#lf,
         manager: this.#framework,
         parts: this.#p,
-        selectedNode: () =>
-          this.lfDataset?.nodes?.find((node) => node.id === this.value),
+        selectedNode: () => findNodeById(this.lfDataset, this.value),
       },
       {
         select: {
-          open: (open: boolean) => {
-            const { list } = this.#adapter.elements.refs;
-
-            const {
-              close,
-              isInPortal,
-              open: portalOpen,
-            } = this.#framework.portal;
-
-            if (open) {
-              portalOpen(list, this.#adapter.elements.refs.textfield);
-            } else {
-              if (isInPortal(list)) {
-                close(list);
-              }
+          dataset: async () => {
+            if (!this.lfDataset) {
+              await this.#adapter.controller.set.select.value(null);
+              return;
             }
-
-            this.isOpen = open;
+            if (this.value && !hasNodeWithId(this.lfDataset, this.value)) {
+              await this.#adapter.controller.set.select.value(null);
+            }
           },
-          value: (value: string) => {
-            this.#adapter.elements.refs.list?.selectNodeById(value);
-            this.#adapter.elements.refs.textfield.setValue(value);
-            this.value = value;
+          value: async (value: string) => {
+            const { refs } = this.#adapter.elements;
+
+            const textfield = refs.textfield || null;
+            const list = refs.list || null;
+
+            const maybeSetValue = async (val: string | null) => {
+              this.value = val;
+              const selectedNode = this.#adapter.controller.get.selectedNode();
+              if (list) {
+                await list.selectNodeById(selectedNode?.id || null);
+              }
+              if (textfield) {
+                await textfield.setValue(String(selectedNode?.value || ""));
+              }
+            };
+
+            if (
+              value &&
+              this.lfDataset &&
+              !hasNodeWithId(this.lfDataset, value)
+            ) {
+              await maybeSetValue(null);
+              return;
+            }
+            await maybeSetValue(value);
           },
         },
       },
@@ -341,12 +356,14 @@ export class LfSelect implements LfSelectInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.#initAdapter();
 
-    const strValue = this.lfValue?.toString();
-    if (this.lfValue && this.#consistencyCheck(strValue)) {
-      this.value = strValue;
+    if (typeof this.lfValue === "number") {
+      this.value = this.lfDataset.nodes[this.lfValue]?.id || null;
+    } else if (typeof this.lfValue === "string" && this.lfValue !== "") {
+      this.value = this.lfValue;
     }
+
+    this.#initAdapter();
   }
   async componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -373,7 +390,7 @@ export class LfSelect implements LfSelectInterface {
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div
-            class={bemClass(this.#b._)}
+            class={bemClass(this.#b.select._)}
             data-lf={this.#lf[this.lfUiState]}
             part={this.#p.select}
           >
@@ -387,10 +404,7 @@ export class LfSelect implements LfSelectInterface {
   disconnectedCallback() {
     if (this.#adapter) {
       const { list } = this.#adapter.elements.refs;
-
-      if (list && this.#framework?.portal.isInPortal(list)) {
-        this.#framework?.portal.close(list);
-      }
+      this.#framework?.portal.close(list);
     }
     this.#framework?.theme.unregister(this);
   }

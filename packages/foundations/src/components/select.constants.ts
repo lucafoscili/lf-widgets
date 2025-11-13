@@ -2,24 +2,16 @@ import { LfSelectPropsInterface } from "./select.declarations";
 
 //#region Blocks
 export const LF_SELECT_BLOCKS = {
-  _: "select",
-  list: "list",
-  textfield: "textfield",
+  select: {
+    _: "select",
+    list: "list",
+    textfield: "textfield",
+  },
 } as const;
 //#endregion
 
 //#region Events
-// Unify events from textfield and list components
-export const LF_SELECT_EVENTS = [
-  "blur",
-  "change",
-  "click",
-  "focus",
-  "input",
-  "ready",
-  "select",
-  "unmount",
-] as const;
+export const LF_SELECT_EVENTS = ["lf-event", "ready", "unmount"] as const;
 //#endregion
 
 //#region Parts

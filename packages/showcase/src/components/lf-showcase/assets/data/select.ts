@@ -3,10 +3,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfSelectPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
@@ -62,7 +62,7 @@ export const getSelectFixtures = (
           SECTION_FACTORY.usage(COMPONENT_NAME, {
             data: JSON.stringify({
               lfDataset,
-              lfLabel: "Select an option",
+              lfTextfieldProps: { lfLabel: "Select an option" },
             }),
             tag: TAG_NAME,
           }),
@@ -72,34 +72,13 @@ export const getSelectFixtures = (
             PAYLOAD_NAME,
             [
               {
-                type: "blur",
-                description: "emitted when the component loses focus",
-              },
-              {
-                type: "change",
-                description: "emitted when the selected value changes",
-              },
-              {
-                type: "click",
-                description: "emitted when the component is clicked",
-              },
-              {
-                type: "focus",
-                description: "emitted when the component gains focus",
-              },
-              {
-                type: "input",
-                description: "emitted when the input value changes",
+                type: "lf-event",
+                description: "emitted by the component on user interactions",
               },
               {
                 type: "ready",
                 description:
                   "emitted when the component completes its first complete lifecycle",
-              },
-              {
-                type: "select",
-                description:
-                  "emitted when an option is selected from the dropdown",
               },
               {
                 type: "unmount",
@@ -132,30 +111,32 @@ export const getSelectFixtures = (
           description: "Basic select with dataset",
           props: {
             lfDataset,
-            lfLabel: "Choose an option",
+            lfTextfieldProps: { lfLabel: "Choose an option" },
           },
         },
         withValue: {
           description: "Select with pre-selected value",
           props: {
             lfDataset,
-            lfLabel: "Select option",
-            lfValue: "Option 2",
+            lfTextfieldProps: { lfLabel: "Select option" },
+            lfValue: "1",
           },
         },
         empty: {
           description: "Select with empty dataset",
           props: {
             lfDataset: { nodes: [] },
-            lfEmpty: "No options available",
-            lfLabel: "Select option",
+            lfTextfieldProps: {
+              lfLabel: "Select option",
+              lfHelper: { value: "No options available" },
+            },
           },
         },
         style: {
           description: "Select with custom style",
           props: {
             lfDataset,
-            lfLabel: "Styled select",
+            lfTextfieldProps: { lfLabel: "Styled select" },
             lfStyle: randomStyle(),
           },
         },
@@ -173,7 +154,7 @@ export const getSelectFixtures = (
               description: `Select with size ${size}`,
               props: {
                 lfDataset,
-                lfLabel: `Size ${size}`,
+                lfTextfieldProps: { lfLabel: `Size ${size}` },
                 lfUiSize: size,
               },
             },
@@ -196,9 +177,9 @@ export const getSelectFixtures = (
               description: `Select in ${state} state`,
               props: {
                 lfDataset,
-                lfLabel: `${state} select`,
+                lfTextfieldProps: { lfLabel: `${state} select` },
                 lfUiState: state,
-                lfValue: "Option 1",
+                lfValue: "0",
               },
             },
           };

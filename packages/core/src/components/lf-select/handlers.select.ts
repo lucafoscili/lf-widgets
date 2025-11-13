@@ -18,10 +18,11 @@ export const prepSelectHandlers = (
       switch (eventType) {
         case "click":
           controller.set.select.value(node.id);
-          controller.set.select.open(false);
-          comp.onLfEvent(event, "select", node);
+          controller.set.list("close");
           break;
       }
+
+      comp.onLfEvent(event, "lf-event", node);
     },
     //#endregion
 
@@ -33,18 +34,12 @@ export const prepSelectHandlers = (
       const comp = compInstance as LfSelect;
 
       switch (eventType) {
-        case "focus":
-          controller.set.select.open(true);
-          comp.onLfEvent(event, "focus");
-          break;
-        case "blur":
-          controller.set.select.open(false);
-          comp.onLfEvent(event, "blur");
-          break;
         case "click":
-          controller.set.select.open(!controller.get.isOpen());
+          controller.set.list();
           break;
       }
+
+      comp.onLfEvent(event, "lf-event");
     },
     //#endregion
   };

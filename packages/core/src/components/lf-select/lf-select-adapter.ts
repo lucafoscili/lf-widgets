@@ -1,50 +1,62 @@
 import {
   LfSelectAdapter,
-  LfSelectAdapterHandlers,
   LfSelectAdapterInitializerGetters,
   LfSelectAdapterInitializerSetters,
-  LfSelectAdapterJsx,
   LfSelectAdapterRefs,
 } from "@lf-widgets/foundations";
 import { prepSelectJsx } from "./elements.select";
 import { prepSelectHandlers } from "./handlers.select";
 
+//#region Adapter
 export const createAdapter = (
   getters: LfSelectAdapterInitializerGetters,
   setters: LfSelectAdapterInitializerSetters,
   getAdapter: () => LfSelectAdapter,
 ): LfSelectAdapter => {
+  const enhancedSetters = {
+    ...setters,
+    list: (state = "toggle") => {
+      const adapter = getAdapter();
+      const { controller, elements } = adapter;
+      const { manager } = controller.get;
+      const { list, textfield } = elements.refs;
+
+      const { close, isInPortal, open } = manager.portal;
+
+      switch (state) {
+        case "close":
+          close(list);
+          break;
+        case "open":
+          open(list, textfield);
+          break;
+        default:
+          if (isInPortal(list)) {
+            close(list);
+          } else {
+            open(list, textfield);
+          }
+          break;
+      }
+    },
+  };
+
   return {
     controller: {
       get: getters,
-      set: setters,
+      set: enhancedSetters,
     },
     elements: {
-      jsx: createJsx(getAdapter),
-      refs: createRefs(),
+      jsx: prepSelectJsx(getAdapter),
+      refs: prepRefs(),
     },
-    handlers: createHandlers(getAdapter),
+    handlers: prepSelectHandlers(getAdapter),
   };
-};
-
-//#region Elements
-export const createJsx = (
-  getAdapter: () => LfSelectAdapter,
-): LfSelectAdapterJsx => {
-  return prepSelectJsx(getAdapter);
-};
-//#endregion
-
-//#region Handlers
-export const createHandlers = (
-  getAdapter: () => LfSelectAdapter,
-): LfSelectAdapterHandlers => {
-  return prepSelectHandlers(getAdapter);
 };
 //#endregion
 
 //#region Refs
-export const createRefs = (): LfSelectAdapterRefs => {
+export const prepRefs = (): LfSelectAdapterRefs => {
   return {
     list: null,
     textfield: null,
