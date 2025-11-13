@@ -141,18 +141,6 @@ export class LfList implements LfListInterface {
    * <lf-list lfNavigation={true}></lf-list>
    * ```
    */
-  @Watch("lfFilter")
-  protected handleFilterToggle(enabled: boolean): void {
-    if (!enabled) {
-      // Clear any pending filter timeout
-      if (this.#filterTimeout) {
-        clearTimeout(this.#filterTimeout);
-        this.#filterTimeout = null;
-      }
-      this.filter = "";
-      this.#hiddenNodes = new Set();
-    }
-  }
   @Prop({ mutable: true }) lfNavigation: boolean = true;
   /**
    * When set to true, the pointerdown event will trigger a ripple effect.
@@ -301,6 +289,20 @@ export class LfList implements LfListInterface {
       originalEvent: e,
       node,
     });
+  }
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfFilter")
+  protected handleFilterToggle(enabled: boolean): void {
+    if (!enabled) {
+      if (this.#filterTimeout) {
+        clearTimeout(this.#filterTimeout);
+        this.#filterTimeout = null;
+      }
+      this.filter = "";
+      this.#hiddenNodes = new Set();
+    }
   }
   //#endregion
 
