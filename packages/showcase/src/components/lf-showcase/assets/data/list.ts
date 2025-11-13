@@ -3,10 +3,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfListPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
@@ -152,6 +152,21 @@ export const getListFixtures = (
           props: {
             lfDataset,
             lfStyle: randomStyle(),
+          },
+        },
+        filterEnabled: {
+          description: "List with filter functionality enabled",
+          props: {
+            lfDataset,
+            lfFilter: true,
+          },
+        },
+        filterAndSelectable: {
+          description: "Filterable and selectable list",
+          props: {
+            lfDataset,
+            lfFilter: true,
+            lfSelectable: true,
           },
         },
       },

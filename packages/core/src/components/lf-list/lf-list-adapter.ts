@@ -1,8 +1,7 @@
 import {
   LfListAdapter,
-  LfListAdapterHandlers,
   LfListAdapterInitializerGetters,
-  LfListAdapterJsx,
+  LfListAdapterInitializerSetters,
   LfListAdapterRefs,
 } from "@lf-widgets/foundations";
 import { prepList } from "./elements.list";
@@ -11,72 +10,33 @@ import { prepListHandlers } from "./handlers.list";
 //#region Adapter
 export const createAdapter = (
   getters: LfListAdapterInitializerGetters,
+  setters: LfListAdapterInitializerSetters,
   getAdapter: () => LfListAdapter,
 ): LfListAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
-      set: createSetters(getAdapter),
+      get: getters,
+      set: setters,
     },
     elements: {
-      jsx: createJsx(getAdapter),
-      refs: createRefs(),
+      jsx: prepList(getAdapter),
+      refs: prepRefs(),
     },
-    handlers: createHandlers(getAdapter),
+    handlers: prepListHandlers(getAdapter),
   };
-};
-//#endregion
-
-//#region Controller
-export const createGetters = (getters: LfListAdapterInitializerGetters) => {
-  return getters;
-};
-
-export const createSetters = (getAdapter: () => LfListAdapter) => {
-  return {
-    filter: {
-      apply: async (value: string) => {
-        const adapter = getAdapter();
-        const { controller } = adapter;
-        const { compInstance } = controller.get;
-
-        // Call the component's filter method
-        await compInstance.applyFilter(value);
-      },
-      setValue: async (value: string) => {
-        const adapter = getAdapter();
-        const { controller } = adapter;
-        const { compInstance } = controller.get;
-
-        // Call the component's setFilterValue method
-        await compInstance.setFilterValue(value);
-      },
-    },
-  };
-};
-//#endregion
-
-//#region Elements
-export const createJsx = (
-  getAdapter: () => LfListAdapter,
-): LfListAdapterJsx => {
-  return prepList(getAdapter);
-};
-//#endregion
-
-//#region Handlers
-export const createHandlers = (
-  getAdapter: () => LfListAdapter,
-): LfListAdapterHandlers => {
-  return prepListHandlers(getAdapter);
 };
 //#endregion
 
 //#region Refs
-export const createRefs = (): LfListAdapterRefs => {
+export const prepRefs = (): LfListAdapterRefs => {
   return {
-    filter: null, // NEW
-    // ... existing refs would go here
+    deleteIcon: null,
+    filter: null,
+    icon: null,
+    node: null,
+    ripples: new Map(),
+    subtitle: null,
+    title: null,
   };
 };
 //#endregion
