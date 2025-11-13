@@ -19,5 +19,5 @@ export const config: Config = {
     },
   },
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
-  sourceMap: false,
+  sourceMap: process.env.NODE_ENV === "development",
 };

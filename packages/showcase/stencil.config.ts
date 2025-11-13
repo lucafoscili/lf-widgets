@@ -29,5 +29,5 @@ export const config: Config = {
       external: ["@lf-widgets/foundations", "@lf-widgets/framework"],
     },
   },
-  sourceMap: false,
+  sourceMap: process.env.NODE_ENV === "development",
 };
