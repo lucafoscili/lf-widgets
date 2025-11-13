@@ -134,10 +134,10 @@ export const getListFixtures = (
           },
         },
         navigation: {
-          description: "List with keyboard navigation",
+          description: "List without keyboard navigation",
           props: {
             lfDataset,
-            lfNavigation: true,
+            lfNavigation: false,
           },
         },
         unselectable: {

@@ -442,6 +442,73 @@ describe("lf-list component", () => {
         expect(items.length).toBe(1);
         expect(items[0].textContent).toContain("Item 1");
       });
+
+      it("maintains correct selection when filtering and selecting", async () => {
+        const page = await createPage(
+          `<lf-list lf-selectable="true" lf-filter="true"></lf-list>`,
+        );
+        page.root.lfDataset = sampleDataset;
+        await page.waitForChanges();
+
+        // Initially select node[0]
+        await page.root.selectNode(0);
+        await page.waitForChanges();
+
+        // Check DOM for selected class instead of accessing state directly
+        const selectedItems = page.root.shadowRoot.querySelectorAll(
+          ".list__item--selected",
+        );
+        expect(selectedItems.length).toBe(1);
+        expect(selectedItems[0].textContent).toContain("Item 1");
+
+        // Filter to show only node[3] (assuming sampleDataset has nodes at indices 0,1,2,3)
+        const testDataset = {
+          nodes: [
+            { id: "0", value: "Item 0", description: "Zero" },
+            { id: "1", value: "Item 1", description: "One" },
+            { id: "2", value: "Item 2", description: "Two" },
+            { id: "3", value: "Item 3", description: "Three" },
+          ],
+        };
+        page.root.lfDataset = testDataset;
+        await page.root.applyFilter("Item 3");
+        await new Promise((resolve) => setTimeout(resolve, 350));
+        await page.waitForChanges();
+
+        // Verify only Item 3 is visible
+        const visibleItems =
+          page.root.shadowRoot.querySelectorAll(".list__item");
+        expect(visibleItems.length).toBe(1);
+        expect(visibleItems[0].textContent).toContain("Item 3");
+
+        // Select the visible item (which is node[3] at visible position 0)
+        // Since we know the visible item is node[3], select it directly by original index
+        await page.root.selectNode(3);
+        await page.waitForChanges();
+
+        // Verify selection is now node[3] (original index 3) - check DOM
+        const selectedAfterClick = page.root.shadowRoot.querySelectorAll(
+          ".list__item--selected",
+        );
+        expect(selectedAfterClick.length).toBe(1);
+        expect(selectedAfterClick[0].textContent).toContain("Item 3");
+
+        // Clear filter
+        await page.root.applyFilter("");
+        await new Promise((resolve) => setTimeout(resolve, 350));
+        await page.waitForChanges();
+
+        // Verify all items are visible again
+        const allItems = page.root.shadowRoot.querySelectorAll(".list__item");
+        expect(allItems.length).toBe(4);
+
+        // Verify that node[3] is still selected (not node[0])
+        const selectedItemsFinal = page.root.shadowRoot.querySelectorAll(
+          ".list__item--selected",
+        );
+        expect(selectedItemsFinal.length).toBe(1);
+        expect(selectedItemsFinal[0].textContent).toContain("Item 3");
+      });
     });
   });
 });

@@ -264,7 +264,8 @@ export class LfList implements LfListInterface {
         break;
       case "click":
         this.focused = index;
-        this.#handleSelection(index);
+        const originalIndex = this.#getOriginalIndexFromVisibleIndex(index);
+        this.#handleSelection(originalIndex);
         break;
       case "delete":
         if (index > -1) {
@@ -501,6 +502,13 @@ export class LfList implements LfListInterface {
   #getNodeText(node: LfDataNode): string {
     const { stringify } = this.#framework.data.cell;
     return `${stringify(node.value)} ${stringify(node.description)}`.trim();
+  }
+  #getOriginalIndexFromVisibleIndex(visibleIndex: number): number {
+    const visibleNodes = this.#getVisibleNodes();
+    const node = visibleNodes[visibleIndex];
+    return node
+      ? (this.lfDataset?.nodes?.findIndex((n) => n.id === node.id) ?? -1)
+      : -1;
   }
   #handleSelection(index: number): void {
     if (
