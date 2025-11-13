@@ -58,84 +58,92 @@ $comp: "checkbox";
 
 .checkbox {
   & {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0);
     align-items: center;
-    cursor: pointer;
-    display: inline-flex;
     /**
+    * @prop --lf-#{$comp}-surface-border-radius: Sets the border radius for the #{$comp} surface.
+    *                                            Defaults to => 50%
+    */
+    border-radius: var(--lf-#{$comp}-surface-border-radius, 50%);
+    cursor: pointer;
+    display: flex;
+    /**
+    * @prop --lf-#{$comp}-surface-size: Sets the size for the #{$comp} surface.
+    *                                   Defaults to => 3.5em
+    */
+    height: var(--lf-#{$comp}-surface-size, 3.5em);
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 90ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    width: var(--lf-#{$comp}-surface-size, 3.5em);
+  }
+
+  &:hover {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.24);
+  }
+
+  &:active {
+    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.36);
+  }
+
+  &__surface {
+    & {
+      align-items: center;
+      display: inline-flex;
+      /**
     * @prop --lf-#{$comp}-size: Sets the size for the #{$comp} component.
     *                           Defaults to => 1.5em
     */
-    height: var(--lf-#{$comp}-size, 1.5em);
-    justify-content: center;
-    /**
-    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
-    *                             Defaults to => 1em 0.5em
-    */
-    margin: var(--lf-#{$comp}-margin, 1em 0.5em);
-    outline: none;
-    position: relative;
-    user-select: none;
-    width: var(--lf-#{$comp}-size, 1.5em);
-  }
+      height: var(--lf-#{$comp}-size, 1.5em);
+      justify-content: center;
+      outline: none;
+      position: relative;
+      user-select: none;
+      width: var(--lf-#{$comp}-size, 1.5em);
+    }
 
-  &:not(.checkbox--disabled):hover:before {
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.08, 12px, true);
-    @include lf-el-transition("fade-in-out");
-    border-radius: 50%;
-    content: "";
-    height: 2.5em;
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 2.5em;
-    z-index: 0;
-  }
-
-  &:not(.checkbox--disabled):focus-within:before {
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.12, 12px, true);
-  }
-
-  &--checked,
-  &--indeterminate {
-    .checkbox__background {
-      @include lf-comp-color($comp, "primary", "bg");
-      border-color: transparent;
-      /**
+    &--checked,
+    &--indeterminate {
+      .checkbox__background {
+        @include lf-comp-color($comp, "primary", "bg");
+        border-color: transparent;
+        /**
       * @prop --lf-#{$comp}-animation-duration: Sets the animation duration for state changes.
       *                                         Defaults to => 90ms
       */
-      transition:
-        border-color var(--lf-#{$comp}-animation-duration, 90ms)
-          cubic-bezier(0.4, 0, 0.6, 1) 0ms,
-        background-color var(--lf-#{$comp}-animation-duration, 90ms)
-          cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+        transition:
+          border-color var(--lf-#{$comp}-animation-duration, 90ms)
+            cubic-bezier(0.4, 0, 0.6, 1) 0ms,
+          background-color var(--lf-#{$comp}-animation-duration, 90ms)
+            cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+      }
+
+      .checkbox__checkmark-path {
+        stroke-dashoffset: 0;
+      }
     }
 
-    .checkbox__checkmark-path {
-      stroke-dashoffset: 0;
-    }
-  }
+    &--checked {
+      .checkbox__checkmark {
+        opacity: 1;
+      }
 
-  &--checked {
-    .checkbox__checkmark {
-      opacity: 1;
-    }
-
-    .checkbox__mixedmark {
-      opacity: 0;
-      transform: scaleX(0) rotate(0deg);
-    }
-  }
-
-  &--indeterminate {
-    .checkbox__checkmark {
-      opacity: 0;
+      .checkbox__mixedmark {
+        opacity: 0;
+        transform: scaleX(0) rotate(0deg);
+      }
     }
 
-    .checkbox__mixedmark {
-      opacity: 1;
-      transform: scaleX(1) rotate(0deg);
+    &--indeterminate {
+      .checkbox__checkmark {
+        opacity: 0;
+      }
+
+      .checkbox__mixedmark {
+        opacity: 1;
+        transform: scaleX(1) rotate(0deg);
+      }
     }
   }
 
