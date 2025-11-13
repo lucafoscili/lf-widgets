@@ -18,8 +18,7 @@ export const prepListHandlers = (
 
     //#region Filter
     filter: async (event) => {
-      const { detail } = event;
-      const { eventType } = detail;
+      const { eventType, inputValue } = event.detail;
 
       const { controller } = getAdapter();
       const { get, set } = controller;
@@ -27,8 +26,7 @@ export const prepListHandlers = (
 
       switch (eventType) {
         case "input":
-          const { value } = detail;
-          set.filter.debounce(value);
+          set.filter.debounce(inputValue);
           break;
       }
 

@@ -233,7 +233,7 @@ export class LfList implements LfListInterface {
   #w = LF_WRAPPER_ID;
   #filterTimeout: ReturnType<typeof setTimeout> | null = null;
   #hiddenNodes: Set<LfDataNode> = new Set();
-  #listItems: HTMLDivElement[] = [];
+  #listItems: HTMLLIElement[] = [];
   //#endregion
 
   //#region Events
@@ -350,17 +350,19 @@ export class LfList implements LfListInterface {
    */
   @Method()
   async focusNext(): Promise<void> {
-    const { focused, selected } = this;
+    const visibleNodes = this.#getVisibleNodes();
 
-    if (isNaN(focused) || focused === null || focused === undefined) {
-      this.focused = selected;
+    if (this.#isFocusedUninitialized()) {
+      this.focused = this.#getInitialFocusedIndex(visibleNodes);
     } else {
       this.focused++;
     }
-    if (this.focused > this.#listItems.length - 1) {
+
+    if (this.focused > visibleNodes.length - 1) {
       this.focused = 0;
     }
-    this.#listItems[this.focused].focus();
+
+    this.#focusElementByIndex(this.focused);
   }
   /**
    * Focuses the previous item in the list.
@@ -370,17 +372,22 @@ export class LfList implements LfListInterface {
    */
   @Method()
   async focusPrevious(): Promise<void> {
-    const { focused, selected } = this;
+    const visibleNodes = this.#getVisibleNodes();
 
-    if (isNaN(focused) || focused === null || focused === undefined) {
-      this.focused = selected;
+    if (this.#isFocusedUninitialized()) {
+      this.focused = this.#getInitialFocusedIndex(
+        visibleNodes,
+        visibleNodes.length - 1,
+      );
     } else {
       this.focused--;
     }
+
     if (this.focused < 0) {
-      this.focused = this.#listItems.length - 1;
+      this.focused = visibleNodes.length - 1;
     }
-    this.#listItems[this.focused].focus();
+
+    this.#focusElementByIndex(this.focused);
   }
   /**
    * Fetches debug information of the component's current state.
@@ -505,6 +512,37 @@ export class LfList implements LfListInterface {
       this.selected = index;
     }
   }
+  #focusElementByIndex(index: number): void {
+    const nodeElement = this.rootElement.shadowRoot?.querySelector(
+      `[data-index="${index}"]`,
+    ) as HTMLElement;
+    if (nodeElement) {
+      nodeElement.focus();
+    }
+  }
+  #getInitialFocusedIndex(
+    visibleNodes: LfDataNode[],
+    defaultIndex: number = 0,
+  ): number {
+    if (this.selected !== null && this.selected !== undefined) {
+      const selectedNode = this.lfDataset?.nodes?.[this.selected];
+      if (selectedNode && !this.#hiddenNodes.has(selectedNode)) {
+        return visibleNodes.findIndex((node) => node.id === selectedNode.id);
+      }
+    }
+    return defaultIndex;
+  }
+  #getVisibleNodes(): LfDataNode[] {
+    return (
+      this.lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) ||
+      []
+    );
+  }
+  #isFocusedUninitialized(): boolean {
+    return (
+      isNaN(this.focused) || this.focused === null || this.focused === undefined
+    );
+  }
   #initAdapter = () => {
     this.#adapter = createAdapter(
       {
@@ -605,18 +643,22 @@ export class LfList implements LfListInterface {
               role={"listbox"}
             >
               {visibleNodes.map((node, index) => {
-                const isFocused = getIndex(node.id) === this.focused;
                 const isSelected = getIndex(node.id) === this.selected;
 
                 return (
                   <li
                     class={bemClass(list._, list.item, {
-                      focused: isFocused,
+                      focused: index === this.focused,
                       "has-description": !!node.description,
                       selected: isSelected,
                     })}
                     data-lf={this.#lf[this.lfUiState]}
                     key={node.id}
+                    ref={(el) => {
+                      if (el && !this.#listItems.includes(el)) {
+                        this.#listItems.push(el);
+                      }
+                    }}
                   >
                     {this.lfEnableDeletions && jsx.deleteIcon(node)}
                     {jsx.node(node, index, isSelected)}

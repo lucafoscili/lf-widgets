@@ -49,7 +49,7 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
           class={bemClass(blocks.list.filter, blocks.list.filter)}
           data-lf={lfAttributes[lfUiState]}
           lfIcon={iconSearch}
-          lfHtmlAttributes={{ placeholder: "Search..." }}
+          lfLabel="Search..."
           lfStretchX={true}
           lfStyling="flat"
           lfUiSize={lfUiSize}
@@ -94,6 +94,7 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
       const { bemClass } = theme;
 
       const hasValue = String(node.value).valueOf().trim().length > 0;
+      const isFocused = controller.get.focused() === index;
 
       return (
         <div
@@ -109,7 +110,7 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
           part={parts.node}
           ref={assignRef(refs, "node")}
           role={"option"}
-          tabindex={isSelected ? "0" : "-1"}
+          tabindex={isSelected || isFocused ? "0" : "-1"}
           title={stringify(node.value) || stringify(node.description)}
         >
           <div

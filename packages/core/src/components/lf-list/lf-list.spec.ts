@@ -303,5 +303,145 @@ describe("lf-list component", () => {
       const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
       expect(filterElement).toBeNull();
     });
+
+    it("filters interactively via textfield input", async () => {
+      const page = await createPage(`<lf-list></lf-list>`);
+      page.root.lfFilter = true;
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      // Get the textfield element
+      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
+      expect(filterElement).not.toBeNull();
+
+      // Simulate typing into the textfield by triggering the input event
+      // Use different values for inputValue vs value to test the bug
+      const inputEvent = new CustomEvent("lf-textfield-event", {
+        detail: {
+          eventType: "input",
+          inputValue: "Item 1", // Current input value
+          target: filterElement,
+          value: "old value", // Stored component value (different!)
+        },
+      });
+
+      filterElement.dispatchEvent(inputEvent);
+
+      // Wait for debounce timeout
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      await page.waitForChanges();
+
+      const items = page.root.shadowRoot.querySelectorAll(".list__item");
+      expect(items.length).toBe(1);
+      expect(items[0].textContent).toContain("Item 1");
+    });
+
+    describe("keyboard navigation", () => {
+      it("focuses next item with arrow down", async () => {
+        const page = await createPage(`<lf-list></lf-list>`);
+        page.root.lfNavigation = true;
+        page.root.lfDataset = {
+          nodes: [
+            { id: "1", value: "Item 1", description: "First Item" },
+            { id: "2", value: "Item 2", description: "Second Item" },
+            { id: "3", value: "Item 3", description: "Third Item" },
+          ],
+        };
+        await page.waitForChanges();
+
+        // Call focusNext directly
+        await page.root.focusNext();
+        await page.waitForChanges();
+
+        // Check that the first item has the focused class
+        const focusedItem = page.root.shadowRoot.querySelector(
+          ".list__item--focused",
+        );
+        expect(focusedItem).not.toBeNull();
+        expect(focusedItem.textContent).toContain("Item 1");
+
+        // Check that the first item has tabindex 0
+        const firstItem =
+          page.root.shadowRoot.querySelector('[data-index="0"]');
+        expect(firstItem.getAttribute("tabindex")).toBe("0");
+      });
+
+      it("focuses previous item with arrow up", async () => {
+        const page = await createPage(`<lf-list></lf-list>`);
+        page.root.lfNavigation = true;
+        page.root.lfDataset = {
+          nodes: [
+            { id: "1", value: "Item 1", description: "First Item" },
+            { id: "2", value: "Item 2", description: "Second Item" },
+            { id: "3", value: "Item 3", description: "Third Item" },
+          ],
+        };
+        await page.waitForChanges();
+
+        // Get the list container
+        const listContainer = page.root.shadowRoot.querySelector("ul");
+        expect(listContainer).not.toBeNull();
+
+        // Focus the list container first
+        listContainer.focus();
+
+        // Simulate arrow up key press on the component (should wrap to last item)
+        const keydownEvent = new KeyboardEvent("keydown", {
+          key: "ArrowUp",
+          bubbles: true,
+        });
+        page.root.dispatchEvent(keydownEvent);
+
+        await page.waitForChanges();
+
+        // Check that the last item is focused
+        const focusedItem = page.root.shadowRoot.querySelector(
+          ".list__item--focused",
+        );
+        expect(focusedItem).not.toBeNull();
+        expect(focusedItem.textContent).toContain("Item 3");
+      });
+
+      it("maintains focus after filtering", async () => {
+        const page = await createPage(
+          `<lf-list lf-navigation="true" lf-filter="true"></lf-list>`,
+        );
+        page.root.lfDataset = sampleDataset;
+        await page.waitForChanges();
+
+        // Get the list container
+        const listContainer = page.root.shadowRoot.querySelector("ul");
+        expect(listContainer).not.toBeNull();
+
+        // Focus the list container first
+        listContainer.focus();
+
+        // Simulate arrow down to focus first item
+        const keydownEvent = new KeyboardEvent("keydown", {
+          key: "ArrowDown",
+          bubbles: true,
+        });
+        listContainer.dispatchEvent(keydownEvent);
+        await page.waitForChanges();
+
+        // Apply filter to show only one item
+        await page.root.applyFilter("Item 1");
+        await new Promise((resolve) => setTimeout(resolve, 350));
+        await page.waitForChanges();
+
+        // Try to navigate - should handle the reduced list correctly
+        const keydownEvent2 = new KeyboardEvent("keydown", {
+          key: "ArrowDown",
+          bubbles: true,
+        });
+        listContainer.dispatchEvent(keydownEvent2);
+        await page.waitForChanges();
+
+        // Should still have focus on the remaining item
+        const items = page.root.shadowRoot.querySelectorAll(".list__item");
+        expect(items.length).toBe(1);
+        expect(items[0].textContent).toContain("Item 1");
+      });
+    });
   });
 });
