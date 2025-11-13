@@ -449,6 +449,9 @@ export class LfList implements LfListInterface {
    */
   @Method()
   async selectNodeById(id: string): Promise<void> {
+    if (!this.lfDataset?.nodes) {
+      return;
+    }
     const index = this.lfDataset.nodes.findIndex((node) => node.id === id);
     this.#handleSelection(index);
   }
