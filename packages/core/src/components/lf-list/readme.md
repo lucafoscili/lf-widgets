@@ -184,20 +184,21 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                     | Description                                                                                       |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-list-border-color`                 | Sets the border color for the list component. Defaults to => var(--lf-color-border)               |
-| `--lf-list-border-radius`                | Sets the border radius for the list component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-list-color-bg`                     | Sets the color-bg color for the list component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-list-color-danger`                 | Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)         |
-| `--lf-list-color-on-bg`                  | Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-list-color-on-danger`              | Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)   |
-| `--lf-list-color-primary`                | Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)       |
-| `--lf-list-font-family`                  | Sets the primary font family for the list component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-list-font-size`                    | Sets the font size for the list component. Defaults to => var(--lf-font-size)                     |
-| `--lf-list-item-height`                  | Sets the height for the item of the list component. Defaults to => 2.5em                          |
-| `--lf-list-item-padding`                 | Sets the padding for the item of the list component. Defaults to => 0 0.75em                      |
-| `--lf-list-item-with-description-height` | Sets the height for the item with description of the list component. Defaults to => 3.6em         |
+| Name                                     | Description                                                                                               |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--lf-list-border-color`                 | Sets the border color for the list component. Defaults to => var(--lf-color-border)                       |
+| `--lf-list-border-radius`                | Sets the border radius for the list component. Defaults to => var(--lf-ui-border-radius)                  |
+| `--lf-list-color-bg`                     | Sets the color-bg color for the list component. Defaults to => var(--lf-color-bg)                         |
+| `--lf-list-color-danger`                 | Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)                 |
+| `--lf-list-color-on-bg`                  | Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)                   |
+| `--lf-list-color-on-danger`              | Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)           |
+| `--lf-list-color-primary`                | Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)               |
+| `--lf-list-filter-bg`                    | Sets the background color for the filter of the list component. Defaults to => var(--lf-color-bg-surface) |
+| `--lf-list-font-family`                  | Sets the primary font family for the list component. Defaults to => var(--lf-font-family-primary)         |
+| `--lf-list-font-size`                    | Sets the font size for the list component. Defaults to => var(--lf-font-size)                             |
+| `--lf-list-item-height`                  | Sets the height for the item of the list component. Defaults to => 2.5em                                  |
+| `--lf-list-item-padding`                 | Sets the padding for the item of the list component. Defaults to => 0 0.75em                              |
+| `--lf-list-item-with-description-height` | Sets the height for the item with description of the list component. Defaults to => 3.6em                 |
 
 
 ## Dependencies
