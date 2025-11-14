@@ -18,6 +18,7 @@ import {
   LfTextfieldModifiers,
   LfTextfieldPropsInterface,
   LfTextfieldStyling,
+  LfTextfieldTrailingIconAction,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -202,6 +203,21 @@ export class LfTextfield implements LfTextfieldInterface {
    */
   @Prop({ mutable: true, reflect: true }) lfTrailingIcon: boolean = false;
   /**
+   * Sets a service icon to be displayed on the trailing side for additional actions.
+   * This icon is not customizable by consumers and defaults to null (hidden).
+   *
+   * @type { LfTextfieldTrailingIconAction}
+   * @default null
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-textfield lfTrailingIconAction="settings" />
+   * ```
+   */
+  @Prop({ mutable: true }) lfTrailingIconAction: LfTextfieldTrailingIconAction =
+    null;
+  /**
    * The size of the component.
    *
    * @type {LfThemeUISizeKey}
@@ -275,6 +291,7 @@ export class LfTextfield implements LfTextfieldInterface {
     e: Event | CustomEvent,
     eventType: LfTextfieldEvent,
     isIcon = false,
+    iconType?: "regular" | "action",
   ) {
     const target = e.target as HTMLInputElement;
     const inputValue = target?.value;
@@ -295,6 +312,7 @@ export class LfTextfield implements LfTextfieldInterface {
       eventType,
       id: this.rootElement.id,
       originalEvent: e,
+      iconType,
       inputValue,
       target: isIcon ? this.#icon : this.#input,
       value: this.value,
@@ -480,7 +498,7 @@ export class LfTextfield implements LfTextfieldInterface {
         })}
         data-cy={this.#cy.maskedSvg}
         onClick={(e) => {
-          this.onLfEvent(e, "click", true);
+          this.onLfEvent(e, "click", true, "regular");
         }}
         part={this.#p.icon}
         ref={(el) => {
@@ -489,6 +507,32 @@ export class LfTextfield implements LfTextfieldInterface {
           }
         }}
         style={style}
+        tabIndex={0}
+      ></div>
+    );
+  };
+  #prepTrailingIconAction = (): VNode => {
+    if (!this.lfTrailingIconAction) {
+      return null;
+    }
+
+    const { bemClass } = this.#framework.theme;
+    const { textfield } = this.#b;
+
+    return (
+      <div
+        class={bemClass(textfield._, textfield.iconAction, {
+          trailing: true,
+        })}
+        data-cy={this.#cy.maskedSvg}
+        onClick={(e) => {
+          this.onLfEvent(e, "click", true, "action");
+        }}
+        part={this.#p.iconAction}
+        style={{
+          mask: `var(${this.lfTrailingIconAction})`,
+          webkitMask: `var(${this.lfTrailingIconAction})`,
+        }}
         tabIndex={0}
       ></div>
     );
@@ -702,6 +746,9 @@ export class LfTextfield implements LfTextfieldInterface {
     status.forEach((status) => {
       modifiers[status] = true;
     });
+    if (this.lfTrailingIconAction) {
+      modifiers["has-actions"] = true;
+    }
 
     return (
       <Host>
@@ -713,10 +760,16 @@ export class LfTextfield implements LfTextfieldInterface {
             part={this.#p.textfield}
           >
             {isTextarea
-              ? [this.#prepCounter(), this.#prepIcon(), this.#prepTextArea()]
+              ? [
+                  this.#prepCounter(),
+                  this.#prepIcon(),
+                  this.#prepTextArea(),
+                  this.#prepTrailingIconAction(),
+                ]
               : [
                   this.#prepIcon(),
                   this.#prepInput(),
+                  this.#prepTrailingIconAction(),
                   this.#prepLabel(),
                   this.#prepRipple(),
                 ]}

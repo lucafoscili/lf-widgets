@@ -173,7 +173,8 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     box-sizing: border-box;
   }
 
-  &__icon {
+  &__icon,
+  &__icon-action {
     & {
       @include lf-comp-icon($comp);
       @include lf-el-transition("bouncy");

@@ -45,6 +45,67 @@ describe("lf-textfield component", () => {
     expect(icon.classList.contains("textfield__icon--trailing")).toBe(true);
   });
 
+  it("displays trailing icon action when lfTrailingIconAction is set", async () => {
+    const page = await createPage(`<lf-textfield></lf-textfield>`);
+    page.root.lfTrailingIconAction = "--lf-icon-search";
+    await page.waitForChanges();
+    const iconAction = page.root.shadowRoot.querySelector(
+      '[part="icon-action"]',
+    );
+    expect(iconAction).not.toBeNull();
+    expect((iconAction as HTMLElement).style.mask).toBe(
+      "var(--lf-icon-search)",
+    );
+  });
+
+  it("emits click event with iconType 'action' when trailing icon action is clicked", async () => {
+    const page = await createPage(`<lf-textfield></lf-textfield>`);
+    page.root.lfTrailingIconAction = "--lf-icon-search";
+    await page.waitForChanges();
+    const spy = jest.fn();
+    page.root.addEventListener("lf-textfield-event", spy);
+    const iconAction = page.root.shadowRoot.querySelector(
+      '[part="icon-action"]',
+    );
+    iconAction.dispatchEvent(new Event("click", { bubbles: true }));
+    await page.waitForChanges();
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: expect.objectContaining({
+          eventType: "click",
+          iconType: "action",
+        }),
+      }),
+    );
+  });
+
+  it("emits click event with iconType 'regular' when regular icon is clicked", async () => {
+    const page = await createPage(
+      `<lf-textfield lf-icon="search"></lf-textfield>`,
+    );
+    const spy = jest.fn();
+    page.root.addEventListener("lf-textfield-event", spy);
+    const icon = page.root.shadowRoot.querySelector(".textfield__icon");
+    icon.dispatchEvent(new Event("click", { bubbles: true }));
+    await page.waitForChanges();
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: expect.objectContaining({
+          eventType: "click",
+          iconType: "regular",
+        }),
+      }),
+    );
+  });
+
+  it("does not display trailing icon action when lfTrailingIconAction is null", async () => {
+    const page = await createPage(`<lf-textfield></lf-textfield>`);
+    const iconAction = page.root.shadowRoot.querySelector(
+      '[part="icon-action"]',
+    );
+    expect(iconAction).toBeNull();
+  });
+
   it("sets initial value when lfValue is provided", async () => {
     const page = await createPage(
       `<lf-textfield lf-value="initial value"></lf-textfield>`,
@@ -164,5 +225,127 @@ describe("lf-textfield component", () => {
     expect(debugInfo).toHaveProperty("renderCount");
     expect(debugInfo).toHaveProperty("renderStart");
     expect(debugInfo).toHaveProperty("renderEnd");
+  });
+
+  describe("Keydown Events", () => {
+    it("emits lf-textfield-event with keydown eventType and key information", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const spy = jest.fn();
+      page.root.addEventListener("lf-textfield-event", spy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const keydownEvent = new KeyboardEvent("keydown", {
+        key: "ArrowDown",
+        code: "ArrowDown",
+        keyCode: 40,
+        bubbles: true,
+      });
+
+      input.dispatchEvent(keydownEvent);
+      await page.waitForChanges();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: expect.objectContaining({
+            eventType: "keydown",
+            originalEvent: expect.objectContaining({
+              key: "ArrowDown",
+              code: "ArrowDown",
+              keyCode: 40,
+            }),
+          }),
+        }),
+      );
+    });
+
+    it("emits keydown event for Enter key with correct payload", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const spy = jest.fn();
+      page.root.addEventListener("lf-textfield-event", spy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const enterEvent = new KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        keyCode: 13,
+        bubbles: true,
+      });
+
+      input.dispatchEvent(enterEvent);
+      await page.waitForChanges();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: expect.objectContaining({
+            eventType: "keydown",
+            originalEvent: expect.objectContaining({
+              key: "Enter",
+              code: "Enter",
+              keyCode: 13,
+            }),
+          }),
+        }),
+      );
+    });
+
+    it("emits keydown event for Escape key with correct payload", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const spy = jest.fn();
+      page.root.addEventListener("lf-textfield-event", spy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const escapeEvent = new KeyboardEvent("keydown", {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        bubbles: true,
+      });
+
+      input.dispatchEvent(escapeEvent);
+      await page.waitForChanges();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: expect.objectContaining({
+            eventType: "keydown",
+            originalEvent: expect.objectContaining({
+              key: "Escape",
+              code: "Escape",
+              keyCode: 27,
+            }),
+          }),
+        }),
+      );
+    });
+
+    it("emits keydown event for alphanumeric keys", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const spy = jest.fn();
+      page.root.addEventListener("lf-textfield-event", spy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const keyEvent = new KeyboardEvent("keydown", {
+        key: "a",
+        code: "KeyA",
+        keyCode: 65,
+        bubbles: true,
+      });
+
+      input.dispatchEvent(keyEvent);
+      await page.waitForChanges();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: expect.objectContaining({
+            eventType: "keydown",
+            originalEvent: expect.objectContaining({
+              key: "a",
+              code: "KeyA",
+              keyCode: 65,
+            }),
+          }),
+        }),
+      );
+    });
   });
 });
