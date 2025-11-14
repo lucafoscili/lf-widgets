@@ -1,4 +1,8 @@
-import { LfSelectAdapter, LfSelectAdapterJsx } from "@lf-widgets/foundations";
+import {
+  LF_THEME_ICONS,
+  LfSelectAdapter,
+  LfSelectAdapterJsx,
+} from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 
 export const prepSelectJsx = (
@@ -29,6 +33,8 @@ export const prepSelectJsx = (
 
       return (
         <lf-list
+          lfUiSize={compInstance.lfUiSize}
+          lfUiState={compInstance.lfUiState}
           {...compInstance.lfListProps}
           class={bemClass(blocks.select._, blocks.select.list)}
           data-cy={cyAttributes.dropdownMenu}
@@ -65,10 +71,13 @@ export const prepSelectJsx = (
 
       return (
         <lf-textfield
+          lfUiSize={compInstance.lfUiSize}
+          lfUiState={compInstance.lfUiState}
           {...compInstance.lfTextfieldProps}
           class={bemClass(blocks.select._, blocks.select.textfield)}
           data-cy={cyAttributes.input}
           lfHtmlAttributes={htmlAttrs}
+          lfTrailingIconAction={LF_THEME_ICONS.dropdown}
           lfValue={String(selectedNode()?.value || "")}
           onLf-textfield-event={textfield}
           part={parts.textfield}

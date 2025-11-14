@@ -39,6 +39,17 @@ $comp: "list";
     }
   }
 
+  &__filter {
+    /**
+    * @prop --lf-#{$comp}-filter-bg: Sets the background color for the filter of the #{$comp} component.
+    *                                Defaults to => var(--lf-color-bg-surface)
+    */
+    background-color: var(--lf-#{$comp}-filter-bg, var(--lf-color-bg-surface));
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
   &__item {
     & {
       @include lf-el-transition;

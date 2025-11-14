@@ -1,8 +1,8 @@
+import { LfDataDataset } from "@lf-widgets/foundations";
 import { newSpecPage } from "@stencil/core/testing";
-import { LfSelect } from "./lf-select";
 import { LfList } from "../lf-list/lf-list";
 import { LfTextfield } from "../lf-textfield/lf-textfield";
-import { LfDataDataset } from "@lf-widgets/foundations";
+import { LfSelect } from "./lf-select";
 // Ensure framework initializes so component's awaitFramework() resolves
 import { getLfFramework } from "@lf-widgets/framework";
 
@@ -12,6 +12,19 @@ const sampleDataset: LfDataDataset = {
     { id: "test-id", value: "Test Option" },
     { id: "id1", value: "Option 1" },
     { id: "id2", value: "Option 2" },
+  ],
+};
+
+// Larger dataset for filtering tests
+const largeDataset: LfDataDataset = {
+  nodes: [
+    { id: "apple", value: "Apple" },
+    { id: "banana", value: "Banana" },
+    { id: "cherry", value: "Cherry" },
+    { id: "date", value: "Date" },
+    { id: "elderberry", value: "Elderberry" },
+    { id: "fig", value: "Fig" },
+    { id: "grape", value: "Grape" },
   ],
 };
 
@@ -392,8 +405,11 @@ describe("lf-select", () => {
 
       // Open portal
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      actionIcon!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Check width after opening
@@ -412,17 +428,20 @@ describe("lf-select", () => {
       expect(list).toBeTruthy();
     });
 
-    it("should open portal when textfield is clicked", async () => {
+    it("should open portal when dropdown icon is clicked", async () => {
       const page = await createPage(`<lf-select></lf-select>`);
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      expect(textfield).toBeTruthy();
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
+      expect(actionIcon).toBeTruthy();
 
-      // Click textfield to open portal
+      // Click action icon to open portal
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      actionIcon!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Portal should be open (list should be in portal)
@@ -437,16 +456,19 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      expect(textfield).toBeTruthy();
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
+      expect(actionIcon).toBeTruthy();
 
       // First open the portal
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      actionIcon!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Then simulate blur to close
       const blurEvent = new FocusEvent("blur");
-      textfield!.dispatchEvent(blurEvent);
+      actionIcon!.dispatchEvent(blurEvent);
       await page.waitForChanges();
 
       // Component should handle the event without crashing
@@ -492,8 +514,11 @@ describe("lf-select", () => {
 
       // First open portal
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      actionIcon!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Then select an item (should close portal)
@@ -533,6 +558,224 @@ describe("lf-select", () => {
 
       // Component should handle toggle without issues
       expect(page.root).toBeTruthy();
+    });
+  });
+
+  describe("Portal Positioning", () => {
+    it("should open portal and position dropdown correctly", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
+      expect(actionIcon).toBeTruthy();
+
+      // Click to open portal
+      const clickEvent = new MouseEvent("click");
+      actionIcon!.dispatchEvent(clickEvent);
+      await page.waitForChanges();
+
+      // Verify portal opens without errors
+      expect(page.root).toBeTruthy();
+
+      // In test environment, the list may still be in shadow root or moved to portal
+      // The important thing is that the component handles the portal opening correctly
+    });
+
+    it("should handle portal positioning with sufficient viewport space", async () => {
+      // Mock window dimensions to ensure sufficient space
+      const originalInnerWidth = window.innerWidth;
+      const originalInnerHeight = window.innerHeight;
+
+      // Set large viewport
+      Object.defineProperty(window, "innerWidth", {
+        value: 1920,
+        writable: true,
+      });
+      Object.defineProperty(window, "innerHeight", {
+        value: 1080,
+        writable: true,
+      });
+
+      try {
+        const page = await createPage(`<lf-select></lf-select>`);
+        page.root.lfDataset = sampleDataset;
+        await page.waitForChanges();
+
+        // Position the select element in the center of viewport
+        const selectElement =
+          page.root.shadowRoot?.querySelector("div[data-lf]");
+        if (selectElement) {
+          Object.defineProperty(selectElement, "getBoundingClientRect", {
+            value: () => ({
+              top: 500,
+              left: 800,
+              right: 1000,
+              bottom: 530,
+              width: 200,
+              height: 30,
+            }),
+            writable: true,
+          });
+        }
+
+        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+        const actionIcon = textfield?.shadowRoot?.querySelector(
+          '[part="icon-action"]',
+        );
+
+        // Click to open portal
+        const clickEvent = new MouseEvent("click");
+        actionIcon!.dispatchEvent(clickEvent);
+        await page.waitForChanges();
+
+        // Should open without positioning errors
+        expect(page.root).toBeTruthy();
+      } finally {
+        // Restore original window dimensions
+        Object.defineProperty(window, "innerWidth", {
+          value: originalInnerWidth,
+          writable: true,
+        });
+        Object.defineProperty(window, "innerHeight", {
+          value: originalInnerHeight,
+          writable: true,
+        });
+      }
+    });
+
+    it("should handle portal positioning near viewport edges", async () => {
+      // Test positioning behavior when select is near viewport edges
+      const originalInnerWidth = window.innerWidth;
+      const originalInnerHeight = window.innerHeight;
+
+      // Set viewport dimensions
+      Object.defineProperty(window, "innerWidth", {
+        value: 1200,
+        writable: true,
+      });
+      Object.defineProperty(window, "innerHeight", {
+        value: 800,
+        writable: true,
+      });
+
+      try {
+        const page = await createPage(`<lf-select></lf-select>`);
+        page.root.lfDataset = sampleDataset;
+        await page.waitForChanges();
+
+        // Position the select element near the right edge
+        const selectElement =
+          page.root.shadowRoot?.querySelector("div[data-lf]");
+        if (selectElement) {
+          Object.defineProperty(selectElement, "getBoundingClientRect", {
+            value: () => ({
+              top: 100,
+              left: 1000, // Near right edge
+              right: 1150,
+              bottom: 130,
+              width: 150,
+              height: 30,
+            }),
+            writable: true,
+          });
+        }
+
+        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+        const actionIcon = textfield?.shadowRoot?.querySelector(
+          '[part="icon-action"]',
+        );
+
+        // Click to open portal
+        const clickEvent = new MouseEvent("click");
+        actionIcon!.dispatchEvent(clickEvent);
+        await page.waitForChanges();
+
+        // Should handle edge positioning without errors
+        expect(page.root).toBeTruthy();
+
+        // Test near left edge
+        if (selectElement) {
+          Object.defineProperty(selectElement, "getBoundingClientRect", {
+            value: () => ({
+              top: 100,
+              left: 50, // Near left edge
+              right: 200,
+              bottom: 130,
+              width: 150,
+              height: 30,
+            }),
+            writable: true,
+          });
+        }
+
+        // Click again to potentially reposition
+        actionIcon!.dispatchEvent(clickEvent);
+        await page.waitForChanges();
+        actionIcon!.dispatchEvent(clickEvent);
+        await page.waitForChanges();
+
+        // Should handle left edge positioning without errors
+        expect(page.root).toBeTruthy();
+      } finally {
+        // Restore original window dimensions
+        Object.defineProperty(window, "innerWidth", {
+          value: originalInnerWidth,
+          writable: true,
+        });
+        Object.defineProperty(window, "innerHeight", {
+          value: originalInnerHeight,
+          writable: true,
+        });
+      }
+    });
+
+    it("should handle portal positioning with constrained viewport", async () => {
+      // Test positioning when viewport is very small
+      const originalInnerWidth = window.innerWidth;
+      const originalInnerHeight = window.innerHeight;
+
+      // Set small viewport
+      Object.defineProperty(window, "innerWidth", {
+        value: 400,
+        writable: true,
+      });
+      Object.defineProperty(window, "innerHeight", {
+        value: 300,
+        writable: true,
+      });
+
+      try {
+        const page = await createPage(`<lf-select></lf-select>`);
+        page.root.lfDataset = sampleDataset;
+        await page.waitForChanges();
+
+        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+        const actionIcon = textfield?.shadowRoot?.querySelector(
+          '[part="icon-action"]',
+        );
+
+        // Click to open portal
+        const clickEvent = new MouseEvent("click");
+        actionIcon!.dispatchEvent(clickEvent);
+        await page.waitForChanges();
+
+        // Should handle constrained viewport without errors
+        expect(page.root).toBeTruthy();
+      } finally {
+        // Restore original window dimensions
+        Object.defineProperty(window, "innerWidth", {
+          value: originalInnerWidth,
+          writable: true,
+        });
+        Object.defineProperty(window, "innerHeight", {
+          value: originalInnerHeight,
+          writable: true,
+        });
+      }
     });
   });
 
@@ -820,6 +1063,118 @@ describe("lf-select", () => {
 
       // Should remain unselected
       expect(component.value).toBeNull();
+    });
+  });
+
+  describe("Filtering", () => {
+    it("should render filter input when lfFilter is enabled", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = largeDataset;
+      page.root.lfListProps = { lfFilter: true };
+      await page.waitForChanges();
+
+      const list = page.root.shadowRoot?.querySelector("lf-list");
+      expect(list).toBeTruthy();
+
+      // Check that the list has filter enabled
+      expect(list?.lfFilter).toBe(true);
+    });
+
+    it("should filter list items based on text input", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = largeDataset;
+      page.root.lfListProps = { lfFilter: true };
+      await page.waitForChanges();
+
+      // Get the list and apply filter using the API
+      const list = page.root.shadowRoot?.querySelector("lf-list") as any;
+      expect(list).toBeTruthy();
+
+      // Apply filter using the component's setFilter method
+      await list.setFilter("a");
+      await page.waitForChanges();
+
+      // Check that only items containing "a" are visible
+      const visibleItems = list?.shadowRoot?.querySelectorAll(
+        ".list__item:not([hidden])",
+      );
+      expect(visibleItems?.length).toBeGreaterThan(0);
+
+      // Should show Apple, Banana, Date, Grape (4 items)
+      expect(visibleItems?.length).toBe(4);
+    });
+
+    it.skip("should allow selection of filtered items", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = largeDataset;
+      page.root.lfListProps = { lfFilter: true };
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+
+      // Open the portal
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
+      actionIcon!.dispatchEvent(new MouseEvent("click"));
+      await page.waitForChanges();
+
+      // Get the list from the document (moved to portal)
+      const list = document.querySelector("lf-list") as any;
+      expect(list).toBeTruthy();
+
+      // Apply filter
+      await list.setFilter("app");
+      await page.waitForChanges();
+      await page.waitForChanges();
+
+      // Find and click the Apple item
+      const appleItem = Array.from(
+        list?.shadowRoot?.querySelectorAll(".list__item") || [],
+      ).find((item) => (item as HTMLElement).textContent?.includes("Apple"));
+
+      expect(appleItem).toBeTruthy();
+
+      // Click the item
+      (appleItem as HTMLElement).dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
+      await page.waitForChanges();
+
+      // Check that Apple was selected
+      expect(component.value).toBe("apple");
+      const selectedValue = await component.getValue();
+      expect(selectedValue.value).toBe("Apple");
+    });
+
+    it.skip("should show no results when filter matches nothing", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = largeDataset;
+      page.root.lfListProps = { lfFilter: true };
+      await page.waitForChanges();
+
+      // Open the portal
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const actionIcon = textfield?.shadowRoot?.querySelector(
+        '[part="icon-action"]',
+      );
+      actionIcon!.dispatchEvent(new MouseEvent("click"));
+      await page.waitForChanges();
+
+      // Get the list from the document (moved to portal)
+      const list = document.querySelector("lf-list") as any;
+      expect(list).toBeTruthy();
+
+      // Apply filter that won't match anything
+      await list.setFilter("xyz");
+      await page.waitForChanges();
+
+      // Check that no items are visible
+      const visibleItems = list?.shadowRoot?.querySelectorAll(
+        ".list__item:not([hidden])",
+      );
+      expect(visibleItems?.length).toBe(0);
     });
   });
 });

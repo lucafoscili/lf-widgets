@@ -46,6 +46,31 @@ export const getSelectFixtures = (
       value: `Option ${i + 1}`,
     })),
   };
+
+  const largeDataset: LfDataDataset = {
+    nodes: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+      { id: "cherry", value: "Cherry" },
+      { id: "date", value: "Date" },
+      { id: "elderberry", value: "Elderberry" },
+      { id: "fig", value: "Fig" },
+      { id: "grape", value: "Grape" },
+      { id: "honeydew", value: "Honeydew" },
+      { id: "kiwi", value: "Kiwi" },
+      { id: "lemon", value: "Lemon" },
+      { id: "mango", value: "Mango" },
+      { id: "nectarine", value: "Nectarine" },
+      { id: "orange", value: "Orange" },
+      { id: "peach", value: "Peach" },
+      { id: "pear", value: "Pear" },
+      { id: "quince", value: "Quince" },
+      { id: "raspberry", value: "Raspberry" },
+      { id: "strawberry", value: "Strawberry" },
+      { id: "tangerine", value: "Tangerine" },
+      { id: "watermelon", value: "Watermelon" },
+    ],
+  };
   //#endregion
 
   //#region documentation
@@ -138,6 +163,14 @@ export const getSelectFixtures = (
             lfDataset,
             lfTextfieldProps: { lfLabel: "Styled select" },
             lfStyle: randomStyle(),
+          },
+        },
+        filtering: {
+          description: "Select with filtering enabled",
+          props: {
+            lfDataset: largeDataset,
+            lfListProps: { lfFilter: true },
+            lfTextfieldProps: { lfLabel: "Filter fruits" },
           },
         },
       },
