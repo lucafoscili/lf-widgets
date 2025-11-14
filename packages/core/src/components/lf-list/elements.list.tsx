@@ -46,7 +46,7 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
 
       return (
         <lf-textfield
-          class={bemClass(blocks.list.filter, blocks.list.filter)}
+          class={bemClass(blocks.list._, blocks.list.filter)}
           data-lf={lfAttributes[lfUiState]}
           lfIcon={iconSearch}
           lfLabel="Search..."
