@@ -30,6 +30,7 @@ export const LF_TEXTFIELD_EVENTS = [
   "click",
   "focus",
   "input",
+  "keydown",
   "ready",
   "unmount",
 ] as const;

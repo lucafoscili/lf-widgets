@@ -520,6 +520,9 @@ export class LfTextfield implements LfTextfieldInterface {
         onInput={(e) => {
           this.onLfEvent(e, "input");
         }}
+        onKeyDown={(e) => {
+          this.onLfEvent(e, "keydown");
+        }}
         part={this.#p.input}
         placeholder={(this.#isOutlined() && this.lfLabel) || ""}
         ref={(el) => {
@@ -611,6 +614,9 @@ export class LfTextfield implements LfTextfieldInterface {
                 this.formatJSON();
               }, ms);
             }
+          }}
+          onKeyDown={(e) => {
+            this.onLfEvent(e, "keydown");
           }}
           part={this.#p.input}
           placeholder={(this.#isOutlined() && this.lfLabel) || ""}

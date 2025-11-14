@@ -77,6 +77,11 @@ export const getTextfieldFixtures = (
                 description: "emitted when a new input signal is received",
               },
               {
+                type: "keydown",
+                description:
+                  "emitted when a key is pressed down while the component is focused",
+              },
+              {
                 type: "ready",
                 description:
                   "emitted when the component completes its first complete lifecycle",
