@@ -26,6 +26,7 @@ export const LF_SELECT_PARTS = {
 export const LF_SELECT_PROPS = [
   "lfDataset",
   "lfListProps",
+  "lfNavigation",
   "lfStyle",
   "lfTextfieldProps",
   "lfUiSize",

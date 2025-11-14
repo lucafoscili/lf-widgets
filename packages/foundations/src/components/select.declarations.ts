@@ -57,6 +57,7 @@ export interface LfSelectAdapterControllerGetters {
   indexById: (id: string) => number;
   isDisabled: () => boolean;
   lfAttributes: typeof LF_ATTRIBUTES;
+  lfDataset: () => LfDataDataset;
   manager: LfFrameworkInterface;
   parts: typeof LF_SELECT_PARTS;
   selectedNode: () => LfDataNode | null;
@@ -69,6 +70,7 @@ export type LfSelectAdapterInitializerGetters = Pick<
   | "indexById"
   | "isDisabled"
   | "lfAttributes"
+  | "lfDataset"
   | "manager"
   | "parts"
   | "selectedNode"
@@ -111,6 +113,7 @@ export interface LfSelectEventPayload
 export interface LfSelectPropsInterface {
   lfDataset?: LfDataDataset;
   lfListProps?: Partial<LfListInterface>;
+  lfNavigation?: boolean;
   lfStyle?: string;
   lfTextfieldProps?: Partial<LfTextfieldInterface>;
   lfUiSize?: LfThemeUISize;

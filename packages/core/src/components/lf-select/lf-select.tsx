@@ -100,6 +100,19 @@ export class LfSelect implements LfSelectInterface {
    */
   @Prop({ mutable: true }) lfListProps: Partial<LfListInterface> = null;
   /**
+   * Enables keyboard navigation with arrow keys.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-select lfNavigation={false} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfNavigation: boolean = true;
+  /**
    * Custom CSS styles to apply to the component.
    *
    * @type {string}
@@ -299,6 +312,7 @@ export class LfSelect implements LfSelectInterface {
           this.lfDataset?.nodes?.findIndex((n) => n.id === id),
         isDisabled: () => this.lfUiState === "disabled",
         lfAttributes: this.#lf,
+        lfDataset: () => this.lfDataset,
         manager: this.#framework,
         parts: this.#p,
         selectedNode: () => findNodeById(this.lfDataset, this.value),

@@ -535,4 +535,291 @@ describe("lf-select", () => {
       expect(page.root).toBeTruthy();
     });
   });
+
+  describe("Keyboard Navigation", () => {
+    it("should navigate options with arrow keys when textfield is focused", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Initially no selection
+      expect(component.value).toBeNull();
+
+      // Press ArrowDown to select first option
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("test-id");
+      expect(await component.getSelectedIndex()).toBe(0);
+
+      // Press ArrowDown again to select second option
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("id1");
+      expect(await component.getSelectedIndex()).toBe(1);
+
+      // Press ArrowUp to go back
+      const upEvent = new KeyboardEvent("keydown", { key: "ArrowUp" });
+      input!.dispatchEvent(upEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("test-id");
+      expect(await component.getSelectedIndex()).toBe(0);
+    });
+
+    it("should wrap around with arrow keys", async () => {
+      const page = await createPage(`<lf-select lf-value="id2"></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      expect(component.value).toBe("id2");
+      expect(await component.getSelectedIndex()).toBe(2);
+
+      // Press ArrowDown to wrap to first
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("test-id");
+      expect(await component.getSelectedIndex()).toBe(0);
+
+      // Press ArrowUp from first to last
+      const upEvent = new KeyboardEvent("keydown", { key: "ArrowUp" });
+      input!.dispatchEvent(upEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("id2");
+      expect(await component.getSelectedIndex()).toBe(2);
+    });
+  });
+
+  describe("lfNavigation Prop", () => {
+    it("should enable keyboard navigation by default (lfNavigation = true)", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Initially no selection
+      expect(component.value).toBeNull();
+
+      // Press ArrowDown to select first option
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      // Should navigate
+      expect(component.value).toBe("test-id");
+    });
+
+    it("should disable keyboard navigation when lfNavigation = false", async () => {
+      const page = await createPage(
+        `<lf-select lf-navigation="false"></lf-select>`,
+      );
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Initially no selection
+      expect(component.value).toBeNull();
+
+      // Press ArrowDown - should NOT navigate
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      // Should remain unselected
+      expect(component.value).toBeNull();
+    });
+
+    it("should re-enable keyboard navigation when lfNavigation changed to true", async () => {
+      const page = await createPage(
+        `<lf-select lf-navigation="false"></lf-select>`,
+      );
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Change navigation to true
+      page.root.lfNavigation = true;
+      await page.waitForChanges();
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Press ArrowDown - should now navigate
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("test-id");
+    });
+  });
+
+  describe("Portal Closing", () => {
+    it("should handle Enter key press without crashing", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Open the dropdown by clicking
+      const clickEvent = new MouseEvent("click");
+      textfield!.dispatchEvent(clickEvent);
+      await page.waitForChanges();
+
+      // Component should handle click without issues
+      expect(page.root).toBeTruthy();
+
+      // Press Enter - should handle without crashing
+      const enterEvent = new KeyboardEvent("keydown", { key: "Enter" });
+      input!.dispatchEvent(enterEvent);
+      await page.waitForChanges();
+
+      // Component should still be functional
+      expect(page.root).toBeTruthy();
+    });
+
+    it("should handle Escape key press without crashing", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Open the dropdown by clicking
+      const clickEvent = new MouseEvent("click");
+      textfield!.dispatchEvent(clickEvent);
+      await page.waitForChanges();
+
+      // Component should handle click without issues
+      expect(page.root).toBeTruthy();
+
+      // Press Escape - should handle without crashing
+      const escapeEvent = new KeyboardEvent("keydown", { key: "Escape" });
+      input!.dispatchEvent(escapeEvent);
+      await page.waitForChanges();
+
+      // Component should still be functional
+      expect(page.root).toBeTruthy();
+    });
+  });
+
+  describe("Edge Cases", () => {
+    it("should handle keyboard navigation with empty dataset", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = { nodes: [] };
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Press ArrowDown - should not crash
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      // Should remain null
+      expect(component.value).toBeNull();
+    });
+
+    it("should handle keyboard navigation with single option", async () => {
+      const singleOptionDataset: LfDataDataset = {
+        nodes: [{ id: "single", value: "Single Option" }],
+      };
+
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = singleOptionDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Press ArrowDown to select the only option
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("single");
+
+      // Press ArrowDown again - should stay on the same option
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      expect(component.value).toBe("single");
+    });
+
+    it("should not respond to keyboard navigation when disabled", async () => {
+      const page = await createPage(
+        `<lf-select lf-navigation="false"></lf-select>`,
+      );
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
+      const input = textfield?.shadowRoot?.querySelector("input");
+
+      // Focus the input
+      input?.focus();
+      await page.waitForChanges();
+
+      // Press ArrowDown - should not navigate
+      const downEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      input!.dispatchEvent(downEvent);
+      await page.waitForChanges();
+
+      // Should remain unselected
+      expect(component.value).toBeNull();
+    });
+  });
 });
