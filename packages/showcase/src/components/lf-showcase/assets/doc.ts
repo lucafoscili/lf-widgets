@@ -2847,12 +2847,16 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)",
       },
       {
+        name: "--lf-list-color-on-surface",
+        docs: "Sets the color-on-surface color for the list component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
         name: "--lf-list-color-primary",
         docs: "Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)",
       },
       {
-        name: "--lf-list-filter-bg",
-        docs: "Sets the background color for the filter of the list component. Defaults to => var(--lf-color-bg-surface)",
+        name: "--lf-list-color-surface",
+        docs: "Sets the color-surface color for the list component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-list-font-family",
