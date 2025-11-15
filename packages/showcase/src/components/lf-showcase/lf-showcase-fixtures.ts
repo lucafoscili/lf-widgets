@@ -67,6 +67,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     playstationCircle,
     progress,
     replace,
+    select,
     slideshow,
     squareToggle,
     toggleRight,
@@ -235,7 +236,7 @@ export const LF_SHOWCASE_COMPONENTS = (
       {
         description:
           "Combines textfield styling with list functionality for dropdown selection.",
-        icon: id,
+        icon: select,
         id: "Select",
         value: "Select",
       },
