@@ -81,5 +81,11 @@ export const GLOBAL_STYLES = {
     "position": "fixed",
     "width": "auto",
     "z-index": "var(--lf-ui-zindex-portal)"
+  },
+  "@media (max-width: 600px)": {
+    ".lf-portal [data-lf=portal]": {
+      "max-height": "80dvh",
+      "max-width": "90dvw"
+    }
   }
 } as const;

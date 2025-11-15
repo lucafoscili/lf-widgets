@@ -178,11 +178,11 @@ export class LfPortal implements LfPortalInterface {
     let finalHorizontal = horizontalPart;
     if (horizontalPart === "auto") {
       if (spaceOnRight >= offsetWidth) {
-        finalHorizontal = "r";
-      } else if (spaceOnLeft >= offsetWidth) {
         finalHorizontal = "l";
+      } else if (spaceOnLeft >= offsetWidth) {
+        finalHorizontal = "r";
       } else {
-        finalHorizontal = "r"; // fallback
+        finalHorizontal = "l"; // fallback prefers left alignment
       }
     } else if (horizontalPart === "r") {
       if (spaceOnRight < offsetWidth && spaceOnLeft > offsetWidth) {

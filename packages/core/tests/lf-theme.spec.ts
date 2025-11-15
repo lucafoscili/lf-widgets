@@ -191,6 +191,23 @@ describe("Framework Theme Utilities", () => {
     });
   });
 
+  describe("global styles", () => {
+    it("includes responsive portal sizing for compact viewports", () => {
+      const stylesByAtRule = GLOBAL_STYLES as unknown as Record<
+        string,
+        Record<string, Record<string, string>>
+      >;
+
+      const mobilePortal = stylesByAtRule["@media (max-width: 600px)"];
+
+      expect(mobilePortal).toBeDefined();
+      expect(mobilePortal[".lf-portal [data-lf=portal]"]).toMatchObject({
+        "max-height": "80dvh",
+        "max-width": "90dvw",
+      });
+    });
+  });
+
   describe("global styles generation", () => {
     it("keeps the generated constants in sync with the SCSS source", () => {
       const scssPath = join(__dirname, "../src/style/global.scss");

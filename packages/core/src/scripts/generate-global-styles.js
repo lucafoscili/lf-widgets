@@ -92,6 +92,55 @@ const createGlobalStylesMap = (scssPath) => {
       continue;
     }
 
+    if (node.type === "media") {
+      const selectorMap = new Map();
+
+      for (const child of node.rules ?? []) {
+        if (!child) {
+          continue;
+        }
+
+        if (child.type === "comment") {
+          continue;
+        }
+
+        if (child.type !== "rule") {
+          throw new Error(`Unsupported media child rule type: ${child.type}`);
+        }
+
+        const declarations = collectRuleDeclarations(child);
+
+        for (const selector of child.selectors ?? []) {
+          if (!selector) {
+            continue;
+          }
+
+          const existing = selectorMap.get(selector);
+
+          if (existing) {
+            selectorMap.set(selector, { ...existing, ...declarations });
+          } else {
+            selectorMap.set(selector, { ...declarations });
+          }
+        }
+      }
+
+      const mediaKey = `@media ${node.media}`;
+      const existingSelectors = styles.get(mediaKey) ?? {};
+      const mergedSelectors = { ...existingSelectors };
+
+      for (const [selector, declarations] of selectorMap.entries()) {
+        const current = mergedSelectors[selector];
+        mergedSelectors[selector] = current
+          ? { ...current, ...declarations }
+          : { ...declarations };
+      }
+
+      styles.set(mediaKey, mergedSelectors);
+
+      continue;
+    }
+
     if (node.type === "keyframes") {
       const frames = [];
 
