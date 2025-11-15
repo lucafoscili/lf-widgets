@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "prepublishOnly": "node ./src/scripts/prepublish.js",
-    "build": "yarn clean && tsc",
+    "build": "yarn clean && node ../core/src/scripts/generate-global-styles.js && tsc",
     "clean": "node ./src/scripts/clean.js"
   },
   "repository": {

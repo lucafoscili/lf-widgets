@@ -3,6 +3,9 @@ jest.mock("@lf-widgets/framework", () => ({
   getLfFramework: jest.fn(),
 }));
 
+import { GLOBAL_STYLES } from "@lf-widgets/foundations";
+import { execFileSync } from "child_process";
+import { join } from "path";
 import { createMockFramework } from "./mocks";
 
 describe("Framework Theme Utilities", () => {
@@ -185,6 +188,26 @@ describe("Framework Theme Utilities", () => {
       framework.theme.unregister(mockComponent);
 
       expect(framework.theme.unregister).toHaveBeenCalledWith(mockComponent);
+    });
+  });
+
+  describe("global styles generation", () => {
+    it("keeps the generated constants in sync with the SCSS source", () => {
+      const scssPath = join(__dirname, "../src/style/global.scss");
+      const scriptPath = join(
+        __dirname,
+        "../src/scripts/generate-global-styles.js",
+      );
+
+      const output = execFileSync(
+        "node",
+        [scriptPath, "--json", `--input=${scssPath}`],
+        { encoding: "utf8" },
+      );
+
+      const generated = JSON.parse(output) as Record<string, unknown>;
+
+      expect(generated).toEqual(GLOBAL_STYLES);
     });
   });
 });

@@ -81,7 +81,7 @@
       max-height: 45dvh;
       max-width: 45dvw;
       height: max-content;
-      min-width: max-content;
+      overflow: auto;
       position: fixed;
       width: auto;
       z-index: var(--lf-ui-zindex-portal);
