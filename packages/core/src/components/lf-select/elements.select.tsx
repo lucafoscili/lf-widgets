@@ -23,7 +23,7 @@ export const prepSelectJsx = (
         parts,
         selectedNode,
       } = controller.get;
-      const { assignRef, theme } = manager;
+      const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { list } = handlers;
       const { lfDataset } = compInstance;
@@ -35,7 +35,7 @@ export const prepSelectJsx = (
         <lf-list
           lfUiSize={compInstance.lfUiSize}
           lfUiState={compInstance.lfUiState}
-          {...compInstance.lfListProps}
+          {...sanitizeProps(compInstance.lfListProps, "LfList")}
           class={bemClass(blocks.select._, blocks.select.list)}
           data-cy={cyAttributes.dropdownMenu}
           data-lf={lfAttributes.portal}
@@ -62,21 +62,22 @@ export const prepSelectJsx = (
         parts,
         selectedNode,
       } = controller.get;
-      const { assignRef, theme } = manager;
+      const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { textfield } = handlers;
 
       const htmlAttrs = compInstance.lfTextfieldProps?.lfHtmlAttributes || {};
       htmlAttrs.readonly = true;
+      const htmlSanitized = sanitizeProps(htmlAttrs);
 
       return (
         <lf-textfield
           lfUiSize={compInstance.lfUiSize}
           lfUiState={compInstance.lfUiState}
-          {...compInstance.lfTextfieldProps}
+          {...sanitizeProps(compInstance.lfTextfieldProps, "LfTextfield")}
           class={bemClass(blocks.select._, blocks.select.textfield)}
           data-cy={cyAttributes.input}
-          lfHtmlAttributes={htmlAttrs}
+          lfHtmlAttributes={htmlSanitized}
           lfTrailingIconAction={LF_THEME_ICONS.dropdown}
           lfValue={String(selectedNode()?.value || "")}
           onLf-textfield-event={textfield}
