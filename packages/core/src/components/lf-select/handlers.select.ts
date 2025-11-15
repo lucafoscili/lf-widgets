@@ -11,14 +11,16 @@ export const prepSelectHandlers = (
     //#region List
     list: async (event) => {
       const { eventType, node } = event.detail;
-      const { controller } = getAdapter();
+      const { controller, elements } = getAdapter();
       const { compInstance } = controller.get;
+      const { refs } = elements;
       const comp = compInstance as LfSelect;
 
       switch (eventType) {
         case "click":
           controller.set.select.value(node.id);
           controller.set.list("close");
+          refs.textfield.setFocus();
           break;
       }
 
