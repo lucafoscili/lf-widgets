@@ -77,14 +77,11 @@ export type LfSelectAdapterInitializerGetters = Pick<
 >;
 export interface LfSelectAdapterControllerSetters {
   list: (state?: "toggle" | "open" | "close") => void;
-  select: {
-    dataset: (dataset: LfDataDataset | null) => void;
-    value: (id: string) => Promise<void>;
-  };
+  value: (id: string) => Promise<void>;
 }
 export type LfSelectAdapterInitializerSetters = Pick<
   LfSelectAdapterControllerSetters,
-  "select"
+  "value"
 >;
 export interface LfSelectAdapterJsx {
   list: () => VNode | null;

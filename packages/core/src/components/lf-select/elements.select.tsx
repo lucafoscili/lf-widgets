@@ -67,7 +67,9 @@ export const prepSelectJsx = (
       const { textfield } = handlers;
 
       const htmlAttrs = compInstance.lfTextfieldProps?.lfHtmlAttributes || {};
+      htmlAttrs.autocomplete = "off";
       htmlAttrs.readonly = true;
+      htmlAttrs.role = "combobox";
       const htmlSanitized = sanitizeProps(htmlAttrs);
 
       return (

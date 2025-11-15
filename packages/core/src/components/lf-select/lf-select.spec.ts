@@ -212,6 +212,62 @@ describe("lf-select", () => {
       await component.setValue("invalid");
       expect(await component.getSelectedIndex()).toBe(-1);
     });
+
+    it("should fire change event when value is set programmatically", async () => {
+      const page = await createPage(`<lf-select></lf-select>`);
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+
+      // Listen for the change event
+      const changeEvents: CustomEvent[] = [];
+      page.root.addEventListener("lf-select-event", (e: CustomEvent) => {
+        if (e.detail.eventType === "change") {
+          changeEvents.push(e);
+        }
+      });
+
+      // Set value programmatically
+      await component.setValue("test-id");
+      await page.waitForChanges();
+
+      // Check that change event was fired
+      expect(changeEvents.length).toBe(1);
+      expect(changeEvents[0].detail.eventType).toBe("change");
+      expect(changeEvents[0].detail.node).toEqual(
+        expect.objectContaining({ id: "test-id", value: "Test Option" }),
+      );
+      expect(changeEvents[0].detail.value).toBe("test-id");
+    });
+
+    it("should fire change event when value is cleared", async () => {
+      const page = await createPage(
+        `<lf-select lf-value="test-id"></lf-select>`,
+      );
+      page.root.lfDataset = sampleDataset;
+      await page.waitForChanges();
+
+      const component = page.rootInstance as LfSelect;
+
+      // Listen for the change event
+      const changeEvents: CustomEvent[] = [];
+      page.root.addEventListener("lf-select-event", (e: CustomEvent) => {
+        if (e.detail.eventType === "change") {
+          changeEvents.push(e);
+        }
+      });
+
+      // Clear value
+      await component.setValue(null);
+      await page.waitForChanges();
+
+      // Check that change event was fired with null
+      expect(changeEvents.length).toBe(1);
+      expect(changeEvents[0].detail.eventType).toBe("change");
+      expect(changeEvents[0].detail.node).toBeNull();
+      expect(changeEvents[0].detail.value).toBeNull();
+    });
   });
 
   describe("Dataset Changes", () => {

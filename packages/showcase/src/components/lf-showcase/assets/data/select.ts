@@ -97,6 +97,10 @@ export const getSelectFixtures = (
             PAYLOAD_NAME,
             [
               {
+                type: "change",
+                description: "emitted when the selected value changes",
+              },
+              {
                 type: "lf-event",
                 description: "emitted by the component on user interactions",
               },

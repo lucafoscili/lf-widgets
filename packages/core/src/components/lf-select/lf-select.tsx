@@ -75,17 +75,18 @@ export class LfSelect implements LfSelectInterface {
   //#region Props
   /**
    * Sets the dataset containing the selectable options.
+   * This property is immutable after the component has loaded.
    *
    * @type {LfDataDataset}
    * @default null
-   * @mutable
+   * @mutable false
    *
    * @example
    * ```tsx
    * <lf-select lfDataset={{ nodes: [{ id: "1", value: "Option 1" }, { id: "2", value: "Option 2" }] }} />
    * ```
    */
-  @Prop({ mutable: true }) lfDataset: LfDataDataset = null;
+  @Prop({ mutable: false }) lfDataset: LfDataDataset = null;
   /**
    * Sets the props for the internal lf-list component.
    *
@@ -180,13 +181,6 @@ export class LfSelect implements LfSelectInterface {
   @Prop({ mutable: false }) lfValue: string | number = null;
   //#endregion
 
-  //#region Watchers
-  @Watch("lfDataset")
-  async onLfDatasetChange() {
-    await this.#adapter.controller.set.select.dataset(this.lfDataset);
-  }
-  //#endregion
-
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #adapter: LfSelectAdapter;
@@ -220,11 +214,24 @@ export class LfSelect implements LfSelectInterface {
     this.lfEvent.emit({
       comp: this,
       eventType,
-      id: this.rootElement?.id || "",
+      id: this.rootElement.id,
       originalEvent: e,
       node,
       value,
     });
+  }
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfDataset")
+  onLfDatasetChange() {
+    // Validate current value against new dataset
+    if (
+      !this.lfDataset ||
+      (this.value && !hasNodeWithId(this.lfDataset, this.value))
+    ) {
+      this.value = null;
+    }
   }
   //#endregion
 
@@ -286,7 +293,7 @@ export class LfSelect implements LfSelectInterface {
    */
   @Method()
   async setValue(id: string): Promise<void> {
-    this.#adapter.controller.set.select.value(id);
+    this.#adapter.controller.set.value(id);
   }
   /**
    * Initiates the unmount sequence.
@@ -318,43 +325,39 @@ export class LfSelect implements LfSelectInterface {
         selectedNode: () => findNodeById(this.lfDataset, this.value),
       },
       {
-        select: {
-          dataset: async () => {
-            if (!this.lfDataset) {
-              await this.#adapter.controller.set.select.value(null);
-              return;
-            }
-            if (this.value && !hasNodeWithId(this.lfDataset, this.value)) {
-              await this.#adapter.controller.set.select.value(null);
-            }
-          },
-          value: async (value: string) => {
-            const { refs } = this.#adapter.elements;
+        value: async (value: string) => {
+          const { refs } = this.#adapter.elements;
 
-            const textfield = refs.textfield || null;
-            const list = refs.list || null;
+          const textfield = refs.textfield || null;
+          const list = refs.list || null;
 
-            const maybeSetValue = async (val: string | null) => {
-              this.value = val;
-              const selectedNode = this.#adapter.controller.get.selectedNode();
-              if (list) {
-                await list.selectNodeById(selectedNode?.id || null);
-              }
-              if (textfield) {
-                await textfield.setValue(String(selectedNode?.value || ""));
-              }
-            };
-
-            if (
-              value &&
-              this.lfDataset &&
-              !hasNodeWithId(this.lfDataset, value)
-            ) {
-              await maybeSetValue(null);
-              return;
+          const maybeSetValue = async (val: string | null) => {
+            this.value = val;
+            const selectedNode = this.#adapter.controller.get.selectedNode();
+            if (list) {
+              await list.selectNodeById(selectedNode?.id || null);
             }
-            await maybeSetValue(value);
-          },
+            if (textfield) {
+              await textfield.setValue(String(selectedNode?.value || ""));
+            }
+
+            this.onLfEvent(
+              new CustomEvent("change"),
+              "change",
+              selectedNode,
+              val,
+            );
+          };
+
+          if (
+            value &&
+            this.lfDataset &&
+            !hasNodeWithId(this.lfDataset, value)
+          ) {
+            await maybeSetValue(null);
+            return;
+          }
+          await maybeSetValue(value);
         },
       },
       () => this.#adapter,

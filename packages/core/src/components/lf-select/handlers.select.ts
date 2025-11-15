@@ -18,7 +18,7 @@ export const prepSelectHandlers = (
 
       switch (eventType) {
         case "click":
-          controller.set.select.value(node.id);
+          controller.set.value(node.id);
           controller.set.list("close");
           refs.textfield.setFocus();
           break;
@@ -101,17 +101,16 @@ const keydownHandler = async (
     case "Enter": {
       event.preventDefault();
       controller.set.list();
-      comp.onLfEvent(event, "lf-event");
-      return;
+      break;
     }
     default: {
-      return;
+      break;
     }
   }
 
   if (newIndex !== currentIndex) {
     const newNode = dataset.nodes[newIndex];
-    controller.set.select.value(newNode.id);
+    controller.set.value(newNode.id);
     comp.onLfEvent(event, "lf-event", newNode);
   }
 };

@@ -11,7 +11,12 @@ export const LF_SELECT_BLOCKS = {
 //#endregion
 
 //#region Events
-export const LF_SELECT_EVENTS = ["lf-event", "ready", "unmount"] as const;
+export const LF_SELECT_EVENTS = [
+  "change",
+  "lf-event",
+  "ready",
+  "unmount",
+] as const;
 //#endregion
 
 //#region Parts
