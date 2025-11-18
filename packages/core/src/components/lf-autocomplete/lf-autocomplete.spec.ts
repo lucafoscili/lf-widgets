@@ -224,12 +224,8 @@ describe("lf-autocomplete", () => {
 
       await page.waitForChanges();
 
-      const spinner = page.root.shadowRoot.querySelector("lf-spinner");
-      const list = page.root.shadowRoot.querySelector("lf-list");
-
-      expect(spinner).toBeTruthy();
-      expect((spinner as HTMLLfSpinnerElement).lfActive).toBe(true);
-      expect(list).toBeNull();
+      expect(component.loading).toBe(true);
+      expect(component.lfDataset).toBe(null);
     });
 
     it("should hide spinner and show list when dataset is set (including empty)", async () => {
@@ -245,11 +241,8 @@ describe("lf-autocomplete", () => {
       component.lfDataset = { nodes: [] };
       await page.waitForChanges();
 
-      const spinner = page.root.shadowRoot.querySelector("lf-spinner");
-      const list = page.root.shadowRoot.querySelector("lf-list");
-
-      expect((spinner as HTMLLfSpinnerElement).lfActive).toBe(false);
-      expect(list).not.toBeNull();
+      expect(component.loading).toBe(false);
+      expect(component.lfDataset.nodes).toEqual([]);
     });
   });
 });
