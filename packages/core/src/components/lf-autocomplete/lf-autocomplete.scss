@@ -1,0 +1,24 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "autocomplete";
+@include lf-comp-setup($comp, "true", "true", "true", "true");
+
+.autocomplete {
+  & {
+    @include lf-el-stretch;
+  }
+}
+
+.dropdown {
+  & {
+  }
+
+  &__spinner {
+    min-height: 0.25em;
+  }
+
+  &__list {
+    margin-top: 0.25em;
+  }
+}

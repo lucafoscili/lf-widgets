@@ -2,6 +2,8 @@ export * from "./accordion.constants";
 export * from "./accordion.declarations";
 export * from "./article.constants";
 export * from "./article.declarations";
+export * from "./autocomplete.constants";
+export * from "./autocomplete.declarations";
 export * from "./badge.constants";
 export * from "./badge.declarations";
 export * from "./button.constants";

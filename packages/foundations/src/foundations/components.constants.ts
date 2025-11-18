@@ -1,5 +1,6 @@
 import { LF_ACCORDION_PROPS } from "../components/accordion.constants";
 import { LF_ARTICLE_PROPS } from "../components/article.constants";
+import { LF_AUTOCOMPLETE_PROPS } from "../components/autocomplete.constants";
 import { LF_BADGE_PROPS } from "../components/badge.constants";
 import { LF_BUTTON_PROPS } from "../components/button.constants";
 import { LF_CANVAS_PROPS } from "../components/canvas.constants";
@@ -39,7 +40,7 @@ import {
 } from "./components.declarations";
 
 /**
- * Namespace prefix applied to every CSS custom property emitted by Lightning Fast components.
+ * Namespace prefix applied to every CSS custom property emitted by LF components.
  *
  * Useful when generating token names programmatically, e.g. `${CSS_VAR_PREFIX}color-primary`.
  */
@@ -67,6 +68,7 @@ export const CY_ATTRIBUTES = {
   shape: "shape",
   showcaseExample: "showcase-example",
   showcaseGridWrapper: "showcase-grid-wrapper",
+  spinner: "spinner",
 } as const;
 /**
  * Shared set of boolean host attributes that influence component styling or behaviour.
@@ -99,7 +101,7 @@ export const LF_ATTRIBUTES = {
  */
 export const LF_STYLE_ID = "lf-style" as const;
 /**
- * DOM id prefix applied to wrapper elements that host Lightning Fast components.
+ * DOM id prefix applied to wrapper elements that host LF components.
  *
  * Allows developer tools to locate the root container wrapper reliably.
  */
@@ -116,6 +118,7 @@ export const getComponentProps = (): {
   return {
     LfAccordion: LF_ACCORDION_PROPS,
     LfArticle: LF_ARTICLE_PROPS,
+    LfAutocomplete: LF_AUTOCOMPLETE_PROPS,
     LfBadge: LF_BADGE_PROPS,
     LfButton: LF_BUTTON_PROPS,
     LfCanvas: LF_CANVAS_PROPS,

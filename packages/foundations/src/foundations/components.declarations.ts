@@ -9,6 +9,11 @@ import {
   LfArticlePropsInterface,
 } from "../components/article.declarations";
 import {
+  LfAutocompleteElement,
+  LfAutocompleteInterface,
+  LfAutocompletePropsInterface,
+} from "../components/autocomplete.declarations";
+import {
   LfBadgeElement,
   LfBadgeInterface,
   LfBadgePropsInterface,
@@ -184,7 +189,7 @@ import {
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
 
 /**
- * Strongly typed runtime contract implemented by every Lightning Fast component.
+ * Strongly typed runtime contract implemented by every LF component.
  *
  * The interface exposes the component-specific root HTMLElement alongside the
  * shared lifecycle API inherited from `LfComponentCommon`.
@@ -222,6 +227,7 @@ export type LfComponentType<T extends LfComponentName = LfComponentName> =
 export type LfComponentElementMap = {
   LfAccordion: LfAccordionElement;
   LfArticle: LfArticleElement;
+  LfAutocomplete: LfAutocompleteElement;
   LfBadge: LfBadgeElement;
   LfButton: LfButtonElement;
   LfCanvas: LfCanvasElement;
@@ -264,6 +270,7 @@ export type LfComponentElementMap = {
 export type LfComponentClassMap = {
   LfAccordion: LfAccordionInterface;
   LfArticle: LfArticleInterface;
+  LfAutocomplete: LfAutocompleteInterface;
   LfBadge: LfBadgeInterface;
   LfButton: LfButtonInterface;
   LfCanvas: LfCanvasInterface;
@@ -359,7 +366,7 @@ export type LfComponentPropsFor<C extends LfComponentName> =
 export type LfComponentTag<C extends LfComponentName = LfComponentName> =
   LfComponentTagMap[C];
 /**
- * Props shared by every Lightning Fast component instance.
+ * Props shared by every LF component instance.
  *
  * Currently exposes the `lfStyle` string used to inject per-instance CSS.
  */
@@ -423,6 +430,7 @@ export type LfDynamicComponentProps = {
 export type LfComponentName =
   | "LfAccordion"
   | "LfArticle"
+  | "LfAutocomplete"
   | "LfBadge"
   | "LfButton"
   | "LfCanvas"
@@ -465,6 +473,7 @@ export type LfComponentName =
 export type LfComponentProps =
   | LfAccordionPropsInterface
   | LfArticlePropsInterface
+  | LfAutocompletePropsInterface
   | LfBadgePropsInterface
   | LfButtonPropsInterface
   | LfCanvasPropsInterface
@@ -504,6 +513,7 @@ export type LfComponentProps =
 export type LfComponentPropsMap = {
   LfAccordion: LfAccordionPropsInterface;
   LfArticle: LfArticlePropsInterface;
+  LfAutocomplete: LfAutocompletePropsInterface;
   LfBadge: LfBadgePropsInterface;
   LfButton: LfButtonPropsInterface;
   LfCanvas: LfCanvasPropsInterface;
@@ -544,6 +554,7 @@ export type LfComponentPropsMap = {
 export type LfComponentTagMap = {
   LfAccordion: "lf-accordion";
   LfArticle: "lf-article";
+  LfAutocomplete: "lf-autocomplete";
   LfBadge: "lf-badge";
   LfButton: "lf-button";
   LfCanvas: "lf-canvas";
@@ -584,6 +595,7 @@ export type LfComponentTagMap = {
 export type LfComponentReverseTagMap = {
   "lf-accordion": "LfAccordion";
   "lf-article": "LfArticle";
+  "lf-autocomplete": "LfAutocomplete";
   "lf-badge": "LfBadge";
   "lf-button": "LfButton";
   "lf-canvas": "LfCanvas";
@@ -638,7 +650,7 @@ export interface VNode {
 /**
  * Base interface implemented by every Stencil-generated HTML element.
  *
- * Combines the native `HTMLElement` contract with the shared Lightning Fast lifecycle utilities.
+ * Combines the native `HTMLElement` contract with the shared LF lifecycle utilities.
  */
 export interface HTMLStencilElement
   extends HTMLElement,

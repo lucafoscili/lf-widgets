@@ -50,6 +50,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     id,
     imageInPicture,
     innerShadowBottom,
+    inputSearch,
     layoutBoardSplit,
     layoutList,
     layoutNavbar,
@@ -89,6 +90,12 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: article,
         id: "Article",
         value: "Article",
+      },
+      {
+        description: "Provides suggestions while typing into the input field.",
+        icon: inputSearch,
+        id: "Autocomplete",
+        value: "Autocomplete",
       },
       {
         description:
