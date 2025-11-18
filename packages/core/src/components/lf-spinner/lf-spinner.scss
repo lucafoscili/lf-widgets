@@ -18,6 +18,11 @@ $comp: "spinner";
   & {
     @include lf-el-transition("fade-in-out");
     background: transparent;
+    /**
+    * @prop --lf-spinner-min-height: Sets the minimum height for the spinner component.
+    *                                Defaults to => 0
+    */
+    min-height: var(--lf-spinner-min-height, 0);
     opacity: 0;
     overflow: hidden;
     transform: translateZ(0);
