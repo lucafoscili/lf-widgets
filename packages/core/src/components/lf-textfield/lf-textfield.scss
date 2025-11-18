@@ -181,7 +181,11 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
       align-self: center;
       cursor: pointer;
       outline: none;
-      padding-right: 0.75em;
+      /**
+      * @prop --lf-#{$comp}-icon-padding: Sets the padding for the #{$comp} icon.
+      *                                   Defaults to => 0 0.75em
+      */
+      padding: var(--lf-#{$comp}-icon-padding, 0 0.75em);
     }
 
     &:hover {
