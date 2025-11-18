@@ -206,6 +206,7 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-autocomplete](../lf-autocomplete)
  - [lf-button](../lf-button)
  - [lf-select](../lf-select)
 
@@ -217,6 +218,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-list --> lf-textfield
+  lf-autocomplete --> lf-list
   lf-button --> lf-list
   lf-select --> lf-list
   style lf-list fill:#f9f,stroke:#333,stroke-width:4px

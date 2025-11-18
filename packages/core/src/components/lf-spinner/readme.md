@@ -97,12 +97,14 @@ Type: `Promise<void>`
 | -------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `--lf-spinner-font-family` | Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-spinner-font-size`   | Sets the font size for the spinner component. Defaults to => var(--lf-font-size)                     |
+| `--lf-spinner-min-height`  | Sets the minimum height for the spinner component. Defaults to => 0                                  |
 
 
 ## Dependencies
 
 ### Used by
 
+ - [lf-autocomplete](../lf-autocomplete)
  - [lf-button](../lf-button)
  - [lf-chat](../lf-chat)
  - [lf-imageviewer](../lf-imageviewer)
@@ -110,6 +112,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  lf-autocomplete --> lf-spinner
   lf-button --> lf-spinner
   lf-chat --> lf-spinner
   lf-imageviewer --> lf-spinner
