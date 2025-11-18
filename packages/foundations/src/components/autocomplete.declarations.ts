@@ -55,7 +55,7 @@ export interface LfAutocompleteAdapter {
 export interface LfAutocompleteAdapterControllerGetters {
   blocks: typeof LF_AUTOCOMPLETE_BLOCKS;
   cache: () => Map<string, { dataset: LfDataDataset; timestamp: number }>;
-  compInstance: () => LfAutocompleteInterface;
+  compInstance: LfAutocompleteInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
   hasCache: () => boolean;
   highlightedIndex: () => number;

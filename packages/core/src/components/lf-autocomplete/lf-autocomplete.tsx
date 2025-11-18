@@ -505,7 +505,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
       {
         blocks: this.#b,
         cache: () => this.#cache,
-        compInstance: () => this,
+        compInstance: this,
         cyAttributes: this.#cy,
         hasCache: () => this.lfCache && this.#cache.size > 0,
         highlightedIndex: () => this.highlightedIndex,

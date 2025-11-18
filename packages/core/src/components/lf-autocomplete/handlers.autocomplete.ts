@@ -12,7 +12,7 @@ export const prepAutocompleteHandlers = (
     list: async (event) => {
       const { eventType, node } = event.detail;
       const { controller } = getAdapter();
-      const comp = controller.get.compInstance() as LfAutocomplete;
+      const comp = controller.get.compInstance as LfAutocomplete;
 
       switch (eventType) {
         case "click":
@@ -33,7 +33,7 @@ export const prepAutocompleteHandlers = (
     textfield: async (event) => {
       const { eventType, inputValue, originalEvent } = event.detail || {};
       const { controller, elements } = getAdapter();
-      const comp = controller.get.compInstance() as LfAutocomplete;
+      const comp = controller.get.compInstance as LfAutocomplete;
 
       switch (eventType) {
         case "input": {
@@ -79,7 +79,7 @@ const keydownHandler = async (
   refs: LfAutocompleteAdapter["elements"]["refs"],
 ) => {
   const { lfDataset, highlightedIndex } = controller.get;
-  const comp = controller.get.compInstance() as LfAutocomplete;
+  const comp = controller.get.compInstance as LfAutocomplete;
 
   if (!comp.lfNavigation) {
     return;

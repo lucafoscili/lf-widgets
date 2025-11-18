@@ -25,7 +25,7 @@ export const prepAutocompleteJsx = (
       const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { list } = handlers;
-      const compInstance = controller.get.compInstance();
+      const compInstance = controller.get.compInstance;
       const lfDataset = controller.get.lfDataset();
 
       const listProps = compInstance.lfListProps || {};
@@ -94,7 +94,7 @@ export const prepAutocompleteJsx = (
       const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { textfield } = handlers;
-      const compInstance = controller.get.compInstance();
+      const compInstance = controller.get.compInstance;
 
       const textfieldProps = compInstance.lfTextfieldProps || {};
       const htmlAttrs = textfieldProps?.lfHtmlAttributes || {};
