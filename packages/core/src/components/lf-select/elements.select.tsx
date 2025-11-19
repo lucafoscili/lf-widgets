@@ -54,14 +54,8 @@ export const prepSelectJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const {
-        blocks,
-        compInstance,
-        cyAttributes,
-        manager,
-        parts,
-        selectedNode,
-      } = controller.get;
+      const { blocks, compInstance, manager, parts, selectedNode } =
+        controller.get;
       const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { textfield } = handlers;
@@ -78,7 +72,6 @@ export const prepSelectJsx = (
           lfUiState={compInstance.lfUiState}
           {...sanitizeProps(compInstance.lfTextfieldProps, "LfTextfield")}
           class={bemClass(blocks.select._, blocks.select.textfield)}
-          data-cy={cyAttributes.input}
           lfHtmlAttributes={htmlSanitized}
           lfTrailingIconAction={LF_THEME_ICONS.dropdown}
           lfValue={String(selectedNode()?.value || "")}

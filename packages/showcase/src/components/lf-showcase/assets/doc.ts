@@ -413,22 +413,22 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAllowFreeInput",
-        docs: "Allows input of values that are not present in the dataset.\r\nWhen true, users can type and submit any value. When false, only values from the dataset can be selected.",
+        docs: "Allows input of values that are not present in the dataset.\nWhen true, users can type and submit any value. When false, only values from the dataset can be selected.",
         type: "boolean",
       },
       {
         name: "lfCache",
-        docs: "Enables caching of autocomplete results.\r\nWhen enabled, previously fetched results are stored and reused for identical queries.",
+        docs: "Enables caching of autocomplete results.\nWhen enabled, previously fetched results are stored and reused for identical queries.",
         type: "boolean",
       },
       {
         name: "lfCacheTTL",
-        docs: "Sets the time-to-live for cached entries in milliseconds.\r\nCached entries older than this will be considered expired.",
+        docs: "Sets the time-to-live for cached entries in milliseconds.\nCached entries older than this will be considered expired.",
         type: "number",
       },
       {
         name: "lfDataset",
-        docs: "Sets the dataset containing the autocomplete suggestions.\r\nThis is typically updated dynamically in response to request events.",
+        docs: "Sets the dataset containing the autocomplete suggestions.\nThis is typically updated dynamically in response to request events.",
         type: "LfDataDataset",
       },
       {
@@ -443,7 +443,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfMaxCacheSize",
-        docs: "Sets the maximum number of entries in the cache.\r\nWhen exceeded, oldest entries are evicted (FIFO).",
+        docs: "Sets the maximum number of entries in the cache.\nWhen exceeded, oldest entries are evicted (FIFO).",
         type: "number",
       },
       {

@@ -14,3 +14,28 @@
  * Referenced in tsconfig.json as part of the test compilation.
  */
 import "jest-preset-stencil/setup-jest";
+
+// Polyfill File API for lf-upload tests
+if (typeof File === "undefined") {
+  (global as any).File = class File {
+    name: string;
+    type: string;
+    size: number;
+    lastModified: number;
+
+    constructor(bits: BlobPart[], name: string, options?: FilePropertyBag) {
+      this.name = name;
+      this.type = options?.type || "";
+      this.size = bits.reduce((acc, bit) => {
+        if (typeof bit === "string") {
+          return acc + bit.length;
+        } else if (bit instanceof Blob) {
+          return acc + bit.size;
+        } else {
+          return acc + (bit as ArrayBuffer | ArrayBufferView).byteLength;
+        }
+      }, 0);
+      this.lastModified = options?.lastModified || Date.now();
+    }
+  };
+}
