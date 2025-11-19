@@ -39,14 +39,12 @@ describe(CY_CATEGORIES.events, () => {
   const { check, input, node } = CY_ATTRIBUTES;
   let framework: LfFrameworkInterface;
   let fixtures: LfShowcaseComponentFixture<"lf-select">;
-  let keys: string[];
 
   beforeEach(() => {
     cy.navigate(select);
     cy.getLfFramework().then((lfFramework) => {
       framework = lfFramework;
       fixtures = getSelectFixtures(framework);
-      keys = getExamplesKeys(fixtures);
     });
   });
 
