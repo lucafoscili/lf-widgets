@@ -124,9 +124,10 @@ Type: `Promise<void>`
 | `--lf-checkbox-label-min-width`        | Sets the min-width for the checkbox label. Defaults to => max-content                                 |
 | `--lf-checkbox-label-padding-left`     | Sets the left padding for the checkbox label. Defaults to => 1em                                      |
 | `--lf-checkbox-label-padding-right`    | Sets the right padding for the checkbox label. Defaults to => 1em                                     |
-| `--lf-checkbox-margin`                 | Sets the margin for the checkbox component. Defaults to => 1em 0.5em                                  |
 | `--lf-checkbox-mixedmark-width`        | Sets the width for the checkbox mixed mark. Defaults to => 70%                                        |
 | `--lf-checkbox-size`                   | Sets the size for the checkbox component. Defaults to => 1.5em                                        |
+| `--lf-checkbox-surface-border-radius`  | Sets the border radius for the checkbox surface. Defaults to => 50%                                   |
+| `--lf-checkbox-surface-size`           | Sets the size for the checkbox surface. Defaults to => 3.5em                                          |
 
 
 ----------------------------------------------

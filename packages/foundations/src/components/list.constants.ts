@@ -2,9 +2,9 @@ import { LfListPropsInterface } from "./list.declarations";
 
 //#region Blocks
 export const LF_LIST_BLOCKS = {
-  delete: { _: "delete", icon: "icon" },
+  deleteIcon: { _: "delete", icon: "icon" },
   emptyData: { _: "empty-data", text: "text" },
-  list: { _: "list", item: "item" },
+  list: { _: "list", filter: "filter", item: "item" },
   node: {
     _: "node",
     icon: "icon",
@@ -21,6 +21,7 @@ export const LF_LIST_EVENTS = [
   "click",
   "delete",
   "focus",
+  "lf-event",
   "pointerdown",
   "ready",
   "unmount",
@@ -29,10 +30,14 @@ export const LF_LIST_EVENTS = [
 
 //#region Parts
 export const LF_LIST_PARTS = {
-  delete: "delete",
+  deleteIcon: "delete-icon",
   emptyData: "empty-data",
+  filter: "filter",
+  icon: "icon",
   list: "list",
   node: "node",
+  subtitle: "subtitle",
+  title: "title",
 } as const;
 //#endregion
 
@@ -41,6 +46,7 @@ export const LF_LIST_PROPS = [
   "lfDataset",
   "lfEmpty",
   "lfEnableDeletions",
+  "lfFilter",
   "lfNavigation",
   "lfRipple",
   "lfSelectable",

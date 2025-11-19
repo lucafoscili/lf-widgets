@@ -5,6 +5,7 @@ import {
   LfComponentReverseTagMap,
   LfComponentTag,
   LfDataDataset,
+  LfEvent,
 } from "@lf-widgets/foundations";
 import { FIXTURES_CATEGORIES } from "./helpers/constants";
 
@@ -13,6 +14,7 @@ export type LfShowcaseCategories = (typeof FIXTURES_CATEGORIES)[number];
 export type LfShowcaseIds = readonly string[];
 export interface LfShowcaseExample<P extends LfComponentProps> {
   description: string;
+  events?: Record<string, (event: LfEvent) => void>;
   hasMinHeight?: boolean;
   hasParent?: boolean;
   props: P;

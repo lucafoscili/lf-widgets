@@ -1,6 +1,7 @@
 import { LfComponentTag, LfFrameworkInterface } from "@lf-widgets/foundations";
 import { getAccordionFixtures } from "../assets/data/accordion";
 import { getArticleFixtures } from "../assets/data/article";
+import { getAutocompleteFixtures } from "../assets/data/autocomplete";
 import { getBadgeFixtures } from "../assets/data/badge";
 import { getButtonFixtures } from "../assets/data/button";
 import { getCanvasFixtures } from "../assets/data/canvas";
@@ -30,6 +31,8 @@ import { getPhotoframeFixtures } from "../assets/data/photoframe";
 import { getPlaceholderFixtures } from "../assets/data/placeholder";
 import { getPortalFixtures } from "../assets/data/portal";
 import { getProgressbarFixtures } from "../assets/data/progressbar";
+import { getRadioFixtures } from "../assets/data/radio";
+import { getSelectFixtures } from "../assets/data/select";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
@@ -54,6 +57,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getAccordionFixtures(framework);
     case "lf-article":
       return getArticleFixtures(framework);
+    case "lf-autocomplete":
+      return getAutocompleteFixtures(framework);
     case "lf-badge":
       return getBadgeFixtures(framework);
     case "lf-button":
@@ -96,6 +101,10 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getPlaceholderFixtures(framework);
     case "lf-progressbar":
       return getProgressbarFixtures(framework);
+    case "lf-radio":
+      return getRadioFixtures(framework);
+    case "lf-select":
+      return getSelectFixtures(framework);
     case "lf-slider":
       return getSliderFixtures(framework);
     case "lf-spinner":

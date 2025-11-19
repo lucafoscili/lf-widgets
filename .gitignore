@@ -13,6 +13,7 @@ packages/core/tests/*.js
 **/node_modules/
 
 # Output
+**/coverage/
 **/dist/
 **/downloads/
 **/screenshots/

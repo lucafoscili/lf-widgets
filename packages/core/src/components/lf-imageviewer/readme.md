@@ -204,6 +204,7 @@ graph TD;
   lf-canvas --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-tree --> lf-textfield
   lf-tree --> lf-badge
   lf-tree --> lf-button

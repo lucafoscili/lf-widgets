@@ -17,6 +17,7 @@ The list supports various customization options, including item selection, delet
 | `lfDataset`         | --                    | The data set for the LF List component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`          |
 | `lfEmpty`           | `lf-empty`            | Empty text displayed when there is no data.                                                                                     | `string`                                                                                 | `"Empty data."` |
 | `lfEnableDeletions` | `lf-enable-deletions` | Defines whether items can be removed from the list or not.                                                                      | `boolean`                                                                                | `false`         |
+| `lfFilter`          | `lf-filter`           | When true, displays a filter text field above the list items for searching.                                                     | `boolean`                                                                                | `false`         |
 | `lfNavigation`      | `lf-navigation`       | When true, enables items' navigation through arrow keys.                                                                        | `boolean`                                                                                | `true`          |
 | `lfRipple`          | `lf-ripple`           | When set to true, the pointerdown event will trigger a ripple effect.                                                           | `boolean`                                                                                | `true`          |
 | `lfSelectable`      | `lf-selectable`       | Defines whether items are selectable or not.                                                                                    | `boolean`                                                                                | `true`          |
@@ -34,6 +35,22 @@ The list supports various customization options, including item selection, delet
 
 
 ## Methods
+
+### `applyFilter(value: string) => Promise<void>`
+
+Applies a filter value immediately (for testing compatibility).
+
+#### Parameters
+
+| Name    | Type     | Description               |
+| ------- | -------- | ------------------------- |
+| `value` | `string` | - The filter string value |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `focusNext() => Promise<void>`
 
@@ -116,6 +133,38 @@ Type: `Promise<void>`
 
 A promise that resolves when the selection is complete.
 
+### `selectNodeById(id: string) => Promise<void>`
+
+Selects a node in the list by its ID.
+
+#### Parameters
+
+| Name | Type     | Description                    |
+| ---- | -------- | ------------------------------ |
+| `id` | `string` | - The ID of the node to select |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setFilter(value: string) => Promise<void>`
+
+Sets the filter value and updates the filter input field.
+
+#### Parameters
+
+| Name    | Type     | Description               |
+| ------- | -------- | ------------------------- |
+| `value` | `string` | - The filter string value |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `unmount(ms?: number) => Promise<void>`
 
 Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -143,7 +192,9 @@ Type: `Promise<void>`
 | `--lf-list-color-danger`                 | Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)         |
 | `--lf-list-color-on-bg`                  | Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-list-color-on-danger`              | Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)   |
+| `--lf-list-color-on-surface`             | Sets the color-on-surface color for the list component. Defaults to => var(--lf-color-on-surface) |
 | `--lf-list-color-primary`                | Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)       |
+| `--lf-list-color-surface`                | Sets the color-surface color for the list component. Defaults to => var(--lf-color-surface)       |
 | `--lf-list-font-family`                  | Sets the primary font family for the list component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-list-font-size`                    | Sets the font size for the list component. Defaults to => var(--lf-font-size)                     |
 | `--lf-list-item-height`                  | Sets the height for the item of the list component. Defaults to => 2.5em                          |
@@ -155,12 +206,21 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [lf-autocomplete](../lf-autocomplete)
  - [lf-button](../lf-button)
+ - [lf-select](../lf-select)
+
+### Depends on
+
+- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
+  lf-list --> lf-textfield
+  lf-autocomplete --> lf-list
   lf-button --> lf-list
+  lf-select --> lf-list
   style lf-list fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/lucafoscili/lf-assets/compare/v1.4.0-rc.0...1.4.0) (2025-11-08)
+
+
+### Features
+
+* Add new SVG icons and update theme constants ([5e17a90](https://github.com/lucafoscili/lf-assets/commit/5e17a908e39b7c77c0c59d773895a8711c9c7797))
+
+
+
+
+
 # [1.4.0-rc.0](https://github.com/lucafoscili/lf-assets/compare/v1.3.0...1.4.0-rc.0) (2025-11-07)
 
 **Note:** Version bump only for package @lf-widgets/assets

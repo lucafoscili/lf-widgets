@@ -146,7 +146,7 @@ describe("lf-checkbox component", () => {
     );
     page.root.lfLeadingLabel = true;
     await page.waitForChanges();
-    const formField = page.root.shadowRoot.querySelector("div[data-lf]");
+    const formField = page.root.shadowRoot.querySelector(".form-field");
     expect(formField).not.toBeNull();
     expect(formField!.classList.contains("form-field--leading")).toBe(true);
   });

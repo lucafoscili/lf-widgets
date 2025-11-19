@@ -10,6 +10,7 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfListAdapter,
   LfListElement,
   LfListEvent,
   LfListEventPayload,
@@ -30,8 +31,10 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { createAdapter } from "./lf-list-adapter";
 
 /**
  * The list component displays a collection of items in a vertical list layout.
@@ -67,6 +70,7 @@ export class LfList implements LfListInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
+  @State() filter: string;
   @State() focused: number;
   @State() selected: number;
   //#endregion
@@ -112,6 +116,19 @@ export class LfList implements LfListInterface {
    * ```
    */
   @Prop({ mutable: true }) lfEnableDeletions: boolean = false;
+  /**
+   * When true, displays a filter text field above the list items for searching.
+   *
+   * @type {boolean}
+   * @default false
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-list lfFilter={true}></lf-list>
+   * ```
+   */
+  @Prop({ mutable: true }) lfFilter: boolean = false;
   /**
    * When true, enables items' navigation through arrow keys.
    *
@@ -206,15 +223,17 @@ export class LfList implements LfListInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfListAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_LIST_BLOCKS;
   #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_LIST_PARTS;
-  #r: HTMLElement[] = [];
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #listItems: HTMLDivElement[] = [];
+  #filterTimeout: ReturnType<typeof setTimeout> | null = null;
+  #hiddenNodes: Set<LfDataNode> = new Set();
+  #listItems: HTMLLIElement[] = [];
   //#endregion
 
   //#region Events
@@ -237,6 +256,7 @@ export class LfList implements LfListInterface {
     index = 0,
   ) {
     const { effects } = this.#framework;
+    const { ripples } = this.#adapter.elements.refs;
 
     switch (eventType) {
       case "blur":
@@ -244,7 +264,8 @@ export class LfList implements LfListInterface {
         break;
       case "click":
         this.focused = index;
-        this.#handleSelection(index);
+        const originalIndex = this.#getOriginalIndexFromVisibleIndex(index);
+        this.#handleSelection(originalIndex);
         break;
       case "delete":
         if (index > -1) {
@@ -256,8 +277,8 @@ export class LfList implements LfListInterface {
         this.focused = index;
         break;
       case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r[index]);
+        if (node?.id && this.lfRipple) {
+          effects.ripple(e as PointerEvent, ripples.get(node.id));
         }
         break;
     }
@@ -269,6 +290,20 @@ export class LfList implements LfListInterface {
       originalEvent: e,
       node,
     });
+  }
+  //#endregion
+
+  //#region Watchers
+  @Watch("lfFilter")
+  protected handleFilterToggle(enabled: boolean): void {
+    if (!enabled) {
+      if (this.#filterTimeout) {
+        clearTimeout(this.#filterTimeout);
+        this.#filterTimeout = null;
+      }
+      this.filter = "";
+      this.#hiddenNodes = new Set();
+    }
   }
   //#endregion
 
@@ -301,6 +336,14 @@ export class LfList implements LfListInterface {
 
   //#region Public methods
   /**
+   * Applies a filter value immediately (for testing compatibility).
+   * @param value - The filter string value
+   */
+  @Method()
+  async applyFilter(value: string): Promise<void> {
+    this.#applyFilter(value);
+  }
+  /**
    * Moves focus to the next item in the list.
    * If no item is currently focused, focuses the selected item.
    * If the last item is focused, wraps around to the first item.
@@ -308,17 +351,19 @@ export class LfList implements LfListInterface {
    */
   @Method()
   async focusNext(): Promise<void> {
-    const { focused, selected } = this;
+    const visibleNodes = this.#getVisibleNodes();
 
-    if (isNaN(focused) || focused === null || focused === undefined) {
-      this.focused = selected;
+    if (this.#isFocusedUninitialized()) {
+      this.focused = this.#getInitialFocusedIndex(visibleNodes);
     } else {
       this.focused++;
     }
-    if (this.focused > this.#listItems.length - 1) {
+
+    if (this.focused > visibleNodes.length - 1) {
       this.focused = 0;
     }
-    this.#listItems[this.focused].focus();
+
+    this.#focusElementByIndex(this.focused);
   }
   /**
    * Focuses the previous item in the list.
@@ -328,17 +373,22 @@ export class LfList implements LfListInterface {
    */
   @Method()
   async focusPrevious(): Promise<void> {
-    const { focused, selected } = this;
+    const visibleNodes = this.#getVisibleNodes();
 
-    if (isNaN(focused) || focused === null || focused === undefined) {
-      this.focused = selected;
+    if (this.#isFocusedUninitialized()) {
+      this.focused = this.#getInitialFocusedIndex(
+        visibleNodes,
+        visibleNodes.length - 1,
+      );
     } else {
       this.focused--;
     }
+
     if (this.focused < 0) {
-      this.focused = this.#listItems.length - 1;
+      this.focused = visibleNodes.length - 1;
     }
-    this.#listItems[this.focused].focus();
+
+    this.#focusElementByIndex(this.focused);
   }
   /**
    * Fetches debug information of the component's current state.
@@ -394,6 +444,29 @@ export class LfList implements LfListInterface {
     this.#handleSelection(index);
   }
   /**
+   * Selects a node in the list by its ID.
+   * @param id - The ID of the node to select
+   */
+  @Method()
+  async selectNodeById(id: string): Promise<void> {
+    if (!this.lfDataset?.nodes) {
+      return;
+    }
+    const index = this.lfDataset.nodes.findIndex((node) => node.id === id);
+    this.#handleSelection(index);
+  }
+  /**
+   * Sets the filter value and updates the filter input field.
+   * @param value - The filter string value
+   */
+  @Method()
+  async setFilter(value: string): Promise<void> {
+    const { refs } = this.#adapter.elements;
+
+    this.#applyFilter(value);
+    await refs.filter.setValue(value);
+  }
+  /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
    * @param {number} ms - Number of milliseconds
    */
@@ -407,6 +480,39 @@ export class LfList implements LfListInterface {
   //#endregion
 
   //#region Private methods
+  #applyFilter(value: string) {
+    this.filter = value;
+    this.#hiddenNodes = new Set();
+
+    const nodes = this.lfDataset?.nodes || [];
+
+    if (value.trim() && nodes) {
+      for (const node of nodes) {
+        const nodeText = this.#getNodeText(node);
+        if (!nodeText.toLowerCase().includes(value.toLowerCase())) {
+          this.#hiddenNodes.add(node);
+        }
+      }
+    }
+  }
+  #debounceFilter(value: string): void {
+    if (this.#filterTimeout) {
+      clearTimeout(this.#filterTimeout);
+    }
+
+    this.#filterTimeout = setTimeout(() => this.#applyFilter(value), 300);
+  }
+  #getNodeText(node: LfDataNode): string {
+    const { stringify } = this.#framework.data.cell;
+    return `${stringify(node.value)} ${stringify(node.description)}`.trim();
+  }
+  #getOriginalIndexFromVisibleIndex(visibleIndex: number): number {
+    const visibleNodes = this.#getVisibleNodes();
+    const node = visibleNodes[visibleIndex];
+    return node
+      ? (this.lfDataset?.nodes?.findIndex((n) => n.id === node.id) ?? -1)
+      : -1;
+  }
   #handleSelection(index: number): void {
     if (
       this.lfSelectable &&
@@ -417,123 +523,65 @@ export class LfList implements LfListInterface {
       this.selected = index;
     }
   }
-  #prepDeleteIcon(node: LfDataNode) {
-    const { bemClass } = this.#framework.theme;
-
+  #focusElementByIndex(index: number): void {
+    const nodeElement = this.rootElement.shadowRoot?.querySelector(
+      `[data-index="${index}"]`,
+    ) as HTMLElement;
+    if (nodeElement) {
+      nodeElement.focus();
+    }
+  }
+  #getInitialFocusedIndex(
+    visibleNodes: LfDataNode[],
+    defaultIndex: number = 0,
+  ): number {
+    if (this.selected !== null && this.selected !== undefined) {
+      const selectedNode = this.lfDataset?.nodes?.[this.selected];
+      if (selectedNode && !this.#hiddenNodes.has(selectedNode)) {
+        return visibleNodes.findIndex((node) => node.id === selectedNode.id);
+      }
+    }
+    return defaultIndex;
+  }
+  #getVisibleNodes(): LfDataNode[] {
     return (
-      <div
-        class={bemClass(this.#b.delete._)}
-        data-cy={this.#cy.button}
-        data-lf={this.#lf.icon}
-        onClick={(e) => {
-          const index = this.lfDataset?.nodes?.indexOf(node);
-          this.onLfEvent(e, "delete", node, index);
-        }}
-        part={this.#p.delete}
-      >
-        <div
-          class={bemClass(this.#b.delete._, this.#b.delete.icon)}
-          key={node.id + "_delete"}
-        ></div>
-      </div>
+      this.lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) ||
+      []
     );
   }
-  #prepIcon(node: LfDataNode) {
-    const { get } = this.#framework.assets;
-    const { bemClass } = this.#framework.theme;
-
-    const { style } = get(`./assets/svg/${node.icon}.svg`);
+  #isFocusedUninitialized(): boolean {
     return (
-      <div
-        class={bemClass(this.#b.node._, this.#b.node.icon)}
-        data-cy={this.#cy.maskedSvg}
-        style={style}
-      ></div>
+      isNaN(this.focused) || this.focused === null || this.focused === undefined
     );
   }
-  #prepNode(node: LfDataNode, index: number) {
-    const { stringify } = this.#framework.data.cell;
-    const { bemClass } = this.#framework.theme;
-
-    const { list } = this.#b;
-    const { focused, lfDataset, lfRipple, selected } = this;
-
-    const isFocused =
-      focused === lfDataset.nodes.findIndex((n) => n.id === node.id);
-    const isSelected =
-      selected === lfDataset.nodes.findIndex((n) => n.id === node.id);
-
-    return (
-      <li
-        class={bemClass(list._, list.item, {
-          focused: isFocused,
-          "has-description": !!node.description,
-          selected: isSelected,
-        })}
-        data-lf={this.#lf[this.lfUiState]}
-        key={node.id}
-      >
-        {this.lfEnableDeletions ? this.#prepDeleteIcon(node) : null}
-        <div
-          aria-checked={isSelected}
-          aria-selected={isSelected}
-          class={bemClass(this.#b.node._)}
-          data-cy={this.#cy.node}
-          data-index={index.toString()}
-          onBlur={(e) => this.onLfEvent(e, "blur", node, index)}
-          onClick={(e) => this.onLfEvent(e, "click", node, index)}
-          onFocus={(e) => this.onLfEvent(e, "focus", node, index)}
-          onPointerDown={(e) => this.onLfEvent(e, "pointerdown", node, index)}
-          part={this.#p.node}
-          ref={(el) => {
-            if (el) {
-              this.#listItems.push(el);
-            }
-          }}
-          role={"option"}
-          tabindex={isSelected ? "0" : "-1"}
-          title={stringify(node.value) || stringify(node.description)}
-        >
-          <div
-            data-cy={this.#cy.rippleSurface}
-            data-lf={this.#lf.rippleSurface}
-            ref={(el) => {
-              if (lfRipple && el) {
-                this.#r.push(el);
-              }
-            }}
-          ></div>
-          {node.icon && this.#prepIcon(node)}
-          <span class={bemClass(this.#b.node._, this.#b.node.text)}>
-            {this.#prepTitle(node)}
-            {this.#prepSubtitle(node)}
-          </span>
-        </div>
-      </li>
+  #initAdapter = () => {
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        cyAttributes: this.#cy,
+        filterValue: () => this.filter,
+        focused: () => this.focused,
+        hiddenNodes: () => this.#hiddenNodes,
+        indexById: (id: string) =>
+          this.lfDataset?.nodes?.findIndex((n) => n.id === id),
+        isDisabled: () => this.lfUiState === "disabled",
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        nodeById: (id: string) =>
+          this.lfDataset?.nodes?.find((n) => n.id === id),
+        parts: this.#p,
+        selected: () => this.selected,
+      },
+      {
+        filter: {
+          debounce: (value) => this.#debounceFilter(value),
+          setValue: (value) => this.#applyFilter(value),
+        },
+      },
+      () => this.#adapter,
     );
-  }
-  #prepSubtitle(node: LfDataNode) {
-    const { bemClass } = this.#framework.theme;
-
-    return (
-      node.description && (
-        <div class={bemClass(this.#b.node._, this.#b.node.subtitle)}>
-          {node.description}
-        </div>
-      )
-    );
-  }
-  #prepTitle(node: LfDataNode) {
-    const { bemClass } = this.#framework.theme;
-
-    return (
-      String(node.value).valueOf() && (
-        <div class={bemClass(this.#b.node._, this.#b.node.title)}>
-          {String(node.value).valueOf()}
-        </div>
-      )
-    );
-  }
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -544,6 +592,7 @@ export class LfList implements LfListInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     if (this.lfValue && typeof this.lfValue === "number") {
       this.selected = this.lfValue;
@@ -568,19 +617,31 @@ export class LfList implements LfListInterface {
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
+    const { controller, elements } = this.#adapter;
+    const { get } = controller;
+    const { jsx } = elements;
     const { emptyData, list } = this.#b;
-    const { lfDataset, lfEmpty, lfSelectable, lfStyle } = this;
+    const { lfDataset, lfEmpty, lfFilter, lfSelectable, lfStyle } = this;
 
-    const isEmpty = !!!lfDataset?.nodes?.length;
     this.#listItems = [];
+
+    const visibleNodes =
+      lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) || [];
+
+    const getIndex = (id: string) => get.indexById(id);
+    const isEmpty = !!!lfDataset?.nodes?.length;
+    const isFilteredEmpty = !isEmpty && visibleNodes.length === 0;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          {isEmpty ? (
+          {lfFilter && jsx.filter()}
+          {isEmpty || isFilteredEmpty ? (
             <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
-              <div class={bemClass(emptyData._, emptyData.text)}>{lfEmpty}</div>
+              <div class={bemClass(emptyData._, emptyData.text)}>
+                {isFilteredEmpty ? "No items match your filter." : lfEmpty}
+              </div>
             </div>
           ) : (
             <ul
@@ -592,9 +653,29 @@ export class LfList implements LfListInterface {
               part={this.#p.list}
               role={"listbox"}
             >
-              {lfDataset.nodes.map((item, index) =>
-                this.#prepNode(item, index),
-              )}
+              {visibleNodes.map((node, index) => {
+                const isSelected = getIndex(node.id) === this.selected;
+
+                return (
+                  <li
+                    class={bemClass(list._, list.item, {
+                      focused: index === this.focused,
+                      "has-description": !!node.description,
+                      selected: isSelected,
+                    })}
+                    data-lf={this.#lf[this.lfUiState]}
+                    key={node.id}
+                    ref={(el) => {
+                      if (el && !this.#listItems.includes(el)) {
+                        this.#listItems.push(el);
+                      }
+                    }}
+                  >
+                    {this.lfEnableDeletions && jsx.deleteIcon(node)}
+                    {jsx.node(node, index, isSelected)}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
@@ -602,7 +683,11 @@ export class LfList implements LfListInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    if (this.#filterTimeout) {
+      clearTimeout(this.#filterTimeout);
+      this.#filterTimeout = null;
+    }
+    this.#framework.theme.unregister(this);
   }
   //#endregion
 }

@@ -290,6 +290,7 @@ graph TD;
   lf-chat --> lf-code
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-code --> lf-button
   lf-accordion --> lf-chat
   lf-article --> lf-chat

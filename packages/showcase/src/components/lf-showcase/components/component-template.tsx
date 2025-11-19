@@ -134,15 +134,25 @@ const prepExample = <C extends LfComponentTag>(
   const { "--lf-icon-copy": copy, "--lf-icon-copy-ok": copyOk } =
     get.current().variables;
 
-  const { description, hasMinHeight, hasParent, props, slots } = example;
+  const { description, events, hasMinHeight, hasParent, props, slots } =
+    example;
   const TagName = component;
   const p = props as LfComponentPropsFor<LfComponentReverseTagMap[C]>;
+  const eventProps = events
+    ? Object.fromEntries(
+        Object.entries(events).map(([key, handler]) => [
+          `on${key.charAt(0).toUpperCase() + key.slice(1)}`,
+          handler,
+        ]),
+      )
+    : {};
   const tag = (
     <TagName
       data-cy={CY_ATTRIBUTES.showcaseExample}
       key={`${category}-${id}`}
       id={`${category}-${id}`}
       {...(p as any)}
+      {...eventProps}
     >
       {prepSlot(component, manager, slots)}
     </TagName>

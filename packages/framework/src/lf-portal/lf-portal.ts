@@ -158,10 +158,12 @@ export class LfPortal implements LfPortalInterface {
 
     let finalVertical = verticalPart;
     if (verticalPart === "auto") {
-      if (spaceBelow >= offsetHeight || spaceBelow >= spaceAbove) {
+      if (spaceBelow >= offsetHeight) {
         finalVertical = "b";
-      } else {
+      } else if (spaceAbove >= offsetHeight) {
         finalVertical = "t";
+      } else {
+        finalVertical = "b"; // fallback
       }
     } else if (verticalPart === "b") {
       if (spaceBelow < offsetHeight && spaceAbove > offsetHeight) {
@@ -175,10 +177,12 @@ export class LfPortal implements LfPortalInterface {
 
     let finalHorizontal = horizontalPart;
     if (horizontalPart === "auto") {
-      if (spaceOnRight >= offsetWidth || spaceOnRight >= spaceOnLeft) {
+      if (spaceOnRight >= offsetWidth) {
+        finalHorizontal = "l";
+      } else if (spaceOnLeft >= offsetWidth) {
         finalHorizontal = "r";
       } else {
-        finalHorizontal = "l";
+        finalHorizontal = "l"; // fallback prefers left alignment
       }
     } else if (horizontalPart === "r") {
       if (spaceOnRight < offsetWidth && spaceOnLeft > offsetWidth) {

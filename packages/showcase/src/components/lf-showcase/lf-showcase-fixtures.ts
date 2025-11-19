@@ -50,6 +50,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     id,
     imageInPicture,
     innerShadowBottom,
+    inputSearch,
     layoutBoardSplit,
     layoutList,
     layoutNavbar,
@@ -64,8 +65,10 @@ export const LF_SHOWCASE_COMPONENTS = (
     notification,
     photo,
     photoSearch,
+    playstationCircle,
     progress,
     replace,
+    select,
     slideshow,
     squareToggle,
     toggleRight,
@@ -87,6 +90,12 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: article,
         id: "Article",
         value: "Article",
+      },
+      {
+        description: "Provides suggestions while typing into the input field.",
+        icon: inputSearch,
+        id: "Autocomplete",
+        value: "Autocomplete",
       },
       {
         description:
@@ -224,6 +233,19 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: progress,
         id: "Progressbar",
         value: "Progress bar",
+      },
+      {
+        description: "Component for selecting a single option from a list.",
+        icon: playstationCircle,
+        id: "Radio",
+        value: "Radio",
+      },
+      {
+        description:
+          "Combines textfield styling with list functionality for dropdown selection.",
+        icon: select,
+        id: "Select",
+        value: "Select",
       },
       {
         description: "Simple component for selecting a range of values.",
