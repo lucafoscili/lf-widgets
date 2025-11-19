@@ -41,7 +41,12 @@ describe("lf-upload component", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-upload-event", spy);
     const input = page.root.shadowRoot.querySelector("input");
-    const file = new File(["content"], "test.txt", { type: "text/plain" });
+    const file = {
+      name: "test.txt",
+      type: "text/plain",
+      size: 7, // "content".length
+      lastModified: Date.now(),
+    };
     input.files = [file] as any;
     input.dispatchEvent(new Event("change", { bubbles: true }));
     await page.waitForChanges();
