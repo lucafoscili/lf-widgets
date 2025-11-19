@@ -112,23 +112,6 @@ describe("lf-list component", () => {
       expect(filterElement).toBeNull();
     });
 
-    it.skip("uses default filter placeholder", async () => {
-      const page = await createPage(`<lf-list lf-filter="true"></lf-list>`);
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
-      expect(filterElement).not.toBeNull();
-      const inputElement = await filterElement.getElement();
-      expect(inputElement.getAttribute("placeholder")).toBe("Filter items...");
-    });
-
-    it.skip("uses custom filter placeholder", async () => {
-      const page = await createPage(`<lf-list lf-filter="true"></lf-list>`);
-      page.root.lfFilterPlaceholder = "Search...";
-      await page.waitForChanges();
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
-      const inputElement = await filterElement.getElement();
-      expect(inputElement.getAttribute("placeholder")).toBe("Search...");
-    });
-
     it("shows all items when no filter is applied", async () => {
       const testDataset = {
         nodes: [

@@ -106,7 +106,7 @@ describe("lf-radio component", () => {
     expect(selectedNode?.id).toBe("option2");
   });
 
-  it.skip("emits click event on item click", async () => {
+  it("emits click event on item click", async () => {
     const page = await createPage(`<lf-radio></lf-radio>`);
     page.rootInstance.lfDataset = testDataset;
     await page.waitForChanges();
@@ -151,14 +151,14 @@ describe("lf-radio component", () => {
     expect(clickEvents[0].node?.id).toBe("option1");
   });
 
-  it.skip("supports horizontal orientation", async () => {
+  it("supports horizontal orientation", async () => {
     const page = await createPage(
       `<lf-radio lf-orientation="horizontal"></lf-radio>`,
     );
     page.rootInstance.lfDataset = testDataset;
     await page.waitForChanges();
     const radioGroup = page.root.shadowRoot.querySelector(".radio");
-    expect(radioGroup).toHaveClass("horizontal");
+    expect(radioGroup).toHaveClass("radio--horizontal");
   });
 
   it("supports vertical orientation by default", async () => {
@@ -172,12 +172,12 @@ describe("lf-radio component", () => {
     expect(radioGroup).not.toHaveClass("horizontal");
   });
 
-  it.skip("supports leading labels", async () => {
+  it("supports leading labels", async () => {
     const page = await createPage(`<lf-radio lf-leading-label></lf-radio>`);
     page.rootInstance.lfDataset = testDataset;
     await page.waitForChanges();
     const firstItem = page.root.shadowRoot.querySelector(".item");
-    expect(firstItem).toHaveClass("leading");
+    expect(firstItem).toHaveClass("item--leading");
   });
 
   it("programmatically selects item via selectItem method", async () => {
