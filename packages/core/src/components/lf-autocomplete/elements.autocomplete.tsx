@@ -83,14 +83,8 @@ export const prepAutocompleteJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const {
-        blocks,
-        cyAttributes,
-        hasCache,
-        highlightedIndex,
-        manager,
-        parts,
-      } = controller.get;
+      const { blocks, hasCache, highlightedIndex, manager, parts } =
+        controller.get;
       const { assignRef, sanitizeProps, theme } = manager;
       const { bemClass } = theme;
       const { textfield } = handlers;
@@ -115,7 +109,6 @@ export const prepAutocompleteJsx = (
           lfUiState={compInstance.lfUiState}
           {...sanitizeProps(textfieldProps, "LfTextfield")}
           class={bemClass(blocks.autocomplete._, blocks.autocomplete.textfield)}
-          data-cy={cyAttributes.input}
           lfHtmlAttributes={htmlSanitized}
           lfTrailingIconAction={hasCache() ? LF_THEME_ICONS.dropdown : null}
           lfValue={compInstance.lfValue}
