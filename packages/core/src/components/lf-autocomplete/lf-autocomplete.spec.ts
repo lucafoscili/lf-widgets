@@ -212,7 +212,9 @@ describe("lf-autocomplete", () => {
 
   describe("Loading and dropdown behavior", () => {
     it("should show spinner and not list while loading with null dataset", async () => {
-      const page = await createPage(`<lf-autocomplete lf-min-chars="1"></lf-autocomplete>`);
+      const page = await createPage(
+        `<lf-autocomplete lf-min-chars="1"></lf-autocomplete>`,
+      );
       const component = page.rootInstance as LfAutocomplete;
 
       const textfield = page.root.shadowRoot.querySelector("lf-textfield");

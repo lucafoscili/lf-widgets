@@ -1,7 +1,7 @@
 import {
-    LfDataNode,
-    LfRadioAdapter,
-    LfRadioAdapterJsx,
+  LfDataNode,
+  LfRadioAdapter,
+  LfRadioAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 
