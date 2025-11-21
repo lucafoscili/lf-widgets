@@ -362,10 +362,7 @@ export class LfMultiInput implements LfMultiInputInterface {
    * @returns A promise that resolves when the history has been set and validity ensured.
    */
   async setHistory(values: string[]): Promise<void> {
-    const normalized = normalizeHistoryValues(
-      values || [],
-      this.#maxHistory(),
-    );
+    const normalized = normalizeHistoryValues(values || [], this.#maxHistory());
     const nodes = this.#createNodesFromValues(normalized);
     await this.#setHistoryNodes(nodes, { preserveColumns: true });
     await this.#ensureValueValidity();

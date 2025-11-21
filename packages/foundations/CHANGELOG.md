@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.5.0-rc.0...1.5.0-rc.1) (2025-11-21)
+
+
+### Features
+
+* Add lf-multiinput component and related files ([4e6b889](https://github.com/lucafoscili/lf-widgets/commit/4e6b889463dc17075c79592f4d8f792f6a166b0f))
+
+
+
+
+
 # [1.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0...1.5.0-rc.0) (2025-11-19)
 
 
