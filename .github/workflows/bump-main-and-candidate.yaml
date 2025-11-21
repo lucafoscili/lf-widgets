@@ -86,8 +86,10 @@ jobs:
           git fetch origin ${{ steps.target.outputs.base_branch }}
           git checkout ${{ steps.target.outputs.base_branch }}
           git pull --ff-only origin ${{ steps.target.outputs.base_branch }}
-          git merge --ff-only "${BR}" || { echo "Fast-forward merge failed"; exit 1; }
+          git merge --ff-only "origin/${BR}" || { echo "Fast-forward merge failed"; exit 1; }
           git push origin ${{ steps.target.outputs.base_branch }}
+          # Cleanup temporary branch
+          git push origin --delete "${BR}"
 
       - name: Open PR when remote advanced (create pull request)
         if: steps.decide.outputs.can_fast_forward == 'false'
