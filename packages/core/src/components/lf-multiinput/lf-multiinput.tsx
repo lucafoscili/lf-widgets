@@ -656,11 +656,12 @@ export class LfMultiInput implements LfMultiInputInterface {
 
     info.update(this, "did-render");
   }
-  componentDidLoad() {
+  async componentDidLoad() {
     const { debug } = this.#framework;
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
+    await this.#syncChipSelection();
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
