@@ -47,7 +47,9 @@ export const clearSelection = async (adapter: LfImageviewerAdapter) => {
 
   set.currentShape({});
   set.history.index(null);
-  masonry.setSelectedShape(null);
+  if (masonry?.setSelectedShape) {
+    masonry.setSelectedShape(-1);
+  }
 };
 //#endregion
 
