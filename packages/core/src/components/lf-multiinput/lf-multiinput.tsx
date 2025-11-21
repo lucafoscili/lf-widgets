@@ -36,6 +36,13 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import {
+  historyDiffers,
+  historyValues,
+  normalizeHistoryNodes,
+  normalizeHistoryValues,
+} from "./helpers.history";
+import { normalizeTags, parseTags, stringifyTags } from "./helpers.tags";
 import { createAdapter } from "./lf-multiinput-adapter";
 
 /**
@@ -246,8 +253,12 @@ export class LfMultiInput implements LfMultiInputInterface {
     if (this.#isSyncingDataset) {
       return;
     }
-    const normalized = this.#normalizeHistoryNodes(newDataset?.nodes || []);
-    const shouldResync = this.#historyDiffers(normalized, this.historyNodes);
+    const normalized = normalizeHistoryNodes(
+      newDataset?.nodes || [],
+      this.#maxHistory(),
+      (value, index) => this.#createNodeId(value, index),
+    );
+    const shouldResync = historyDiffers(normalized, this.historyNodes);
     this.historyNodes = normalized;
     if (shouldResync) {
       await this.#setHistoryNodes(normalized, { preserveColumns: true });
@@ -258,7 +269,11 @@ export class LfMultiInput implements LfMultiInputInterface {
   }
   @Watch("lfMaxHistory")
   async onLfMaxHistoryChange() {
-    const normalized = this.#normalizeHistoryNodes(this.historyNodes);
+    const normalized = normalizeHistoryNodes(
+      this.historyNodes,
+      this.#maxHistory(),
+      (value, index) => this.#createNodeId(value, index),
+    );
     await this.#setHistoryNodes(normalized, { preserveColumns: true });
   }
   //#endregion
@@ -276,9 +291,9 @@ export class LfMultiInput implements LfMultiInputInterface {
     if (this.#isDisabled() || !value) {
       return;
     }
-    const current = this.#historyValues();
+    const current = historyValues(this.historyNodes);
     const nextValues = [value, ...current.filter((v) => v !== value)];
-    const normalized = this.#normalizeHistoryValues(nextValues);
+    const normalized = normalizeHistoryValues(nextValues, this.#maxHistory());
     const nodes = this.#createNodesFromValues(normalized);
     await this.#setHistoryNodes(nodes, { preserveColumns: true });
   }
@@ -297,7 +312,7 @@ export class LfMultiInput implements LfMultiInputInterface {
    * @returns {Promise<string[]>} A promise that resolves to an array of strings representing the historical values.
    */
   async getHistory(): Promise<string[]> {
-    return this.#historyValues();
+    return historyValues(this.historyNodes);
   }
   /**
    * Used to retrieve component's properties and descriptions.
@@ -347,7 +362,10 @@ export class LfMultiInput implements LfMultiInputInterface {
    * @returns A promise that resolves when the history has been set and validity ensured.
    */
   async setHistory(values: string[]): Promise<void> {
-    const normalized = this.#normalizeHistoryValues(values || []);
+    const normalized = normalizeHistoryValues(
+      values || [],
+      this.#maxHistory(),
+    );
     const nodes = this.#createNodesFromValues(normalized);
     await this.#setHistoryNodes(nodes, { preserveColumns: true });
     await this.#ensureValueValidity();
@@ -414,16 +432,16 @@ export class LfMultiInput implements LfMultiInputInterface {
         tags = [...current, tag];
       }
     } else {
-      tags = this.#parseTags(rawValue ?? "");
+      tags = parseTags(rawValue ?? "");
     }
 
-    tags = this.#normalizeTags(tags);
+    tags = normalizeTags(tags);
 
     if (!this.lfAllowFreeInput) {
       tags = this.#filterAllowedTags(tags);
     }
 
-    const stringValue = this.#stringifyTags(tags);
+    const stringValue = stringifyTags(tags);
     await this.#updateValue(stringValue, {
       validate: false,
       syncTextfield: false,
@@ -470,14 +488,14 @@ export class LfMultiInput implements LfMultiInputInterface {
     }
   }
   #filterAllowedTags(tags: string[]): string[] {
-    const allowed = new Set(this.#historyValues());
+    const allowed = new Set(historyValues(this.historyNodes));
     return tags.filter((tag) => allowed.has(tag));
   }
   #currentTags(): string[] {
-    return this.#normalizeTags(this.#parseTags(this.value));
+    return normalizeTags(parseTags(this.value));
   }
   async #ensureTagsInHistory(tags: string[]): Promise<void> {
-    const current = this.#historyValues();
+    const current = historyValues(this.historyNodes);
     const currentSet = new Set(current);
     const newTags = (tags || []).filter((tag) => !currentSet.has(tag));
 
@@ -485,31 +503,11 @@ export class LfMultiInput implements LfMultiInputInterface {
       return;
     }
 
-    const union = this.#normalizeHistoryValues([...newTags, ...current]);
-    await this.setHistory(union);
-  }
-  #historyDiffers(a: LfDataNode[], b: LfDataNode[]) {
-    if (!a && !b) {
-      return false;
-    }
-    if (!a || !b || a.length !== b.length) {
-      return true;
-    }
-    return a.some((node, index) => {
-      const other = b[index];
-      return (
-        !other ||
-        String(node?.value ?? "") !== String(other?.value ?? "") ||
-        (node?.id || "") !== (other?.id || "")
-      );
-    });
-  }
-  #historyValues(): string[] {
-    return (this.historyNodes || []).map((node) =>
-      node?.value !== undefined && node?.value !== null
-        ? String(node.value)
-        : "",
+    const union = normalizeHistoryValues(
+      [...newTags, ...current],
+      this.#maxHistory(),
     );
+    await this.setHistory(union);
   }
   #initAdapter() {
     this.#adapter = createAdapter(
@@ -518,7 +516,7 @@ export class LfMultiInput implements LfMultiInputInterface {
         compInstance: this,
         cyAttributes: this.#cy,
         historyNodes: () => this.historyNodes,
-        historyValues: () => this.#historyValues(),
+        historyValues: () => historyValues(this.historyNodes),
         isDisabled: () => this.#isDisabled(),
         lfAttributes: this.#lf,
         lfDataset: () => this.lfDataset,
@@ -556,7 +554,7 @@ export class LfMultiInput implements LfMultiInputInterface {
     if (!value) {
       return true;
     }
-    return this.#historyValues().includes(value);
+    return historyValues(this.historyNodes).includes(value);
   }
   #maxHistory() {
     const parsed =
@@ -564,87 +562,6 @@ export class LfMultiInput implements LfMultiInputInterface {
         ? this.lfMaxHistory
         : 10;
     return parsed;
-  }
-  #normalizeHistoryNodes(nodes: LfDataNode[]): LfDataNode[] {
-    const maxHistory = this.#maxHistory();
-    if (!maxHistory) {
-      return [];
-    }
-    const seen = new Set<string>();
-    const normalized: LfDataNode[] = [];
-
-    for (const node of nodes || []) {
-      if (!node) {
-        continue;
-      }
-      const value =
-        node.value !== undefined && node.value !== null
-          ? String(node.value)
-          : "";
-      if (seen.has(value)) {
-        continue;
-      }
-      seen.add(value);
-      normalized.push({
-        ...node,
-        id: node.id || this.#createNodeId(value, normalized.length),
-        value,
-      });
-      if (normalized.length >= maxHistory) {
-        break;
-      }
-    }
-
-    return normalized;
-  }
-  #normalizeHistoryValues(values: string[]): string[] {
-    const maxHistory = this.#maxHistory();
-    if (!maxHistory) {
-      return [];
-    }
-    const seen = new Set<string>();
-    const normalized: string[] = [];
-
-    for (const raw of values || []) {
-      const value =
-        raw !== undefined && raw !== null ? String(raw) : (raw ?? "");
-      if (seen.has(value)) {
-        continue;
-      }
-      seen.add(value);
-      normalized.push(value);
-      if (normalized.length >= maxHistory) {
-        break;
-      }
-    }
-    return normalized;
-  }
-  #normalizeTags(tags: string[]): string[] {
-    const seen = new Set<string>();
-    const normalized: string[] = [];
-
-    for (const raw of tags || []) {
-      const value = (raw ?? "").trim();
-      if (!value || seen.has(value)) {
-        continue;
-      }
-      seen.add(value);
-      normalized.push(value);
-    }
-
-    return normalized;
-  }
-  #parseTags(raw: string): string[] {
-    if (!raw) {
-      return [];
-    }
-    return raw
-      .split(",")
-      .map((token) => token.trim())
-      .filter((token) => token.length > 0);
-  }
-  #stringifyTags(tags: string[]): string {
-    return (tags || []).join(", ");
   }
   async #setHistoryNodes(
     nodes: LfDataNode[],
@@ -723,8 +640,10 @@ export class LfMultiInput implements LfMultiInputInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    const initialNodes = this.#normalizeHistoryNodes(
+    const initialNodes = normalizeHistoryNodes(
       this.lfDataset?.nodes || [],
+      this.#maxHistory(),
+      (value, index) => this.#createNodeId(value, index),
     );
     await this.#setHistoryNodes(initialNodes, { preserveColumns: true });
     await this.#updateValue(this.lfValue || "", { validate: true });

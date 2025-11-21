@@ -96,8 +96,9 @@ describe("lf-multiinput", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
-    const textfield =
-      page.root.shadowRoot.querySelector("lf-textfield") as LfTextfieldElement;
+    const textfield = page.root.shadowRoot.querySelector(
+      "lf-textfield",
+    ) as LfTextfieldElement;
     textfield.dispatchEvent(
       new CustomEvent("lf-textfield-event", {
         detail: {
@@ -242,11 +243,7 @@ describe("lf-multiinput", () => {
     await page.waitForChanges();
 
     expect(await component.getValue()).toBe("");
-    expect(await component.getHistory()).toEqual([
-      "First",
-      "Second",
-      "Third",
-    ]);
+    expect(await component.getHistory()).toEqual(["First", "Second", "Third"]);
   });
 
   it("should parse comma-separated tags in tags mode", async () => {
@@ -296,7 +293,9 @@ describe("lf-multiinput", () => {
   });
 
   it("should not emit input/change while disabled", async () => {
-    const page = await createPage(`<lf-multiinput lf-ui-state="disabled"></lf-multiinput>`);
+    const page = await createPage(
+      `<lf-multiinput lf-ui-state="disabled"></lf-multiinput>`,
+    );
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
@@ -309,8 +308,33 @@ describe("lf-multiinput", () => {
     await page.waitForChanges();
 
     expect(
+      spy.mock.calls.find((call) => call[0]?.detail?.eventType === "input"),
+    ).toBeUndefined();
+  });
+
+  it("should not emit select-history when chip is clicked while disabled", async () => {
+    const page = await createPage(
+      `<lf-multiinput lf-ui-state="disabled"></lf-multiinput>`,
+    );
+    const component = page.rootInstance as LfMultiInput;
+    await component.setHistory(["chip-value"]);
+    await page.waitForChanges();
+
+    const spy = jest.fn();
+    page.root.addEventListener("lf-multiinput-event", spy);
+    const chip = page.root.shadowRoot.querySelector("lf-chip");
+    const node = component.lfDataset.nodes[0];
+
+    chip.dispatchEvent(
+      new CustomEvent("lf-chip-event", {
+        detail: { eventType: "click", node },
+      }),
+    );
+    await page.waitForChanges();
+
+    expect(
       spy.mock.calls.find(
-        (call) => call[0]?.detail?.eventType === "input",
+        (call) => call[0]?.detail?.eventType === "select-history",
       ),
     ).toBeUndefined();
   });
