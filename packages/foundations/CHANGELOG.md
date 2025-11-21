@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.5.0-rc.1...1.5.0-rc.2) (2025-11-21)
+
+**Note:** Version bump only for package @lf-widgets/foundations
+
+
+
+
+
 # [1.5.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.5.0-rc.0...1.5.0-rc.1) (2025-11-21)
 
 
