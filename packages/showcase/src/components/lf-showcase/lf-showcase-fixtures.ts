@@ -45,6 +45,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     chartHistogram,
     checkbox,
     code,
+    filterSearch,
     forms,
     hexagonInfo,
     id,
@@ -213,6 +214,13 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: messageCircleUser,
         id: "Messenger",
         value: "Messenger",
+      },
+      {
+        description:
+          "Combines a textfield with a chip row to manage history or selectable tags.",
+        icon: filterSearch,
+        id: "Multiinput",
+        value: "Multi input",
       },
       {
         description:
