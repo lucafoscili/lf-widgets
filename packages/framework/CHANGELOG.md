@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0...1.5.0-rc.0) (2025-11-19)
+
+
+### Bug Fixes
+
+* Refine auto positioning logic in LfPortal ([3191794](https://github.com/lucafoscili/lf-widgets/commit/319179487cb810b497a12ad1e9cad814675c5816))
+
+
+### Features
+
+* Add responsive portal sizing and improve positioning logic ([dddfb19](https://github.com/lucafoscili/lf-widgets/commit/dddfb193615163f18d34c84ecbbcff3671129609))
+
+
+
+
+
 # [1.4.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0-rc.0...1.4.0) (2025-11-08)
 
 **Note:** Version bump only for package @lf-widgets/framework
