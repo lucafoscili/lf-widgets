@@ -48,11 +48,6 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     *                             Defaults to => 3.5em
     */
     height: var(--lf-#{$comp}-height, 3.5em);
-    /**
-    * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
-    *                              Defaults to => 0 1em
-    */
-    padding: var(--lf-#{$comp}-padding, 0 1em);
     position: relative;
     width: 100%;
   }
@@ -178,14 +173,19 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     box-sizing: border-box;
   }
 
-  &__icon {
+  &__icon,
+  &__icon-action {
     & {
       @include lf-comp-icon($comp);
       @include lf-el-transition("bouncy");
       align-self: center;
       cursor: pointer;
       outline: none;
-      padding-right: 0.75em;
+      /**
+      * @prop --lf-#{$comp}-icon-padding: Sets the padding for the #{$comp} icon.
+      *                                   Defaults to => 0 0.75em
+      */
+      padding: var(--lf-#{$comp}-icon-padding, 0 0.75em);
     }
 
     &:hover {
@@ -211,11 +211,20 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
       border-radius: 0;
       box-sizing: border-box;
       caret-color: rgba($primaryC, 0.75);
+      /**
+      * @prop --lf-#{$comp}-input-cursor: Sets the cursor for the #{$comp} input.
+      *                                   Defaults to => text
+      */
+      cursor: var(--lf-#{$comp}-input-cursor, text);
       -webkit-font-smoothing: antialiased;
       margin: 0;
       min-width: 0;
       outline: none;
-      padding: 0;
+      /**
+       * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+       *                              Defaults to => 0 1em
+       */
+      padding: var(--lf-#{$comp}-padding, 0 1em);
       text-decoration: inherit;
       text-transform: inherit;
     }

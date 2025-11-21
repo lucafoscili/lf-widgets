@@ -9,6 +9,11 @@ import {
   LfArticlePropsInterface,
 } from "../components/article.declarations";
 import {
+  LfAutocompleteElement,
+  LfAutocompleteInterface,
+  LfAutocompletePropsInterface,
+} from "../components/autocomplete.declarations";
+import {
   LfBadgeElement,
   LfBadgeInterface,
   LfBadgePropsInterface,
@@ -99,6 +104,11 @@ import {
   LfMessengerPropsInterface,
 } from "../components/messenger.declarations";
 import {
+  LfMultiInputElement,
+  LfMultiInputInterface,
+  LfMultiInputPropsInterface,
+} from "../components/multiinput.declarations";
+import {
   LfPhotoframeElement,
   LfPhotoframeInterface,
   LfPhotoframePropsInterface,
@@ -113,6 +123,16 @@ import {
   LfProgressbarInterface,
   LfProgressbarPropsInterface,
 } from "../components/progressbar.declarations";
+import {
+  LfRadioElement,
+  LfRadioInterface,
+  LfRadioPropsInterface,
+} from "../components/radio.declarations";
+import {
+  LfSelectElement,
+  LfSelectInterface,
+  LfSelectPropsInterface,
+} from "../components/select.declarations";
 import {
   LfSliderElement,
   LfSliderInterface,
@@ -174,7 +194,7 @@ import {
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
 
 /**
- * Strongly typed runtime contract implemented by every Lightning Fast component.
+ * Strongly typed runtime contract implemented by every LF component.
  *
  * The interface exposes the component-specific root HTMLElement alongside the
  * shared lifecycle API inherited from `LfComponentCommon`.
@@ -212,6 +232,7 @@ export type LfComponentType<T extends LfComponentName = LfComponentName> =
 export type LfComponentElementMap = {
   LfAccordion: LfAccordionElement;
   LfArticle: LfArticleElement;
+  LfAutocomplete: LfAutocompleteElement;
   LfBadge: LfBadgeElement;
   LfButton: LfButtonElement;
   LfCanvas: LfCanvasElement;
@@ -230,9 +251,12 @@ export type LfComponentElementMap = {
   LfList: LfListElement;
   LfMasonry: LfMasonryElement;
   LfMessenger: LfMessengerElement;
+  LfMultiInput: LfMultiInputElement;
   LfPhotoframe: LfPhotoframeElement;
   LfPlaceholder: LfPlaceholderElement;
   LfProgressbar: LfProgressbarElement;
+  LfRadio: LfRadioElement;
+  LfSelect: LfSelectElement;
   LfSlider: LfSliderElement;
   LfSpinner: LfSpinnerElement;
   LfSplash: LfSplashElement;
@@ -252,6 +276,7 @@ export type LfComponentElementMap = {
 export type LfComponentClassMap = {
   LfAccordion: LfAccordionInterface;
   LfArticle: LfArticleInterface;
+  LfAutocomplete: LfAutocompleteInterface;
   LfBadge: LfBadgeInterface;
   LfButton: LfButtonInterface;
   LfCanvas: LfCanvasInterface;
@@ -270,9 +295,12 @@ export type LfComponentClassMap = {
   LfList: LfListInterface;
   LfMasonry: LfMasonryInterface;
   LfMessenger: LfMessengerInterface;
+  LfMultiInput: LfMultiInputInterface;
   LfPhotoframe: LfPhotoframeInterface;
   LfPlaceholder: LfPlaceholderInterface;
   LfProgressbar: LfProgressbarInterface;
+  LfRadio: LfRadioInterface;
+  LfSelect: LfSelectInterface;
   LfSlider: LfSliderInterface;
   LfSpinner: LfSpinnerInterface;
   LfSplash: LfSplashInterface;
@@ -345,7 +373,7 @@ export type LfComponentPropsFor<C extends LfComponentName> =
 export type LfComponentTag<C extends LfComponentName = LfComponentName> =
   LfComponentTagMap[C];
 /**
- * Props shared by every Lightning Fast component instance.
+ * Props shared by every LF component instance.
  *
  * Currently exposes the `lfStyle` string used to inject per-instance CSS.
  */
@@ -409,6 +437,7 @@ export type LfDynamicComponentProps = {
 export type LfComponentName =
   | "LfAccordion"
   | "LfArticle"
+  | "LfAutocomplete"
   | "LfBadge"
   | "LfButton"
   | "LfCanvas"
@@ -428,9 +457,12 @@ export type LfComponentName =
   | "LfList"
   | "LfMasonry"
   | "LfMessenger"
+  | "LfMultiInput"
   | "LfPhotoframe"
   | "LfPlaceholder"
   | "LfProgressbar"
+  | "LfRadio"
+  | "LfSelect"
   | "LfSlider"
   | "LfSpinner"
   | "LfSplash"
@@ -449,6 +481,7 @@ export type LfComponentName =
 export type LfComponentProps =
   | LfAccordionPropsInterface
   | LfArticlePropsInterface
+  | LfAutocompletePropsInterface
   | LfBadgePropsInterface
   | LfButtonPropsInterface
   | LfCanvasPropsInterface
@@ -456,6 +489,7 @@ export type LfComponentProps =
   | LfCarouselPropsInterface
   | LfChartPropsInterface
   | LfChatPropsInterface
+  | LfCheckboxPropsInterface
   | LfChipPropsInterface
   | LfCodePropsInterface
   | LfComparePropsInterface
@@ -466,9 +500,12 @@ export type LfComponentProps =
   | LfListPropsInterface
   | LfMasonryPropsInterface
   | LfMessengerPropsInterface
+  | LfMultiInputPropsInterface
   | LfPhotoframePropsInterface
   | LfPlaceholderPropsInterface
   | LfProgressbarPropsInterface
+  | LfRadioPropsInterface
+  | LfSelectPropsInterface
   | LfSliderPropsInterface
   | LfSpinnerPropsInterface
   | LfSplashPropsInterface
@@ -485,6 +522,7 @@ export type LfComponentProps =
 export type LfComponentPropsMap = {
   LfAccordion: LfAccordionPropsInterface;
   LfArticle: LfArticlePropsInterface;
+  LfAutocomplete: LfAutocompletePropsInterface;
   LfBadge: LfBadgePropsInterface;
   LfButton: LfButtonPropsInterface;
   LfCanvas: LfCanvasPropsInterface;
@@ -503,9 +541,12 @@ export type LfComponentPropsMap = {
   LfList: LfListPropsInterface;
   LfMasonry: LfMasonryPropsInterface;
   LfMessenger: LfMessengerPropsInterface;
+  LfMultiInput: LfMultiInputPropsInterface;
   LfPhotoframe: LfPhotoframePropsInterface;
   LfPlaceholder: LfPlaceholderPropsInterface;
   LfProgressbar: LfProgressbarPropsInterface;
+  LfRadio: LfRadioPropsInterface;
+  LfSelect: LfSelectPropsInterface;
   LfSlider: LfSliderPropsInterface;
   LfSpinner: LfSpinnerPropsInterface;
   LfSplash: LfSplashPropsInterface;
@@ -523,6 +564,7 @@ export type LfComponentPropsMap = {
 export type LfComponentTagMap = {
   LfAccordion: "lf-accordion";
   LfArticle: "lf-article";
+  LfAutocomplete: "lf-autocomplete";
   LfBadge: "lf-badge";
   LfButton: "lf-button";
   LfCanvas: "lf-canvas";
@@ -541,9 +583,12 @@ export type LfComponentTagMap = {
   LfList: "lf-list";
   LfMasonry: "lf-masonry";
   LfMessenger: "lf-messenger";
+  LfMultiInput: "lf-multiinput";
   LfPhotoframe: "lf-photoframe";
   LfPlaceholder: "lf-placeholder";
   LfProgressbar: "lf-progressbar";
+  LfRadio: "lf-radio";
+  LfSelect: "lf-select";
   LfSlider: "lf-slider";
   LfSpinner: "lf-spinner";
   LfSplash: "lf-splash";
@@ -561,6 +606,7 @@ export type LfComponentTagMap = {
 export type LfComponentReverseTagMap = {
   "lf-accordion": "LfAccordion";
   "lf-article": "LfArticle";
+  "lf-autocomplete": "LfAutocomplete";
   "lf-badge": "LfBadge";
   "lf-button": "LfButton";
   "lf-canvas": "LfCanvas";
@@ -579,9 +625,12 @@ export type LfComponentReverseTagMap = {
   "lf-list": "LfList";
   "lf-masonry": "LfMasonry";
   "lf-messenger": "LfMessenger";
+  "lf-multiinput": "LfMultiInput";
   "lf-photoframe": "LfPhotoframe";
   "lf-placeholder": "LfPlaceholder";
   "lf-progressbar": "LfProgressbar";
+  "lf-radio": "LfRadio";
+  "lf-select": "LfSelect";
   "lf-slider": "LfSlider";
   "lf-spinner": "LfSpinner";
   "lf-splash": "LfSplash";
@@ -613,7 +662,7 @@ export interface VNode {
 /**
  * Base interface implemented by every Stencil-generated HTML element.
  *
- * Combines the native `HTMLElement` contract with the shared Lightning Fast lifecycle utilities.
+ * Combines the native `HTMLElement` contract with the shared LF lifecycle utilities.
  */
 export interface HTMLStencilElement
   extends HTMLElement,

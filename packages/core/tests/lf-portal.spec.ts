@@ -1,4 +1,5 @@
 import { LfFrameworkInterface } from "@lf-widgets/foundations";
+import { LfPortal } from "../../framework/src/lf-portal/lf-portal";
 
 describe("Framework Portal Utilities", () => {
   let framework: jest.Mocked<LfFrameworkInterface>;
@@ -150,5 +151,93 @@ describe("Framework Portal Utilities", () => {
         placement,
       );
     });
+  });
+});
+
+describe("LfPortal positioning logic", () => {
+  let manager: LfFrameworkInterface;
+  let portal: LfPortal;
+  let requestAnimationFrameMock: jest.Mock<number, [FrameRequestCallback]>;
+  let originalRequestAnimationFrame: typeof requestAnimationFrame;
+  let rafCallbacks: FrameRequestCallback[];
+
+  beforeEach(() => {
+    manager = {
+      addClickCallback: jest.fn(),
+      debug: { logs: { new: jest.fn() } },
+      removeClickCallback: jest.fn(),
+    } as unknown as LfFrameworkInterface;
+
+    portal = new LfPortal(manager);
+
+    rafCallbacks = [];
+    requestAnimationFrameMock = jest.fn<number, [FrameRequestCallback]>(
+      (callback: FrameRequestCallback) => {
+        rafCallbacks.push(callback);
+        return rafCallbacks.length;
+      },
+    );
+
+    originalRequestAnimationFrame = global.requestAnimationFrame;
+    (
+      global as typeof globalThis & {
+        requestAnimationFrame: typeof requestAnimationFrame;
+      }
+    ).requestAnimationFrame = requestAnimationFrameMock;
+    window.requestAnimationFrame = requestAnimationFrameMock;
+  });
+
+  afterEach(() => {
+    (
+      global as typeof globalThis & {
+        requestAnimationFrame: typeof requestAnimationFrame;
+      }
+    ).requestAnimationFrame = originalRequestAnimationFrame;
+    window.requestAnimationFrame = originalRequestAnimationFrame;
+    document.body.innerHTML = "";
+  });
+
+  it("anchors to the anchor's left edge when auto placement has room on the right", () => {
+    (window as any).innerWidth = 1000;
+
+    const parent = document.createElement("div");
+    document.body.appendChild(parent);
+
+    const anchor = document.createElement("div");
+    Object.defineProperty(anchor, "tagName", {
+      configurable: true,
+      value: "DIV",
+    });
+    expect(anchor.tagName).toBe("DIV");
+    parent.appendChild(anchor);
+
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      bottom: 120,
+      height: 20,
+      left: 100,
+      right: 130,
+      top: 100,
+      width: 30,
+      x: 100,
+      y: 100,
+      toJSON: () => {},
+    } as DOMRect);
+
+    const element = document.createElement("div");
+    Object.defineProperty(element, "offsetHeight", {
+      configurable: true,
+      value: 80,
+    });
+    Object.defineProperty(element, "offsetWidth", {
+      configurable: true,
+      value: 120,
+    });
+
+    portal.open(element, parent, anchor);
+    expect(requestAnimationFrameMock).toHaveBeenCalled();
+    rafCallbacks.shift()?.(0);
+
+    expect(element.style.left).toBe("100px");
+    expect(element.style.right).toBe("");
   });
 });

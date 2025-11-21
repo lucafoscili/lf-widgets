@@ -8,6 +8,10 @@ const foundations = resolve(__dirname, "../foundations/dist/index.js");
 const showcase = resolve(__dirname, "../showcase/dist/esm/lf-showcase.js");
 
 export default defineConfig({
+  build: {
+    sourcemap: process.env.NODE_ENV === "development",
+  },
+  publicDir: resolve(__dirname, "../assets"),
   resolve: {
     alias: {
       "@lf-widgets/assets": assets,
@@ -17,7 +21,6 @@ export default defineConfig({
       "@lf-widgets/showcase": showcase,
     },
   },
-  publicDir: resolve(__dirname, "../assets"),
   root: resolve(__dirname, "src"),
   server: {
     open: true,

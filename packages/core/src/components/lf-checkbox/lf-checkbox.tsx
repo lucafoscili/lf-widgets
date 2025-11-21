@@ -395,28 +395,30 @@ export class LfCheckbox implements LfCheckboxInterface {
     return (
       <Host id={this.#w}>
         {lfStyle && <style id={this.#s}>{lfStyle}</style>}
-        <div id={this.#w}>
+        <div id={this.#w} data-lf={this.#lf[this.lfUiState]}>
           <div
             class={bemClass(formField._, null, {
               leading: lfLeadingLabel,
             })}
-            data-lf={this.#lf[this.lfUiState]}
           >
             <div
-              class={bemClass(checkbox._, null, {
-                checked: this.#isChecked(),
-                indeterminate: this.#isIndeterminate(),
-                disabled: this.#isDisabled(),
-              })}
-              ref={(el) => (this.#r = el)}
+              class={bemClass(checkbox._)}
               onClick={(e) => this.onLfEvent(e, "change")}
-              onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
-              part={this.#p.checkbox}
             >
-              {this.#prepInput()}
-              {this.#prepBackground()}
+              <div
+                class={bemClass(checkbox._, checkbox.surface, {
+                  checked: this.#isChecked(),
+                  indeterminate: this.#isIndeterminate(),
+                  disabled: this.#isDisabled(),
+                })}
+                onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
+                ref={(el) => (this.#r = el)}
+                part={this.#p.checkbox}
+              >
+                {this.#prepInput()}
+                {this.#prepBackground()}
+              </div>
             </div>
-
             {lfLabel && this.#prepLabel()}
           </div>
         </div>

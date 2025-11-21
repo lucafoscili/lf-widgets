@@ -35,7 +35,7 @@ export const config: Config = {
       injectGlobalPaths: [],
     }),
   ],
-  sourceMap: false,
+  sourceMap: process.env.NODE_ENV === "development",
   testing: {
     testPathIgnorePatterns: ["<rootDir>/cypress/"],
     moduleNameMapper: {

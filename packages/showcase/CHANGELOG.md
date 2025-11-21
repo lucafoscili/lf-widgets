@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rc.2](https://github.com/lucafoscili/lf-widgets/compare/v1.5.0-rc.1...1.5.0-rc.2) (2025-11-21)
+
+
+### Bug Fixes
+
+* Update docs and improve lf-multiinput initialization ([2500430](https://github.com/lucafoscili/lf-widgets/commit/2500430057de66b72b0b57980d3bd4e959819e40))
+
+
+
+
+
+# [1.5.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v1.5.0-rc.0...1.5.0-rc.1) (2025-11-21)
+
+
+### Features
+
+* Add lf-multiinput component and related files ([4e6b889](https://github.com/lucafoscili/lf-widgets/commit/4e6b889463dc17075c79592f4d8f792f6a166b0f))
+
+
+
+
+
+# [1.5.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0...1.5.0-rc.0) (2025-11-19)
+
+
+### Bug Fixes
+
+* Add filtering support to lf-select ([bc4e9fa](https://github.com/lucafoscili/lf-widgets/commit/bc4e9fa1a132b0496d7a20c567cc38f46ff0e9fd))
+* Apply glassmorphism to list filter background ([2fffcb1](https://github.com/lucafoscili/lf-widgets/commit/2fffcb1e7d8b7c90d077ac8f47261ec879a2fd26))
+* Fix selection logic for filtered lf-list items ([352ed43](https://github.com/lucafoscili/lf-widgets/commit/352ed4347a879412303c25375b10cf6bb63ef9e4))
+* Update portal mixin to use height: max-content ([8b08538](https://github.com/lucafoscili/lf-widgets/commit/8b08538e8effa6328cfa5b82b12d173fcd04d235))
+
+
+### Features
+
+* Add 'ready' event to lf-radio component ([11101be](https://github.com/lucafoscili/lf-widgets/commit/11101be7ec3c6cbf64608cc87bd8a41f76abf609))
+* Add keydown event support to LfTextfield ([2c3e723](https://github.com/lucafoscili/lf-widgets/commit/2c3e723b9d41c51f67b4c2ccdc11a75b2c310e09))
+* Add lf-autocomplete component and related files ([c59dac4](https://github.com/lucafoscili/lf-widgets/commit/c59dac4ce01fc9be63d50b2400d535c0a839531b))
+* Add lf-radio component and related foundations ([e9b061a](https://github.com/lucafoscili/lf-widgets/commit/e9b061a4328825bf0d774e489c205878cf897b44))
+* Add lf-select dropdown component ([828f82c](https://github.com/lucafoscili/lf-widgets/commit/828f82cb3055ba0b8b0effc5ef495f45d7e0ff4d))
+* Add new SVG icons and update icon registry ([f88f1c0](https://github.com/lucafoscili/lf-widgets/commit/f88f1c009676e6999c46fba6b59ab0905ad781fe))
+* Add responsive portal sizing and improve positioning logic ([dddfb19](https://github.com/lucafoscili/lf-widgets/commit/dddfb193615163f18d34c84ecbbcff3671129609))
+* Emit change event on lf-select value updates ([c106f0b](https://github.com/lucafoscili/lf-widgets/commit/c106f0ba13a06227cdfa56f11357fad5cc02028d))
+* Refactor lf-select for improved dataset and value handling ([aad2054](https://github.com/lucafoscili/lf-widgets/commit/aad2054720dc898d954dcbfa892a7b9e381f24d1))
+
+
+
+
+
 # [1.4.0](https://github.com/lucafoscili/lf-widgets/compare/v1.4.0-rc.0...1.4.0) (2025-11-08)
 
 

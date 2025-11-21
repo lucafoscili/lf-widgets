@@ -4,6 +4,7 @@ import {
   LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LF_THEME_ICONS } from "../framework";
 import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
@@ -44,6 +45,7 @@ export type LfTextfieldEvent = (typeof LF_TEXTFIELD_EVENTS)[number];
  */
 export interface LfTextfieldEventPayload
   extends LfEventPayload<"LfTextfield", LfTextfieldEvent> {
+  iconType?: "regular" | "action";
   inputValue?: string;
   target: HTMLInputElement | HTMLDivElement | HTMLTextAreaElement;
   value?: string;
@@ -71,6 +73,7 @@ export interface LfTextfieldPropsInterface {
   lfStyle?: string;
   lfStyling?: LfTextfieldStyling;
   lfTrailingIcon?: boolean;
+  lfTrailingIconAction?: LfTextfieldTrailingIconAction;
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
@@ -86,6 +89,9 @@ export interface LfTextfieldFormatJSON {
   onBlur?: boolean;
   onInput?: number;
 }
+export type LfTextfieldTrailingIconAction =
+  | (typeof LF_THEME_ICONS)[keyof typeof LF_THEME_ICONS]
+  | null;
 /**
  * Utility interface used by the `lf-textfield` component.
  */

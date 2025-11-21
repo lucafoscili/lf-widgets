@@ -1,5 +1,6 @@
 import { LfAccordionEvent } from "../components/accordion.declarations";
 import { LfArticleEvent } from "../components/article.declarations";
+import { LfAutocompleteEvent } from "../components/autocomplete.declarations";
 import { LfBadgeEvent } from "../components/badge.declarations";
 import { LfButtonEvent } from "../components/button.declarations";
 import { LfCanvasEvent } from "../components/canvas.declarations";
@@ -18,9 +19,12 @@ import { LfImageviewerEvent } from "../components/imageviewer.declarations";
 import { LfListEvent } from "../components/list.declarations";
 import { LfMasonryEvent } from "../components/masonry.declarations";
 import { LfMessengerEvent } from "../components/messenger.declarations";
+import { LfMultiInputEvent } from "../components/multiinput.declarations";
 import { LfPhotoframeEvent } from "../components/photoframe.declarations";
 import { LfPlaceholderEvent } from "../components/placeholder.declarations";
 import { LfProgressbarEvent } from "../components/progressbar.declarations";
+import { LfRadioEvent } from "../components/radio.declarations";
+import { LfSelectEvent } from "../components/select.declarations";
 import { LfSliderEvent } from "../components/slider.declarations";
 import { LfSpinnerEvent } from "../components/spinner.declarations";
 import { LfSplashEvent } from "../components/splash.declarations";
@@ -39,7 +43,7 @@ import {
 } from "./components.declarations";
 
 /**
- * Typed alias for the custom events emitted by Lightning Fast components.
+ * Typed alias for the custom events emitted by LF components.
  *
  * @template P Payload type carried by the event `detail` property.
  */
@@ -60,7 +64,7 @@ export type LfEventType<
   C extends LfComponent<LfComponentName> = LfComponent<LfComponentName>,
 > = ComponentEventMap[ExtractComponentName<C>];
 /**
- * Standard payload delivered through the `detail` property of Lightning Fast events.
+ * Standard payload delivered through the `detail` property of LF events.
  *
  * @template C Component name emitting the event.
  * @template T Event type discriminator associated with the component.
@@ -101,6 +105,7 @@ export type LfEventPayloadName<C extends LfComponentName> = `${C}EventPayload`;
 export type ComponentEventMap = {
   LfAccordion: LfAccordionEvent;
   LfArticle: LfArticleEvent;
+  LfAutocomplete: LfAutocompleteEvent;
   LfBadge: LfBadgeEvent;
   LfButton: LfButtonEvent;
   LfCanvas: LfCanvasEvent;
@@ -119,9 +124,12 @@ export type ComponentEventMap = {
   LfList: LfListEvent;
   LfMasonry: LfMasonryEvent;
   LfMessenger: LfMessengerEvent;
+  LfMultiInput: LfMultiInputEvent;
   LfPhotoframe: LfPhotoframeEvent;
   LfPlaceholder: LfPlaceholderEvent;
   LfProgressbar: LfProgressbarEvent;
+  LfRadio: LfRadioEvent;
+  LfSelect: LfSelectEvent;
   LfSlider: LfSliderEvent;
   LfSpinner: LfSpinnerEvent;
   LfSplash: LfSplashEvent;

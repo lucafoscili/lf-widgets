@@ -127,6 +127,7 @@ graph TD;
   lf-code --> lf-button
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-accordion --> lf-code
   lf-article --> lf-code
   lf-card --> lf-code

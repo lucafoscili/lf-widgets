@@ -12,6 +12,7 @@ export const LF_CHECKBOX_BLOCKS = {
     background: "background",
     checkmark: "checkmark",
     mixedmark: "mixedmark",
+    surface: "surface",
   },
 } as const;
 

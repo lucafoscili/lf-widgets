@@ -15,6 +15,7 @@ export const LF_TEXTFIELD_BLOCKS = {
     helperLine: "helper-line",
     helperText: "helper-text",
     icon: "icon",
+    iconAction: "icon-action",
     input: "input",
     label: "label",
     resizer: "resizer",
@@ -30,6 +31,7 @@ export const LF_TEXTFIELD_EVENTS = [
   "click",
   "focus",
   "input",
+  "keydown",
   "ready",
   "unmount",
 ] as const;
@@ -39,6 +41,7 @@ export const LF_TEXTFIELD_EVENTS = [
 export const LF_TEXTFIELD_PARTS = {
   counter: "counter",
   icon: "icon",
+  iconAction: "icon-action",
   input: "input",
   label: "label",
   textfield: "textfield",
@@ -56,6 +59,7 @@ export const LF_TEXTFIELD_PROPS = [
   "lfStyle",
   "lfStyling",
   "lfTrailingIcon",
+  "lfTrailingIconAction",
   "lfUiSize",
   "lfUiState",
   "lfValue",

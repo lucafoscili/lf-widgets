@@ -39,6 +39,13 @@ $comp: "list";
     }
   }
 
+  &__filter {
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875, 15px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
   &__item {
     & {
       @include lf-el-transition;

@@ -1,0 +1,26 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "select";
+@include lf-comp-setup($comp, "true", "true", "true", "true");
+
+.select {
+  & {
+    @include lf-el-stretch;
+  }
+
+  &__textfield {
+    & {
+      --lf-textfield-input-cursor: pointer;
+
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0);
+      @include lf-el-stretch;
+      cursor: var(--lf-textfield-input-cursor, pointer);
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    &:hover {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.12);
+    }
+  }
+}

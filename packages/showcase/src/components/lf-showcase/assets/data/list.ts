@@ -3,10 +3,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfListPropsInterface,
   LfThemeUISize,
   LfThemeUIState,
@@ -134,10 +134,10 @@ export const getListFixtures = (
           },
         },
         navigation: {
-          description: "List with keyboard navigation",
+          description: "List without keyboard navigation",
           props: {
             lfDataset,
-            lfNavigation: true,
+            lfNavigation: false,
           },
         },
         unselectable: {
@@ -152,6 +152,21 @@ export const getListFixtures = (
           props: {
             lfDataset,
             lfStyle: randomStyle(),
+          },
+        },
+        filterEnabled: {
+          description: "List with filter functionality enabled",
+          props: {
+            lfDataset,
+            lfFilter: true,
+          },
+        },
+        filterAndSelectable: {
+          description: "Filterable and selectable list",
+          props: {
+            lfDataset,
+            lfFilter: true,
+            lfSelectable: true,
           },
         },
       },

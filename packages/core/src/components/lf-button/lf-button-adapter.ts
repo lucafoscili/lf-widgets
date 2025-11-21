@@ -15,7 +15,7 @@ export const createAdapter = (
 ): LfButtonAdapter => {
   return {
     controller: {
-      get: createGetters(getters),
+      get: getters,
       set: createSetters(getAdapter),
     },
     elements: {
@@ -28,9 +28,6 @@ export const createAdapter = (
 //#endregion
 
 //#region Controller
-export const createGetters = (getters: LfButtonAdapterInitializerGetters) => {
-  return getters;
-};
 export const createSetters = (getAdapter: () => LfButtonAdapter) => {
   return {
     list: (state = "toggle") => {

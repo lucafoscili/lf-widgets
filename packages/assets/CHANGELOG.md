@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-rc.2](https://github.com/lucafoscili/lf-assets/compare/v1.5.0-rc.1...1.5.0-rc.2) (2025-11-21)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+
+
+
+
+# [1.5.0-rc.1](https://github.com/lucafoscili/lf-assets/compare/v1.5.0-rc.0...1.5.0-rc.1) (2025-11-21)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+
+
+
+
+# [1.5.0-rc.0](https://github.com/lucafoscili/lf-assets/compare/v1.4.0...1.5.0-rc.0) (2025-11-19)
+
+
+### Features
+
+* Add new SVG icons and update icon registry ([f88f1c0](https://github.com/lucafoscili/lf-assets/commit/f88f1c009676e6999c46fba6b59ab0905ad781fe))
+* Add new SVG icons and update icon registry ([e12ba27](https://github.com/lucafoscili/lf-assets/commit/e12ba271eb896572adf80a7d2a9b197e9f5cacc8))
+
+
+
+
+
 # [1.4.0](https://github.com/lucafoscili/lf-assets/compare/v1.4.0-rc.0...1.4.0) (2025-11-08)
 
 

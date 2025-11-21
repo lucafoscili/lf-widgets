@@ -513,7 +513,9 @@ export class LfCanvas implements LfCanvasInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.resizeCanvas();
+    if (this.lfImageProps) {
+      this.resizeCanvas();
+    }
     this.#initResizeObserver();
 
     this.onLfEvent(new CustomEvent("ready"), "ready");

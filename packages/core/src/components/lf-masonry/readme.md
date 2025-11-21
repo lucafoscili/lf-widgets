@@ -186,6 +186,7 @@ graph TD;
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-badge
   lf-card --> lf-button
