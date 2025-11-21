@@ -150,6 +150,7 @@ describe("lf-multiinput", () => {
         }),
       }),
     );
+    expect(await component.getHistory()).toEqual(["chip-value"]);
   });
 
   it("should support tag selection via chips in tags mode", async () => {
@@ -169,6 +170,7 @@ describe("lf-multiinput", () => {
     );
     await page.waitForChanges();
     expect(await component.getValue()).toBe("tag1");
+    expect(await component.getHistory()).toEqual(["tag1", "tag2"]);
 
     chip.dispatchEvent(
       new CustomEvent("lf-chip-event", {
@@ -177,6 +179,7 @@ describe("lf-multiinput", () => {
     );
     await page.waitForChanges();
     expect(await component.getValue()).toBe("tag1, tag2");
+    expect(await component.getHistory()).toEqual(["tag1", "tag2"]);
 
     chip.dispatchEvent(
       new CustomEvent("lf-chip-event", {
@@ -185,6 +188,7 @@ describe("lf-multiinput", () => {
     );
     await page.waitForChanges();
     expect(await component.getValue()).toBe("tag2");
+    expect(await component.getHistory()).toEqual(["tag1", "tag2"]);
   });
 
   it("should emit clear-history when clearing", async () => {

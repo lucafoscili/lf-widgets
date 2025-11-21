@@ -196,6 +196,7 @@ export class LfMultiInput implements LfMultiInputInterface {
         } else {
           await this.#applyHistoryCommit(value ?? "", {
             clearTextfield: true,
+            addToHistory: true,
           });
         }
         break;
@@ -215,9 +216,8 @@ export class LfMultiInput implements LfMultiInputInterface {
           if (this.#isTagsMode()) {
             await this.#applyTagsCommit(raw, node);
           } else {
-            await this.#applyHistoryCommit(raw);
+            await this.#applyHistoryCommit(raw, { addToHistory: false });
           }
-          // Reflect chip selection into the textfield.
           await this.#syncTextfieldValue(this.value);
         }
         break;
@@ -379,9 +379,10 @@ export class LfMultiInput implements LfMultiInputInterface {
   //#region Private methods
   async #applyHistoryCommit(
     rawValue: string,
-    options?: { clearTextfield?: boolean },
+    options?: { clearTextfield?: boolean; addToHistory?: boolean },
   ) {
     const shouldClearTextfield = options?.clearTextfield === true;
+    const shouldAddToHistory = options?.addToHistory !== false;
 
     const updated = await this.#updateValue(rawValue || "", {
       validate: true,
@@ -390,7 +391,7 @@ export class LfMultiInput implements LfMultiInputInterface {
     if (!updated) {
       return;
     }
-    if (this.value) {
+    if (shouldAddToHistory && this.value) {
       await this.addToHistory(this.value);
     }
 
@@ -463,14 +464,6 @@ export class LfMultiInput implements LfMultiInputInterface {
       };
     });
   }
-  #currentTags(): string[] {
-    return this.#normalizeTags(this.#parseTags(this.value));
-  }
-  async #ensureTagsInHistory(tags: string[]): Promise<void> {
-    const current = this.#historyValues();
-    const union = this.#normalizeHistoryValues([...tags, ...current]);
-    await this.setHistory(union);
-  }
   async #ensureValueValidity() {
     if (!this.#isValueAllowed(this.value)) {
       await this.#updateValue(this.#lastValidValue || "", { validate: false });
@@ -479,6 +472,21 @@ export class LfMultiInput implements LfMultiInputInterface {
   #filterAllowedTags(tags: string[]): string[] {
     const allowed = new Set(this.#historyValues());
     return tags.filter((tag) => allowed.has(tag));
+  }
+  #currentTags(): string[] {
+    return this.#normalizeTags(this.#parseTags(this.value));
+  }
+  async #ensureTagsInHistory(tags: string[]): Promise<void> {
+    const current = this.#historyValues();
+    const currentSet = new Set(current);
+    const newTags = (tags || []).filter((tag) => !currentSet.has(tag));
+
+    if (!newTags.length) {
+      return;
+    }
+
+    const union = this.#normalizeHistoryValues([...newTags, ...current]);
+    await this.setHistory(union);
   }
   #historyDiffers(a: LfDataNode[], b: LfDataNode[]) {
     if (!a && !b) {
