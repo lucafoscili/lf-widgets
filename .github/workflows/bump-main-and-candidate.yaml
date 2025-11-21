@@ -48,7 +48,12 @@ jobs:
           echo "branch=$BRANCH" > $GITHUB_OUTPUT
 
           # Run changeset versioning to update package.json files etc.
-          npx changeset version || true
+          # Allow exit code 1 (no changesets found), but fail on other errors
+          npx changeset version || EXIT_CODE=$?
+          if [ "${EXIT_CODE:-0}" -gt 1 ]; then
+            echo "Changeset version failed with exit code $EXIT_CODE"
+            exit $EXIT_CODE
+          fi
 
           # If there are changes, create a branch and commit them
           if [ -n "$(git status --porcelain)" ]; then
@@ -86,10 +91,16 @@ jobs:
           git fetch origin ${{ steps.target.outputs.base_branch }}
           git checkout ${{ steps.target.outputs.base_branch }}
           git pull --ff-only origin ${{ steps.target.outputs.base_branch }}
-          git merge --ff-only "origin/${BR}" || { echo "Fast-forward merge failed"; exit 1; }
-          git push origin ${{ steps.target.outputs.base_branch }}
-          # Cleanup temporary branch
-          git push origin --delete "${BR}"
+          if git merge --ff-only "origin/${BR}"; then
+            git push origin ${{ steps.target.outputs.base_branch }}
+            # Cleanup temporary branch after successful merge
+            git push origin --delete "${BR}"
+          else
+            echo "Fast-forward merge failed"
+            # Cleanup temporary branch before exiting
+            git push origin --delete "${BR}"
+            exit 1
+          fi
 
       - name: Open PR when remote advanced (create pull request)
         if: steps.decide.outputs.can_fast_forward == 'false'
