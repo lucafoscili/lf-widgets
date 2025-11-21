@@ -1,5 +1,7 @@
 # Ignore accidental foundations artifacts mirrored inside core
-packages/core/foundations/
+packages/core/foundations
+# Ignore accidental framework artifacts mirrored inside core
+packages/core/framework
 # Ignore compiled or stray JS test artifacts (prefer .ts specs)
 packages/core/tests/*.js
 # Yarn
@@ -7,6 +9,7 @@ packages/core/tests/*.js
 .yarn/install-state.gz
 
 # Node
+.env
 *.log
 .stencil/
 .vscode/

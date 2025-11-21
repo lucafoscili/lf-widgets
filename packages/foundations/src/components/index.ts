@@ -40,6 +40,8 @@ export * from "./masonry.constants";
 export * from "./masonry.declarations";
 export * from "./messenger.constants";
 export * from "./messenger.declarations";
+export * from "./multiinput.constants";
+export * from "./multiinput.declarations";
 export * from "./photoframe.constants";
 export * from "./photoframe.declarations";
 export * from "./placeholder.constants";

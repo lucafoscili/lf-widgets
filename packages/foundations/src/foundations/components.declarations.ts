@@ -104,6 +104,11 @@ import {
   LfMessengerPropsInterface,
 } from "../components/messenger.declarations";
 import {
+  LfMultiInputElement,
+  LfMultiInputInterface,
+  LfMultiInputPropsInterface,
+} from "../components/multiinput.declarations";
+import {
   LfPhotoframeElement,
   LfPhotoframeInterface,
   LfPhotoframePropsInterface,
@@ -246,6 +251,7 @@ export type LfComponentElementMap = {
   LfList: LfListElement;
   LfMasonry: LfMasonryElement;
   LfMessenger: LfMessengerElement;
+  LfMultiInput: LfMultiInputElement;
   LfPhotoframe: LfPhotoframeElement;
   LfPlaceholder: LfPlaceholderElement;
   LfProgressbar: LfProgressbarElement;
@@ -289,6 +295,7 @@ export type LfComponentClassMap = {
   LfList: LfListInterface;
   LfMasonry: LfMasonryInterface;
   LfMessenger: LfMessengerInterface;
+  LfMultiInput: LfMultiInputInterface;
   LfPhotoframe: LfPhotoframeInterface;
   LfPlaceholder: LfPlaceholderInterface;
   LfProgressbar: LfProgressbarInterface;
@@ -450,6 +457,7 @@ export type LfComponentName =
   | "LfList"
   | "LfMasonry"
   | "LfMessenger"
+  | "LfMultiInput"
   | "LfPhotoframe"
   | "LfPlaceholder"
   | "LfProgressbar"
@@ -492,6 +500,7 @@ export type LfComponentProps =
   | LfListPropsInterface
   | LfMasonryPropsInterface
   | LfMessengerPropsInterface
+  | LfMultiInputPropsInterface
   | LfPhotoframePropsInterface
   | LfPlaceholderPropsInterface
   | LfProgressbarPropsInterface
@@ -532,6 +541,7 @@ export type LfComponentPropsMap = {
   LfList: LfListPropsInterface;
   LfMasonry: LfMasonryPropsInterface;
   LfMessenger: LfMessengerPropsInterface;
+  LfMultiInput: LfMultiInputPropsInterface;
   LfPhotoframe: LfPhotoframePropsInterface;
   LfPlaceholder: LfPlaceholderPropsInterface;
   LfProgressbar: LfProgressbarPropsInterface;
@@ -573,6 +583,7 @@ export type LfComponentTagMap = {
   LfList: "lf-list";
   LfMasonry: "lf-masonry";
   LfMessenger: "lf-messenger";
+  LfMultiInput: "lf-multiinput";
   LfPhotoframe: "lf-photoframe";
   LfPlaceholder: "lf-placeholder";
   LfProgressbar: "lf-progressbar";
@@ -614,6 +625,7 @@ export type LfComponentReverseTagMap = {
   "lf-list": "LfList";
   "lf-masonry": "LfMasonry";
   "lf-messenger": "LfMessenger";
+  "lf-multiinput": "LfMultiInput";
   "lf-photoframe": "LfPhotoframe";
   "lf-placeholder": "LfPlaceholder";
   "lf-progressbar": "LfProgressbar";

@@ -19,6 +19,7 @@ import { LF_IMAGEVIEWER_PROPS } from "../components/imageviewer.constants";
 import { LF_LIST_PROPS } from "../components/list.constants";
 import { LF_MASONRY_PROPS } from "../components/masonry.constants";
 import { LF_MESSENGER_PROPS } from "../components/messenger.constants";
+import { LF_MULTIINPUT_PROPS } from "../components/multiinput.constants";
 import { LF_PHOTOFRAME_PROPS } from "../components/photoframe.constants";
 import { LF_PLACEHOLDER_PROPS } from "../components/placeholder.constants";
 import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
@@ -137,6 +138,7 @@ export const getComponentProps = (): {
     LfList: LF_LIST_PROPS,
     LfMasonry: LF_MASONRY_PROPS,
     LfMessenger: LF_MESSENGER_PROPS,
+    LfMultiInput: LF_MULTIINPUT_PROPS,
     LfPhotoframe: LF_PHOTOFRAME_PROPS,
     LfPlaceholder: LF_PLACEHOLDER_PROPS,
     LfProgressbar: LF_PROGRESSBAR_PROPS,

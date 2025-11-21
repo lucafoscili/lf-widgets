@@ -19,6 +19,7 @@ import { LfImageviewerEvent } from "../components/imageviewer.declarations";
 import { LfListEvent } from "../components/list.declarations";
 import { LfMasonryEvent } from "../components/masonry.declarations";
 import { LfMessengerEvent } from "../components/messenger.declarations";
+import { LfMultiInputEvent } from "../components/multiinput.declarations";
 import { LfPhotoframeEvent } from "../components/photoframe.declarations";
 import { LfPlaceholderEvent } from "../components/placeholder.declarations";
 import { LfProgressbarEvent } from "../components/progressbar.declarations";
@@ -123,6 +124,7 @@ export type ComponentEventMap = {
   LfList: LfListEvent;
   LfMasonry: LfMasonryEvent;
   LfMessenger: LfMessengerEvent;
+  LfMultiInput: LfMultiInputEvent;
   LfPhotoframe: LfPhotoframeEvent;
   LfPlaceholder: LfPlaceholderEvent;
   LfProgressbar: LfProgressbarEvent;

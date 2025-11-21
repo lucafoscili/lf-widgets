@@ -1,0 +1,30 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "multiinput";
+@include lf-comp-setup($comp, "true", "true", "true", "true");
+
+.multiinput {
+  & {
+    @include lf-el-stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  &__chips {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__history {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  &__textfield {
+    @include lf-el-stretch;
+  }
+}

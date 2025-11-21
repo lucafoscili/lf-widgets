@@ -33,6 +33,7 @@ import { getPortalFixtures } from "../assets/data/portal";
 import { getProgressbarFixtures } from "../assets/data/progressbar";
 import { getRadioFixtures } from "../assets/data/radio";
 import { getSelectFixtures } from "../assets/data/select";
+import { getMultiInputFixtures } from "../assets/data/multiinput";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
@@ -95,6 +96,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getMasonryFixtures(framework);
     case "lf-messenger":
       return getMessengerFixtures(framework);
+    case "lf-multiinput":
+      return getMultiInputFixtures(framework);
     case "lf-photoframe":
       return getPhotoframeFixtures(framework);
     case "lf-placeholder":
