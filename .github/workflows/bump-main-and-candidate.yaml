@@ -1,0 +1,107 @@
+name: Automatic version bump (main & candidate)
+
+on:
+  push:
+    branches:
+      - main
+      - candidate
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test --silent
+
+      - name: Determine target branch
+        id: target
+        run: |
+          # The workflow may be triggered on main or candidate (or manually). Use GITHUB_REF_NAME.
+          REF_NAME="${{ github.ref_name }}"
+          echo "trigger_ref=$REF_NAME" > $GITHUB_OUTPUT
+          # Use this name as base for bump PR/branch
+          echo "base_branch=$REF_NAME" > $GITHUB_OUTPUT
+
+      - name: Bump versions (changesets)
+        id: changesets
+        run: |
+          BRANCH="auto-bump/${{ steps.target.outputs.base_branch }}/$(date -u +%Y%m%dT%H%M%SZ)"
+          echo "branch=$BRANCH" > $GITHUB_OUTPUT
+
+          # Run changeset versioning to update package.json files etc.
+          npx changeset version || true
+
+          # If there are changes, create a branch and commit them
+          if [ -n "$(git status --porcelain)" ]; then
+            git checkout -b "$BRANCH"
+            git add -A
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(release): automatic version bump for ${{ steps.target.outputs.base_branch }}"
+            echo "bumped=true" > $GITHUB_OUTPUT
+          else
+            echo "bumped=false" > $GITHUB_OUTPUT
+          fi
+
+      - name: Decide push vs PR
+        if: steps.changesets.outputs.bumped == 'true'
+        id: decide
+        run: |
+          BRANCH="${{ steps.changesets.outputs.branch }}"
+          echo "branch=$BRANCH" > $GITHUB_OUTPUT
+
+          # Fetch remote base branch
+          git fetch origin ${{ steps.target.outputs.base_branch }}
+
+          # Determine if origin/base is ancestor of our HEAD
+          if git merge-base --is-ancestor origin/${{ steps.target.outputs.base_branch }} HEAD; then
+            echo "can_fast_forward=true" > $GITHUB_OUTPUT
+          else
+            echo "can_fast_forward=false" > $GITHUB_OUTPUT
+          fi
+
+      - name: Push branch and merge fast-forward (fast path)
+        if: steps.decide.outputs.can_fast_forward == 'true'
+        run: |
+          BR="${{ steps.decide.outputs.branch }}"
+          git push origin "HEAD:${BR}"
+          # Attempt fast-forward merge into target base branch
+          git fetch origin ${{ steps.target.outputs.base_branch }}
+          git checkout ${{ steps.target.outputs.base_branch }}
+          git pull --ff-only origin ${{ steps.target.outputs.base_branch }}
+          git merge --ff-only "${BR}" || { echo "Fast-forward merge failed"; exit 1; }
+          git push origin ${{ steps.target.outputs.base_branch }}
+
+      - name: Open PR when remote advanced (create pull request)
+        if: steps.decide.outputs.can_fast_forward == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "chore: automatic version bump for ${{ steps.target.outputs.base_branch }}"
+          body: |
+            This PR was created automatically by the workflow to apply the version bump created by Changesets for branch ${{ steps.target.outputs.base_branch }}.
+            If there are conflicts, please resolve them locally and push the resolved bump branch.
+          base: ${{ steps.target.outputs.base_branch }}
+          branch: ${{ steps.decide.outputs.branch }}
+          labels: automated, version-bump
+
+      - name: No bump required
+        if: steps.changesets.outputs.bumped == 'false'
+        run: echo "No version bump detected for ${{ steps.target.outputs.base_branch }}. Nothing to do."
