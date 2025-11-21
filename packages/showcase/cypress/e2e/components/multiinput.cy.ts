@@ -63,13 +63,13 @@ describe(CY_CATEGORIES.events, () => {
     const eventType: LfMultiInputEvent = "select-history";
     cy.checkEvent(componentSlug, eventType);
 
-    // Use the preset history example to guarantee chips are present.
-    cy.get(eventElement)
-      .contains("Prompt history")
-      .parentsUntil("[data-cy=\"showcase-example\"]")
-      .parent()
+    cy.contains(".example__description", "History mode with preset dataset")
+      .parents(".example")
       .within(() => {
-        cy.findCyElement(CY_ATTRIBUTES.node).first().click();
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(CY_ATTRIBUTES.node)
+          .first()
+          .click();
       });
 
     cy.getCyElement(check).should("exist");
@@ -80,12 +80,12 @@ describe(CY_CATEGORIES.events, () => {
     const eventType: LfMultiInputEvent = "clear-history";
     cy.checkEvent(componentSlug, eventType);
 
-    cy.get(eventElement)
-      .contains("Prompt history")
-      .parentsUntil("[data-cy=\"showcase-example\"]")
-      .parent()
+    cy.contains(".example__description", "History mode with preset dataset")
+      .parents(".example")
       .within(() => {
-        cy.findCyElement(CY_ATTRIBUTES.button).click();
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(CY_ATTRIBUTES.maskedSvg)
+          .click();
       });
 
     cy.getCyElement(check).should("exist");
@@ -132,37 +132,45 @@ describe(CY_CATEGORIES.props, () => {
   });
 
   it("history: free input should populate chips on change", () => {
-    const { eventElement } = CY_ALIASES;
     const { input, node } = CY_ATTRIBUTES;
 
-    cy.get(eventElement)
-      .contains("History mode with free input")
-      .parentsUntil("[data-cy=\"showcase-example\"]")
-      .parent()
+    cy.contains(".example__description", "History mode with free input")
+      .parents(".example")
       .within(() => {
-        cy.findCyElement(input).first().focus().type("my prompt{enter}").blur();
-        cy.findCyElement(node).contains("my prompt").should("exist");
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(input)
+          .first()
+          .focus()
+          .type("my prompt{enter}")
+          .blur();
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(node)
+          .contains("my prompt")
+          .should("exist");
       });
   });
 
   it("tags: free input should create new tags when allowed", () => {
-    const { eventElement } = CY_ALIASES;
     const { input, node } = CY_ATTRIBUTES;
 
-    cy.get(eventElement)
-      .contains("Tags mode with free input allowed")
-      .parentsUntil("[data-cy=\"showcase-example\"]")
-      .parent()
+    cy.contains(".example__description", "Tags mode with free input allowed")
+      .parents(".example")
       .within(() => {
-        cy.findCyElement(input)
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(input)
           .first()
           .focus()
           .type("new-tag-1, new-tag-2{enter}")
           .blur();
-        cy.findCyElement(node).contains("new-tag-1").should("exist");
-        cy.findCyElement(node).contains("new-tag-2").should("exist");
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(node)
+          .contains("new-tag-1")
+          .should("exist");
+        cy.get('[data-cy="showcase-example"]')
+          .findCyElement(node)
+          .contains("new-tag-2")
+          .should("exist");
       });
   });
 });
 //#endregion
-
