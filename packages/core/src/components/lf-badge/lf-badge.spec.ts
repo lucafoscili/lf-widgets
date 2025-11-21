@@ -46,4 +46,26 @@ describe("lf-badge component", () => {
     const image = page.root.shadowRoot.querySelector("lf-image");
     expect(image).not.toBeNull();
   });
+
+  it("sets props programmatically", async () => {
+    const page = await createPage(`<lf-badge></lf-badge>`);
+    const component = page.rootInstance as LfBadge;
+
+    component.lfLabel = "Dynamic Label";
+    component.lfPosition = "bottom-right";
+    component.lfStyle = "color: blue;";
+    await page.waitForChanges();
+
+    const props = await component.getProps();
+    expect(props.lfLabel).toBe("Dynamic Label");
+    expect(props.lfPosition).toBe("bottom-right");
+    expect(props.lfStyle).toBe("color: blue;");
+  });
+
+  it("calls getDebugInfo method", async () => {
+    const page = await createPage(`<lf-badge></lf-badge>`);
+    const component = page.rootInstance as LfBadge;
+    const debugInfo = await component.getDebugInfo();
+    expect(debugInfo).toBeDefined();
+  });
 });

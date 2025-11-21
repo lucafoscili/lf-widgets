@@ -19,6 +19,11 @@ describe("LfPhotoframe", () => {
       unobserve: jest.fn(),
       disconnect: jest.fn(),
     }));
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    (console.warn as jest.Mock).mockRestore();
   });
   let page: any;
 

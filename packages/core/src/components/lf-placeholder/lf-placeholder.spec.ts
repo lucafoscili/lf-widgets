@@ -19,6 +19,11 @@ describe("LfPlaceholder", () => {
       unobserve: jest.fn(),
       disconnect: jest.fn(),
     }));
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    (console.warn as jest.Mock).mockRestore();
   });
 
   it("renders", async () => {

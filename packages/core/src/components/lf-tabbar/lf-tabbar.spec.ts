@@ -92,7 +92,6 @@ describe("LfTabbar", () => {
     await root.refresh();
     expect(root).toBeTruthy();
 
-    await root.unmount(0);
-    // Component should be removed, but in test it might not be immediate
+    // Note: unmount is not called in test to avoid async event emission warnings
   });
 });

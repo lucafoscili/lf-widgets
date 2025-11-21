@@ -562,7 +562,7 @@ export class LfMasonry implements LfMasonryInterface {
   }
   componentDidLoad() {
     window.addEventListener("resize", this.#handleResize);
-    this.viewportWidth = window.innerWidth;
+    this.viewportWidth = window.innerWidth; // re-render expected
 
     const { info } = this.#framework.debug;
 

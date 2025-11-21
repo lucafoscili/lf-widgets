@@ -74,4 +74,53 @@ describe("lf-code component", () => {
     const page = await createPage(`<lf-code lf-ui-size="small"></lf-code>`);
     expect(page.root.getAttribute("lf-ui-size")).toBe("small");
   });
+
+  it("sets props programmatically", async () => {
+    const page = await createPage(`<lf-code></lf-code>`);
+    const component = page.rootInstance as LfCode;
+
+    component.lfValue = "console.log('test');";
+    component.lfLanguage = "javascript";
+    component.lfShowHeader = true;
+    component.lfShowCopy = true;
+    component.lfStyle = "border: 1px solid black;";
+    await page.waitForChanges();
+
+    const props = await component.getProps();
+    expect(props.lfValue).toBe("console.log('test');");
+    expect(props.lfLanguage).toBe("javascript");
+    expect(props.lfShowHeader).toBe(true);
+    expect(props.lfShowCopy).toBe(true);
+    expect(props.lfStyle).toBe("border: 1px solid black;");
+  });
+
+  it("calls getDebugInfo method", async () => {
+    const page = await createPage(`<lf-code></lf-code>`);
+    const component = page.rootInstance as LfCode;
+    const debugInfo = await component.getDebugInfo();
+    expect(debugInfo).toBeDefined();
+  });
+
+  it("calls refresh method", async () => {
+    const page = await createPage(`<lf-code></lf-code>`);
+    const component = page.rootInstance as LfCode;
+    await component.refresh();
+    expect(page.root).toBeTruthy();
+  });
+
+  it("handles empty value", async () => {
+    const page = await createPage(`<lf-code></lf-code>`);
+    page.rootInstance.lfValue = "";
+    await page.waitForChanges();
+    const pre = page.root.shadowRoot.querySelector("pre");
+    expect(pre).not.toBeNull();
+    expect(pre.textContent.trim()).toBe("");
+  });
+
+  it("renders with custom theme", async () => {
+    const page = await createPage(
+      `<lf-code lf-ui-state="secondary"></lf-code>`,
+    );
+    expect(page.root.getAttribute("lf-ui-state")).toBe("secondary");
+  });
 });
