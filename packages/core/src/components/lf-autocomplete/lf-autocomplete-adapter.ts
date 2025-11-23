@@ -19,16 +19,9 @@ export const createAdapter = (
       const adapter = getAdapter();
       const { controller, elements } = adapter;
       const { manager } = controller.get;
-      const { dropdown, textfield } = elements.refs;
-      const { close, getState, isInPortal, open } = manager.portal;
+      const { autocomplete, dropdown, textfield } = elements.refs;
+      const { close, isInPortal, open } = manager.portal;
 
-      const resolveParent = () => {
-        const existingState = dropdown && getState(dropdown);
-        if (existingState?.parent) {
-          return existingState.parent;
-        }
-        return (dropdown?.parentElement || textfield) as HTMLElement;
-      };
       const syncDropdownWidth = () => {
         if (!dropdown || !textfield) {
           return;
@@ -44,14 +37,14 @@ export const createAdapter = (
           close(dropdown);
           break;
         case "open":
-          open(dropdown, resolveParent(), textfield);
+          open(dropdown, autocomplete, textfield);
           syncDropdownWidth();
           break;
         default:
           if (isInPortal(dropdown)) {
             close(dropdown);
           } else {
-            open(dropdown, resolveParent(), textfield);
+            open(dropdown, autocomplete, textfield);
             syncDropdownWidth();
           }
           break;
@@ -74,6 +67,7 @@ export const createAdapter = (
 
 const prepRefs = (): LfAutocompleteAdapterRefs => {
   return {
+    autocomplete: null,
     dropdown: null,
     list: null,
     spinner: null,

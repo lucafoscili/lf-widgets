@@ -19,7 +19,7 @@ import {
   LfListEventPayload,
   LfListInterface,
 } from "./list.declarations";
-import { LfSpinnerInterface } from "./spinner.declarations";
+import { LfSpinnerElement, LfSpinnerInterface } from "./spinner.declarations";
 import {
   LfTextfieldElement,
   LfTextfieldEventPayload,
@@ -109,9 +109,10 @@ export interface LfAutocompleteAdapterJsx {
   textfield: () => VNode;
 }
 export interface LfAutocompleteAdapterRefs {
+  autocomplete: HTMLDivElement;
   dropdown: HTMLElement;
   list: LfListElement;
-  spinner: HTMLElement;
+  spinner: LfSpinnerElement;
   textfield: LfTextfieldElement;
 }
 export interface LfAutocompleteAdapterHandlers {
