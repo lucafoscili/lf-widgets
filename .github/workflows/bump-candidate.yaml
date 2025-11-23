@@ -93,13 +93,23 @@ jobs:
 
       - name: Sync changes with latest candidate commit
         run: |
-          # Commit the staged changes temporarily
+          # Commit the staged changes first
           git add .
-          git commit -m "temp: staged version bump changes"
+          git commit -m "chore: version bump for release candidate"
 
-          # Fetch latest changes and rebase onto them
+          # Fetch latest changes from candidate
           git fetch origin candidate
-          git rebase origin/candidate -X ours
+
+          # Merge with ours strategy to preserve version bump changes
+          # This ensures our version bump commit stays on top
+          git merge origin/candidate --strategy-option ours --no-edit || true
+
+          # If there were conflicts, they're now resolved in favor of our changes
+          # Ensure we're ahead of candidate for PR creation
+          if git diff --quiet origin/candidate; then
+            echo "No differences from origin/candidate, amending commit"
+            git commit --amend --no-edit --allow-empty
+          fi
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v5

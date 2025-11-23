@@ -143,13 +143,23 @@ jobs:
       - name: Sync changes with latest main commit
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
         run: |
-          # Commit the staged changes temporarily
+          # Commit the staged changes first
           git add .
-          git commit -m "temp: staged version bump changes"
+          git commit -m "chore: version bump for release"
 
-          # Fetch latest changes and rebase onto them
+          # Fetch latest changes from main
           git fetch origin main
-          git rebase origin/main -X ours
+
+          # Merge with ours strategy to preserve version bump changes
+          # This ensures our version bump commit stays on top
+          git merge origin/main --strategy-option ours --no-edit || true
+
+          # If there were conflicts, they're now resolved in favor of our changes
+          # Ensure we're ahead of main for PR creation
+          if git diff --quiet origin/main; then
+            echo "No differences from origin/main, amending commit"
+            git commit --amend --no-edit --allow-empty
+          fi
 
       - name: Create or Update Pull Request
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}
