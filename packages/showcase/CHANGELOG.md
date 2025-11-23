@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/lucafoscili/lf-widgets/compare/v2.0.0...2.0.1) (2025-11-23)
+
+
+### Bug Fixes
+
+* Remove redundant height property from portal styles ([c5b19c6](https://github.com/lucafoscili/lf-widgets/commit/c5b19c6f8f116d79b3a4fd8df2dceed6af5c98ff))
+
+
+
+
+
 ## [2.0.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.0...2.0.1-rc.0) (2025-11-23)
 
 
