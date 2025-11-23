@@ -149,7 +149,7 @@ jobs:
 
           # Fetch latest changes and rebase onto them
           git fetch origin main
-          git rebase origin/main
+          git rebase origin/main -X ours
 
       - name: Create or Update Pull Request
         if: ${{ steps.bump_control.outputs.should == 'true' && steps.check_changes.outputs.has_changes == 'true' }}

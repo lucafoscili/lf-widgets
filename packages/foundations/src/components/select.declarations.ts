@@ -89,6 +89,7 @@ export interface LfSelectAdapterJsx {
 }
 export interface LfSelectAdapterRefs {
   list: LfListElement;
+  select: HTMLDivElement;
   textfield: LfTextfieldElement;
 }
 export interface LfSelectAdapterHandlers {
