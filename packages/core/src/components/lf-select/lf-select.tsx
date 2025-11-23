@@ -410,6 +410,11 @@ export class LfSelect implements LfSelectInterface {
             class={bemClass(this.#b.select._)}
             data-lf={this.#lf[this.lfUiState]}
             part={this.#p.select}
+            ref={(el) => {
+              if (el) {
+                this.#adapter.elements.refs.select = el;
+              }
+            }}
           >
             {this.#adapter.elements.jsx.textfield()}
             {this.#adapter.elements.jsx.list()}

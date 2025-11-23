@@ -19,7 +19,7 @@ export const createAdapter = (
       const adapter = getAdapter();
       const { controller, elements } = adapter;
       const { manager } = controller.get;
-      const { list, textfield } = elements.refs;
+      const { list, select, textfield } = elements.refs;
 
       const { close, isInPortal, open } = manager.portal;
 
@@ -28,13 +28,13 @@ export const createAdapter = (
           close(list);
           break;
         case "open":
-          open(list, textfield);
+          open(list, select, textfield);
           break;
         default:
           if (isInPortal(list)) {
             close(list);
           } else {
-            open(list, textfield);
+            open(list, select, textfield);
           }
           break;
       }
@@ -59,6 +59,7 @@ export const createAdapter = (
 export const prepRefs = (): LfSelectAdapterRefs => {
   return {
     list: null,
+    select: null,
     textfield: null,
   };
 };
