@@ -74,7 +74,7 @@ export const GLOBAL_STYLES = {
   ],
   ".lf-portal [data-lf=portal]": {
     "display": "block",
-    "height": "max-content",
+    "height": "auto",
     "max-height": "45dvh",
     "max-width": "45dvw",
     "overflow": "auto",
