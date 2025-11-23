@@ -37,6 +37,7 @@ publish-main.yaml (publishes to NPM with "latest" tag)
   - Uses Lerna with `--conventional-prerelease` and `--preid=rc`
   - Creates PR with `release:rc` label
   - Builds packages, runs unit tests, and formats code
+  - **Sync strategy:** Uses merge (not rebase) to preserve version bump commits
 - **Skip conditions:** `[skip bump]`, `chore: bump versions`, or manual skip input
 
 #### `bump-main.yaml`
@@ -47,6 +48,7 @@ publish-main.yaml (publishes to NPM with "latest" tag)
   - Removes `-rc.X` suffix if present
   - Creates PR with `release:production` label
   - Builds packages and runs unit tests
+  - **Sync strategy:** Uses merge (not rebase) to preserve version bump commits
 - **Skip conditions:** Same as candidate workflow
 
 ---
@@ -126,6 +128,7 @@ publish-main.yaml (publishes to NPM with "latest" tag)
 - Concurrency control in test workflows
 - Fetch depth and tags for proper versioning
 - Delete branch after PR merge
+- **Merge strategy over rebase:** Version bump workflows use `git merge` with `--strategy-option ours` instead of `git rebase` to ensure version bump commits are preserved and not dropped as "already upstream"
 
 ---
 
@@ -145,6 +148,7 @@ All workflows support `workflow_dispatch` where needed. To manually trigger:
 - **Version bump not happening:** Check for `[skip bump]` in commit message
 - **Publishing not triggered:** Verify PR has correct label (`release:rc` or `release:production`)
 - **Tests failing:** Check Cypress output in Actions logs
+- **PR not being created:** The merge strategy ensures the branch is ahead of the base branch. If issues persist, check workflow logs for git merge conflicts
 
 ### Key Labels
 
