@@ -54,6 +54,7 @@ Built with modern standards and best practices in mind, LF Widgets offers a coll
     - [LfMasonry](#lfmasonry)
     - [LfMessenger](#lfmessenger)
   - [Contributing](#contributing)
+    - [Sass / Styling Guidelines](#sass--styling-guidelines)
   - [A `Comfy` Marriage](#a-comfy-marriage)
   - [Documentation](#documentation)
     - [Credits](#credits)
@@ -391,7 +392,10 @@ This project uses several fonts from [Google Fonts](https://fonts.google.com/), 
 
 - BebasNeue-Regular
 - Cinzel-Regular
+- CormorantGaramond-Regular
+- EB Garamond-Regular
 - IMFellEnglishSC-Regular
+- JetBrainsMono-Regular
 - Lato-Regular
 - Merriweather-Regular
 - Montserrat-Regular

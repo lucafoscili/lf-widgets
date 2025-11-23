@@ -48,7 +48,10 @@ export const LF_THEME_FONTS_PREFIX = "--lf-font-" as const;
 export const LF_THEME_FONTS_FONTFACE = {
   bebasNeue: "BebasNeue",
   cinzel: "Cinzel",
+  cormorantGaramond: "CormorantGaramond",
+  ebGaramond: "EBGaramond",
   IMFellEnglishSC: "IMFellEnglishSC",
+  jetBrainsMono: "JetBrainsMono",
   lato: "Lato",
   merriweather: "Merriweather",
   montserrat: "Montserrat",
@@ -427,6 +430,55 @@ export const ABYSS: LfThemeElement = {
 } as const;
 //#endregion
 
+//#region Bloodmoon
+export const BLOODMOON: LfThemeElement = {
+  font: [
+    LF_THEME_FONTS_FONTFACE.cormorantGaramond,
+    LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+  ],
+  isDark: true,
+  variables: {
+    ...DARK.variables,
+    "--lf-color-bg": "#070001",
+    "--lf-color-surface": "#150003",
+    "--lf-color-drawer": "#150003",
+    "--lf-color-header": "#150003",
+    "--lf-color-border": "#3a0a14",
+    "--lf-color-primary": "#ff002e", // Blood nova
+    "--lf-color-on-primary": "#050000",
+    "--lf-color-secondary": "#d8307a", // Magenta-crimson
+    "--lf-color-on-secondary": "#fff0f6",
+    "--lf-color-on-bg": "#e8c7c7",
+    "--lf-color-on-surface": "#ffd6d6",
+    "--lf-color-on-border": "#b58a8a",
+    "--lf-color-link": "#ff4066",
+    "--lf-color-on-link": "#050000",
+    "--lf-color-danger": "#ff1a3c",
+    "--lf-color-on-danger": "#ffe5ea",
+    "--lf-color-warning": "#ff7700",
+    "--lf-color-on-warning": "#1a0b00",
+    "--lf-color-success": "#d4ff4d",
+    "--lf-color-on-success": "#1c2600",
+    "--lf-color-info": "#d933ff",
+    "--lf-color-on-info": "#f6e4ff",
+    "--lf-color-data-1": "#ff557a",
+    "--lf-color-data-2": "#ff0033",
+    "--lf-color-data-3": "#b30059",
+    "--lf-color-data-4": "#ff7700",
+    "--lf-color-data-5": "#ffd200",
+    "--lf-color-data-6": "#d933ff",
+    "--lf-color-data-7": "#ff5e00",
+    "--lf-color-spinner": "#ff5500",
+    "--lf-color-on-spinner": "#ffe6d9",
+    "--lf-ui-border-radius": "0.5em",
+    "--lf-ui-radius-ripple": "50%",
+    "--lf-font-family-primary": "Cormorant Garamond, serif",
+    "--lf-font-family-monospace": "Jet Brains Mono, monospace",
+    "--lf-font-size": "15px",
+  },
+} as const;
+//#endregion
+
 //#region Eris
 export const ERIS: LfThemeElement = {
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
@@ -609,6 +661,56 @@ export const SAKURA: LfThemeElement = {
 } as const;
 //#endregion
 
+//#region Sepulchre
+export const SEPULCHRE: LfThemeElement = {
+  font: [
+    LF_THEME_FONTS_FONTFACE.ebGaramond,
+    LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+  ],
+  isDark: false,
+  variables: {
+    ...LIGHT.variables,
+    "--lf-color-bg": "#f5eee1", // warm parchment
+    "--lf-color-surface": "#f0e4d2", // slightly darker parchment
+    "--lf-color-drawer": "#efe1cc",
+    "--lf-color-header": "#efe1cc",
+    "--lf-color-border": "#c5b39a", // aged bronze
+    "--lf-color-on-bg": "#2b2117", // soot brown
+    "--lf-color-on-surface": "#261c13",
+    "--lf-color-on-border": "#715e47",
+    "--lf-color-link": "#8a5c2b", // inked sepia
+    "--lf-color-on-link": "#fdf5e8",
+    "--lf-color-primary": "#d09c3f", // candle flame gold
+    "--lf-color-on-primary": "#1b1408",
+    "--lf-color-secondary": "#a56a4a", // terracotta / clay
+    "--lf-color-on-secondary": "#fff7ee",
+    "--lf-color-danger": "#b84a4a", // dried blood
+    "--lf-color-on-danger": "#fff5f5",
+    "--lf-color-warning": "#d59c3b", // warm amber
+    "--lf-color-on-warning": "#221408",
+    "--lf-color-success": "#6e9b4d", // olive green
+    "--lf-color-on-success": "#0f180a",
+    "--lf-color-info": "#6683a6", // dusty chapel blue
+    "--lf-color-on-info": "#f7fbff",
+    "--lf-color-data-1": "#c7894a", // warm ochre
+    "--lf-color-data-2": "#b45b5b", // muted red
+    "--lf-color-data-3": "#7a8d5a", // moss
+    "--lf-color-data-4": "#8b7260", // incense smoke
+    "--lf-color-data-5": "#c7a86a", // aged gold
+    "--lf-color-data-6": "#7b8fa8", // dusty blue-grey
+    "--lf-color-data-7": "#9b6b4c", // burnt umber
+    "--lf-color-spinner": "#b38b4e", // brass
+    "--lf-color-on-spinner": "#fdf6e9",
+    "--lf-font-family-primary": "'E B Garamond', serif",
+    "--lf-font-family-monospace": "'JetBrains Mono', monospace",
+    "--lf-font-size": "16px",
+    "--lf-ui-border-radius": "0.35rem",
+    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-box-shadow-modal": "0 18px 45px rgba(80, 55, 20, 0.45)",
+  },
+} as const;
+//#endregion
+
 //#region Steampunk
 export const STEAMPUNK: LfThemeElement = {
   font: [
@@ -682,6 +784,42 @@ export const URBAN: LfThemeElement = {
 } as const;
 //#endregion
 
+//#region Voidforge
+export const VOIDFORGE: LfThemeElement = {
+  font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
+  isDark: true,
+  variables: {
+    ...DARK.variables,
+    "--lf-color-bg": "#020308",
+    "--lf-color-surface": "#050818",
+    "--lf-color-drawer": "#050818",
+    "--lf-color-header": "#050818",
+    "--lf-color-border": "#151824",
+    "--lf-color-primary": "#27f3ff", // cyan-teal glow
+    "--lf-color-on-primary": "#020309",
+    "--lf-color-secondary": "#a855ff", // magenta-violet glow
+    "--lf-color-on-secondary": "#05010b",
+    "--lf-color-on-bg": "#e4ecff",
+    "--lf-color-on-surface": "#d5d9ff",
+    "--lf-color-on-border": "#8b93c4",
+    "--lf-color-link": "#53b7ff",
+    "--lf-color-on-link": "#010308",
+    "--lf-color-data-1": "#26ffe0", // teal
+    "--lf-color-data-2": "#ff6bcb", // pink
+    "--lf-color-data-3": "#9b6bff", // violet
+    "--lf-color-data-4": "#4bff9b", // mint
+    "--lf-color-data-5": "#ffe45e", // yellow
+    "--lf-color-data-6": "#ff9b4b", // orange
+    "--lf-color-data-7": "#4bc7ff", // cyan
+    "--lf-color-spinner": "#262a3c",
+    "--lf-color-on-spinner": "#cfe5ff",
+    "--lf-ui-border-radius": "0.75em",
+    "--lf-ui-radius-ripple": "50%",
+    "--lf-font-size": "15px",
+  },
+} as const;
+//#endregion
+
 //#region Wizardry
 export const WIZARDRY: LfThemeElement = {
   font: [LF_THEME_FONTS_FONTFACE.uncialAntiqua, LF_THEME_FONTS_FONTFACE.cinzel],
@@ -721,6 +859,7 @@ export const WIZARDRY: LfThemeElement = {
 //#region Theme List
 export const THEME_LIST: LfThemeList = {
   abyss: ABYSS,
+  bloodmoon: BLOODMOON,
   dark: DARK,
   eris: ERIS,
   light: LIGHT,
@@ -728,8 +867,10 @@ export const THEME_LIST: LfThemeList = {
   night: NIGHT,
   pastel: PASTEL,
   sakura: SAKURA,
+  sepulchre: SEPULCHRE,
   steampunk: STEAMPUNK,
   urban: URBAN,
+  voidforge: VOIDFORGE,
   wizardry: WIZARDRY,
 } as const;
 //#endregion

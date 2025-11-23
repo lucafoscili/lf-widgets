@@ -8,12 +8,15 @@ $comp: "autocomplete";
   & {
     @include lf-el-stretch;
   }
+
+  &__textfield {
+    & {
+      @include lf-el-stretch;
+    }
+  }
 }
 
 .dropdown {
-  & {
-  }
-
   &__spinner {
     min-height: 0.25em;
   }

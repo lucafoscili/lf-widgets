@@ -5,10 +5,10 @@ import {
   LfCardPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -509,6 +509,7 @@ export const getCardFixtures = (
       ...Object.keys(lfDatasets).reduce(
         (acc, layout) => {
           const l = layout as LfCardLayout;
+          const size = l === "weather" ? "auto" : "320px";
           acc[l] = {
             ...lfDatasets[l].reduce(
               (acc, data, index) => {
@@ -518,8 +519,8 @@ export const getCardFixtures = (
                   props: {
                     lfDataset: data,
                     lfLayout: l,
-                    lfSizeX: "320px",
-                    lfSizeY: "320px",
+                    lfSizeX: size,
+                    lfSizeY: size,
                   },
                 };
                 acc[`${layout}-${index}-style`] = {
@@ -527,8 +528,8 @@ export const getCardFixtures = (
                   props: {
                     lfDataset: data,
                     lfLayout: l,
-                    lfSizeX: "320px",
-                    lfSizeY: "320px",
+                    lfSizeX: size,
+                    lfSizeY: size,
                     lfStyle: randomStyle(),
                   },
                 };

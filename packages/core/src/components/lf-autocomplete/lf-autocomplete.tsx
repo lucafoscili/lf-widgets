@@ -653,13 +653,18 @@ export class LfAutocomplete implements LfAutocompleteInterface {
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div
-            class={bemClass(this.#b.autocomplete._)}
-            data-lf={this.#lf[this.lfUiState]}
-            part={this.#p.autocomplete}
-            role="combobox"
             aria-expanded={isExpanded ? "true" : "false"}
             aria-haspopup="listbox"
             aria-owns={dropdownId}
+            class={bemClass(this.#b.autocomplete._)}
+            data-lf={this.#lf[this.lfUiState]}
+            part={this.#p.autocomplete}
+            ref={(el) => {
+              if (el) {
+                this.#adapter.elements.refs.autocomplete = el;
+              }
+            }}
+            role="combobox"
           >
             {this.#adapter.elements.jsx.textfield()}
             {this.#adapter.elements.jsx.dropdown()}
