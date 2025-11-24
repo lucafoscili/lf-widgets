@@ -6,6 +6,8 @@ export * from "./autocomplete.constants";
 export * from "./autocomplete.declarations";
 export * from "./badge.constants";
 export * from "./badge.declarations";
+export * from "./breadcrumbs.constants";
+export * from "./breadcrumbs.declarations";
 export * from "./button.constants";
 export * from "./button.declarations";
 export * from "./canvas.constants";

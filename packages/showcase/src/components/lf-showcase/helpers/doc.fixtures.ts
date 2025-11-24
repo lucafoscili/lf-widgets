@@ -4,6 +4,7 @@ import { getArticleFixtures } from "../assets/data/article";
 import { getAutocompleteFixtures } from "../assets/data/autocomplete";
 import { getBadgeFixtures } from "../assets/data/badge";
 import { getButtonFixtures } from "../assets/data/button";
+import { getBreadcrumbsFixtures } from "../assets/data/breadcrumbs";
 import { getCanvasFixtures } from "../assets/data/canvas";
 import { getCardFixtures } from "../assets/data/card";
 import { getCarouselFixtures } from "../assets/data/carousel";
@@ -62,6 +63,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getAutocompleteFixtures(framework);
     case "lf-badge":
       return getBadgeFixtures(framework);
+    case "lf-breadcrumbs":
+      return getBreadcrumbsFixtures(framework);
     case "lf-button":
       return getButtonFixtures(framework);
     case "lf-canvas":

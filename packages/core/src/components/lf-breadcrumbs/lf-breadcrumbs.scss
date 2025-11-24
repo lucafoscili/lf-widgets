@@ -1,0 +1,78 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "breadcrumbs";
+@include lf-comp-setup($comp, "true", "true");
+
+//FIXME: reference other components for the mixins to use and the variables description. Keep in mind LFW uses the glass design system.
+:host {
+  display: block;
+}
+
+.breadcrumbs {
+  & {
+    align-items: center;
+    color: var(--lf-#{$comp}-color, var(--lf-color-text));
+    display: inline-flex;
+    gap: var(--lf-#{$comp}-gap, 0.5rem);
+  }
+
+  &__list {
+    align-items: center;
+    display: inline-flex;
+    gap: var(--lf-#{$comp}-gap, 0.5rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    @include lf-el-transition("hover-glow");
+    align-items: center;
+    color: var(--lf-#{$comp}-link-color, var(--lf-color-primary));
+    cursor: pointer;
+    display: inline-flex;
+    gap: 0.25rem;
+    position: relative;
+    text-decoration: none;
+
+    &[data-disabled="true"] {
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lf-color-focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-current="page"] {
+      color: var(--lf-#{$comp}-current-color, var(--lf-color-text));
+      cursor: default;
+      font-weight: 600;
+    }
+  }
+
+  &__separator {
+    color: var(--lf-#{$comp}-separator-color, var(--lf-color-text-secondary));
+    user-select: none;
+  }
+
+  &__truncation {
+    color: var(--lf-#{$comp}-separator-color, var(--lf-color-text-secondary));
+  }
+
+  &__label {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+  }
+
+  &__empty {
+    color: var(--lf-#{$comp}-empty-color, var(--lf-color-text-secondary));
+    font-style: italic;
+  }
+}
