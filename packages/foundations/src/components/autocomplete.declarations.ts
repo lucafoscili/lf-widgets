@@ -1,4 +1,12 @@
-import { CY_ATTRIBUTES, LF_ATTRIBUTES } from "../foundations";
+import {
+  CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
+  LfComponentAdapterGetters,
+  LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
+} from "../foundations";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -52,7 +60,8 @@ export interface LfAutocompleteAdapter {
   };
   handlers: LfAutocompleteAdapterHandlers;
 }
-export interface LfAutocompleteAdapterControllerGetters {
+export interface LfAutocompleteAdapterControllerGetters
+  extends LfComponentAdapterGetters<LfAutocompleteInterface> {
   blocks: typeof LF_AUTOCOMPLETE_BLOCKS;
   cache: () => Map<string, { dataset: LfDataDataset; timestamp: number }>;
   compInstance: LfAutocompleteInterface;
@@ -89,7 +98,8 @@ export type LfAutocompleteAdapterInitializerGetters = Pick<
   | "parts"
   | "selectedNode"
 >;
-export interface LfAutocompleteAdapterControllerSetters {
+export interface LfAutocompleteAdapterControllerSetters
+  extends LfComponentAdapterSetters {
   blurTimeout: {
     clear: () => void;
     new: (callback: () => void, delay?: number) => void;
@@ -104,18 +114,19 @@ export type LfAutocompleteAdapterInitializerSetters = Pick<
   LfAutocompleteAdapterControllerSetters,
   "blurTimeout" | "dataset" | "input" | "select" | "highlight"
 >;
-export interface LfAutocompleteAdapterJsx {
+export interface LfAutocompleteAdapterJsx extends LfComponentAdapterJsx {
   dropdown: () => VNode;
   textfield: () => VNode;
 }
-export interface LfAutocompleteAdapterRefs {
+export interface LfAutocompleteAdapterRefs extends LfComponentAdapterRefs {
   autocomplete: HTMLDivElement;
   dropdown: HTMLElement;
   list: LfListElement;
   spinner: LfSpinnerElement;
   textfield: LfTextfieldElement;
 }
-export interface LfAutocompleteAdapterHandlers {
+export interface LfAutocompleteAdapterHandlers
+  extends LfComponentAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }
