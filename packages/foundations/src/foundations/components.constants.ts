@@ -2,6 +2,7 @@ import { LF_ACCORDION_PROPS } from "../components/accordion.constants";
 import { LF_ARTICLE_PROPS } from "../components/article.constants";
 import { LF_AUTOCOMPLETE_PROPS } from "../components/autocomplete.constants";
 import { LF_BADGE_PROPS } from "../components/badge.constants";
+import { LF_BREADCRUMBS_PROPS } from "../components/breadcrumbs.constants";
 import { LF_BUTTON_PROPS } from "../components/button.constants";
 import { LF_CANVAS_PROPS } from "../components/canvas.constants";
 import { LF_CARD_PROPS } from "../components/card.constants";
@@ -122,6 +123,7 @@ export const getComponentProps = (): {
     LfArticle: LF_ARTICLE_PROPS,
     LfAutocomplete: LF_AUTOCOMPLETE_PROPS,
     LfBadge: LF_BADGE_PROPS,
+    LfBreadcrumbs: LF_BREADCRUMBS_PROPS,
     LfButton: LF_BUTTON_PROPS,
     LfCanvas: LF_CANVAS_PROPS,
     LfCard: LF_CARD_PROPS,

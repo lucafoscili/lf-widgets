@@ -106,6 +106,12 @@ export const LF_SHOWCASE_COMPONENTS = (
         value: "Badge",
       },
       {
+        description: "Displays a hierarchical navigation trail.",
+        icon: layoutNavbarInactive,
+        id: "Breadcrumbs",
+        value: "Breadcrumbs",
+      },
+      {
         description:
           "Provides a reusable button for various user interactions.",
         icon: innerShadowBottom,
