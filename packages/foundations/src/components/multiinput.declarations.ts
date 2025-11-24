@@ -1,4 +1,13 @@
-import { CY_ATTRIBUTES, LF_ATTRIBUTES, VNode } from "../foundations";
+import {
+  CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
+  LfComponentAdapterGetters,
+  LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
+  VNode,
+} from "../foundations";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -52,9 +61,9 @@ export interface LfMultiInputAdapter {
   };
   handlers: LfMultiInputAdapterHandlers;
 }
-export interface LfMultiInputAdapterControllerGetters {
+export interface LfMultiInputAdapterControllerGetters
+  extends LfComponentAdapterGetters<LfMultiInputInterface> {
   blocks: typeof LF_MULTIINPUT_BLOCKS;
-  compInstance: LfMultiInputInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
   historyNodes: () => LfDataNode[];
   historyValues: () => string[];
@@ -79,7 +88,8 @@ export type LfMultiInputAdapterInitializerGetters = Pick<
   | "parts"
   | "value"
 >;
-export interface LfMultiInputAdapterControllerSetters {
+export interface LfMultiInputAdapterControllerSetters
+  extends LfComponentAdapterSetters {
   history: (nodes: LfDataNode[]) => Promise<void>;
   value: (value: string) => Promise<void>;
 }
@@ -87,15 +97,16 @@ export type LfMultiInputAdapterInitializerSetters = Pick<
   LfMultiInputAdapterControllerSetters,
   "history" | "value"
 >;
-export interface LfMultiInputAdapterJsx {
+export interface LfMultiInputAdapterJsx extends LfComponentAdapterJsx {
   chips: () => VNode | null;
   textfield: () => VNode;
 }
-export interface LfMultiInputAdapterRefs {
+export interface LfMultiInputAdapterRefs extends LfComponentAdapterRefs {
   chips: LfChipElement;
   textfield: LfTextfieldElement;
 }
-export interface LfMultiInputAdapterHandlers {
+export interface LfMultiInputAdapterHandlers
+  extends LfComponentAdapterHandlers {
   chips: (event: LfEvent<LfChipEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }

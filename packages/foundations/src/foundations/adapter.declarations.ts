@@ -83,7 +83,10 @@ export type LfComponentAdapterJsx = {
  * Recursive dictionary of DOM references collected from the rendered tree.
  */
 export type LfComponentAdapterRefs = {
-  [key: string]: HTMLElement | LfComponentAdapterRefs;
+  [key: string]:
+    | Map<string, HTMLElement>
+    | HTMLElement
+    | LfComponentAdapterRefs;
 };
 //#endregion
 
