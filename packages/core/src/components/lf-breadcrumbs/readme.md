@@ -40,9 +40,9 @@ Key features include:
 
 ## Events
 
-| Event                  | Description | Type                                                                                                                                         |
-| ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lf-breadcrumbs-event` |             | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount"> & LfBreadcrumbsEventArguments>` |
+| Event                  | Description | Type                                                                                                                                                     |
+| ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lf-breadcrumbs-event` |             | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount" \| "expand"> & LfBreadcrumbsEventArguments>` |
 
 
 ## Methods
@@ -126,6 +126,8 @@ Type: `Promise<void>`
 | `--lf-breadcrumbs-color-on-surface` | Sets the color-on-surface color for the breadcrumbs component. Defaults to => var(--lf-color-on-surface) |
 | `--lf-breadcrumbs-color-primary`    | Sets the color-primary color for the breadcrumbs component. Defaults to => var(--lf-color-primary)       |
 | `--lf-breadcrumbs-color-surface`    | Sets the color-surface color for the breadcrumbs component. Defaults to => var(--lf-color-surface)       |
+| `--lf-breadcrumbs-dot-gap`          | Sets the gap between dots. Defaults to => 0.05em                                                         |
+| `--lf-breadcrumbs-dot-gap-hover`    | Sets the gap between dots on hover. Defaults to => 0.2em                                                 |
 | `--lf-breadcrumbs-font-family`      | Sets the primary font family for the breadcrumbs component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-breadcrumbs-font-size`        | Sets the font size for the breadcrumbs component. Defaults to => var(--lf-font-size)                     |
 | `--lf-breadcrumbs-gap`              | Sets the gap between breadcrumb items. Defaults to => 0.5em                                              |

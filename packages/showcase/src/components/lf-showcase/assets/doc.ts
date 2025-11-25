@@ -735,6 +735,14 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-surface color for the breadcrumbs component. Defaults to => var(--lf-color-surface)",
       },
       {
+        name: "--lf-breadcrumbs-dot-gap",
+        docs: "Sets the gap between dots. Defaults to => 0.05em",
+      },
+      {
+        name: "--lf-breadcrumbs-dot-gap-hover",
+        docs: "Sets the gap between dots on hover. Defaults to => 0.2em",
+      },
+      {
         name: "--lf-breadcrumbs-font-family",
         docs: "Sets the primary font family for the breadcrumbs component. Defaults to => var(--lf-font-family-primary)",
       },
