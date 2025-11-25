@@ -1021,6 +1021,7 @@ export const LF_ICONS_REGISTRY = {
   refresh: "refresh",
   replace: "replace",
   robot: "robot",
+  route2: "route-2",
   schema: "schema",
   select: "select",
   search: "search",

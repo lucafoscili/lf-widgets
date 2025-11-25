@@ -9,6 +9,7 @@ export const LF_BREADCRUMBS_BLOCKS = {
     separator: "separator",
     icon: "icon",
     label: "label",
+    ripple: "ripple",
     truncation: "truncation",
     empty: "empty",
   },
@@ -19,6 +20,7 @@ export const LF_BREADCRUMBS_BLOCKS = {
 export const LF_BREADCRUMBS_EVENTS = [
   "click",
   "lf-event",
+  "pointerdown",
   "ready",
   "unmount",
 ] as const;
@@ -27,20 +29,20 @@ export const LF_BREADCRUMBS_EVENTS = [
 //#region Parts
 export const LF_BREADCRUMBS_PARTS = {
   breadcrumbs: "breadcrumbs",
-  icon: "icon",
+  current: "current",
   empty: "empty",
+  icon: "icon",
   item: "item",
   label: "label",
   list: "list",
+  ripple: "ripple",
   separator: "separator",
   truncation: "truncation",
-  current: "current",
 } as const;
 //#endregion
 
 //#region Props
 export const LF_BREADCRUMBS_PROPS = [
-  "lfCurrentNodeId",
   "lfDataset",
   "lfEmpty",
   "lfInteractive",
@@ -50,5 +52,7 @@ export const LF_BREADCRUMBS_PROPS = [
   "lfShowRoot",
   "lfStyle",
   "lfUiSize",
+  "lfUiState",
+  "lfValue",
 ] as const satisfies (keyof LfBreadcrumbsPropsInterface)[];
 //#endregion

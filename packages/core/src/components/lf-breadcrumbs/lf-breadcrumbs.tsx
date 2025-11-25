@@ -17,6 +17,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfThemeUISize,
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -29,7 +30,6 @@ import {
   Method,
   Prop,
   State,
-  Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { buildBreadcrumbPath } from "./helpers.path";
@@ -54,7 +54,7 @@ import { createAdapter } from "./lf-breadcrumbs-adapter";
  * ```html
  * <lf-breadcrumbs
  *   lf-dataset="your-dataset"
- *   lf-current-node-id="node-id"
+ *   lf-value="node-id"
  *   lf-separator=">"
  *   lf-show-root="true"
  *   lf-interactive="true"
@@ -95,10 +95,10 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
    *
    * @example
    * ```tsx
-   * <lf-breadcrumbs lf-current-node-id="node-123"></lf-breadcrumbs>
+   * <lf-breadcrumbs lf-value="node-123"></lf-breadcrumbs>
    * ```
    */
-  @Prop({ mutable: true }) lfCurrentNodeId?: string; //FIXME: shouldn't this be non-mutable & called lfValue based on the architectural guidelines?
+  @Prop({ mutable: false }) lfValue?: string;
   /**
    * Dataset used to build the breadcrumb path.
    *
@@ -216,7 +216,19 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
    * ```
    */
   @Prop({ mutable: true, reflect: true }) lfUiSize: LfThemeUISize = "medium";
-  //FIXME: investigate wheteher we need lfUiState too or if it's correctly omitted. Especially in relation to the selected state.
+  /**
+   * Reflects the specified state color defined by the theme.
+   *
+   * @type {LfThemeUIState}
+   * @default "primary"
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-button lfUiState="success"></lf-button>
+   * ```
+   */
+  @Prop({ mutable: true }) lfUiState: LfThemeUIState = "primary";
   //#endregion
 
   //#region Internal variables
@@ -252,11 +264,9 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
       ...(args || {}),
     };
 
-    this.lfBreadcrumbsEvent.emit(payload); //FIXME: this should be the last line of the method, ensuring that all the logic is executed before emitting the event. The payload should be just built before thus line.
-
     if (
-      eventType === "click" &&
-      this.#adapter.controller.get.isEnabled(this.lfRipple) &&
+      eventType === "pointerdown" &&
+      this.#isEnabled(this.lfRipple) &&
       args?.node
     ) {
       const rippleTarget = this.#adapter?.elements.refs.ripples.get(
@@ -264,14 +274,9 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
       );
       this.#framework?.effects.ripple(e as PointerEvent, rippleTarget);
     }
-  };
-  //#endregion
 
-  //#region Watchers
-  @Watch("lfCurrentNodeId") //FIXME: this should be removed as lfCurrentNodeId (aka lfValue) is not mutable
-  handleCurrentNodeId(newValue: string) {
-    this.currentNodeId = newValue;
-  }
+    this.lfBreadcrumbsEvent.emit(payload);
+  };
   //#endregion
 
   //#region Public methods
@@ -336,7 +341,7 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
         compInstance: this,
         cyAttributes: this.#cy,
         dataset: () => this.lfDataset,
-        isEnabled: (value?) => value !== false && value !== "false",
+        isInteractive: () => this.#isEnabled(this.lfInteractive),
         lfAttributes: this.#lf,
         manager: () => this.#framework,
         parts: this.#p,
@@ -344,16 +349,16 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
           buildBreadcrumbPath(
             this.#framework,
             this.lfDataset,
-            this.currentNodeId ?? this.lfCurrentNodeId,
-            this.#adapter.controller.get.isEnabled(this.lfShowRoot),
+            this.currentNodeId ?? this.lfValue,
+            this.#isEnabled(this.lfShowRoot),
           ),
         separator: () => `${this.lfSeparator ?? ">"}`,
         uiSize: () => this.lfUiSize,
       },
       {
         currentNode: async (nodeId: string) => {
-          this.lfCurrentNodeId = nodeId;
           this.currentNodeId = nodeId;
+          await this.refresh();
         },
       },
       () => this.#adapter,
@@ -370,7 +375,7 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-    this.currentNodeId = this.lfCurrentNodeId ?? null;
+    this.currentNodeId = this.lfValue ?? null;
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -395,7 +400,13 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     return (
       <Host>
         {this.lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>{jsx.items()}</div>
+        <div
+          id={this.#w}
+          data-lf={this.#lf[this.lfUiState]}
+          part={this.#p.breadcrumbs}
+        >
+          {jsx.items()}
+        </div>
       </Host>
     );
   }
@@ -403,4 +414,8 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     this.#framework?.theme.unregister(this);
   }
   //#endregion
+
+  #isEnabled(value?: boolean | string) {
+    return value !== false && value !== "false";
+  }
 }

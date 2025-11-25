@@ -75,9 +75,12 @@ export type LfComponentAdapterHandlers = {
  * Dictionary of JSX factory helpers that generate Stencil `VNode` fragments.
  *
  * Entries may be render helpers or nested namespaces of helpers.
+ * Functions can return single VNode or VNode[] (for cases like siblings with separators).
  */
 export type LfComponentAdapterJsx = {
-  [key: string]: ((...args: unknown[]) => VNode) | LfComponentAdapterJsx;
+  [key: string]:
+    | ((...args: unknown[]) => VNode | VNode[] | null)
+    | LfComponentAdapterJsx;
 };
 /**
  * Recursive dictionary of DOM references collected from the rendered tree.
