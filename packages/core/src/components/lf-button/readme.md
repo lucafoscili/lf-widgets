@@ -163,6 +163,7 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
@@ -187,6 +188,7 @@ graph TD;
   lf-list --> lf-textfield
   lf-accordion --> lf-button
   lf-article --> lf-button
+  lf-breadcrumbs --> lf-button
   lf-card --> lf-button
   lf-carousel --> lf-button
   lf-chat --> lf-button
