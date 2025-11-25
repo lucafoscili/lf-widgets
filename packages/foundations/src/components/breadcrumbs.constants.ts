@@ -4,14 +4,15 @@ import { LfBreadcrumbsPropsInterface } from "./breadcrumbs.declarations";
 export const LF_BREADCRUMBS_BLOCKS = {
   breadcrumbs: {
     _: "breadcrumbs",
-    list: "list",
-    item: "item",
-    separator: "separator",
-    icon: "icon",
-    label: "label",
-    ripple: "ripple",
-    truncation: "truncation",
+    dot: "dot",
     empty: "empty",
+    icon: "icon",
+    item: "item",
+    label: "label",
+    list: "list",
+    ripple: "ripple",
+    separator: "separator",
+    truncation: "truncation",
   },
 } as const;
 //#endregion
@@ -19,6 +20,7 @@ export const LF_BREADCRUMBS_BLOCKS = {
 //#region Events
 export const LF_BREADCRUMBS_EVENTS = [
   "click",
+  "expand",
   "lf-event",
   "pointerdown",
   "ready",

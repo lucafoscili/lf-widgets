@@ -170,4 +170,114 @@ describe("lf-breadcrumbs component", () => {
       page.root.shadowRoot.querySelectorAll(".breadcrumbs__item").length;
     expect(updatedCount).toBe(initialCount - 1);
   });
+
+  it("expands truncated items when truncation is clicked", async () => {
+    const page = await createPage(
+      '<lf-breadcrumbs lf-max-items="3"></lf-breadcrumbs>',
+    );
+    page.root.lfDataset = sampleDataset;
+    page.root.lfValue = "phones";
+    await page.waitForChanges();
+
+    // Initially truncated: should show [Home] [...] [Phones]
+    const truncation = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    ) as HTMLElement;
+    expect(truncation).toBeTruthy();
+    const initialItems =
+      page.root.shadowRoot.querySelectorAll(".breadcrumbs__item");
+    expect(initialItems.length).toBe(2); // Only Home and Phones (truncation is not an item)
+
+    // Click on truncation to expand
+    truncation.click();
+    await page.waitForChanges();
+
+    // After expansion: should show all items
+    const truncationAfter = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    );
+    expect(truncationAfter).toBeNull(); // No more truncation
+    const expandedItems =
+      page.root.shadowRoot.querySelectorAll(".breadcrumbs__item");
+    expect(expandedItems.length).toBe(4); // All 4 items
+  });
+
+  it("emits expand event when truncation is clicked", async () => {
+    const page = await createPage(
+      '<lf-breadcrumbs lf-max-items="3"></lf-breadcrumbs>',
+    );
+    page.root.lfDataset = sampleDataset;
+    page.root.lfValue = "phones";
+    await page.waitForChanges();
+
+    const eventSpy = jest.fn();
+    page.root.addEventListener("lf-breadcrumbs-event", eventSpy);
+
+    const truncation = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    ) as HTMLElement;
+    truncation.click();
+    await page.waitForChanges();
+
+    expect(eventSpy).toHaveBeenCalled();
+    const expandEvent = eventSpy.mock.calls.find(
+      (call) => call[0].detail.eventType === "expand",
+    );
+    expect(expandEvent).toBeTruthy();
+  });
+
+  it("does not expand truncation when not interactive", async () => {
+    const page = await createPage(
+      '<lf-breadcrumbs lf-max-items="3" lf-interactive="false"></lf-breadcrumbs>',
+    );
+    page.root.lfDataset = sampleDataset;
+    page.root.lfValue = "phones";
+    await page.waitForChanges();
+
+    const truncation = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    ) as HTMLElement;
+    expect(truncation).toBeTruthy();
+    expect(truncation.getAttribute("tabindex")).toBeNull();
+
+    truncation.click();
+    await page.waitForChanges();
+
+    // Should still be truncated
+    const truncationAfter = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    );
+    expect(truncationAfter).toBeTruthy();
+  });
+
+  it("expands truncated items on keyboard Enter", async () => {
+    const page = await createPage(
+      '<lf-breadcrumbs lf-max-items="3"></lf-breadcrumbs>',
+    );
+    page.root.lfDataset = sampleDataset;
+    page.root.lfValue = "phones";
+    await page.waitForChanges();
+
+    const truncation = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    ) as HTMLElement;
+    expect(truncation).toBeTruthy();
+
+    // Dispatch Enter key event
+    const keyEvent = new KeyboardEvent("keydown", {
+      key: "Enter",
+      bubbles: true,
+    });
+    truncation.dispatchEvent(keyEvent);
+    await page.waitForChanges();
+
+    // Should be expanded
+    const truncationAfter = page.root.shadowRoot.querySelector(
+      ".breadcrumbs__truncation",
+    );
+    expect(truncationAfter).toBeNull();
+    const expandedItems =
+      page.root.shadowRoot.querySelectorAll(".breadcrumbs__item");
+    expect(expandedItems.length).toBe(4);
+  });
 });

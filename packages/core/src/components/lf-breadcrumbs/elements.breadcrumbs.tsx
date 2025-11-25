@@ -140,15 +140,17 @@ export const prepBreadcrumbsJsx = (
   //#region Items
   const items = (): VNode | null => {
     const { controller } = getAdapter();
-    const { blocks, compInstance, manager, parts, path } = controller.get;
+    const { blocks, compInstance, expanded, manager, parts, path } =
+      controller.get;
     const fw = manager();
     const { bemClass } = fw.theme;
 
     const pathNodes = path();
-    const renderable = truncateBreadcrumbPath(
-      pathNodes,
-      compInstance.lfMaxItems,
-    );
+
+    // When expanded, show all items; otherwise apply truncation
+    const renderable = expanded()
+      ? pathNodes
+      : truncateBreadcrumbPath(pathNodes, compInstance.lfMaxItems);
 
     if (!renderable.length) {
       return (
@@ -206,18 +208,33 @@ export const prepBreadcrumbsJsx = (
 
   //#region Truncation
   const truncation = (index: number, totalItems: number): VNode[] => {
-    const { controller } = getAdapter();
-    const { blocks, manager, parts } = controller.get;
+    const { controller, handlers } = getAdapter();
+    const { blocks, isInteractive, manager, parts } = controller.get;
     const { bemClass } = manager().theme;
     const isLast = index === totalItems - 1;
+    const interactive = isInteractive();
+
+    const dotClass = bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.dot);
 
     return [
       <li
         class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.truncation)}
+        data-cy="truncation"
         key={`truncation-${index}`}
+        onClick={(e) =>
+          interactive && handlers.truncation.click(e as MouseEvent)
+        }
+        onKeyDown={(e) =>
+          interactive && handlers.truncation.keydown(e as KeyboardEvent)
+        }
         part={parts.truncation}
+        role={interactive ? "button" : undefined}
+        tabIndex={interactive ? 0 : undefined}
+        title={interactive ? "Click to expand all items" : undefined}
       >
-        &hellip;
+        <span class={dotClass}>.</span>
+        <span class={dotClass}>.</span>
+        <span class={dotClass}>.</span>
       </li>,
       !isLast && separator(index),
     ];

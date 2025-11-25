@@ -13,7 +13,6 @@ export const prepBreadcrumbsHandlers = (
           return;
         }
 
-        // Update internal state to navigate to clicked node
         await controller.set.currentNode(node.id);
 
         compInstance.onLfEvent(e, "click", { node, index });
@@ -35,7 +34,6 @@ export const prepBreadcrumbsHandlers = (
           return;
         }
 
-        // Update internal state to navigate to clicked node
         await controller.set.currentNode(node.id);
 
         compInstance.onLfEvent(e, "click", { node, index });
@@ -51,6 +49,42 @@ export const prepBreadcrumbsHandlers = (
         }
 
         compInstance.onLfEvent(e, "pointerdown", { node, index });
+      },
+      //#endregion
+    },
+    truncation: {
+      //#region Click
+      click: async (e: MouseEvent) => {
+        const { controller } = getAdapter();
+        const { compInstance, expanded, isInteractive } = controller.get;
+        if (!isInteractive()) {
+          return;
+        }
+
+        await controller.set.expanded(!expanded());
+
+        compInstance.onLfEvent(e, "expand");
+      },
+      //#endregion
+
+      //#region Keydown
+      keydown: async (e: KeyboardEvent) => {
+        if (e.key !== "Enter" && e.key !== " ") {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const { controller } = getAdapter();
+        const { compInstance, expanded, isInteractive } = controller.get;
+        if (!isInteractive()) {
+          return;
+        }
+
+        await controller.set.expanded(!expanded());
+
+        compInstance.onLfEvent(e, "expand");
       },
       //#endregion
     },
