@@ -83,6 +83,7 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() currentNodeId: string = null;
+  @State() expanded: boolean = false;
   //#endregion
 
   //#region Props
@@ -341,6 +342,7 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
         compInstance: this,
         cyAttributes: this.#cy,
         dataset: () => this.lfDataset,
+        expanded: () => this.expanded,
         isInteractive: () => this.#isEnabled(this.lfInteractive),
         lfAttributes: this.#lf,
         manager: () => this.#framework,
@@ -358,6 +360,10 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
       {
         currentNode: async (nodeId: string) => {
           this.currentNodeId = nodeId;
+          await this.refresh();
+        },
+        expanded: async (value: boolean) => {
+          this.expanded = value;
           await this.refresh();
         },
       },

@@ -81,6 +81,7 @@ export interface LfBreadcrumbsAdapterControllerGetters
   blocks: typeof LF_BREADCRUMBS_BLOCKS;
   cyAttributes: typeof CY_ATTRIBUTES;
   dataset: () => LfDataDataset;
+  expanded: () => boolean;
   isInteractive: () => boolean;
   lfAttributes: typeof LF_ATTRIBUTES;
   manager: () => LfFrameworkInterface;
@@ -95,6 +96,7 @@ export type LfBreadcrumbsAdapterInitializerGetters = Pick<
   | "compInstance"
   | "cyAttributes"
   | "dataset"
+  | "expanded"
   | "isInteractive"
   | "lfAttributes"
   | "manager"
@@ -106,10 +108,11 @@ export type LfBreadcrumbsAdapterInitializerGetters = Pick<
 export interface LfBreadcrumbsAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentNode: (nodeId: string) => Promise<void>;
+  expanded: (value: boolean) => Promise<void>;
 }
 export type LfBreadcrumbsAdapterInitializerSetters = Pick<
   LfBreadcrumbsAdapterControllerSetters,
-  "currentNode"
+  "currentNode" | "expanded"
 >;
 export interface LfBreadcrumbsAdapterJsx extends LfComponentAdapterJsx {
   icon: (node: LfDataNode) => VNode | null;
@@ -132,6 +135,10 @@ export interface LfBreadcrumbsAdapterHandlers
       index: number,
     ) => Promise<void>;
     pointerdown: (e: PointerEvent, node: LfDataNode, index: number) => void;
+  };
+  truncation: {
+    click: (e: MouseEvent) => Promise<void>;
+    keydown: (e: KeyboardEvent) => Promise<void>;
   };
 }
 //#endregion
