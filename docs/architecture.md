@@ -244,6 +244,143 @@ flowchart TD
 
 The most complex components in the library are built using a combination of Stencil.js and the LF Widgets framework. This architecture allows for a clear separation of concerns and ensures that components are modular, reusable, and easy to maintain.
 
+### Component Complexity Tiers
+
+Components fall into three complexity tiers, each with specific file organization patterns:
+
+| Tier | Complexity | File Pattern | Examples |
+|------|------------|--------------|----------|
+| **Simple** | Single JSX section, few handlers | `lf-<name>-adapter.ts`, `elements.<name>.tsx`, `handlers.<name>.ts` | `lf-breadcrumbs`, `lf-radio`, `lf-chip` |
+| **Medium** | Multiple JSX sections, enhanced setters, portal | `lf-<name>-adapter.ts`, `elements.<name>.tsx`, `handlers.<name>.ts` | `lf-autocomplete`, `lf-select` |
+| **Complex** | Domain segmentation, multiple controller/handler files | `lf-<name>-adapter.ts`, `controller.<domain>.ts`, `elements.<domain>.tsx`, `handlers.<domain>.ts`, `helpers.<function>.ts` | `lf-messenger`, `lf-chat` |
+
+### Adapter Pattern Overview
+
+The adapter pattern provides a clean separation between the component class and its implementation details:
+
+```mermaid
+flowchart TD
+    subgraph Component["Component (lf-*.tsx)"]
+        Props["@Prop / @State"]
+        Events["@Event (single lf-*-event)"]
+        Methods["@Method (public API)"]
+        OnLfEvent["onLfEvent()"]
+    end
+
+    subgraph Adapter["Adapter (lf-*-adapter.ts)"]
+        Controller["controller"]
+        Elements["elements"]
+        Handlers["handlers"]
+    end
+
+    subgraph Controller
+        Get["get (accessors)"]
+        Set["set (mutators)"]
+    end
+
+    subgraph Elements
+        JSX["jsx (VNode producers)"]
+        Refs["refs (element handles)"]
+    end
+
+    Component --> Adapter
+    Handlers --> OnLfEvent
+    JSX --> Handlers
+```
+
+### Simple Component Pattern (Tier 1)
+
+For components with straightforward requirements (e.g., `lf-breadcrumbs`, `lf-radio`):
+
+**File Structure:**
+
+```text
+lf-breadcrumbs/
+├── lf-breadcrumbs.tsx           # Main component
+├── lf-breadcrumbs.scss          # Styles
+├── lf-breadcrumbs-adapter.ts    # Adapter factory
+├── elements.breadcrumbs.tsx     # JSX functions
+└── handlers.breadcrumbs.ts      # Event handlers
+```
+
+**Adapter Factory:**
+
+```typescript
+export const createAdapter = (
+  getters: LfBreadcrumbsAdapterInitializerGetters,
+  setters: LfBreadcrumbsAdapterInitializerSetters,
+  getAdapter: () => LfBreadcrumbsAdapter,
+): LfBreadcrumbsAdapter => {
+  return {
+    controller: { get: getters, set: setters },
+    elements: {
+      jsx: prepBreadcrumbsJsx(getAdapter),
+      refs: prepRefs(),
+    },
+    handlers: prepBreadcrumbsHandlers(getAdapter),
+  };
+};
+```
+
+**Refs with Maps:**  
+For components rendering multiple items (e.g., breadcrumb items), use Maps to track element references and ripple targets:
+
+```typescript
+const prepRefs = (): LfBreadcrumbsAdapterRefs => ({
+  items: new Map(),      // Map<nodeId, HTMLElement>
+  ripples: new Map(),    // Map<nodeId, HTMLElement> for ripple effects
+});
+```
+
+### Medium Component Pattern (Tier 2)
+
+For components with portal-based dropdowns or enhanced setters (e.g., `lf-autocomplete`, `lf-select`):
+
+**Enhanced Setters Pattern:**  
+When a setter requires complex logic (e.g., portal management), wrap the initializer setters:
+
+```typescript
+export const createAdapter = (
+  getters: LfAutocompleteAdapterInitializerGetters,
+  setters: LfAutocompleteAdapterInitializerSetters,
+  getAdapter: () => LfAutocompleteAdapter,
+): LfAutocompleteAdapter => {
+  const enhancedSetters = {
+    ...setters,
+    list: (state = "toggle") => {
+      const adapter = getAdapter();
+      const { controller, elements } = adapter;
+      const { manager } = controller.get;
+      const { dropdown, textfield } = elements.refs;
+      const { close, isInPortal, open } = manager.portal;
+
+      switch (state) {
+        case "close": close(dropdown); break;
+        case "open": open(dropdown, autocomplete, textfield); break;
+        default:
+          if (isInPortal(dropdown)) close(dropdown);
+          else open(dropdown, autocomplete, textfield);
+          break;
+      }
+    },
+  };
+
+  return {
+    controller: { get: getters, set: enhancedSetters },
+    // ...
+  };
+};
+```
+
+**Portal Pattern:**  
+Use `manager.portal.open/close/isInPortal` for floating elements like dropdowns:
+
+- `open(floatingEl, hostEl, anchorEl)` - Positions and shows the dropdown
+- `close(floatingEl)` - Hides and resets the dropdown
+- `isInPortal(floatingEl)` - Checks if currently visible
+
+### Complex Component Pattern (Tier 3)
+
 The following diagram illustrates the internal structure of the Messenger component, which is a top-level component in the library:
 
 ```mermaid
@@ -292,6 +429,164 @@ flowchart TD
     F --- M
 ```
 
+**File Structure (Complex):**
+
+```text
+lf-messenger/
+├── lf-messenger.tsx              # Main component
+├── lf-messenger.scss             # Main styles
+├── lf-messenger-adapter.ts       # Adapter factory (imports domain modules)
+├── controller.character.ts       # Domain: Character getters/setters
+├── controller.image.ts           # Domain: Image getters/setters
+├── controller.ui.ts              # Domain: UI state getters/setters
+├── elements.character.tsx        # Domain: Character JSX
+├── elements.chat.tsx             # Domain: Chat JSX
+├── elements.customization.tsx    # Domain: Customization JSX
+├── elements.options.tsx          # Domain: Options JSX
+├── handlers.character.ts         # Domain: Character event handlers
+├── handlers.chat.ts              # Domain: Chat event handlers
+├── handlers.customization.ts     # Domain: Customization handlers
+├── handlers.options.ts           # Domain: Options handlers
+├── helpers.utils.ts              # Shared utility functions
+└── lf-messenger-*.scss           # Additional style modules
+```
+
+**Domain-Segmented Controller Pattern:**  
+Each domain exports `prep<Domain>Getters` and `prep<Domain>Setters`:
+
+```typescript
+// controller.character.ts
+export const prepCharacterGetters = (
+  getAdapter: () => LfMessengerAdapter,
+): LfMessengerAdapterGettersCharacter => ({
+  all: () => getAdapter().controller.get.compInstance.lfDataset?.nodes || [],
+  biography: () => { /* ... */ },
+  byId: (id) => { /* ... */ },
+  chat: () => { /* ... */ },
+  current: () => getAdapter().controller.get.compInstance.currentCharacter,
+  name: () => { /* ... */ },
+});
+
+export const prepCharacterSetters = (
+  getAdapter: () => LfMessengerAdapter,
+): LfMessengerAdapterSettersCharacter => ({
+  current: (character) => {
+    const comp = getAdapter().controller.get.compInstance;
+    comp.currentCharacter = character;
+  },
+});
+```
+
+**Adapter Assembly:**
+
+```typescript
+// lf-messenger-adapter.ts
+export const createAdapter = (
+  initializerGetters: LfMessengerInitializerGetters,
+  getAdapter: () => LfMessengerAdapter,
+): LfMessengerAdapter => {
+  return {
+    controller: {
+      get: {
+        ...initializerGetters,
+        character: prepCharacterGetters(getAdapter),
+        image: prepImageGetters(getAdapter),
+        status: prepStatusGetters(getAdapter),
+        ui: prepUIGetters(getAdapter),
+      },
+      set: {
+        character: prepCharacterSetters(getAdapter),
+        image: prepImageSetters(getAdapter),
+        status: prepStatusSetters(getAdapter),
+        ui: prepUISetters(getAdapter),
+      },
+    },
+    elements: {
+      jsx: { /* domain JSX modules */ },
+      refs: { /* nested ref structure */ },
+    },
+    handlers: { /* domain handler modules */ },
+  };
+};
+```
+
+### Handler Patterns
+
+**Switch on eventType, then id:**  
+Use constants for IDs to ensure type safety:
+
+```typescript
+// handlers.chat.ts
+export const prepChatHandlers = (
+  getAdapter: () => LfChatAdapter,
+): LfChatAdapterHandlers["chat"] => ({
+  button: async (e) => {
+    const { eventType, id } = e.detail;
+    const adapter = getAdapter();
+    
+    switch (eventType) {
+      case "click":
+        switch (id) {
+          case LF_CHAT_IDS.chat.clear:
+            // Handle clear
+            break;
+          case LF_CHAT_IDS.chat.send:
+            // Handle send
+            break;
+          case LF_CHAT_IDS.chat.settings:
+            set.view("settings");
+            break;
+        }
+        break;
+    }
+  },
+});
+```
+
+**Composition Handler Pattern:**  
+When a component contains child LF components, create composition handlers to forward events:
+
+```typescript
+handlers: {
+  list: async (event) => {
+    const { eventType, node } = event.detail;
+    
+    switch (eventType) {
+      case "click":
+        controller.set.value(node.id);
+        controller.set.list("close");
+        break;
+    }
+    
+    // Always forward to parent event funnel
+    comp.onLfEvent(event, "lf-event", node);
+  },
+}
+```
+
+### Helper Files
+
+Complex components extract business logic into helper files:
+
+| Helper File | Purpose |
+|-------------|---------|
+| `helpers.api.ts` | API/LLM communication |
+| `helpers.messages.ts` | Message processing |
+| `helpers.attachments.ts` | File/image handling |
+| `helpers.parsing.ts` | Content parsing |
+| `helpers.utils.ts` | Shared utilities |
+
+**Helper Function Signature:**  
+Helpers receive the adapter to access controller state:
+
+```typescript
+export const submitPrompt = async (adapter: LfChatAdapter) => {
+  const { controller, elements } = adapter;
+  const { get, set } = controller;
+  // Implementation
+};
+```
+
 ### Adapter's Role
 
 In order to keep the main source file of feature-rich components clean and maintainable, the adapter layer acts as a mediator between the component and its internal structure. It abstracts the component's logic into separate controllers, elements, and handlers, each responsible for a specific aspect of the component's functionality.
@@ -303,6 +598,49 @@ The controller is the heart of the component, managing the interaction between t
 ### Elements & Handlers
 
 The elements represent the visual structure of the component, while the handlers manage the component's behavior and interactions. By separating these concerns, the component's codebase remains organized and easy to extend.
+
+### Ripple Effect Pattern
+
+For interactive elements requiring ripple effects:
+
+1. **Dedicated ripple element:** Add a `<div>` specifically for the ripple
+2. **Use `pointerdown` event:** Not `click` - ripple should start on press
+3. **Store refs in Map:** Track ripple elements by item ID
+
+```tsx
+// In JSX
+<div
+  class={bemClass(blocks.item._, blocks.item.ripple)}
+  data-lf={lfAttributes.ripple}
+  onPointerDown={(e) => handler(e, node)}
+  ref={(el) => { if (el) refs.ripples.set(node.id, el); }}
+></div>
+
+// In handler
+const ripple = refs.ripples.get(node.id);
+if (ripple) {
+  manager.effects.ripple(ripple, e);
+}
+```
+
+### Glassmorphism Styling
+
+Components should use the glassmorphism mixins for consistent visual styling:
+
+```scss
+@use "../../style/glassmorphize" as *;
+@use "../../style/border" as *;
+
+.lf-breadcrumbs__item {
+  @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+  @include lf-comp-border($comp, "all");
+}
+```
+
+Available mixins:
+
+- `lf-comp-glassmorphize($component, $surface-type, $sides, $opacity)`
+- `lf-comp-border($component, $sides)`
 
 ## Build & Testing Scripts
 
