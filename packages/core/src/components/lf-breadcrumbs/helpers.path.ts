@@ -1,15 +1,9 @@
 import {
+  LfBreadcrumbsRenderable,
   LfDataDataset,
   LfDataNode,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
-
-//FIXME: this type should be in foundations
-export type LfBreadcrumbsRenderable =
-  | LfDataNode
-  | {
-      isTruncation: true;
-    };
 
 //#region buildBreadcrumbPath
 export const buildBreadcrumbPath = (

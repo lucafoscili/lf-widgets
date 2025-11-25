@@ -9,10 +9,12 @@ import {
   LfEventPayloadName,
   LfFrameworkInterface,
   LfThemeUISize,
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
+import { stateFactory } from "../../helpers/fixtures.state";
 import {
   LfShowcaseComponentFixture,
   LfShowcaseExample,
@@ -88,17 +90,17 @@ const iconDataset: LfDataDataset = {
     {
       id: "dashboard",
       value: "Dashboard",
-      cells: { icon: { shape: "image", value: "home" } },
+      cells: { lfImage: { shape: "image", value: "home" } },
       children: [
         {
           id: "settings",
           value: "Settings",
-          cells: { icon: { shape: "image", value: "settings" } },
+          cells: { lfImage: { shape: "image", value: "settings" } },
           children: [
             {
               id: "profile",
               value: "Profile",
-              cells: { icon: { shape: "image", value: "user" } },
+              cells: { lfImage: { shape: "image", value: "user" } },
             },
           ],
         },
@@ -108,8 +110,10 @@ const iconDataset: LfDataDataset = {
 };
 
 export const getBreadcrumbsFixtures = (
-  _framework: LfFrameworkInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-breadcrumbs"> => {
+  const { theme } = framework;
+
   //#region documentation
   const documentation: LfArticleDataset = {
     nodes: [
@@ -159,27 +163,32 @@ export const getBreadcrumbsFixtures = (
   //#endregion
 
   return {
+    //#region configuration
     configuration: {
       columns: {
         uncategorized: 3,
         sizes: 3,
+        states: 3,
       },
     },
+    //#endregion
+
     documentation,
     examples: {
+      //#region Uncategorized
       uncategorized: {
         basic: {
           description: "Default separator with full path",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "phones",
+            lfValue: "phones",
           },
         },
         customSeparator: {
           description: "Uses a slash separator",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "laptops",
+            lfValue: "laptops",
             lfSeparator: "/",
           },
         },
@@ -187,7 +196,7 @@ export const getBreadcrumbsFixtures = (
           description: "Hides the root node from the trail",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "electronics",
+            lfValue: "electronics",
             lfShowRoot: false,
           },
         },
@@ -195,7 +204,7 @@ export const getBreadcrumbsFixtures = (
           description: "Truncates long paths with an ellipsis",
           props: {
             lfDataset: deepDataset,
-            lfCurrentNodeId: "level5",
+            lfValue: "level5",
             lfMaxItems: 3,
           },
         },
@@ -203,7 +212,7 @@ export const getBreadcrumbsFixtures = (
           description: "Shows a static trail without clicks",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "phones",
+            lfValue: "phones",
             lfInteractive: false,
           },
         },
@@ -211,7 +220,7 @@ export const getBreadcrumbsFixtures = (
           description: "Enables ripple effect on click",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "phones",
+            lfValue: "phones",
             lfRipple: true,
           },
         },
@@ -219,18 +228,21 @@ export const getBreadcrumbsFixtures = (
           description: "Displays icons via shape cells",
           props: {
             lfDataset: iconDataset,
-            lfCurrentNodeId: "profile",
+            lfValue: "profile",
           },
         },
         styled: {
           description: "Custom style injected via lfStyle",
           props: {
             lfDataset: baseDataset,
-            lfCurrentNodeId: "phones",
+            lfValue: "phones",
             lfStyle: randomStyle(),
           },
         },
       },
+      //#endregion
+
+      //#region Sizes
       sizes: LF_THEME_UI_SIZES.reduce(
         (acc, key) => {
           const size = key as LfThemeUISize;
@@ -240,7 +252,7 @@ export const getBreadcrumbsFixtures = (
               description: `Breadcrumbs with size ${size}`,
               props: {
                 lfDataset: baseDataset,
-                lfCurrentNodeId: "phones",
+                lfValue: "phones",
                 lfUiSize: size,
               },
             },
@@ -250,6 +262,46 @@ export const getBreadcrumbsFixtures = (
           [example: string]: LfShowcaseExample<LfBreadcrumbsPropsInterface>;
         },
       ),
+      //#endregion
+
+      //#region States
+      states: Object.entries(stateFactory(theme)).reduce(
+        (acc, [key, values]) => {
+          const state = key as LfThemeUIState;
+          const { icon } = values;
+
+          return {
+            ...acc,
+            [state]: {
+              description: `Breadcrumbs in ${state} state`,
+              props: {
+                lfDataset: {
+                  nodes: [
+                    {
+                      id: "node1",
+                      value: "Node 1",
+                      cells: { lfImage: { shape: "image", value: icon } },
+                      children: [
+                        {
+                          id: "node2",
+                          value: "Node 2",
+                          cells: { lfImage: { shape: "image", value: icon } },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                lfValue: "node2",
+                lfUiState: state,
+              },
+            },
+          };
+        },
+        {} as {
+          [example: string]: LfShowcaseExample<LfBreadcrumbsPropsInterface>;
+        },
+      ),
+      //#endregion
     },
   };
 };

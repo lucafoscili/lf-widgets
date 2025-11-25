@@ -48,7 +48,7 @@ describe("lf-breadcrumbs component", () => {
   it("displays path correctly from dataset", async () => {
     const page = await createPage();
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
     const items = page.root.shadowRoot.querySelectorAll(".breadcrumbs__item");
@@ -57,21 +57,26 @@ describe("lf-breadcrumbs component", () => {
   });
 
   it("renders separator between items and supports custom separator", async () => {
-    const page = await createPage('<lf-breadcrumbs lf-separator="/"></lf-breadcrumbs>');
+    const page = await createPage(
+      '<lf-breadcrumbs lf-separator="/"></lf-breadcrumbs>',
+    );
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
-    const separators =
-      page.root.shadowRoot.querySelectorAll(".breadcrumbs__separator");
+    const separators = page.root.shadowRoot.querySelectorAll(
+      ".breadcrumbs__separator",
+    );
     expect(separators.length).toBe(3);
     expect(separators[0].textContent).toBe("/");
   });
 
   it("hides root when lfShowRoot is false", async () => {
-    const page = await createPage('<lf-breadcrumbs lf-show-root="false"></lf-breadcrumbs>');
+    const page = await createPage(
+      '<lf-breadcrumbs lf-show-root="false"></lf-breadcrumbs>',
+    );
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
     const items = page.root.shadowRoot.querySelectorAll(".breadcrumbs__item");
@@ -80,9 +85,11 @@ describe("lf-breadcrumbs component", () => {
   });
 
   it("truncates middle items when lfMaxItems is set", async () => {
-    const page = await createPage('<lf-breadcrumbs lf-max-items="3"></lf-breadcrumbs>');
+    const page = await createPage(
+      '<lf-breadcrumbs lf-max-items="3"></lf-breadcrumbs>',
+    );
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
     const truncation = page.root.shadowRoot.querySelector(
@@ -97,9 +104,11 @@ describe("lf-breadcrumbs component", () => {
   });
 
   it("disables interactivity when lfInteractive is false", async () => {
-    const page = await createPage('<lf-breadcrumbs lf-interactive="false"></lf-breadcrumbs>');
+    const page = await createPage(
+      '<lf-breadcrumbs lf-interactive="false"></lf-breadcrumbs>',
+    );
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
     const item = page.root.shadowRoot.querySelector(
@@ -111,7 +120,7 @@ describe("lf-breadcrumbs component", () => {
   it("emits lf-breadcrumbs-event on item click", async () => {
     const page = await createPage();
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
     const eventSpy = jest.fn();
@@ -130,7 +139,9 @@ describe("lf-breadcrumbs component", () => {
   });
 
   it("returns props via getProps", async () => {
-    const page = await createPage('<lf-breadcrumbs lf-separator="/"></lf-breadcrumbs>');
+    const page = await createPage(
+      '<lf-breadcrumbs lf-separator="/"></lf-breadcrumbs>',
+    );
     const props = await page.root.getProps();
     expect(props.lfSeparator).toBe("/");
   });
@@ -145,20 +156,18 @@ describe("lf-breadcrumbs component", () => {
   it("refresh triggers re-render", async () => {
     const page = await createPage();
     page.root.lfDataset = sampleDataset;
-    page.root.lfCurrentNodeId = "phones";
+    page.root.lfValue = "phones";
     await page.waitForChanges();
 
-    const initialCount = page.root.shadowRoot.querySelectorAll(
-      ".breadcrumbs__item",
-    ).length;
+    const initialCount =
+      page.root.shadowRoot.querySelectorAll(".breadcrumbs__item").length;
 
-    page.root.lfCurrentNodeId = "electronics";
+    page.root.lfValue = "electronics";
     await page.root.refresh();
     await page.waitForChanges();
 
-    const updatedCount = page.root.shadowRoot.querySelectorAll(
-      ".breadcrumbs__item",
-    ).length;
+    const updatedCount =
+      page.root.shadowRoot.querySelectorAll(".breadcrumbs__item").length;
     expect(updatedCount).toBe(initialCount - 1);
   });
 });

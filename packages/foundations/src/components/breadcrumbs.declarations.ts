@@ -17,7 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework";
+import { LfFrameworkInterface, LfThemeUIState } from "../framework";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import {
@@ -55,6 +55,14 @@ export type LfBreadcrumbsEventPayload = LfEventPayload<
   LfBreadcrumbsEventArguments;
 //#endregion
 
+//#region Types
+export type LfBreadcrumbsRenderable =
+  | LfDataNode
+  | {
+      isTruncation: true;
+    };
+//#endregion
+
 //#region Adapter
 export interface LfBreadcrumbsAdapter
   extends LfComponentAdapter<LfBreadcrumbsInterface> {
@@ -73,7 +81,7 @@ export interface LfBreadcrumbsAdapterControllerGetters
   blocks: typeof LF_BREADCRUMBS_BLOCKS;
   cyAttributes: typeof CY_ATTRIBUTES;
   dataset: () => LfDataDataset;
-  isEnabled: (value?: boolean | string) => boolean;
+  isInteractive: () => boolean;
   lfAttributes: typeof LF_ATTRIBUTES;
   manager: () => LfFrameworkInterface;
   parts: typeof LF_BREADCRUMBS_PARTS;
@@ -87,7 +95,7 @@ export type LfBreadcrumbsAdapterInitializerGetters = Pick<
   | "compInstance"
   | "cyAttributes"
   | "dataset"
-  | "isEnabled"
+  | "isInteractive"
   | "lfAttributes"
   | "manager"
   | "parts"
@@ -104,8 +112,11 @@ export type LfBreadcrumbsAdapterInitializerSetters = Pick<
   "currentNode"
 >;
 export interface LfBreadcrumbsAdapterJsx extends LfComponentAdapterJsx {
+  icon: (node: LfDataNode) => VNode | null;
+  item: (node: LfDataNode, index: number, totalItems: number) => VNode[];
   items: () => VNode | null;
   separator: (index: number) => VNode | null;
+  truncation: (index: number, totalItems: number) => VNode[];
 }
 export interface LfBreadcrumbsAdapterRefs extends LfComponentAdapterRefs {
   items: Map<string, HTMLElement>;
@@ -114,15 +125,19 @@ export interface LfBreadcrumbsAdapterRefs extends LfComponentAdapterRefs {
 export interface LfBreadcrumbsAdapterHandlers
   extends LfComponentAdapterHandlers {
   item: {
-    click: (e: MouseEvent, node: LfDataNode, index: number) => void;
-    keydown: (e: KeyboardEvent, node: LfDataNode, index: number) => void;
+    click: (e: MouseEvent, node: LfDataNode, index: number) => Promise<void>;
+    keydown: (
+      e: KeyboardEvent,
+      node: LfDataNode,
+      index: number,
+    ) => Promise<void>;
+    pointerdown: (e: PointerEvent, node: LfDataNode, index: number) => void;
   };
 }
 //#endregion
 
 //#region Props
 export interface LfBreadcrumbsPropsInterface {
-  lfCurrentNodeId?: string;
   lfDataset?: LfDataDataset;
   lfEmpty?: string;
   lfInteractive?: boolean;
@@ -132,5 +147,7 @@ export interface LfBreadcrumbsPropsInterface {
   lfShowRoot?: boolean;
   lfStyle?: string;
   lfUiSize?: LfThemeUISize;
+  lfUiState?: LfThemeUIState;
+  lfValue?: string;
 }
 //#endregion

@@ -69,6 +69,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     playstationCircle,
     progress,
     replace,
+    route2,
     select,
     slideshow,
     squareToggle,
@@ -107,7 +108,7 @@ export const LF_SHOWCASE_COMPONENTS = (
       },
       {
         description: "Displays a hierarchical navigation trail.",
-        icon: layoutNavbarInactive,
+        icon: route2,
         id: "Breadcrumbs",
         value: "Breadcrumbs",
       },
