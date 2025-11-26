@@ -19,6 +19,11 @@ import {
   LfBadgePropsInterface,
 } from "../components/badge.declarations";
 import {
+  LfBreadcrumbsElement,
+  LfBreadcrumbsInterface,
+  LfBreadcrumbsPropsInterface,
+} from "../components/breadcrumbs.declarations";
+import {
   LfButtonElement,
   LfButtonInterface,
   LfButtonPropsInterface,
@@ -239,6 +244,7 @@ export type LfComponentElementMap = {
   LfArticle: LfArticleElement;
   LfAutocomplete: LfAutocompleteElement;
   LfBadge: LfBadgeElement;
+  LfBreadcrumbs: LfBreadcrumbsElement;
   LfButton: LfButtonElement;
   LfCanvas: LfCanvasElement;
   LfCard: LfCardElement;
@@ -284,6 +290,7 @@ export type LfComponentClassMap = {
   LfArticle: LfArticleInterface;
   LfAutocomplete: LfAutocompleteInterface;
   LfBadge: LfBadgeInterface;
+  LfBreadcrumbs: LfBreadcrumbsInterface;
   LfButton: LfButtonInterface;
   LfCanvas: LfCanvasInterface;
   LfCard: LfCardInterface;
@@ -446,6 +453,7 @@ export type LfComponentName =
   | "LfArticle"
   | "LfAutocomplete"
   | "LfBadge"
+  | "LfBreadcrumbs"
   | "LfButton"
   | "LfCanvas"
   | "LfCard"
@@ -491,6 +499,7 @@ export type LfComponentProps =
   | LfArticlePropsInterface
   | LfAutocompletePropsInterface
   | LfBadgePropsInterface
+  | LfBreadcrumbsPropsInterface
   | LfButtonPropsInterface
   | LfCanvasPropsInterface
   | LfCardPropsInterface
@@ -533,6 +542,7 @@ export type LfComponentPropsMap = {
   LfArticle: LfArticlePropsInterface;
   LfAutocomplete: LfAutocompletePropsInterface;
   LfBadge: LfBadgePropsInterface;
+  LfBreadcrumbs: LfBreadcrumbsPropsInterface;
   LfButton: LfButtonPropsInterface;
   LfCanvas: LfCanvasPropsInterface;
   LfCard: LfCardPropsInterface;
@@ -576,6 +586,7 @@ export type LfComponentTagMap = {
   LfArticle: "lf-article";
   LfAutocomplete: "lf-autocomplete";
   LfBadge: "lf-badge";
+  LfBreadcrumbs: "lf-breadcrumbs";
   LfButton: "lf-button";
   LfCanvas: "lf-canvas";
   LfCard: "lf-card";
@@ -619,6 +630,7 @@ export type LfComponentReverseTagMap = {
   "lf-article": "LfArticle";
   "lf-autocomplete": "LfAutocomplete";
   "lf-badge": "LfBadge";
+  "lf-breadcrumbs": "LfBreadcrumbs";
   "lf-button": "LfButton";
   "lf-canvas": "LfCanvas";
   "lf-card": "LfCard";

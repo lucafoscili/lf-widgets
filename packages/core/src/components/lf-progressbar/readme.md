@@ -106,6 +106,7 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
@@ -118,6 +119,7 @@ Type: `Promise<void>`
 graph TD;
   lf-accordion --> lf-progressbar
   lf-article --> lf-progressbar
+  lf-breadcrumbs --> lf-progressbar
   lf-card --> lf-progressbar
   lf-carousel --> lf-progressbar
   lf-chat --> lf-progressbar

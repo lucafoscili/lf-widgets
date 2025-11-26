@@ -2,6 +2,7 @@ import { LfAccordionEvent } from "../components/accordion.declarations";
 import { LfArticleEvent } from "../components/article.declarations";
 import { LfAutocompleteEvent } from "../components/autocomplete.declarations";
 import { LfBadgeEvent } from "../components/badge.declarations";
+import { LfBreadcrumbsEvent } from "../components/breadcrumbs.declarations";
 import { LfButtonEvent } from "../components/button.declarations";
 import { LfCanvasEvent } from "../components/canvas.declarations";
 import { LfCardEvent } from "../components/card.declarations";
@@ -108,6 +109,7 @@ export type ComponentEventMap = {
   LfArticle: LfArticleEvent;
   LfAutocomplete: LfAutocompleteEvent;
   LfBadge: LfBadgeEvent;
+  LfBreadcrumbs: LfBreadcrumbsEvent;
   LfButton: LfButtonEvent;
   LfCanvas: LfCanvasEvent;
   LfCard: LfCardEvent;

@@ -1,0 +1,151 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "breadcrumbs";
+@include lf-comp-setup($comp, "true", "true");
+
+:host {
+  display: block;
+}
+
+.breadcrumbs {
+  & {
+    align-items: center;
+    color: var(--lf-#{$comp}-color, var(--lf-color-text));
+    display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-gap: Sets the gap between breadcrumb items.
+    *                          Defaults to => 0.5em
+    */
+    gap: var(--lf-#{$comp}-gap, 0.5em);
+  }
+
+  &__list {
+    align-items: center;
+    display: inline-flex;
+    gap: var(--lf-#{$comp}-gap, 0.5em);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    & {
+      @include lf-comp-border($comp, "radius");
+      @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+      @include lf-el-transition("hover-glow");
+      align-items: center;
+      box-shadow:
+        1px 1px 2px 0px rgba(var(--lf-color-on-surface), 0.25),
+        0 0 1px 0 rgba(var(--lf-color-on-surface), 0.375);
+      box-sizing: border-box;
+      cursor: pointer;
+      display: inline-flex;
+      /**
+      * @prop --lf-#{$comp}-item-height: Sets the height for the items.
+      *                                  Defaults to => 2em
+      */
+      height: var(--lf-#{$comp}-item-height, 2em);
+      /**
+      * @prop --lf-#{$comp}-item-padding: Sets the padding for the items.
+      *                                   Defaults to => 0 0.75em
+      */
+      padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
+      position: relative;
+      text-decoration: none;
+    }
+
+    &:hover:not([data-disabled="true"]) {
+      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125);
+    }
+
+    &[data-disabled="true"] {
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lf-color-focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-current="page"] {
+      @include lf-comp-glassmorphize($comp, "primary", "all", 0.875);
+      cursor: default;
+      font-weight: 600;
+    }
+  }
+
+  &__separator {
+    color: var(
+      --lf-#{$comp}-separator-color,
+      rgba(var(--lf-color-on-surface), 0.5)
+    );
+    /**
+    * @prop --lf-#{$comp}-separator-margin: Sets the horizontal margin around separators.
+    *                                       Defaults to => 0.25em
+    */
+    margin: 0 var(--lf-#{$comp}-separator-margin, 0.25em);
+    user-select: none;
+  }
+
+  &__empty {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.5);
+    color: var(
+      --lf-#{$comp}-empty-color,
+      rgba(var(--lf-color-on-surface), 0.6)
+    );
+    font-style: italic;
+    padding: 0.5em 1em;
+  }
+
+  &__label {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.35em;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__icon {
+    @include lf-comp-icon($comp, "", "surface", 1.25em);
+    display: inline-flex;
+    margin-left: -0.25em;
+    margin-right: 0.1em;
+  }
+
+  &__truncation {
+    & {
+      @include lf-comp-border($comp, "radius");
+      @include lf-comp-glassmorphize($comp, "surface", "all", 0.5);
+      align-items: center;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: inline-flex;
+      height: var(--lf-#{$comp}-item-height, 2em);
+      padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
+    }
+
+    &:hover .#{$comp}__dot {
+      /**
+      * @prop --lf-#{$comp}-dot-gap-hover: Sets the gap between dots on hover.
+      *                                     Defaults to => 0.2em
+      */
+      margin: 0 var(--lf-#{$comp}-dot-gap-hover, 0.2em);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lf-color-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  &__dot {
+    @include lf-el-transition("bounce");
+    /**
+    * @prop --lf-#{$comp}-dot-gap: Sets the gap between dots.
+    *                              Defaults to => 0.05em
+    */
+    margin: 0 var(--lf-#{$comp}-dot-gap, 0.05em);
+  }
+}
