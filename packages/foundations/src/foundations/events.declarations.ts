@@ -26,6 +26,7 @@ import { LfProgressbarEvent } from "../components/progressbar.declarations";
 import { LfRadioEvent } from "../components/radio.declarations";
 import { LfSelectEvent } from "../components/select.declarations";
 import { LfSliderEvent } from "../components/slider.declarations";
+import { LfSnackbarEvent } from "../components/snackbar.declarations";
 import { LfSpinnerEvent } from "../components/spinner.declarations";
 import { LfSplashEvent } from "../components/splash.declarations";
 import { LfTabbarEvent } from "../components/tabbar.declarations";
@@ -131,6 +132,7 @@ export type ComponentEventMap = {
   LfRadio: LfRadioEvent;
   LfSelect: LfSelectEvent;
   LfSlider: LfSliderEvent;
+  LfSnackbar: LfSnackbarEvent;
   LfSpinner: LfSpinnerEvent;
   LfSplash: LfSplashEvent;
   LfToggle: LfToggleEvent;

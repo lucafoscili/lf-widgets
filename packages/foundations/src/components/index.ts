@@ -54,6 +54,8 @@ export * from "./select.constants";
 export * from "./select.declarations";
 export * from "./slider.constants";
 export * from "./slider.declarations";
+export * from "./snackbar.constants";
+export * from "./snackbar.declarations";
 export * from "./spinner.constants";
 export * from "./spinner.declarations";
 export * from "./splash.constants";

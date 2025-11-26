@@ -1,0 +1,186 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "snackbar";
+@include lf-comp-setup($comp, "true", "false", "true");
+
+:host {
+  animation: slideUp 250ms ease-out;
+  box-sizing: border-box;
+  display: block;
+  pointer-events: none;
+  position: fixed;
+  z-index: var(--lf-ui-zindex-#{$comp}, 999);
+}
+
+// Positioning variants
+:host([lf-position="bottom-left"]) {
+  bottom: 1em;
+  left: 1em;
+}
+
+:host([lf-position="bottom-center"]) {
+  bottom: 1em;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([lf-position="bottom-right"]) {
+  bottom: 1em;
+  right: 1em;
+}
+
+:host([lf-position="top-left"]) {
+  animation-name: slideDown;
+  top: 1em;
+  left: 1em;
+}
+
+:host([lf-position="top-center"]) {
+  animation-name: slideDown;
+  top: 1em;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([lf-position="top-right"]) {
+  animation-name: slideDown;
+  top: 1em;
+  right: 1em;
+}
+
+.snackbar {
+  & {
+    @include lf-comp-border($comp, "radius");
+    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875);
+    box-shadow: var(--lf-ui-box-shadow-#{$comp}, 0 4px 12px rgba(0, 0, 0, 0.3));
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+    min-width: 288px;
+    max-width: 568px;
+    overflow: hidden;
+    pointer-events: auto;
+    /**
+    * @prop --lf-snackbar-padding: Sets the padding for the snackbar.
+    *                              Defaults to => 0.875em 1em
+    */
+    padding: var(--lf-#{$comp}-padding, 0.875em 1em);
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.75em;
+  }
+
+  &__icon {
+    @include lf-comp-color($comp, "surface", "bg", 1, "true");
+    flex-shrink: 0;
+    height: 1.5em;
+    width: 1.5em;
+  }
+
+  &__message {
+    flex: 1;
+    /**
+    * @prop --lf-snackbar-message-font-size: Font size for the message.
+    *                                        Defaults to => 0.875em
+    */
+    font-size: var(--lf-#{$comp}-message-font-size, 0.875em);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__actions {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5em;
+  }
+
+  &__action-button {
+    & {
+      @include lf-comp-color($comp, "primary");
+      @include lf-el-transition("hover-glow");
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      /**
+      * @prop --lf-snackbar-action-font-size: Font size for action button.
+      *                                       Defaults to => 0.875em
+      */
+      font-size: var(--lf-#{$comp}-action-font-size, 0.875em);
+      font-weight: 500;
+      padding: 0.25em 0.5em;
+      text-transform: uppercase;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 0.6;
+    }
+  }
+
+  &__close-button {
+    & {
+      @include lf-comp-icon($comp, "clear", "surface", "1.25em", 1, "true");
+      @include lf-el-transition("hover-glow");
+      cursor: pointer;
+      flex-shrink: 0;
+      height: 1.25em;
+      width: 1.25em;
+    }
+
+    &:hover {
+      opacity: 0.75;
+    }
+
+    &:active {
+      opacity: 0.5;
+    }
+  }
+}
+
+// Animations
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Mobile optimizations
+@media only screen and (max-width: 600px) {
+  :host {
+    left: 0.5em !important;
+    right: 0.5em !important;
+    transform: none !important;
+    width: auto !important;
+  }
+
+  .snackbar {
+    min-width: unset;
+    width: 100%;
+  }
+}

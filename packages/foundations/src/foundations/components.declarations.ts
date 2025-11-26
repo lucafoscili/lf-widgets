@@ -139,6 +139,11 @@ import {
   LfSliderPropsInterface,
 } from "../components/slider.declarations";
 import {
+  LfSnackbarElement,
+  LfSnackbarInterface,
+  LfSnackbarPropsInterface,
+} from "../components/snackbar.declarations";
+import {
   LfSpinnerElement,
   LfSpinnerInterface,
   LfSpinnerPropsInterface,
@@ -258,6 +263,7 @@ export type LfComponentElementMap = {
   LfRadio: LfRadioElement;
   LfSelect: LfSelectElement;
   LfSlider: LfSliderElement;
+  LfSnackbar: LfSnackbarElement;
   LfSpinner: LfSpinnerElement;
   LfSplash: LfSplashElement;
   LfToggle: LfToggleElement;
@@ -302,6 +308,7 @@ export type LfComponentClassMap = {
   LfRadio: LfRadioInterface;
   LfSelect: LfSelectInterface;
   LfSlider: LfSliderInterface;
+  LfSnackbar: LfSnackbarInterface;
   LfSpinner: LfSpinnerInterface;
   LfSplash: LfSplashInterface;
   LfToggle: LfToggleInterface;
@@ -464,6 +471,7 @@ export type LfComponentName =
   | "LfRadio"
   | "LfSelect"
   | "LfSlider"
+  | "LfSnackbar"
   | "LfSpinner"
   | "LfSplash"
   | "LfToggle"
@@ -507,6 +515,7 @@ export type LfComponentProps =
   | LfRadioPropsInterface
   | LfSelectPropsInterface
   | LfSliderPropsInterface
+  | LfSnackbarPropsInterface
   | LfSpinnerPropsInterface
   | LfSplashPropsInterface
   | LfTogglePropsInterface
@@ -548,6 +557,7 @@ export type LfComponentPropsMap = {
   LfRadio: LfRadioPropsInterface;
   LfSelect: LfSelectPropsInterface;
   LfSlider: LfSliderPropsInterface;
+  LfSnackbar: LfSnackbarPropsInterface;
   LfSpinner: LfSpinnerPropsInterface;
   LfSplash: LfSplashPropsInterface;
   LfToggle: LfTogglePropsInterface;
@@ -590,6 +600,7 @@ export type LfComponentTagMap = {
   LfRadio: "lf-radio";
   LfSelect: "lf-select";
   LfSlider: "lf-slider";
+  LfSnackbar: "lf-snackbar";
   LfSpinner: "lf-spinner";
   LfSplash: "lf-splash";
   LfToggle: "lf-toggle";
@@ -632,6 +643,7 @@ export type LfComponentReverseTagMap = {
   "lf-radio": "LfRadio";
   "lf-select": "LfSelect";
   "lf-slider": "LfSlider";
+  "lf-snackbar": "LfSnackbar";
   "lf-spinner": "LfSpinner";
   "lf-splash": "LfSplash";
   "lf-toggle": "LfToggle";
