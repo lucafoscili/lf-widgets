@@ -26,6 +26,7 @@ import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
 import { LF_RADIO_PROPS } from "../components/radio.constants";
 import { LF_SELECT_PROPS } from "../components/select.constants";
 import { LF_SLIDER_PROPS } from "../components/slider.constants";
+import { LF_SNACKBAR_PROPS } from "../components/snackbar.constants";
 import { LF_SPINNER_PROPS } from "../components/spinner.constants";
 import { LF_SPLASH_PROPS } from "../components/splash.constants";
 import { LF_TABBAR_PROPS } from "../components/tabbar.constants";
@@ -145,6 +146,7 @@ export const getComponentProps = (): {
     LfRadio: LF_RADIO_PROPS,
     LfSelect: LF_SELECT_PROPS,
     LfSlider: LF_SLIDER_PROPS,
+    LfSnackbar: LF_SNACKBAR_PROPS,
     LfSpinner: LF_SPINNER_PROPS,
     LfSplash: LF_SPLASH_PROPS,
     LfTabbar: LF_TABBAR_PROPS,

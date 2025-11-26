@@ -263,6 +263,13 @@ export const LF_SHOWCASE_COMPONENTS = (
       },
       {
         description:
+          "Displays brief notifications with optional action buttons at screen edges.",
+        icon: messages,
+        id: "Snackbar",
+        value: "Snackbar",
+      },
+      {
+        description:
           "Indicates a loading state, commonly used during content or page loading.",
         icon: loader2,
         id: "Spinner",
