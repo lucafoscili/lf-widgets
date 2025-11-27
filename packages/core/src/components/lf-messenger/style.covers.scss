@@ -11,7 +11,12 @@ $comp: null !default;
   }
 
   &__title {
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-ellipsis;
     @include lf-el-sticky;
     @include lf-el-text("button");

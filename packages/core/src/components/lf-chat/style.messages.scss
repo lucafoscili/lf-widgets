@@ -38,7 +38,12 @@ $comp: null !default;
   &__container {
     & {
       @include lf-comp-border($comp);
-      @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+      @include lf-comp-color(
+        $comp,
+        "bg",
+        "all",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
       @include lf-el-transition("fade-in-out", "background-color");
       height: max-content;
       /**
@@ -50,7 +55,12 @@ $comp: null !default;
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+      @include lf-comp-color(
+        $comp,
+        "bg",
+        "all",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
     &--assistant {
@@ -62,6 +72,10 @@ $comp: null !default;
 
     &--user {
       justify-self: end;
+    }
+
+    &--textarea {
+      @include lf-el-stretch;
     }
   }
 
@@ -85,7 +99,12 @@ $comp: null !default;
   }
 
   &__inline-code {
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125, 4px);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     @include lf-el-text("code");
     /**
     * @prop --lf-#{$comp}-inline-code-border-radius: Sets the border radius for inline code.

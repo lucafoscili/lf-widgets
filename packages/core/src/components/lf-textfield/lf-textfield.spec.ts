@@ -50,12 +50,14 @@ describe("lf-textfield component", () => {
     page.root.lfTrailingIconAction = "--lf-icon-search";
     await page.waitForChanges();
     const iconAction = page.root.shadowRoot.querySelector(
-      '[part="icon-action"]',
+      ".textfield__icon-action",
     );
     expect(iconAction).not.toBeNull();
-    expect((iconAction as HTMLElement).style.mask).toBe(
-      "var(--lf-icon-search)",
-    );
+    // Verify it's an LfIcon by checking for SVG use element
+    const svg = iconAction.querySelector("svg");
+    expect(svg).not.toBeNull();
+    const use = svg.querySelector("use");
+    expect(use).not.toBeNull();
   });
 
   it("emits click event with iconType 'action' when trailing icon action is clicked", async () => {
@@ -65,7 +67,7 @@ describe("lf-textfield component", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-textfield-event", spy);
     const iconAction = page.root.shadowRoot.querySelector(
-      '[part="icon-action"]',
+      ".textfield__icon-action",
     );
     iconAction.dispatchEvent(new Event("click", { bubbles: true }));
     await page.waitForChanges();

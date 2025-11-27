@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "list";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -12,7 +12,7 @@ $comp: "list";
 .list {
   & {
     @include lf-comp-border($comp);
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.275);
+    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
     @include lf-el-stretch;
     box-sizing: border-box;
     list-style-type: none;
@@ -60,7 +60,12 @@ $comp: "list";
 
     &:hover {
       & {
-        @include lf-comp-glassmorphize($comp, "bg", "bg", 0.125, 8px, true);
+        @include lf-comp-color(
+          $comp,
+          "primary",
+          "bg",
+          var(--lf-ui-alpha-glass-hint, 0.125)
+        );
       }
 
       .delete {
@@ -77,16 +82,31 @@ $comp: "list";
     }
 
     &--focused {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.225);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
     }
 
     &--selected {
       & {
-        @include lf-comp-glassmorphize($comp, "primary", "bg", 0.325);
+        @include lf-comp-color(
+          $comp,
+          "primary",
+          "all",
+          var(--lf-ui-alpha-glass-heavy, 0.75)
+        );
       }
 
       &:hover {
-        @include lf-comp-glassmorphize($comp, "primary", "bg", 0.475);
+        @include lf-comp-color(
+          $comp,
+          "primary",
+          "all",
+          var(--lf-ui-alpha-glass-solid, 0.875)
+        );
       }
     }
   }
@@ -94,7 +114,12 @@ $comp: "list";
 
 .delete {
   & {
-    @include lf-comp-glassmorphize($comp, "danger", "bg", 0.575);
+    @include lf-comp-color(
+      $comp,
+      "danger",
+      "bg",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-transition;
     align-content: center;
     box-sizing: border-box;
@@ -110,7 +135,7 @@ $comp: "list";
   }
 
   &__icon {
-    @include lf-comp-icon($comp, "clear", "danger");
+    @include f-icon($comp, "danger");
     margin: 0;
   }
 }
@@ -171,7 +196,7 @@ $comp: "list";
 
   &__icon {
     & {
-      @include lf-comp-icon($comp, "");
+      @include f-icon($comp);
       margin: 0 0.75em 0 0;
     }
   }
@@ -184,7 +209,7 @@ $comp: "list";
 
 .empty-data {
   @include lf-comp-border($comp);
-  @include lf-comp-glassmorphize($comp, "bg", "all", 0.275);
+  @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
   @include lf-el-stretch;
   @include lf-el-text("body");
   align-items: center;

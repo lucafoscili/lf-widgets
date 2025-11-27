@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "carousel";
-@include lf-comp-setup($comp, "false", "false", "true");
+@include lf-comp-setup($comp, "false", "false", "true", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -80,7 +80,12 @@ $comp: "carousel";
 
 .slide-bar {
   & {
-    @include lf-comp-glassmorphize("carousel", "surface", "bg", 0.75);
+    @include lf-comp-color(
+      "carousel",
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-transition("slide-in-out");
     align-items: center;
     bottom: 0;

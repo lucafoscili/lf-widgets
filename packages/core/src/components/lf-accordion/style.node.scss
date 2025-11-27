@@ -6,7 +6,12 @@ $comp: null !default;
 .node {
   & {
     @include lf-comp-border($comp);
-    @include lf-comp-glassmorphize($comp);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
     border-bottom: 0;
     border-top: 0;
     box-sizing: border-box;
@@ -43,6 +48,12 @@ $comp: null !default;
       */
       cursor: var(--lf-#{$comp}-cursor, pointer);
       display: flex;
+      flex-wrap: nowrap;
+      /**
+      * @prop --lf-#{$comp}-gap: Sets the gap of the #{$comp} header.
+      *                          Defaults to => 0.5em
+      */
+      gap: var(--lf-#{$comp}-gap, 0.5em);
       /**
       * @prop --lf-#{$comp}-line-height: Sets the line height of the #{$comp} header.
       *                                  Defaults to => 1.75em
@@ -64,7 +75,12 @@ $comp: null !default;
     }
 
     &:hover {
-      @include lf-comp-color($comp, "primary", "bg", 0.175);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
     &--expanded {
@@ -74,11 +90,21 @@ $comp: null !default;
 
     &--selected {
       & {
-        @include lf-comp-color($comp, "primary", "bg", 0.375);
+        @include lf-comp-color(
+          $comp,
+          "primary",
+          "bg",
+          var(--lf-ui-alpha-glass, 0.375)
+        );
       }
 
       &:hover {
-        @include lf-comp-color($comp, "primary", "bg", 0.475);
+        @include lf-comp-color(
+          $comp,
+          "primary",
+          "all",
+          var(--lf-ui-alpha-glass-heavy, 0.75)
+        );
       }
     }
   }
@@ -86,16 +112,22 @@ $comp: null !default;
   &__text {
     & {
       @include lf-el-ellipsis;
+      @include lf-el-stretch;
       @include lf-el-text("title");
       /**
       * @prop --lf-#{$comp}-text-margin: Sets the margin of the #{$comp} text.
-      *                                  Defaults to => 0 0.5em 0 0
+      *                                  Defaults to => 0
       */
-      margin: var(--lf-#{$comp}-text-margin, 0 0.5em 0 0);
+      margin: var(--lf-#{$comp}-text-margin, 0);
     }
 
     &--highlighted {
-      @include lf-comp-color($comp, "primary");
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "all",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
     }
   }
 
@@ -105,23 +137,23 @@ $comp: null !default;
   }
 
   &__icon {
-    @include lf-comp-icon($comp);
+    @include f-icon($comp);
     /**
     * @prop --lf-#{$comp}-icon-margin: Sets the margin of the #{$comp} icon.
-    *                                  Defaults to => 0 0.5em 0 0
+    *                                  Defaults to => 0
     */
-    margin: var(--lf-#{$comp}-icon-margin, 0 0.5em 0 0);
+    margin: var(--lf-#{$comp}-icon-margin, 0);
   }
 
   &__expand {
     & {
-      @include lf-comp-icon($comp, "dropdown");
+      @include f-icon($comp);
       @include lf-el-transition;
       /**
       * @prop --lf-#{$comp}-expand-margin: Sets the margin of the #{$comp} expand icon.
-      *                                    Defaults to => 0 0 0 auto
+      *                                    Defaults to => 0
       */
-      margin: var(--lf-#{$comp}-expand-margin, 0 0 0 auto);
+      margin: var(--lf-#{$comp}-expand-margin, 0);
     }
 
     &--expanded {

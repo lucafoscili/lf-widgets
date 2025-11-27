@@ -25,7 +25,12 @@ $comp: null !default;
   }
 
   &--selected:after {
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-solid, 0.875)
+    );
     @include lf-el-ellipsis;
     @include lf-el-text("button");
     align-content: center;
@@ -37,7 +42,12 @@ $comp: null !default;
   }
 
   &__actions {
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.75);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     bottom: 0;
     display: flex;
     left: 0;

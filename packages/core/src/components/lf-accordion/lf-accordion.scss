@@ -5,7 +5,7 @@
 );
 
 $comp: "accordion";
-@include lf-comp-setup($comp, "true", "true", "true");
+@include lf-comp-setup($comp, "true", "true", "true", "false", "true");
 
 .accordion {
   @include lf-comp-border($comp);

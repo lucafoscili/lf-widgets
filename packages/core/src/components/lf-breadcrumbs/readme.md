@@ -133,6 +133,7 @@ Type: `Promise<void>`
 | `--lf-breadcrumbs-gap`              | Sets the gap between breadcrumb items. Defaults to => 0.5em                                              |
 | `--lf-breadcrumbs-item-height`      | Sets the height for the items. Defaults to => 2em                                                        |
 | `--lf-breadcrumbs-item-padding`     | Sets the padding for the items. Defaults to => 0 0.75em                                                  |
+| `--lf-breadcrumbs-padding`          | Sets the padding for the breadcrumbs container. Defaults to => 0.5em                                     |
 | `--lf-breadcrumbs-separator-margin` | Sets the horizontal margin around separators. Defaults to => 0.25em                                      |
 
 

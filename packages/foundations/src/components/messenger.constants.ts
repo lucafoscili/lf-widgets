@@ -19,6 +19,7 @@ export const LF_MESSENGER_BLOCKS = {
     label: "label",
     name: "name",
     nameWrapper: "name-wrapper",
+    saveButton: "save-button",
     status: "status",
   },
   chat: {

@@ -27,6 +27,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -284,8 +285,7 @@ export class LfUpload {
     ));
   }
   #prepIcon = (f: File, isClear = false): VNode => {
-    const { assets, theme } = this.#framework;
-    const { get } = assets;
+    const { theme } = this.#framework;
     const { bemClass } = theme;
     const { file, movie, music, pdf, photo, zip } =
       this.#framework.theme.get.icons();
@@ -334,20 +334,19 @@ export class LfUpload {
               : isLikelyZip
                 ? zip
                 : file;
-    const { style } = get(`./assets/svg/${icon}.svg`);
 
     return (
       <div
         class={bemClass(fileInfo._, fileInfo.icon, {
           "has-actions": isClear,
         })}
-        data-cy={this.#cy.maskedSvg}
         onClick={isClear ? (e) => this.onLfEvent(e, "delete", f) : null}
         part={this.#p.icon}
-        style={style}
         tabIndex={isClear && 0}
         title={isClear ? "Remove file" : f.type}
-      ></div>
+      >
+        <FIcon framework={this.#framework} icon={icon} />
+      </div>
     );
   };
   //#endregion

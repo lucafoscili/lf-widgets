@@ -4,8 +4,8 @@ import {
   LfFrameworkInterface,
   LfThemeIconRegistry,
 } from "@lf-widgets/foundations";
-import { version as LF_WIDGETS_VERSION } from "../../../package.json";
-import { DOC_IDS } from "./helpers/constants";
+import { DashboardData } from "./helpers/dashboard.api";
+import { buildDashboardDataset } from "./helpers/dashboard.builder";
 
 // version is now imported directly as LF_WIDGETS_VERSION
 
@@ -424,73 +424,28 @@ export const LF_SHOWCASE_FRAMEWORK = (
     ],
   };
 };
-export const LF_DOC = (framework: LfFrameworkInterface): LfArticleDataset => {
-  return {
-    nodes: [
-      {
-        id: DOC_IDS.root,
-        value: `LF Widgets`,
-        children: [
-          {
-            id: DOC_IDS.section,
-            value: "",
-            children: [
-              {
-                id: DOC_IDS.paragraph,
-                value: "",
-                children: [
-                  {
-                    cells: {
-                      lfImage: {
-                        lfValue: framework.assets.get(
-                          "./assets/showcase/LFW.jpg",
-                        ).path,
-                        shape: "image",
-                        value: "",
-                      },
-                    },
-                    id: DOC_IDS.contentWrapper,
-                    value: "",
-                  },
-                ],
-              },
-              {
-                id: DOC_IDS.paragraph,
-                value: `v${LF_WIDGETS_VERSION}`,
-                children: [
-                  {
-                    id: DOC_IDS.contentWrapper,
-                    value:
-                      "This page is designed to showcase LF Widgets webcomponents.",
-                  },
-                ],
-              },
-              {
-                id: DOC_IDS.paragraph,
-                value: "",
-                children: [
-                  {
-                    id: DOC_IDS.contentWrapper,
-                    value:
-                      "If this is the first time that you stumble upon the library and want to know more, you should check out the GitHub repository (link below!)",
-                  },
-                ],
-              },
-              {
-                id: DOC_IDS.paragraph,
-                value: "",
-                children: [
-                  {
-                    id: DOC_IDS.contentWrapper,
-                    value:
-                      "In short: LF Widgets is a framework-agnostic web components library built with Stencil.js, offering offering lightweight and stylish components for web pages.",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+/**
+ * Creates the main documentation/dashboard dataset for the showcase intro.
+ * Supports dynamic data from GitHub/npm APIs when available.
+ *
+ * @param framework - The LF Framework interface
+ * @param dashboardData - Optional API data (GitHub stats, npm stats, etc.)
+ * @returns {LfArticleDataset} A rich dashboard dataset
+ */
+export const LF_DOC = (
+  framework: LfFrameworkInterface,
+  dashboardData?: DashboardData | null,
+): LfArticleDataset => {
+  const icons = framework.theme.get.icons();
+
+  // Count components and framework services for stats
+  const componentCount = LF_SHOWCASE_COMPONENTS(icons).nodes.length;
+  const frameworkCount = LF_SHOWCASE_FRAMEWORK(icons).nodes.length;
+
+  return buildDashboardDataset(
+    framework,
+    dashboardData ?? null,
+    componentCount,
+    frameworkCount,
+  );
 };

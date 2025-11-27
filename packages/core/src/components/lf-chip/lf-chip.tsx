@@ -18,6 +18,7 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -34,6 +35,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -400,27 +402,26 @@ export class LfChip implements LfChipInterface {
     return this.selectedNodes.has(node);
   }
   #prepDeleteIcon(node: LfDataNode) {
-    const { bemClass } = this.#framework.theme;
+    const { bemClass, get } = this.#framework.theme;
 
     const { item } = this.#b;
+    const icon = get.icon("squareX");
 
     return (
-      <div
-        class={bemClass(item._, item.icon, {
+      <FIcon
+        framework={this.#framework}
+        icon={icon as LfIconType}
+        wrapperClass={bemClass(item._, item.icon, {
           "has-actions": true,
           trailing: true,
         })}
-        data-cy={this.#cy.button}
-        data-lf={this.#lf.icon}
-        key={node.id + "_delete"}
         onClick={(e) => {
           this.onLfEvent(e, "delete", { node });
         }}
-      ></div>
+      />
     );
   }
   #prepIcons(node: LfDataNode) {
-    const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
 
     const { item } = this.#b;
@@ -433,16 +434,15 @@ export class LfChip implements LfChipInterface {
         </div>,
       );
     } else if (node.icon) {
-      const { style } = get(`./assets/svg/${node.icon}.svg`);
       icons.push(
-        <div
-          class={bemClass(item._, item.icon, {
+        <FIcon
+          framework={this.#framework}
+          icon={node.icon}
+          wrapperClass={bemClass(item._, item.icon, {
             leading: true,
             hidden: this.lfStyling === "filter" && this.#isSelected(node),
           })}
-          data-cy={this.#cy.maskedSvg}
-          style={style}
-        ></div>,
+        />,
       );
     }
 
@@ -561,15 +561,21 @@ export class LfChip implements LfChipInterface {
           style={indentStyle}
         ></div>
         {hasChildren ? (
-          <div
-            class={className}
+          <FIcon
+            framework={this.#framework}
+            icon={
+              this.#framework.theme.get.icon(
+                isExpanded ? "chevronDown" : "chevronRight",
+              ) as LfIconType
+            }
+            wrapperClass={className}
             onClick={(e) => {
               this.onLfEvent(e, "click", {
                 expansion: true,
                 node,
               });
             }}
-          ></div>
+          />
         ) : indent ? (
           <div class={className}></div>
         ) : null}

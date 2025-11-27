@@ -108,18 +108,19 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                         |
-| ----------------------------- | --------------------------------------------------------------------------------------------------- |
-| `--lf-tabbar-border-radius`   | Sets the border radius for the tabbar component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-tabbar-color-bg`        | Sets the color-bg color for the tabbar component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-tabbar-color-indicator` | Sets the color for the tabbar component's indicator. Defaults to => var(--lf-tabbar-color-primary)  |
-| `--lf-tabbar-color-on-bg`     | Sets the color-on-bg color for the tabbar component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-tabbar-color-primary`   | Sets the color-primary color for the tabbar component. Defaults to => var(--lf-color-primary)       |
-| `--lf-tabbar-font-family`     | Sets the primary font family for the tabbar component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-tabbar-font-size`       | Sets the font size for the tabbar component. Defaults to => var(--lf-font-size)                     |
-| `--lf-tabbar-height`          | Sets the height for the tabbar component. Defaults to => 2.25em                                     |
-| `--lf-tabbar-min-width`       | Sets the min-width for the tabbar component. Defaults to => 5em                                     |
-| `--lf-tabbar-padding`         | Sets the padding for the tabbar component. Defaults to => 0 1.25em                                  |
+| Name                           | Description                                                                                         |
+| ------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `--lf-tabbar-border-radius`    | Sets the border radius for the tabbar component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-tabbar-color-bg`         | Sets the color-bg color for the tabbar component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-tabbar-color-indicator`  | Sets the color for the tabbar component's indicator. Defaults to => var(--lf-tabbar-color-primary)  |
+| `--lf-tabbar-color-on-bg`      | Sets the color-on-bg color for the tabbar component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-tabbar-color-on-primary` | Sets the color-on-primary color for the tabbar component. Defaults to => var(--lf-color-on-primary) |
+| `--lf-tabbar-color-primary`    | Sets the color-primary color for the tabbar component. Defaults to => var(--lf-color-primary)       |
+| `--lf-tabbar-font-family`      | Sets the primary font family for the tabbar component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-tabbar-font-size`        | Sets the font size for the tabbar component. Defaults to => var(--lf-font-size)                     |
+| `--lf-tabbar-height`           | Sets the height for the tabbar component. Defaults to => 2.25em                                     |
+| `--lf-tabbar-min-width`        | Sets the min-width for the tabbar component. Defaults to => 5em                                     |
+| `--lf-tabbar-padding`          | Sets the padding for the tabbar component. Defaults to => 0 1.25em                                  |
 
 
 ## Dependencies

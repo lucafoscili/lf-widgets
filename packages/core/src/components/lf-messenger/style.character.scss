@@ -30,6 +30,10 @@ $comp: null !default;
     display: flex;
   }
 
+  &__save-button {
+    backdrop-filter: unset;
+  }
+
   &__status {
     & {
       border-radius: 50%;
@@ -39,16 +43,31 @@ $comp: null !default;
     }
 
     &--offline {
-      @include lf-comp-glassmorphize($comp, "danger", "all", 0.75);
+      @include lf-comp-glassmorphize(
+        $comp,
+        "danger",
+        "all",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
     }
 
     &--online {
-      @include lf-comp-glassmorphize($comp, "success", "all", 0.75);
+      @include lf-comp-glassmorphize(
+        $comp,
+        "success",
+        "all",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
     }
   }
 
   &__name-wrapper {
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-comp-glassmorphize(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-ellipsis;
     @include lf-el-text("button");
     align-items: center;

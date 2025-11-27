@@ -24,6 +24,9 @@ This document provides a comprehensive overview of the architecture of the LF Wi
     - [Adapter's Role](#adapters-role)
     - [Controller Submodules](#controller-submodules)
     - [Elements \& Handlers](#elements--handlers)
+    - [Ripple Effect Pattern](#ripple-effect-pattern)
+    - [Glassmorphism Styling](#glassmorphism-styling)
+    - [Backdrop-Filter and Shadow DOM Considerations](#backdrop-filter-and-shadow-dom-considerations)
   - [Build \& Testing Scripts](#build--testing-scripts)
   - [Conclusion](#conclusion)
 
@@ -641,6 +644,144 @@ Available mixins:
 
 - `lf-comp-glassmorphize($component, $surface-type, $sides, $opacity)`
 - `lf-comp-border($component, $sides)`
+- `lf-comp-color($component, $surface-type, $sides, $alpha)` - For colored backgrounds without blur
+
+#### Tiered Glass Alpha Variables
+
+The library provides a hierarchical system of CSS custom properties for controlling glass transparency across different UI elements. This tiered approach allows theme designers to adjust the entire glassmorphism intensity with just four knobs:
+
+| Variable | Default | Use Case |
+|----------|---------|----------|
+| `--lf-ui-alpha-glass-hint` | 0.125 | Very subtle backgrounds, hover hints, focus states |
+| `--lf-ui-alpha-glass` | 0.375 | Default glass panels, containers, surfaces |
+| `--lf-ui-alpha-glass-heavy` | 0.75 | Interactive items (chips, breadcrumbs, tabs) |
+| `--lf-ui-alpha-glass-solid` | 0.875 | Buttons, badges, active/selected states |
+
+**Usage in SCSS:**
+
+```scss
+// Hint - subtle backgrounds
+@include lf-comp-color($comp, "primary", "bg", var(--lf-ui-alpha-glass-hint, 0.125));
+
+// Default glass
+@include lf-comp-color($comp, "surface", "all", var(--lf-ui-alpha-glass, 0.375));
+
+// Heavy - interactive elements
+@include lf-comp-color($comp, "surface", "all", var(--lf-ui-alpha-glass-heavy, 0.75));
+
+// Solid - buttons, active states
+@include lf-comp-color($comp, "primary", "all", var(--lf-ui-alpha-glass-solid, 0.875));
+```
+
+**Mapping Guidelines:**
+
+When converting hardcoded alpha values to tiered variables:
+
+| Original Alpha Range | Target Variable |
+|---------------------|-----------------|
+| 0.075 - 0.175 | `--lf-ui-alpha-glass-hint` |
+| 0.225 - 0.475 | `--lf-ui-alpha-glass` |
+| 0.5 - 0.775 | `--lf-ui-alpha-glass-heavy` |
+| 0.8 - 0.875 | `--lf-ui-alpha-glass-solid` |
+
+These variables can be overridden at the theme level to adjust the glass effect intensity globally, or per-component for specific customization.
+
+### Backdrop-Filter and Shadow DOM Considerations
+
+The `backdrop-filter` CSS property (used by `lf-comp-glassmorphize` for blur effects) has important limitations when used within Shadow DOM components. Understanding these constraints is critical for achieving the desired glassmorphism effect.
+
+#### The Core Problem
+
+`backdrop-filter` blurs content that is **visually behind** the element, but only within the same **stacking context**. Two factors commonly break this:
+
+1. **Shadow DOM Boundary:** An element inside Shadow DOM cannot blur Light DOM content (page content outside the shadow root).
+2. **CSS `transform` Property:** Any ancestor with `transform` (even `transform: none` or identity matrix) creates a new stacking context, isolating the backdrop-filter.
+
+#### When Backdrop-Filter Works
+
+| Scenario | Works? | Reason |
+|----------|--------|--------|
+| Blur applied on `:host` | ✅ | `:host` participates in Light DOM's stacking context |
+| Blur on inner element, blurring Shadow DOM siblings | ✅ | Same shadow root = same stacking context |
+| Blur on inner element, blurring Light DOM | ❌ | Shadow boundary isolates rendering |
+| Blur on any element with `transform` ancestor | ❌ | Transform creates new stacking context |
+
+#### Real-World Examples
+
+```scss
+// ✅ WORKS - backdrop-filter on :host blurs Light DOM content
+:host {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  position: fixed;
+}
+
+.snackbar {
+  // Just colors, no blur here
+  @include lf-comp-color($comp, "surface", "all", 0.5);
+}
+```
+
+```scss
+// ✅ WORKS - blurring sibling content within same Shadow DOM
+// (e.g., sticky header blurring scrollable content below it)
+.code__header {
+  @include lf-comp-glassmorphize($comp, "surface", "all", 0.775);
+  position: sticky;
+  top: 0;
+}
+```
+
+```scss
+// ❌ BROKEN - trying to blur Light DOM from inside Shadow DOM
+.material-layout {
+  @include lf-comp-glassmorphize($comp, "bg", "all", 0.25, 4px);
+  // This won't blur the page background!
+}
+```
+
+#### The Transform Trap
+
+Components with 3D effects, animations, or tilt interactions often use `transform`, which breaks backdrop-filter for all descendants:
+
+```html
+<!-- Parent has transform for tilt effect -->
+<lf-card style="transform: matrix(1, 0, 0, 1, 0, 0); transform-style: preserve-3d;">
+  #shadow-root
+    <!-- backdrop-filter here CANNOT blur through the transform boundary -->
+    <div class="material-layout" style="backdrop-filter: blur(8px)">
+```
+
+#### Solution Guidelines
+
+1. **For components needing to blur Light DOM** (toasts, snackbars, modals, fixed headers):
+   - Apply `backdrop-filter` directly on `:host`
+   - Use `lf-comp-color` (not `lf-comp-glassmorphize`) on inner elements
+
+2. **For components blurring their own content** (code blocks with sticky headers, scrollable lists):
+   - `lf-comp-glassmorphize` on inner elements works fine
+
+3. **For components that may have `transform` ancestors** (cards in grids with effects):
+   - Accept that blur won't work, OR
+   - Provide a prop to disable transform effects when blur is needed
+
+#### Quick Reference
+
+```text
+Light DOM (page content)
+│
+├── Element with transform ──────── Creates new stacking context
+│     │
+│     └── <lf-component> (:host)
+│           │
+│           └── Shadow DOM
+│                 └── .inner (backdrop-filter) ❌ Can't blur past transform!
+│
+└── <lf-component> (:host, backdrop-filter) ✅ Works!
+      │
+      └── Shadow DOM
+            └── .inner (just colors)
+```
 
 ## Build & Testing Scripts
 

@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "chart";
-@include lf-comp-setup($comp);
+@include lf-comp-setup($comp, "false", "false", "false", "false", "true");
 
 :host {
   height: var(--lf_#{$comp}_height, 100%);
@@ -12,6 +12,11 @@ $comp: "chart";
 }
 
 .chart {
-  @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+  @include lf-comp-color(
+    $comp,
+    "bg",
+    "all",
+    var(--lf-ui-alpha-glass-hint, 0.125)
+  );
   @include lf-el-stretch;
 }

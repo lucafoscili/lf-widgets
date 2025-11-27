@@ -5,7 +5,7 @@
 );
 
 $comp: "article";
-@include lf-comp-setup(#{$comp});
+@include lf-comp-setup(#{$comp}, "false", "false", "false", "false", "true");
 
 :host {
   @include lf-comp-border($comp, "radius");
@@ -13,7 +13,12 @@ $comp: "article";
 }
 
 .article {
-  @include lf-comp-glassmorphize($comp);
+  @include lf-comp-color(
+    $comp,
+    "surface",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
   /**
   * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
   *                             Defaults to => auto
@@ -58,9 +63,6 @@ $comp: "article";
 }
 
 [data-component="LfCode"] {
+  margin: 1.75em auto;
   max-width: max-content;
-  margin: auto;
-  padding: 1.75em 0;
 }
-
-/* local partial loaded above */
