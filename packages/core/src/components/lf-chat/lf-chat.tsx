@@ -21,6 +21,7 @@ import {
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfLLMAttachment,
   LfLLMChoiceMessage,
   LfLLMTool,
@@ -42,6 +43,7 @@ import {
   VNode,
   Watch,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { exportH, setH } from "./helpers.history";
@@ -728,6 +730,7 @@ export class LfChat implements LfChatInterface {
                   <div
                     class={bemClass(messages._, messages.container, {
                       [m.role]: true,
+                      textarea: isEditing,
                     })}
                     key={index}
                     ref={(el) => {
@@ -781,12 +784,15 @@ export class LfChat implements LfChatInterface {
     const { chat } = this.#b;
     const { configuration } = this.#adapter.elements.jsx.chat;
     const icon = get.icon("door");
-    const { style } = this.#framework.assets.get(`./assets/svg/${icon}.svg`);
 
     return (
       <Fragment>
         <div class={bemClass(chat._, chat.error)}>
-          <div class={bemClass(chat._, chat.icon)} style={style}></div>
+          <FIcon
+            framework={this.#framework}
+            icon={icon as LfIconType}
+            wrapperClass={bemClass(chat._, chat.icon)}
+          />
           <div class={bemClass(chat._, chat.title)}>Zzz...</div>
           <div class={bemClass(chat._, chat.text)}>
             The LLM endpoint is currently offline.

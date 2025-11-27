@@ -8,7 +8,7 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 .material-layout {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.25, 4px);
+    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
     @include lf-el-stretch;
     @include lf-el-transition;
     box-sizing: border-box;
@@ -26,7 +26,12 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
   &:focus,
   &:hover {
     & {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.075);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
       box-shadow:
         0 2px 4px -1px rgba($box-shadow-color, 0.1),
         0 4px 5px 0 rgba($box-shadow-color, 0.1),

@@ -5,7 +5,13 @@ $comp: null !default;
 
 .button--icon {
   & {
-    @include lf-comp-color($comp, "primary", "text");
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass-heavy, 0.75),
+      "true"
+    );
     background-color: transparent;
     border: none;
     border-radius: 50%;
@@ -24,7 +30,13 @@ $comp: null !default;
 
   &:hover,
   &:focus {
-    @include lf-comp-color($comp, "primary", "bg", 0.125);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass-solid, 0.875),
+      "true"
+    );
   }
 
   &.button--has-spinner {

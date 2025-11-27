@@ -1,5 +1,4 @@
 import {
-  CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_PROGRESSBAR_BLOCKS,
   LF_PROGRESSBAR_CSS_VARIABLES,
@@ -9,6 +8,7 @@ import {
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfProgressbarElement,
   LfProgressbarEvent,
   LfProgressbarEventPayload,
@@ -30,6 +30,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -189,7 +190,6 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_PROGRESSBAR_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_PROGRESSBAR_PARTS;
   #s = LF_STYLE_ID;
@@ -284,20 +284,18 @@ export class LfProgressbar implements LfProgressbarInterface {
   }
 
   #prepIcon() {
-    const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
 
     const { progressbar } = this.#b;
     const { lfIcon } = this;
 
-    const { style } = get(`./assets/svg/${lfIcon}.svg`);
     return (
       <div
         class={bemClass(progressbar._, progressbar.icon)}
-        data-cy={this.#cy.maskedSvg}
         part={this.#p.icon}
-        style={style}
-      ></div>
+      >
+        <FIcon framework={this.#framework} icon={lfIcon as LfIconType} />
+      </div>
     );
   }
   #prepLabel() {

@@ -130,7 +130,7 @@ export const prepChat = (
 
       return (
         <lf-button
-          class={bemClass(blocks.chat._, blocks.chat.clear)}
+          class={bemClass(blocks.commands._, blocks.commands.clear)}
           data-cy={cyAttributes.button}
           id={LF_CHAT_IDS.chat.clear}
           lfIcon={icon}

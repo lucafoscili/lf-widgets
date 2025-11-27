@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "upload";
-@include lf-comp-setup($comp, "false", "true", "true");
+@include lf-comp-setup($comp, "false", "true", "true", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -11,7 +11,12 @@ $comp: "upload";
 .upload {
   & {
     @include lf-comp-border($comp);
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     @include lf-el-stretch;
     box-sizing: border-box;
     display: grid;
@@ -58,9 +63,15 @@ $comp: "upload";
 .file-upload {
   & {
     @include lf-comp-border($comp);
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     @include lf-el-transition("hover-glow");
     display: flex;
+    position: relative;
   }
 
   &__input {
@@ -94,7 +105,7 @@ $comp: "upload";
 
   &__icon {
     & {
-      @include lf-comp-icon($comp);
+      @include f-icon($comp);
     }
 
     &--has-actions {

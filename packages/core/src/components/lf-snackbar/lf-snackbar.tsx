@@ -1,5 +1,4 @@
 import {
-  CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_SNACKBAR_BLOCKS,
   LF_SNACKBAR_CSS_VARIABLES,
@@ -9,6 +8,7 @@ import {
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfSnackbarActionCallback,
   LfSnackbarElement,
   LfSnackbarEvent,
@@ -33,6 +33,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -207,7 +208,6 @@ export class LfSnackbar implements LfSnackbarInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_SNACKBAR_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_SNACKBAR_PARTS;
   #s = LF_STYLE_ID;
@@ -301,13 +301,11 @@ export class LfSnackbar implements LfSnackbarInterface {
     this.unmount();
   };
   #prepIcon = (isClose = false): VNode => {
-    const { assets, theme } = this.#framework;
-    const { get } = assets;
+    const { theme } = this.#framework;
     const { bemClass } = theme;
 
     const { snackbar } = this.#b;
     const icon = isClose ? this.lfCloseIcon : this.lfIcon;
-    const { style } = get(`./assets/svg/${icon}.svg`);
 
     return (
       <div
@@ -315,12 +313,12 @@ export class LfSnackbar implements LfSnackbarInterface {
           snackbar._,
           isClose ? snackbar.closeButton : snackbar.icon,
         )}
-        data-cy={this.#cy.maskedSvg}
         onPointerDown={isClose ? this.#handleCloseClick : null}
         part={isClose ? this.#p.closeButton : this.#p.icon}
-        style={style}
         tabIndex={isClose ? 0 : undefined}
-      ></div>
+      >
+        <FIcon framework={this.#framework} icon={icon as LfIconType} />
+      </div>
     );
   };
   //#endregion

@@ -2,10 +2,10 @@
 @use "mixins" as *;
 
 $comp: "snackbar";
-@include lf-comp-setup($comp, "true", "false", "true");
+@include lf-comp-setup($comp, "true", "false", "true", "false", "true");
 
 :host {
-  animation: slideUp 250ms ease-out;
+  @include lf-comp-border($comp, "radius");
   box-sizing: border-box;
   display: block;
   pointer-events: none;
@@ -31,35 +31,48 @@ $comp: "snackbar";
 }
 
 :host([lf-position="top-left"]) {
-  animation-name: slideDown;
   top: 1em;
   left: 1em;
+
+  .snackbar {
+    animation-name: slideDown;
+  }
 }
 
 :host([lf-position="top-center"]) {
-  animation-name: slideDown;
   top: 1em;
   left: 50%;
   transform: translateX(-50%);
+
+  .snackbar {
+    animation-name: slideDown;
+  }
 }
 
 :host([lf-position="top-right"]) {
-  animation-name: slideDown;
   top: 1em;
   right: 1em;
+
+  .snackbar {
+    animation-name: slideDown;
+  }
 }
 
 .snackbar {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     box-shadow: var(--lf-ui-box-shadow-#{$comp}, 0 4px 12px rgba(0, 0, 0, 0.3));
     display: flex;
     gap: 1em;
     justify-content: space-between;
     min-width: 288px;
     max-width: 568px;
-    overflow: hidden;
     pointer-events: auto;
     /**
     * @prop --lf-snackbar-padding: Sets the padding for the snackbar.
@@ -76,10 +89,8 @@ $comp: "snackbar";
   }
 
   &__icon {
-    @include lf-comp-color($comp, "surface", "bg", 1, "true");
+    @include f-icon($comp, "surface");
     flex-shrink: 0;
-    height: 1.5em;
-    width: 1.5em;
   }
 
   &__message {
@@ -103,7 +114,12 @@ $comp: "snackbar";
 
   &__action-button {
     & {
-      @include lf-comp-color($comp, "primary");
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "all",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
       @include lf-el-transition("hover-glow");
       background: transparent;
       border: none;
@@ -129,12 +145,10 @@ $comp: "snackbar";
 
   &__close-button {
     & {
-      @include lf-comp-icon($comp, "clear", "surface", "1.25em", 1, "true");
+      @include f-icon($comp, "surface");
       @include lf-el-transition("hover-glow");
       cursor: pointer;
       flex-shrink: 0;
-      height: 1.25em;
-      width: 1.25em;
     }
 
     &:hover {

@@ -186,6 +186,11 @@ $gap: 1.5em;
     justify-content: space-between;
   }
 
+  &__button {
+    backdrop-filter: unset;
+    -webkit-backdrop-filter: unset;
+  }
+
   &__left,
   &__right {
     @include lf-el-stretch;

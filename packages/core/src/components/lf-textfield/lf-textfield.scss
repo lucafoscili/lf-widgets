@@ -4,7 +4,7 @@
 $comp: "textfield";
 $onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
 $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
-@include lf-comp-setup($comp, "true");
+@include lf-comp-setup($comp, "true", "false", "false", "false", "true");
 
 :host {
   width: 100%;
@@ -26,11 +26,11 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
       }
 
       &__icon {
-        padding-left: 0.5em;
+        padding: 0 0.5em;
       }
 
       &__label {
-        left: 1em;
+        left: 1.1em;
       }
     }
   }
@@ -60,10 +60,7 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 
   &--filled,
   &--focused {
-    .textfield__icon {
-      @include lf-comp-color($comp, "primary", "bg");
-    }
-
+    .textfield__icon,
     .textfield__label {
       @include lf-comp-color($comp, "primary", "text", 1, true);
     }
@@ -99,15 +96,30 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 
   &--raised {
     & {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.275);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
     }
 
     &.textfield--focused {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.525);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
     }
   }
 
@@ -119,7 +131,12 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.075);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
       border-color: rgba($primaryC, 0.775);
     }
 
@@ -129,7 +146,12 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     &.textfield--filled {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.175, 15px);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
   }
 
@@ -176,16 +198,10 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
   &__icon,
   &__icon-action {
     & {
-      @include lf-comp-icon($comp);
+      @include f-icon($comp);
       @include lf-el-transition("bouncy");
       align-self: center;
-      cursor: pointer;
       outline: none;
-      /**
-      * @prop --lf-#{$comp}-icon-padding: Sets the padding for the #{$comp} icon.
-      *                                   Defaults to => 0 0.75em
-      */
-      padding: var(--lf-#{$comp}-icon-padding, 0 0.75em);
     }
 
     &:hover {
@@ -195,6 +211,22 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     &:focus {
       box-shadow: 0 0 0 0.15em rgb($primaryC);
     }
+  }
+
+  &__icon {
+    /**
+      * @prop --lf-#{$comp}-icon-padding: Sets the padding for the #{$comp} icon.
+      *                                   Defaults to => 0 0 0 0.75em
+      */
+    padding: var(--lf-#{$comp}-icon-padding, 0 0 0 0.75em);
+  }
+
+  &__icon-action {
+    /**
+      * @prop --lf-#{$comp}-icon-action-padding: Sets the padding for the #{$comp} action icon.
+      *                                   Defaults to => 0 0.75em 0 0
+      */
+    padding: var(--lf-#{$comp}-icon-action-padding, 0 0.75em 0 0);
   }
 
   &__input {
@@ -230,7 +262,12 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     &:placeholder {
-      @include lf-comp-color($comp, "bg", "text", 0.375);
+      @include lf-comp-color(
+        $comp,
+        "bg",
+        "text",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
     }
   }
 
@@ -273,7 +310,12 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     &:after {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.775);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
       @include lf-el-transition("slide-in-out", "width");
       width: 0;
     }

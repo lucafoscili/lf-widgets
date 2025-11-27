@@ -23,7 +23,6 @@ describe("LfImage", () => {
     const component = page.rootInstance as LfImage;
 
     expect(component.lfHtmlAttributes).toEqual({});
-    expect(component.lfMode).toBe("sprite");
     expect(component.lfShowSpinner).toBe(false);
     expect(component.lfSizeX).toBe("100%");
     expect(component.lfSizeY).toBe("100%");
@@ -34,11 +33,10 @@ describe("LfImage", () => {
 
   it("renders with custom props", async () => {
     const page = await createPage(
-      `<lf-image lf-mode="mask" lf-show-spinner="true" lf-size-x="200px" lf-size-y="150px" lf-style="#test { color: red; }" lf-ui-state="success" lf-value="test-icon"></lf-image>`,
+      `<lf-image lf-show-spinner="true" lf-size-x="200px" lf-size-y="150px" lf-style="#test { color: red; }" lf-ui-state="success" lf-value="test-icon"></lf-image>`,
     );
     const component = page.rootInstance as LfImage;
 
-    expect(component.lfMode).toBe("mask");
     expect(component.lfShowSpinner).toBe(true);
     expect(component.lfSizeX).toBe("200px");
     expect(component.lfSizeY).toBe("150px");
@@ -53,7 +51,6 @@ describe("LfImage", () => {
     const props = await component.getProps();
 
     expect(props).toBeDefined();
-    expect(props.lfMode).toBe("sprite");
     expect(props.lfSizeX).toBe("100%");
     expect(props.lfSizeY).toBe("100%");
     expect(props.lfStyle).toBe("");

@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "image";
-@include lf-comp-setup("image", "true", "false", "true");
+@include lf-comp-setup("image", "true", "false", "true", "false", "true");
 
 :host,
 #lf-component,
@@ -26,16 +26,14 @@ $comp: "image";
   }
 
   &__icon {
-    & {
-      @include lf-el-transition;
-      /**
-      * @prop --lf-#{$comp}-aspect-ratio: Sets the aspect ratio for the icons.
-      *                                   Defaults to => 1
-      */
-      aspect-ratio: var(--lf-#{comp}-aspect-ratio, 1);
-      mask: var(--lf_#{$comp}_mask);
-      -webkit-mask: var(--lf_#{$comp}_mask);
-    }
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "text",
+      var(--lf-ui-alpha-glass-solid, 0.875),
+      "true"
+    );
+    @include lf-el-transition;
   }
 
   &__img {
@@ -44,28 +42,5 @@ $comp: "image";
       *                                 Defaults to => cover
       */
     object-fit: var(--lf-#{$comp}-object-fit, cover);
-  }
-}
-
-:host([lf-mode="mask"]) {
-  .image {
-    &__icon {
-      @include lf-comp-glassmorphize("image", "primary", "bg", 0.775);
-    }
-  }
-}
-
-:host([lf-mode="sprite"]) {
-  .image {
-    &__icon {
-      @include lf-comp-glassmorphize(
-        "image",
-        "primary",
-        "text",
-        0.775,
-        8px,
-        true
-      );
-    }
   }
 }

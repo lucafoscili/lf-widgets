@@ -205,7 +205,7 @@ describe(CY_CATEGORIES.e2e, () => {
   let framework: LfFrameworkInterface;
   let fixtures: LfShowcaseComponentFixture<"lf-select">;
   let keys: string[];
-  const { input, node, portal, dropdownMenu, maskedSvg } = CY_ATTRIBUTES;
+  const { input, node, portal, dropdownMenu, fIcon } = CY_ATTRIBUTES;
   const { lfComponentShowcase } = CY_ALIASES;
 
   beforeEach(() => {
@@ -274,7 +274,7 @@ describe(CY_CATEGORIES.e2e, () => {
 
           cy.getCyElement(portal)
             .findCyElement(dropdownMenu)
-            .findCyElement(maskedSvg)
+            .findCyElement(fIcon)
             .should("exist");
         }
       });

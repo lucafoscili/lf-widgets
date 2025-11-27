@@ -110,7 +110,7 @@ describe(CY_CATEGORIES.methods, () => {
 describe(CY_CATEGORIES.props, () => {
   let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
-  const { dropdownButton, maskedSvg, rippleSurface } = CY_ATTRIBUTES;
+  const { dropdownButton, fIcon, rippleSurface } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(button);
@@ -144,7 +144,7 @@ describe(CY_CATEGORIES.props, () => {
             expect(lfIcon).to.not.be.empty;
           })
           .within(() => {
-            cy.getCyElement(maskedSvg).should("exist");
+            cy.getCyElement(fIcon).should("exist");
           });
       });
   });
@@ -167,20 +167,22 @@ describe(CY_CATEGORIES.props, () => {
             expect(lfIconOff).to.not.be.empty;
           })
           .within(() => {
-            cy.getCyElement(maskedSvg).then(($svg) => {
-              cy.wrap($svg).should(async ($s) => {
-                const svg = $s[0] as HTMLDivElement;
-                expect(svg.getAttribute("style")).to.include(lfIcon);
-              });
+            cy.getCyElement(fIcon).then(($icon) => {
+              cy.wrap($icon)
+                .find("svg use")
+                .should(($use) => {
+                  expect($use.attr("href")).to.include(lfIcon);
+                });
             });
           })
           .click()
           .within(() => {
-            cy.getCyElement(maskedSvg).then(($svg) => {
-              cy.wrap($svg).should(async ($s) => {
-                const svg = $s[0] as HTMLDivElement;
-                expect(svg.getAttribute("style")).to.include(lfIconOff);
-              });
+            cy.getCyElement(fIcon).then(($icon) => {
+              cy.wrap($icon)
+                .find("svg use")
+                .should(($use) => {
+                  expect($use.attr("href")).to.include(lfIconOff);
+                });
             });
           });
       });

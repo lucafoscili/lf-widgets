@@ -93,6 +93,11 @@
 /*******************************************
  * @mixin lf-comp-glassmorphize
  * Applies a "glass" effect via backdrop blur plus a background color from lf-comp-color.
+ * 
+ * NOTE: This mixin should only be used on inner elements that blur OTHER Shadow DOM
+ * content (e.g., sticky headers blurring scrollable content below).
+ * For blurring Light DOM content (page background), use the $has-glassmorphism flag
+ * in lf-comp-setup instead, which applies backdrop-filter to :host.
  *
  * @param {String}  $comp    - Component ID/key
  * @param {String}  $color   - Base color token (e.g. "bg", "primary", etc.)
@@ -115,6 +120,7 @@
 }
 /*******************************************
  * @mixin lf-comp-icon
+ * @deprecated Use lf-icon instead for inline SVG sprites.
  * Applies an SVG mask as an icon plus a background color for that icon area.
  *
  * @param {String}  $comp   - Component ID/key
@@ -154,18 +160,22 @@
  * One-stop setup for a component: applies default font-size,
  * scrollbar, ripple states, fade in, etc.
  *
- * @param {String}  $comp       - Component ID/key
- * @param {String}  $has-states - "true" to include fw-state-colors, otherwise "false"
- * @param {String}  $has-ripple - "true" to include ripple styles, otherwise "false"
- * @param {String}  $has-fade-in - "true" to include fade-in transitions, otherwise "false"
- * @param {String}  $has-portal - "true" to include portal styles, otherwise "false"
+ * @param {String}  $comp              - Component ID/key
+ * @param {String}  $has-states        - "true" to include fw-state-colors, otherwise "false"
+ * @param {String}  $has-ripple        - "true" to include ripple styles, otherwise "false"
+ * @param {String}  $has-fade-in       - "true" to include fade-in transitions, otherwise "false"
+ * @param {String}  $has-portal        - "true" to include portal styles, otherwise "false"
+ * @param {String}  $has-glassmorphism - "true" to apply backdrop-filter blur on :host for Light DOM blurring
+ * @param {Length}  $glassmorphism-blur - Blur radius for glassmorphism (default: 8px)
  *******************************************/
 @mixin lf-comp-setup(
   $comp,
   $has-states: "false",
   $has-ripple: "false",
   $has-fade-in: "false",
-  $has-portal: "false"
+  $has-portal: "false",
+  $has-glassmorphism: "false",
+  $glassmorphism-blur: 8px
 ) {
   @include lf-app-scrollbar;
 
@@ -199,6 +209,16 @@
      *                                Defaults to => var(--lf-font-size)
      */
     font-size: var(--lf-#{$comp}-font-size, var(--lf-font-size));
+
+    @if $has-glassmorphism == "true" {
+      /**
+       * Glassmorphism effect applied to :host to ensure blur works on Light DOM content.
+       * This is necessary because backdrop-filter on inner Shadow DOM elements cannot
+       * blur content outside the shadow boundary, especially when transform ancestors exist.
+       */
+      backdrop-filter: blur($glassmorphism-blur);
+      -webkit-backdrop-filter: blur($glassmorphism-blur);
+    }
   }
 
   @each $size, $value in $lf-sizes {

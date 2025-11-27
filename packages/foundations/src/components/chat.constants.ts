@@ -24,6 +24,7 @@ export const LF_CHAT_BLOCKS = {
   },
   commands: {
     _: "commands",
+    clear: "clear",
     stt: "stt",
   },
   input: {

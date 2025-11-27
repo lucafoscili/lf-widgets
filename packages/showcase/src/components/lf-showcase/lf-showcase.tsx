@@ -22,6 +22,7 @@ import {
 import { disableMockLLM, enableMockLLM } from "../../utils/llm.mock";
 import { awaitFramework } from "../../utils/setup";
 import { ComponentTemplate } from "./components/component-template";
+import { DashboardData, fetchDashboardData } from "./helpers/dashboard.api";
 import { FrameworkTemplate } from "./components/framework-template";
 import {
   LfShowcaseDatasets,
@@ -66,6 +67,7 @@ export class LfShowcase {
     Components: "",
     Framework: "",
   };
+  @State() dashboardData: DashboardData | null = null;
   @State() debugInfo: LfDebugLifecycleInfo;
   @State() isDarkMode: boolean;
   @State() isDrawerDocked = false;
@@ -215,7 +217,7 @@ export class LfShowcase {
       >
         <lf-article
           class={bemClass("showcase", "intro")}
-          lfDataset={LF_DOC(this.#framework)}
+          lfDataset={LF_DOC(this.#framework, this.dashboardData)}
           part="intro"
         ></lf-article>
         <div class={bemClass("showcase", "links")}>
@@ -225,6 +227,8 @@ export class LfShowcase {
             lfIcon={get.icon("brandGithub")}
             lfLabel="GitHub"
             lfStyling="floating"
+            lfUiSize="small"
+            lfUiState="secondary"
             onClick={() =>
               window.open("https://github.com/lucafoscili/lf-widgets", "_blank")
             }
@@ -237,6 +241,8 @@ export class LfShowcase {
             lfIcon={get.icon("brandNpm")}
             lfLabel="npm"
             lfStyling="floating"
+            lfUiSize="small"
+            lfUiState="secondary"
             onClick={() =>
               window.open(
                 "https://www.npmjs.com/package/@lf-widgets/core",
@@ -609,6 +615,11 @@ export class LfShowcase {
     this.#framework = await awaitFramework(this);
     this.isDarkMode = this.#framework.theme.get.current().isDark;
 
+    // Fetch dashboard data from APIs (non-blocking)
+    fetchDashboardData().then((data) => {
+      this.dashboardData = data;
+    });
+
     const icons = this.#framework.theme.get.icons();
     this.datasets.Components = LF_SHOWCASE_COMPONENTS(icons);
     this.datasets.Framework = LF_SHOWCASE_FRAMEWORK(icons);
@@ -660,7 +671,7 @@ export class LfShowcase {
           ],
           id: "",
           value: "Home",
-          icon: "",
+          icon: undefined,
           description: "",
         },
       ],
