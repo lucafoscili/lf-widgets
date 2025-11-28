@@ -1,4 +1,8 @@
-import { CY_ATTRIBUTES, FIconPropsInterface } from "@lf-widgets/foundations";
+import {
+  CY_ATTRIBUTES,
+  FIconPropsInterface,
+  LF_ATTRIBUTES,
+} from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
 
 /**
@@ -70,6 +74,7 @@ const resolveIconName = (
  * @param props.iconClass - Optional CSS class for SVG element
  * @param props.onClick - Optional click handler
  * @param props.style - Optional inline styles (prefer SCSS when possible)
+ * @param props.uiState - Optional UI state to reflect on the icon
  *
  * @returns Wrapped SVG element with sprite reference
  */
@@ -80,6 +85,7 @@ export const FIcon: FunctionalComponent<FIconPropsInterface> = ({
   iconClass,
   onClick,
   style,
+  uiState,
 }) => {
   const { theme } = framework;
   const { variables } = theme.get.current();
@@ -103,6 +109,7 @@ export const FIcon: FunctionalComponent<FIconPropsInterface> = ({
     <div
       class={wrapperClasses}
       data-cy={CY_ATTRIBUTES.fIcon}
+      data-lf={uiState ? LF_ATTRIBUTES[uiState] : undefined}
       onClick={onClick}
       style={wrapperStyle}
     >

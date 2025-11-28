@@ -125,7 +125,7 @@ export class LfTextfield implements LfTextfieldInterface {
    * <lf-textfield lfIcon="search" />
    * ```
    */
-  @Prop({ mutable: true }) lfIcon: string = "";
+  @Prop({ mutable: true }) lfIcon: LfIconType | null = null;
   /**
    * Sets the label for the text field.
    *
@@ -494,7 +494,7 @@ export class LfTextfield implements LfTextfieldInterface {
     return (
       <FIcon
         framework={this.#framework}
-        icon={this.lfIcon as LfIconType}
+        icon={this.lfIcon}
         wrapperClass={bemClass(textfield._, textfield.icon, {
           trailing: this.lfTrailingIcon,
         })}

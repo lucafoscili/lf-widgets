@@ -129,6 +129,9 @@ export const getImageFixtures = (
         cover: {
           description: "Image set as cover of a container (default behavior)",
           props: {
+            lfHtmlAttributes: {
+              title: "Image cover",
+            },
             lfSizeX: "256px",
             lfSizeY: "256px",
             lfValue: image1,

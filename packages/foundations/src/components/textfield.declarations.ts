@@ -1,3 +1,4 @@
+import { LfIconType } from "../foundations";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -67,7 +68,7 @@ export interface LfTextfieldPropsInterface {
   lfFormatJSON?: LfTextfieldFormatJSON | null;
   lfHelper?: LfTextfieldHelper;
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
-  lfIcon?: string;
+  lfIcon?: LfIconType | null;
   lfLabel?: string;
   lfStretchY?: boolean;
   lfStyle?: string;
