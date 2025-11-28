@@ -319,3 +319,81 @@ describe("Data Node Helpers", () => {
     });
   });
 });
+
+describe("Article helpers", () => {
+  it("builder creates section and card leaf with hierarchical structure", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root",
+      title: "Weather Article",
+    });
+
+    const section = builder.addSection({
+      id: "weather-section",
+      title: "Today",
+    });
+
+    builder.addLeaf({
+      sectionId: section.id,
+      node: article.shapes.card({
+        id: "weather-card",
+        dataset: { nodes: [] },
+        layout: "weather",
+      }),
+    });
+
+    const dataset = builder.getDataset();
+
+    expect(dataset).toBeDefined();
+    expect(Array.isArray(dataset.nodes)).toBe(true);
+    expect(dataset.nodes!.length).toBe(1);
+
+    const rootNode = dataset.nodes![0];
+    expect(rootNode.id).toBe("article-root");
+    expect(rootNode.value).toBe("Weather Article");
+    expect(rootNode.children?.length).toBe(1);
+
+    const sectionNode = rootNode.children![0];
+    expect(sectionNode.id).toBe("weather-section");
+    expect(sectionNode.value).toBe("Today");
+    expect(sectionNode.children?.length).toBe(1);
+
+    const paragraphNode = sectionNode.children![0];
+    expect(paragraphNode.children?.length).toBe(1);
+
+    const cardNode = paragraphNode.children![0];
+    expect(cardNode.cells?.lfCard).toBeDefined();
+  });
+
+  it("builder paragraphs attach text as leaf content", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root-text",
+      title: "Docs Article",
+    });
+
+    const section = builder.addSection({
+      id: "docs-section",
+      title: "Overview",
+    });
+
+    const paragraph = builder.addParagraph(section.id, {
+      id: "intro-paragraph",
+      title: "Introduction",
+      text: "Hello world",
+    });
+
+    const dataset = builder.getDataset();
+
+    expect(dataset.nodes).toBeDefined();
+    const rootNode = dataset.nodes![0];
+    const sectionNode = rootNode.children![0];
+    const paragraphNode = sectionNode.children![0];
+
+    expect(paragraphNode.id).toBe(paragraph.id);
+    expect(paragraphNode.value).toBe("Introduction");
+    expect(paragraphNode.children?.[0].value).toBe("Hello world");
+  });
+});

@@ -16,8 +16,12 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfChat"> = "LfChatEventPayload";
 const TAG_NAME: LfComponentTag<"LfChat"> = "lf-chat";
 
 export const getChatFixtures = (
-  _framework: LfFrameworkInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-chat"> => {
+  const builtinTools = framework.llm.getBuiltinToolsByCategory?.();
+  const builtinWeatherTool = builtinTools?.general?.get_weather;
+  const builtinDocsTool = builtinTools?.lfw?.get_component_docs;
+
   //#region documentation
   const documentation: LfArticleDataset = {
     nodes: [
@@ -145,154 +149,19 @@ export const getChatFixtures = (
           },
         },
         tools: {
-          description: "Chat with tools for external actions (real APIs)",
+          description:
+            "Chat with builtin tools for external actions (real APIs)",
           props: {
-            lfTools: [
-              {
-                type: "function",
-                function: {
-                  name: "get_showcase_docs",
-                  description:
-                    "Retrieves documentation about lf-widgets components and framework. Use this to answer questions about components, their props, events, methods, or usage examples.",
-                  parameters: {
-                    type: "object",
-                    properties: {
-                      component: {
-                        type: "string",
-                        description:
-                          "The component name to query (e.g., 'lf-button', 'lf-chat', 'lf-tree'). Leave empty for general framework docs.",
-                      },
-                    },
-                  },
-                  execute: async (args: Record<string, unknown>) => {
-                    const component = (args.component as string) || "";
-
-                    try {
-                      // Fetch the actual doc.json file from the core package
-                      const fetchResponse = await fetch("/build/doc.json");
-                      if (!fetchResponse.ok) {
-                        return `Documentation fetch failed. The doc.json file might not be available. Status: ${fetchResponse.status}`;
-                      }
-
-                      const docData = await fetchResponse.json();
-
-                      if (!component) {
-                        // Return general framework overview
-                        const componentCount = docData.components?.length || 0;
-                        const componentList =
-                          docData.components
-                            ?.map((c: any) => c.tag)
-                            .join(", ") || "none";
-                        return `lf-widgets Framework Overview:\n- Total Components: ${componentCount}\n- Available Components: ${componentList}\n- Documentation includes props, events, methods, and styling for each component.\n\nAsk about a specific component for detailed information.`;
-                      }
-
-                      // Find specific component documentation
-                      const comp = docData.components?.find(
-                        (c: any) =>
-                          c.tag === component ||
-                          c.tag === `lf-${component.replace("lf-", "")}`,
-                      );
-
-                      if (!comp) {
-                        return `Component "${component}" not found. Available components: ${docData.components?.map((c: any) => c.tag).join(", ")}`;
-                      }
-
-                      // Build comprehensive response
-                      let result = `${comp.tag} Documentation:\n\n`;
-                      result += `Description: ${comp.overview || "No description available"}\n\n`;
-
-                      if (comp.props?.length) {
-                        result += `Props (${comp.props.length}):\n`;
-                        comp.props.slice(0, 5).forEach((prop: any) => {
-                          result += `- ${prop.name}: ${prop.type} ${prop.required ? "(required)" : ""}\n  ${prop.docs || ""}\n`;
-                        });
-                        if (comp.props.length > 5) {
-                          result += `... and ${comp.props.length - 5} more props\n`;
-                        }
-                      }
-
-                      if (comp.events?.length) {
-                        result += `\nEvents: ${comp.events.map((e: any) => e.event).join(", ")}\n`;
-                      }
-
-                      if (comp.methods?.length) {
-                        result += `\nMethods: ${comp.methods.map((m: any) => m.name).join(", ")}\n`;
-                      }
-
-                      return result;
-                    } catch (error) {
-                      return `Error fetching documentation: ${error instanceof Error ? error.message : String(error)}`;
-                    }
-                  },
-                },
+            lfConfig: {
+              tools: {
+                definitions: [builtinDocsTool, builtinWeatherTool].filter(
+                  (tool): tool is NonNullable<typeof tool> => Boolean(tool),
+                ),
               },
-              {
-                type: "function",
-                function: {
-                  name: "get_weather",
-                  description:
-                    "Get real-time weather information for any city or location worldwide. Returns temperature, conditions, humidity, and wind speed.",
-                  parameters: {
-                    type: "object",
-                    properties: {
-                      location: {
-                        type: "string",
-                        description:
-                          "The city name or location (e.g., 'London', 'New York', 'Tokyo')",
-                      },
-                    },
-                    required: ["location"],
-                  },
-                  execute: async (args: Record<string, unknown>) => {
-                    const location = (args.location as string) || "London";
-
-                    try {
-                      // Using wttr.in - a free weather API that doesn't require API key
-                      // Format: simple text output, easy to parse
-                      const response = await fetch(
-                        `https://wttr.in/${encodeURIComponent(location)}?format=j1`,
-                      );
-
-                      if (!response.ok) {
-                        return `Unable to fetch weather for "${location}". Please check the location name and try again.`;
-                      }
-
-                      const data = await response.json();
-                      const current = data.current_condition?.[0];
-                      const area = data.nearest_area?.[0];
-
-                      if (!current) {
-                        return `Weather data unavailable for "${location}".`;
-                      }
-
-                      const locationName =
-                        area?.areaName?.[0]?.value || location;
-                      const country = area?.country?.[0]?.value || "";
-                      const temp_c = current.temp_C;
-                      const temp_f = current.temp_F;
-                      const condition =
-                        current.weatherDesc?.[0]?.value || "Unknown";
-                      const humidity = current.humidity;
-                      const windSpeed = current.windspeedKmph;
-                      const windDir = current.winddir16Point;
-                      const feelsLike_c = current.FeelsLikeC;
-                      const feelsLike_f = current.FeelsLikeF;
-
-                      return `Weather for ${locationName}${country ? ", " + country : ""}:
-🌡️ Temperature: ${temp_c}°C (${temp_f}°F)
-🌤️ Conditions: ${condition}
-🤔 Feels like: ${feelsLike_c}°C (${feelsLike_f}°F)
-💧 Humidity: ${humidity}%
-🌬️ Wind: ${windSpeed} km/h ${windDir}`;
-                    } catch (error) {
-                      return `Error fetching weather data: ${error instanceof Error ? error.message : String(error)}. Please try again.`;
-                    }
-                  },
-                },
-              },
-            ],
+            },
           },
         },
+
         configCreative: {
           description: "Config preset: Creative (high temperature, diverse)",
           props: {

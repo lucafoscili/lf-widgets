@@ -718,7 +718,9 @@ export class LfChat implements LfChatInterface {
           {history?.length ? (
             history
               .filter((m) => {
-                // Hide tool messages (internal only)
+                // Hide raw tool messages (internal only). Their rich
+                // article content is attached to the corresponding
+                // assistant message instead.
                 if (m.role === "tool") {
                   return false;
                 }
@@ -776,7 +778,27 @@ export class LfChat implements LfChatInterface {
     );
   };
   #prepContent = (message: LfLLMChoiceMessage): VNode[] => {
-    return parseMessageContent(this.#adapter, message.content, message.role);
+    const nodes: VNode[] = [];
+
+    if (message.articleContent) {
+      nodes.push(<lf-article lfDataset={message.articleContent}></lf-article>);
+    }
+
+    const hasText = Boolean(message.content && message.content.trim().length);
+    const shouldRenderText =
+      message.role !== "tool" || !message.articleContent;
+
+    if (hasText && shouldRenderText) {
+      nodes.push(
+        ...parseMessageContent(
+          this.#adapter,
+          message.content,
+          message.role,
+        ),
+      );
+    }
+
+    return nodes;
   };
   #prepOffline: () => VNode[] = () => {
     const { bemClass, get } = this.#framework.theme;
