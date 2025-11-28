@@ -28,7 +28,7 @@ describe("LfSnackbar", () => {
     expect(root.lfActionCallback).toBeDefined();
     expect(root.lfCloseIcon).toBeDefined(); // Set in componentWillLoad
     expect(root.lfDuration).toBe(4000);
-    expect(root.lfIcon).toBeUndefined();
+    expect(root.lfIcon).toBe(null);
     expect(root.lfMessage).toBe("");
     expect(root.lfPosition).toBe("bottom-center");
     expect(root.lfStyle).toBe("");
