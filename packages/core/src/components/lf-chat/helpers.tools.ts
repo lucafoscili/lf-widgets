@@ -2,6 +2,7 @@ import {
   LfChatAdapter,
   LfDataDataset,
   LfDataNode,
+  LfIconType,
   LfLLMChoiceMessage,
   LfLLMTool,
   LfLLMToolCall,
@@ -16,6 +17,8 @@ import { getEffectiveConfig } from "./helpers.config";
  * @param toolId - ID of the tool to update
  * @param result - Result text or error message
  * @param success - Whether the tool executed successfully
+ * @param successIcon - Optional icon identifier for successful execution
+ * @param errorIcon - Optional icon identifier for failed execution
  * @returns Updated dataset with tool result
  */
 export const updateToolResult = (
@@ -23,19 +26,35 @@ export const updateToolResult = (
   toolId: string,
   result: string,
   success: boolean,
+  successIcon?: LfIconType,
+  errorIcon?: LfIconType,
 ): LfDataDataset => {
-  const root = dataset.nodes[0];
-  if (!root.children) return dataset;
+  const root = dataset.nodes?.[0];
+  if (!root || !root.children) {
+    return dataset;
+  }
 
-  const toolNode = root.children.find((n) => n.id === toolId);
+  const toolNode = root.children.find((node) => node.id === toolId);
   if (toolNode) {
-    const icon = success ? "✓" : "✗";
     const preview =
-      result.length > 50 ? result.substring(0, 47) + "..." : result;
-    const currentValue = String(toolNode.value || "");
-    toolNode.value = `${icon} ${currentValue.replace("🔧 ", "")}`;
+      result.length > 50 ? `${result.substring(0, 47)}...` : result;
+    const name = String(toolNode.value ?? toolId);
 
-    // Add result as child if there's meaningful content
+    // Update node status text
+    toolNode.value = name;
+    // Store full result in description so it appears on chip hover
+    toolNode.description =
+      result ||
+      (success
+        ? `Tool "${name}" completed successfully.`
+        : `Tool "${name}" failed.`);
+
+    // Update per-tool icon when provided
+    if (successIcon || errorIcon) {
+      toolNode.icon = success ? successIcon : errorIcon;
+    }
+
+    // Attach a child node with a short preview of the result
     if (result && result.trim()) {
       toolNode.children = [
         {
@@ -46,7 +65,191 @@ export const updateToolResult = (
     }
   }
 
-  return { nodes: [{ ...root }] };
+  return {
+    nodes: [
+      {
+        ...root,
+      },
+    ],
+  };
+};
+//#endregion
+
+//#region Streaming helpers
+/**
+ * Normalizes streaming tool call chunks into complete tool call objects.
+ *
+ * OpenAI-style streaming sends partial `tool_calls` entries where the same
+ * tool call can be spread across multiple deltas (identified by `index`/`id`).
+ * This helper merges those chunks so downstream execution sees a single
+ * `LfLLMToolCall` per logical tool invocation with fully assembled arguments.
+ */
+export const normalizeToolCallsForStreaming = (
+  calls: LfLLMToolCall[],
+): LfLLMToolCall[] => {
+  if (!Array.isArray(calls) || calls.length === 0) {
+    return [];
+  }
+
+  type PartialCall = LfLLMToolCall & {
+    index?: number;
+    function?: {
+      name?: string;
+      arguments?: string;
+    };
+  };
+
+  const byKey = new Map<
+    string,
+    {
+      id?: string;
+      type?: "function";
+      name?: string;
+      argsParts: string[];
+    }
+  >();
+
+  (calls as PartialCall[]).forEach((raw, rawIndex) => {
+    if (!raw) return;
+
+    const key =
+      typeof raw.index === "number"
+        ? `idx_${raw.index}`
+        : raw.id || `anon_${rawIndex}`;
+
+    const existing = byKey.get(key) || {
+      id: raw.id,
+      type: raw.type,
+      name: raw.function?.name,
+      argsParts: [] as string[],
+    };
+
+    if (raw.id) {
+      existing.id = raw.id;
+    }
+
+    if (raw.type) {
+      existing.type = raw.type;
+    }
+
+    if (raw.function?.name) {
+      existing.name = raw.function.name;
+    }
+
+    if (
+      typeof raw.function?.arguments === "string" &&
+      raw.function.arguments.length > 0
+    ) {
+      existing.argsParts.push(raw.function.arguments);
+    }
+
+    byKey.set(key, existing);
+  });
+
+  const result: LfLLMToolCall[] = [];
+
+  for (const agg of byKey.values()) {
+    const name = agg.name ?? "unknown_tool";
+    const args = agg.argsParts.length > 0 ? agg.argsParts.join("") : "{}";
+
+    result.push({
+      id: agg.id ?? `tool_call_${result.length}`,
+      type: agg.type ?? "function",
+      function: {
+        name,
+        arguments: args,
+      },
+    });
+  }
+
+  return result;
+};
+//#endregion
+
+//#region Tool execution merging helpers
+/**
+ * Merges two tool execution datasets, preserving existing nodes and updating or
+ * appending children from the incoming dataset. The root node is taken from the
+ * existing dataset when available, but its `icon`, `value`, and `description`
+ * are updated from the incoming dataset to reflect the latest aggregate status.
+ */
+export const mergeToolExecutionDatasets = (
+  existing: LfDataDataset,
+  incoming: LfDataDataset,
+): LfDataDataset => {
+  const existingRoot = existing?.nodes?.[0];
+  const incomingRoot = incoming?.nodes?.[0];
+
+  if (!existingRoot && !incomingRoot) {
+    return {};
+  }
+
+  if (!existingRoot) {
+    return incoming;
+  }
+
+  if (!incomingRoot) {
+    return existing;
+  }
+
+  const existingChildren = Array.isArray(existingRoot.children)
+    ? existingRoot.children
+    : [];
+  const incomingChildren = Array.isArray(incomingRoot.children)
+    ? incomingRoot.children
+    : [];
+
+  const byId = new Map<string, LfDataNode>();
+
+  existingChildren.forEach((child) => {
+    if (child?.id) {
+      byId.set(child.id, child);
+    }
+  });
+
+  incomingChildren.forEach((child) => {
+    if (child?.id) {
+      byId.set(child.id, child);
+    }
+  });
+
+  // Mutate existing root in-place to preserve node identity (keeps expansion state)
+  existingRoot.icon = incomingRoot.icon ?? existingRoot.icon;
+  existingRoot.value = incomingRoot.value ?? existingRoot.value;
+  existingRoot.description =
+    incomingRoot.description ?? existingRoot.description;
+  existingRoot.children = Array.from(byId.values());
+
+  return existing;
+};
+
+/**
+ * Merges existing and incoming tool_calls arrays, keeping insertion order and
+ * de-duplicating by tool call id.
+ */
+export const mergeToolCalls = (
+  existing: LfLLMToolCall[] | undefined,
+  incoming: LfLLMToolCall[],
+): LfLLMToolCall[] => {
+  const result: LfLLMToolCall[] = [];
+  const seen = new Set<string>();
+
+  const add = (arr?: LfLLMToolCall[]) => {
+    if (!Array.isArray(arr)) return;
+    for (const call of arr) {
+      if (!call) continue;
+      const id = call.id;
+      if (id && !seen.has(id)) {
+        seen.add(id);
+        result.push(call);
+      }
+    }
+  };
+
+  add(existing);
+  add(incoming);
+
+  return result;
 };
 //#endregion
 
@@ -79,7 +282,9 @@ export const executeTools = async (
           result = `Error: Tool "${func.name}" has no execute function defined. This is a configuration error.`;
         }
       } catch (parseError) {
-        result = `Error: Failed to parse arguments for tool "${func.name}". ${parseError instanceof Error ? parseError.message : String(parseError)}. Please check the argument format and try again.`;
+        result = `Error: Failed to parse arguments for tool "${func.name}". ${
+          parseError instanceof Error ? parseError.message : String(parseError)
+        }. Please check the argument format and try again.`;
       }
     } else {
       // Tool not found - provide helpful error message
@@ -99,7 +304,7 @@ export const executeTools = async (
 
   // Wait for all tools to complete and filter out nulls
   const results = (await Promise.all(executionPromises)).filter(
-    (result) => result !== null,
+    (r) => r !== null,
   ) as LfLLMChoiceMessage[];
 
   return results;
@@ -116,20 +321,15 @@ export const executeTools = async (
  * @returns Initial dataset showing tools in executing state
  */
 export const createInitialToolDataset = (
-  adapter: LfChatAdapter,
+  _adapter: LfChatAdapter,
   toolCalls: LfLLMToolCall[],
 ): LfDataDataset => {
-  const { get } = adapter.controller;
-  const { manager } = get;
-  const { theme } = manager;
-
   const children: LfDataNode[] = [];
 
   for (const call of toolCalls) {
     if (call && call.function?.name && call.id) {
       children.push({
         description: `Tool "${call.function.name}" is being executed...`,
-        icon: theme.get.current().variables["--lf-icon-loading"],
         id: call.id,
         value: call.function.name,
         children: [],
@@ -141,7 +341,9 @@ export const createInitialToolDataset = (
     nodes: [
       {
         description: "Executing tool...",
-        icon: theme.get.current().variables["--lf-icon-loading"],
+        // Root starts without an explicit icon; the spinner
+        // will be shown while the chain is running and a
+        // success / warning icon will be applied on completion.
         id: "tool-exec-root",
         value: "Working...",
         children,
@@ -177,15 +379,17 @@ export const handleToolCalls = async (
 
   const showIndicator = effectiveConfig.ui.showToolExecutionIndicator !== false;
   const children: LfDataNode[] = [];
-  let dataset: LfDataDataset = { nodes: [] };
-
-  dataset.nodes.push({
-    description: "Executing tool...",
-    icon: theme.get.current().variables["--lf-icon-loading"],
-    id: "tool-exec-root",
-    value: "Working...",
-    children,
-  });
+  const dataset: LfDataDataset = {
+    nodes: [
+      {
+        description: "Executing tool...",
+        icon: theme.get.current().variables["--lf-icon-loading"],
+        id: "tool-exec-root",
+        value: "Working...",
+        children,
+      },
+    ],
+  };
 
   for (const call of toolCalls) {
     if (call && call.function?.name && call.id) {
@@ -204,33 +408,54 @@ export const handleToolCalls = async (
     effectiveConfig.tools.definitions,
   );
 
-  for (const result of toolResults) {
-    const isSuccess =
-      result.content &&
-      !result.content.startsWith('Tool "') &&
-      !result.content.startsWith("Error:");
+  const successIcon = theme.get.current().variables["--lf-icon-success"];
+  const warningIcon = theme.get.current().variables["--lf-icon-warning"];
 
-    dataset = updateToolResult(
+  const successFlags: boolean[] = [];
+
+  for (const result of toolResults) {
+    const content = result.content || "";
+    const normalized = content.trim().toLowerCase();
+
+    const isErrorContent =
+      !content ||
+      normalized.startsWith("error") ||
+      normalized.startsWith('tool "') ||
+      normalized.includes("is not available");
+
+    const isSuccess = Boolean(content) && !isErrorContent;
+    successFlags.push(isSuccess);
+
+    updateToolResult(
       dataset,
       result.tool_call_id || "",
-      result.content || "",
+      content,
       isSuccess,
+      successIcon,
+      warningIcon,
     );
   }
 
-  const hasValidToolResults = toolResults.some(
-    (result: LfLLMChoiceMessage) =>
-      result.content &&
-      !result.content.startsWith('Tool "') &&
-      !result.content.includes("is not available"),
-  );
+  const hasValidToolResults = successFlags.some((flag) => flag);
+  const hasErrors = successFlags.some((flag, index) => {
+    const content = toolResults[index]?.content;
+    return !flag && Boolean(content);
+  });
 
-  const hasErrors = toolResults.some(
-    (result: LfLLMChoiceMessage) =>
-      result.content &&
-      (result.content.startsWith('Tool "') ||
-        result.content.includes("is not available")),
-  );
+  if (!hasValidToolResults && !hasErrors) {
+    debug.logs.new(
+      compInstance,
+      "No tool results generated (unexpected)",
+      "error",
+    );
+    return null;
+  }
+
+  for (const result of toolResults) {
+    set.history(() => history().push(result));
+  }
+
+  const { apiCall } = await import("./helpers.api");
 
   if (hasValidToolResults) {
     debug.logs.new(
@@ -239,26 +464,12 @@ export const handleToolCalls = async (
       "informational",
     );
 
-    for (const result of toolResults) {
-      set.history(() => history().push(result));
-    }
-
     debug.logs.new(
       compInstance,
       "Making follow-up request after successful tool execution",
-      "informational",
+      hasErrors ? "warning" : "informational",
     );
-    // Import apiCall to avoid circular dependency
-    const { apiCall } = await import("./helpers.api");
     await apiCall(adapter, true);
-
-    if (showIndicator && dataset) {
-      const root = dataset.nodes[0];
-      root.icon = theme.get.current().variables["--lf-icon-success"];
-      root.value = "Completed";
-    }
-
-    return dataset;
   } else if (hasErrors) {
     debug.logs.new(
       compInstance,
@@ -266,34 +477,29 @@ export const handleToolCalls = async (
       "warning",
     );
 
-    if (showIndicator && dataset) {
-      const root = dataset.nodes[0];
-      root.icon = theme.get.current().variables["--lf-icon-warning"];
-      root.value = "Failed";
-    }
-
-    for (const result of toolResults) {
-      set.history(() => history().push(result));
-    }
-
     debug.logs.new(
       compInstance,
       "Making follow-up request after tool errors (LLM will see error messages)",
       "informational",
     );
-    // Import apiCall to avoid circular dependency
-    const { apiCall } = await import("./helpers.api");
     await apiCall(adapter, true);
-
-    return dataset;
-  } else {
-    debug.logs.new(
-      compInstance,
-      "No tool results generated (unexpected)",
-      "error",
-    );
-
-    return null;
   }
+
+  if (showIndicator && dataset.nodes && dataset.nodes[0]) {
+    const root = dataset.nodes[0];
+
+    if (hasValidToolResults && !hasErrors) {
+      root.icon = successIcon;
+      root.value = "Completed";
+    } else if (hasValidToolResults && hasErrors) {
+      root.icon = successIcon;
+      root.value = "Completed (with issues)";
+    } else if (!hasValidToolResults && hasErrors) {
+      root.icon = warningIcon;
+      root.value = "Failed";
+    }
+  }
+
+  return dataset;
 };
 //#endregion

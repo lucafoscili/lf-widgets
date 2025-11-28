@@ -5,7 +5,13 @@ import {
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
 import { newRequest } from "./helpers.request";
-import { createInitialToolDataset, handleToolCalls } from "./helpers.tools";
+import {
+  createInitialToolDataset,
+  handleToolCalls,
+  mergeToolCalls,
+  mergeToolExecutionDatasets,
+  normalizeToolCallsForStreaming,
+} from "./helpers.tools";
 import { LfChat } from "./lf-chat";
 
 //#region Api call
@@ -63,6 +69,15 @@ const handleStreamingResponse = async (
     let toolExecutionShown = false;
     let messageCreated = false;
 
+    const findLastAssistantIndex = () => {
+      const h = history();
+      let index = h.length - 1;
+      while (index >= 0 && h[index].role !== "assistant") {
+        index--;
+      }
+      return index;
+    };
+
     for await (const chunk of llm.stream(request, lfEndpointUrl, {
       signal: abortController?.signal,
     })) {
@@ -74,11 +89,7 @@ const handleStreamingResponse = async (
           messageCreated = true;
           if (updateLastAssistant) {
             // Find the last assistant message and update it
-            const h = history();
-            lastIndex = h.length - 1;
-            while (lastIndex >= 0 && h[lastIndex].role !== "assistant") {
-              lastIndex--;
-            }
+            lastIndex = findLastAssistantIndex();
             if (lastIndex >= 0) {
               set.history(() => {
                 const h = history();
@@ -133,22 +144,43 @@ const handleStreamingResponse = async (
 
           // If we haven't created a message yet, create one for tool execution
           if (!messageCreated) {
-            messageCreated = true;
-            set.history(() =>
-              history().push({ role: "assistant", content: "" }),
-            );
-            lastIndex = history().length - 1;
+            if (updateLastAssistant) {
+              const existingIndex = findLastAssistantIndex();
+              if (existingIndex >= 0) {
+                lastIndex = existingIndex;
+                messageCreated = true;
+              } else {
+                messageCreated = true;
+                set.history(() =>
+                  history().push({ role: "assistant", content: "" }),
+                );
+                lastIndex = history().length - 1;
+              }
+            } else {
+              messageCreated = true;
+              set.history(() =>
+                history().push({ role: "assistant", content: "" }),
+              );
+              lastIndex = history().length - 1;
+            }
           }
 
           // Create and attach tool execution dataset immediately
+          const normalizedForIndicator = normalizeToolCallsForStreaming(
+            accumulatedToolCalls,
+          );
+
           const initialDataset = createInitialToolDataset(
             adapter,
-            accumulatedToolCalls,
+            normalizedForIndicator,
           );
           set.history(() => {
             const h = history();
-            if (h[lastIndex]) {
-              h[lastIndex].toolExecution = initialDataset;
+            const msg = h[lastIndex];
+            if (msg) {
+              msg.toolExecution = msg.toolExecution
+                ? mergeToolExecutionDatasets(msg.toolExecution, initialDataset)
+                : initialDataset;
             }
           });
         }
@@ -171,21 +203,33 @@ const handleStreamingResponse = async (
         "informational",
       );
 
+      const normalizedToolCalls =
+        normalizeToolCallsForStreaming(accumulatedToolCalls);
+
       // Execute tools and update the existing toolExecution dataset
-      const finalDataset = await handleToolCalls(adapter, accumulatedToolCalls);
+      const finalDataset = await handleToolCalls(adapter, normalizedToolCalls);
       if (finalDataset && lastIndex >= 0) {
         // Update the existing toolExecution dataset and ensure tool_calls are attached
         set.history(() => {
           const h = history();
-          if (h[lastIndex]) {
-            h[lastIndex].tool_calls = accumulatedToolCalls;
-            h[lastIndex].toolExecution = finalDataset;
+          const msg = h[lastIndex];
+          if (msg) {
+            const mergedCalls = mergeToolCalls(
+              msg.tool_calls as LfLLMToolCall[] | undefined,
+              normalizedToolCalls,
+            );
+            const mergedDataset = msg.toolExecution
+              ? mergeToolExecutionDatasets(msg.toolExecution, finalDataset)
+              : finalDataset;
+
+            msg.tool_calls = mergedCalls;
+            msg.toolExecution = mergedDataset;
           }
         });
       }
     }
 
-    requestAnimationFrame(() => comp.scrollToBottom("end"));
+    requestAnimationFrame(() => comp.scrollToBottom(true));
   } finally {
     set.currentAbortStreaming(null);
   }
@@ -238,7 +282,25 @@ const handleFetchResponse = async (
     if (lastIndex >= 0) {
       set.history(() => {
         const h = history();
-        h[lastIndex] = { ...h[lastIndex], ...llmMessage };
+        const existing = h[lastIndex] as LfLLMChoiceMessage;
+        const mergedCalls = toolCalls
+          ? mergeToolCalls(existing.tool_calls, toolCalls)
+          : existing.tool_calls;
+
+        const mergedExecution =
+          existing.toolExecution && llmMessage.toolExecution
+            ? mergeToolExecutionDatasets(
+                existing.toolExecution,
+                llmMessage.toolExecution,
+              )
+            : existing.toolExecution || llmMessage.toolExecution;
+
+        h[lastIndex] = {
+          ...existing,
+          ...llmMessage,
+          tool_calls: mergedCalls,
+          toolExecution: mergedExecution,
+        };
       });
     } else {
       // Fallback: push new message
