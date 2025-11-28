@@ -426,13 +426,17 @@ export class LfChip implements LfChipInterface {
     const { item } = this.#b;
     const icons: VNode[] = [];
 
-    if (this.lfShowSpinner) {
+    const hasIcon = Boolean(node.icon);
+
+    if (this.lfShowSpinner && !hasIcon) {
       icons.push(
         <div class={bemClass(item._, item.spinnerContainer)}>
           <div class={bemClass(item._, item.spinner)}></div>
         </div>,
       );
-    } else if (node.icon) {
+    }
+
+    if (hasIcon) {
       icons.push(
         <FIcon
           framework={this.#framework}
@@ -632,6 +636,19 @@ export class LfChip implements LfChipInterface {
     const { info } = this.#framework.debug;
 
     info.update(this, "will-render");
+
+    const root = this.lfDataset?.nodes?.[0];
+    if (
+      root &&
+      root.id === "tool-exec-root" &&
+      Array.isArray(root.children) &&
+      root.children.length > 0 &&
+      this.expandedNodes.size === 0
+    ) {
+      const expanded = new Set(this.expandedNodes);
+      expanded.add(root);
+      this.expandedNodes = expanded;
+    }
   }
   componentDidRender() {
     const { debug } = this.#framework;

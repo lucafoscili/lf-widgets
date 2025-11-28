@@ -1,5 +1,11 @@
 import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
+import { LfDataDataset, LfLLMToolCall } from "@lf-widgets/foundations";
+import {
+  mergeToolCalls,
+  mergeToolExecutionDatasets,
+  normalizeToolCallsForStreaming,
+} from "./helpers.tools";
 import { LfChat } from "./lf-chat";
 
 const createPage = async (html: string) => {
@@ -62,5 +68,97 @@ describe("lf-chat", () => {
 
     const debugInfo = await component.getDebugInfo();
     expect(debugInfo).toBeDefined();
+  });
+
+  it("merges streaming tool call chunks into a single complete call", () => {
+    const rawCalls: Array<LfLLMToolCall & { index?: number }> = [
+      {
+        // Initial chunk with empty arguments
+        index: 0,
+        id: "call_1",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: "",
+        },
+      },
+      {
+        // Follow-up chunk with populated arguments
+        index: 0,
+        id: "call_1",
+        function: {
+          arguments: '{"location":"Tokyo"}',
+          name: "get_weather",
+        },
+      },
+    ];
+
+    const merged = normalizeToolCallsForStreaming(rawCalls);
+
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toBe("call_1");
+    expect(merged[0].function.name).toBe("get_weather");
+    expect(merged[0].function.arguments).toBe('{"location":"Tokyo"}');
+  });
+
+  it("merges tool execution datasets while preserving children", () => {
+    const existing: LfDataDataset = {
+      nodes: [
+        {
+          id: "tool-exec-root",
+          value: "Working...",
+          icon: "loading",
+          children: [
+            { id: "call_1", value: "get_weather", children: [] },
+          ] as any,
+        } as any,
+      ],
+    };
+
+    const incoming: LfDataDataset = {
+      nodes: [
+        {
+          id: "tool-exec-root",
+          value: "Completed",
+          icon: "success",
+          children: [{ id: "call_2", value: "get_docs", children: [] }] as any,
+        } as any,
+      ],
+    };
+
+    const merged = mergeToolExecutionDatasets(existing, incoming);
+
+    expect(merged.nodes[0].value).toBe("Completed");
+    expect(merged.nodes[0].icon).toBe("success");
+    const childIds = (merged.nodes[0].children || []).map((c: any) => c.id);
+    expect(childIds).toEqual(expect.arrayContaining(["call_1", "call_2"]));
+  });
+
+  it("merges tool calls and de-duplicates by id", () => {
+    const existing: LfLLMToolCall[] = [
+      {
+        id: "call_1",
+        type: "function",
+        function: { name: "get_weather", arguments: '{"location":"London"}' },
+      },
+    ];
+
+    const incoming: LfLLMToolCall[] = [
+      {
+        id: "call_1",
+        type: "function",
+        function: { name: "get_weather", arguments: '{"location":"Tokyo"}' },
+      },
+      {
+        id: "call_2",
+        type: "function",
+        function: { name: "get_docs", arguments: "{}" },
+      },
+    ];
+
+    const merged = mergeToolCalls(existing, incoming);
+    const ids = merged.map((c) => c.id);
+
+    expect(ids).toEqual(["call_1", "call_2"]);
   });
 });

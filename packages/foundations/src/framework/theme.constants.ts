@@ -1023,6 +1023,7 @@ export const LF_ICONS_REGISTRY = {
   photo: "photo",
   photoSearch: "photo-search",
   photoX: "photo-x",
+  pictureInPictureTop: "picture-in-picture-top",
   playerRecord: "player-record",
   playerStop: "player-stop",
   playstationCircle: "playstation-circle",
