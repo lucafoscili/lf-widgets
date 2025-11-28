@@ -12,6 +12,117 @@ import {
 export const createComponentDocsTool = (
   framework: LfFrameworkInterface,
 ): LfLLMTool => {
+  const fetchDocJson = async (): Promise<any | null> => {
+    try {
+      const response = await fetch("/build/doc.json");
+      if (!response.ok) {
+        return null;
+      }
+
+      const doc = (await response.json()) as any;
+      return doc && typeof doc === "object" ? doc : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const buildArticleFromMeta = (
+    tag: string,
+    overview: string,
+  ): LfLLMToolResponse => {
+    const summary = `${tag}: ${overview}`;
+
+    const article = framework.data.article;
+    const builder = article.builder.create({
+      id: "docs-article",
+      title: tag,
+    });
+
+    builder.addSectionWithLeaf({
+      sectionId: "docs-section",
+      sectionTitle: "Overview & usage",
+      text: overview,
+      layout: "stack",
+      leaf: article.shapes.codeBlock({
+        id: "docs-usage",
+        language: "html",
+        code: `<${tag}></${tag}>`,
+      }),
+    });
+
+    const dataset = builder.getDataset();
+
+    return {
+      type: "article",
+      content: summary,
+      dataset,
+    };
+  };
+
+  const buildArticleFromReadme = async (
+    componentName: string,
+  ): Promise<LfLLMToolResponse> => {
+    const normalizedTag = componentName.startsWith("lf-")
+      ? componentName
+      : `lf-${componentName.replace(/^lf-/, "")}`;
+
+    const path = `packages/core/src/components/${normalizedTag}/readme.md`;
+    const url = `https://raw.githubusercontent.com/lucafoscili/lf-widgets/main/${path}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        return {
+          type: "text",
+          content: `Documentation for "${normalizedTag}" is not available from GitHub README (status: ${response.status}).`,
+        };
+      }
+
+      const markdown = await response.text();
+      const lines = markdown.split(/\r?\n/);
+      const firstNonEmpty = lines.find((line) => line.trim().length > 0) || "";
+      const cleanedTitle = firstNonEmpty.replace(/^#+\s*/, "").trim();
+
+      const summary =
+        cleanedTitle.length > 0
+          ? `${normalizedTag} README: ${cleanedTitle}`
+          : `${normalizedTag}: README.md loaded from GitHub.`;
+
+      const article = framework.data.article;
+      const builder = article.builder.create({
+        id: "docs-article",
+        title: normalizedTag,
+      });
+
+      builder.addSectionWithLeaf({
+        sectionId: "docs-readme",
+        sectionTitle: "README.md",
+        text: "",
+        layout: "stack",
+        leaf: article.shapes.codeBlock({
+          id: "docs-readme",
+          language: "markdown",
+          code: markdown,
+        }),
+      });
+
+      const dataset = builder.getDataset();
+
+      return {
+        type: "article",
+        content: summary,
+        dataset,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : String(error ?? "Unknown");
+      return {
+        type: "text",
+        content: `Error fetching GitHub README for "${normalizedTag}": ${message}`,
+      };
+    }
+  };
+
   const execute = async (
     args: Record<string, unknown>,
   ): Promise<LfLLMToolResponse> => {
@@ -20,15 +131,21 @@ export const createComponentDocsTool = (
       typeof rawComponent === "string" ? rawComponent.trim() : "";
 
     try {
-      const response = await fetch("/build/doc.json");
-      if (!response.ok) {
-        return {
-          type: "text",
-          content: `Documentation fetch failed. The doc.json file might not be available. Status: ${response.status}`,
-        };
+      const doc = await fetchDocJson();
+
+      if (!doc) {
+        if (!componentName) {
+          return {
+            type: "text",
+            content:
+              "Documentation metadata (doc.json) is not available. Please query a specific component so I can try loading its README from GitHub.",
+          };
+        }
+
+        // No metadata, fall back to GitHub README for the requested component.
+        return await buildArticleFromReadme(componentName);
       }
 
-      const doc = (await response.json()) as any;
       const components: any[] = Array.isArray(doc.components)
         ? doc.components
         : [];
@@ -59,11 +176,8 @@ export const createComponentDocsTool = (
         components.find((c) => tagCandidates.includes(c.tag)) ?? null;
 
       if (!comp) {
-        const available = components.map((c) => c.tag).join(", ");
-        return {
-          type: "text",
-          content: `Component "${componentName}" not found. Available components: ${available}`,
-        };
+        // Unknown component in doc.json, but we can still try the GitHub README.
+        return await buildArticleFromReadme(componentName);
       }
 
       const tag = String(comp.tag);
@@ -72,40 +186,7 @@ export const createComponentDocsTool = (
           ? comp.overview
           : "No description available.";
 
-      const summary = `${tag}: ${overview}`;
-
-      const article = framework.data.article;
-      const builder = article.builder.create({
-        id: "docs-article",
-        title: tag,
-      });
-
-      const section = builder.addSection({
-        id: "docs-section",
-        title: "Overview & usage",
-      });
-
-      builder.addParagraph(section.id, {
-        id: "docs-overview",
-        text: overview,
-      });
-
-      builder.addLeaf({
-        sectionId: section.id,
-        node: article.shapes.codeBlock({
-          id: "docs-usage",
-          language: "html",
-          code: `<${tag}></${tag}>`,
-        }),
-      });
-
-      const dataset = builder.getDataset();
-
-      return {
-        type: "article",
-        content: summary,
-        dataset,
-      };
+      return buildArticleFromMeta(tag, overview);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : String(error ?? "Unknown");
@@ -121,7 +202,12 @@ export const createComponentDocsTool = (
     function: {
       name: "get_component_docs",
       description:
-        "Retrieve documentation for an lf-widgets component using the generated doc.json metadata.",
+        [
+          "Retrieve authoritative documentation for an lf-widgets web component.",
+          "Always use this tool whenever the user asks about lf-widgets component docs, props, events, methods, usage examples, or CSS variables.",
+          "Do not guess or invent APIs from memory: instead, base your answer only on the content returned by this tool (doc.json metadata or the GitHub README).",
+          "If documentation cannot be fetched, clearly say that docs are unavailable instead of fabricating details.",
+        ].join(" "),
       parameters: {
         type: "object",
         properties: {

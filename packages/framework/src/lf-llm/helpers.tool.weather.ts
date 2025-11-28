@@ -34,7 +34,7 @@ export const createWeatherTool = (
         };
       }
 
-      const data = (await response.json()) as any;
+      const data = await response.json();
       const current = data?.current_condition?.[0];
       const area = data?.nearest_area?.[0];
 
@@ -88,7 +88,7 @@ export const createWeatherTool = (
               text: {
                 value: fullLocation,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -97,7 +97,7 @@ export const createWeatherTool = (
               text: {
                 value: tempC,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -106,7 +106,7 @@ export const createWeatherTool = (
               text: {
                 value: tempF,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -115,7 +115,7 @@ export const createWeatherTool = (
               text: {
                 value: String(conditionText),
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -124,7 +124,7 @@ export const createWeatherTool = (
               text: {
                 value: feelsLikeC,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -133,7 +133,7 @@ export const createWeatherTool = (
               text: {
                 value: feelsLikeF,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -142,7 +142,7 @@ export const createWeatherTool = (
               text: {
                 value: humidity,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -151,7 +151,7 @@ export const createWeatherTool = (
               text: {
                 value: windSpeed,
                 shape: "text",
-              } as any,
+              },
             },
           },
           {
@@ -160,7 +160,7 @@ export const createWeatherTool = (
               text: {
                 value: windDir,
                 shape: "text",
-              } as any,
+              },
             },
           },
         ],
@@ -172,21 +172,11 @@ export const createWeatherTool = (
         title: `Weather for ${fullLocation}`,
       });
 
-      const section = builder.addSection({
-        id: "weather-section",
-        title: "Current conditions",
-      });
-
-      // Optional textual summary inside the article itself so the card
-      // and narrative are part of the same structured response.
-      builder.addParagraph(section.id, {
-        id: "weather-summary",
-        text: summary,
-      });
-
-      builder.addLeaf({
-        sectionId: section.id,
-        node: article.shapes.card({
+      builder.addSectionWithLeaf({
+        sectionId: "weather-section",
+        sectionTitle: "Current conditions",
+        layout: "hero-top",
+        leaf: article.shapes.card({
           id: "weather-card",
           dataset: weatherDataset,
           layout: "weather",
