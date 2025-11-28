@@ -66,6 +66,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     notification,
     photo,
     photoSearch,
+    pictureInPictureTop,
     playstationCircle,
     progress,
     replace,
@@ -271,7 +272,7 @@ export const LF_SHOWCASE_COMPONENTS = (
       {
         description:
           "Displays brief notifications with optional action buttons at screen edges.",
-        icon: messages,
+        icon: pictureInPictureTop,
         id: "Snackbar",
         value: "Snackbar",
       },
