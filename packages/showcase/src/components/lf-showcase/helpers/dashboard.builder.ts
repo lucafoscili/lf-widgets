@@ -28,7 +28,7 @@ export const DASHBOARD_STYLES = {
   } as Record<string, string>,
   statsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
+    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
     gap: "1em",
     margin: "1.5em 0",
   } as Record<string, string>,

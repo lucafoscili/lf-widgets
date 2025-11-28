@@ -269,10 +269,56 @@ const fetchBundleStats = async (): Promise<BundleStats | null> => {
 };
 //#endregion
 
+//#region Test environment detection
+/**
+ * Detects if running in Cypress test environment
+ * Skips API calls to avoid rate limiting during automated tests
+ */
+const isTestEnvironment = (): boolean => {
+  try {
+    // Check for Cypress
+    if (typeof window !== "undefined" && "Cypress" in window) {
+      return true;
+    }
+    // Check for common test environment indicators
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("__cypress") || window.navigator.webdriver)
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Returns empty dashboard data for test environments
+ */
+const getEmptyDashboardData = (): DashboardData => ({
+  github: {
+    repo: null,
+    release: null,
+    contributors: [],
+    commitActivity: [],
+  },
+  npm: null,
+  bundle: null,
+  fetchedAt: new Date(),
+  errors: ["API calls skipped in test environment"],
+});
+//#endregion
+
 //#region Main fetch function
 export const fetchDashboardData = async (
   forceRefresh = false,
 ): Promise<DashboardData> => {
+  // Skip API calls in test environments to avoid rate limiting
+  if (isTestEnvironment()) {
+    return getEmptyDashboardData();
+  }
+
   // Check cache first
   if (!forceRefresh) {
     const cached = getCache();
