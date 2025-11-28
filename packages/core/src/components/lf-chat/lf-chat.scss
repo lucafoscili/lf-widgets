@@ -5,7 +5,7 @@
 );
 
 $comp: "chat";
-@include lf-comp-setup("chat");
+@include lf-comp-setup("chat", "false", "false", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -17,7 +17,12 @@ $comp: "chat";
 
 .chat {
   & {
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.075);
+    @include lf-comp-color(
+      $comp,
+      "bg",
+      "all",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     box-sizing: border-box;
     display: grid;
     height: 100%;
@@ -94,7 +99,7 @@ $comp: "chat";
   }
 
   &__icon {
-    @include lf-comp-icon($comp, "", "bg", 4em, 0.75, true);
+    @include f-icon($comp, "bg", 4em, 0.75);
     justify-self: center;
     margin-bottom: 0.75em;
   }
@@ -147,6 +152,11 @@ $comp: "chat";
     *                                      Defaults to => 1em 0
     */
     padding: var(--lf-#{$comp}-buttons-padding, 1em 0);
+  }
+
+  &__clear,
+  &__stt {
+    backdrop-filter: unset;
   }
 
   &__stt {
@@ -216,7 +226,12 @@ $comp: "chat";
 
 .toolbar {
   & {
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-solid, 0.875)
+    );
     /**
     * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
     *                                    Defaults to => var(--lf-ui-border-radius)

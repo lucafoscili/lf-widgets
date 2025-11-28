@@ -2,6 +2,7 @@ import { LF_ACCORDION_PROPS } from "../components/accordion.constants";
 import { LF_ARTICLE_PROPS } from "../components/article.constants";
 import { LF_AUTOCOMPLETE_PROPS } from "../components/autocomplete.constants";
 import { LF_BADGE_PROPS } from "../components/badge.constants";
+import { LF_BREADCRUMBS_PROPS } from "../components/breadcrumbs.constants";
 import { LF_BUTTON_PROPS } from "../components/button.constants";
 import { LF_CANVAS_PROPS } from "../components/canvas.constants";
 import { LF_CARD_PROPS } from "../components/card.constants";
@@ -26,6 +27,7 @@ import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
 import { LF_RADIO_PROPS } from "../components/radio.constants";
 import { LF_SELECT_PROPS } from "../components/select.constants";
 import { LF_SLIDER_PROPS } from "../components/slider.constants";
+import { LF_SNACKBAR_PROPS } from "../components/snackbar.constants";
 import { LF_SPINNER_PROPS } from "../components/spinner.constants";
 import { LF_SPLASH_PROPS } from "../components/splash.constants";
 import { LF_TABBAR_PROPS } from "../components/tabbar.constants";
@@ -59,10 +61,10 @@ export const CY_ATTRIBUTES = {
   dropdownButton: "dropdown-button",
   dropdownMenu: "dropdown-menu",
   effects: "effects",
+  fIcon: "f-icon",
   icon: "icon",
   image: "image",
   input: "input",
-  maskedSvg: "masked-svg",
   node: "node",
   portal: "portal",
   rippleSurface: "ripple-surface",
@@ -121,6 +123,7 @@ export const getComponentProps = (): {
     LfArticle: LF_ARTICLE_PROPS,
     LfAutocomplete: LF_AUTOCOMPLETE_PROPS,
     LfBadge: LF_BADGE_PROPS,
+    LfBreadcrumbs: LF_BREADCRUMBS_PROPS,
     LfButton: LF_BUTTON_PROPS,
     LfCanvas: LF_CANVAS_PROPS,
     LfCard: LF_CARD_PROPS,
@@ -145,6 +148,7 @@ export const getComponentProps = (): {
     LfRadio: LF_RADIO_PROPS,
     LfSelect: LF_SELECT_PROPS,
     LfSlider: LF_SLIDER_PROPS,
+    LfSnackbar: LF_SNACKBAR_PROPS,
     LfSpinner: LF_SPINNER_PROPS,
     LfSplash: LF_SPLASH_PROPS,
     LfTabbar: LF_TABBAR_PROPS,

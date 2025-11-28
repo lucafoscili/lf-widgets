@@ -15,7 +15,7 @@ const createPage = async (html: string) => {
 describe("lf-button component", () => {
   it("derives icon and label from dataset when set after mount", async () => {
     const page = await createPage(`<lf-button></lf-button>`);
-    expect(page.root.lfIcon).toBe("");
+    expect(page.root.lfIcon).toBe(null);
     expect(page.root.lfLabel).toBe("");
     page.root.lfDataset = { nodes: [{ icon: "save", value: "Save" }] } as any;
     await page.waitForChanges();

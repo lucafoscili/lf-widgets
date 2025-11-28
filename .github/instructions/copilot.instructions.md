@@ -171,7 +171,17 @@ Performance: precompute with `getAll` for large collections; skip `<LfShape/>` f
 
 Three pillars ensure cross-component consistency: Data, Adapter Structure, Unified Event Management.
 
-### A. Adapter Structure
+### A. Component Complexity Tiers
+
+Components fall into three complexity tiers:
+
+| Tier | Complexity | File Pattern | Examples |
+| --- | --- | --- | --- |
+| **Simple** | Single JSX section, few handlers | `lf-<name>-adapter.ts`, `elements.<name>.tsx`, `handlers.<name>.ts` | `lf-breadcrumbs`, `lf-radio`, `lf-chip` |
+| **Medium** | Multiple JSX sections, enhanced setters, portal | Same as Simple + enhanced setters in adapter | `lf-autocomplete`, `lf-select` |
+| **Complex** | Domain segmentation, multiple files per domain | `controller.<domain>.ts`, `elements.<domain>.tsx`, `handlers.<domain>.ts`, `helpers.<function>.ts` | `lf-messenger`, `lf-chat` |
+
+### B. Adapter Structure
 
 Canonical factory signature:
 
@@ -195,9 +205,209 @@ Partitions:
 - `elements.refs` (element handles only)
 - `handlers` (UI callbacks → setters → event funnel)
 
-Guidelines (summary – see SoC section for details): no duplicated traversal, no `any`, no direct component import inside handlers/JSX, follow messenger for large scale.
+### C. Simple Component Pattern (Tier 1)
 
-### B. Unified Event Management
+Standard file structure:
+
+```text
+lf-<name>/
+├── lf-<name>.tsx           # Main component
+├── lf-<name>.scss          # Styles
+├── lf-<name>-adapter.ts    # Adapter factory
+├── elements.<name>.tsx     # JSX functions
+└── handlers.<name>.ts      # Event handlers
+```
+
+Adapter factory:
+
+```ts
+export const createAdapter = (
+  getters: LfBreadcrumbsAdapterInitializerGetters,
+  setters: LfBreadcrumbsAdapterInitializerSetters,
+  getAdapter: () => LfBreadcrumbsAdapter,
+): LfBreadcrumbsAdapter => ({
+  controller: { get: getters, set: setters },
+  elements: {
+    jsx: prepBreadcrumbsJsx(getAdapter),
+    refs: prepRefs(),
+  },
+  handlers: prepBreadcrumbsHandlers(getAdapter),
+});
+```
+
+Refs with Maps for multi-item components:
+
+```ts
+const prepRefs = (): LfBreadcrumbsAdapterRefs => ({
+  items: new Map(), // Map<nodeId, HTMLElement>
+  ripples: new Map(), // Map<nodeId, HTMLElement> for ripple effects
+});
+```
+
+### D. Medium Component Pattern (Tier 2)
+
+Enhanced setters wrap initializer setters with complex logic:
+
+```ts
+const enhancedSetters = {
+  ...setters,
+  list: (state = "toggle") => {
+    const { manager } = getAdapter().controller.get;
+    const { dropdown, textfield } = getAdapter().elements.refs;
+    const { close, isInPortal, open } = manager.portal;
+
+    switch (state) {
+      case "close":
+        close(dropdown);
+        break;
+      case "open":
+        open(dropdown, autocomplete, textfield);
+        break;
+      default:
+        isInPortal(dropdown)
+          ? close(dropdown)
+          : open(dropdown, autocomplete, textfield);
+    }
+  },
+};
+```
+
+Portal pattern for dropdowns:
+
+- `manager.portal.open(floatingEl, hostEl, anchorEl)` - Position and show
+- `manager.portal.close(floatingEl)` - Hide and reset
+- `manager.portal.isInPortal(floatingEl)` - Check visibility
+
+### E. Complex Component Pattern (Tier 3)
+
+Domain-segmented file structure:
+
+```text
+lf-messenger/
+├── lf-messenger.tsx              # Main component
+├── lf-messenger-adapter.ts       # Adapter factory (imports domain modules)
+├── controller.character.ts       # Domain: Character getters/setters
+├── controller.image.ts           # Domain: Image getters/setters
+├── controller.ui.ts              # Domain: UI state getters/setters
+├── elements.character.tsx        # Domain: Character JSX
+├── elements.chat.tsx             # Domain: Chat JSX
+├── handlers.character.ts         # Domain: Character handlers
+├── handlers.chat.ts              # Domain: Chat handlers
+├── helpers.api.ts                # Business logic: API calls
+├── helpers.messages.ts           # Business logic: Message handling
+└── helpers.utils.ts              # Shared utilities
+```
+
+Domain controller pattern:
+
+```ts
+// controller.character.ts
+export const prepCharacterGetters = (
+  getAdapter: () => LfMessengerAdapter,
+): LfMessengerAdapterGettersCharacter => ({
+  all: () => getAdapter().controller.get.compInstance.lfDataset?.nodes || [],
+  byId: (id) => {
+    /* ... */
+  },
+  current: () => getAdapter().controller.get.compInstance.currentCharacter,
+});
+
+export const prepCharacterSetters = (
+  getAdapter: () => LfMessengerAdapter,
+): LfMessengerAdapterSettersCharacter => ({
+  current: (character) => {
+    getAdapter().controller.get.compInstance.currentCharacter = character;
+  },
+});
+```
+
+### F. Handler Patterns
+
+Switch on eventType, then id with constants:
+
+```ts
+export const prepChatHandlers = (getAdapter) => ({
+  button: async (e) => {
+    const { eventType, id } = e.detail;
+    switch (eventType) {
+      case "click":
+        switch (id) {
+          case LF_CHAT_IDS.chat.clear:
+            clearTextarea(getAdapter());
+            break;
+          case LF_CHAT_IDS.chat.send:
+            submitPrompt(getAdapter());
+            break;
+          case LF_CHAT_IDS.chat.settings:
+            getAdapter().controller.set.view("settings");
+            break;
+        }
+    }
+  },
+});
+```
+
+Composition handler for child components:
+
+```ts
+list: async (event) => {
+  const { eventType, node } = event.detail;
+  switch (eventType) {
+    case "click":
+      controller.set.value(node.id);
+      controller.set.list("close");
+      break;
+  }
+  comp.onLfEvent(event, "lf-event", node); // Always forward to event funnel
+},
+```
+
+### G. Helper Files
+
+Complex components extract business logic:
+
+| Helper File              | Purpose               |
+| ------------------------ | --------------------- |
+| `helpers.api.ts`         | API/LLM communication |
+| `helpers.messages.ts`    | Message processing    |
+| `helpers.attachments.ts` | File/image handling   |
+| `helpers.utils.ts`       | Shared utilities      |
+
+Helpers receive adapter for state access:
+
+```ts
+export const submitPrompt = async (adapter: LfChatAdapter) => {
+  const { controller, elements } = adapter;
+  const { get, set } = controller;
+  // Implementation
+};
+```
+
+### H. Ripple Effect Pattern
+
+For interactive elements:
+
+1. **Dedicated ripple element:** Add `<div>` for ripple
+2. **Use `pointerdown`:** Not `click` - ripple starts on press
+3. **Store refs in Map:** Track by item ID
+
+```tsx
+// In JSX
+<div
+  class={bemClass(blocks.item._, blocks.item.ripple)}
+  data-lf={lfAttributes.ripple}
+  onPointerDown={(e) => handler(e, node)}
+  ref={(el) => {
+    if (el) refs.ripples.set(node.id, el);
+  }}
+></div>;
+
+// In handler
+const ripple = refs.ripples.get(node.id);
+if (ripple) manager.effects.ripple(ripple, e);
+```
+
+### I. Unified Event Management
 
 Single outward event (`lf-<comp>-event`); all interactions route through `onLfEvent(event, eventType, args?)`. Shape events use `<LfShape eventDispatcher>` → `lf-event`. Ripple & side-effects centralized there.
 
@@ -214,6 +424,8 @@ Quick checklist (TDD approach):
 9. Add/adjust showcase examples + (optional) Cypress E2E tests.
 10. Ensure component imports its adapter type directly from foundations (no local re-export kept behind for convenience).
 
+Guidelines (summary – see SoC section for details): no duplicated traversal, no `any`, no direct component import inside handlers/JSX, follow messenger for large scale.
+
 ## 5.2 Scaling Up (Messenger Pattern Summary)
 
 When complexity grows (see `lf-messenger` for full example):
@@ -225,18 +437,80 @@ When complexity grows (see `lf-messenger` for full example):
 - Handlers domain-grouped; async-capable.
 - Centralize dataset updates via one setter.
 - Single event funnel remains.
-- Avoid monolithic >300 line adapter files, snapshot getters, timers in refs, multiple outward events. Advanced checklist (condensed): domains present · dynamic getters · mirrored setters · pure JSX · grouped handlers · single event · centralized data · theme lookups inside JSX · no cross-domain mutation.
+- Avoid monolithic >300 line adapter files, snapshot getters, timers in refs, multiple outward events.
+
+Advanced checklist (condensed): domains present · dynamic getters · mirrored setters · pure JSX · grouped handlers · single event · centralized data · theme lookups inside JSX · no cross-domain mutation.
+
+## 5.3 JSX Function Guidelines
+
+JSX functions should be small and focused:
+
+- **Max ~50 lines per function:** Split larger renders into sub-functions
+- **Pure functions:** No side effects, no state mutations
+- **Return consistent types:** `VNode` or `VNode[]` (use Fragment for multiple)
+- **Named keys:** For lists, use stable node IDs as keys
+
+Example structure:
+
+```tsx
+export const prepBreadcrumbsJsx = (
+  getAdapter: () => LfBreadcrumbsAdapter,
+): LfBreadcrumbsAdapterJsx => ({
+  // Root container ~30 lines
+  breadcrumbs: () => {
+    /* ... */
+  },
+  // Individual items ~40 lines
+  items: () => {
+    /* ... */
+  },
+  // Sub-components ~20 lines each
+  itemContent: (node) => {
+    /* ... */
+  },
+  separator: () => {
+    /* ... */
+  },
+  ripple: (node) => {
+    /* ... */
+  },
+});
+```
 
 ## 6. Styling & Theming
 
 - Use provided mixins (`lf-comp-*`, `lf-el-*`).
 - Expose CSS custom props with `@prop` JSDoc, naming: `--lf-<component>-<token>`.
 - Avoid `!important` unless truly unavoidable.
+- Glassmorphism: Use `@include lf-comp-glassmorphize($comp, "surface", "all", 0.75);`
+- Borders: Use `@include lf-comp-border($comp, "all");`
 
 ## 7. Events & Effects
 
 - Ripple only if `lfRipple` true; store refs in a local map (see `#r` in tree) for the effect system.
 - Distinguish expansion vs selection via `args` object in `onLfEvent` (tree/list pattern).
+- **Ripple pattern:** Use `pointerdown` event on a dedicated ripple `<div>`, not `click` on the item itself.
+- **Event forwarding:** Child component events should be forwarded through the composition handler to the parent's `onLfEvent`.
+
+Ripple implementation:
+
+```tsx
+// JSX: Dedicated ripple div
+<div
+  class={bemClass(blocks.item._, blocks.item.ripple)}
+  data-lf={lfAttributes.ripple}
+  onPointerDown={(e) => handler(e, node)}
+  ref={(el) => {
+    if (el) refs.ripples.set(node.id, el);
+  }}
+></div>;
+
+// Handler: Trigger ripple effect
+const ripple = refs.ripples.get(node.id);
+if (ripple) {
+  manager.effects.ripple(ripple, e);
+}
+```
 
 ## 8. Testing / Docs
 

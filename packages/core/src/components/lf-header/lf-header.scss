@@ -3,13 +3,18 @@
 
 $comp: "header";
 
-@include lf-comp-setup($comp);
+@include lf-comp-setup($comp, "false", "false", "false", "false", "true", 12px);
 
 :host {
   @include lf-comp-border($comp, "radius");
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  @include lf-comp-glassmorphize($comp, "header", "all", 0.375, 12px);
+  @include lf-comp-color(
+    $comp,
+    "header",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
   @include lf-el-transition("slide-in-out");
   box-shadow:
     0 2px 4px -1px rgba(var(--lf-color-on-#{$comp}), 0.2),

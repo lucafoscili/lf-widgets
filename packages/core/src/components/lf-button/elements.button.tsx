@@ -4,8 +4,10 @@ import {
   LfButtonAdapter,
   LfButtonAdapterJsx,
   LfDataNode,
+  LfIconType,
 } from "@lf-widgets/foundations";
 import { Fragment, h, VNode } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { LfButton } from "./lf-button";
 
 //#endregion
@@ -207,10 +209,9 @@ export const prepButton = (
 //#region Helpers
 const prepIcon = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
   const { controller } = adapter;
-  const { blocks, compInstance, cyAttributes, isOn, manager, parts } =
-    controller.get;
+  const { blocks, compInstance, isOn, manager, parts } = controller.get;
   const { lfIcon, lfIconOff, lfToggable } = compInstance;
-  const { assets, theme } = manager;
+  const { theme } = manager;
   const { bemClass, get } = theme;
 
   let icon = "";
@@ -222,15 +223,13 @@ const prepIcon = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
     icon = lfToggable && !isOn() ? iconOff : lfIcon;
   }
 
-  const { style } = assets.get(`./assets/svg/${icon}.svg`);
-
   return (
     <div
       class={bemClass(blocks.button._, blocks.button.icon)}
-      data-cy={cyAttributes.maskedSvg}
       part={parts.icon}
-      style={style}
-    ></div>
+    >
+      <FIcon framework={manager} icon={icon as LfIconType} />
+    </div>
   );
 };
 const prepLabel = (adapter: LfButtonAdapter): VNode => {

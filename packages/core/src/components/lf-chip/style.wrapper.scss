@@ -37,7 +37,7 @@ $comp: null !default;
     }
 
     & {
-      @include lf-comp-icon($comp, collapsed, "bg");
+      @include f-icon($comp, "bg");
       @include lf-el-transition("default", "transform");
       cursor: pointer;
       margin: 0;
@@ -46,10 +46,6 @@ $comp: null !default;
 
     &:hover {
       transform: scale(1.25);
-    }
-
-    &--expanded {
-      @include lf-comp-icon($comp, expanded, "bg");
     }
 
     &--hidden {

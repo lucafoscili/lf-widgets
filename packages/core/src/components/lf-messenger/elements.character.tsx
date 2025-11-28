@@ -61,12 +61,17 @@ export const prepCharacter = (
       const { character } = elements.refs;
       const { button } = handlers.character;
       const { inProgress } = status.save;
-      const { assignRef } = manager;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
 
       const isSaving = inProgress();
 
       return (
         <lf-button
+          class={bemClass(
+            controller.get.blocks.character._,
+            controller.get.blocks.character.saveButton,
+          )}
           data-cy={cyAttributes.button}
           lfDataset={LF_MESSENGER_MENU(manager.theme)}
           lfLabel={"Save"}

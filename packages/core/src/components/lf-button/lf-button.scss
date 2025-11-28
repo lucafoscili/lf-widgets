@@ -8,7 +8,7 @@
 );
 
 $comp: "button";
-@include lf-comp-setup($comp, "true", "true", "false", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "true", "true", 4px);
 
 :host {
   max-width: 100%;

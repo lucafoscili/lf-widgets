@@ -19,6 +19,11 @@ import {
   LfBadgePropsInterface,
 } from "../components/badge.declarations";
 import {
+  LfBreadcrumbsElement,
+  LfBreadcrumbsInterface,
+  LfBreadcrumbsPropsInterface,
+} from "../components/breadcrumbs.declarations";
+import {
   LfButtonElement,
   LfButtonInterface,
   LfButtonPropsInterface,
@@ -139,6 +144,11 @@ import {
   LfSliderPropsInterface,
 } from "../components/slider.declarations";
 import {
+  LfSnackbarElement,
+  LfSnackbarInterface,
+  LfSnackbarPropsInterface,
+} from "../components/snackbar.declarations";
+import {
   LfSpinnerElement,
   LfSpinnerInterface,
   LfSpinnerPropsInterface,
@@ -234,6 +244,7 @@ export type LfComponentElementMap = {
   LfArticle: LfArticleElement;
   LfAutocomplete: LfAutocompleteElement;
   LfBadge: LfBadgeElement;
+  LfBreadcrumbs: LfBreadcrumbsElement;
   LfButton: LfButtonElement;
   LfCanvas: LfCanvasElement;
   LfCard: LfCardElement;
@@ -258,6 +269,7 @@ export type LfComponentElementMap = {
   LfRadio: LfRadioElement;
   LfSelect: LfSelectElement;
   LfSlider: LfSliderElement;
+  LfSnackbar: LfSnackbarElement;
   LfSpinner: LfSpinnerElement;
   LfSplash: LfSplashElement;
   LfToggle: LfToggleElement;
@@ -278,6 +290,7 @@ export type LfComponentClassMap = {
   LfArticle: LfArticleInterface;
   LfAutocomplete: LfAutocompleteInterface;
   LfBadge: LfBadgeInterface;
+  LfBreadcrumbs: LfBreadcrumbsInterface;
   LfButton: LfButtonInterface;
   LfCanvas: LfCanvasInterface;
   LfCard: LfCardInterface;
@@ -302,6 +315,7 @@ export type LfComponentClassMap = {
   LfRadio: LfRadioInterface;
   LfSelect: LfSelectInterface;
   LfSlider: LfSliderInterface;
+  LfSnackbar: LfSnackbarInterface;
   LfSpinner: LfSpinnerInterface;
   LfSplash: LfSplashInterface;
   LfToggle: LfToggleInterface;
@@ -439,6 +453,7 @@ export type LfComponentName =
   | "LfArticle"
   | "LfAutocomplete"
   | "LfBadge"
+  | "LfBreadcrumbs"
   | "LfButton"
   | "LfCanvas"
   | "LfCard"
@@ -464,6 +479,7 @@ export type LfComponentName =
   | "LfRadio"
   | "LfSelect"
   | "LfSlider"
+  | "LfSnackbar"
   | "LfSpinner"
   | "LfSplash"
   | "LfToggle"
@@ -483,6 +499,7 @@ export type LfComponentProps =
   | LfArticlePropsInterface
   | LfAutocompletePropsInterface
   | LfBadgePropsInterface
+  | LfBreadcrumbsPropsInterface
   | LfButtonPropsInterface
   | LfCanvasPropsInterface
   | LfCardPropsInterface
@@ -507,6 +524,7 @@ export type LfComponentProps =
   | LfRadioPropsInterface
   | LfSelectPropsInterface
   | LfSliderPropsInterface
+  | LfSnackbarPropsInterface
   | LfSpinnerPropsInterface
   | LfSplashPropsInterface
   | LfTogglePropsInterface
@@ -524,6 +542,7 @@ export type LfComponentPropsMap = {
   LfArticle: LfArticlePropsInterface;
   LfAutocomplete: LfAutocompletePropsInterface;
   LfBadge: LfBadgePropsInterface;
+  LfBreadcrumbs: LfBreadcrumbsPropsInterface;
   LfButton: LfButtonPropsInterface;
   LfCanvas: LfCanvasPropsInterface;
   LfCard: LfCardPropsInterface;
@@ -548,6 +567,7 @@ export type LfComponentPropsMap = {
   LfRadio: LfRadioPropsInterface;
   LfSelect: LfSelectPropsInterface;
   LfSlider: LfSliderPropsInterface;
+  LfSnackbar: LfSnackbarPropsInterface;
   LfSpinner: LfSpinnerPropsInterface;
   LfSplash: LfSplashPropsInterface;
   LfToggle: LfTogglePropsInterface;
@@ -566,6 +586,7 @@ export type LfComponentTagMap = {
   LfArticle: "lf-article";
   LfAutocomplete: "lf-autocomplete";
   LfBadge: "lf-badge";
+  LfBreadcrumbs: "lf-breadcrumbs";
   LfButton: "lf-button";
   LfCanvas: "lf-canvas";
   LfCard: "lf-card";
@@ -590,6 +611,7 @@ export type LfComponentTagMap = {
   LfRadio: "lf-radio";
   LfSelect: "lf-select";
   LfSlider: "lf-slider";
+  LfSnackbar: "lf-snackbar";
   LfSpinner: "lf-spinner";
   LfSplash: "lf-splash";
   LfToggle: "lf-toggle";
@@ -608,6 +630,7 @@ export type LfComponentReverseTagMap = {
   "lf-article": "LfArticle";
   "lf-autocomplete": "LfAutocomplete";
   "lf-badge": "LfBadge";
+  "lf-breadcrumbs": "LfBreadcrumbs";
   "lf-button": "LfButton";
   "lf-canvas": "LfCanvas";
   "lf-card": "LfCard";
@@ -632,6 +655,7 @@ export type LfComponentReverseTagMap = {
   "lf-radio": "LfRadio";
   "lf-select": "LfSelect";
   "lf-slider": "LfSlider";
+  "lf-snackbar": "LfSnackbar";
   "lf-spinner": "LfSpinner";
   "lf-splash": "LfSplash";
   "lf-toggle": "LfToggle";

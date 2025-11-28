@@ -16,6 +16,7 @@ import { LfTextfieldPropsInterface } from "../components/textfield.declarations"
 import { LfTogglePropsInterface } from "../components/toggle.declarations";
 import { LfTypewriterPropsInterface } from "../components/typewriter.declarations";
 import { LfUploadPropsInterface } from "../components/upload.declarations";
+import { LfIconType } from "../foundations";
 import {
   LfComponent,
   LfComponentName,
@@ -109,7 +110,7 @@ export interface LfDataNode {
   /** Optional secondary text shown alongside the node value. */
   description?: string;
   /** Icon identifier rendered near the node (if supported by the component). */
-  icon?: string;
+  icon?: LfIconType;
   /** Flag used by components to disable interactions on the node. */
   isDisabled?: boolean;
   /** Flag indicating the node can expand even when child data hasn't been materialised yet. */

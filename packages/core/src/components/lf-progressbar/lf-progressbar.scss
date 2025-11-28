@@ -3,14 +3,19 @@
 
 $comp: "progressbar";
 $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
-@include lf-comp-setup($comp, "true");
+@include lf-comp-setup($comp, "true", "false", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
 }
 
 #lf-component {
-  @include lf-comp-glassmorphize($comp, "surface", "all", 0.225);
+  @include lf-comp-color(
+    $comp,
+    "surface",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
 }
 
 .progressbar {
@@ -31,7 +36,7 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
   }
 
   &__icon {
-    @include lf-comp-icon($comp, "", "primary");
+    @include f-icon($comp);
     margin: 0 0.75em;
   }
 
@@ -55,7 +60,12 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
 
   &__percentage {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "primary", "all", 0.775);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "all",
+      var(--lf-ui-alpha-glass-solid, 0.875)
+    );
     @include lf-el-transition("bouncy");
     box-sizing: border-box;
     height: var(--lf-progressbar-height, 100%);
@@ -111,7 +121,7 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
     }
 
     &__icon {
-      @include lf-comp-icon($comp, "", "bg", 0.75em);
+      @include f-icon($comp);
       margin: 0 0.15em;
     }
 

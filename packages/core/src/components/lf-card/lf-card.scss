@@ -17,7 +17,7 @@
 );
 
 $comp: "card";
-@include lf-comp-setup($comp, "true", "true", "true");
+@include lf-comp-setup($comp, "true", "true", "true", "false", "true", 4px);
 
 :host {
   @include lf-comp-color($comp, "bg", "text");

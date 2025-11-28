@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "compare";
-@include lf-comp-setup($comp, "false", "false", "true");
+@include lf-comp-setup($comp, "false", "false", "true", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -31,7 +31,7 @@ $comp: "compare";
     @include lf-comp-border($comp, "radius");
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    @include lf-comp-glassmorphize($comp, "surface", "bg");
+    @include lf-comp-color($comp, "surface", "bg");
     box-sizing: border-box;
     display: flex;
     /**
@@ -46,7 +46,12 @@ $comp: "compare";
   &__panel {
     & {
       @include lf-comp-border($comp);
-      @include lf-comp-glassmorphize($comp, "surface");
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "all",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
       bottom: 0;
       /**
       * @prop --lf-#{$comp}-panel-height: Sets the height for the panel of the #{$comp} component.
@@ -105,7 +110,12 @@ $comp: "compare";
       }
 
       &:after {
-        @include lf-comp-glassmorphize($comp, "surface", "bg", 0.5);
+        @include lf-comp-color(
+          $comp,
+          "surface",
+          "bg",
+          var(--lf-ui-alpha-glass-heavy, 0.75)
+        );
         content: "";
         height: 100%;
         pointer-events: none;
@@ -152,7 +162,7 @@ $comp: "compare";
     }
 
     &::-webkit-slider-thumb {
-      @include lf-comp-glassmorphize($comp, "surface", "bg");
+      @include lf-comp-color($comp, "surface", "bg");
       appearance: none;
       cursor: ew-resize;
       height: 100%;
@@ -161,7 +171,7 @@ $comp: "compare";
     }
 
     &::-moz-slider-thumb {
-      @include lf-comp-glassmorphize($comp, "surface", "bg");
+      @include lf-comp-color($comp, "surface", "bg");
       appearance: none;
       cursor: ew-resize;
       height: 100%;

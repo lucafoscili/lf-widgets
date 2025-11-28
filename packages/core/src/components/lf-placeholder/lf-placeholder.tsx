@@ -1,5 +1,4 @@
 import {
-  CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_PLACEHOLDER_BLOCKS,
   LF_PLACEHOLDER_PARTS,
@@ -34,6 +33,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -150,7 +150,6 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_PLACEHOLDER_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_PLACEHOLDER_PARTS;
   #s = LF_STYLE_ID;
@@ -294,7 +293,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { assets, sanitizeProps, theme } = this.#framework;
+    const { sanitizeProps, theme } = this.#framework;
     const { bemClass, setLfStyle } = theme;
 
     const { placeholder } = this.#b;
@@ -327,15 +326,14 @@ export class LfPlaceholder implements LfPlaceholderInterface {
         ></Tag>
       );
     } else if (lfIcon) {
-      const { style } = assets.get(`./assets/svg/${lfIcon}.svg`);
       content = (
         <div
           class={bemClass(placeholder._, placeholder.icon)}
-          data-cy={this.#cy.maskedSvg}
           data-lf={this.#lf.fadeIn}
           part={this.#p.icon}
-          style={style}
-        ></div>
+        >
+          <FIcon framework={this.#framework} icon={lfIcon} />
+        </div>
       );
     }
 

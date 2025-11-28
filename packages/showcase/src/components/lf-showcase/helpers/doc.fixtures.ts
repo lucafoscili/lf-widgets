@@ -4,6 +4,7 @@ import { getArticleFixtures } from "../assets/data/article";
 import { getAutocompleteFixtures } from "../assets/data/autocomplete";
 import { getBadgeFixtures } from "../assets/data/badge";
 import { getButtonFixtures } from "../assets/data/button";
+import { getBreadcrumbsFixtures } from "../assets/data/breadcrumbs";
 import { getCanvasFixtures } from "../assets/data/canvas";
 import { getCardFixtures } from "../assets/data/card";
 import { getCarouselFixtures } from "../assets/data/carousel";
@@ -35,6 +36,7 @@ import { getRadioFixtures } from "../assets/data/radio";
 import { getSelectFixtures } from "../assets/data/select";
 import { getMultiInputFixtures } from "../assets/data/multiinput";
 import { getSliderFixtures } from "../assets/data/slider";
+import { getSnackbarFixtures } from "../assets/data/snackbar";
 import { getSpinnerFixtures } from "../assets/data/spinner";
 import { getSplashFixtures } from "../assets/data/splash";
 import { getSyntaxFixtures } from "../assets/data/syntax";
@@ -62,6 +64,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getAutocompleteFixtures(framework);
     case "lf-badge":
       return getBadgeFixtures(framework);
+    case "lf-breadcrumbs":
+      return getBreadcrumbsFixtures(framework);
     case "lf-button":
       return getButtonFixtures(framework);
     case "lf-canvas":
@@ -110,6 +114,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getSelectFixtures(framework);
     case "lf-slider":
       return getSliderFixtures(framework);
+    case "lf-snackbar":
+      return getSnackbarFixtures(framework);
     case "lf-spinner":
       return getSpinnerFixtures(framework);
     case "lf-splash":

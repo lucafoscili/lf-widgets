@@ -1,5 +1,8 @@
 import {
   LfComponentAdapterGetters as LfAdapterGetters,
+  LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import {
@@ -225,7 +228,7 @@ export type LfRadioAdapterInitializerSetters = Pick<
  * Element references for the radio adapter.
  * Store only element handles, no logic.
  */
-export interface LfRadioAdapterRefs {
+export interface LfRadioAdapterRefs extends LfComponentAdapterRefs {
   /**
    * Map of node ID to input element.
    */
@@ -243,7 +246,7 @@ export interface LfRadioAdapterRefs {
  * JSX factory functions for the radio adapter.
  * All functions are pure and return VNodes.
  */
-export interface LfRadioAdapterJsx {
+export interface LfRadioAdapterJsx extends LfComponentAdapterJsx {
   /**
    * Renders the radio control element.
    */
@@ -265,23 +268,23 @@ export interface LfRadioAdapterJsx {
  * Event handlers for the radio adapter.
  * All handlers are async-capable.
  */
-export interface LfRadioAdapterHandlers {
+export interface LfRadioAdapterHandlers extends LfComponentAdapterHandlers {
   /**
    * Handles blur on a radio item.
    */
-  blur: (nodeId: string, event: FocusEvent) => Promise<void>;
+  blur: (event: FocusEvent, nodeId: string) => Promise<void>;
   /**
    * Handles change on a radio input.
    */
-  change: (nodeId: string, event: Event) => Promise<void>;
+  change: (event: Event, nodeId: string) => Promise<void>;
   /**
    * Handles click on a radio item.
    */
-  click: (nodeId: string, event: MouseEvent) => Promise<void>;
+  click: (event: MouseEvent, nodeId: string) => Promise<void>;
   /**
    * Handles focus on a radio item.
    */
-  focus: (nodeId: string, event: FocusEvent) => Promise<void>;
+  focus: (event: FocusEvent, nodeId: string) => Promise<void>;
   /**
    * Handles keyboard navigation (arrow keys).
    */
@@ -289,7 +292,7 @@ export interface LfRadioAdapterHandlers {
   /**
    * Handles pointer down on a radio item for ripple effect.
    */
-  pointerDown: (node: LfDataNode, event: Event) => Promise<void>;
+  pointerDown: (event: Event, node: LfDataNode) => Promise<void>;
 }
 //#endregion
 

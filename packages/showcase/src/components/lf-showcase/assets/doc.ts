@@ -94,10 +94,6 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the border radius for the accordion component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
-        name: "--lf-accordion-color-bg",
-        docs: "Sets the color-bg color for the accordion component. Defaults to => var(--lf-color-bg)",
-      },
-      {
         name: "--lf-accordion-color-on-bg",
         docs: "Sets the color-on-bg color for the accordion component. Defaults to => var(--lf-color-on-bg)",
       },
@@ -106,8 +102,16 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-on-primary color for the accordion component. Defaults to => var(--lf-color-on-primary)",
       },
       {
+        name: "--lf-accordion-color-on-surface",
+        docs: "Sets the color-on-surface color for the accordion component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
         name: "--lf-accordion-color-primary",
         docs: "Sets the color-primary color for the accordion component. Defaults to => var(--lf-color-primary)",
+      },
+      {
+        name: "--lf-accordion-color-surface",
+        docs: "Sets the color-surface color for the accordion component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-accordion-cursor",
@@ -115,7 +119,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-accordion-expand-margin",
-        docs: "Sets the margin of the accordion expand icon. Defaults to => 0 0 0 auto",
+        docs: "Sets the margin of the accordion expand icon. Defaults to => 0",
       },
       {
         name: "--lf-accordion-flex-direction",
@@ -134,8 +138,12 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the accordion component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-accordion-gap",
+        docs: "Sets the gap of the accordion header. Defaults to => 0.5em",
+      },
+      {
         name: "--lf-accordion-icon-margin",
-        docs: "Sets the margin of the accordion icon. Defaults to => 0 0.5em 0 0",
+        docs: "Sets the margin of the accordion icon. Defaults to => 0",
       },
       {
         name: "--lf-accordion-line-height",
@@ -151,7 +159,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-accordion-text-margin",
-        docs: "Sets the margin of the accordion text. Defaults to => 0 0.5em 0 0",
+        docs: "Sets the margin of the accordion text. Defaults to => 0",
       },
     ],
   },
@@ -222,10 +230,6 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the border radius for the article component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
-        name: "--lf-article-color-bg",
-        docs: "Sets the color-bg color for the article component. Defaults to => var(--lf-color-bg)",
-      },
-      {
         name: "--lf-article-color-h1",
         docs: "Sets the h1 color for the article component. Defaults to => var(--lf-color-on-bg)",
       },
@@ -252,6 +256,14 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-article-color-on-bg",
         docs: "Sets the color-on-bg color for the article component. Defaults to => var(--lf-color-on-bg)",
+      },
+      {
+        name: "--lf-article-color-on-surface",
+        docs: "Sets the color-on-surface color for the article component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
+        name: "--lf-article-color-surface",
+        docs: "Sets the color-surface color for the article component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-article-font-family",
@@ -413,22 +425,22 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAllowFreeInput",
-        docs: "Allows input of values that are not present in the dataset.\nWhen true, users can type and submit any value. When false, only values from the dataset can be selected.",
+        docs: "Allows input of values that are not present in the dataset.\r\nWhen true, users can type and submit any value. When false, only values from the dataset can be selected.",
         type: "boolean",
       },
       {
         name: "lfCache",
-        docs: "Enables caching of autocomplete results.\nWhen enabled, previously fetched results are stored and reused for identical queries.",
+        docs: "Enables caching of autocomplete results.\r\nWhen enabled, previously fetched results are stored and reused for identical queries.",
         type: "boolean",
       },
       {
         name: "lfCacheTTL",
-        docs: "Sets the time-to-live for cached entries in milliseconds.\nCached entries older than this will be considered expired.",
+        docs: "Sets the time-to-live for cached entries in milliseconds.\r\nCached entries older than this will be considered expired.",
         type: "number",
       },
       {
         name: "lfDataset",
-        docs: "Sets the dataset containing the autocomplete suggestions.\nThis is typically updated dynamically in response to request events.",
+        docs: "Sets the dataset containing the autocomplete suggestions.\r\nThis is typically updated dynamically in response to request events.",
         type: "LfDataDataset",
       },
       {
@@ -443,7 +455,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfMaxCacheSize",
-        docs: "Sets the maximum number of entries in the cache.\nWhen exceeded, oldest entries are evicted (FIFO).",
+        docs: "Sets the maximum number of entries in the cache.\r\nWhen exceeded, oldest entries are evicted (FIFO).",
         type: "number",
       },
       {
@@ -469,7 +481,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Sets the props for the internal lf-textfield component.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: string; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -608,6 +620,170 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
   },
+  "lf-breadcrumbs": {
+    methods: [
+      {
+        name: "getDebugInfo",
+        docs: "Fetches debug information of the component's current state.",
+        returns: {
+          type: "Promise<LfDebugLifecycleInfo>",
+          docs: "A promise that resolves with the debug information object.",
+        },
+        signature: "() => Promise<LfDebugLifecycleInfo>",
+      },
+      {
+        name: "getProps",
+        docs: "Used to retrieve component's properties and descriptions.",
+        returns: {
+          type: "Promise<LfBreadcrumbsPropsInterface>",
+          docs: "Promise resolved with an object containing the component's properties.",
+        },
+        signature: "() => Promise<LfBreadcrumbsPropsInterface>",
+      },
+      {
+        name: "refresh",
+        docs: "This method is used to trigger a new render of the component.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "setCurrentNode",
+        docs: "Sets the current node to the specified node ID.",
+        returns: {
+          type: "Promise<void>",
+          docs: "A promise that resolves when the current node has been set.",
+        },
+        signature: "(nodeId: string) => Promise<void>",
+      },
+      {
+        name: "unmount",
+        docs: "Initiates the unmount sequence, which removes the component from the DOM after a delay.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(ms?: number) => Promise<void>",
+      },
+    ],
+    props: [
+      {
+        name: "lfDataset",
+        docs: "Dataset used to build the breadcrumb path.",
+        type: "LfDataDataset",
+      },
+      {
+        name: "lfEmpty",
+        docs: "Message displayed when the dataset is empty.",
+        type: "string",
+      },
+      {
+        name: "lfInteractive",
+        docs: "When true, enables interactivity for breadcrumb items.",
+        type: "boolean",
+      },
+      {
+        name: "lfMaxItems",
+        docs: "Maximum number of breadcrumb items to display.",
+        type: "number",
+      },
+      {
+        name: "lfRipple",
+        docs: "When true, enables ripple effect on breadcrumb item clicks.",
+        type: "boolean",
+      },
+      {
+        name: "lfSeparator",
+        docs: "Separator string displayed between breadcrumb items.",
+        type: "string",
+      },
+      {
+        name: "lfShowRoot",
+        docs: "When true, the root node is included in the breadcrumb path.",
+        type: "boolean",
+      },
+      {
+        name: "lfStyle",
+        docs: "Custom CSS styles applied to the component.",
+        type: "string",
+      },
+      {
+        name: "lfUiSize",
+        docs: "The size of the component.",
+        type: '"large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"',
+      },
+      {
+        name: "lfUiState",
+        docs: "Reflects the specified state color defined by the theme.",
+        type: '"danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"',
+      },
+      {
+        name: "lfValue",
+        docs: "ID of the current node in the breadcrumb path.",
+        type: "string",
+      },
+    ],
+    styles: [
+      {
+        name: "--lf-breadcrumbs-border-radius",
+        docs: "Sets the border radius for the breadcrumbs component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-breadcrumbs-color-on-primary",
+        docs: "Sets the color-on-primary color for the breadcrumbs component. Defaults to => var(--lf-color-on-primary)",
+      },
+      {
+        name: "--lf-breadcrumbs-color-on-surface",
+        docs: "Sets the color-on-surface color for the breadcrumbs component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
+        name: "--lf-breadcrumbs-color-primary",
+        docs: "Sets the color-primary color for the breadcrumbs component. Defaults to => var(--lf-color-primary)",
+      },
+      {
+        name: "--lf-breadcrumbs-color-surface",
+        docs: "Sets the color-surface color for the breadcrumbs component. Defaults to => var(--lf-color-surface)",
+      },
+      {
+        name: "--lf-breadcrumbs-dot-gap",
+        docs: "Sets the gap between dots. Defaults to => 0.05em",
+      },
+      {
+        name: "--lf-breadcrumbs-dot-gap-hover",
+        docs: "Sets the gap between dots on hover. Defaults to => 0.2em",
+      },
+      {
+        name: "--lf-breadcrumbs-font-family",
+        docs: "Sets the primary font family for the breadcrumbs component. Defaults to => var(--lf-font-family-primary)",
+      },
+      {
+        name: "--lf-breadcrumbs-font-size",
+        docs: "Sets the font size for the breadcrumbs component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-breadcrumbs-gap",
+        docs: "Sets the gap between breadcrumb items. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-breadcrumbs-item-height",
+        docs: "Sets the height for the items. Defaults to => 2em",
+      },
+      {
+        name: "--lf-breadcrumbs-item-padding",
+        docs: "Sets the padding for the items. Defaults to => 0 0.75em",
+      },
+      {
+        name: "--lf-breadcrumbs-padding",
+        docs: "Sets the padding for the breadcrumbs container. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-breadcrumbs-separator-margin",
+        docs: "Sets the horizontal margin around separators. Defaults to => 0.25em",
+      },
+    ],
+  },
   "lf-button": {
     methods: [
       {
@@ -654,7 +830,7 @@ export const LF_DOC: LfShowcaseDoc = {
           docs: "",
         },
         signature:
-          "(label?: string, icon?: string, timeout?: number) => Promise<void>",
+          "(label?: string, icon?: LfIconType | null, timeout?: number) => Promise<void>",
       },
       {
         name: "setValue",
@@ -678,23 +854,23 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAriaLabel",
-        docs: "Explicit accessible label for the button. When provided it takes precedence over\nany derived label (lfLabel / lfIcon / id fallback) and is applied to the internal button element(s).",
+        docs: "Explicit accessible label for the button. When provided it takes precedence over\r\nany derived label (lfLabel / lfIcon / id fallback) and is applied to the internal button element(s).",
         type: "string",
       },
       {
         name: "lfDataset",
-        docs: "The dataset for the button, containing the nodes to be displayed.\nThe first node will be used to set the icon and label if not provided.",
+        docs: "The dataset for the button, containing the nodes to be displayed.\r\nThe first node will be used to set the icon and label if not provided.",
         type: "LfDataDataset",
       },
       {
         name: "lfIcon",
         docs: "When set, the button will show this icon.",
-        type: "string",
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfIconOff",
-        docs: "When set, the icon button off state will show this icon. Otherwise, an outlined version of the icon prop will be displayed.",
-        type: "string",
+        docs: "When set, the icon button off state will show this icon.",
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfLabel",
@@ -758,7 +934,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial state of the button.\nRelevant only when lfToggable is set to true.",
+        docs: "Sets the initial state of the button.\r\nRelevant only when lfToggable is set to true.",
         type: "boolean",
       },
     ],
@@ -1464,7 +1640,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "scrollToBottom",
-        docs: 'Scrolls the chat message list to the bottom.\n\nThe method first checks the component controller status via this.#adapter.controller.get;\nif the controller is not in the "ready" state the method returns early without performing any scrolling.\n\nBehavior:\n- If blockOrScroll === true, performs a passive scroll of the messages container by calling\n  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).\n  This path is intended for initial loads where a container-level scroll is sufficient.\n- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })\n  to bring the last message element into view for active user interactions. The block argument is\n  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").\n\nNotes:\n- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling\n  animation to complete; the promise resolves after issuing the scroll command.\n- If the messages container or last message element is not present, the corresponding scroll call\n  is a no-op.\n- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend\n  to use scrollIntoView should pass a valid ScrollLogicalPosition value.',
+        docs: 'Scrolls the chat message list to the bottom.\r\n\r\nThe method first checks the component controller status via this.#adapter.controller.get;\r\nif the controller is not in the "ready" state the method returns early without performing any scrolling.\r\n\r\nBehavior:\r\n- If blockOrScroll === true, performs a passive scroll of the messages container by calling\r\n  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).\r\n  This path is intended for initial loads where a container-level scroll is sufficient.\r\n- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })\r\n  to bring the last message element into view for active user interactions. The block argument is\r\n  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").\r\n\r\nNotes:\r\n- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling\r\n  animation to complete; the promise resolves after issuing the scroll command.\r\n- If the messages container or last message element is not present, the corresponding scroll call\r\n  is a no-op.\r\n- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend\r\n  to use scrollIntoView should pass a valid ScrollLogicalPosition value.',
         returns: {
           type: "Promise<void>",
           docs: "Promise<void> that resolves after issuing the scroll command.",
@@ -1499,7 +1675,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfConfig",
-        docs: "Configuration object for LLM, tools, UI, and attachments.\nRecommended for new implementations; legacy individual props remain supported.",
+        docs: "Configuration object for LLM, tools, UI, and attachments.\r\nRecommended for new implementations; legacy individual props remain supported.",
         type: "LfChatConfig",
       },
       {
@@ -1519,7 +1695,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfFrequencyPenalty",
-        docs: "The frequency penalty for the LLM's answer.\nThis parameter is used to reduce the likelihood of the model repeating the same tokens.",
+        docs: "The frequency penalty for the LLM's answer.\r\nThis parameter is used to reduce the likelihood of the model repeating the same tokens.",
         type: "number",
       },
       {
@@ -1529,7 +1705,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfMaxTokens",
-        docs: "The maximum amount of tokens allowed in the LLM's answer.\nThis parameter is used to control the length of the generated output.",
+        docs: "The maximum amount of tokens allowed in the LLM's answer.\r\nThis parameter is used to control the length of the generated output.",
         type: "number",
       },
       {
@@ -1539,12 +1715,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfPresencePenalty",
-        docs: "The presence penalty for the LLM's answer.\nThis parameter is used to reduce the likelihood of the model repeating the same information.",
+        docs: "The presence penalty for the LLM's answer.\r\nThis parameter is used to reduce the likelihood of the model repeating the same information.",
         type: "number",
       },
       {
         name: "lfSeed",
-        docs: "The seed of the LLM's answer.\nThis parameter is used to control the randomness of the output.",
+        docs: "The seed of the LLM's answer.\r\nThis parameter is used to control the randomness of the output.",
         type: "number",
       },
       {
@@ -1564,12 +1740,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfTools",
-        docs: "The tools available for the LLM to use during the conversation.\nThese enable the model to perform actions like web searches or data fetching.",
+        docs: "The tools available for the LLM to use during the conversation.\r\nThese enable the model to perform actions like web searches or data fetching.",
         type: "LfLLMTool[]",
       },
       {
         name: "lfTopP",
-        docs: "The top-p sampling value for the LLM's answer.\nThis parameter controls the diversity of the generated output by limiting the\nmodel's consideration to the top-p most probable tokens.",
+        docs: "The top-p sampling value for the LLM's answer.\r\nThis parameter controls the diversity of the generated output by limiting the\r\nmodel's consideration to the top-p most probable tokens.",
         type: "number",
       },
       {
@@ -1579,7 +1755,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfUploadCallback",
-        docs: "If set, the component will call this\nfunction with the selected File[] and await the returned attachments. If not\nprovided the component falls back to embedding base64 data in the `data` field.",
+        docs: "If set, the component will call this\r\nfunction with the selected File[] and await the returned attachments. If not\r\nprovided the component falls back to embedding base64 data in the `data` field.",
         type: "(files: File[]) => Promise<LfLLMAttachment[]>",
       },
       {
@@ -1775,7 +1951,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAriaLabel",
-        docs: "Explicit accessible label for the checkbox control. Fallback chain when empty:\nlfLabel -> root element id -> 'checkbox'. Applied to the native input element.",
+        docs: "Explicit accessible label for the checkbox control. Fallback chain when empty:\r\nlfLabel -> root element id -> 'checkbox'. Applied to the native input element.",
         type: "string",
       },
       {
@@ -1810,7 +1986,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial boolean state of the checkbox.\nSet to null for indeterminate state.",
+        docs: "Sets the initial boolean state of the checkbox.\r\nSet to null for indeterminate state.",
         type: "boolean",
       },
     ],
@@ -2599,12 +2775,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the image element.\r\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfImageProps?: any; lfLabel?: any; lfPosition?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfRipple?: any; lfShowSpinner?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfValue?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfHtmlAttributes?: any; lfMode?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; disabled?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; dataset?: any; href?: any; id?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
-      },
-      {
-        name: "lfMode",
-        docs: "Rendering mode for non-URL values: sprite (default) or mask (legacy).",
-        type: '"mask" | "sprite"',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfShowSpinner",
@@ -2638,10 +2809,6 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
     styles: [
-      {
-        name: "--lf-image-aspect-ratio",
-        docs: "Sets the aspect ratio for the icons. Defaults to => 1",
-      },
       {
         name: "--lf-image-color-primary",
         docs: "Sets the color-primary color for the image component. Defaults to => var(--lf-color-primary)",
@@ -3008,6 +3175,10 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-list-color-on-danger",
         docs: "Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)",
+      },
+      {
+        name: "--lf-list-color-on-primary",
+        docs: "Sets the color-on-primary color for the list component. Defaults to => var(--lf-color-on-primary)",
       },
       {
         name: "--lf-list-color-on-surface",
@@ -3490,7 +3661,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfMode",
-        docs: 'Behaviour mode for the component.\n- "history": single-value + commit history (default).\n- "tags": tag selection where the value is a comma-separated list of tags.',
+        docs: 'Behaviour mode for the component.\r\n- "history": single-value + commit history (default).\r\n- "tags": tag selection where the value is a comma-separated list of tags.',
         type: '"history" | "tags"',
       },
       {
@@ -3501,7 +3672,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Props forwarded to the internal lf-textfield input.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: string; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -3578,7 +3749,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPlaceholder",
         docs: "Html attributes of the picture before the component enters the viewport.",
-        type: '{ lfImageProps?: any; lfLabel?: any; lfPosition?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfRipple?: any; lfShowSpinner?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfValue?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfHtmlAttributes?: any; lfMode?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; disabled?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; dataset?: any; href?: any; id?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfStyle",
@@ -3593,7 +3764,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Html attributes of the picture after the component enters the viewport.",
-        type: '{ lfImageProps?: any; lfLabel?: any; lfPosition?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfRipple?: any; lfShowSpinner?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfValue?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfHtmlAttributes?: any; lfMode?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; disabled?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; dataset?: any; href?: any; id?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
     ],
     styles: [
@@ -3683,12 +3854,12 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Displays an animated SVG placeholder until the component is loaded.",
-        type: '"code" | "upload" | "id" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "copy" | "door" | "download" | "droplet" | "edit" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "refresh" | "replace" | "robot" | "schema" | "select" | "search" | "send" | "settings" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfProps",
         docs: "Sets the props of the component to be placeholder loaded.",
-        type: "LfBadgePropsInterface | LfButtonPropsInterface | LfCanvasPropsInterface | LfCardPropsInterface | LfChartPropsInterface | LfChatPropsInterface | LfChipPropsInterface | LfCodePropsInterface | LfImagePropsInterface | LfPhotoframePropsInterface | LfProgressbarPropsInterface | LfTextfieldPropsInterface | LfTogglePropsInterface | LfTypewriterPropsInterface | LfUploadPropsInterface | LfAccordionPropsInterface | LfArticlePropsInterface | LfAutocompletePropsInterface | LfCarouselPropsInterface | LfCheckboxPropsInterface | LfComparePropsInterface | LfDrawerPropsInterface | LfHeaderPropsInterface | LfImageviewerPropsInterface | LfListPropsInterface | LfMasonryPropsInterface | LfMessengerPropsInterface | LfMultiInputPropsInterface | LfPlaceholderPropsInterface | LfRadioPropsInterface | LfSelectPropsInterface | LfSliderPropsInterface | LfSpinnerPropsInterface | LfSplashPropsInterface | LfTabbarPropsInterface | LfToastPropsInterface | LfTreePropsInterface",
+        type: "LfImagePropsInterface | LfUploadPropsInterface | LfCodePropsInterface | LfBadgePropsInterface | LfButtonPropsInterface | LfCanvasPropsInterface | LfCardPropsInterface | LfChartPropsInterface | LfChatPropsInterface | LfChipPropsInterface | LfPhotoframePropsInterface | LfProgressbarPropsInterface | LfTextfieldPropsInterface | LfTogglePropsInterface | LfTypewriterPropsInterface | LfAccordionPropsInterface | LfArticlePropsInterface | LfAutocompletePropsInterface | LfBreadcrumbsPropsInterface | LfCarouselPropsInterface | LfCheckboxPropsInterface | LfComparePropsInterface | LfDrawerPropsInterface | LfHeaderPropsInterface | LfImageviewerPropsInterface | LfListPropsInterface | LfMasonryPropsInterface | LfMessengerPropsInterface | LfMultiInputPropsInterface | LfPlaceholderPropsInterface | LfRadioPropsInterface | LfSelectPropsInterface | LfSliderPropsInterface | LfSnackbarPropsInterface | LfSpinnerPropsInterface | LfSplashPropsInterface | LfTabbarPropsInterface | LfToastPropsInterface | LfTreePropsInterface",
       },
       {
         name: "lfStyle",
@@ -3708,14 +3879,10 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Sets the tag name of the component to be placeholder loaded.",
-        type: '"LfAccordion" | "LfArticle" | "LfAutocomplete" | "LfBadge" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfCheckbox" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfImageviewer" | "LfList" | "LfMasonry" | "LfMessenger" | "LfMultiInput" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfRadio" | "LfSelect" | "LfSlider" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
+        type: '"LfAccordion" | "LfArticle" | "LfAutocomplete" | "LfBadge" | "LfBreadcrumbs" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfCheckbox" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfImageviewer" | "LfList" | "LfMasonry" | "LfMessenger" | "LfMultiInput" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfRadio" | "LfSelect" | "LfSlider" | "LfSnackbar" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
       },
     ],
     styles: [
-      {
-        name: "--lf-placeholder-color-on-bg",
-        docs: "Sets the color-on-bg color for the placeholder component. Defaults to => var(--lf-color-on-bg)",
-      },
       {
         name: "--lf-placeholder-font-family",
         docs: "Sets the primary font family for the placeholder component. Defaults to => var(--lf-font-family-primary)",
@@ -4157,7 +4324,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "Sets the dataset containing the selectable options.\nThis property is immutable after the component has loaded.",
+        docs: "Sets the dataset containing the selectable options.\r\nThis property is immutable after the component has loaded.",
         type: "LfDataDataset",
       },
       {
@@ -4178,7 +4345,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Sets the props for the internal lf-textfield component.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: string; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -4192,7 +4359,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfValue",
-        docs: "Sets the initial selected value.\nNon-mutable after component load.",
+        docs: "Sets the initial selected value.\r\nNon-mutable after component load.",
         type: "number | string",
       },
     ],
@@ -4370,6 +4537,10 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the min-width for the slider component. Defaults to => 7em",
       },
       {
+        name: "--lf-slider-overflow",
+        docs: "Sets the overflow for the slider component. Defaults to => hidden",
+      },
+      {
         name: "--lf-slider-padding",
         docs: "Sets the padding for the slider component. Defaults to => 2em",
       },
@@ -4400,6 +4571,152 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-slider-value-bottom-position",
         docs: "Sets the bottom position for the slider component's value. Defaults to => -3em",
+      },
+    ],
+  },
+  "lf-snackbar": {
+    methods: [
+      {
+        name: "getDebugInfo",
+        docs: "Retrieves the debug information reflecting the current state of the component.",
+        returns: {
+          type: "Promise<LfDebugLifecycleInfo>",
+          docs: "A promise that resolves to a LfDebugLifecycleInfo object containing debug information.",
+        },
+        signature: "() => Promise<LfDebugLifecycleInfo>",
+      },
+      {
+        name: "getProps",
+        docs: "Used to retrieve component's properties and descriptions.",
+        returns: {
+          type: "Promise<LfSnackbarPropsInterface>",
+          docs: "Promise resolved with an object containing the component's properties.",
+        },
+        signature: "() => Promise<LfSnackbarPropsInterface>",
+      },
+      {
+        name: "refresh",
+        docs: "Triggers a re-render of the component to reflect any state changes.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "unmount",
+        docs: "Initiates the unmount sequence, which removes the component from the DOM after a delay.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(ms?: number) => Promise<void>",
+      },
+    ],
+    props: [
+      {
+        name: "lfAction",
+        docs: "Text label for action button. If omitted, no action button appears.",
+        type: "string",
+      },
+      {
+        name: "lfActionCallback",
+        docs: "Callback invoked when the action button is clicked.\r\nReceives snackbar instance and pointer event.",
+        type: "(snackbar: LfSnackbarInterface, e: PointerEvent, ...args: unknown[]) => unknown",
+      },
+      {
+        name: "lfCloseIcon",
+        docs: "Icon shown in the close button.",
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+      },
+      {
+        name: "lfDuration",
+        docs: "Auto-dismiss duration in milliseconds. Set to 0 to disable auto-dismiss.",
+        type: "number",
+      },
+      {
+        name: "lfIcon",
+        docs: "Optional icon shown at the start of the snackbar.",
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+      },
+      {
+        name: "lfMessage",
+        docs: "Message text displayed in the snackbar.",
+        type: "string",
+      },
+      {
+        name: "lfPosition",
+        docs: "Positioning of the snackbar on screen.",
+        type: '"bottom-center" | "bottom-left" | "bottom-right" | "inline" | "top-center" | "top-left" | "top-right"',
+      },
+      {
+        name: "lfStyle",
+        docs: "Custom styling for the component.",
+        type: "string",
+      },
+      {
+        name: "lfUiSize",
+        docs: "The size of the component.",
+        type: '"large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"',
+      },
+      {
+        name: "lfUiState",
+        docs: "Reflects the specified state color defined by the theme.",
+        type: '"danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"',
+      },
+    ],
+    styles: [
+      {
+        name: "--lf-snackbar-action-font-family",
+        docs: "Font family for action button. Defaults to => inherit",
+      },
+      {
+        name: "--lf-snackbar-action-font-size",
+        docs: "Font size for action button. Defaults to => 0.875em",
+      },
+      {
+        name: "--lf-snackbar-border-radius",
+        docs: "Sets the border radius for the snackbar component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-snackbar-color-on-surface",
+        docs: "Sets the color-on-surface color for the snackbar component. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
+        name: "--lf-snackbar-color-primary",
+        docs: "Sets the color-primary color for the snackbar component. Defaults to => var(--lf-color-primary)",
+      },
+      {
+        name: "--lf-snackbar-color-surface",
+        docs: "Sets the color-surface color for the snackbar component. Defaults to => var(--lf-color-surface)",
+      },
+      {
+        name: "--lf-snackbar-font-family",
+        docs: "Sets the primary font family for the snackbar component. Defaults to => var(--lf-font-family-primary)",
+      },
+      {
+        name: "--lf-snackbar-font-size",
+        docs: "Sets the font size for the snackbar component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-snackbar-glass-opacity",
+        docs: "Opacity for the glass reflection effect. Defaults to => var(--lf-ui-alpha-glass, 0.375)",
+      },
+      {
+        name: "--lf-snackbar-max-width",
+        docs: "Sets the maximum width for the snackbar. Defaults to => clamp(288px, 80vw, 568px)",
+      },
+      {
+        name: "--lf-snackbar-message-font-size",
+        docs: "Font size for the message. Defaults to => 0.875em",
+      },
+      {
+        name: "--lf-snackbar-min-width",
+        docs: "Sets the minimum width for the snackbar. Defaults to => 288px",
+      },
+      {
+        name: "--lf-snackbar-padding",
+        docs: "Sets the padding for the snackbar. Defaults to => 0.875em 1em",
       },
     ],
   },
@@ -4732,6 +5049,10 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-on-bg color for the tabbar component. Defaults to => var(--lf-color-on-bg)",
       },
       {
+        name: "--lf-tabbar-color-on-primary",
+        docs: "Sets the color-on-primary color for the tabbar component. Defaults to => var(--lf-color-on-primary)",
+      },
+      {
         name: "--lf-tabbar-color-primary",
         docs: "Sets the color-primary color for the tabbar component. Defaults to => var(--lf-color-primary)",
       },
@@ -4864,12 +5185,12 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input or textarea element through additional HTML attributes.\r\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfImageProps?: any; lfLabel?: any; lfPosition?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfRipple?: any; lfShowSpinner?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfValue?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfHtmlAttributes?: any; lfMode?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; disabled?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; dataset?: any; href?: any; id?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfIcon",
         docs: "Sets the icon to be displayed within the text field.",
-        type: "string",
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfLabel",
@@ -4904,7 +5225,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTrailingIconAction",
         docs: "Sets a service icon to be displayed on the trailing side for additional actions.\r\nThis icon is not customizable by consumers and defaults to null (hidden).",
-        type: '"--lf-icon-image" | "--lf-icon-upload" | "--lf-icon-delete" | "--lf-icon-danger" | "--lf-icon-disabled" | "--lf-icon-info" | "--lf-icon-primary" | "--lf-icon-secondary" | "--lf-icon-success" | "--lf-icon-warning" | "--lf-icon-copy" | "--lf-icon-download" | "--lf-icon-edit" | "--lf-icon-refresh" | "--lf-icon-search" | "--lf-icon-settings" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-dropdown" | "--lf-icon-expanded" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous"',
+        type: '"--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning"',
       },
       {
         name: "lfUiSize",
@@ -4956,8 +5277,12 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the height for the textfield component. Defaults to => 3.5em",
       },
       {
+        name: "--lf-textfield-icon-action-padding",
+        docs: "Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0",
+      },
+      {
         name: "--lf-textfield-icon-padding",
-        docs: "Sets the padding for the textfield icon. Defaults to => 0 0.75em",
+        docs: "Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em",
       },
       {
         name: "--lf-textfield-input-cursor",
@@ -5051,10 +5376,6 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
     styles: [
-      {
-        name: "--lf-comp-color-on-bg",
-        docs: "Sets the color-on-bg color for the comp component. Defaults to => var(--lf-color-on-bg)",
-      },
       {
         name: "--lf-toast-accent-height",
         docs: "Sets the height for the toast accent. Defaults to => 0.25em",
@@ -5657,7 +5978,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input element through additional HTML attributes.\r\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ lfImageProps?: any; lfLabel?: any; lfPosition?: any; lfStyle?: any; lfUiSize?: any; lfUiState?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfRipple?: any; lfShowSpinner?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfValue?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfSizeX?: any; lfSizeY?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfHtmlAttributes?: any; lfMode?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; disabled?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfCloseIcon?: any; lfMessage?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; class?: any; dataset?: any; href?: any; id?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfDataset?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfAttachmentUploadTimeout?: any; lfContextWindow?: any; lfEmpty?: any; lfEndpointUrl?: any; lfFrequencyPenalty?: any; lfMaxTokens?: any; lfPollingInterval?: any; lfPresencePenalty?: any; lfSeed?: any; lfSystem?: any; lfTemperature?: any; lfTools?: any; lfTopP?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfLabel",
@@ -5692,10 +6013,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-upload-button-height",
         docs: "Sets the height for the upload button. Defaults to => 2.75em",
-      },
-      {
-        name: "--lf-upload-color-on-bg",
-        docs: "Sets the color-on-bg color for the upload component. Defaults to => var(--lf-color-on-bg)",
       },
       {
         name: "--lf-upload-color-surface",

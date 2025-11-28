@@ -462,7 +462,7 @@ describe("lf-select", () => {
       // Open portal
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
       const actionIcon = textfield?.shadowRoot?.querySelector(
-        '[part="icon-action"]',
+        ".textfield__icon-action",
       );
       const clickEvent = new MouseEvent("click");
       actionIcon!.dispatchEvent(clickEvent);
@@ -491,7 +491,7 @@ describe("lf-select", () => {
 
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
       const actionIcon = textfield?.shadowRoot?.querySelector(
-        '[part="icon-action"]',
+        ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
 
@@ -513,7 +513,7 @@ describe("lf-select", () => {
 
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
       const actionIcon = textfield?.shadowRoot?.querySelector(
-        '[part="icon-action"]',
+        ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
 
@@ -571,7 +571,7 @@ describe("lf-select", () => {
       // First open portal
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
       const actionIcon = textfield?.shadowRoot?.querySelector(
-        '[part="icon-action"]',
+        ".textfield__icon-action",
       );
       const clickEvent = new MouseEvent("click");
       actionIcon!.dispatchEvent(clickEvent);
@@ -625,7 +625,7 @@ describe("lf-select", () => {
 
       const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
       const actionIcon = textfield?.shadowRoot?.querySelector(
-        '[part="icon-action"]',
+        ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
 
@@ -680,7 +680,7 @@ describe("lf-select", () => {
 
         const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
         const actionIcon = textfield?.shadowRoot?.querySelector(
-          '[part="icon-action"]',
+          ".textfield__icon-action",
         );
 
         // Click to open portal
@@ -742,7 +742,7 @@ describe("lf-select", () => {
 
         const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
         const actionIcon = textfield?.shadowRoot?.querySelector(
-          '[part="icon-action"]',
+          ".textfield__icon-action",
         );
 
         // Click to open portal
@@ -811,7 +811,7 @@ describe("lf-select", () => {
 
         const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
         const actionIcon = textfield?.shadowRoot?.querySelector(
-          '[part="icon-action"]',
+          ".textfield__icon-action",
         );
 
         // Click to open portal

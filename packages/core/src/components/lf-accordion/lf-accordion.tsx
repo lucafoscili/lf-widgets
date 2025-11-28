@@ -5,6 +5,7 @@ import {
   LF_ACCORDION_PROPS,
   LF_ATTRIBUTES,
   LF_STYLE_ID,
+  LF_THEME_ICONS,
   LF_WRAPPER_ID,
   LfAccordionElement,
   LfAccordionEvent,
@@ -15,6 +16,7 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -31,6 +33,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import { LfShape } from "../../utils/shapes";
 
@@ -301,20 +304,15 @@ export class LfAccordion implements LfAccordionInterface {
   #isSelected(node: LfDataNode) {
     return this.selectedNodes.has(node);
   }
-  #prepIcon(icon: string): VNode {
-    const { assets, theme } = this.#framework;
-
-    const { style } = assets.get(`./assets/svg/${icon}.svg`);
+  #prepIcon(icon: LfIconType): VNode {
+    const { theme } = this.#framework;
 
     const { node } = this.#b;
 
     return (
-      <div
-        class={theme.bemClass(node._, node.icon)}
-        data-cy={this.#cy.maskedSvg}
-        part={this.#p.icon}
-        style={style}
-      ></div>
+      <div class={theme.bemClass(node._, node.icon)} part={this.#p.icon}>
+        <FIcon framework={this.#framework} icon={icon} />
+      </div>
     );
   }
   #prepAccordion(): VNode[] {
@@ -379,7 +377,12 @@ export class LfAccordion implements LfAccordionInterface {
                 data-cy={this.#cy.dropdownButton}
                 data-lf={this.#lf.icon}
                 part={this.#p.icon}
-              ></div>
+              >
+                <FIcon
+                  framework={this.#framework}
+                  icon={LF_THEME_ICONS.dropdown}
+                />
+              </div>
             )}
           </div>
           {isExpanded && (
