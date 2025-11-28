@@ -1766,6 +1766,10 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-chat-article-margin-top",
+        docs: "Sets the top margin for lf-article content rendered inside messages. Defaults to => 0.75em",
+      },
+      {
         name: "--lf-chat-attachments-padding",
         docs: "Sets the attachments padding for the chat component. Defaults to => 0 1em",
       },

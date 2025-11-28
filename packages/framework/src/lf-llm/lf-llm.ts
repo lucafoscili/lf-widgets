@@ -1,19 +1,24 @@
 import {
   LfButtonElement,
   LfFrameworkInterface,
+  LfLLMBuiltinToolsRegistry,
   LfLLMCompletionObject,
   LfLLMInterface,
   LfLLMRequest,
   LfLLMRetryPolicy,
+  LfLLMTool,
   LfLLMUtils,
   LfTextfieldElement,
 } from "@lf-widgets/foundations";
+import { createComponentDocsTool } from "./helpers.tool.docs";
+import { createWeatherTool } from "./helpers.tool.weather";
 
 export class LfLLM implements LfLLMInterface {
   #DONE_RESPONSE = "data: [DONE]";
   #IS_ABORT_ERROR = (e: unknown): e is DOMException =>
     e instanceof DOMException && e.name === "AbortError";
   #LF_MANAGER: LfFrameworkInterface;
+  #BUILTIN_TOOLS: LfLLMBuiltinToolsRegistry;
 
   /**
    * Utility functions for LLM operations including request hashing and token estimation.
@@ -80,7 +85,28 @@ export class LfLLM implements LfLLMInterface {
 
   constructor(lfFramework: LfFrameworkInterface) {
     this.#LF_MANAGER = lfFramework;
+    this.#BUILTIN_TOOLS = this.#createBuiltinToolsRegistry();
   }
+
+  /**
+   * Builds the registry of builtin tools exposed by the framework. Tools are
+   * grouped by loosely defined categories so consumers can organise them in
+   * UIs while still being able to retrieve a flat list via `getBuiltinTools`.
+   */
+  #createBuiltinToolsRegistry = (): LfLLMBuiltinToolsRegistry => {
+    const general: Record<string, LfLLMTool> = {
+      get_weather: createWeatherTool(this.#LF_MANAGER),
+    };
+
+    const lfw: Record<string, LfLLMTool> = {
+      get_component_docs: createComponentDocsTool(this.#LF_MANAGER),
+    };
+
+    return {
+      general,
+      lfw,
+    };
+  };
 
   //#region Fetch
   /**
@@ -112,6 +138,32 @@ export class LfLLM implements LfLLMInterface {
       console.error("Error calling LLM:", error);
       throw error;
     }
+  };
+  //#endregion
+
+  //#region Builtin tools
+  /**
+   * Returns builtin tools grouped by category. Consumers can merge these with
+   * user-defined tools when configuring components like `lf-chat`.
+   */
+  getBuiltinToolsByCategory = (): LfLLMBuiltinToolsRegistry => {
+    return this.#BUILTIN_TOOLS;
+  };
+
+  /**
+   * Returns a flattened list of builtin tools across all categories.
+   */
+  getBuiltinTools = (): LfLLMTool[] => {
+    const tools: LfLLMTool[] = [];
+    const registry = this.getBuiltinToolsByCategory();
+
+    Object.values(registry).forEach((group) => {
+      Object.values(group).forEach((tool) => {
+        tools.push(tool);
+      });
+    });
+
+    return tools;
   };
   //#endregion
 
@@ -307,7 +359,8 @@ export class LfLLM implements LfLLMInterface {
     const { debug } = this.#LF_MANAGER;
 
     const speechConstructor =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     if (!speechConstructor) {
       alert("Speech recognition is not supported in this browser.");
       return;
@@ -316,10 +369,10 @@ export class LfLLM implements LfLLMInterface {
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    recognition.addEventListener("result", (event: SpeechRecognitionEvent) => {
-      const transcript = Array.from(event.results)
-        .map((result) => result[0])
-        .map((result) => result.transcript)
+    recognition.addEventListener("result", (event: any) => {
+      const transcript = Array.from(event.results as any[])
+        .map((result) => result[0] as any)
+        .map((result) => result.transcript as string)
         .join("");
       debug.logs.new(this, "STT response: " + transcript);
       textarea.setValue(transcript);

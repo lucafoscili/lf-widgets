@@ -6,6 +6,7 @@ import {
   LfLLMChoiceMessage,
   LfLLMTool,
   LfLLMToolCall,
+  LfLLMToolResponse,
 } from "@lf-widgets/foundations";
 import { getEffectiveConfig } from "./helpers.config";
 
@@ -265,7 +266,7 @@ export const executeTools = async (
     }
 
     const func = call.function;
-    let result = "";
+    let result: string | LfLLMToolResponse = "";
 
     const matchingTool = availableTools.find(
       (tool) => tool.function?.name === func.name,
@@ -295,9 +296,16 @@ export const executeTools = async (
       result = `Error: Tool "${func.name}" is not available. Available tools are: ${availableToolNames}. Please use one of these tool names exactly as shown.`;
     }
 
+    const normalized: LfLLMToolResponse =
+      typeof result === "string"
+        ? { type: "text", content: result }
+        : result;
+
     return {
       role: "tool" as const,
-      content: result,
+      content: normalized.type === "text" ? normalized.content : normalized.content ?? "",
+      articleContent:
+        normalized.type === "article" ? normalized.dataset : undefined,
       tool_call_id: call.id,
     };
   });
@@ -449,6 +457,26 @@ export const handleToolCalls = async (
       "error",
     );
     return null;
+  }
+
+  // Attach rich article content (when available) to the last assistant
+  // message so the article becomes part of the main chat bubble rather
+  // than a separate internal tool entry.
+  const firstArticleResult = toolResults.find(
+    (r) => r.articleContent,
+  ) as LfLLMChoiceMessage | undefined;
+  if (firstArticleResult?.articleContent) {
+    set.history(() => {
+      const h = history();
+      let lastAssistantIndex = h.length - 1;
+      while (lastAssistantIndex >= 0 && h[lastAssistantIndex].role !== "assistant") {
+        lastAssistantIndex--;
+      }
+      if (lastAssistantIndex >= 0) {
+        const msg = h[lastAssistantIndex] as LfLLMChoiceMessage;
+        msg.articleContent = msg.articleContent ?? firstArticleResult.articleContent;
+      }
+    });
   }
 
   for (const result of toolResults) {
