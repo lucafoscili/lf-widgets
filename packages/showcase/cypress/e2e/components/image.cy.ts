@@ -88,13 +88,13 @@ describe(CY_CATEGORIES.props, () => {
   });
 
   it("lfHtmlAttributes: passes attributes to rendered element", () => {
-    const iconClass = framework.theme.bemClass("image", "icon");
+    const imgClass = framework.theme.bemClass("image", "img");
     cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(`${imageTag}#states-primary`)
+      .find(`${imageTag}#image-cover`)
       .should("exist")
       .shadow()
-      .find(`.${iconClass}`)
-      .should("have.attr", "title", "Icon in primary state");
+      .find(`.${imgClass}`)
+      .should("have.attr", "title", "Image cover");
   });
 
   it("lfValue (icon): renders SVG sprite icon", () => {

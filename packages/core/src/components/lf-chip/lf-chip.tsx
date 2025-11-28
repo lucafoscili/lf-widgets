@@ -18,7 +18,6 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfIconType,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -410,7 +409,7 @@ export class LfChip implements LfChipInterface {
     return (
       <FIcon
         framework={this.#framework}
-        icon={icon as LfIconType}
+        icon={icon}
         wrapperClass={bemClass(item._, item.icon, {
           "has-actions": true,
           trailing: true,
@@ -563,11 +562,9 @@ export class LfChip implements LfChipInterface {
         {hasChildren ? (
           <FIcon
             framework={this.#framework}
-            icon={
-              this.#framework.theme.get.icon(
-                isExpanded ? "chevronDown" : "chevronRight",
-              ) as LfIconType
-            }
+            icon={this.#framework.theme.get.icon(
+              isExpanded ? "chevronDown" : "chevronRight",
+            )}
             wrapperClass={className}
             onClick={(e) => {
               this.onLfEvent(e, "click", {

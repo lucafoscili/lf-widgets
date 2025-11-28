@@ -18,6 +18,7 @@ import {
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -105,8 +106,8 @@ export class LfButton implements LfButtonInterface {
   /**
    * When set, the button will show this icon.
    *
-   * @type {string}
-   * @default ""
+   * @type {LfIconType | null}
+   * @default null
    * @mutable
    *
    * @example
@@ -114,12 +115,12 @@ export class LfButton implements LfButtonInterface {
    * <lf-button lfIcon="save"></lf-button>
    * ```
    */
-  @Prop({ mutable: true }) lfIcon: string = "";
+  @Prop({ mutable: true }) lfIcon: LfIconType | null = null;
   /**
-   * When set, the icon button off state will show this icon. Otherwise, an outlined version of the icon prop will be displayed.
+   * When set, the icon button off state will show this icon.
    *
-   * @type {string}
-   * @default ""
+   * @type {LfIconType | null}
+   * @default null
    * @mutable
    *
    * @example
@@ -127,7 +128,7 @@ export class LfButton implements LfButtonInterface {
    * <lf-button lfIcon="palette" lfIconOff="off-palette" lfToggable={true}></lf-button>
    * ```
    */
-  @Prop({ mutable: true }) lfIconOff: string = "";
+  @Prop({ mutable: true }) lfIconOff: LfIconType | null = null;
   /**
    * When set, the button will show this text.
    *
@@ -418,14 +419,14 @@ export class LfButton implements LfButtonInterface {
   /**
    * Temporarily sets a different label/icon combination, falling back to their previous value after a timeout.
    * @param {string} label - Temporary label to display.
-   * @param {string} icon - Temporary icon to display.
+   * @param {LfIconType | null} icon - Temporary icon to display.
    * @param {number} timeout - Time in ms to wait before restoring previous values.
    * @returns {Promise<void>}
    */
   @Method()
   async setMessage(
     label: string = "Copied!",
-    icon: string = this.#framework.theme.get.icon("check"),
+    icon: LfIconType | null = this.#framework.theme.get.icon("check"),
     timeout: number = 1000,
   ): Promise<void> {
     if (this.#timeout) {

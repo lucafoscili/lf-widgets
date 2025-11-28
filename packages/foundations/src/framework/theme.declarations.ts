@@ -50,7 +50,9 @@ export interface LfThemeInterface {
       name: string;
       full: LfThemeList[string];
     };
-    icon: (name: keyof typeof LF_ICONS_REGISTRY) => string;
+    icon: (
+      name: keyof typeof LF_ICONS_REGISTRY,
+    ) => (typeof LF_ICONS_REGISTRY)[keyof typeof LF_ICONS_REGISTRY];
     icons: () => typeof LF_ICONS_REGISTRY;
     sprite: {
       path: () => string;

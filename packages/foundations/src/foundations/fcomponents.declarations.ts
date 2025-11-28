@@ -2,6 +2,7 @@ import {
   LF_ICONS_REGISTRY,
   LF_THEME_ICONS,
   LfFrameworkInterface,
+  LfThemeUIState,
 } from "../framework";
 
 //#region Icon
@@ -37,5 +38,9 @@ export interface FIconPropsInterface {
    * Optional inline styles to apply to the SVG element.
    */
   style?: { [key: string]: string | number };
+  /**
+   * Optional UI state to reflect on the icon via `data-lf` attribute.
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

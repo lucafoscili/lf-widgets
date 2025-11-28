@@ -358,6 +358,7 @@ export class LfImage implements LfImageInterface {
           width: "100%",
           height: "100%",
         }}
+        uiState={this.lfUiState}
       />
     );
   }
