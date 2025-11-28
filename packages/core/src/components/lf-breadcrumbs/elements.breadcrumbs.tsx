@@ -179,7 +179,7 @@ export const prepBreadcrumbsJsx = (
             if (isTruncation(entry)) {
               return truncation(index, totalItems);
             }
-            return item(entry as LfDataNode, index, totalItems);
+            return item(entry, index, totalItems);
           })}
         </ol>
       </nav>

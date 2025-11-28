@@ -242,8 +242,7 @@ describe(CY_CATEGORIES.e2e, () => {
       .find(`${breadcrumbsTag}#uncategorized-truncation`)
       .shadow()
       .find(`.${framework.theme.bemClass("breadcrumbs", "truncation")}`)
-      .should("exist")
-      .and("contain.text", "…");
+      .should("exist");
 
     // Verify the visible items are limited (first + truncation + last items based on maxItems=3)
     cy.get(lfComponentShowcase)

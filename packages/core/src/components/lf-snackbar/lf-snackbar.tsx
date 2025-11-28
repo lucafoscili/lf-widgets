@@ -16,7 +16,6 @@ import {
   LfSnackbarInterface,
   LfSnackbarPositions,
   LfSnackbarPropsInterface,
-  LfThemeIcon,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -112,7 +111,7 @@ export class LfSnackbar implements LfSnackbarInterface {
    * <lf-snackbar lfCloseIcon="close" />
    * ```
    */
-  @Prop({ mutable: true }) lfCloseIcon: string | LfThemeIcon = "";
+  @Prop({ mutable: true }) lfCloseIcon: LfIconType = null;
   /**
    * Auto-dismiss duration in milliseconds. Set to 0 to disable auto-dismiss.
    *
@@ -136,7 +135,7 @@ export class LfSnackbar implements LfSnackbarInterface {
    * <lf-snackbar lfIcon="check" />
    * ```
    */
-  @Prop({ mutable: true }) lfIcon?: string | LfThemeIcon;
+  @Prop({ mutable: true }) lfIcon: LfIconType = null;
   /**
    * Message text displayed in the snackbar.
    *
@@ -312,12 +311,15 @@ export class LfSnackbar implements LfSnackbarInterface {
         class={bemClass(
           snackbar._,
           isClose ? snackbar.closeButton : snackbar.icon,
+          {
+            main: !isClose && this.lfUiState === "primary",
+          },
         )}
         onPointerDown={isClose ? this.#handleCloseClick : null}
         part={isClose ? this.#p.closeButton : this.#p.icon}
         tabIndex={isClose ? 0 : undefined}
       >
-        <FIcon framework={this.#framework} icon={icon as LfIconType} />
+        <FIcon framework={this.#framework} icon={icon} />
       </div>
     );
   };
@@ -332,7 +334,7 @@ export class LfSnackbar implements LfSnackbarInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
 
-    if (this.lfCloseIcon === "") {
+    if (!this.lfCloseIcon) {
       const { "--lf-icon-delete": close } =
         this.#framework.theme.get.current().variables;
       this.lfCloseIcon = close;
@@ -341,7 +343,7 @@ export class LfSnackbar implements LfSnackbarInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    if (this.lfDuration > 0) {
+    if (this.lfDuration > 0 && this.lfPosition !== "inline") {
       this.#timerRef = setTimeout(() => {
         this.unmount();
       }, this.lfDuration);
