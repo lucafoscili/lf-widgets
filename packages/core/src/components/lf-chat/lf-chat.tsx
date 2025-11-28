@@ -665,7 +665,7 @@ export class LfChat implements LfChatInterface {
       } else {
         if (this.status !== "ready") {
           requestAnimationFrame(() => {
-            this.scrollToBottom(true); // Container-only scroll for initial load
+            this.scrollToBottom(true);
           });
         }
         this.status = "ready";
@@ -718,9 +718,6 @@ export class LfChat implements LfChatInterface {
           {history?.length ? (
             history
               .filter((m) => {
-                // Hide raw tool messages (internal only). Their rich
-                // article content is attached to the corresponding
-                // assistant message instead.
                 if (m.role === "tool") {
                   return false;
                 }
@@ -785,16 +782,11 @@ export class LfChat implements LfChatInterface {
     }
 
     const hasText = Boolean(message.content && message.content.trim().length);
-    const shouldRenderText =
-      message.role !== "tool" || !message.articleContent;
+    const shouldRenderText = message.role !== "tool" || !message.articleContent;
 
     if (hasText && shouldRenderText) {
       nodes.push(
-        ...parseMessageContent(
-          this.#adapter,
-          message.content,
-          message.role,
-        ),
+        ...parseMessageContent(this.#adapter, message.content, message.role),
       );
     }
 

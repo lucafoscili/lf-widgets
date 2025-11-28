@@ -3,7 +3,42 @@ import {
   LfArticleBuilderCreateOptions,
   LfArticleDataset,
   LfArticleNode,
+  LfDataArticleLayoutPreset,
 } from "@lf-widgets/foundations";
+
+const ARTICLE_LAYOUT_STYLES: Record<
+  LfDataArticleLayoutPreset,
+  Record<string, string>
+> = {
+  stack: {},
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "1.5em",
+    alignItems: "flex-start",
+  },
+  "two-columns": {
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+    gap: "1.5em",
+  },
+  "hero-top": {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5em",
+  },
+  "hero-side": {
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 1.2fr) minmax(0, 1.8fr)",
+    gap: "2em",
+    alignItems: "center",
+  },
+  "cards-grid": {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "1.5em",
+  },
+};
 
 /**
  * Framework-level implementation of the fluent article builder declared in
@@ -21,14 +56,35 @@ class ArticleBuilder implements LfArticleBuilder {
   #sections = new Map<string, LfArticleNode>();
   #paragraphs = new Map<string, LfArticleNode>();
   #counter = 0;
+  #defaultLayout?: LfDataArticleLayoutPreset;
+
+  #applyLayout(
+    layout: LfDataArticleLayoutPreset | undefined,
+    cssStyle?: LfArticleNode["cssStyle"],
+  ): LfArticleNode["cssStyle"] {
+    if (!layout || layout === "stack") {
+      return cssStyle;
+    }
+
+    const layoutStyle = ARTICLE_LAYOUT_STYLES[layout];
+    if (!layoutStyle) {
+      return cssStyle;
+    }
+
+    return {
+      ...layoutStyle,
+      ...(cssStyle ?? {}),
+    };
+  }
 
   constructor(options?: LfArticleBuilderCreateOptions) {
     const id = options?.id ?? "article-root";
+    this.#defaultLayout = options?.layout;
 
     this.#root = {
       id,
       value: options?.title ?? "",
-      cssStyle: options?.cssStyle,
+      cssStyle: this.#applyLayout(this.#defaultLayout, options?.cssStyle),
       children: [],
     };
 
@@ -57,13 +113,15 @@ class ArticleBuilder implements LfArticleBuilder {
     id?: string;
     title?: string;
     cssStyle?: LfArticleNode["cssStyle"];
+    layout?: LfDataArticleLayoutPreset;
   }): LfArticleNode {
     const id = options.id ?? this.#nextId("section");
+    const layout = options.layout ?? this.#defaultLayout;
 
     const section: LfArticleNode = {
       id,
       value: options.title ?? "",
-      cssStyle: options.cssStyle,
+      cssStyle: this.#applyLayout(layout, options.cssStyle),
       children: [],
     };
 
@@ -154,9 +212,73 @@ class ArticleBuilder implements LfArticleBuilder {
 
     return node;
   }
+
+  addSectionWithText(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+  } {
+    const section = this.addSection({
+      id: options.sectionId,
+      title: options.sectionTitle,
+      cssStyle: options.sectionCssStyle,
+      layout: options.layout,
+    });
+
+    const paragraph = this.addParagraph(section.id, {
+      id: options.paragraphId,
+      title: options.paragraphTitle,
+      text: options.text,
+      cssStyle: this.#applyLayout(options.layout, options.paragraphCssStyle),
+    });
+
+    return { section, paragraph };
+  }
+
+  addSectionWithLeaf(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text?: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    leaf: LfArticleNode;
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+    leaf: LfArticleNode;
+  } {
+    const { section, paragraph } = this.addSectionWithText({
+      sectionId: options.sectionId,
+      sectionTitle: options.sectionTitle,
+      text: options.text ?? "",
+      paragraphId: options.paragraphId,
+      paragraphTitle: options.paragraphTitle,
+      sectionCssStyle: options.sectionCssStyle,
+      paragraphCssStyle: options.paragraphCssStyle,
+      layout: options.layout,
+    });
+
+    this.addLeaf({
+      sectionId: section.id,
+      paragraphId: paragraph.id,
+      node: options.leaf,
+    });
+
+    return { section, paragraph, leaf: options.leaf };
+  }
 }
 
 export const createArticleBuilder = (
   options?: LfArticleBuilderCreateOptions,
 ): LfArticleBuilder => new ArticleBuilder(options);
-

@@ -41,16 +41,13 @@ export const updateToolResult = (
       result.length > 50 ? `${result.substring(0, 47)}...` : result;
     const name = String(toolNode.value ?? toolId);
 
-    // Update node status text
     toolNode.value = name;
-    // Store full result in description so it appears on chip hover
     toolNode.description =
       result ||
       (success
         ? `Tool "${name}" completed successfully.`
         : `Tool "${name}" failed.`);
 
-    // Update per-tool icon when provided
     if (successIcon || errorIcon) {
       toolNode.icon = success ? successIcon : errorIcon;
     }
@@ -297,13 +294,14 @@ export const executeTools = async (
     }
 
     const normalized: LfLLMToolResponse =
-      typeof result === "string"
-        ? { type: "text", content: result }
-        : result;
+      typeof result === "string" ? { type: "text", content: result } : result;
 
     return {
       role: "tool" as const,
-      content: normalized.type === "text" ? normalized.content : normalized.content ?? "",
+      content:
+        normalized.type === "text"
+          ? normalized.content
+          : (normalized.content ?? ""),
       articleContent:
         normalized.type === "article" ? normalized.dataset : undefined,
       tool_call_id: call.id,
@@ -349,9 +347,6 @@ export const createInitialToolDataset = (
     nodes: [
       {
         description: "Executing tool...",
-        // Root starts without an explicit icon; the spinner
-        // will be shown while the chain is running and a
-        // success / warning icon will be applied on completion.
         id: "tool-exec-root",
         value: "Working...",
         children,
@@ -376,6 +371,7 @@ export const handleToolCalls = async (
   toolCalls: LfLLMToolCall[],
 ): Promise<LfDataDataset | null> => {
   const { get, set } = adapter.controller;
+  const { toolExecution } = adapter.elements.refs.toolbar;
   const { compInstance, history } = get;
   const { debug, theme } = get.manager;
   const effectiveConfig = getEffectiveConfig(adapter);
@@ -442,6 +438,7 @@ export const handleToolCalls = async (
       successIcon,
       warningIcon,
     );
+    toolExecution?.refresh();
   }
 
   const hasValidToolResults = successFlags.some((flag) => flag);
@@ -462,19 +459,23 @@ export const handleToolCalls = async (
   // Attach rich article content (when available) to the last assistant
   // message so the article becomes part of the main chat bubble rather
   // than a separate internal tool entry.
-  const firstArticleResult = toolResults.find(
-    (r) => r.articleContent,
-  ) as LfLLMChoiceMessage | undefined;
+  const firstArticleResult = toolResults.find((r) => r.articleContent) as
+    | LfLLMChoiceMessage
+    | undefined;
   if (firstArticleResult?.articleContent) {
     set.history(() => {
       const h = history();
       let lastAssistantIndex = h.length - 1;
-      while (lastAssistantIndex >= 0 && h[lastAssistantIndex].role !== "assistant") {
+      while (
+        lastAssistantIndex >= 0 &&
+        h[lastAssistantIndex].role !== "assistant"
+      ) {
         lastAssistantIndex--;
       }
       if (lastAssistantIndex >= 0) {
         const msg = h[lastAssistantIndex] as LfLLMChoiceMessage;
-        msg.articleContent = msg.articleContent ?? firstArticleResult.articleContent;
+        msg.articleContent =
+          msg.articleContent ?? firstArticleResult.articleContent;
       }
     });
   }

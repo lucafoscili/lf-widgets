@@ -40,6 +40,18 @@ import { LfThemeUISize, LfThemeUIState } from "./theme.declarations";
 
 //#region Article builder
 /**
+ * Semantic layout presets used by the article builder. These values are
+ * interpreted by the framework layer to apply appropriate `cssStyle` rules
+ * on container nodes; the `lf-article` component itself remains layout-agnostic.
+ */
+export type LfDataArticleLayoutPreset =
+  | "stack"
+  | "row"
+  | "two-columns"
+  | "hero-top"
+  | "hero-side"
+  | "cards-grid";
+/**
  * Options used when creating a new high-level article builder.
  *
  * The builder focuses on producing `LfArticleDataset` structures that align
@@ -56,6 +68,11 @@ export interface LfArticleBuilderCreateOptions {
   title?: string;
   /** Inline CSS style applied to the root article node. */
   cssStyle?: LfArticleNode["cssStyle"];
+  /**
+   * Optional layout preset hint used by the framework builder to decorate the
+   * root article node with semantic flex/grid styles.
+   */
+  layout?: LfDataArticleLayoutPreset;
   /**
    * Dataset-level properties merged into the final `LfArticleDataset`
    * (for example `columns` or metadata). `nodes` are controlled by the builder.
@@ -80,6 +97,10 @@ export interface LfArticleBuilder {
     id?: string;
     title?: string;
     cssStyle?: LfArticleNode["cssStyle"];
+    /**
+     * Optional layout preset applied to this section container via `cssStyle`.
+     */
+    layout?: LfDataArticleLayoutPreset;
   }): LfArticleNode;
   /** Retrieves a previously created section node by its identifier. */
   getSection(id: string): LfArticleNode | undefined;
@@ -108,6 +129,53 @@ export interface LfArticleBuilder {
     paragraphId?: string;
     node: LfArticleNode;
   }): LfArticleNode;
+  /**
+   * Convenience helper that creates a new section and an inner paragraph with
+   * a single text leaf in one call. Useful for tool-style articles where a
+   * short summary or explanation accompanies richer content.
+   */
+  addSectionWithText(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    /**
+     * Optional layout preset applied primarily to the inner paragraph container
+     * so that its children (text + shapes) follow the chosen layout.
+     */
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+  };
+  /**
+   * High-level helper that creates a section, an inner paragraph (optionally
+   * with text), and appends a leaf node (typically a shape) under that
+   * paragraph. This is the primary building block for tool responses that
+   * combine narrative and a visual card or chart.
+   */
+  addSectionWithLeaf(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text?: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    leaf: LfArticleNode;
+    /**
+     * Optional layout preset applied to the paragraph container that hosts both
+     * the narrative text and the leaf node (for example a card or chart).
+     */
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+    leaf: LfArticleNode;
+  };
 }
 //#endregion
 
