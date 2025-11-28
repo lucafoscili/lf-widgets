@@ -1,14 +1,11 @@
+import { LfIconType } from "../foundations";
 import {
   HTMLStencilElement,
   LfComponent,
   LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import {
-  LfThemeIcon,
-  LfThemeUISize,
-  LfThemeUIState,
-} from "../framework/theme.declarations";
+import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_SNACKBAR_EVENTS,
   LF_SNACKBAR_POSITIONS,
@@ -50,9 +47,9 @@ export interface LfSnackbarEventPayload
 export interface LfSnackbarPropsInterface {
   lfAction?: string;
   lfActionCallback?: LfSnackbarActionCallback;
-  lfCloseIcon?: string | LfThemeIcon;
+  lfCloseIcon?: LfIconType | null;
   lfDuration?: number;
-  lfIcon?: string | LfThemeIcon;
+  lfIcon?: LfIconType | null;
   lfMessage?: string;
   lfPosition?: LfSnackbarPositions;
   lfStyle?: string;

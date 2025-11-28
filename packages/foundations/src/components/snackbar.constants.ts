@@ -43,6 +43,7 @@ export const LF_SNACKBAR_POSITIONS = [
   "bottom-center",
   "bottom-left",
   "bottom-right",
+  "inline",
   "top-center",
   "top-left",
   "top-right",

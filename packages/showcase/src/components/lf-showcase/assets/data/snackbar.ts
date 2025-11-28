@@ -142,18 +142,22 @@ export const getSnackbarFixtures = (
       uncategorized: {
         empty: {
           description: "Empty snackbar",
-          props: {},
+          props: {
+            lfPosition: "inline",
+          },
         },
         icon: {
           description: "Snackbar with icon",
           props: {
             lfIcon: randomIcon(icons),
+            lfPosition: "inline",
           },
         },
         message: {
           description: "Snackbar with message",
           props: {
             lfMessage: randomPhrase(6, 15),
+            lfPosition: "inline",
           },
         },
         iconMessage: {
@@ -161,42 +165,47 @@ export const getSnackbarFixtures = (
           props: {
             lfIcon: randomIcon(icons),
             lfMessage: randomPhrase(6, 15),
+            lfPosition: "inline",
           },
         },
         action: {
           description: "Snackbar with action button",
           props: {
-            lfMessage: "Item removed",
             lfAction: "Undo",
             lfActionCallback: (snackbar) => {
               snackbar.lfMessage = `Undo action triggered! ${randomPhrase(3, 8)}`;
               snackbar.lfAction = undefined;
             },
+            lfMessage: "Item removed",
+            lfPosition: "inline",
           },
         },
         style: {
           description: "Snackbar with custom style",
           props: {
             lfMessage: randomPhrase(6, 15),
+            lfPosition: "inline",
             lfStyle: randomStyle(),
           },
         },
         persistent: {
           description: "Persistent snackbar (no auto-dismiss)",
           props: {
-            lfMessage: "Manual dismissal required",
             lfDuration: 0,
+            lfMessage: "Manual dismissal required",
+            lfPosition: "inline",
           },
         },
         closeCb: {
           description: "Snackbar with close callback",
           props: {
-            lfMessage: "Try closing this snackbar",
             lfActionCallback: (snackbar) => {
               snackbar.lfMessage = `This snackbar should have been closed, here is a random message instead: 
                 
                 ${randomPhrase(6, 15)}`;
             },
+            lfMessage: "Try closing this snackbar",
+            lfPosition: "inline",
           },
         },
       },
@@ -231,6 +240,7 @@ export const getSnackbarFixtures = (
               description: `Snackbar with size: ${size}`,
               props: {
                 lfMessage: size,
+                lfPosition: "inline",
                 lfUiSize: size,
               },
             },
@@ -255,6 +265,7 @@ export const getSnackbarFixtures = (
               props: {
                 lfIcon: icon,
                 lfMessage: state,
+                lfPosition: "inline",
                 lfUiState: state,
               },
             },
