@@ -14,7 +14,6 @@ import {
   formatBytes,
   formatNumber,
   formatRelativeTime,
-  getRandomTip,
 } from "./dashboard.api";
 
 //#region Styles
@@ -256,14 +255,13 @@ const createSectionTitle = (title: string, emoji?: string): LfArticleNode => ({
 });
 //#endregion
 
-//#region Section builders
 export const buildHeroSection = (
   framework: LfFrameworkInterface,
 ): LfArticleNode[] => {
   const imagePath = framework.assets.get("./assets/showcase/LFW.jpg").path;
 
   return [
-    // Hero image
+    //#region Hero section
     {
       id: DOC_IDS.paragraph,
       value: "",
@@ -281,7 +279,9 @@ export const buildHeroSection = (
         },
       ],
     },
-    // Title and version
+    //#endregion
+
+    //#region Title and version
     {
       id: DOC_IDS.paragraph,
       value: "",
@@ -301,7 +301,9 @@ export const buildHeroSection = (
         },
       ],
     },
-    // Tagline
+    //#endregion
+
+    //#region Tagline
     {
       id: DOC_IDS.paragraph,
       value: "",
@@ -314,9 +316,11 @@ export const buildHeroSection = (
         },
       ],
     },
+    //#endregion
   ];
 };
 
+//#region GitHub
 export const buildGitHubStatsSection = (
   data: DashboardData | null,
 ): LfArticleNode => {
@@ -347,6 +351,7 @@ export const buildGitHubStatsSection = (
         textAlign: "center",
         marginTop: "0.5em",
       },
+      tagName: "div" as const,
       id: DOC_IDS.content,
       value: `Latest: ${release.tagName} • ${formatRelativeTime(release.publishedAt)}`,
     });
@@ -361,11 +366,13 @@ export const buildGitHubStatsSection = (
       children: [
         {
           cssStyle: {
+            textAlign: "center",
             fontSize: "0.8em",
             opacity: "0.7",
             marginTop: "1em",
             marginBottom: "0.25em",
           },
+          tagName: "div" as const,
           id: DOC_IDS.content,
           value: "Commit activity (last 12 weeks)",
         },
@@ -411,7 +418,9 @@ export const buildGitHubStatsSection = (
     ],
   };
 };
+//#endregion
 
+//#region npm/package
 export const buildNpmStatsSection = (
   data: DashboardData | null,
 ): LfArticleNode => {
@@ -458,6 +467,7 @@ export const buildNpmStatsSection = (
               marginTop: "0.5em",
             },
             id: DOC_IDS.content,
+            tagName: "div" as const,
             value: npm
               ? `Published ${formatRelativeTime(npm.lastPublished)}`
               : "Loading npm data...",
@@ -467,7 +477,9 @@ export const buildNpmStatsSection = (
     ],
   };
 };
+//#endregion
 
+//#region Contributors
 export const buildContributorsSection = (
   data: DashboardData | null,
 ): LfArticleNode => {
@@ -526,7 +538,9 @@ export const buildContributorsSection = (
     ],
   };
 };
+//#endregion
 
+//#region Quick Start
 export const buildQuickStartSection = (): LfArticleNode => {
   const installCode = `# Install with npm
 npm install @lf-widgets/core
@@ -598,52 +612,9 @@ defineCustomElements();
     ],
   };
 };
+//#endregion
 
-export const buildTipSection = (): LfArticleNode => {
-  const tip = getRandomTip();
-
-  return {
-    id: DOC_IDS.paragraph,
-    value: "",
-    children: [
-      {
-        cssStyle: DASHBOARD_STYLES.tipBox,
-        id: DOC_IDS.contentWrapper,
-        value: "",
-        children: [
-          {
-            cssStyle: { fontSize: "1.5em" },
-            id: DOC_IDS.content,
-            tagName: "span",
-            value: "💡",
-          },
-          {
-            id: DOC_IDS.content,
-            value: "",
-            children: [
-              {
-                cssStyle: {
-                  fontWeight: "600",
-                  marginBottom: "0.25em",
-                  display: "block",
-                },
-                id: DOC_IDS.content,
-                tagName: "span",
-                value: "Pro Tip",
-              },
-              {
-                cssStyle: { opacity: "0.9" },
-                id: DOC_IDS.content,
-                value: tip.tip,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
-};
-
+//#region Components
 export const buildComponentsOverview = (
   componentCount: number,
   frameworkCount: number,
@@ -673,7 +644,9 @@ export const buildComponentsOverview = (
     ],
   };
 };
+//#endregion
 
+//#region Features chips
 export const buildFeaturesChips = (
   icons: ReturnType<LfFrameworkInterface["theme"]["get"]["icons"]>,
 ): LfArticleNode => {
@@ -783,9 +756,6 @@ export const buildDashboardDataset = (
 
               // Quick start
               buildQuickStartSection(),
-
-              // Pro tip
-              buildTipSection(),
             ],
           },
         ],
