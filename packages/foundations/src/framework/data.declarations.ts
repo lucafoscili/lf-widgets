@@ -90,6 +90,62 @@ export interface LfArticleBuilder {
   /** Alias for `getDataset` for ergonomic chaining. */
   toDataset(): LfArticleDataset;
   /**
+   * Section-centric helpers grouped under a descriptive namespace to keep
+   * the builder API declarative (e.g. `section.add.withLeaf(...)`).
+   */
+  section: {
+    /** Retrieves a previously created section node by its identifier. */
+    get(id: string): LfArticleNode | undefined;
+    add: {
+      /**
+       * Creates an empty section node (with optional title and layout) under
+       * the root article node and returns it.
+       */
+      empty(options: {
+        id?: string;
+        title?: string;
+        cssStyle?: LfArticleNode["cssStyle"];
+        layout?: LfDataArticleLayoutPreset;
+      }): LfArticleNode;
+      /**
+       * Convenience helper that creates a section and a paragraph with a text
+       * leaf underneath in one call.
+       */
+      withText(options: {
+        sectionId?: string;
+        sectionTitle: string;
+        text: string;
+        paragraphId?: string;
+        paragraphTitle?: string;
+        sectionCssStyle?: LfArticleNode["cssStyle"];
+        paragraphCssStyle?: LfArticleNode["cssStyle"];
+        layout?: LfDataArticleLayoutPreset;
+      }): {
+        section: LfArticleNode;
+        paragraph: LfArticleNode;
+      };
+      /**
+       * High-level helper that creates a section, an inner paragraph, and
+       * appends the supplied leaf node under that paragraph.
+       */
+      withLeaf(options: {
+        sectionId?: string;
+        sectionTitle: string;
+        text?: string;
+        paragraphId?: string;
+        paragraphTitle?: string;
+        sectionCssStyle?: LfArticleNode["cssStyle"];
+        paragraphCssStyle?: LfArticleNode["cssStyle"];
+        leaf: LfArticleNode;
+        layout?: LfDataArticleLayoutPreset;
+      }): {
+        section: LfArticleNode;
+        paragraph: LfArticleNode;
+        leaf: LfArticleNode;
+      };
+    };
+  };
+  /**
    * Adds a new section under the root article node and returns the created node.
    * Sections are rendered as `<section>` elements with an optional `<h2>` title.
    */

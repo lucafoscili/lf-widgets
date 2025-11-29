@@ -36,7 +36,7 @@ export const createComponentDocsTool = (
         title: normalizedTag,
       });
 
-      builder.addSectionWithLeaf({
+      builder.section.add.withLeaf({
         sectionId: "docs-readme",
         sectionTitle: "README.md",
         text: "",

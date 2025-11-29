@@ -103,6 +103,15 @@ class ArticleBuilder implements LfArticleBuilder {
     return `${prefix}-${this.#counter}`;
   }
 
+  section: LfArticleBuilder["section"] = {
+    get: (id: string) => this.getSection(id),
+    add: {
+      empty: (options) => this.addSection(options),
+      withText: (options) => this.addSectionWithText(options),
+      withLeaf: (options) => this.addSectionWithLeaf(options),
+    },
+  };
+
   addSection(options: {
     id?: string;
     title?: string;
