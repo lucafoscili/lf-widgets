@@ -1,4 +1,4 @@
-import { LfChatAdapter, LfChatConfig } from "@lf-widgets/foundations";
+import { LfChatAdapter, LfChatConfig, LfLLMTool } from "@lf-widgets/foundations";
 import { LfChat } from "./lf-chat";
 
 //#region Config merge utility
@@ -15,7 +15,7 @@ export const getEffectiveConfig = (
 ): Required<LfChatConfig> => {
   const { get } = adapter.controller;
   const { compInstance, manager } = get;
-  const { debug } = manager;
+  const { debug, llm } = manager;
   const component = compInstance as LfChat;
   const config = component.lfConfig || {};
   const hasConfig = !!component.lfConfig;
@@ -90,10 +90,23 @@ export const getEffectiveConfig = (
       : (config.llm?.seed ?? -1);
 
   // Tools config
-  const tools =
+  const explicitTools: LfLLMTool[] =
     component.lfTools?.length > 0
       ? (warnDeprecated("lfTools", "tools.definitions"), component.lfTools)
       : (config.tools?.definitions ?? []);
+
+  const builtinTools: LfLLMTool[] = llm.getBuiltinTools?.() ?? [];
+
+  // Merge builtin tools with user tools, giving precedence to user tools
+  const tools: LfLLMTool[] = [...explicitTools];
+  for (const builtin of builtinTools) {
+    const name = builtin.function?.name;
+    if (!name) continue;
+    const exists = tools.some((t) => t.function?.name === name);
+    if (!exists) {
+      tools.push(builtin);
+    }
+  }
 
   // UI config
   const layout =

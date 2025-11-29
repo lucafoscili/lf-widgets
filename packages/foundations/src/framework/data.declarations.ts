@@ -1,8 +1,16 @@
+import { LfArticleDataset, LfArticleNode } from "../components/article.declarations";
 import { LfBadgePropsInterface } from "../components/badge.declarations";
-import { LfButtonPropsInterface } from "../components/button.declarations";
+import {
+  LfButtonPropsInterface,
+  LfButtonStyling,
+} from "../components/button.declarations";
 import { LfCanvasPropsInterface } from "../components/canvas.declarations";
-import { LfCardPropsInterface } from "../components/card.declarations";
-import { LfChartPropsInterface } from "../components/chart.declarations";
+import { LfCardLayout, LfCardPropsInterface } from "../components/card.declarations";
+import {
+  LfChartLegendPlacement,
+  LfChartPropsInterface,
+  LfChartType,
+} from "../components/chart.declarations";
 import {
   LfChatHistory,
   LfChatPropsInterface,
@@ -28,6 +36,204 @@ import {
 } from "../foundations/events.declarations";
 import { LF_DATA_SHAPE_MAP, LF_DATA_SHAPES } from "./data.constants";
 import { LfFrameworkAllowedKeysMap } from "./framework.declarations";
+import { LfThemeUISize, LfThemeUIState } from "./theme.declarations";
+
+//#region Article builder
+/**
+ * Semantic layout presets used by the article builder. These values are
+ * interpreted by the framework layer to apply appropriate `cssStyle` rules
+ * on container nodes; the `lf-article` component itself remains layout-agnostic.
+ */
+export type LfDataArticleLayoutPreset =
+  | "stack"
+  | "row"
+  | "two-columns"
+  | "hero-top"
+  | "hero-side"
+  | "cards-grid";
+/**
+ * Options used when creating a new high-level article builder.
+ *
+ * The builder focuses on producing `LfArticleDataset` structures that align
+ * with the `lf-article` component depth semantics:
+ * - depth 0: article root (h1)
+ * - depth 1: sections (h2)
+ * - depth 2: paragraphs (h3 + content wrappers)
+ * - depth 3+: leaf content (text spans, shapes, etc.)
+ */
+export interface LfArticleBuilderCreateOptions {
+  /** Identifier used for the root article node. Defaults to "article-root". */
+  id?: string;
+  /** Optional title rendered as the article-level heading (`<h1>`). */
+  title?: string;
+  /** Inline CSS style applied to the root article node. */
+  cssStyle?: LfArticleNode["cssStyle"];
+  /**
+   * Optional layout preset hint used by the framework builder to decorate the
+   * root article node with semantic flex/grid styles.
+   */
+  layout?: LfDataArticleLayoutPreset;
+  /**
+   * Dataset-level properties merged into the final `LfArticleDataset`
+   * (for example `columns` or metadata). `nodes` are controlled by the builder.
+   */
+  dataset?: Partial<Omit<LfArticleDataset, "nodes">>;
+}
+
+/**
+ * Fluent helper used to construct hierarchical `LfArticleDataset` structures
+ * without manually managing node depths. Implemented in the framework layer.
+ */
+export interface LfArticleBuilder {
+  /** Returns the backing dataset with the current structure. */
+  getDataset(): LfArticleDataset;
+  /** Alias for `getDataset` for ergonomic chaining. */
+  toDataset(): LfArticleDataset;
+  /**
+   * Section-centric helpers grouped under a descriptive namespace to keep
+   * the builder API declarative (e.g. `section.add.withLeaf(...)`).
+   */
+  section: {
+    /** Retrieves a previously created section node by its identifier. */
+    get(id: string): LfArticleNode | undefined;
+    add: {
+      /**
+       * Creates an empty section node (with optional title and layout) under
+       * the root article node and returns it.
+       */
+      empty(options: {
+        id?: string;
+        title?: string;
+        cssStyle?: LfArticleNode["cssStyle"];
+        layout?: LfDataArticleLayoutPreset;
+      }): LfArticleNode;
+      /**
+       * Convenience helper that creates a section and a paragraph with a text
+       * leaf underneath in one call.
+       */
+      withText(options: {
+        sectionId?: string;
+        sectionTitle: string;
+        text: string;
+        paragraphId?: string;
+        paragraphTitle?: string;
+        sectionCssStyle?: LfArticleNode["cssStyle"];
+        paragraphCssStyle?: LfArticleNode["cssStyle"];
+        layout?: LfDataArticleLayoutPreset;
+      }): {
+        section: LfArticleNode;
+        paragraph: LfArticleNode;
+      };
+      /**
+       * High-level helper that creates a section, an inner paragraph, and
+       * appends the supplied leaf node under that paragraph.
+       */
+      withLeaf(options: {
+        sectionId?: string;
+        sectionTitle: string;
+        text?: string;
+        paragraphId?: string;
+        paragraphTitle?: string;
+        sectionCssStyle?: LfArticleNode["cssStyle"];
+        paragraphCssStyle?: LfArticleNode["cssStyle"];
+        leaf: LfArticleNode;
+        layout?: LfDataArticleLayoutPreset;
+      }): {
+        section: LfArticleNode;
+        paragraph: LfArticleNode;
+        leaf: LfArticleNode;
+      };
+    };
+  };
+  /**
+   * Adds a new section under the root article node and returns the created node.
+   * Sections are rendered as `<section>` elements with an optional `<h2>` title.
+   */
+  addSection(options: {
+    id?: string;
+    title?: string;
+    cssStyle?: LfArticleNode["cssStyle"];
+    /**
+     * Optional layout preset applied to this section container via `cssStyle`.
+     */
+    layout?: LfDataArticleLayoutPreset;
+  }): LfArticleNode;
+  /** Retrieves a previously created section node by its identifier. */
+  getSection(id: string): LfArticleNode | undefined;
+  /**
+   * Adds a paragraph under the given section and returns it. Paragraphs are
+   * rendered at depth 2 and may carry an optional heading plus child content.
+   */
+  addParagraph(
+    sectionId: string,
+    options?: {
+      id?: string;
+      title?: string;
+      text?: string;
+      cssStyle?: LfArticleNode["cssStyle"];
+    },
+  ): LfArticleNode;
+  /** Retrieves a previously created paragraph node by its identifier. */
+  getParagraph(id: string): LfArticleNode | undefined;
+  /**
+   * Adds a leaf node (typically a shape such as a card or chart) at the
+   * appropriate depth below the specified section or paragraph. When the
+   * target paragraph does not exist, a new empty paragraph is created.
+   */
+  addLeaf(options: {
+    sectionId: string;
+    paragraphId?: string;
+    node: LfArticleNode;
+  }): LfArticleNode;
+  /**
+   * Convenience helper that creates a new section and an inner paragraph with
+   * a single text leaf in one call. Useful for tool-style articles where a
+   * short summary or explanation accompanies richer content.
+   */
+  addSectionWithText(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    /**
+     * Optional layout preset applied primarily to the inner paragraph container
+     * so that its children (text + shapes) follow the chosen layout.
+     */
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+  };
+  /**
+   * High-level helper that creates a section, an inner paragraph (optionally
+   * with text), and appends a leaf node (typically a shape) under that
+   * paragraph. This is the primary building block for tool responses that
+   * combine narrative and a visual card or chart.
+   */
+  addSectionWithLeaf(options: {
+    sectionId?: string;
+    sectionTitle: string;
+    text?: string;
+    paragraphId?: string;
+    paragraphTitle?: string;
+    sectionCssStyle?: LfArticleNode["cssStyle"];
+    paragraphCssStyle?: LfArticleNode["cssStyle"];
+    leaf: LfArticleNode;
+    /**
+     * Optional layout preset applied to the paragraph container that hosts both
+     * the narrative text and the leaf node (for example a card or chart).
+     */
+    layout?: LfDataArticleLayoutPreset;
+  }): {
+    section: LfArticleNode;
+    paragraph: LfArticleNode;
+    leaf: LfArticleNode;
+  };
+}
+//#endregion
 
 //#region Class
 /**
@@ -73,6 +279,90 @@ export interface LfDataInterface {
    * Rich set of node-centric operations used to traverse, filter, and mutate hierarchical datasets.
    */
   node: LfDataNodeOperations;
+  /**
+   * Helpers for constructing datasets, with a focus on lf-article friendly
+   * structures. These builders are pure and do not touch runtime services.
+   */
+  article: {
+    core: {
+      create: (
+        nodes?: LfArticleNode[],
+        partial?: Partial<LfArticleDataset>,
+      ) => LfArticleDataset;
+      section: (options: {
+        id: string;
+        title?: string;
+        children?: LfArticleNode[];
+        cssStyle?: LfArticleNode["cssStyle"];
+      }) => LfArticleNode;
+      paragraph: (options: {
+        id: string;
+        text?: string;
+        children?: LfArticleNode[];
+        cssStyle?: LfArticleNode["cssStyle"];
+      }) => LfArticleNode;
+      separator: (options: {
+        id: string;
+        cssStyle?: LfArticleNode["cssStyle"];
+      }) => LfArticleNode;
+    };
+    shapes: {
+      progressRow: (options: {
+        id: string;
+        label: string;
+        value: number;
+        icon?: LfIconType;
+        uiState?: LfThemeUIState;
+      }) => LfArticleNode;
+      buttonRow: (options: {
+        id: string;
+        label: string;
+        icon?: LfIconType;
+        styling?: LfButtonStyling;
+        uiState?: LfThemeUIState;
+        style?: string;
+      }) => LfArticleNode;
+      card: (options: {
+        id: string;
+        dataset: LfDataDataset;
+        layout?: LfCardLayout;
+        uiSize?: LfThemeUISize;
+        uiState?: LfThemeUIState;
+        style?: string;
+      }) => LfArticleNode;
+      chart: (options: {
+        id: string;
+        dataset: LfDataDataset;
+        types?: LfChartType[];
+        axis?: string | string[];
+        legend?: LfChartLegendPlacement;
+        sizeX?: string;
+        sizeY?: string;
+        style?: string;
+      }) => LfArticleNode;
+      codeBlock: (options: {
+        id: string;
+        code: string;
+        language?: string;
+        cssStyle?: LfArticleNode["cssStyle"];
+      }) => LfArticleNode;
+      textfieldRow: (options: {
+        id: string;
+        label: string;
+        value?: string;
+        type?: string;
+        style?: string;
+        helperText?: string;
+      }) => LfArticleNode;
+    };
+    /**
+     * High-level fluent builder that assists with constructing hierarchical
+     * article datasets while preserving the expected depth semantics.
+     */
+    builder: {
+      create: (options?: LfArticleBuilderCreateOptions) => LfArticleBuilder;
+    };
+  };
 }
 //#endregion
 

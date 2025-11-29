@@ -1,11 +1,12 @@
 import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
-import { LfDataDataset, LfLLMToolCall } from "@lf-widgets/foundations";
+import { LfDataDataset, LfLLMTool, LfLLMToolCall } from "@lf-widgets/foundations";
 import {
   mergeToolCalls,
   mergeToolExecutionDatasets,
   normalizeToolCallsForStreaming,
 } from "./helpers.tools";
+import { getEffectiveConfig } from "./helpers.config";
 import { LfChat } from "./lf-chat";
 
 const createPage = async (html: string) => {
@@ -160,5 +161,183 @@ describe("lf-chat", () => {
     const ids = merged.map((c) => c.id);
 
     expect(ids).toEqual(["call_1", "call_2"]);
+  });
+
+  it("merges builtin tools with user tools from config without duplicates", () => {
+    const userTool: LfLLMTool = {
+      type: "function",
+      function: {
+        name: "user_tool",
+        description: "User provided tool",
+        parameters: {
+          type: "object",
+          properties: {},
+        },
+      },
+    };
+
+    const builtinTool: LfLLMTool = {
+      type: "function",
+      function: {
+        name: "builtin_tool",
+        description: "Builtin framework tool",
+        parameters: {
+          type: "object",
+          properties: {},
+        },
+      },
+    };
+
+    const adapter: any = {
+      controller: {
+        get: {
+          compInstance: {
+            lfAttachmentUploadTimeout: 60000,
+            lfContextWindow: 8192,
+            lfEmpty: "Your chat history is empty!",
+            lfEndpointUrl: "http://localhost:5001",
+            lfFrequencyPenalty: 0,
+            lfLayout: "top",
+            lfMaxTokens: 2048,
+            lfPollingInterval: 10000,
+            lfPresencePenalty: 0,
+            lfSeed: -1,
+            lfSystem:
+              "You are a helpful and cheerful assistant eager to help the user out with his tasks.",
+            lfTemperature: 0.7,
+            lfTopP: 0.9,
+            lfTools: [],
+            lfConfig: {
+              llm: {},
+              tools: {
+                definitions: [userTool],
+              },
+              ui: {},
+              attachments: {},
+            },
+          },
+          manager: {
+            debug: {
+              logs: {
+                new: jest.fn(),
+              },
+            },
+            llm: {
+              getBuiltinTools: () => [builtinTool],
+            },
+          },
+        },
+      },
+    };
+
+    const effective = getEffectiveConfig(adapter);
+    const names = effective.tools.definitions.map((t) => t.function.name);
+
+    expect(names).toEqual(
+      expect.arrayContaining(["user_tool", "builtin_tool"]),
+    );
+  });
+
+  it("prefers user tools over builtin tools with the same name", () => {
+    const userTool: LfLLMTool = {
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "User override for weather",
+        parameters: {
+          type: "object",
+          properties: {},
+        },
+      },
+    };
+
+    const builtinTool: LfLLMTool = {
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Builtin weather tool",
+        parameters: {
+          type: "object",
+          properties: {},
+        },
+      },
+    };
+
+    const adapter: any = {
+      controller: {
+        get: {
+          compInstance: {
+            lfAttachmentUploadTimeout: 60000,
+            lfContextWindow: 8192,
+            lfEmpty: "Your chat history is empty!",
+            lfEndpointUrl: "http://localhost:5001",
+            lfFrequencyPenalty: 0,
+            lfLayout: "top",
+            lfMaxTokens: 2048,
+            lfPollingInterval: 10000,
+            lfPresencePenalty: 0,
+            lfSeed: -1,
+            lfSystem:
+              "You are a helpful and cheerful assistant eager to help the user out with his tasks.",
+            lfTemperature: 0.7,
+            lfTopP: 0.9,
+            lfTools: [],
+            lfConfig: {
+              llm: {},
+              tools: {
+                definitions: [userTool],
+              },
+              ui: {},
+              attachments: {},
+            },
+          },
+          manager: {
+            debug: {
+              logs: {
+                new: jest.fn(),
+              },
+            },
+            llm: {
+              getBuiltinTools: () => [builtinTool],
+            },
+          },
+        },
+      },
+    };
+
+    const effective = getEffectiveConfig(adapter);
+    const definitions = effective.tools.definitions;
+
+    expect(definitions).toHaveLength(1);
+    expect(definitions[0].function.name).toBe("get_weather");
+    expect(definitions[0].function.description).toBe(
+      "User override for weather",
+    );
+  });
+
+  it("renders lf-article when a message has articleContent", async () => {
+    const page = await createPage(`<lf-chat></lf-chat>`);
+    const component = page.rootInstance as LfChat;
+
+    component.history = [
+      {
+        role: "assistant",
+        content: "Here is a rich result",
+        articleContent: {
+          nodes: [
+            {
+              id: "root",
+              value: "Article root",
+            },
+          ],
+        },
+      },
+    ] as any;
+    component.status = "ready";
+
+    await page.waitForChanges();
+
+    const article = page.root?.shadowRoot?.querySelector("lf-article");
+    expect(article).not.toBeNull();
   });
 });

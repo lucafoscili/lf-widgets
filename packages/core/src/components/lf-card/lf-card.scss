@@ -30,5 +30,3 @@ $comp: "card";
 #lf-component {
   @include lf-comp-border($comp, "radius");
 }
-
-/* local partials loaded above */

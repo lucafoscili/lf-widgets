@@ -407,6 +407,7 @@ export const LIGHT: LfThemeElement = {
 export const ABYSS: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.staatliches,
+    LF_THEME_FONTS_FONTFACE.oswald,
     LF_THEME_FONTS_FONTFACE.montserrat,
   ],
   isDark: true,
@@ -437,6 +438,7 @@ export const ABYSS: LfThemeElement = {
     "--lf-ui-radius-ripple": "50%",
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Staatliches, sans-serif",
+    "--lf-font-family-secondary": "Oswald, sans-serif",
     "--lf-font-family-monospace": "Montserrat, sans-serif",
   },
 } as const;
@@ -447,6 +449,7 @@ export const BLOODMOON: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.cormorantGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+    LF_THEME_FONTS_FONTFACE.cinzel,
   ],
   isDark: true,
   variables: {
@@ -486,7 +489,8 @@ export const BLOODMOON: LfThemeElement = {
     "--lf-ui-radius-ripple": "50%",
     "--lf-font-family-primary": "Cormorant Garamond, serif",
     "--lf-font-family-monospace": "Jet Brains Mono, monospace",
-    "--lf-font-size": "15px",
+    "--lf-font-family-secondary": "Cinzel, serif",
+    "--lf-font-size": "16px",
   },
 } as const;
 //#endregion
@@ -524,7 +528,11 @@ export const ERIS: LfThemeElement = {
 
 //#region Neon
 export const NEON: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.orbitron, LF_THEME_FONTS_FONTFACE.vt323],
+  font: [
+    LF_THEME_FONTS_FONTFACE.orbitron,
+    LF_THEME_FONTS_FONTFACE.lato,
+    LF_THEME_FONTS_FONTFACE.vt323,
+  ],
   isDark: true,
   variables: {
     ...DARK.variables,
@@ -551,6 +559,7 @@ export const NEON: LfThemeElement = {
     "--lf-color-on-spinner": "#00ff9e",
     "--lf-font-family-monospace": "VT323, monospace",
     "--lf-font-family-primary": "Orbitron, sans-serif",
+    "--lf-font-family-secondary": "Lato, sans-serif",
     "--lf-font-size": "14px",
     "--lf-ui-border-radius": "0.5em",
     "--lf-ui-radius-ripple": "50%",
@@ -563,6 +572,7 @@ export const NIGHT: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.bebasNeue,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
+    LF_THEME_FONTS_FONTFACE.oswald,
   ],
   isDark: true,
   variables: {
@@ -601,6 +611,7 @@ export const PASTEL: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.raleway,
     LF_THEME_FONTS_FONTFACE.sourceCodePro,
+    LF_THEME_FONTS_FONTFACE.oswald,
   ],
   isDark: false,
   variables: {
@@ -639,6 +650,7 @@ export const SAKURA: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.sawarabiMincho,
     LF_THEME_FONTS_FONTFACE.raleway,
+    LF_THEME_FONTS_FONTFACE.lato,
   ],
   isDark: false,
   variables: {
@@ -669,6 +681,7 @@ export const SAKURA: LfThemeElement = {
     "--lf-font-size": "17px",
     "--lf-font-family-primary": "Sawarabi Mincho, serif",
     "--lf-font-family-monospace": "Raleway, sans-serif",
+    "--lf-font-family-secondary": "Lato, sans-serif",
   },
 } as const;
 //#endregion
@@ -678,6 +691,7 @@ export const SEPULCHRE: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.ebGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+    LF_THEME_FONTS_FONTFACE.cormorantGaramond,
   ],
   isDark: false,
   variables: {
@@ -715,6 +729,7 @@ export const SEPULCHRE: LfThemeElement = {
     "--lf-color-on-spinner": "#fdf6e9",
     "--lf-font-family-primary": "'E B Garamond', serif",
     "--lf-font-family-monospace": "'JetBrains Mono', monospace",
+    "--lf-font-family-secondary": "'Cormorant Garamond', serif",
     "--lf-font-size": "16px",
     "--lf-ui-border-radius": "0.35rem",
     "--lf-ui-radius-ripple": "50%",
@@ -728,6 +743,7 @@ export const STEAMPUNK: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.IMFellEnglishSC,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
+    LF_THEME_FONTS_FONTFACE.ebGaramond,
   ],
   isDark: true,
   variables: {
@@ -758,13 +774,18 @@ export const STEAMPUNK: LfThemeElement = {
     "--lf-font-size": "16px",
     "--lf-font-family-primary": "IM Fell English SC, serif",
     "--lf-font-family-monospace": "Share Tech Mono, monospace",
+    "--lf-font-family-secondary": "E B Garamond, serif",
   },
 } as const;
 //#endregion
 
 //#region Urban
 export const URBAN: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.lato, LF_THEME_FONTS_FONTFACE.merriweather],
+  font: [
+    LF_THEME_FONTS_FONTFACE.lato,
+    LF_THEME_FONTS_FONTFACE.merriweather,
+    LF_THEME_FONTS_FONTFACE.oswald,
+  ],
   isDark: false,
   variables: {
     ...LIGHT.variables,
@@ -834,7 +855,11 @@ export const VOIDFORGE: LfThemeElement = {
 
 //#region Wizardry
 export const WIZARDRY: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.uncialAntiqua, LF_THEME_FONTS_FONTFACE.cinzel],
+  font: [
+    LF_THEME_FONTS_FONTFACE.uncialAntiqua,
+    LF_THEME_FONTS_FONTFACE.cinzel,
+    LF_THEME_FONTS_FONTFACE.ebGaramond,
+  ],
   isDark: true,
   variables: {
     ...DARK.variables,
@@ -864,6 +889,7 @@ export const WIZARDRY: LfThemeElement = {
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Uncial Antiqua, serif",
     "--lf-font-family-monospace": "Cinzel, serif",
+    "--lf-font-family-secondary": "EB Garamond, serif",
   },
 } as const;
 //#endregion

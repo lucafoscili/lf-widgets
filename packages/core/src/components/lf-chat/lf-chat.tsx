@@ -665,7 +665,7 @@ export class LfChat implements LfChatInterface {
       } else {
         if (this.status !== "ready") {
           requestAnimationFrame(() => {
-            this.scrollToBottom(true); // Container-only scroll for initial load
+            this.scrollToBottom(true);
           });
         }
         this.status = "ready";
@@ -718,7 +718,6 @@ export class LfChat implements LfChatInterface {
           {history?.length ? (
             history
               .filter((m) => {
-                // Hide tool messages (internal only)
                 if (m.role === "tool") {
                   return false;
                 }
@@ -776,7 +775,22 @@ export class LfChat implements LfChatInterface {
     );
   };
   #prepContent = (message: LfLLMChoiceMessage): VNode[] => {
-    return parseMessageContent(this.#adapter, message.content, message.role);
+    const nodes: VNode[] = [];
+
+    if (message.articleContent) {
+      nodes.push(<lf-article lfDataset={message.articleContent}></lf-article>);
+    }
+
+    const hasText = Boolean(message.content && message.content.trim().length);
+    const shouldRenderText = message.role !== "tool" || !message.articleContent;
+
+    if (hasText && shouldRenderText) {
+      nodes.push(
+        ...parseMessageContent(this.#adapter, message.content, message.role),
+      );
+    }
+
+    return nodes;
   };
   #prepOffline: () => VNode[] = () => {
     const { bemClass, get } = this.#framework.theme;

@@ -149,6 +149,11 @@ pre {
   white-space: normal;
 }
 
+.token.code {
+  display: block;
+  height: var(--lf-code-height, auto);
+}
+
 .token.cdata,
 .token.comment,
 .token.doctype,
