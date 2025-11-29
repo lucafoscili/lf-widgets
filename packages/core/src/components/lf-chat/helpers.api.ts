@@ -84,11 +84,9 @@ const handleStreamingResponse = async (
       if (chunk?.contentDelta) {
         accumulatedContent += chunk.contentDelta;
 
-        // Create or update message on first content chunk
         if (!messageCreated) {
           messageCreated = true;
           if (updateLastAssistant) {
-            // Find the last assistant message and update it
             lastIndex = findLastAssistantIndex();
             if (lastIndex >= 0) {
               set.history(() => {
@@ -96,7 +94,6 @@ const handleStreamingResponse = async (
                 h[lastIndex].content = accumulatedContent;
               });
             } else {
-              // Fallback: push new message if no assistant found
               set.history(() =>
                 history().push({
                   role: "assistant",
@@ -115,7 +112,6 @@ const handleStreamingResponse = async (
             lastIndex = history().length - 1;
           }
         } else {
-          // Update existing message
           set.history(() => {
             const h = history();
             if (h[lastIndex]) {
@@ -138,11 +134,9 @@ const handleStreamingResponse = async (
           "informational",
         );
 
-        // Show tool execution chip immediately when first tool call is detected
         if (accumulatedToolCalls.length > 0 && !toolExecutionShown) {
           toolExecutionShown = true;
 
-          // If we haven't created a message yet, create one for tool execution
           if (!messageCreated) {
             if (updateLastAssistant) {
               const existingIndex = findLastAssistantIndex();
@@ -166,9 +160,8 @@ const handleStreamingResponse = async (
           }
 
           // Create and attach tool execution dataset immediately
-          const normalizedForIndicator = normalizeToolCallsForStreaming(
-            accumulatedToolCalls,
-          );
+          const normalizedForIndicator =
+            normalizeToolCallsForStreaming(accumulatedToolCalls);
 
           const initialDataset = createInitialToolDataset(
             adapter,
@@ -257,14 +250,18 @@ const handleFetchResponse = async (
   const response = await llm.fetch(request, lfEndpointUrl);
 
   const message = response.choices?.[0]?.message?.content;
-  const toolCalls = response.choices?.[0]?.message?.tool_calls;
+  const rawToolCalls = response.choices?.[0]?.message?.tool_calls;
+
+  const toolCalls =
+    rawToolCalls && rawToolCalls.length > 0
+      ? normalizeToolCallsForStreaming(rawToolCalls)
+      : undefined;
   const llmMessage: LfLLMChoiceMessage = {
     role: "assistant",
     content: message,
     tool_calls: toolCalls,
   };
 
-  // Handle tool calls if any (attaches toolExecution to message)
   if (toolCalls && toolCalls.length > 0) {
     const toolDataset = await handleToolCalls(adapter, toolCalls);
     if (toolDataset) {
@@ -273,7 +270,6 @@ const handleFetchResponse = async (
   }
 
   if (updateLastAssistant) {
-    // Find the last assistant message and update it
     const h = history();
     let lastIndex = h.length - 1;
     while (lastIndex >= 0 && h[lastIndex].role !== "assistant") {

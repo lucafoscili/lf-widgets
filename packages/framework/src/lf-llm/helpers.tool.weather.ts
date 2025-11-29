@@ -13,6 +13,7 @@ import {
 export const createWeatherTool = (
   framework: LfFrameworkInterface,
 ): LfLLMTool => {
+  //#region Execute
   const execute = async (
     args: Record<string, unknown>,
   ): Promise<LfLLMToolResponse> => {
@@ -199,6 +200,7 @@ export const createWeatherTool = (
       };
     }
   };
+  //#endregion
 
   return {
     type: "function",

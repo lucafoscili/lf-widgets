@@ -300,22 +300,10 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     const registry = llm.getBuiltinToolsByCategory();
     const docsTool = registry.lfw["get_component_docs"];
 
-    const sampleDocJson = {
-      components: [
-        {
-          tag: "lf-button",
-          overview: "Button component",
-          props: [] as any[],
-          events: [] as any[],
-          methods: [] as any[],
-        },
-      ],
-    };
-
     const originalFetch = (global as any).fetch;
     (global as any).fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => sampleDocJson,
+      text: async () => "# lf-button\n\nButton component README content",
     });
 
     const result = await docsTool.function.execute?.({

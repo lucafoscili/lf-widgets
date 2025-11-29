@@ -6,6 +6,7 @@ import {
   LfDataArticleLayoutPreset,
 } from "@lf-widgets/foundations";
 
+//#region Layout styles
 const ARTICLE_LAYOUT_STYLES: Record<
   LfDataArticleLayoutPreset,
   Record<string, string>
@@ -39,6 +40,7 @@ const ARTICLE_LAYOUT_STYLES: Record<
     gap: "1.5em",
   },
 };
+//#endregion
 
 /**
  * Framework-level implementation of the fluent article builder declared in
@@ -57,25 +59,6 @@ class ArticleBuilder implements LfArticleBuilder {
   #paragraphs = new Map<string, LfArticleNode>();
   #counter = 0;
   #defaultLayout?: LfDataArticleLayoutPreset;
-
-  #applyLayout(
-    layout: LfDataArticleLayoutPreset | undefined,
-    cssStyle?: LfArticleNode["cssStyle"],
-  ): LfArticleNode["cssStyle"] {
-    if (!layout || layout === "stack") {
-      return cssStyle;
-    }
-
-    const layoutStyle = ARTICLE_LAYOUT_STYLES[layout];
-    if (!layoutStyle) {
-      return cssStyle;
-    }
-
-    return {
-      ...layoutStyle,
-      ...(cssStyle ?? {}),
-    };
-  }
 
   constructor(options?: LfArticleBuilderCreateOptions) {
     const id = options?.id ?? "article-root";
@@ -96,12 +79,23 @@ class ArticleBuilder implements LfArticleBuilder {
     };
   }
 
-  getDataset(): LfArticleDataset {
-    return this.#dataset;
-  }
+  #applyLayout(
+    layout: LfDataArticleLayoutPreset | undefined,
+    cssStyle?: LfArticleNode["cssStyle"],
+  ): LfArticleNode["cssStyle"] {
+    if (!layout || layout === "stack") {
+      return cssStyle;
+    }
 
-  toDataset(): LfArticleDataset {
-    return this.getDataset();
+    const layoutStyle = ARTICLE_LAYOUT_STYLES[layout];
+    if (!layoutStyle) {
+      return cssStyle;
+    }
+
+    return {
+      ...layoutStyle,
+      ...(cssStyle ?? {}),
+    };
   }
 
   #nextId(prefix: string): string {
@@ -135,8 +129,16 @@ class ArticleBuilder implements LfArticleBuilder {
     return section;
   }
 
+  getDataset(): LfArticleDataset {
+    return this.#dataset;
+  }
+
   getSection(id: string): LfArticleNode | undefined {
     return this.#sections.get(id);
+  }
+
+  toDataset(): LfArticleDataset {
+    return this.getDataset();
   }
 
   addParagraph(

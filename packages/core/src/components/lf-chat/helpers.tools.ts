@@ -110,10 +110,19 @@ export const normalizeToolCallsForStreaming = (
   (calls as PartialCall[]).forEach((raw, rawIndex) => {
     if (!raw) return;
 
-    const key =
-      typeof raw.index === "number"
-        ? `idx_${raw.index}`
-        : raw.id || `anon_${rawIndex}`;
+    let key: string;
+
+    if (typeof raw.index === "number") {
+      // Streaming deltas: group by stable index so partial chunks merge.
+      key = `idx_${raw.index}`;
+    } else if (raw.function?.name && typeof raw.function.arguments === "string") {
+      // Non-streaming or already-assembled calls: group identical function
+      // invocations (same name + arguments) to avoid executing the same tool
+      // multiple times in a single assistant turn.
+      key = `fn_${raw.function.name}::${raw.function.arguments}`;
+    } else {
+      key = raw.id || `anon_${rawIndex}`;
+    }
 
     const existing = byKey.get(key) || {
       id: raw.id,
@@ -144,14 +153,14 @@ export const normalizeToolCallsForStreaming = (
     byKey.set(key, existing);
   });
 
-  const result: LfLLMToolCall[] = [];
+  const aggregated: LfLLMToolCall[] = [];
 
   for (const agg of byKey.values()) {
     const name = agg.name ?? "unknown_tool";
     const args = agg.argsParts.length > 0 ? agg.argsParts.join("") : "{}";
 
-    result.push({
-      id: agg.id ?? `tool_call_${result.length}`,
+    aggregated.push({
+      id: agg.id ?? `tool_call_${aggregated.length}`,
       type: agg.type ?? "function",
       function: {
         name,
@@ -160,7 +169,25 @@ export const normalizeToolCallsForStreaming = (
     });
   }
 
-  return result;
+  // Second-stage dedupe: collapse identical logical calls (same name + args)
+  // that may have been emitted multiple times in a single assistant turn.
+  const deduped: LfLLMToolCall[] = [];
+  const seen = new Set<string>();
+
+  aggregated.forEach((call, index) => {
+    const fn = call.function;
+    const key =
+      fn?.name && typeof fn.arguments === "string"
+        ? `${fn.name}::${fn.arguments}`
+        : call.id ?? `idx_${index}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(call);
+    }
+  });
+
+  return deduped;
 };
 //#endregion
 
