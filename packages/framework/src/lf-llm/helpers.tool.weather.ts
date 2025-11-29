@@ -170,12 +170,11 @@ export const createWeatherTool = (
       const article = framework.data.article;
       const builder = article.builder.create({
         id: "weather-article",
-        title: `Weather for ${fullLocation}`,
       });
 
-      builder.addSectionWithLeaf({
+      builder.section.add.withLeaf({
         sectionId: "weather-section",
-        sectionTitle: "Current conditions",
+        sectionTitle: "",
         layout: "hero-top",
         leaf: article.shapes.card({
           id: "weather-card",

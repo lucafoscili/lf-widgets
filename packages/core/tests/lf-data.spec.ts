@@ -329,7 +329,7 @@ describe("Article helpers", () => {
       title: "Weather Article",
     });
 
-    const section = builder.addSection({
+    const section = builder.section.add.empty({
       id: "weather-section",
       title: "Today",
     });
@@ -374,7 +374,7 @@ describe("Article helpers", () => {
       title: "Docs Article",
     });
 
-    const section = builder.addSection({
+    const section = builder.section.add.empty({
       id: "docs-section",
       title: "Overview",
     });
@@ -405,7 +405,7 @@ describe("Article helpers", () => {
       title: "Tool Article",
     });
 
-    const { section, paragraph } = builder.addSectionWithText({
+    const { section, paragraph } = builder.section.add.withText({
       sectionId: "tool-section",
       sectionTitle: "Details",
       text: "This is a summary.",
@@ -439,7 +439,7 @@ describe("Article helpers", () => {
       layout: "weather",
     });
 
-    const { section, paragraph, leaf } = builder.addSectionWithLeaf({
+    const { section, paragraph, leaf } = builder.section.add.withLeaf({
       sectionId: "tool-section",
       sectionTitle: "Result",
       text: "Summary text",
