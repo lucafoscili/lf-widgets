@@ -130,9 +130,7 @@ export const prepToolbar = (
       }
 
       const root = dataset.nodes[0];
-      const isWorking =
-        root.value === "Working..." &&
-        !root.icon;
+      const isWorking = root.value === "Working..." && !root.icon;
 
       return (
         <div class={bemClass(blocks.toolbar._, blocks.toolbar.toolExecution)}>

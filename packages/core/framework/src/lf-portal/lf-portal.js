@@ -297,4 +297,3 @@ export class LfPortal {
     }
 }
 _LfPortal_RAF = new WeakMap(), _LfPortal_MANAGER = new WeakMap(), _LfPortal_PORTAL = new WeakMap(), _LfPortal_STATE = new WeakMap(), _LfPortal_appendToWrapper = new WeakMap(), _LfPortal_clean = new WeakMap(), _LfPortal_schedulePositionUpdate = new WeakMap(), _LfPortal_executeRun = new WeakMap(), _LfPortal_isAnchorHTMLElement = new WeakMap(), _LfPortal_resetStyle = new WeakMap();
-//# sourceMappingURL=lf-portal.js.map

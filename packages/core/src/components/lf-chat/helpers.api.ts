@@ -166,9 +166,8 @@ const handleStreamingResponse = async (
           }
 
           // Create and attach tool execution dataset immediately
-          const normalizedForIndicator = normalizeToolCallsForStreaming(
-            accumulatedToolCalls,
-          );
+          const normalizedForIndicator =
+            normalizeToolCallsForStreaming(accumulatedToolCalls);
 
           const initialDataset = createInitialToolDataset(
             adapter,
