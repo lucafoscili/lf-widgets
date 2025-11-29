@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.0...2.1.0-rc.0) (2025-11-29)
+
+
+### Bug Fixes
+
+* Add block display and height to .token.code ([8730495](https://github.com/lucafoscili/lf-widgets/commit/873049576c8c8697109754574d22e25fb34c345a))
+* Add select ref to lf-select adapter and component ([bb37e45](https://github.com/lucafoscili/lf-widgets/commit/bb37e459b3d415b49666433bd5a70ee6e7306972))
+* Pass lfValue as array to LfChip component ([fb05a4a](https://github.com/lucafoscili/lf-widgets/commit/fb05a4a3f35ffcc29a21df94831c2987d26f329f))
+* Refactor autocomplete to use root element ref ([e4d688c](https://github.com/lucafoscili/lf-widgets/commit/e4d688cd49fb788bc3a9197ef66741b7c041dde2))
+* Remove redundant height property from portal styles ([c5b19c6](https://github.com/lucafoscili/lf-widgets/commit/c5b19c6f8f116d79b3a4fd8df2dceed6af5c98ff))
+
+
+### Features
+
+* Add article builder and rich tool response support ([2ac9d0e](https://github.com/lucafoscili/lf-widgets/commit/2ac9d0e605dde84db815b60f5017493b1c3c5bce))
+* Add article builder helpers and improve tool docs ([03fc67e](https://github.com/lucafoscili/lf-widgets/commit/03fc67e6c425e0a29923573e9df50280949537b1))
+* Add inline position and style improvements to snackbar ([f28e334](https://github.com/lucafoscili/lf-widgets/commit/f28e334c2935a8a9a69e30f1d95db36eb50df2a3))
+* Add interactive truncation expansion to breadcrumbs ([47b9d07](https://github.com/lucafoscili/lf-widgets/commit/47b9d073555bdf2d3ff81ddf30fa58e3e44e18c0))
+* Add lf-snackbar component and related foundations ([30d4d06](https://github.com/lucafoscili/lf-widgets/commit/30d4d062c5672d470ba9472e63d4ac1281e1cc49))
+* Add LfBreadcrumbs component and related utilities ([9c88372](https://github.com/lucafoscili/lf-widgets/commit/9c88372e5be234b342c36e7b6594f1037f5b6246))
+* Improve tool execution merging and streaming in chat ([bbc2478](https://github.com/lucafoscili/lf-widgets/commit/bbc24789f3679a443b7561b8bbfd26eb1faa954f))
+* Refactor and simplify component docs tool logic ([e43745c](https://github.com/lucafoscili/lf-widgets/commit/e43745c25f6794eb39f2e1bd41732e5ffb59d630))
+
+
+
+
+
 ## [2.0.1-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.0...2.0.1-rc.0) (2025-11-23)
 
 
