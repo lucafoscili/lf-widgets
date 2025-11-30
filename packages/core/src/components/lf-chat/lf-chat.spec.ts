@@ -1,6 +1,10 @@
 import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
-import { LfDataDataset, LfLLMTool, LfLLMToolCall } from "@lf-widgets/foundations";
+import {
+  LfDataDataset,
+  LfLLMTool,
+  LfLLMToolCall,
+} from "@lf-widgets/foundations";
 import {
   mergeToolCalls,
   mergeToolExecutionDatasets,

@@ -1,4 +1,8 @@
-import { LfChatAdapter, LfChatConfig, LfLLMTool } from "@lf-widgets/foundations";
+import {
+  LfChatAdapter,
+  LfChatConfig,
+  LfLLMTool,
+} from "@lf-widgets/foundations";
 import { LfChat } from "./lf-chat";
 
 //#region Config merge utility
