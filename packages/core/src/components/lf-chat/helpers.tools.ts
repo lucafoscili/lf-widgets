@@ -115,7 +115,10 @@ export const normalizeToolCallsForStreaming = (
     if (typeof raw.index === "number") {
       // Streaming deltas: group by stable index so partial chunks merge.
       key = `idx_${raw.index}`;
-    } else if (raw.function?.name && typeof raw.function.arguments === "string") {
+    } else if (
+      raw.function?.name &&
+      typeof raw.function.arguments === "string"
+    ) {
       // Non-streaming or already-assembled calls: group identical function
       // invocations (same name + arguments) to avoid executing the same tool
       // multiple times in a single assistant turn.
@@ -179,7 +182,7 @@ export const normalizeToolCallsForStreaming = (
     const key =
       fn?.name && typeof fn.arguments === "string"
         ? `${fn.name}::${fn.arguments}`
-        : call.id ?? `idx_${index}`;
+        : (call.id ?? `idx_${index}`);
 
     if (!seen.has(key)) {
       seen.add(key);
