@@ -1,5 +1,10 @@
-import { LfListAdapter, LfListAdapterJsx } from "@lf-widgets/foundations";
+import {
+  LF_THEME_ICONS,
+  LfListAdapter,
+  LfListAdapterJsx,
+} from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 
 export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
   return {
@@ -25,7 +30,9 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
           <div
             class={bemClass(blocks.deleteIcon._, blocks.deleteIcon.icon)}
             key={node.id + "_delete"}
-          ></div>
+          >
+            <FIcon framework={manager} icon={LF_THEME_ICONS.clear} />
+          </div>
         </div>
       );
     },
@@ -65,20 +72,19 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
     //#region Icon
     icon(node) {
       const { controller, elements } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
-      const { assets, assignRef } = manager;
+      const { blocks, manager, parts } = controller.get;
+      const { assignRef } = manager;
       const { bemClass } = manager.theme;
       const { refs } = elements;
 
-      const { style } = assets.get(`./assets/svg/${node.icon}.svg`);
       return (
         <div
           class={bemClass(blocks.node._, blocks.node.icon)}
-          data-cy={cyAttributes.maskedSvg}
           part={parts.icon}
           ref={assignRef(refs, "icon")}
-          style={style}
-        ></div>
+        >
+          <FIcon framework={manager} icon={node.icon} />
+        </div>
       );
     },
     //#endregion

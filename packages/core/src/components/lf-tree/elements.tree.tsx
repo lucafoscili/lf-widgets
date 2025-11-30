@@ -5,11 +5,13 @@ import type {
   LfDataShapes,
 } from "@lf-widgets/foundations";
 import {
+  LF_THEME_ICONS,
   LfTextfieldEventPayload,
   LfTreeAdapter,
   LfTreeAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { LfShape } from "../../utils/shapes";
 import { TreeNode } from "./components.node";
 
@@ -226,7 +228,9 @@ export const createJsx = (
       const { noMatches } = blocks;
       return (
         <div class={bemClass(noMatches._)}>
-          <div class={bemClass(noMatches._, noMatches.icon)}></div>
+          <div class={bemClass(noMatches._, noMatches.icon)}>
+            <FIcon framework={manager} icon={LF_THEME_ICONS.warning} />
+          </div>
           <div class={bemClass(noMatches._, noMatches.text)}>
             No matches found for "
             <strong class={bemClass(noMatches._, noMatches.filter)}>

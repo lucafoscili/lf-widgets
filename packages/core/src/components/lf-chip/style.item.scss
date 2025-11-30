@@ -6,7 +6,12 @@ $comp: null !default;
 .item {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.75);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-text("list");
     @include lf-el-transition("hover-glow");
     align-items: center;
@@ -62,13 +67,13 @@ $comp: null !default;
 
   &__icon {
     & {
-      @include lf-comp-icon($comp, "", "surface", 1em);
+      @include f-icon($comp, "inherit", 1em);
       display: block;
       outline: none;
     }
 
     &--leading:not(.chip__icon--hidden) {
-      @include lf-comp-icon($comp, "", "surface", 1.25em);
+      @include f-icon($comp, "inherit", 1.25em);
     }
 
     &--trailing {
@@ -124,6 +129,8 @@ $comp: null !default;
     align-items: center;
     display: flex;
     justify-content: center;
+    margin-left: -0.25em;
+    margin-right: 0.35em;
   }
 }
 

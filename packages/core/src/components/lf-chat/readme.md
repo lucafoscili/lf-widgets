@@ -224,6 +224,7 @@ Type: `Promise<void>`
 
 | Name                                  | Description                                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--lf-chat-article-margin-top`        | Sets the top margin for lf-article content rendered inside messages. Defaults to => 0.75em        |
 | `--lf-chat-attachments-padding`       | Sets the attachments padding for the chat component. Defaults to => 0 1em                         |
 | `--lf-chat-blockquote-border-opacity` | Sets the border opacity for blockquotes. Defaults to => 0.3                                       |
 | `--lf-chat-blockquote-border-width`   | Sets the border width for blockquotes. Defaults to => 3px                                         |
@@ -263,6 +264,7 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
@@ -273,6 +275,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-spinner](../lf-spinner)
+- [lf-article](../lf-article)
 - [lf-button](../lf-button)
 - [lf-chip](../lf-chip)
 - [lf-textfield](../lf-textfield)
@@ -283,18 +286,23 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-chat --> lf-spinner
+  lf-chat --> lf-article
   lf-chat --> lf-button
   lf-chat --> lf-chip
   lf-chat --> lf-textfield
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-article --> lf-chat
+  lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-list --> lf-textfield
-  lf-code --> lf-button
-  lf-accordion --> lf-chat
-  lf-article --> lf-chat
+  lf-canvas --> lf-image
   lf-card --> lf-chat
+  lf-code --> lf-button
+  lf-photoframe --> lf-image
+  lf-accordion --> lf-chat
+  lf-breadcrumbs --> lf-chat
   lf-carousel --> lf-chat
   lf-compare --> lf-chat
   lf-masonry --> lf-chat

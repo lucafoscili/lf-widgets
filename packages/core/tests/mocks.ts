@@ -46,6 +46,25 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         sanitizeIds: jest.fn(),
         extractCellMetadata: jest.fn(),
       },
+      article: {
+        core: {
+          create: jest.fn(),
+          section: jest.fn(),
+          paragraph: jest.fn(),
+          separator: jest.fn(),
+        },
+        shapes: {
+          progressRow: jest.fn(),
+          buttonRow: jest.fn(),
+          card: jest.fn(),
+          chart: jest.fn(),
+          codeBlock: jest.fn(),
+          textfieldRow: jest.fn(),
+        },
+        builder: {
+          create: jest.fn(),
+        },
+      },
     },
     debug: {
       info: {

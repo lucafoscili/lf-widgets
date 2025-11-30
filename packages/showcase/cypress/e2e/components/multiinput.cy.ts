@@ -84,7 +84,7 @@ describe(CY_CATEGORIES.events, () => {
       .parents(".example")
       .within(() => {
         cy.get('[data-cy="showcase-example"]')
-          .findCyElement(CY_ATTRIBUTES.maskedSvg)
+          .findCyElement(CY_ATTRIBUTES.fIcon)
           .click();
       });
 

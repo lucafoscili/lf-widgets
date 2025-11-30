@@ -12,6 +12,8 @@ import {
   LfDataShapesMap,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
+import * as articleBuilders from "./helpers.article";
+import { createArticleBuilder } from "./helpers.article.builder";
 import {
   cellExists,
   cellGetAllShapes,
@@ -138,6 +140,33 @@ export class LfData implements LfDataInterface {
         nullable?: boolean;
       },
     ) => extractCellMetadata<T>(node, cellId, schema),
+  };
+  //#endregion
+
+  //#region Article
+  /**
+   * Lightweight helpers for building `lf-article` datasets using common patterns.
+   * These helpers are thin wrappers around pure builder functions and are safe
+   * to use from any layer that already depends on the framework.
+   */
+  article: LfDataInterface["article"] = {
+    core: {
+      create: articleBuilders.createArticle,
+      section: articleBuilders.section,
+      paragraph: articleBuilders.paragraph,
+      separator: articleBuilders.separator,
+    },
+    shapes: {
+      progressRow: articleBuilders.progressRow,
+      buttonRow: articleBuilders.buttonRow,
+      codeBlock: articleBuilders.codeBlock,
+      textfieldRow: articleBuilders.textfieldRow,
+      card: articleBuilders.card,
+      chart: articleBuilders.chart,
+    },
+    builder: {
+      create: (options) => createArticleBuilder(options),
+    },
   };
   //#endregion
 }

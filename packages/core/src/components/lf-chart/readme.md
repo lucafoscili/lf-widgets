@@ -112,6 +112,7 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
@@ -123,6 +124,7 @@ Type: `Promise<void>`
 graph TD;
   lf-accordion --> lf-chart
   lf-article --> lf-chart
+  lf-breadcrumbs --> lf-chart
   lf-card --> lf-chart
   lf-carousel --> lf-chart
   lf-compare --> lf-chart

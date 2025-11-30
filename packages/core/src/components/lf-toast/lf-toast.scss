@@ -2,9 +2,10 @@
 @use "mixins" as *;
 
 $comp: "toast";
-@include lf-comp-setup($comp, "true", "false", "true");
+@include lf-comp-setup($comp, "true", "false", "true", "false", "true", 12px);
 
 :host {
+  @include lf-comp-border($comp, "radius");
   @include lf-el-stretch;
   animation: slideIn 250ms ease-out;
   box-sizing: border-box;
@@ -14,7 +15,12 @@ $comp: "toast";
 .toast {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.675, 12px);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     @include lf-el-stretch;
     box-shadow: var(--lf-ui-box-shadow-modal);
     display: grid;
@@ -24,7 +30,12 @@ $comp: "toast";
 
   &__accent {
     & {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
       /**
       * @prop --lf-#{$comp}-accent-height: Sets the height for the #{$comp} accent.
       *                                    Defaults to => 0.25em
@@ -72,7 +83,7 @@ $comp: "toast";
 
   &__icon {
     & {
-      @include lf-comp-icon(comp);
+      @include f-icon($comp);
       /**
       * @prop --lf-#{$comp}-icon-margin: Sets the margin for the #{$comp} icon.
       *                                  Defaults to => auto 0.5em
@@ -87,7 +98,7 @@ $comp: "toast";
 
     &--has-actions {
       & {
-        @include lf-comp-icon($comp, clear);
+        @include f-icon($comp);
         @include lf-el-transition("hover-glow");
         cursor: pointer;
         margin: auto 0.5em auto auto;

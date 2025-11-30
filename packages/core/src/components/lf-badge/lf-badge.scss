@@ -17,7 +17,7 @@ $comp: "badge";
 
 .badge {
   & {
-    @include lf-comp-color($comp, "primary");
+    @include lf-comp-color($comp, "primary", "all");
     @include lf-el-ellipsis;
     @include lf-el-text("button");
     /**
@@ -54,6 +54,7 @@ $comp: "badge";
       var(--lf-color-on-primary)
     );
 
+    backdrop-filter: unset;
     left: 50%;
     position: absolute;
     top: 50%;

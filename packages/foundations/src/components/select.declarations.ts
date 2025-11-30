@@ -1,4 +1,12 @@
-import { CY_ATTRIBUTES, LF_ATTRIBUTES } from "../foundations";
+import {
+  CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
+  LfComponentAdapterGetters,
+  LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
+} from "../foundations";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -50,9 +58,9 @@ export interface LfSelectAdapter {
   };
   handlers: LfSelectAdapterHandlers;
 }
-export interface LfSelectAdapterControllerGetters {
+export interface LfSelectAdapterControllerGetters
+  extends LfComponentAdapterGetters<LfSelectInterface> {
   blocks: typeof LF_SELECT_BLOCKS;
-  compInstance: LfSelectInterface;
   cyAttributes: typeof CY_ATTRIBUTES;
   indexById: (id: string) => number;
   isDisabled: () => boolean;
@@ -75,7 +83,8 @@ export type LfSelectAdapterInitializerGetters = Pick<
   | "parts"
   | "selectedNode"
 >;
-export interface LfSelectAdapterControllerSetters {
+export interface LfSelectAdapterControllerSetters
+  extends LfComponentAdapterSetters {
   list: (state?: "toggle" | "open" | "close") => void;
   value: (id: string) => Promise<void>;
 }
@@ -83,16 +92,16 @@ export type LfSelectAdapterInitializerSetters = Pick<
   LfSelectAdapterControllerSetters,
   "value"
 >;
-export interface LfSelectAdapterJsx {
+export interface LfSelectAdapterJsx extends LfComponentAdapterJsx {
   list: () => VNode | null;
   textfield: () => VNode;
 }
-export interface LfSelectAdapterRefs {
+export interface LfSelectAdapterRefs extends LfComponentAdapterRefs {
   list: LfListElement;
   select: HTMLDivElement;
   textfield: LfTextfieldElement;
 }
-export interface LfSelectAdapterHandlers {
+export interface LfSelectAdapterHandlers extends LfComponentAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }

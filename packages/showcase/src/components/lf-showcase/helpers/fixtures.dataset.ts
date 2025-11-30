@@ -37,7 +37,7 @@ export function generateRandomNode(depth = 1, branchingFactor = 2): LfDataNode {
     value: randomNumber(0, 1000),
     isDisabled: randomBoolean(),
     description: `Node: ${randomString()}`,
-    icon: `lf-icon-${randomString().toLowerCase()}`,
+    icon: undefined,
     cells,
   };
 

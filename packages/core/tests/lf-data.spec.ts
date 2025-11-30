@@ -319,3 +319,149 @@ describe("Data Node Helpers", () => {
     });
   });
 });
+
+describe("Article helpers", () => {
+  it("builder creates section and card leaf with hierarchical structure", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root",
+      title: "Weather Article",
+    });
+
+    const section = builder.section.add.empty({
+      id: "weather-section",
+      title: "Today",
+    });
+
+    builder.addLeaf({
+      sectionId: section.id,
+      node: article.shapes.card({
+        id: "weather-card",
+        dataset: { nodes: [] },
+        layout: "weather",
+      }),
+    });
+
+    const dataset = builder.getDataset();
+
+    expect(dataset).toBeDefined();
+    expect(Array.isArray(dataset.nodes)).toBe(true);
+    expect(dataset.nodes!.length).toBe(1);
+
+    const rootNode = dataset.nodes![0];
+    expect(rootNode.id).toBe("article-root");
+    expect(rootNode.value).toBe("Weather Article");
+    expect(rootNode.children?.length).toBe(1);
+
+    const sectionNode = rootNode.children![0];
+    expect(sectionNode.id).toBe("weather-section");
+    expect(sectionNode.value).toBe("Today");
+    expect(sectionNode.children?.length).toBe(1);
+
+    const paragraphNode = sectionNode.children![0];
+    expect(paragraphNode.children?.length).toBe(1);
+
+    const cardNode = paragraphNode.children![0];
+    expect(cardNode.cells?.lfCard).toBeDefined();
+  });
+
+  it("builder paragraphs attach text as leaf content", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root-text",
+      title: "Docs Article",
+    });
+
+    const section = builder.section.add.empty({
+      id: "docs-section",
+      title: "Overview",
+    });
+
+    const paragraph = builder.addParagraph(section.id, {
+      id: "intro-paragraph",
+      title: "Introduction",
+      text: "Hello world",
+    });
+
+    const dataset = builder.getDataset();
+
+    expect(dataset.nodes).toBeDefined();
+    const rootNode = dataset.nodes![0];
+    const sectionNode = rootNode.children![0];
+    const paragraphNode = sectionNode.children![0];
+
+    expect(paragraphNode.id).toBe(paragraph.id);
+    expect(paragraphNode.value).toBe("Introduction");
+    expect(paragraphNode.children?.[0].value).toBe("Hello world");
+  });
+
+  it("builder addSectionWithText creates section and paragraph in one call", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root-section-text",
+      title: "Tool Article",
+    });
+
+    const { section, paragraph } = builder.section.add.withText({
+      sectionId: "tool-section",
+      sectionTitle: "Details",
+      text: "This is a summary.",
+    });
+
+    const dataset = builder.getDataset();
+
+    const rootNode = dataset.nodes![0];
+    expect(rootNode.children?.[0]).toBe(section);
+
+    const sectionNode = rootNode.children![0];
+    expect(sectionNode.id).toBe("tool-section");
+    expect(sectionNode.value).toBe("Details");
+    expect(sectionNode.children?.[0]).toBe(paragraph);
+
+    const paragraphNode = sectionNode.children![0];
+    expect(paragraphNode.children?.[0].value).toBe("This is a summary.");
+  });
+
+  it("builder addSectionWithLeaf composes section, paragraph and leaf", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-root-section-leaf",
+      title: "Tool Article With Card",
+    });
+
+    const cardNode = article.shapes.card({
+      id: "tool-card",
+      dataset: { nodes: [] },
+      layout: "weather",
+    });
+
+    const { section, paragraph, leaf } = builder.section.add.withLeaf({
+      sectionId: "tool-section",
+      sectionTitle: "Result",
+      text: "Summary text",
+      leaf: cardNode,
+    });
+
+    const dataset = builder.getDataset();
+
+    const rootNode = dataset.nodes![0];
+    expect(rootNode.children?.[0]).toBe(section);
+
+    const sectionNode = rootNode.children![0];
+    expect(sectionNode.id).toBe("tool-section");
+    expect(sectionNode.value).toBe("Result");
+
+    const paragraphNode = sectionNode.children![0];
+    expect(paragraphNode).toBe(paragraph);
+    expect(paragraphNode.children).toBeDefined();
+    expect(paragraphNode.children!.length).toBeGreaterThanOrEqual(1);
+
+    // The returned leaf should be appended to the paragraph children.
+    expect(paragraphNode.children).toContain(leaf);
+    expect(leaf.cells?.lfCard).toBeDefined();
+  });
+});

@@ -31,6 +31,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import { triggerScroll } from "./helpers.utils";
 
@@ -319,18 +320,14 @@ export class LfTabbar implements LfTabbarInterface {
 
   //#region Private methods
   #prepIcon = (node: LfDataNode) => {
-    const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
 
     const { tab } = this.#b;
 
-    const { style } = get(`./assets/svg/${node.icon}.svg`);
     return (
-      <div
-        class={bemClass(tab._, tab.icon)}
-        data-cy={this.#cy.maskedSvg}
-        style={style}
-      ></div>
+      <div class={bemClass(tab._, tab.icon)}>
+        <FIcon framework={this.#framework} icon={node.icon} />
+      </div>
     );
   };
   #prepNode = (node: LfDataNode, index: number) => {

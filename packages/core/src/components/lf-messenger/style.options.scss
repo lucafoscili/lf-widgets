@@ -22,12 +22,17 @@ $comp: null !default;
   }
 
   &__placeholder-icon {
-    @include lf-comp-icon($comp, "", "surface", 100%, 0.375);
+    @include f-icon($comp, "surface", 100%, 0.375);
   }
 
   &__blocker {
     & {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.775);
+      @include lf-comp-glassmorphize(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
       @include lf-el-stretch;
       @include lf-el-transition("fade-in-out", "opacity");
       align-content: center;
@@ -52,7 +57,7 @@ $comp: null !default;
   }
 
   &__blocker-icon {
-    @include lf-comp-icon($comp, "", "surface", 100%, 0.75);
+    @include f-icon($comp, "surface", 100%, 0.75);
   }
 
   &__blocker-label {
@@ -69,8 +74,7 @@ $comp: null !default;
   }
 
   &__info {
-    @include lf-comp-icon($comp, "info", "surface", 1em, 0.75);
-    cursor: help;
+    @include f-icon($comp, "surface", 1em, 0.75);
     margin-left: 0.275em;
   }
 

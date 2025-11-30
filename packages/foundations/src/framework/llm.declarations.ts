@@ -1,3 +1,4 @@
+import { LfArticleDataset } from "../components/article.declarations";
 import { LfDataDataset } from ".";
 import { LfButtonElement } from "../components/button.declarations";
 import { LfTextfieldElement } from "../components/textfield.declarations";
@@ -54,6 +55,15 @@ export interface LfLLMInterface {
     fn: () => Promise<T>,
     policy?: Partial<LfLLMRetryPolicy>,
   ) => Promise<T>;
+  /**
+   * Returns the list of builtin tools available to consumers. These are
+   * provided by the framework and can be merged with user-defined tools.
+   */
+  getBuiltinTools?: () => LfLLMTool[];
+  /**
+   * Returns builtin tools grouped by category (e.g. "general", "lfw").
+   */
+  getBuiltinToolsByCategory?: () => LfLLMBuiltinToolsRegistry;
 }
 //#endregion
 
@@ -80,6 +90,11 @@ export interface LfLLMChoiceMessage {
    * When present, renders chip tree in message toolbar
    */
   toolExecution?: LfDataDataset;
+  /**
+   * Optional rich article dataset returned by tools.
+   * When present, consumers may render `<lf-article>` beneath the message.
+   */
+  articleContent?: LfArticleDataset;
 }
 /**
  * Represents an attachment in a chat message
@@ -149,8 +164,30 @@ export interface LfLLMTool {
       properties: Record<string, unknown>;
       required?: string[];
     };
-    execute?: (args: Record<string, unknown>) => Promise<string> | string;
+    execute?: (
+      args: Record<string, unknown>,
+    ) => Promise<string | LfLLMToolResponse> | string | LfLLMToolResponse;
   };
+}
+
+/**
+ * Discriminated union describing the structured result that tools may return.
+ * Tools can either emit plain text or a rich `lf-article` dataset (optionally
+ * accompanied by a short textual summary for the LLM).
+ */
+export type LfLLMToolResponse =
+  | { type: "text"; content: string }
+  | { type: "article"; dataset: LfArticleDataset; content?: string };
+
+/**
+ * Registry structure used to organise builtin tools exposed by the framework.
+ * Categories are intentionally loose so additional groups can be introduced
+ * without breaking existing consumers.
+ */
+export interface LfLLMBuiltinToolsRegistry {
+  general: Record<string, LfLLMTool>;
+  lfw: Record<string, LfLLMTool>;
+  [category: string]: Record<string, LfLLMTool>;
 }
 /**
  * Utility interface used by the LLM integration helpers.

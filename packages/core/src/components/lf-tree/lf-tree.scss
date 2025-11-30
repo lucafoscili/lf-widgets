@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "tree";
-@include lf-comp-setup($comp, "false", "true");
+@include lf-comp-setup($comp, "false", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -12,7 +12,12 @@ $comp: "tree";
   .node[data-depth="0"] {
     & {
       @include lf-comp-border($comp, "radius");
-      @include lf-comp-glassmorphize($comp, "surface");
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "all",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
       font-size: 1em;
       /**
       * @prop --lf-#{$comp}-accordion-node-height: Sets the height for the #{$comp} accordion node.
@@ -31,16 +36,31 @@ $comp: "tree";
 :host([lf-selectable]) {
   .node {
     &:hover {
-      @include lf-comp-glassmorphize($comp, "bg", "bg", 0.075, 8px, true);
+      @include lf-comp-color(
+        $comp,
+        "bg",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
     &--selected {
       & {
-        @include lf-comp-glassmorphize($comp, "bg", "bg", 0.175, 8px, true);
+        @include lf-comp-color(
+          $comp,
+          "bg",
+          "bg",
+          var(--lf-ui-alpha-glass-hint, 0.125)
+        );
       }
 
       &:hover {
-        @include lf-comp-glassmorphize($comp, "bg", "bg", 0.225, 8px, true);
+        @include lf-comp-color(
+          $comp,
+          "bg",
+          "bg",
+          var(--lf-ui-alpha-glass, 0.375)
+        );
       }
     }
   }
@@ -49,7 +69,7 @@ $comp: "tree";
 .tree {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.275);
+    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
     /**
     * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
     *                              Defaults to => 0
@@ -153,7 +173,7 @@ $comp: "tree";
 
   &__dropdown {
     & {
-      @include lf-comp-icon($comp, dropdown);
+      @include f-icon($comp);
     }
 
     &--expanded {
@@ -173,11 +193,11 @@ $comp: "tree";
 
   &__expand {
     & {
-      @include lf-comp-icon($comp, collapsed);
+      @include f-icon($comp);
     }
 
     &--expanded {
-      @include lf-comp-icon($comp, expanded);
+      @include f-icon($comp);
     }
 
     &--hidden {
@@ -186,7 +206,7 @@ $comp: "tree";
   }
 
   &__icon {
-    @include lf-comp-icon($comp);
+    @include f-icon($comp);
   }
 
   &__padding {
@@ -242,7 +262,7 @@ $comp: "tree";
   }
 
   &__icon {
-    @include lf-comp-icon($comp, warning);
+    @include f-icon($comp);
     margin-right: 0.375em;
   }
 

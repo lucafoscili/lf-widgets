@@ -124,6 +124,7 @@ Type: `Promise<void>`
 | `--lf-slider-label-padding-right`   | Sets the right padding for the slider label. Defaults to => 1.5em                                                                                |
 | `--lf-slider-margin`                | Sets the margin for the slider component. Defaults to => 0 0.75em                                                                                |
 | `--lf-slider-min-width`             | Sets the min-width for the slider component. Defaults to => 7em                                                                                  |
+| `--lf-slider-overflow`              | Sets the overflow for the slider component. Defaults to => hidden                                                                                |
 | `--lf-slider-padding`               | Sets the padding for the slider component. Defaults to => 2em                                                                                    |
 | `--lf-slider-thumb-box-shadow`      | Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-comp-color-on-bg, var(--lf-color-on-bg)), 0.2) |
 | `--lf-slider-thumb-height`          | Sets the height for the slider component's thumb. Defaults to => 1.25em                                                                          |

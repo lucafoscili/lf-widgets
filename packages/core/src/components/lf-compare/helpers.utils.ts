@@ -1,6 +1,7 @@
 import {
   LfDataCell,
   LfDataDataset,
+  LfIconType,
   LfThemeIcon,
 } from "@lf-widgets/foundations";
 
@@ -19,7 +20,7 @@ export const prepTreeDataset = (
       typeof shape.value === "string" && shape.value.trim().length > 0;
 
     dataset.nodes.push({
-      icon: currentShape === shape && currentIcon,
+      icon: (currentShape === shape ? currentIcon : undefined) as LfIconType,
       id: strIndex,
       value: hasValue ? shape.value : `#${strIndex}`,
     });

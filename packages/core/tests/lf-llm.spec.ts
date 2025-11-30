@@ -1,6 +1,8 @@
-import { LfFrameworkInterface } from "@lf-widgets/foundations";
+import { LfFrameworkInterface, LfLLMToolResponse } from "@lf-widgets/foundations";
+import { LfFramework } from "../../framework/src/lf-framework/lf-framework";
+import { LfLLM } from "../../framework/src/lf-llm/lf-llm";
 
-describe("Framework LLM Utilities", () => {
+describe("Framework LLM Utilities (mocked)", () => {
   let framework: jest.Mocked<LfFrameworkInterface>;
 
   beforeEach(() => {
@@ -194,5 +196,134 @@ describe("Framework LLM Utilities", () => {
       expect(result).toBe(mockResult);
       expect(framework.llm.withRetry).toHaveBeenCalledWith(mockFn, mockPolicy);
     });
+  });
+});
+
+describe("Framework LLM Builtin Tools (integration)", () => {
+  let framework: LfFrameworkInterface;
+  let llm: LfLLM;
+
+  beforeAll(() => {
+    framework = new LfFramework();
+    llm = new LfLLM(framework);
+  });
+
+  it("exposes builtin weather and docs tools via registry", () => {
+    expect(llm.getBuiltinToolsByCategory).toBeDefined();
+
+    const registry = llm.getBuiltinToolsByCategory();
+
+    expect(registry).toBeDefined();
+    expect(registry.general).toBeDefined();
+    expect(registry.lfw).toBeDefined();
+
+    const weatherTool = registry.general["get_weather"];
+    const docsTool = registry.lfw["get_component_docs"];
+
+    expect(weatherTool).toBeDefined();
+    expect(weatherTool.type).toBe("function");
+    expect(weatherTool.function.name).toBe("get_weather");
+
+    expect(docsTool).toBeDefined();
+    expect(docsTool.type).toBe("function");
+    expect(docsTool.function.name).toBe("get_component_docs");
+  });
+
+  it("flattens builtin tools via getBuiltinTools", () => {
+    expect(llm.getBuiltinTools).toBeDefined();
+
+    const tools = llm.getBuiltinTools();
+    const names = tools.map((t) => t.function.name);
+
+    expect(names).toEqual(
+      expect.arrayContaining(["get_weather", "get_component_docs"]),
+    );
+  });
+
+  it("builtin weather tool returns an article response on success", async () => {
+    const registry = llm.getBuiltinToolsByCategory();
+    const weatherTool = registry.general["get_weather"];
+
+    // Sample payload in the shape of wttr.in responses
+    const samplePayload = {
+      current_condition: [
+        {
+          temp_C: "13",
+          temp_F: "55",
+          weatherDesc: [{ value: "Clear" }],
+          humidity: "67",
+          windspeedKmph: "4",
+          winddir16Point: "NE",
+          FeelsLikeC: "12",
+          FeelsLikeF: "54",
+        },
+      ],
+      nearest_area: [
+        {
+          areaName: [{ value: "Rome" }],
+          country: [{ value: "Italy" }],
+        },
+      ],
+    };
+
+    const originalFetch = (global as any).fetch;
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => samplePayload,
+    });
+
+    const result = await weatherTool.function.execute?.({
+      location: "Rome",
+    } as Record<string, unknown>);
+
+    (global as any).fetch = originalFetch;
+
+    expect(result).toBeDefined();
+
+    if (typeof result === "string") {
+      // Weather tool should normally return structured article responses,
+      // but allow text results in case of network errors.
+      expect(result.length).toBeGreaterThan(0);
+      return;
+    }
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("article");
+    if (structured.type === "article") {
+      expect(structured.dataset).toBeDefined();
+      expect(Array.isArray(structured.dataset.nodes)).toBe(true);
+      expect(structured.dataset.nodes!.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("builtin docs tool returns structured content for a known component", async () => {
+    const registry = llm.getBuiltinToolsByCategory();
+    const docsTool = registry.lfw["get_component_docs"];
+
+    const originalFetch = (global as any).fetch;
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      text: async () => "# lf-button\n\nButton component README content",
+    });
+
+    const result = await docsTool.function.execute?.({
+      component: "lf-button",
+    } as Record<string, unknown>);
+
+    (global as any).fetch = originalFetch;
+
+    expect(result).toBeDefined();
+
+    if (typeof result === "string") {
+      expect(result).toContain("lf-button");
+    } else {
+      expect(["text", "article"]).toContain(result.type);
+      if (result.type === "article") {
+        expect(result.dataset).toBeDefined();
+        expect(Array.isArray(result.dataset.nodes)).toBe(true);
+      } else {
+        expect(result.content).toContain("lf-button");
+      }
+    }
   });
 });

@@ -3,10 +3,15 @@
 
 $comp: "imageviewer";
 $borderC: 1px solid rgba(var(--lf-color-border));
-@include lf-comp-setup($comp, "false", "false", "true");
+@include lf-comp-setup($comp, "false", "false", "true", "false", "true");
 
 :host {
-  @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+  @include lf-comp-color(
+    $comp,
+    "bg",
+    "all",
+    var(--lf-ui-alpha-glass-hint, 0.125)
+  );
   @include lf-el-stretch;
 }
 

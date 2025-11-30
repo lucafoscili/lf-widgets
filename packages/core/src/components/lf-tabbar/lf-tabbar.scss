@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "tabbar";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   width: 100%;
@@ -29,7 +29,7 @@ $comp: "tabbar";
 .tab {
   & {
     @include lf-comp-font($comp, "primary");
-    @include lf-comp-glassmorphize($comp, "bg", "all");
+    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
     @include lf-el-transition("hover-glow");
     appearance: none;
     border: none;
@@ -70,31 +70,41 @@ $comp: "tabbar";
   }
 
   &:hover {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
   }
 
   &--active {
     & {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.225);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "all",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.325);
-    }
-
-    .tab__icon {
-      @include lf-comp-color($comp, "primary", "bg");
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "all",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
     }
 
     .tab__label {
-      @include lf-comp-color($comp, "primary", "text", 1, true);
       font-weight: 600;
       opacity: 1;
     }
   }
 
   &__icon {
-    @include lf-comp-icon($comp, "");
+    @include f-icon($comp);
     @include lf-el-transition("hover-glow");
   }
 

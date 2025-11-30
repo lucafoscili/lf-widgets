@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "toggle";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -73,7 +73,12 @@ $comp: "toggle";
   }
 
   &:hover:before {
-    @include lf-comp-glassmorphize($comp, "surface", "bg", 0.125, 12px, true);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     @include lf-el-transition("fade-in-out");
     border-radius: 50%;
     content: "";
@@ -88,19 +93,35 @@ $comp: "toggle";
 
   &--active {
     .toggle__track {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.675);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
     }
 
     .toggle__thumb {
       transform: translateX(100%) translateY(-50%);
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.775);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
     }
   }
 
   &__track {
     & {
       @include lf-comp-border($comp, "radius");
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.275, 8px, true);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375),
+        "true"
+      );
       @include lf-el-transition("springy");
       border-radius: var(--lf-ui-border-radius, 1em);
       box-sizing: border-box;
@@ -120,7 +141,13 @@ $comp: "toggle";
 
   &__thumb {
     & {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.375, 12px, true);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375),
+        "true"
+      );
       @include lf-el-transition("springy");
       border-radius: 50%;
       cursor: pointer;
@@ -138,7 +165,12 @@ $comp: "toggle";
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "surface", "bg", 0.8);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "bg",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
     }
   }
 

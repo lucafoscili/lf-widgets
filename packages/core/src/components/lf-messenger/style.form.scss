@@ -19,7 +19,12 @@ $comp: null !default;
   }
 
   &__label {
-    @include lf-comp-glassmorphize($comp, "surface");
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
     @include lf-el-ellipsis;
     @include lf-el-text("button");
     display: flex;

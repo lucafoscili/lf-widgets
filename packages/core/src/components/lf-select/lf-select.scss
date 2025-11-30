@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "select";
-@include lf-comp-setup($comp, "true", "true", "true", "true");
+@include lf-comp-setup($comp, "true", "true", "true", "true", "true");
 
 .select {
   & {
@@ -13,14 +13,19 @@ $comp: "select";
     & {
       --lf-textfield-input-cursor: pointer;
 
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0);
+      @include lf-comp-color($comp, "primary", "bg", 0);
       @include lf-el-stretch;
       cursor: var(--lf-textfield-input-cursor, pointer);
       transition: background-color 0.2s ease-in-out;
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.12);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
   }
 }

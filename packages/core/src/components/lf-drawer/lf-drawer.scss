@@ -3,11 +3,16 @@
 
 $comp: "drawer";
 $borderC: 1px solid rgba(var(--lf-color-border), 0.75);
-@include lf-comp-setup($comp, "false", "false", "true");
+@include lf-comp-setup($comp, "false", "false", "true", "false", "true", 12px);
 
 :host {
   @include lf-comp-border($comp, "radius");
-  @include lf-comp-glassmorphize($comp, "drawer", "all", 0.375, 12px);
+  @include lf-comp-color(
+    $comp,
+    "drawer",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
   box-sizing: border-box;
   display: block;
   height: 100dvh;

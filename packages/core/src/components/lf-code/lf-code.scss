@@ -3,7 +3,7 @@
 
 $comp: "code";
 $borderC: 1px solid rgb(var(--lf-color-border));
-@include lf-comp-setup($comp, "true", "false", "true");
+@include lf-comp-setup($comp, "true", "false", "true", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -38,7 +38,12 @@ $borderC: 1px solid rgb(var(--lf-color-border));
       @include lf-comp-border($comp, "radius");
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      @include lf-comp-glassmorphize($comp, "surface", "all", 0.775);
+      @include lf-comp-color(
+        $comp,
+        "surface",
+        "all",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
       align-items: center;
       border-left-color: rgb(
         var(--lf-#{$comp}-color-primary, rgb(var(--lf-color-primary)))
@@ -88,7 +93,12 @@ pre,
   border-top-right-radius: 0;
   box-sizing: border-box;
   overflow: auto;
-  @include lf-comp-glassmorphize($comp, "surface", "all", 0.375);
+  @include lf-comp-color(
+    $comp,
+    "surface",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
 }
 
 .body {
@@ -116,7 +126,12 @@ code ::selection,
 code::selection,
 pre ::selection,
 pre::selection {
-  @include lf-comp-color($comp, "primary");
+  @include lf-comp-color(
+    $comp,
+    "primary",
+    "all",
+    var(--lf-ui-alpha-glass, 0.375)
+  );
   text-shadow: none;
 }
 
@@ -134,15 +149,30 @@ pre {
   white-space: normal;
 }
 
+.token.code {
+  display: block;
+  height: var(--lf-code-height, auto);
+}
+
 .token.cdata,
 .token.comment,
 .token.doctype,
 .token.prolog {
-  @include lf-comp-color($comp, "bg", "text", 0.75);
+  @include lf-comp-color(
+    $comp,
+    "bg",
+    "text",
+    var(--lf-ui-alpha-glass-heavy, 0.75)
+  );
 }
 
 .token.punctuation {
-  @include lf-comp-color($comp, "bg", "text", 0.875);
+  @include lf-comp-color(
+    $comp,
+    "bg",
+    "text",
+    var(--lf-ui-alpha-glass-solid, 0.875)
+  );
 }
 
 .token.bold,

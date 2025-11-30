@@ -1,5 +1,4 @@
 import {
-  CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TOAST_BLOCKS,
@@ -9,6 +8,7 @@ import {
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfThemeIcon,
   LfThemeUISize,
   LfThemeUIState,
@@ -32,6 +32,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 
 /**
@@ -182,7 +183,6 @@ export class LfToast implements LfToastInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_TOAST_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_TOAST_PARTS;
   #s = LF_STYLE_ID;
@@ -260,26 +260,23 @@ export class LfToast implements LfToastInterface {
 
   //#region Private methods
   #prepIcon = (isClose = false): VNode => {
-    const { assets, theme } = this.#framework;
-    const { get } = assets;
+    const { theme } = this.#framework;
     const { bemClass } = theme;
 
     const { toast } = this.#b;
-    const { style } = get(
-      `./assets/svg/${isClose ? this.lfCloseIcon : this.lfIcon}.svg`,
-    );
+    const icon = isClose ? this.lfCloseIcon : this.lfIcon;
 
     return (
       <div
         class={bemClass(toast._, toast.icon, {
           "has-actions": isClose,
         })}
-        data-cy={this.#cy.maskedSvg}
         onPointerDown={isClose ? (e) => this.lfCloseCallback(this, e) : null}
         part={this.#p.icon}
-        style={style}
         tabIndex={isClose && 0}
-      ></div>
+      >
+        <FIcon framework={this.#framework} icon={icon as LfIconType} />
+      </div>
     );
   };
   //#endregion

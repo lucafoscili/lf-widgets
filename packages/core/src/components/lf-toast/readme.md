@@ -85,7 +85,6 @@ Type: `Promise<void>`
 
 | Name                               | Description                                                                                        |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--lf-comp-color-on-bg`            | Sets the color-on-bg color for the comp component. Defaults to => var(--lf-color-on-bg)            |
 | `--lf-toast-accent-height`         | Sets the height for the toast accent. Defaults to => 0.25em                                        |
 | `--lf-toast-border-radius`         | Sets the border radius for the toast component. Defaults to => var(--lf-ui-border-radius)          |
 | `--lf-toast-color-on-bg`           | Sets the color-on-bg color for the toast component. Defaults to => var(--lf-color-on-bg)           |

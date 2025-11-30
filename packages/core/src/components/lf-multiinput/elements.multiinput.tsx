@@ -32,6 +32,7 @@ export const prepMultiInputJsx = (
           {...sanitizeProps(compInstance.lfChipProps, "LfChip")}
           class={bemClass(blocks.multiinput._, blocks.multiinput.chips)}
           data-cy={cyAttributes.node}
+          lfValue={compInstance.lfValue?.split(",") || []}
           onLf-chip-event={handlers.chips}
           part={parts.chips}
           ref={assignRef(refs, "chips")}
