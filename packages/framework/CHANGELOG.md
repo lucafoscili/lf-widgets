@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.1...3.0.0) (2025-11-30)
+
+
+### Features
+
+* Add article builder and rich tool response support ([aea84c6](https://github.com/lucafoscili/lf-widgets/commit/aea84c6b188db5d54c5c78be8ddbaa88ddeec10e))
+* Add article builder helpers and improve tool docs ([7f455f6](https://github.com/lucafoscili/lf-widgets/commit/7f455f6b83e52140c2d6350a93944542ce61ec25))
+* Refactor and simplify component docs tool logic ([34dce5f](https://github.com/lucafoscili/lf-widgets/commit/34dce5f6204dda54939030e1463850d241f52d47))
+
+
+
+
+
 # [3.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v2.0.1...3.0.0-rc.1) (2025-11-30)
 
 

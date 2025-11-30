@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.1...3.0.0) (2025-11-30)
+
+
+### Features
+
+* Add article builder and rich tool response support ([aea84c6](https://github.com/lucafoscili/lf-widgets/commit/aea84c6b188db5d54c5c78be8ddbaa88ddeec10e))
+* Add article builder helpers and improve tool docs ([7f455f6](https://github.com/lucafoscili/lf-widgets/commit/7f455f6b83e52140c2d6350a93944542ce61ec25))
+* Add inline position and style improvements to snackbar ([7be33ab](https://github.com/lucafoscili/lf-widgets/commit/7be33ab40e21349adcc29364aebbc7df199ffc28))
+* Add interactive truncation expansion to breadcrumbs ([0b1563a](https://github.com/lucafoscili/lf-widgets/commit/0b1563a44b6de0b4bd50461c0327338241400b8b))
+* Add lf-snackbar component and related foundations ([e17e5f1](https://github.com/lucafoscili/lf-widgets/commit/e17e5f17f4360316db0bb79e738dc43ee58d8481))
+* Add LfBreadcrumbs component and related utilities ([65b982c](https://github.com/lucafoscili/lf-widgets/commit/65b982c06bf2e56ec2e5ecab166f6dc55d7f1137))
+* Enhance theme fonts and UI styles, remove tip section ([3036489](https://github.com/lucafoscili/lf-widgets/commit/3036489ad5a10911b29750e801ee9bafccaa2076))
+* Improve tool execution merging and streaming in chat ([96381eb](https://github.com/lucafoscili/lf-widgets/commit/96381eb450e3e9c5787bcc4b3aab66eb96f83ed4))
+
+
+
+
+
 # [3.0.0-rc.1](https://github.com/lucafoscili/lf-widgets/compare/v2.0.1...3.0.0-rc.1) (2025-11-30)
 
 
