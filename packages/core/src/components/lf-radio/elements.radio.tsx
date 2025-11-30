@@ -32,12 +32,12 @@ export const prepRadio = (
             disabled={node.isDisabled}
             id={node.id}
             name={inputName}
-            onBlur={(e) => blur(node.id, e)}
+            onBlur={(e) => blur(e, node.id)}
             onChange={(e) => {
-              change(node.id, e);
+              change(e, node.id);
             }}
             onFocus={(e) => {
-              focus(node.id, e);
+              focus(e, node.id);
             }}
             part={parts.input}
             ref={(el) => {
@@ -97,8 +97,8 @@ export const prepRadio = (
             selected: isSelected,
             disabled: isDisabled,
           })}
-          onClick={(e) => click(node.id, e)}
-          onPointerDown={(e) => handlers.pointerDown(node, e)}
+          onClick={(e) => click(e, node.id)}
+          onPointerDown={(e) => handlers.pointerDown(e, node)}
           part={parts.item}
           ref={(el) => {
             if (el) elements.refs.items.set(node.id, el);

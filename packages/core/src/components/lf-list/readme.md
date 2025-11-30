@@ -192,6 +192,7 @@ Type: `Promise<void>`
 | `--lf-list-color-danger`                 | Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)         |
 | `--lf-list-color-on-bg`                  | Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-list-color-on-danger`              | Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)   |
+| `--lf-list-color-on-primary`             | Sets the color-on-primary color for the list component. Defaults to => var(--lf-color-on-primary) |
 | `--lf-list-color-on-surface`             | Sets the color-on-surface color for the list component. Defaults to => var(--lf-color-on-surface) |
 | `--lf-list-color-primary`                | Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)       |
 | `--lf-list-color-surface`                | Sets the color-surface color for the list component. Defaults to => var(--lf-color-surface)       |

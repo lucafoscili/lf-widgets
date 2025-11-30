@@ -8,7 +8,7 @@
 );
 
 $comp: "chip";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -34,21 +34,32 @@ $comp: "chip";
 
       &:hover {
         & {
-          @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125);
+          @include lf-comp-color(
+            $comp,
+            "primary",
+            "bg",
+            var(--lf-ui-alpha-glass-hint, 0.125)
+          );
         }
       }
 
       &--selected {
         & {
-          @include lf-comp-glassmorphize($comp, "primary", "all", 0.875);
+          @include lf-comp-color(
+            $comp,
+            "primary",
+            "all",
+            var(--lf-ui-alpha-glass-solid, 0.875)
+          );
         }
 
         &:hover {
-          @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
-        }
-
-        & .item__icon--leading:not(.item__icon--hidden) {
-          @include lf-comp-color($comp, "primary", "bg", 1, true);
+          @include lf-comp-color(
+            $comp,
+            "primary",
+            "bg",
+            var(--lf-ui-alpha-glass-heavy, 0.75)
+          );
         }
       }
     }
@@ -146,7 +157,7 @@ $comp: "chip";
       }
 
       &--has-actions {
-        @include lf-comp-icon($comp, delete, "surface");
+        @include f-icon($comp, "surface");
       }
     }
   }

@@ -9,6 +9,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
+  LfIconType,
   LfTextfieldElement,
   LfTextfieldEvent,
   LfTextfieldEventPayload,
@@ -35,6 +36,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 /**
  * The text field may include an icon, label, helper text, and a character counter.
@@ -123,7 +125,7 @@ export class LfTextfield implements LfTextfieldInterface {
    * <lf-textfield lfIcon="search" />
    * ```
    */
-  @Prop({ mutable: true }) lfIcon: string = "";
+  @Prop({ mutable: true }) lfIcon: LfIconType | null = null;
   /**
    * Sets the label for the text field.
    *
@@ -485,30 +487,22 @@ export class LfTextfield implements LfTextfieldInterface {
       return null;
     }
 
-    const { get } = this.#framework.assets;
     const { bemClass } = this.#framework.theme;
 
     const { textfield } = this.#b;
 
-    const { style } = get(`./assets/svg/${this.lfIcon}.svg`);
     return (
-      <div
-        class={bemClass(textfield._, textfield.icon, {
+      <FIcon
+        framework={this.#framework}
+        icon={this.lfIcon}
+        wrapperClass={bemClass(textfield._, textfield.icon, {
           trailing: this.lfTrailingIcon,
         })}
-        data-cy={this.#cy.maskedSvg}
-        onClick={(e) => {
+        onClick={(e: MouseEvent) => {
           this.onLfEvent(e, "click", true, "regular");
         }}
-        part={this.#p.icon}
-        ref={(el) => {
-          if (el) {
-            this.#icon = el;
-          }
-        }}
-        style={style}
-        tabIndex={0}
-      ></div>
+        style={{ tabIndex: 0, cursor: "pointer" }}
+      />
     );
   };
   #prepTrailingIconAction = (): VNode => {
@@ -516,25 +510,25 @@ export class LfTextfield implements LfTextfieldInterface {
       return null;
     }
 
-    const { bemClass } = this.#framework.theme;
+    const { bemClass, get } = this.#framework.theme;
     const { textfield } = this.#b;
+    const { variables } = get.current();
+
+    // Resolve the CSS variable to the actual icon name
+    const iconName = variables[this.lfTrailingIconAction] as string;
 
     return (
-      <div
-        class={bemClass(textfield._, textfield.iconAction, {
+      <FIcon
+        framework={this.#framework}
+        icon={iconName as LfIconType}
+        wrapperClass={bemClass(textfield._, textfield.iconAction, {
           trailing: true,
         })}
-        data-cy={this.#cy.maskedSvg}
-        onClick={(e) => {
+        onClick={(e: MouseEvent) => {
           this.onLfEvent(e, "click", true, "action");
         }}
-        part={this.#p.iconAction}
-        style={{
-          mask: `var(${this.lfTrailingIconAction})`,
-          webkitMask: `var(${this.lfTrailingIconAction})`,
-        }}
-        tabIndex={0}
-      ></div>
+        style={{ tabIndex: 0, cursor: "pointer" }}
+      />
     );
   };
   #prepInput = (): VNode => {

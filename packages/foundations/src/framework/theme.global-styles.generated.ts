@@ -5,6 +5,16 @@
  */
 
 export const GLOBAL_STYLES = {
+  ".f-icon": {
+    "height": "100%",
+    "width": "100%"
+  },
+  ".f-icon > svg": {
+    "display": "block",
+    "fill": "currentColor",
+    "height": "100%",
+    "width": "100%"
+  },
   "::-webkit-scrollbar": {
     "width": "9px"
   },

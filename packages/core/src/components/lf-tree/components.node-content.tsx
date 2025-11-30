@@ -1,11 +1,12 @@
 import {
-  CY_ATTRIBUTES,
+  LF_THEME_ICONS,
   LF_TREE_BLOCKS,
   LF_TREE_CSS_VARIABLES,
   LfFrameworkInterface,
   LfDataNode,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 
 //#region Tree node content
 export const TreeNodeContent: FunctionalComponent<{
@@ -16,7 +17,6 @@ export const TreeNodeContent: FunctionalComponent<{
   type: "dropdown" | "expand" | "icon" | "padding" | "placeholder";
   onClickExpand?: (e: MouseEvent) => void;
 }> = ({ depth, expanded = false, manager, node, onClickExpand, type }) => {
-  const { get } = manager.assets;
   const { bemClass } = manager.theme;
 
   switch (type) {
@@ -26,8 +26,9 @@ export const TreeNodeContent: FunctionalComponent<{
           class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.dropdown, {
             expanded,
           })}
-          data-cy={CY_ATTRIBUTES.maskedSvg}
-        ></div>
+        >
+          <FIcon framework={manager} icon={LF_THEME_ICONS.dropdown} />
+        </div>
       );
     case "expand":
       return (
@@ -35,18 +36,19 @@ export const TreeNodeContent: FunctionalComponent<{
           class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.expand, {
             expanded,
           })}
-          data-cy={CY_ATTRIBUTES.maskedSvg}
           onClick={onClickExpand}
-        ></div>
+        >
+          <FIcon
+            framework={manager}
+            icon={expanded ? LF_THEME_ICONS.expanded : LF_THEME_ICONS.collapsed}
+          />
+        </div>
       );
     case "icon":
-      const { style } = get(`./assets/svg/${node.icon}.svg`);
       return (
-        <div
-          class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.icon)}
-          data-cy={CY_ATTRIBUTES.maskedSvg}
-          style={style}
-        ></div>
+        <div class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.icon)}>
+          <FIcon framework={manager} icon={node.icon} />
+        </div>
       );
     case "padding":
       return (

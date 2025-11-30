@@ -68,6 +68,8 @@ $gap: 1.5em;
   }
 
   &__content {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     grid-area: content;
     overflow: auto;
   }
@@ -107,6 +109,8 @@ $gap: 1.5em;
   }
 
   &__link {
+    backdrop-filter: unset;
+    -webkit-backdrop-filter: unset;
     padding: 1em;
   }
 
@@ -184,6 +188,11 @@ $gap: 1.5em;
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+  }
+
+  &__button {
+    backdrop-filter: unset;
+    -webkit-backdrop-filter: unset;
   }
 
   &__left,

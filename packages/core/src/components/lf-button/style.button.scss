@@ -8,7 +8,7 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 .button {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-color($comp, "primary", "text", 1, true);
+    @include lf-comp-color($comp, "primary", "text", 1, "true");
     @include lf-comp-font($comp, "primary");
     @include lf-el-text($comp);
     @include lf-el-transition;
@@ -68,28 +68,52 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     vertical-align: middle;
   }
 
-  &--floating,
-  &--outlined,
-  &--raised {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.125, 4px);
-  }
-
   &:hover {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.25, 4px);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
   }
 
   &:focus {
-    @include lf-comp-glassmorphize($comp, "primary", "bg");
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
   }
 
   &--floating,
+  &--outlined,
   &--raised {
-    &:not(.button--disabled) {
-      @include lf-comp-color($comp, "primary", "bg", 0.15);
+    & {
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
-    &.button--disabled {
-      box-shadow: none;
+    &:hover {
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
+    }
+
+    &:focus {
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "all",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
     }
   }
 
@@ -148,24 +172,33 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
 
     &:not(.button--disabled) {
-      @include lf-comp-glassmorphize(
+      @include lf-comp-color(
         $comp,
         "primary",
         "text",
-        0.125,
-        4px,
-        true
+        var(--lf-ui-alpha-glass-hint, 0.125),
+        "true"
       );
       border-color: var(--lf-#{$comp}-color-primary);
       background-color: transparent;
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.175, 8px, true);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      );
     }
 
     &:focus {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.275, 8px, true);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass, 0.375)
+      );
     }
   }
 
@@ -227,7 +260,7 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 
   &__icon {
     & {
-      @include lf-comp-icon($comp, "", "primary", 1.5em, 1, false);
+      @include f-icon($comp);
       margin-left: -0.25em;
       margin-right: 0.75em;
     }

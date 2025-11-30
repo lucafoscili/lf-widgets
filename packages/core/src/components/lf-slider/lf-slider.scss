@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "slider";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -16,6 +16,11 @@ $comp: "slider";
     align-items: center;
     box-sizing: border-box;
     display: inline-flex;
+    /**
+    * @prop --lf-#{$comp}-overflow: Sets the overflow for the #{$comp} component.
+    *                               Defaults to => hidden
+    */
+    overflow: var(--lf-#{$comp}-overflow, hidden);
     /**
     * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
     *                              Defaults to => 2em
@@ -75,7 +80,12 @@ $comp: "slider";
   &--has-value {
     .slider__track:after {
       @include lf-comp-border($comp, "radius");
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.75);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
       @include lf-el-transition("springy");
       position: absolute;
       content: "";
@@ -115,7 +125,12 @@ $comp: "slider";
 
   &__track {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.25);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
     @include lf-el-transition("springy");
     /**
     * @prop --lf-#{$comp}-box-shadow: Sets the box-shadow for the #{$comp} component's track.
@@ -164,7 +179,12 @@ $comp: "slider";
 
   &__thumb {
     & {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.6);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
       @include lf-el-transition("springy");
       border-radius: 50%;
       /**
@@ -182,7 +202,12 @@ $comp: "slider";
     }
 
     &:hover {
-      @include lf-comp-glassmorphize($comp, "primary", "bg", 0.8);
+      @include lf-comp-color(
+        $comp,
+        "primary",
+        "bg",
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
       /**
       * @prop --lf-#{$comp}-thumb-hover-scale: Sets the scale for the #{$comp} component's thumb on hover.
       *                                        Defaults to => 1.1

@@ -1,3 +1,4 @@
+import { LfIconType } from "../foundations";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -161,8 +162,8 @@ export type LfButtonState = (typeof LF_BUTTON_STATE)[number];
 export interface LfButtonPropsInterface {
   lfAriaLabel?: string;
   lfDataset?: LfDataDataset;
-  lfIcon?: string;
-  lfIconOff?: string;
+  lfIcon?: LfIconType | null;
+  lfIconOff?: LfIconType | null;
   lfLabel?: string;
   lfRipple?: boolean;
   lfShowSpinner?: boolean;

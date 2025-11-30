@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "checkbox";
-@include lf-comp-setup($comp, "true", "true");
+@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -58,7 +58,7 @@ $comp: "checkbox";
 
 .checkbox {
   & {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0);
+    @include lf-comp-color($comp, "primary", "bg", 0);
     align-items: center;
     /**
     * @prop --lf-#{$comp}-surface-border-radius: Sets the border radius for the #{$comp} surface.
@@ -80,11 +80,21 @@ $comp: "checkbox";
   }
 
   &:hover {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.24);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
   }
 
   &:active {
-    @include lf-comp-glassmorphize($comp, "primary", "bg", 0.36);
+    @include lf-comp-color(
+      $comp,
+      "primary",
+      "bg",
+      var(--lf-ui-alpha-glass, 0.375)
+    );
   }
 
   &__surface {
@@ -162,7 +172,12 @@ $comp: "checkbox";
 
   &__background {
     @include lf-el-transition();
-    @include lf-comp-glassmorphize($comp, "surface", "text", 0.6);
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "text",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     /**
     * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} background.
     *                                    Defaults to => var(--lf-ui-border-radius)

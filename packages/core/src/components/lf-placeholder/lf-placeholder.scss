@@ -27,7 +27,7 @@ $comp: "placeholder";
   }
 
   &__icon {
-    @include lf-comp-icon($comp, "");
+    @include f-icon($comp);
     @include lf-el-stretch;
     animation: shine ease 2s infinite;
   }

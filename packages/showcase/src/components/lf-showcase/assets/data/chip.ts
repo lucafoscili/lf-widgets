@@ -42,7 +42,7 @@ export const getChipFixtures = (
     nodes: Array.from({ length: randomNumber(3, 7) }, (_, i) => ({
       id: `${i}`,
       value: randomString(),
-      icon: randomBoolean() && randomIcon(iconValues),
+      icon: randomBoolean() ? randomIcon(iconValues) : undefined,
     })),
   };
 
@@ -50,19 +50,19 @@ export const getChipFixtures = (
     nodes: Array.from({ length: randomNumber(3, 7) }, (_, i) => ({
       id: `000${i}`,
       value: `Depth 0 (${i})`,
-      icon: randomBoolean() && randomIcon(iconValues),
+      icon: randomBoolean() ? randomIcon(iconValues) : undefined,
       children: Array.from({ length: randomNumber(1, 3) }, (_, j) => ({
         id: `000${i}${j}`,
         value: `Depth 1 (${j})`,
-        icon: randomBoolean() && randomIcon(iconValues),
+        icon: randomBoolean() ? randomIcon(iconValues) : undefined,
         children: Array.from({ length: randomNumber(1, 3) }, (_, k) => ({
           id: `000${i}${j}${k}`,
           value: `Depth 2 (${k})`,
-          icon: randomBoolean() && randomIcon(iconValues),
+          icon: randomBoolean() ? randomIcon(iconValues) : undefined,
           children: Array.from({ length: randomNumber(1, 3) }, (_, l) => ({
             id: `000${i}${j}${k}${l}`,
             value: `Depth 3 (${l})`,
-            icon: randomBoolean() && randomIcon(iconValues),
+            icon: randomBoolean() ? randomIcon(iconValues) : undefined,
           })),
         })),
       })),

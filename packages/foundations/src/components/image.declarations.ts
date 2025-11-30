@@ -43,15 +43,11 @@ export interface LfImageEventPayload
  */
 export interface LfImagePropsInterface {
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
-  lfMode?: LfImageMode;
+  lfShowSpinner?: boolean;
   lfSizeX?: string;
   lfSizeY?: string;
   lfStyle?: string;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
 }
-/**
- * Utility type used by the `lf-image` component.
- */
-export type LfImageMode = "sprite" | "mask";
 //#endregion

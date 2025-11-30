@@ -203,6 +203,7 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
@@ -220,6 +221,7 @@ graph TD;
   lf-canvas --> lf-image
   lf-accordion --> lf-canvas
   lf-article --> lf-canvas
+  lf-breadcrumbs --> lf-canvas
   lf-card --> lf-canvas
   lf-carousel --> lf-canvas
   lf-compare --> lf-canvas

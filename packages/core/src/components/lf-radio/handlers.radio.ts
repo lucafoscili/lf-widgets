@@ -10,7 +10,7 @@ export const createHandlers = (
 ): LfRadioAdapterHandlers => {
   return {
     //#region Blur
-    blur: async (nodeId: string, e: FocusEvent) => {
+    blur: async (e: FocusEvent, nodeId: string) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
       const node = adapter.controller.get.data.nodeById(nodeId);
@@ -25,7 +25,7 @@ export const createHandlers = (
     //#endregion
 
     //#region Click
-    click: async (nodeId: string, e: MouseEvent) => {
+    click: async (e: MouseEvent, nodeId: string) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
       const node = adapter.controller.get.data.nodeById(nodeId);
@@ -40,7 +40,7 @@ export const createHandlers = (
     //#endregion
 
     //#region Change
-    change: async (nodeId: string, e: Event) => {
+    change: async (e: Event, nodeId: string) => {
       const adapter = getAdapter();
       const { compInstance, data } = adapter.controller.get;
       const node = data.nodeById(nodeId);
@@ -55,7 +55,7 @@ export const createHandlers = (
     //#endregion
 
     //#region Focus
-    focus: async (nodeId: string, e: FocusEvent) => {
+    focus: async (e: FocusEvent, nodeId: string) => {
       const adapter = getAdapter();
       const { compInstance, data } = adapter.controller.get;
       const node = data.nodeById(nodeId);
@@ -126,7 +126,7 @@ export const createHandlers = (
     //#endregion
 
     //#region Pointer Down
-    pointerDown: async (node: LfDataNode, e: Event) => {
+    pointerDown: async (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
       const comp = compInstance as LfRadio;

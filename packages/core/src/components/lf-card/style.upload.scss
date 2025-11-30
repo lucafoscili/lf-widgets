@@ -6,7 +6,7 @@ $comp: null !default;
 .upload-layout {
   & {
     @include lf-comp-border($comp, "radius");
-    @include lf-comp-glassmorphize($comp);
+    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
     @include lf-el-stretch;
     display: grid;
     grid-template-rows: 1fr auto;

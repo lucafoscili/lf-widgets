@@ -8,10 +8,12 @@ import {
   LF_MESSENGER_PARTS,
   LF_MESSENGER_PROPS,
   LF_STYLE_ID,
+  LF_THEME_ICONS,
   LF_WRAPPER_ID,
   LfChatStatus,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfIconType,
   LfMessengerAdapter,
   LfMessengerBaseChildNode,
   LfMessengerCharacterNode,
@@ -47,6 +49,7 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import {
   assignPropsToChatCell,
@@ -652,7 +655,6 @@ export class LfMessenger implements LfMessengerInterface {
         : this.#framework.theme.get.icon(
             isEnabled ? "hexagonMinus2" : "offHexagon",
           );
-      const { style } = this.#framework.assets.get(`./assets/svg/${icon}.svg`);
 
       return (
         <div class={bemClass(options._, options.wrapper)}>
@@ -673,10 +675,11 @@ export class LfMessenger implements LfMessengerInterface {
                   this.refresh();
                 }}
               >
-                <div
-                  class={bemClass(options._, options.blockerIcon)}
-                  style={style}
-                ></div>
+                <FIcon
+                  framework={this.#framework}
+                  icon={icon as LfIconType}
+                  wrapperClass={bemClass(options._, options.blockerIcon)}
+                />
                 <div class={bemClass(options._, options.blockerLabel)}>
                   {isEnabled ? "Click to disable" : "Click to enable"}
                 </div>
@@ -687,10 +690,11 @@ export class LfMessenger implements LfMessengerInterface {
               class={bemClass(options._, options.placeholder)}
               title={`No ${option} selected.`}
             >
-              <div
-                class={bemClass(options._, options.placeholderIcon)}
-                style={style}
-              ></div>
+              <FIcon
+                framework={this.#framework}
+                icon={icon as LfIconType}
+                wrapperClass={bemClass(options._, options.placeholderIcon)}
+              />
             </div>
           )}
           <div class={bemClass(options._, options.name)}>
@@ -701,10 +705,12 @@ export class LfMessenger implements LfMessengerInterface {
               {option}
             </div>
             {title && (
-              <div
-                class={bemClass(options._, options.info)}
-                title={title}
-              ></div>
+              <FIcon
+                framework={this.#framework}
+                icon={LF_THEME_ICONS.info}
+                wrapperClass={bemClass(options._, options.info)}
+                style={{ cursor: "help" }}
+              />
             )}
           </div>
         </div>

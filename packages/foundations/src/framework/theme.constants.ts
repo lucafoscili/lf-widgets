@@ -102,6 +102,10 @@ export const LF_THEME_UI_NUMERICS = [
   "large",
   "xlarge",
   "xxlarge",
+  "alphaGlass",
+  "alphaGlassHeavy",
+  "alphaGlassHint",
+  "alphaGlassSolid",
   "opacityDisabled",
   "opacityRipple",
   "zindexBackdrop",
@@ -124,6 +128,10 @@ export const LF_THEME_UI = {
       `${typeof LF_THEME_UI_PREFIX}size-${(typeof LF_THEME_UI_SIZES)[number]}`
     >,
   ),
+  alphaGlassHint: `${LF_THEME_UI_PREFIX}alpha-glass-hint`,
+  alphaGlass: `${LF_THEME_UI_PREFIX}alpha-glass`,
+  alphaGlassHeavy: `${LF_THEME_UI_PREFIX}alpha-glass-heavy`,
+  alphaGlassSolid: `${LF_THEME_UI_PREFIX}alpha-glass-solid`,
   borderRadius: `${LF_THEME_UI_PREFIX}border-radius`,
   boxShadowModal: `${LF_THEME_UI_PREFIX}box-shadow-modal`,
   durationRipple: `${LF_THEME_UI_PREFIX}duration-ripple`,
@@ -294,6 +302,10 @@ export const LF_THEME_BASE_VARS = {
   "--lf-icon-upload": `upload`,
   "--lf-icon-warning": `alert-triangle`,
   "--lf-ui-border-radius": "0",
+  "--lf-ui-alpha-glass-hint": 0.125,
+  "--lf-ui-alpha-glass": 0.375,
+  "--lf-ui-alpha-glass-heavy": 0.75,
+  "--lf-ui-alpha-glass-solid": 0.875,
   "--lf-ui-box-shadow-modal": "0px 0px 7.5px 0px rgba(128, 128, 128, 0.5)",
   "--lf-ui-duration-ripple": "750ms",
   "--lf-ui-height-header": "80px",
@@ -395,6 +407,7 @@ export const LIGHT: LfThemeElement = {
 export const ABYSS: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.staatliches,
+    LF_THEME_FONTS_FONTFACE.oswald,
     LF_THEME_FONTS_FONTFACE.montserrat,
   ],
   isDark: true,
@@ -425,6 +438,7 @@ export const ABYSS: LfThemeElement = {
     "--lf-ui-radius-ripple": "50%",
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Staatliches, sans-serif",
+    "--lf-font-family-secondary": "Oswald, sans-serif",
     "--lf-font-family-monospace": "Montserrat, sans-serif",
   },
 } as const;
@@ -435,6 +449,7 @@ export const BLOODMOON: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.cormorantGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+    LF_THEME_FONTS_FONTFACE.cinzel,
   ],
   isDark: true,
   variables: {
@@ -474,7 +489,8 @@ export const BLOODMOON: LfThemeElement = {
     "--lf-ui-radius-ripple": "50%",
     "--lf-font-family-primary": "Cormorant Garamond, serif",
     "--lf-font-family-monospace": "Jet Brains Mono, monospace",
-    "--lf-font-size": "15px",
+    "--lf-font-family-secondary": "Cinzel, serif",
+    "--lf-font-size": "16px",
   },
 } as const;
 //#endregion
@@ -512,7 +528,11 @@ export const ERIS: LfThemeElement = {
 
 //#region Neon
 export const NEON: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.orbitron, LF_THEME_FONTS_FONTFACE.vt323],
+  font: [
+    LF_THEME_FONTS_FONTFACE.orbitron,
+    LF_THEME_FONTS_FONTFACE.lato,
+    LF_THEME_FONTS_FONTFACE.vt323,
+  ],
   isDark: true,
   variables: {
     ...DARK.variables,
@@ -539,6 +559,7 @@ export const NEON: LfThemeElement = {
     "--lf-color-on-spinner": "#00ff9e",
     "--lf-font-family-monospace": "VT323, monospace",
     "--lf-font-family-primary": "Orbitron, sans-serif",
+    "--lf-font-family-secondary": "Lato, sans-serif",
     "--lf-font-size": "14px",
     "--lf-ui-border-radius": "0.5em",
     "--lf-ui-radius-ripple": "50%",
@@ -551,6 +572,7 @@ export const NIGHT: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.bebasNeue,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
+    LF_THEME_FONTS_FONTFACE.oswald,
   ],
   isDark: true,
   variables: {
@@ -589,6 +611,7 @@ export const PASTEL: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.raleway,
     LF_THEME_FONTS_FONTFACE.sourceCodePro,
+    LF_THEME_FONTS_FONTFACE.oswald,
   ],
   isDark: false,
   variables: {
@@ -627,6 +650,7 @@ export const SAKURA: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.sawarabiMincho,
     LF_THEME_FONTS_FONTFACE.raleway,
+    LF_THEME_FONTS_FONTFACE.lato,
   ],
   isDark: false,
   variables: {
@@ -657,6 +681,7 @@ export const SAKURA: LfThemeElement = {
     "--lf-font-size": "17px",
     "--lf-font-family-primary": "Sawarabi Mincho, serif",
     "--lf-font-family-monospace": "Raleway, sans-serif",
+    "--lf-font-family-secondary": "Lato, sans-serif",
   },
 } as const;
 //#endregion
@@ -666,6 +691,7 @@ export const SEPULCHRE: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.ebGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
+    LF_THEME_FONTS_FONTFACE.cormorantGaramond,
   ],
   isDark: false,
   variables: {
@@ -703,6 +729,7 @@ export const SEPULCHRE: LfThemeElement = {
     "--lf-color-on-spinner": "#fdf6e9",
     "--lf-font-family-primary": "'E B Garamond', serif",
     "--lf-font-family-monospace": "'JetBrains Mono', monospace",
+    "--lf-font-family-secondary": "'Cormorant Garamond', serif",
     "--lf-font-size": "16px",
     "--lf-ui-border-radius": "0.35rem",
     "--lf-ui-radius-ripple": "50%",
@@ -716,6 +743,7 @@ export const STEAMPUNK: LfThemeElement = {
   font: [
     LF_THEME_FONTS_FONTFACE.IMFellEnglishSC,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
+    LF_THEME_FONTS_FONTFACE.ebGaramond,
   ],
   isDark: true,
   variables: {
@@ -746,13 +774,18 @@ export const STEAMPUNK: LfThemeElement = {
     "--lf-font-size": "16px",
     "--lf-font-family-primary": "IM Fell English SC, serif",
     "--lf-font-family-monospace": "Share Tech Mono, monospace",
+    "--lf-font-family-secondary": "E B Garamond, serif",
   },
 } as const;
 //#endregion
 
 //#region Urban
 export const URBAN: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.lato, LF_THEME_FONTS_FONTFACE.merriweather],
+  font: [
+    LF_THEME_FONTS_FONTFACE.lato,
+    LF_THEME_FONTS_FONTFACE.merriweather,
+    LF_THEME_FONTS_FONTFACE.oswald,
+  ],
   isDark: false,
   variables: {
     ...LIGHT.variables,
@@ -822,7 +855,11 @@ export const VOIDFORGE: LfThemeElement = {
 
 //#region Wizardry
 export const WIZARDRY: LfThemeElement = {
-  font: [LF_THEME_FONTS_FONTFACE.uncialAntiqua, LF_THEME_FONTS_FONTFACE.cinzel],
+  font: [
+    LF_THEME_FONTS_FONTFACE.uncialAntiqua,
+    LF_THEME_FONTS_FONTFACE.cinzel,
+    LF_THEME_FONTS_FONTFACE.ebGaramond,
+  ],
   isDark: true,
   variables: {
     ...DARK.variables,
@@ -852,6 +889,7 @@ export const WIZARDRY: LfThemeElement = {
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Uncial Antiqua, serif",
     "--lf-font-family-monospace": "Cinzel, serif",
+    "--lf-font-family-secondary": "EB Garamond, serif",
   },
 } as const;
 //#endregion
@@ -1011,6 +1049,7 @@ export const LF_ICONS_REGISTRY = {
   photo: "photo",
   photoSearch: "photo-search",
   photoX: "photo-x",
+  pictureInPictureTop: "picture-in-picture-top",
   playerRecord: "player-record",
   playerStop: "player-stop",
   playstationCircle: "playstation-circle",
@@ -1021,6 +1060,7 @@ export const LF_ICONS_REGISTRY = {
   refresh: "refresh",
   replace: "replace",
   robot: "robot",
+  route2: "route-2",
   schema: "schema",
   select: "select",
   search: "search",

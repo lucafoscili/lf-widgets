@@ -2,7 +2,7 @@
 @use "mixins" as *;
 
 $comp: "typewriter";
-@include lf-comp-setup($comp);
+@include lf-comp-setup($comp, "false", "false", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
@@ -10,7 +10,12 @@ $comp: "typewriter";
 
 .typewriter {
   & {
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.125);
+    @include lf-comp-color(
+      $comp,
+      "bg",
+      "all",
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
     @include lf-el-stretch;
     box-sizing: border-box;
     /**
@@ -31,7 +36,12 @@ $comp: "typewriter";
   }
 
   &__cursor {
-    @include lf-comp-glassmorphize($comp, "bg", "all", 0.575, 8px, true);
+    @include lf-comp-color(
+      $comp,
+      "bg",
+      "all",
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
     /**
     * @prop --lf-#{$comp}-cursor-height: Sets the height for the #{$comp} cursor.
     *                                    Defaults to => 1.25em

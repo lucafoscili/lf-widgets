@@ -88,54 +88,27 @@ describe(CY_CATEGORIES.props, () => {
   });
 
   it("lfHtmlAttributes: passes attributes to rendered element", () => {
-    const iconClass = framework.theme.bemClass("image", "icon");
+    const imgClass = framework.theme.bemClass("image", "img");
     cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(`${imageTag}#states-primary`)
+      .find(`${imageTag}#image-cover`)
       .should("exist")
       .shadow()
-      .find(`.${iconClass}`)
-      .should("have.attr", "title", "Icon in primary state");
-
-    // Mask example should propagate html attributes to the masked element as well
-    cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(`${imageTag}#icon-mask`)
-      .should("exist")
-      .and("have.attr", "lf-mode", "mask")
-      .shadow()
-      .find(`.${iconClass}`)
-      .should("have.attr", "title", "Mask icon");
+      .find(`.${imgClass}`)
+      .should("have.attr", "title", "Image cover");
   });
 
-  it("lfMode: default 'sprite' renders an <svg> icon", () => {
+  it("lfValue (icon): renders SVG sprite icon", () => {
     const iconClass = framework.theme.bemClass("image", "icon");
     cy.get(CY_ALIASES.lfComponentShowcase)
       .find(`${imageTag}#icon-icon`)
-      .should(($img) => {
-        const comp = $img[0] as HTMLLfImageElement;
-        expect(comp.lfMode).to.eq("sprite");
-      })
+      .should("exist")
       .shadow()
       .find(`.${iconClass}`)
       .should(($el) => {
-        expect($el.get(0).tagName.toLowerCase()).to.eq("svg");
+        expect($el.get(0).tagName.toLowerCase()).to.eq("div");
       })
-      .find("use")
+      .find("svg use")
       .should("have.attr", "href");
-  });
-
-  it("lfMode: 'mask' renders a masked <div> and reflects attribute", () => {
-    const iconClass = framework.theme.bemClass("image", "icon");
-    cy.get(CY_ALIASES.lfComponentShowcase)
-      .find(`${imageTag}#icon-mask`)
-      .should("exist")
-      .and("have.attr", "lf-mode", "mask")
-      .should(($img) => {
-        const comp = $img[0] as HTMLLfImageElement;
-        expect(comp.lfMode).to.eq("mask");
-      })
-      .shadow()
-      .find(`.${iconClass}`)
-      .should("have.attr", "data-cy", CY_ATTRIBUTES.maskedSvg);
   });
 
   it("lfSizeX/lfSizeY: inject width/height CSS variables", () => {

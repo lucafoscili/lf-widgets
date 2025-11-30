@@ -124,16 +124,21 @@ export const prepToolbar = (
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
-      if (!m.toolExecution) {
+      const dataset = m.toolExecution;
+      if (!dataset || !dataset.nodes || !dataset.nodes[0]) {
         return null;
       }
+
+      const root = dataset.nodes[0];
+      const isWorking = root.value === "Working..." && !root.icon;
 
       return (
         <div class={bemClass(blocks.toolbar._, blocks.toolbar.toolExecution)}>
           <lf-chip
-            lfDataset={m.toolExecution}
+            lfDataset={dataset}
             lfFlat={true}
             lfUiSize="xsmall"
+            lfShowSpinner={isWorking}
             ref={assignRef(toolbar, "toolExecution")}
           />
         </div>

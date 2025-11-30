@@ -113,7 +113,7 @@ const prepActions = <C extends LfComponentTag>(
           lfLabel={label}
           lfStyling="floating"
           lfUiState="secondary"
-          lfUiSize="large"
+          lfUiSize="small"
           onClick={command}
           part="action"
         ></lf-button>,
