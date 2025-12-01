@@ -1,4 +1,7 @@
-import { LfFrameworkInterface } from "@lf-widgets/foundations";
+import {
+  LfEffectsNeonGlowOptions,
+  LfFrameworkInterface,
+} from "@lf-widgets/foundations";
 
 describe("Framework Effects Utilities", () => {
   let framework: jest.Mocked<LfFrameworkInterface>;
@@ -19,6 +22,7 @@ describe("Framework Effects Utilities", () => {
           show: jest.fn(),
         },
         register: {
+          neonGlow: jest.fn(),
           tilt: jest.fn(),
         },
         ripple: jest.fn(),
@@ -27,6 +31,7 @@ describe("Framework Effects Utilities", () => {
           timeout: jest.fn(),
         },
         unregister: {
+          neonGlow: jest.fn(),
           tilt: jest.fn(),
         },
       },
@@ -132,6 +137,95 @@ describe("Framework Effects Utilities", () => {
   });
 
   describe("register", () => {
+    describe("neonGlow", () => {
+      it("should register neon glow effect with default options", () => {
+        const mockElement = document.createElement("div");
+
+        framework.effects.register.neonGlow(mockElement);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+        );
+      });
+
+      it("should register neon glow effect with custom options", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsNeonGlowOptions = {
+          mode: "filled",
+          color: "#ff0000",
+          intensity: 0.5,
+          pulseSpeed: "fast",
+          reflection: true,
+        };
+
+        framework.effects.register.neonGlow(mockElement, options);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register neon glow effect with outline mode", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsNeonGlowOptions = {
+          mode: "outline",
+        };
+
+        framework.effects.register.neonGlow(mockElement, options);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register neon glow effect with reflection disabled", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsNeonGlowOptions = {
+          reflection: false,
+        };
+
+        framework.effects.register.neonGlow(mockElement, options);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register neon glow effect with slow pulse speed", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsNeonGlowOptions = {
+          pulseSpeed: "slow",
+        };
+
+        framework.effects.register.neonGlow(mockElement, options);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register neon glow effect with custom reflection settings", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsNeonGlowOptions = {
+          reflection: true,
+          reflectionBlur: 12,
+          reflectionOffset: 8,
+          reflectionOpacity: 0.5,
+        };
+
+        framework.effects.register.neonGlow(mockElement, options);
+
+        expect(framework.effects.register.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+    });
+
     describe("tilt", () => {
       it("should register tilt effect", () => {
         const mockElement = document.createElement("div");
@@ -213,6 +307,18 @@ describe("Framework Effects Utilities", () => {
   });
 
   describe("unregister", () => {
+    describe("neonGlow", () => {
+      it("should unregister neon glow effect", () => {
+        const mockElement = document.createElement("div");
+
+        framework.effects.unregister.neonGlow(mockElement);
+
+        expect(framework.effects.unregister.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+        );
+      });
+    });
+
     describe("tilt", () => {
       it("should unregister tilt effect", () => {
         const mockElement = document.createElement("div");

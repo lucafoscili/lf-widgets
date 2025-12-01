@@ -3,6 +3,8 @@
 // This is a manual process for now.
 
 @include lf-app-scrollbar;
+@include lf-fw-neon-glow;
+@include lf-fw-neon-glow-surface;
 
 .lf-effects {
   @include lf-fw-backdrop;

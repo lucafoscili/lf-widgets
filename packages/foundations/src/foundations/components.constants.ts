@@ -87,6 +87,8 @@ export const LF_ATTRIBUTES = {
   info: "info",
   lightbox: "lightbox",
   lightboxContent: "lightbox-content",
+  neonGlow: "neon-glow",
+  neonGlowReflection: "neon-glow-reflection",
   portal: "portal",
   primary: "primary",
   ripple: "ripple",

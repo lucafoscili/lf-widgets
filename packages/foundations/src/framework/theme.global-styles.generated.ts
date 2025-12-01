@@ -25,6 +25,493 @@ export const GLOBAL_STYLES = {
   "::-webkit-scrollbar-track": {
     "background-color": "rgb(var(--lf-color-bg))"
   },
+  "[data-lf=neon-glow]": {
+    "--lf-ui-neon-color": "#00ffcc",
+    "--lf-ui-neon-intensity": "0.7",
+    "--lf-ui-neon-pulse-duration": "8s",
+    "position": "relative",
+    "animation": "lf-neon-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite, lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite",
+    "border": "2px solid var(--lf-ui-neon-color)",
+    "border-radius": "var(--lf-ui-border-radius, 0.5em)",
+    "transition": "box-shadow 0.3s ease"
+  },
+  "@keyframes lf-neon-pulse": [
+    {
+      "0%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "3%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "5%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 14px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "8%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "9.5%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color) , 0 0 35px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10%": {
+        "box-shadow": "0 0 12px var(--lf-ui-neon-color) , 0 0 25px var(--lf-ui-neon-color) , 0 0 50px var(--lf-ui-neon-color) , 0 0 100px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color) , 0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "11%": {
+        "box-shadow": "0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 24px var(--lf-ui-neon-color) , 0 0 40px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "14%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "20%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "25%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 14px var(--lf-ui-neon-color) , 0 0 24px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "30%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "35%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 11px var(--lf-ui-neon-color) , 0 0 19px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "40%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "49%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color) , 0 0 16px var(--lf-ui-neon-color) , 0 0 28px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "50%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color) , 0 0 16px var(--lf-ui-neon-color) , 0 0 32px var(--lf-ui-neon-color) , 0 0 60px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "51%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color) , 0 0 15px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "53%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "60%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "65%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 13px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "70%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "74%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75%": {
+        "box-shadow": "0 0 15px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color) , 0 0 60px var(--lf-ui-neon-color) , 0 0 120px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color) , 0 0 2px var(--lf-ui-neon-color) , 0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "76%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color) , 0 0 15px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color) , 0 0 50px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "78%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "85%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "90%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 13px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "95%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 11px var(--lf-ui-neon-color) , 0 0 19px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "100%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
+      }
+    }
+  ],
+  "@keyframes lf-neon-flicker": [
+    {
+      "0%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "2%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "3%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "5%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "5.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "7%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "8%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "9.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "9.8%": {
+        "opacity": "1.1"
+      }
+    },
+    {
+      "10%": {
+        "opacity": "0.3"
+      }
+    },
+    {
+      "10.3%": {
+        "opacity": "0.9"
+      }
+    },
+    {
+      "10.5%": {
+        "opacity": "0.2"
+      }
+    },
+    {
+      "10.8%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "11.2%": {
+        "opacity": "0.5"
+      }
+    },
+    {
+      "11.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "14%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "15%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "20%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "21%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "25%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "25.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "30%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "31%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "40%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "41%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "45%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "46%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "49.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "49.8%": {
+        "opacity": "1.05"
+      }
+    },
+    {
+      "50%": {
+        "opacity": "0.6"
+      }
+    },
+    {
+      "50.3%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "50.6%": {
+        "opacity": "0.7"
+      }
+    },
+    {
+      "51%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "55%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "56%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "60%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "60.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "65%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "66%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "74.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "74.8%": {
+        "opacity": "1.15"
+      }
+    },
+    {
+      "75%": {
+        "opacity": "0.15"
+      }
+    },
+    {
+      "75.2%": {
+        "opacity": "0.8"
+      }
+    },
+    {
+      "75.4%": {
+        "opacity": "0.1"
+      }
+    },
+    {
+      "75.7%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "76%": {
+        "opacity": "0.3"
+      }
+    },
+    {
+      "76.4%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "80%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "81%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "85%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "86%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "90%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "91%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "95%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "96%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "100%": {
+        "opacity": "1"
+      }
+    }
+  ],
+  "[data-lf=neon-glow][data-lf-neon-mode=outline]": {
+    "background": "transparent"
+  },
+  "[data-lf=neon-glow][data-lf-neon-mode=filled]": {
+    "background": "color-mix(in srgb, var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%), transparent)",
+    "backdrop-filter": "blur(4px)"
+  },
+  "[data-lf=neon-glow]::before": {
+    "content": "\"\"",
+    "position": "absolute",
+    "inset": "-1px",
+    "border-radius": "inherit",
+    "padding": "2px",
+    "background": "linear-gradient(135deg, var(--lf-ui-neon-color), transparent 50%, var(--lf-ui-neon-color))",
+    "mask": "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+    "mask-composite": "exclude",
+    "-webkit-mask-composite": "xor",
+    "pointer-events": "none",
+    "opacity": "var(--lf-ui-neon-intensity)"
+  },
+  "[data-lf=neon-glow] > *": {
+    "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
+  },
+  "[data-lf=neon-glow-reflection]": {
+    "position": "fixed",
+    "pointer-events": "none",
+    "z-index": "-1",
+    "--lf-ui-neon-reflection-blur": "8px",
+    "--lf-ui-neon-reflection-offset": "4px",
+    "--lf-ui-neon-reflection-opacity": "0.3",
+    "transform": "scaleY(-1)",
+    "mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
+    "-webkit-mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
+    "filter": "blur(var(--lf-ui-neon-reflection-blur))",
+    "opacity": "var(--lf-ui-neon-reflection-opacity)",
+    "box-shadow": "0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color)",
+    "animation": "lf-neon-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out infinite"
+  },
+  "[data-lf=neon-glow-surface]": {
+    "position": "relative",
+    "overflow": "visible",
+    "isolation": "isolate"
+  },
   ".lf-effects [data-lf=backdrop]": {
     "transition": "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",
     "background": "rgba(0, 0, 0, 0.375)",

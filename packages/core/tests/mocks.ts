@@ -114,6 +114,7 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         show: jest.fn(),
       },
       register: {
+        neonGlow: jest.fn(),
         tilt: jest.fn(),
       },
       ripple: jest.fn(),
@@ -122,6 +123,7 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         timeout: jest.fn(),
       },
       unregister: {
+        neonGlow: jest.fn(),
         tilt: jest.fn(),
       },
     },

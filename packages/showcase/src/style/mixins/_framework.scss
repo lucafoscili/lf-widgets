@@ -67,6 +67,173 @@
   }
 }
 /*******************************************
+ * @mixin lf-fw-neon-glow-apply
+ * Applies animated neon glow effect directly to the current selector.
+ * Use this mixin inside shadow DOM components or with ::part() selectors.
+ *
+ * @param {Color} $color - Neon glow color. Defaults to CSS var or fallback.
+ * @param {Number} $intensity - Glow intensity (0-1). Defaults to 0.7.
+ * @param {Time} $pulse-duration - Animation cycle duration. Defaults to 2s.
+ *******************************************/
+@mixin lf-fw-neon-glow-apply(
+  $color: var(--lf-ui-neon-color, #00ffcc),
+  $intensity: var(--lf-ui-neon-intensity, 0.7),
+  $pulse-duration: var(--lf-ui-neon-pulse-duration, 8s)
+) {
+  & {
+    position: relative;
+    animation:
+      lf-neon-pulse #{$pulse-duration} ease-in-out infinite,
+      lf-neon-flicker calc(#{$pulse-duration} * 1.5) linear infinite;
+    border: 2px solid #{$color};
+    border-radius: var(--lf-ui-border-radius, 0.5em);
+    transition: box-shadow 0.3s ease;
+    box-shadow:
+      0 0 3px #{$color},
+      0 0 6px #{$color},
+      0 0 12px #{$color},
+      0 0 24px #{$color};
+
+    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
+    @include lf-keyframe(lf-neon-flicker, map.get($lf-keyframes, neon-flicker));
+  }
+
+  // Inner glow pseudo-element
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg, #{$color}, transparent 50%, #{$color});
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    opacity: #{$intensity};
+  }
+}
+/*******************************************
+ * @mixin lf-fw-neon-glow
+ * Adds animated neon glow effect with pulsating border and optional reflection.
+ * Supports "outline" (border only) and "filled" (with background) modes.
+ * Use for global styles targeting [data-lf="neon-glow"] attribute.
+ *
+ * @param {Color} $default-color - Fallback neon color if CSS var not set.
+ *******************************************/
+@mixin lf-fw-neon-glow($default-color: #00ffcc) {
+  [data-lf="neon-glow"] {
+    --lf-ui-neon-color: #{$default-color};
+    --lf-ui-neon-intensity: 0.7;
+    --lf-ui-neon-pulse-duration: 8s;
+
+    position: relative;
+    animation:
+      lf-neon-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite,
+      lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear
+        infinite;
+    border: 2px solid var(--lf-ui-neon-color);
+    border-radius: var(--lf-ui-border-radius, 0.5em);
+    transition: box-shadow 0.3s ease;
+
+    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
+    @include lf-keyframe(lf-neon-flicker, map.get($lf-keyframes, neon-flicker));
+
+    // Outline mode (default)
+    &[data-lf-neon-mode="outline"] {
+      background: transparent;
+    }
+
+    // Filled mode
+    &[data-lf-neon-mode="filled"] {
+      background: color-mix(
+        in srgb,
+        var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%),
+        transparent
+      );
+      backdrop-filter: blur(4px);
+    }
+
+    // Inner glow pseudo-element
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(
+        135deg,
+        var(--lf-ui-neon-color),
+        transparent 50%,
+        var(--lf-ui-neon-color)
+      );
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask-composite: xor;
+      pointer-events: none;
+      opacity: var(--lf-ui-neon-intensity);
+    }
+
+    // Text glow for child text elements
+    & > * {
+      text-shadow:
+        0 0 5px var(--lf-ui-neon-color),
+        0 0 10px var(--lf-ui-neon-color),
+        0 0 20px var(--lf-ui-neon-color);
+    }
+  }
+
+  // Reflection element styling
+  [data-lf="neon-glow-reflection"] {
+    // Base styling - fixed position because we use viewport coordinates from getBoundingClientRect
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+
+    // Reflection-specific CSS variable defaults
+    --lf-ui-neon-reflection-blur: 8px;
+    --lf-ui-neon-reflection-offset: 4px;
+    --lf-ui-neon-reflection-opacity: 0.3;
+
+    // Reflection effect
+    transform: scaleY(-1);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      transparent
+    );
+    filter: blur(var(--lf-ui-neon-reflection-blur));
+    opacity: var(--lf-ui-neon-reflection-opacity);
+
+    // Glow effect
+    box-shadow:
+      0 0 20px var(--lf-ui-neon-color),
+      0 0 40px var(--lf-ui-neon-color);
+
+    // Animation - sync with main element timing
+    animation: lf-neon-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out
+      infinite;
+
+    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
+  }
+}
+/*******************************************
+ * @mixin lf-fw-neon-glow-surface
+ * Defines a container that clips the neon glow effect properly.
+ *******************************************/
+@mixin lf-fw-neon-glow-surface {
+  [data-lf="neon-glow-surface"] {
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+  }
+}
+/*******************************************
  * @mixin lf-fw-portal
  * Simple conditional portal display mixin.
  *

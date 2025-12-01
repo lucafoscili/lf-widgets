@@ -1,4 +1,60 @@
-import { LF_EFFECTS_LIST } from "./effects.constants";
+import { LfColorInput } from "./color.declarations";
+import {
+  LF_EFFECTS_LIST,
+  LF_EFFECTS_NEON_MODES,
+  LF_EFFECTS_NEON_PULSE_SPEEDS,
+} from "./effects.constants";
+
+//#region Neon Glow
+/**
+ * Display mode for neon glow effect.
+ * - "outline": Glow on border only, transparent interior
+ * - "filled": Glow on border with translucent filled interior
+ */
+export type LfEffectsNeonGlowMode = (typeof LF_EFFECTS_NEON_MODES)[number];
+
+/**
+ * Pulse animation speed preset.
+ */
+export type LfEffectsNeonGlowPulseSpeed =
+  (typeof LF_EFFECTS_NEON_PULSE_SPEEDS)[number];
+
+/**
+ * Configuration options for the neon glow effect.
+ */
+export interface LfEffectsNeonGlowOptions {
+  /** Custom glow color. Defaults to theme secondary color. */
+  color?: LfColorInput;
+  /**
+   * Enables entropy-driven animation timing.
+   * When true, adds a random delay (0-5s) to desynchronize multiple elements.
+   * Creates organic, non-uniform flickering like independent neon signs.
+   * Defaults to false.
+   */
+  desync?: boolean;
+  /** Glow intensity from 0 to 1. Defaults to 0.7. */
+  intensity?: number;
+  /** Display mode: "outline" or "filled". Defaults to "outline". */
+  mode?: LfEffectsNeonGlowMode;
+  /**
+   * Pulse animation speed preset.
+   * - "burst": Long pauses with intermittent flickers (~8s cycle) - cyberpunk style
+   * - "fast": Rapid pulsing (1.2s)
+   * - "normal": Moderate pulsing (2s)
+   * - "slow": Gentle pulsing (3.5s)
+   * Defaults to "burst".
+   */
+  pulseSpeed?: LfEffectsNeonGlowPulseSpeed;
+  /** Whether to show reflection below element. Defaults to true. */
+  reflection?: boolean;
+  /** Reflection blur amount in pixels. Defaults to 8. */
+  reflectionBlur?: number;
+  /** Reflection vertical offset in pixels. Defaults to 4. */
+  reflectionOffset?: number;
+  /** Reflection opacity from 0 to 1. Defaults to 0.3. */
+  reflectionOpacity?: number;
+}
+//#endregion
 
 //#region Class
 /**
@@ -27,6 +83,11 @@ export interface LfEffectsInterface {
   };
   /** Effect registration helpers. */
   register: {
+    /** Adds neon glow effect to the element with optional configuration. */
+    neonGlow: (
+      element: HTMLElement,
+      options?: LfEffectsNeonGlowOptions,
+    ) => void;
     /** Adds tilt effect behaviour to the element with optional intensity override. */
     tilt: (element: HTMLElement, intensity?: number) => void;
   };
@@ -44,6 +105,8 @@ export interface LfEffectsInterface {
   };
   /** Removes registered effects from elements. */
   unregister: {
+    /** Removes neon glow effect from the element. */
+    neonGlow: (element: HTMLElement) => void;
     /** Removes tilt effect listeners for the element. */
     tilt: (element: HTMLElement) => void;
   };

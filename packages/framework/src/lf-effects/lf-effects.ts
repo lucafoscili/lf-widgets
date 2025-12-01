@@ -3,23 +3,27 @@ import {
   LF_ATTRIBUTES,
   LF_EFFECTS_VARS,
   LfComponentRootElement,
-  LfFrameworkInterface,
   LfEffectsIntensities,
   LfEffectsInterface,
+  LfEffectsNeonGlowOptions,
   LfEffectsTimeouts,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
+import { neonGlowEffect } from "./helpers.neon-glow";
 
 export class LfEffects implements LfEffectsInterface {
   #BACKDROP: HTMLDivElement | null = null;
   #COMPONENTS: Set<HTMLElement> = new Set();
   #EFFECTS: HTMLDivElement;
   #INTENSITY: LfEffectsIntensities = {
+    "neon-glow": 0.7,
     tilt: 10,
   };
   #LIGHTBOX: HTMLElement | null = null;
   #MANAGER: LfFrameworkInterface;
   #TIMEOUT: LfEffectsTimeouts = {
     lightbox: 300,
+    "neon-glow": 2000,
     ripple: 500,
   };
 
@@ -27,6 +31,7 @@ export class LfEffects implements LfEffectsInterface {
     this.#MANAGER = lfFramework;
   }
 
+  //#region Private helpers
   #appendToWrapper = (element: HTMLElement) => {
     if (typeof document === "undefined") {
       return;
@@ -41,6 +46,7 @@ export class LfEffects implements LfEffectsInterface {
 
     this.#EFFECTS.appendChild(element);
   };
+
   #getParentStyle = (
     element: HTMLElement,
   ): Pick<
@@ -56,6 +62,7 @@ export class LfEffects implements LfEffectsInterface {
       color,
     };
   };
+  //#endregion
 
   //#region set
   set = {
@@ -229,9 +236,27 @@ export class LfEffects implements LfEffectsInterface {
   };
   //#endregion
 
+  //#region Registration
   isRegistered = (element: HTMLElement) => this.#COMPONENTS.has(element);
 
   register = {
+    neonGlow: (
+      element: HTMLElement,
+      options: LfEffectsNeonGlowOptions = {},
+    ) => {
+      if (this.isRegistered(element)) {
+        this.#MANAGER.debug.logs.new(
+          this,
+          "Element already has neon-glow registered.",
+          "warning",
+        );
+        return;
+      }
+
+      neonGlowEffect.register(element, options, this.#INTENSITY["neon-glow"]);
+      this.#COMPONENTS.add(element);
+    },
+
     tilt: (element: HTMLElement, intensity = 10) => {
       const { tilt } = LF_EFFECTS_VARS;
 
@@ -267,6 +292,15 @@ export class LfEffects implements LfEffectsInterface {
   };
 
   unregister = {
+    neonGlow: (element: HTMLElement) => {
+      if (!this.#COMPONENTS.has(element)) {
+        return;
+      }
+
+      neonGlowEffect.unregister(element);
+      this.#COMPONENTS.delete(element);
+    },
+
     tilt: (element: HTMLElement) => {
       element.removeEventListener("pointermove", () => {});
       element.removeEventListener("pointerleave", () => {});
@@ -274,4 +308,5 @@ export class LfEffects implements LfEffectsInterface {
       this.#COMPONENTS.delete(element);
     },
   };
+  //#endregion
 }

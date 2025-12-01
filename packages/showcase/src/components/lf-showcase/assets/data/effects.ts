@@ -53,10 +53,18 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
       },
     ],
     [
-      "ripple",
+      "register.neonGlow",
       {
-        code: "lfEffects.ripple(event, element);",
-        description: "Creates a ripple effect.",
+        code: `lfEffects.register.neonGlow(element, {
+  mode: "outline",        // "outline" or "filled"
+  color: undefined,       // Uses theme secondary color by default
+  intensity: 0.7,         // Glow intensity (0-1)
+  pulseSpeed: "burst",    // "burst" (8s cyberpunk), "slow", "normal", "fast"
+  desync: true,           // Randomize timing for independent flickering
+  reflection: false,      // Show reflection below element
+});`,
+        description:
+          "Registers a neon glow effect on the element with pulsating border and optional reflection. Uses theme secondary color by default for automatic theme adaptation.",
       },
     ],
     [
@@ -64,6 +72,20 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
       {
         code: "lfEffects.register.tilt(element);",
         description: "Registers a tilt effect.",
+      },
+    ],
+    [
+      "ripple",
+      {
+        code: "lfEffects.ripple(event, element);",
+        description: "Creates a ripple effect.",
+      },
+    ],
+    [
+      "unregister.neonGlow",
+      {
+        code: "lfEffects.unregister.neonGlow(element);",
+        description: "Removes the neon glow effect from the element.",
       },
     ],
     [
@@ -102,7 +124,7 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
                   {
                     id: DOC_IDS.content,
                     value:
-                      "It provides methods for creating and managing backdrop, lightbox, ripple, and tilt effects.",
+                      "It provides methods for creating and managing backdrop, lightbox, neon glow, ripple, and tilt effects.",
                   },
                 ],
                 id: DOC_IDS.paragraph,
