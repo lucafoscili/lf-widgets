@@ -40,7 +40,7 @@ export interface LfButtonInterface
     LfButtonPropsInterface {
   setMessage: (
     label?: string,
-    icon?: string,
+    icon?: LfIconType,
     timeout?: number,
   ) => Promise<void>;
 }
