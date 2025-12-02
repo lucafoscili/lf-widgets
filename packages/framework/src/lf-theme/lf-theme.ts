@@ -1,20 +1,198 @@
 import {
+  GLOBAL_STYLES,
   LF_ICONS_REGISTRY,
   LF_THEME_ATTRIBUTE,
   LF_THEME_COLORS_PREFIX,
   LF_THEME_ICONS_PREFIX,
   LfColorInput,
   LfComponent,
-  LfFrameworkInterface,
   LfDataDataset,
   LfDataNode,
+  LfFrameworkInterface,
   LfThemeBEMModifier,
   LfThemeCustomStyles,
   LfThemeInterface,
   LfThemeList,
+  LfThemeSharedStylesManager,
   THEME_LIST,
-  GLOBAL_STYLES,
 } from "@lf-widgets/foundations";
+
+//#region Shared Styles Manager
+/**
+ * Selectors that should ONLY be in document-level <style>, not adopted sheets.
+ * These target light DOM elements outside shadow roots.
+ */
+const DOCUMENT_ONLY_SELECTORS = [".lf-effects", ".lf-portal"];
+
+/**
+ * Attribute selectors that should be transformed to :host() context.
+ * These target the host element itself in shadow DOM.
+ */
+const HOST_ATTRIBUTE_SELECTORS = [
+  "[data-lf-effect-host]",
+  "[data-lf-tilt]",
+  "[data-lf-neon-glow",
+];
+
+/**
+ * Checks if a selector should be excluded from adopted stylesheets.
+ */
+const isDocumentOnlySelector = (selector: string): boolean => {
+  return DOCUMENT_ONLY_SELECTORS.some(
+    (prefix) => selector.startsWith(prefix) || selector.includes(` ${prefix}`),
+  );
+};
+
+/**
+ * Transforms attribute selectors to :host() context for shadow DOM.
+ * E.g., "[data-lf-effect-host]" → ":host([data-lf-effect-host])"
+ */
+const transformToHostSelector = (selector: string): string => {
+  for (const attr of HOST_ATTRIBUTE_SELECTORS) {
+    if (selector.startsWith(attr)) {
+      // Transform [attr] to :host([attr]) and preserve any suffix
+      return selector.replace(
+        new RegExp(`^(\\[data-lf-[^\\]]+\\])`),
+        ":host($1)",
+      );
+    }
+  }
+  return selector;
+};
+
+/**
+ * Creates the shared styles manager for adopted stylesheets.
+ * Uses a single CSSStyleSheet instance shared across all shadow roots.
+ */
+const createSharedStylesManager = (): LfThemeSharedStylesManager => {
+  /** Single shared CSSStyleSheet instance - created lazily on first adopt */
+  let sharedSheet: CSSStyleSheet | null = null;
+
+  /** Tracks which shadow roots have adopted the shared sheet */
+  const adoptedRoots = new WeakSet<ShadowRoot>();
+
+  /** Reference count per shadow root (for multiple registrations per root) */
+  const rootRefCount = new WeakMap<ShadowRoot, number>();
+
+  /**
+   * Builds the CSS string from GLOBAL_STYLES, excluding document-only selectors.
+   * Transforms host-targeting attribute selectors to :host() context.
+   */
+  const buildAdoptableCss = (): string => {
+    let css = "";
+
+    for (const [selector, rules] of Object.entries(GLOBAL_STYLES)) {
+      // Skip document-only selectors (light DOM containers)
+      if (isDocumentOnlySelector(selector)) {
+        continue;
+      }
+
+      // Transform attribute selectors to :host() context
+      const outputSelector = transformToHostSelector(selector);
+
+      if (selector.startsWith("@keyframes")) {
+        css += `${selector} { `;
+        if (Array.isArray(rules)) {
+          for (const frame of rules) {
+            for (const [frameKey, props] of Object.entries(frame)) {
+              css += `${frameKey} { `;
+              for (const [prop, value] of Object.entries(
+                props as Record<string, string>,
+              )) {
+                css += `${prop}: ${value}; `;
+              }
+              css += `} `;
+            }
+          }
+        }
+        css += `} `;
+      } else if (selector.startsWith("@media")) {
+        // Handle @media queries
+        css += `${selector} { `;
+        if (typeof rules === "object" && rules !== null) {
+          for (const [innerSelector, innerRules] of Object.entries(rules)) {
+            if (isDocumentOnlySelector(innerSelector)) {
+              continue;
+            }
+            // Transform inner selectors too
+            const innerOutput = transformToHostSelector(innerSelector);
+            css += `${innerOutput} { `;
+            for (const [prop, value] of Object.entries(
+              innerRules as Record<string, string>,
+            )) {
+              css += `${prop}: ${value}; `;
+            }
+            css += `} `;
+          }
+        }
+        css += `} `;
+      } else {
+        css += `${outputSelector} { `;
+        for (const [prop, value] of Object.entries(
+          rules as Record<string, string>,
+        )) {
+          css += `${prop}: ${value}; `;
+        }
+        css += `} `;
+      }
+    }
+
+    return css;
+  };
+
+  /**
+   * Gets or creates the shared CSSStyleSheet.
+   */
+  const getOrCreateSheet = (): CSSStyleSheet => {
+    if (!sharedSheet) {
+      const css = buildAdoptableCss();
+      sharedSheet = new CSSStyleSheet();
+      sharedSheet.replaceSync(css);
+    }
+    return sharedSheet;
+  };
+
+  return {
+    adopt: (shadowRoot: ShadowRoot): void => {
+      if (!shadowRoot) return;
+
+      if (!adoptedRoots.has(shadowRoot)) {
+        const sheet = getOrCreateSheet();
+        shadowRoot.adoptedStyleSheets = [
+          ...shadowRoot.adoptedStyleSheets,
+          sheet,
+        ];
+        adoptedRoots.add(shadowRoot);
+        rootRefCount.set(shadowRoot, 1);
+      } else {
+        rootRefCount.set(shadowRoot, (rootRefCount.get(shadowRoot) || 0) + 1);
+      }
+    },
+
+    isAdopted: (shadowRoot: ShadowRoot): boolean => {
+      return shadowRoot ? adoptedRoots.has(shadowRoot) : false;
+    },
+
+    release: (shadowRoot: ShadowRoot): void => {
+      if (!shadowRoot || !rootRefCount.has(shadowRoot)) return;
+
+      const count = rootRefCount.get(shadowRoot)! - 1;
+
+      if (count <= 0) {
+        if (sharedSheet) {
+          shadowRoot.adoptedStyleSheets = shadowRoot.adoptedStyleSheets.filter(
+            (s) => s !== sharedSheet,
+          );
+        }
+        adoptedRoots.delete(shadowRoot);
+        rootRefCount.delete(shadowRoot);
+      } else {
+        rootRefCount.set(shadowRoot, count);
+      }
+    },
+  };
+};
+//#endregion
 
 export class LfTheme implements LfThemeInterface {
   #COMPONENTS: Set<LfComponent> = new Set();
@@ -27,6 +205,12 @@ export class LfTheme implements LfThemeInterface {
   // Cached sprite sheet indexing for centralized access
   #SPRITE_IDS?: Set<string>;
   #SPRITE_INDEXING?: Promise<Set<string>>;
+
+  /**
+   * Shared styles manager for adopting global styles into shadow roots.
+   * Automatically used by register/unregister for component lifecycle.
+   */
+  sharedStyles: LfThemeSharedStylesManager = createSharedStylesManager();
 
   constructor(lfFramework: LfFrameworkInterface) {
     this.#MANAGER = lfFramework;
@@ -60,22 +244,31 @@ export class LfTheme implements LfThemeInterface {
     return css;
   };
   #prepGlobalStyles = (): string => {
+    // Only include document-level styles (light DOM containers)
+    // All other styles are adopted via sharedStyles into shadow roots
     let css = "";
 
     for (const [selector, rules] of Object.entries(GLOBAL_STYLES)) {
-      if (selector.startsWith("@keyframes")) {
+      // Only include document-only selectors (.lf-effects, .lf-portal)
+      if (!isDocumentOnlySelector(selector)) {
+        continue;
+      }
+
+      if (selector.startsWith("@media")) {
+        // Handle @media queries containing document-only selectors
         css += `${selector} { `;
-        if (Array.isArray(rules)) {
-          for (const frame of rules) {
-            for (const [frameKey, props] of Object.entries(frame)) {
-              css += `${frameKey} { `;
-              for (const [prop, value] of Object.entries(
-                props as Record<string, string>,
-              )) {
-                css += `${prop}: ${value}; `;
-              }
-              css += `} `;
+        if (typeof rules === "object" && rules !== null) {
+          for (const [innerSelector, innerRules] of Object.entries(rules)) {
+            if (!isDocumentOnlySelector(innerSelector)) {
+              continue;
             }
+            css += `${innerSelector} { `;
+            for (const [prop, value] of Object.entries(
+              innerRules as Record<string, string>,
+            )) {
+              css += `${prop}: ${value}; `;
+            }
+            css += `} `;
           }
         }
         css += `} `;
@@ -418,21 +611,35 @@ export class LfTheme implements LfThemeInterface {
   //#region register
   /**
    * Registers a component to the theme registry.
-   * @param comp - The component to be registered. Must be a LfGenericComponent instance.
+   * Automatically adopts shared styles into the component's shadow root.
+   *
+   * @param comp - The component to be registered. Must be a LfComponent instance.
    */
   register = (comp: LfComponent) => {
     this.#COMPONENTS.add(comp);
+
+    // Auto-adopt shared styles into shadow root
+    const shadowRoot = comp.rootElement?.shadowRoot;
+    if (shadowRoot) {
+      this.sharedStyles.adopt(shadowRoot);
+    }
   };
   //#endregion
 
   //#region unregister
   /**
    * Unregisters a component from the theme manager.
+   * Automatically releases shared styles from the component's shadow root.
    *
    * @param comp - The component to unregister from theme management
-   * @returns A function that handles the unregistration of the component
    */
   unregister = (comp: LfComponent) => {
+    // Auto-release shared styles from shadow root
+    const shadowRoot = comp.rootElement?.shadowRoot;
+    if (shadowRoot) {
+      this.sharedStyles.release(shadowRoot);
+    }
+
     this.#COMPONENTS?.delete(comp);
   };
   //#endregion

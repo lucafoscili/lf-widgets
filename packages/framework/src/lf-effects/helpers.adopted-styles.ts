@@ -104,16 +104,33 @@ export const createCachedCssGetter = (
 //#region Adopted Styles Manager
 /**
  * Creates a manager for handling adopted stylesheets in shadow roots.
+ * Uses a SINGLE shared CSSStyleSheet instance across all shadow roots for memory efficiency.
  * Tracks reference counts per root and handles cleanup automatically.
  *
  * @param getCss - Function that returns the CSS string to adopt
  * @returns Manager object with adopt/release methods
  */
 export const createAdoptedStylesManager = (getCss: () => string) => {
-  /** Tracks which shadow roots have adopted styles. Key: ShadowRoot, Value: CSSStyleSheet */
-  const adoptedRoots = new WeakMap<ShadowRoot, CSSStyleSheet>();
-  /** Reference count per shadow root */
+  /** Single shared CSSStyleSheet instance - created lazily on first adopt */
+  let sharedSheet: CSSStyleSheet | null = null;
+
+  /** Tracks which shadow roots have adopted the shared sheet */
+  const adoptedRoots = new WeakSet<ShadowRoot>();
+
+  /** Reference count per shadow root (for multiple effects per root) */
   const rootRefCount = new WeakMap<ShadowRoot, number>();
+
+  /**
+   * Gets or creates the shared CSSStyleSheet.
+   */
+  const getOrCreateSheet = (): CSSStyleSheet => {
+    if (!sharedSheet) {
+      const css = getCss();
+      sharedSheet = new CSSStyleSheet();
+      sharedSheet.replaceSync(css);
+    }
+    return sharedSheet;
+  };
 
   return {
     /**
@@ -124,20 +141,19 @@ export const createAdoptedStylesManager = (getCss: () => string) => {
 
     /**
      * Adopts the effect's styles into a shadow root.
-     * Uses reference counting to support multiple elements per root.
+     * Uses a shared CSSStyleSheet for memory efficiency.
+     * Reference counting supports multiple elements per root.
      *
      * @param shadowRoot - The shadow root to adopt styles into
      */
     adopt: (shadowRoot: ShadowRoot): void => {
       if (!adoptedRoots.has(shadowRoot)) {
-        const css = getCss();
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(css);
+        const sheet = getOrCreateSheet();
         shadowRoot.adoptedStyleSheets = [
           ...shadowRoot.adoptedStyleSheets,
           sheet,
         ];
-        adoptedRoots.set(shadowRoot, sheet);
+        adoptedRoots.add(shadowRoot);
         rootRefCount.set(shadowRoot, 1);
       } else {
         rootRefCount.set(shadowRoot, (rootRefCount.get(shadowRoot) || 0) + 1);
@@ -156,10 +172,9 @@ export const createAdoptedStylesManager = (getCss: () => string) => {
       const count = rootRefCount.get(shadowRoot)! - 1;
 
       if (count <= 0) {
-        const sheet = adoptedRoots.get(shadowRoot);
-        if (sheet) {
+        if (sharedSheet) {
           shadowRoot.adoptedStyleSheets = shadowRoot.adoptedStyleSheets.filter(
-            (s) => s !== sheet,
+            (s) => s !== sharedSheet,
           );
         }
         adoptedRoots.delete(shadowRoot);

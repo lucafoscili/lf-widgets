@@ -194,6 +194,11 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       randomize: jest.fn(),
       register: jest.fn(),
       unregister: jest.fn(),
+      sharedStyles: {
+        adopt: jest.fn(),
+        release: jest.fn(),
+        isAdopted: jest.fn().mockReturnValue(false),
+      },
     },
     addClickCallback: jest.fn(),
     assignRef: jest.fn(),

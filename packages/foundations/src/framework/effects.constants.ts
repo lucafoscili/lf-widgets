@@ -116,6 +116,10 @@ export const LF_EFFECTS_VARS = {
     lightX: "--lf-ui-tilt-light-x",
     /** Highlight position Y (0-100%) */
     lightY: "--lf-ui-tilt-light-y",
+    /** Rotation around X axis (degrees) */
+    rotateX: "--lf-ui-tilt-rotate-x",
+    /** Rotation around Y axis (degrees) */
+    rotateY: "--lf-ui-tilt-rotate-y",
   },
   lightbox: {
     portal: "portal",

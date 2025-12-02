@@ -67,9 +67,45 @@ export interface LfThemeInterface {
   set: (name?: string, list?: LfThemeList) => void;
   refresh: () => void;
   setLfStyle: (comp: LfComponent) => string;
+  /**
+   * Shared styles manager for adopting global styles into shadow roots.
+   * Uses a single CSSStyleSheet instance shared across all shadow roots for memory efficiency.
+   * Automatically handles reference counting for proper cleanup.
+   */
+  sharedStyles: LfThemeSharedStylesManager;
   randomize: () => void;
   register: (comp: LfComponent) => void;
   unregister: (comp: LfComponent) => void;
+}
+
+/**
+ * Manager for shared adopted stylesheets across shadow roots.
+ * Provides a memory-efficient way to share common styles (ripple, effects, etc.)
+ * across all component shadow roots using a single CSSStyleSheet instance.
+ */
+export interface LfThemeSharedStylesManager {
+  /**
+   * Adopts the shared stylesheet into a shadow root.
+   * Uses reference counting to track adoptions per root.
+   * Safe to call multiple times on the same root.
+   *
+   * @param shadowRoot - The shadow root to adopt styles into
+   */
+  adopt: (shadowRoot: ShadowRoot) => void;
+  /**
+   * Checks if styles have been adopted into the given shadow root.
+   *
+   * @param shadowRoot - The shadow root to check
+   * @returns true if styles are currently adopted
+   */
+  isAdopted: (shadowRoot: ShadowRoot) => boolean;
+  /**
+   * Releases the shared stylesheet from a shadow root.
+   * Uses reference counting - only removes when count reaches zero.
+   *
+   * @param shadowRoot - The shadow root to release styles from
+   */
+  release: (shadowRoot: ShadowRoot) => void;
 }
 //#endregion
 

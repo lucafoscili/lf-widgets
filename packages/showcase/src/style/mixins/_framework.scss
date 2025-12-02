@@ -308,6 +308,7 @@
  * @param {Time}   $transition - Transition duration (e.g., 275ms).
  *******************************************/
 @mixin lf-fw-tilt($intensity: 10, $transition: 275ms) {
+  // Host elements with effect transforms use the composed variable
   [data-lf-effect-host] {
     transform: var(--lf-effects-transform, none);
     transition: transform #{$transition} ease-out;
