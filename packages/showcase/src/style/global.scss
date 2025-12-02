@@ -18,20 +18,10 @@
 // ============================================================================
 
 // -----------------------------------------------------------------------------
-// Functional Component Styles (used by FIcon, etc.)
+// Functional Component Styles (FIcon, etc.)
 // -----------------------------------------------------------------------------
-// Base styles for .f-icon class - inherited by all components using FIcon
-.f-icon {
-  height: 100%;
-  width: 100%;
-
-  > svg {
-    display: block;
-    fill: currentColor;
-    height: 100%;
-    width: 100%;
-  }
-}
+// Base styles for functional components - source in _fcomponents.scss
+@import "./mixins/fcomponents";
 
 // -----------------------------------------------------------------------------
 // Scrollbar Styles

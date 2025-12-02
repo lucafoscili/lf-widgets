@@ -27,11 +27,11 @@
 // =====================================================
 // Base styles for the `.f-icon` class (hardwired in FIcon component).
 // These ensure the SVG fills the wrapper and inherits color properly.
+// Included in global.scss → GLOBAL_STYLES → auto-adopted into shadow roots.
 .f-icon {
-  & {
-    height: 100%;
-    width: 100%;
-  }
+  height: 100%;
+  width: 100%;
+
   // SVG styling - fill with currentColor for theme inheritance
   > svg {
     display: block;

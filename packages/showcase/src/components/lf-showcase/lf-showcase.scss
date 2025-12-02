@@ -33,15 +33,7 @@ $gap: 1.5em;
   }
 
   &__card {
-    & {
-      perspective: 600px;
-    }
-
     &::part(card) {
-      & {
-        @include lf-fw-tilt;
-      }
-
       &:after {
         @include lf-comp-border("", "radius");
       }
