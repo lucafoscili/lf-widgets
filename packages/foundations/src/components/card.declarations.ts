@@ -84,6 +84,8 @@ export interface LfCardAdapterRefs extends LfComponentAdapterRefs {
       button: LfButtonElement;
       chip: LfChipElement;
     };
+    /** Reference to the material layout element for ripple registration */
+    material: HTMLDivElement;
   };
 }
 /**
