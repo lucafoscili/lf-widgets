@@ -5,6 +5,7 @@ import {
   LfEffectsIntensities,
   LfEffectsInterface,
   LfEffectsNeonGlowOptions,
+  LfEffectsRippleOptions,
   LfEffectsTimeouts,
   LfEffectName,
   LfFrameworkInterface,
@@ -259,6 +260,23 @@ export class LfEffects implements LfEffectsInterface {
       this.#addEffect(element, "neon-glow");
     },
 
+    ripple: (element: HTMLElement, options: LfEffectsRippleOptions = {}) => {
+      if (this.isRegistered(element, "ripple")) {
+        this.#MANAGER.debug.logs.new(
+          this,
+          "Element already has ripple registered.",
+          "warning",
+        );
+        return;
+      }
+
+      rippleEffect.register(element, {
+        duration: options.duration ?? this.#TIMEOUT.ripple,
+        ...options,
+      });
+      this.#addEffect(element, "ripple");
+    },
+
     tilt: (element: HTMLElement, intensity?: number) => {
       if (this.isRegistered(element, "tilt")) {
         this.#MANAGER.debug.logs.new(
@@ -284,6 +302,15 @@ export class LfEffects implements LfEffectsInterface {
 
       neonGlowEffect.unregister(element);
       this.#removeEffect(element, "neon-glow");
+    },
+
+    ripple: (element: HTMLElement) => {
+      if (!this.isRegistered(element, "ripple")) {
+        return;
+      }
+
+      rippleEffect.unregister(element);
+      this.#removeEffect(element, "ripple");
     },
 
     tilt: (element: HTMLElement) => {

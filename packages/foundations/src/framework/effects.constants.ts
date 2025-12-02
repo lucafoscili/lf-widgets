@@ -79,9 +79,9 @@ export const LF_EFFECTS_LIST = [
 
 /**
  * Effects that can be registered/unregistered on elements.
- * Unlike ripple (fire-and-forget), these persist until explicitly removed.
+ * These persist until explicitly removed.
  */
-export const LF_EFFECTS_REGISTERABLE = ["neon-glow", "tilt"] as const;
+export const LF_EFFECTS_REGISTERABLE = ["neon-glow", "ripple", "tilt"] as const;
 
 export const LF_EFFECTS_NEON_MODES = ["filled", "outline"] as const;
 
@@ -106,7 +106,10 @@ export const LF_EFFECTS_VARS = {
   },
   ripple: {
     background: "--lf-ui-ripple-background",
+    duration: "--lf-ui-ripple-duration",
+    easing: "--lf-ui-ripple-easing",
     height: "--lf-ui-ripple-height",
+    scale: "--lf-ui-ripple-scale",
     width: "--lf-ui-ripple-width",
     x: "--lf-ui-ripple-x",
     y: "--lf-ui-ripple-y",

@@ -225,10 +225,46 @@ export interface LfEffectsNeonGlowOptions {
 }
 //#endregion
 
+//#region Ripple
+/**
+ * Configuration options for the ripple effect.
+ */
+export interface LfEffectsRippleOptions {
+  /**
+   * Auto-apply parent's border-radius to surface.
+   * When true, inherits border-radius from the parent element.
+   * Defaults to true.
+   */
+  autoSurfaceRadius?: boolean;
+  /**
+   * Custom ripple color (CSS color value).
+   * If not provided, uses the parent element's color or backgroundColor.
+   */
+  color?: string;
+  /**
+   * Animation duration in milliseconds.
+   * Controls how long the ripple animation takes.
+   * Defaults to 500.
+   */
+  duration?: number;
+  /**
+   * CSS easing function for the ripple animation.
+   * Defaults to "cubic-bezier(0.4, 0, 0.2, 1)".
+   */
+  easing?: string;
+  /**
+   * Scale factor for ripple size.
+   * 1 = element size, 2 = double size, etc.
+   * Defaults to 1.
+   */
+  scale?: number;
+}
+//#endregion
+
 //#region Registerable Effects
 /**
  * Effect names that can be registered/unregistered on elements.
- * These are persistent effects (unlike ripple which is fire-and-forget).
+ * These persist until explicitly removed.
  */
 export type LfEffectName = (typeof LF_EFFECTS_REGISTERABLE)[number];
 //#endregion
@@ -275,10 +311,21 @@ export interface LfEffectsInterface {
       element: HTMLElement,
       options?: LfEffectsNeonGlowOptions,
     ) => void;
+    /**
+     * Registers ripple effect on an element.
+     * Creates a ripple surface layer and attaches pointerdown listener.
+     * @param element - The element to add ripple effect to
+     * @param options - Configuration options (duration, color, scale, easing)
+     */
+    ripple: (element: HTMLElement, options?: LfEffectsRippleOptions) => void;
     /** Adds tilt effect behaviour to the element with optional intensity override. */
     tilt: (element: HTMLElement, intensity?: number) => void;
   };
-  /** Triggers a ripple animation on the provided element. */
+  /**
+   * @deprecated Use register.ripple() for new implementations.
+   * Triggers a one-off ripple animation on the provided element.
+   * Kept for backward compatibility with existing component internals.
+   */
   ripple: (
     e: PointerEvent,
     element: HTMLElement,
@@ -294,6 +341,8 @@ export interface LfEffectsInterface {
   unregister: {
     /** Removes neon glow effect from the element. */
     neonGlow: (element: HTMLElement) => void;
+    /** Removes ripple effect from the element. */
+    ripple: (element: HTMLElement) => void;
     /** Removes tilt effect listeners for the element. */
     tilt: (element: HTMLElement) => void;
   };

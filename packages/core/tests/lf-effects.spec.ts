@@ -2,6 +2,7 @@ import {
   LF_EFFECTS_LAYER_ATTRIBUTES,
   LfEffectLayerConfig,
   LfEffectsNeonGlowOptions,
+  LfEffectsRippleOptions,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getLfFramework } from "@lf-widgets/framework";
@@ -26,6 +27,7 @@ describe("Framework Effects Utilities", () => {
         },
         register: {
           neonGlow: jest.fn(),
+          ripple: jest.fn(),
           tilt: jest.fn(),
         },
         ripple: jest.fn(),
@@ -35,6 +37,7 @@ describe("Framework Effects Utilities", () => {
         },
         unregister: {
           neonGlow: jest.fn(),
+          ripple: jest.fn(),
           tilt: jest.fn(),
         },
       },
@@ -278,6 +281,48 @@ describe("Framework Effects Utilities", () => {
         mockEvent,
         mockElement,
         autoSurfaceRadius,
+      );
+    });
+  });
+
+  describe("register.ripple", () => {
+    it("should register ripple effect with default options", () => {
+      const mockElement = document.createElement("div");
+
+      framework.effects.register.ripple(mockElement);
+
+      expect(framework.effects.register.ripple).toHaveBeenCalledWith(
+        mockElement,
+      );
+    });
+
+    it("should register ripple effect with custom options", () => {
+      const mockElement = document.createElement("div");
+      const options: LfEffectsRippleOptions = {
+        duration: 800,
+        color: "rgba(255, 0, 0, 0.5)",
+        scale: 1.5,
+        easing: "ease-out",
+        autoSurfaceRadius: false,
+      };
+
+      framework.effects.register.ripple(mockElement, options);
+
+      expect(framework.effects.register.ripple).toHaveBeenCalledWith(
+        mockElement,
+        options,
+      );
+    });
+  });
+
+  describe("unregister.ripple", () => {
+    it("should unregister ripple effect", () => {
+      const mockElement = document.createElement("div");
+
+      framework.effects.unregister.ripple(mockElement);
+
+      expect(framework.effects.unregister.ripple).toHaveBeenCalledWith(
+        mockElement,
       );
     });
   });
