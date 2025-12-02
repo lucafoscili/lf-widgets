@@ -1,5 +1,5 @@
-@use "../../../style/_variables" as *;
-@use "../../../style/mixins" as *;
+@use "variables" as *;
+@use "mixins" as *;
 
 @mixin showcase-title {
   @include lf-comp-color("showcase", "bg", "bg", 0.675);

@@ -1,6 +1,6 @@
-@use "../../../style/_variables" as *;
-@use "../../../style/mixins" as *;
-@use "./mixins" as *;
+@use "_variables" as *;
+@use "mixins" as *;
+@use "./showcase-mixins" as *;
 
 .code-word {
   @include lf-comp-color("", "primary", "text");
