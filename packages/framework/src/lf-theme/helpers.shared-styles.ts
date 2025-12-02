@@ -11,6 +11,13 @@ import {
 const DOCUMENT_ONLY_SELECTORS = [".lf-effects", ".lf-portal"];
 
 /**
+ * Selectors that should be in BOTH document-level and adopted stylesheets.
+ * Scrollbar pseudo-elements need to be in both places since scrollbars appear
+ * in both light DOM and inside shadow DOM components.
+ */
+const BOTH_CONTEXT_SELECTORS = ["::-webkit-scrollbar", "*::-webkit-scrollbar"];
+
+/**
  * Attribute selectors that should be transformed to :host() context.
  * These target the host element itself in shadow DOM.
  */
@@ -33,6 +40,16 @@ export const isDocumentOnlySelector = (selector: string): boolean => {
   return DOCUMENT_ONLY_SELECTORS.some(
     (prefix) => selector.startsWith(prefix) || selector.includes(` ${prefix}`),
   );
+};
+
+/**
+ * Checks if a selector should be included in both document and shadow DOM.
+ *
+ * @param selector - The CSS selector to check
+ * @returns true if the selector should be in both contexts
+ */
+export const isBothContextSelector = (selector: string): boolean => {
+  return BOTH_CONTEXT_SELECTORS.some((prefix) => selector.startsWith(prefix));
 };
 
 /**
@@ -155,7 +172,8 @@ export const buildAdoptableCss = (): string => {
 
 /**
  * Builds CSS string from GLOBAL_STYLES for document-level <style> element.
- * Only includes document-only selectors (.lf-effects, .lf-portal).
+ * Includes document-only selectors (.lf-effects, .lf-portal) and
+ * both-context selectors (scrollbar pseudo-elements).
  *
  * @returns CSS string for document-level styles
  */
@@ -163,8 +181,11 @@ export const buildDocumentCss = (): string => {
   let css = "";
 
   for (const [selector, rules] of Object.entries(GLOBAL_STYLES)) {
-    // Only include document-only selectors
-    if (!isDocumentOnlySelector(selector)) {
+    // Include document-only selectors and both-context selectors
+    const shouldInclude =
+      isDocumentOnlySelector(selector) || isBothContextSelector(selector);
+
+    if (!shouldInclude) {
       continue;
     }
 

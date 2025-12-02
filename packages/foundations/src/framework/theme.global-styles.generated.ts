@@ -15,15 +15,15 @@ export const GLOBAL_STYLES = {
     "height": "100%",
     "width": "100%"
   },
-  "::-webkit-scrollbar": {
+  "*::-webkit-scrollbar": {
     "width": "9px"
   },
-  "::-webkit-scrollbar-thumb": {
+  "*::-webkit-scrollbar-thumb": {
     "transition": "all 400ms cubic-bezier(0.8, -0.5, 0.2, 1.4)",
-    "background-color": "rgb(var(--lf-color-primary))"
+    "background-color": "rgba(var(--lf-color-on-surface), var(--lf-ui-alpha-glass-solid))"
   },
-  "::-webkit-scrollbar-track": {
-    "background-color": "rgb(var(--lf-color-bg))"
+  "*::-webkit-scrollbar-track": {
+    "background-color": "rgb(var(--lf-color-surface))"
   },
   "[data-lf-ripple]": {
     "animation-duration": "var(--lf-ui-duration-ripple, 675ms)",

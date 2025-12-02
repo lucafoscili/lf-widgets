@@ -181,8 +181,9 @@
   $has-glassmorphism: "false",
   $glassmorphism-blur: 8px
 ) {
-  // NOTE: Scrollbar and ripple styles are auto-adopted from shared GLOBAL_STYLES
-  // via theme.register() - no need to include them in each component's CSS.
+  // Scrollbar styles - included directly in each component for shadow DOM support
+  // (adoptedStyleSheets don't reliably apply scrollbar pseudo-elements in all browsers)
+  @include lf-app-scrollbar;
 
   @if $has-states == "true" {
     @include lf-fw-state-colors($comp);
