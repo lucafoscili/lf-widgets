@@ -1,6 +1,6 @@
 import {
-    GLOBAL_STYLES,
-    LfThemeSharedStylesManager,
+  GLOBAL_STYLES,
+  LfThemeSharedStylesManager,
 } from "@lf-widgets/foundations";
 
 //#region Constants
@@ -200,9 +200,29 @@ export const createSharedStylesManager = (): LfThemeSharedStylesManager => {
   const rootRefCount = new WeakMap<ShadowRoot, number>();
 
   /**
-   * Gets or creates the shared CSSStyleSheet.
+   * Checks if constructable stylesheets are supported (not available in jsdom/Jest).
    */
-  const getOrCreateSheet = (): CSSStyleSheet => {
+  const supportsConstructableStyleSheets = (): boolean => {
+    try {
+      return (
+        typeof CSSStyleSheet !== "undefined" &&
+        "replaceSync" in CSSStyleSheet.prototype &&
+        typeof document !== "undefined" &&
+        "adoptedStyleSheets" in Document.prototype
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  /**
+   * Gets or creates the shared CSSStyleSheet.
+   * Returns null if constructable stylesheets aren't supported.
+   */
+  const getOrCreateSheet = (): CSSStyleSheet | null => {
+    if (!supportsConstructableStyleSheets()) {
+      return null;
+    }
     if (!sharedSheet) {
       const css = buildAdoptableCss();
       sharedSheet = new CSSStyleSheet();
@@ -215,14 +235,17 @@ export const createSharedStylesManager = (): LfThemeSharedStylesManager => {
     /**
      * Adopts the shared stylesheet into a shadow root.
      * Uses reference counting to support multiple components per root.
+     * Gracefully no-ops if constructable stylesheets aren't supported.
      *
      * @param shadowRoot - The shadow root to adopt styles into
      */
     adopt: (shadowRoot: ShadowRoot): void => {
       if (!shadowRoot) return;
 
+      const sheet = getOrCreateSheet();
+      if (!sheet) return; // Constructable stylesheets not supported (e.g., Jest/jsdom)
+
       if (!adoptedRoots.has(shadowRoot)) {
-        const sheet = getOrCreateSheet();
         shadowRoot.adoptedStyleSheets = [
           ...shadowRoot.adoptedStyleSheets,
           sheet,

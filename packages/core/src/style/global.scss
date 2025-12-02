@@ -21,7 +21,7 @@
 // Functional Component Styles (FIcon, etc.)
 // -----------------------------------------------------------------------------
 // Base styles for functional components - source in _fcomponents.scss
-@import "./mixins/fcomponents";
+@use "./mixins/fcomponents";
 
 // -----------------------------------------------------------------------------
 // Scrollbar Styles
