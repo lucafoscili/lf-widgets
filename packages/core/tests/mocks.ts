@@ -114,8 +114,11 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         register: jest
           .fn()
           .mockImplementation(() => document.createElement("div")),
+        registerTransform: jest.fn(),
         reorderLayers: jest.fn(),
         unregister: jest.fn(),
+        unregisterTransform: jest.fn(),
+        updateTransform: jest.fn(),
       },
       lightbox: {
         hide: jest.fn(),

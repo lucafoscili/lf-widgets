@@ -1,4 +1,8 @@
-import { LF_EFFECTS_VARS, LfEffectLayerManager } from "@lf-widgets/foundations";
+import {
+  LF_EFFECTS_TRANSFORM_PRIORITY,
+  LF_EFFECTS_VARS,
+  LfEffectLayerManager,
+} from "@lf-widgets/foundations";
 import {
   createAdoptedStylesManager,
   createCachedCssGetter,
@@ -6,6 +10,7 @@ import {
 
 //#region Constants
 const LAYER_NAME = "tilt-highlight";
+const EFFECT_NAME = "tilt";
 //#endregion
 
 //#region CSS Configuration
@@ -16,10 +21,18 @@ const LAYER_NAME = "tilt-highlight";
 const getTiltCss = createCachedCssGetter({
   selectorFilter: (k) =>
     k.includes("data-lf-tilt") ||
+    k.includes("data-lf-effect-host") ||
     k.includes(`data-lf-effect-layer="${LAYER_NAME}"`) ||
     k.startsWith(":host([data-lf-tilt]"),
   hostTransform: (selector) => {
     if (selector.startsWith(":host(")) return selector;
+    if (selector.startsWith("[data-lf-effect-host]")) {
+      // Transform to :host([data-lf-effect-host]) for shadow DOM
+      return selector.replace(
+        /^\[data-lf-effect-host\]/,
+        ":host([data-lf-effect-host])",
+      );
+    }
     if (!selector.startsWith("[data-lf-tilt]")) return selector;
     return selector.replace(/^\[data-lf-tilt\]/, ":host([data-lf-tilt])");
   },
@@ -65,6 +78,7 @@ export const tiltEffect = {
   /**
    * Registers the tilt effect on an element.
    * Creates a 3D tilt/hover effect with dynamic radial highlight using layers.
+   * Uses the layer manager's transform composition for scalability.
    *
    * @param element - The element to apply the tilt effect to
    * @param intensity - Tilt intensity in degrees (default: 10)
@@ -79,10 +93,10 @@ export const tiltEffect = {
 
     let layerCleanup: (() => void) | undefined;
     if (layerManagerRef) {
+      // Register highlight layer
       const layer = layerManagerRef.register(element, {
         name: LAYER_NAME,
         onSetup: (layerEl) => {
-          // Inherit border-radius from the element
           const computedStyle = getComputedStyle(element);
           layerEl.style.borderRadius = computedStyle.borderRadius;
         },
@@ -91,6 +105,14 @@ export const tiltEffect = {
       if (layer) {
         layerCleanup = () => layerManagerRef?.unregister(element, LAYER_NAME);
       }
+
+      // Register initial transform (perspective + neutral rotation)
+      layerManagerRef.registerTransform(
+        element,
+        EFFECT_NAME,
+        "perspective(1000px) rotateX(0deg) rotateY(0deg)",
+        LF_EFFECTS_TRANSFORM_PRIORITY.perspective,
+      );
     }
 
     const pointermoveHandler = (e: PointerEvent) => {
@@ -109,15 +131,25 @@ export const tiltEffect = {
       const lightX = normalizedX * 100;
       const lightY = normalizedY * 100;
 
-      element.style.setProperty(tilt.rotateX, `${rotateX}deg`);
-      element.style.setProperty(tilt.rotateY, `${rotateY}deg`);
+      // Update transform via layer manager composition
+      layerManagerRef?.updateTransform(
+        element,
+        EFFECT_NAME,
+        `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+      );
+
+      // Update highlight position
       element.style.setProperty(tilt.lightX, `${lightX}%`);
       element.style.setProperty(tilt.lightY, `${lightY}%`);
     };
 
     const pointerleaveHandler = () => {
-      element.style.setProperty(tilt.rotateX, "0deg");
-      element.style.setProperty(tilt.rotateY, "0deg");
+      // Reset to neutral position
+      layerManagerRef?.updateTransform(
+        element,
+        EFFECT_NAME,
+        "perspective(1000px) rotateX(0deg) rotateY(0deg)",
+      );
       element.style.setProperty(tilt.lightX, "50%");
       element.style.setProperty(tilt.lightY, "50%");
     };
@@ -136,7 +168,7 @@ export const tiltEffect = {
 
   /**
    * Unregisters the tilt effect from an element.
-   * Removes event listeners, layers, and cleans up CSS custom properties.
+   * Removes event listeners, layers, transforms, and cleans up CSS custom properties.
    *
    * @param element - The element to remove the tilt effect from
    */
@@ -156,12 +188,14 @@ export const tiltEffect = {
       elementData.delete(element);
     }
 
+    // Unregister transform from layer manager
+    layerManagerRef?.unregisterTransform(element, EFFECT_NAME);
+
     if (elementShadowRoot) {
       stylesManager.release(elementShadowRoot);
     }
 
-    element.style.removeProperty(tilt.rotateX);
-    element.style.removeProperty(tilt.rotateY);
+    // Clean up highlight position variables
     element.style.removeProperty(tilt.lightX);
     element.style.removeProperty(tilt.lightY);
 

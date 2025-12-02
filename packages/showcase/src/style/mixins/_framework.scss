@@ -300,25 +300,22 @@
  * Adds a 3D tilt/hover effect to the element, with a dynamic radial highlight.
  * Uses layer-based approach for composability with other effects.
  *
+ * Transform composition: The layer manager composes all effect transforms
+ * into --lf-effects-transform. This allows N effects to coexist without
+ * overwriting each other's transforms.
+ *
  * @param {Number} $intensity - (Unused directly here) Potentially used for scaling the tilt.
  * @param {Time}   $transition - Transition duration (e.g., 275ms).
  *******************************************/
 @mixin lf-fw-tilt($intensity: 10, $transition: 275ms) {
+  [data-lf-effect-host] {
+    transform: var(--lf-effects-transform, none);
+    transition: transform #{$transition} ease-out;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
   [data-lf-tilt] {
-    & {
-      // Transform composition via CSS variables
-      // Each effect sets its own variable, then we compose them
-      --lf-ui-tilt-rotate-x: 0deg;
-      --lf-ui-tilt-rotate-y: 0deg;
-
-      perspective: 1000px;
-      transform: perspective(1000px) rotateX(var(--lf-ui-tilt-rotate-x))
-        rotateY(var(--lf-ui-tilt-rotate-y));
-      transition: transform #{$transition} ease-out;
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
-
     &:hover {
       box-shadow: 0 15px 30px rgba(var(--lf-color-on-bg), 0.375);
     }

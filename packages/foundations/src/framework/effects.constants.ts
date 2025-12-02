@@ -44,6 +44,28 @@ export const LF_EFFECTS_LAYER_DEFAULTS = {
  * Layer insert positions.
  */
 export const LF_EFFECTS_LAYER_POSITIONS = ["prepend", "append"] as const;
+
+/**
+ * CSS variable used by the layer manager to compose transforms.
+ * All effects contribute their transforms via this single variable.
+ */
+export const LF_EFFECTS_TRANSFORM_VAR = "--lf-effects-transform";
+
+/**
+ * Priority levels for transform composition order.
+ * Lower priority = applied first in the transform chain.
+ * Transform order matters: perspective should be first, then rotations, then scale, then translate.
+ */
+export const LF_EFFECTS_TRANSFORM_PRIORITY = {
+  /** Perspective - always first for 3D context */
+  perspective: 0,
+  /** Rotations (tilt, flip, etc.) */
+  rotate: 10,
+  /** Scale (pulse, zoom, etc.) */
+  scale: 20,
+  /** Translate (bounce, shake, slide, etc.) */
+  translate: 30,
+} as const;
 //#endregion
 
 //#region Effects
@@ -90,10 +112,6 @@ export const LF_EFFECTS_VARS = {
     y: "--lf-ui-ripple-y",
   },
   tilt: {
-    /** Rotation around X axis (vertical tilt) */
-    rotateX: "--lf-ui-tilt-rotate-x",
-    /** Rotation around Y axis (horizontal tilt) */
-    rotateY: "--lf-ui-tilt-rotate-y",
     /** Highlight position X (0-100%) */
     lightX: "--lf-ui-tilt-light-x",
     /** Highlight position Y (0-100%) */

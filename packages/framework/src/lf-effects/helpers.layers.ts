@@ -2,6 +2,8 @@ import {
   LF_EFFECTS_LAYER_ATTRIBUTES,
   LF_EFFECTS_LAYER_BASE_Z_INDEX,
   LF_EFFECTS_LAYER_DEFAULTS,
+  LF_EFFECTS_TRANSFORM_PRIORITY,
+  LF_EFFECTS_TRANSFORM_VAR,
   LfEffectLayerData,
   LfEffectLayerManager,
 } from "@lf-widgets/foundations";
@@ -20,12 +22,15 @@ const getLayerCss = createCachedCssGetter({
     k.includes("data-lf-effect-layer") || k.startsWith("@keyframes lf-"),
   hostTransform: (selector) => {
     // @keyframes are kept as-is (global)
-    if (selector.startsWith("@keyframes")) return selector;
+    if (selector.startsWith("@keyframes")) {
+      return selector;
+    }
 
     // Only transform [data-lf-effect-layer] selectors
-    if (!selector.startsWith("[data-lf-effect-layer")) return selector;
+    if (!selector.startsWith("[data-lf-effect-layer")) {
+      return selector;
+    }
 
-    // No transformation needed - layers are direct children, not :host()
     return selector;
   },
 });
@@ -45,9 +50,43 @@ let globalOrderCounter = 0;
 const hostLayers = new WeakMap<HTMLElement, Map<string, LfEffectLayerData>>();
 
 /**
+ * Tracks transform contributions per host element.
+ * Each effect registers its transform with a priority for ordering.
+ */
+interface TransformEntry {
+  transform: string;
+  priority: number;
+}
+const hostTransforms = new WeakMap<HTMLElement, Map<string, TransformEntry>>();
+
+/**
  * Shared adopted styles manager for layer effects.
  */
 const stylesManager = createAdoptedStylesManager(getLayerCss);
+
+/**
+ * Composes all registered transforms for a host into a single CSS variable.
+ * Transforms are ordered by priority (lower = first in chain).
+ *
+ * @param host - The host element to compose transforms for
+ */
+const composeTransforms = (host: HTMLElement): void => {
+  const transforms = hostTransforms.get(host);
+
+  if (!transforms || transforms.size === 0) {
+    // No transforms - set to none
+    host.style.setProperty(LF_EFFECTS_TRANSFORM_VAR, "none");
+    return;
+  }
+
+  // Sort by priority and compose
+  const sorted = Array.from(transforms.entries()).sort(
+    ([, a], [, b]) => a.priority - b.priority,
+  );
+
+  const composed = sorted.map(([, entry]) => entry.transform).join(" ");
+  host.style.setProperty(LF_EFFECTS_TRANSFORM_VAR, composed);
+};
 //#endregion
 
 //#region Layer Manager Implementation
@@ -162,9 +201,14 @@ export const layerManager: LfEffectLayerManager = {
     if (layers.size > 0) {
       layerManager.reorderLayers(host);
     } else {
-      // Clean up empty map entry and remove host marker
+      // Clean up empty map entry
       hostLayers.delete(host);
-      host.removeAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host);
+
+      // Only remove host attribute if no transforms are registered either
+      const transforms = hostTransforms.get(host);
+      if (!transforms || transforms.size === 0) {
+        host.removeAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host);
+      }
     }
   },
 
@@ -196,6 +240,66 @@ export const layerManager: LfEffectLayerManager = {
         data.config.zIndexOverride ?? LF_EFFECTS_LAYER_BASE_Z_INDEX + index;
       data.layer.style.zIndex = String(zIndex);
     });
+  },
+
+  registerTransform: (
+    host,
+    effectName,
+    transform,
+    priority = LF_EFFECTS_TRANSFORM_PRIORITY.rotate,
+  ) => {
+    // Get or create the transforms map for this host
+    let transforms = hostTransforms.get(host);
+    if (!transforms) {
+      transforms = new Map();
+      hostTransforms.set(host, transforms);
+      // Mark the host element for CSS targeting (enables transform styles)
+      host.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host, "");
+    }
+
+    // Register the transform
+    transforms.set(effectName, { transform, priority });
+
+    // Recompose and apply
+    composeTransforms(host);
+  },
+
+  updateTransform: (host, effectName, transform) => {
+    const transforms = hostTransforms.get(host);
+    if (!transforms) {
+      return;
+    }
+
+    const existing = transforms.get(effectName);
+    if (!existing) {
+      return;
+    }
+
+    existing.transform = transform;
+
+    composeTransforms(host);
+  },
+
+  unregisterTransform: (host, effectName) => {
+    const transforms = hostTransforms.get(host);
+    if (!transforms) {
+      return;
+    }
+
+    transforms.delete(effectName);
+
+    if (transforms.size === 0) {
+      hostTransforms.delete(host);
+      host.style.removeProperty(LF_EFFECTS_TRANSFORM_VAR);
+
+      // Only remove host attribute if no layers are registered either
+      const layers = hostLayers.get(host);
+      if (!layers || layers.size === 0) {
+        host.removeAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host);
+      }
+    } else {
+      composeTransforms(host);
+    }
   },
 };
 //#endregion

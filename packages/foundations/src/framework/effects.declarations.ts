@@ -132,6 +132,45 @@ export interface LfEffectLayerManager {
    * @param host - The element whose layers should be reordered
    */
   reorderLayers: (host: HTMLElement) => void;
+
+  /**
+   * Registers a transform contribution from an effect.
+   * The layer manager composes all transforms into a single CSS variable.
+   *
+   * @param host - The element to apply transforms to
+   * @param effectName - Unique identifier for this effect's transform
+   * @param transform - CSS transform value (e.g., "rotateX(5deg) rotateY(10deg)")
+   * @param priority - Order priority (lower = applied first). Use LF_EFFECTS_TRANSFORM_PRIORITY.
+   */
+  registerTransform: (
+    host: HTMLElement,
+    effectName: string,
+    transform: string,
+    priority?: number,
+  ) => void;
+
+  /**
+   * Updates an existing transform contribution.
+   * More efficient than unregister + register for dynamic effects like tilt.
+   *
+   * @param host - The element with the transform
+   * @param effectName - The effect name to update
+   * @param transform - New CSS transform value
+   */
+  updateTransform: (
+    host: HTMLElement,
+    effectName: string,
+    transform: string,
+  ) => void;
+
+  /**
+   * Removes a transform contribution from an effect.
+   * Recomposes the remaining transforms automatically.
+   *
+   * @param host - The element with the transform
+   * @param effectName - The effect name to remove
+   */
+  unregisterTransform: (host: HTMLElement, effectName: string) => void;
 }
 //#endregion
 
