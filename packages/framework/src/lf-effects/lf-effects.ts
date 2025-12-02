@@ -1,23 +1,30 @@
 import {
   CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-  LF_EFFECTS_VARS,
+  LF_UTILITY_ATTRIBUTES,
   LfComponentRootElement,
   LfEffectsIntensities,
   LfEffectsInterface,
   LfEffectsNeonGlowOptions,
   LfEffectsTimeouts,
+  LfEffectName,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
+import { layerManager } from "./helpers.layers";
 import { neonGlowEffect } from "./helpers.neon-glow";
+import { rippleEffect } from "./helpers.ripple";
+import { tiltEffect } from "./helpers.tilt";
 
 export class LfEffects implements LfEffectsInterface {
   #BACKDROP: HTMLDivElement | null = null;
-  #COMPONENTS: Set<HTMLElement> = new Set();
+  /**
+   * Tracks which effects are registered on each element.
+   * Key: HTMLElement, Value: Set of effect names registered on that element.
+   */
+  #COMPONENTS: Map<HTMLElement, Set<LfEffectName>> = new Map();
   #EFFECTS: HTMLDivElement;
   #INTENSITY: LfEffectsIntensities = {
     "neon-glow": 0.7,
-    tilt: 10,
+    tilt: 15,
   };
   #LIGHTBOX: HTMLElement | null = null;
   #MANAGER: LfFrameworkInterface;
@@ -46,22 +53,14 @@ export class LfEffects implements LfEffectsInterface {
 
     this.#EFFECTS.appendChild(element);
   };
+  //#endregion
 
-  #getParentStyle = (
-    element: HTMLElement,
-  ): Pick<
-    CSSStyleDeclaration,
-    "backgroundColor" | "borderRadius" | "color"
-  > => {
-    const { parentElement } = element;
-    const { backgroundColor, borderRadius, color } =
-      getComputedStyle(parentElement);
-    return {
-      backgroundColor,
-      borderRadius,
-      color,
-    };
-  };
+  //#region layers
+  /**
+   * Layer manager for creating and managing isolated effect layers.
+   * Use this for effects that need their own DOM element to avoid pseudo-element conflicts.
+   */
+  layers = layerManager;
   //#endregion
 
   //#region set
@@ -96,7 +95,7 @@ export class LfEffects implements LfEffectsInterface {
       }
 
       const backdrop = document.createElement("div");
-      backdrop.setAttribute("data-lf", LF_ATTRIBUTES.backdrop);
+      backdrop.setAttribute("data-lf", LF_UTILITY_ATTRIBUTES.backdrop);
       backdrop.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -144,7 +143,7 @@ export class LfEffects implements LfEffectsInterface {
         Object.assign(clone, props);
       }
 
-      clone.setAttribute("data-lf", LF_ATTRIBUTES.lightboxContent);
+      clone.setAttribute("data-lf", LF_UTILITY_ATTRIBUTES.lightboxContent);
       clone.setAttribute("role", "dialog");
       clone.setAttribute("aria-modal", "true");
       clone.setAttribute("tabindex", "-1");
@@ -167,7 +166,7 @@ export class LfEffects implements LfEffectsInterface {
       };
 
       const portal = document.createElement("div");
-      portal.setAttribute("data-lf", LF_ATTRIBUTES.lightbox);
+      portal.setAttribute("data-lf", LF_UTILITY_ATTRIBUTES.lightbox);
       portal.appendChild(clone);
       this.#appendToWrapper(portal);
 
@@ -198,53 +197,56 @@ export class LfEffects implements LfEffectsInterface {
     element: HTMLElement,
     autoSurfaceRadius = true,
   ) => {
-    if (!element) {
-      return;
-    }
-
-    const ripple = document.createElement("span");
-
-    const { left, height: h, top, width: w } = element.getBoundingClientRect();
-    const { backgroundColor, borderRadius, color } =
-      this.#getParentStyle(element);
-
-    const rippleX = e.clientX - left - w / 2;
-    const rippleY = e.clientY - top - h / 2;
-
-    if (autoSurfaceRadius) {
-      element.style.borderRadius = borderRadius;
-    }
-
-    const { background, height, width, x, y } = LF_EFFECTS_VARS.ripple;
-
-    ripple.dataset.lf = LF_ATTRIBUTES.ripple;
-    ripple.style.setProperty(background, color || backgroundColor);
-    ripple.style.setProperty(height, `${h}px`);
-    ripple.style.setProperty(width, `${w}px`);
-    ripple.style.setProperty(x, `${rippleX}px`);
-    ripple.style.setProperty(y, `${rippleY}px`);
-
-    element.appendChild(ripple);
-
-    setTimeout(
-      () =>
-        requestAnimationFrame(async () => {
-          ripple.remove();
-        }),
-      this.#TIMEOUT.ripple,
-    );
+    rippleEffect.trigger(e, element, this.#TIMEOUT.ripple, autoSurfaceRadius);
   };
   //#endregion
 
   //#region Registration
-  isRegistered = (element: HTMLElement) => this.#COMPONENTS.has(element);
+  /**
+   * Checks if an element has effects registered.
+   * @param element - The element to check
+   * @param effectName - Optional: check for a specific effect. If omitted, checks for any effect.
+   * @returns true if the element has the specified effect (or any effect if not specified)
+   */
+  isRegistered = (element: HTMLElement, effectName?: LfEffectName): boolean => {
+    const effects = this.#COMPONENTS.get(element);
+    if (!effects) return false;
+    if (effectName) return effects.has(effectName);
+    return effects.size > 0;
+  };
+
+  /**
+   * Adds an effect to the element's registered effects set.
+   */
+  #addEffect = (element: HTMLElement, effectName: LfEffectName): void => {
+    let effects = this.#COMPONENTS.get(element);
+    if (!effects) {
+      effects = new Set();
+      this.#COMPONENTS.set(element, effects);
+    }
+    effects.add(effectName);
+  };
+
+  /**
+   * Removes an effect from the element's registered effects set.
+   * Cleans up the map entry if no effects remain.
+   */
+  #removeEffect = (element: HTMLElement, effectName: LfEffectName): void => {
+    const effects = this.#COMPONENTS.get(element);
+    if (!effects) return;
+
+    effects.delete(effectName);
+    if (effects.size === 0) {
+      this.#COMPONENTS.delete(element);
+    }
+  };
 
   register = {
     neonGlow: (
       element: HTMLElement,
       options: LfEffectsNeonGlowOptions = {},
     ) => {
-      if (this.isRegistered(element)) {
+      if (this.isRegistered(element, "neon-glow")) {
         this.#MANAGER.debug.logs.new(
           this,
           "Element already has neon-glow registered.",
@@ -254,58 +256,43 @@ export class LfEffects implements LfEffectsInterface {
       }
 
       neonGlowEffect.register(element, options, this.#INTENSITY["neon-glow"]);
-      this.#COMPONENTS.add(element);
+      this.#addEffect(element, "neon-glow");
     },
 
-    tilt: (element: HTMLElement, intensity = 10) => {
-      const { tilt } = LF_EFFECTS_VARS;
-
-      element.addEventListener("pointermove", (e) => {
-        const { clientX, clientY } = e;
-        const { height, left, top, width } = element.getBoundingClientRect();
-
-        const x = ((clientX - left) / width) * 100;
-        const y = ((clientY - top) / height) * 100;
-
-        element.style.setProperty(
-          tilt.x,
-          `${((clientX - left) / width - 0.5) * intensity}deg`,
+    tilt: (element: HTMLElement, intensity?: number) => {
+      if (this.isRegistered(element, "tilt")) {
+        this.#MANAGER.debug.logs.new(
+          this,
+          "Element already has tilt registered.",
+          "warning",
         );
-        element.style.setProperty(
-          tilt.y,
-          `${-((clientY - top) / height - 0.5) * intensity}deg`,
-        );
-        element.style.setProperty(tilt.lightX, `${x}%`);
-        element.style.setProperty(tilt.lightY, `${y}%`);
-      });
+        return;
+      }
 
-      element.addEventListener("pointerleave", () => {
-        element.style.setProperty(tilt.x, "0deg");
-        element.style.setProperty(tilt.y, "0deg");
-        element.style.setProperty(tilt.lightX, "50%");
-        element.style.setProperty(tilt.lightY, "50%");
-      });
-
-      element.dataset.lf = LF_ATTRIBUTES.tilt;
-      this.#COMPONENTS.add(element);
+      // Ensure tilt has access to the layer manager for highlight layer
+      tiltEffect.setLayerManager(layerManager);
+      tiltEffect.register(element, intensity ?? this.#INTENSITY.tilt);
+      this.#addEffect(element, "tilt");
     },
   };
 
   unregister = {
     neonGlow: (element: HTMLElement) => {
-      if (!this.#COMPONENTS.has(element)) {
+      if (!this.isRegistered(element, "neon-glow")) {
         return;
       }
 
       neonGlowEffect.unregister(element);
-      this.#COMPONENTS.delete(element);
+      this.#removeEffect(element, "neon-glow");
     },
 
     tilt: (element: HTMLElement) => {
-      element.removeEventListener("pointermove", () => {});
-      element.removeEventListener("pointerleave", () => {});
+      if (!this.isRegistered(element, "tilt")) {
+        return;
+      }
 
-      this.#COMPONENTS.delete(element);
+      tiltEffect.unregister(element);
+      this.#removeEffect(element, "tilt");
     },
   };
   //#endregion

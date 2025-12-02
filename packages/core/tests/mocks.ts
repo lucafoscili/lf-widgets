@@ -108,6 +108,15 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         show: jest.fn(),
       },
       isRegistered: jest.fn(),
+      layers: {
+        getAllLayers: jest.fn().mockReturnValue([]),
+        getLayer: jest.fn().mockReturnValue(null),
+        register: jest
+          .fn()
+          .mockImplementation(() => document.createElement("div")),
+        reorderLayers: jest.fn(),
+        unregister: jest.fn(),
+      },
       lightbox: {
         hide: jest.fn(),
         isVisible: jest.fn(),

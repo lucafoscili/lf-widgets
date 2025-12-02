@@ -74,29 +74,69 @@ export const CY_ATTRIBUTES = {
   spinner: "spinner",
 } as const;
 /**
- * Shared set of boolean host attributes that influence component styling or behaviour.
+ * Composable effect attributes that use hierarchical dataset naming.
  *
- * Centralises attribute names so adapters and components avoid hard-coding strings.
+ * These are applied via JavaScript (element.dataset.lfEffectName) to allow
+ * multiple effects per element. CSS targets these via [data-lf-effect-name].
+ *
+ * NOTE: These values are the camelCase dataset keys (e.g., "lfNeonGlow" → data-lf-neon-glow).
  */
-export const LF_ATTRIBUTES = {
+export const LF_EFFECT_ATTRIBUTES = {
+  neonGlow: "lfNeonGlow",
+  neonGlowReflection: "lfNeonGlowReflection",
+  ripple: "lfRipple",
+  tilt: "lfTilt",
+} as const;
+/**
+ * Utility attributes that are mutually exclusive (structural elements).
+ *
+ * Uses single-value pattern (data-lf="<utility>") for elements that serve
+ * a specific structural purpose. Applied via setAttribute or JSX data-lf prop.
+ */
+export const LF_UTILITY_ATTRIBUTES = {
   backdrop: "backdrop",
-  danger: "danger",
-  disabled: "disabled",
   fadeIn: "fade-in",
-  icon: "icon",
-  info: "info",
   lightbox: "lightbox",
   lightboxContent: "lightbox-content",
-  neonGlow: "neon-glow",
-  neonGlowReflection: "neon-glow-reflection",
+  neonGlowSurface: "neon-glow-surface",
   portal: "portal",
-  primary: "primary",
-  ripple: "ripple",
   rippleSurface: "ripple-surface",
+} as const;
+/**
+ * State attributes for semantic coloring (mutually exclusive per element).
+ */
+export const LF_STATE_ATTRIBUTES = {
+  danger: "danger",
+  disabled: "disabled",
+  icon: "icon",
+  info: "info",
+  primary: "primary",
   secondary: "secondary",
   success: "success",
-  tilt: "tilt",
   warning: "warning",
+} as const;
+/**
+ * @deprecated Use LF_EFFECT_ATTRIBUTES, LF_UTILITY_ATTRIBUTES, or LF_STATE_ATTRIBUTES instead.
+ * Kept for backward compatibility during migration.
+ *
+ * Shared set of boolean host attributes that influence component styling or behaviour.
+ * Centralises attribute names so adapters and components avoid hard-coding strings.
+ *
+ * NOTE: For effects (neonGlow, tilt, ripple), components should use the dataset API
+ * directly (e.g., element.dataset.lfNeonGlow) for hierarchical composability.
+ * The values here maintain backward compatibility for components still using data-lf="...".
+ */
+export const LF_ATTRIBUTES = {
+  // Utilities (mutually exclusive, data-lf="value")
+  ...LF_UTILITY_ATTRIBUTES,
+  // States (semantic colors, data-lf="value")
+  ...LF_STATE_ATTRIBUTES,
+  // Backward compat: old effect names for data-lf="value" pattern
+  // Components should migrate to dataset API for composability
+  neonGlow: "neon-glow",
+  neonGlowReflection: "neon-glow-reflection",
+  ripple: "ripple",
+  tilt: "tilt",
 } as const;
 /**
  * DOM id assigned to the global `<style>` element injected by the runtime.

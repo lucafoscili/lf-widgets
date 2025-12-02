@@ -25,168 +25,16 @@ export const GLOBAL_STYLES = {
   "::-webkit-scrollbar-track": {
     "background-color": "rgb(var(--lf-color-bg))"
   },
-  "[data-lf=neon-glow]": {
-    "--lf-ui-neon-color": "#00ffcc",
+  "[data-lf-neon-glow]": {
+    "--lf-ui-neon-color": "rgba(var(--lf-color-secondary), 1)",
     "--lf-ui-neon-intensity": "0.7",
     "--lf-ui-neon-pulse-duration": "8s",
     "position": "relative",
-    "animation": "lf-neon-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite, lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite",
     "border": "2px solid var(--lf-ui-neon-color)",
     "border-radius": "var(--lf-ui-border-radius, 0.5em)",
-    "transition": "box-shadow 0.3s ease"
+    "transform-style": "preserve-3d",
+    "animation": "lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite"
   },
-  "@keyframes lf-neon-pulse": [
-    {
-      "0%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "3%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "5%": {
-        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 14px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "8%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "9.5%": {
-        "box-shadow": "0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color) , 0 0 35px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "10%": {
-        "box-shadow": "0 0 12px var(--lf-ui-neon-color) , 0 0 25px var(--lf-ui-neon-color) , 0 0 50px var(--lf-ui-neon-color) , 0 0 100px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "10.5%": {
-        "box-shadow": "0 0 1px var(--lf-ui-neon-color) , 0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "11%": {
-        "box-shadow": "0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 24px var(--lf-ui-neon-color) , 0 0 40px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "14%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "20%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "25%": {
-        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 14px var(--lf-ui-neon-color) , 0 0 24px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "30%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "35%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 11px var(--lf-ui-neon-color) , 0 0 19px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "40%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "49%": {
-        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color) , 0 0 16px var(--lf-ui-neon-color) , 0 0 28px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "50%": {
-        "box-shadow": "0 0 8px var(--lf-ui-neon-color) , 0 0 16px var(--lf-ui-neon-color) , 0 0 32px var(--lf-ui-neon-color) , 0 0 60px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "51%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color) , 0 0 15px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "53%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "60%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "65%": {
-        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 13px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "70%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "74%": {
-        "box-shadow": "0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "75%": {
-        "box-shadow": "0 0 15px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color) , 0 0 60px var(--lf-ui-neon-color) , 0 0 120px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "75.5%": {
-        "box-shadow": "0 0 1px var(--lf-ui-neon-color) , 0 0 2px var(--lf-ui-neon-color) , 0 0 4px var(--lf-ui-neon-color) , 0 0 8px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "76%": {
-        "box-shadow": "0 0 8px var(--lf-ui-neon-color) , 0 0 15px var(--lf-ui-neon-color) , 0 0 30px var(--lf-ui-neon-color) , 0 0 50px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "78%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "85%": {
-        "box-shadow": "0 0 2px var(--lf-ui-neon-color) , 0 0 5px var(--lf-ui-neon-color) , 0 0 10px var(--lf-ui-neon-color) , 0 0 18px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "90%": {
-        "box-shadow": "0 0 4px var(--lf-ui-neon-color) , 0 0 7px var(--lf-ui-neon-color) , 0 0 13px var(--lf-ui-neon-color) , 0 0 22px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "95%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 11px var(--lf-ui-neon-color) , 0 0 19px var(--lf-ui-neon-color)"
-      }
-    },
-    {
-      "100%": {
-        "box-shadow": "0 0 3px var(--lf-ui-neon-color) , 0 0 6px var(--lf-ui-neon-color) , 0 0 12px var(--lf-ui-neon-color) , 0 0 20px var(--lf-ui-neon-color)"
-      }
-    }
-  ],
   "@keyframes lf-neon-flicker": [
     {
       "0%": {
@@ -469,14 +317,7 @@ export const GLOBAL_STYLES = {
       }
     }
   ],
-  "[data-lf=neon-glow][data-lf-neon-mode=outline]": {
-    "background": "transparent"
-  },
-  "[data-lf=neon-glow][data-lf-neon-mode=filled]": {
-    "background": "color-mix(in srgb, var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%), transparent)",
-    "backdrop-filter": "blur(4px)"
-  },
-  "[data-lf=neon-glow]::before": {
+  "[data-lf-neon-glow]::before": {
     "content": "\"\"",
     "position": "absolute",
     "inset": "-1px",
@@ -487,30 +328,219 @@ export const GLOBAL_STYLES = {
     "mask-composite": "exclude",
     "-webkit-mask-composite": "xor",
     "pointer-events": "none",
-    "opacity": "var(--lf-ui-neon-intensity)"
+    "opacity": "var(--lf-ui-neon-intensity)",
+    "transform": "translateZ(0)"
   },
-  "[data-lf=neon-glow] > *": {
+  "[data-lf-neon-glow] > *": {
     "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
   },
-  "[data-lf=neon-glow-reflection]": {
-    "position": "fixed",
-    "pointer-events": "none",
-    "z-index": "-1",
+  "[data-lf-effect-layer=neon-glow]": {
+    "will-change": "box-shadow",
+    "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)",
+    "animation": "lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite"
+  },
+  "@keyframes lf-neon-glow-pulse": [
+    {
+      "0%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "3%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "5%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "8%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "9.5%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10%": {
+        "box-shadow": "0 0 10px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), 0 0 50px var(--lf-ui-neon-color), inset 0 0 8px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "11%": {
+        "box-shadow": "0 0 6px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "14%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "20%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "25%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "30%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "35%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "40%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "49%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "50%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "51%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "53%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "60%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "65%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "70%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "74%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 22px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75%": {
+        "box-shadow": "0 0 12px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), 0 0 60px var(--lf-ui-neon-color), inset 0 0 10px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "76%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), 0 0 35px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "78%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "85%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "90%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "95%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "100%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    }
+  ],
+  "[data-lf-neon-glow=outline]": {
+    "background": "transparent"
+  },
+  "[data-lf-neon-glow=filled]": {
+    "background": "color-mix(in srgb, var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%), transparent)",
+    "backdrop-filter": "blur(4px)"
+  },
+  "[data-lf-effect-layer=neon-glow-reflection]": {
     "--lf-ui-neon-reflection-blur": "8px",
-    "--lf-ui-neon-reflection-offset": "4px",
     "--lf-ui-neon-reflection-opacity": "0.3",
-    "transform": "scaleY(-1)",
+    "transform": "scaleY(-1) translateY(-100%)",
     "mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
     "-webkit-mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
     "filter": "blur(var(--lf-ui-neon-reflection-blur))",
     "opacity": "var(--lf-ui-neon-reflection-opacity)",
     "box-shadow": "0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color)",
-    "animation": "lf-neon-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out infinite"
+    "animation": "lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out infinite"
   },
   "[data-lf=neon-glow-surface]": {
     "position": "relative",
     "overflow": "visible",
     "isolation": "isolate"
+  },
+  "[data-lf-tilt]": {
+    "--lf-ui-tilt-rotate-x": "0deg",
+    "--lf-ui-tilt-rotate-y": "0deg",
+    "perspective": "1000px",
+    "transform": "perspective(1000px) rotateX(var(--lf-ui-tilt-rotate-x)) rotateY(var(--lf-ui-tilt-rotate-y))",
+    "transition": "transform 275ms ease-out",
+    "transform-style": "preserve-3d",
+    "will-change": "transform"
+  },
+  "[data-lf-tilt]:hover": {
+    "box-shadow": "0 15px 30px rgba(var(--lf-color-on-bg), 0.375)"
+  },
+  "[data-lf-effect-layer=tilt-highlight]": {
+    "background": "transparent",
+    "border-radius": "inherit",
+    "inset": "0",
+    "mix-blend-mode": "screen",
+    "overflow": "hidden",
+    "pointer-events": "none",
+    "position": "absolute",
+    "transition": "background 275ms ease-out"
+  },
+  "[data-lf-tilt]:hover > [data-lf-effect-layer=tilt-highlight]": {
+    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), 0.275), transparent)"
+  },
+  ":host([data-lf-tilt]:hover) [data-lf-effect-layer=tilt-highlight]": {
+    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), 0.275), transparent)"
   },
   ".lf-effects [data-lf=backdrop]": {
     "transition": "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",

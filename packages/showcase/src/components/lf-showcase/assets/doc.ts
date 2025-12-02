@@ -2384,6 +2384,10 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the primary font family for the code component. Defaults to => var(--lf-font-family-primary)",
       },
       {
+        name: "--lf-code-font-family-monospace",
+        docs: "Sets the monospace font family for the code component. Defaults to => var(--lf-font-family-monospace)",
+      },
+      {
         name: "--lf-code-font-size",
         docs: "Sets the font size for the code component. Defaults to => var(--lf-font-size)",
       },

@@ -1,13 +1,22 @@
 import {
-  GLOBAL_STYLES,
-  LF_ATTRIBUTES,
   LF_EFFECTS_VARS,
   LF_THEME_COLORS,
-  LF_THEME_UI,
   LfColorInput,
   LfEffectsNeonGlowOptions,
   LfEffectsNeonGlowPulseSpeed,
 } from "@lf-widgets/foundations";
+import {
+  createAdoptedStylesManager,
+  createCachedCssGetter,
+} from "./helpers.adopted-styles";
+import { layerManager } from "./helpers.layers";
+
+//#region Constants
+const LAYER_NAMES = {
+  glow: "neon-glow",
+  reflection: "neon-glow-reflection",
+} as const;
+//#endregion
 
 //#region Helpers
 const getPulseDuration = (
@@ -32,110 +41,49 @@ const getRandomDelay = (maxDelay = 5): string => {
 };
 
 /**
- * Extracts and converts neon-glow related styles from GLOBAL_STYLES to CSS string.
- * This uses the pre-compiled SCSS from the build system.
- * When targeting a custom element's host, converts selectors to :host() format.
+ * Gets the cached neon-glow :host() CSS string using shared utilities.
+ * Uses regex-based host transformation for consistent pattern with tilt.
+ * Includes layer element selectors for glow and reflection.
  */
-const getNeonGlowCss = (forHost = false): string => {
-  let css = "";
+const getNeonGlowCss = createCachedCssGetter({
+  selectorFilter: (k) =>
+    k.includes("data-lf-neon-glow") ||
+    k.includes("data-lf-effect-layer") ||
+    k.includes("lf-neon-") ||
+    k.startsWith("@keyframes lf-neon"),
+  hostTransform: (selector) => {
+    // @keyframes are kept as-is (global)
+    if (selector.startsWith("@keyframes")) return selector;
 
-  // Get the neon-glow related selectors and keyframes
-  const neonSelectors = [
-    "[data-lf=neon-glow]",
-    "[data-lf=neon-glow][data-lf-neon-mode=outline]",
-    "[data-lf=neon-glow][data-lf-neon-mode=filled]",
-    "[data-lf=neon-glow]::before",
-    "[data-lf=neon-glow] > *",
-    "[data-lf=neon-glow-reflection]",
-    "[data-lf=neon-glow-surface]",
-    "@keyframes lf-neon-pulse",
-    "@keyframes lf-neon-flicker",
-  ] as const;
+    // Layer selectors are kept as-is (they're children of host)
+    if (selector.includes("data-lf-effect-layer")) return selector;
 
-  for (const selector of neonSelectors) {
-    const rules = GLOBAL_STYLES[selector as keyof typeof GLOBAL_STYLES];
-    if (!rules) continue;
+    // Only transform [data-lf-neon-glow] selectors
+    if (!selector.startsWith("[data-lf-neon-glow]")) return selector;
 
-    let outputSelector: string = selector;
-    if (forHost && selector.startsWith("[data-lf=neon-glow]")) {
-      // Convert [data-lf=neon-glow] to :host([data-lf=neon-glow])
-      // And [data-lf=neon-glow]::before to :host([data-lf=neon-glow])::before
-      // And [data-lf=neon-glow] > * to :host([data-lf=neon-glow]) > *
-      if (selector === "[data-lf=neon-glow]") {
-        outputSelector = ":host([data-lf=neon-glow])";
-      } else if (selector.includes("::before")) {
-        outputSelector = ":host([data-lf=neon-glow])::before";
-      } else if (selector.includes("> *")) {
-        outputSelector = ":host([data-lf=neon-glow]) > *";
-      } else if (selector.includes("[data-lf-neon-mode=")) {
-        const modeMatch = selector.match(/\[data-lf-neon-mode=([^\]]+)\]/);
-        if (modeMatch) {
-          outputSelector = `:host([data-lf=neon-glow][data-lf-neon-mode=${modeMatch[1]}])`;
-        }
-      }
-    }
-
-    if (selector.startsWith("@keyframes")) {
-      css += `${selector} { `;
-      if (Array.isArray(rules)) {
-        for (const frame of rules) {
-          for (const [frameKey, props] of Object.entries(frame)) {
-            css += `${frameKey} { `;
-            for (const [prop, value] of Object.entries(
-              props as Record<string, string>,
-            )) {
-              css += `${prop}: ${value}; `;
-            }
-            css += `} `;
-          }
-        }
-      }
-      css += `} `;
-    } else {
-      css += `${outputSelector} { `;
-      for (const [prop, value] of Object.entries(
-        rules as Record<string, string>,
-      )) {
-        css += `${prop}: ${value}; `;
-      }
-      css += `} `;
-    }
-  }
-
-  return css;
-};
-
-/** Cached CSS string for :host() neon-glow styles */
-let cachedNeonGlowHostCss: string | null = null;
-
-/**
- * Gets or builds the cached neon-glow :host() CSS string.
- * Only :host() selectors are needed - global.scss provides the standard selectors.
- */
-const getOrBuildNeonGlowCss = (): string => {
-  if (cachedNeonGlowHostCss === null) {
-    cachedNeonGlowHostCss = getNeonGlowCss(true);
-  }
-  return cachedNeonGlowHostCss;
-};
+    // Transform to :host() format using regex
+    return selector.replace(
+      /^\[data-lf-neon-glow([^\]]*)\]/,
+      ":host([data-lf-neon-glow$1])",
+    );
+  },
+});
 
 const resolveColor = (color?: LfColorInput): string => {
   if (color) {
     return color;
   } else {
     const { secondary } = LF_THEME_COLORS;
-    const { alphaGlass } = LF_THEME_UI;
-    return `rgba(var(${secondary}), var(${alphaGlass}))`;
+    return `rgb(var(${secondary}))`;
   }
 };
 //#endregion
 
 //#region State
 /**
- * Tracks which shadow roots have adopted neon-glow :host() styles.
- * Key: ShadowRoot, Value: CSSStyleSheet
+ * Shared adopted styles manager for neon-glow effect.
  */
-const adoptedRoots = new WeakMap<ShadowRoot, CSSStyleSheet>();
+const stylesManager = createAdoptedStylesManager(getNeonGlowCss);
 
 /**
  * Tracks element-specific data for cleanup.
@@ -143,16 +91,9 @@ const adoptedRoots = new WeakMap<ShadowRoot, CSSStyleSheet>();
 const elementData = new WeakMap<
   HTMLElement,
   {
-    resizeObserver?: ResizeObserver;
-    reflection?: HTMLElement;
     originalStyles?: string;
   }
 >();
-
-/**
- * Reference count per shadow root (how many elements use neon-glow in that root).
- */
-const rootRefCount = new WeakMap<ShadowRoot, number>();
 //#endregion
 
 //#region Public API
@@ -179,67 +120,67 @@ export const neonGlowEffect = {
     const pulseDuration = getPulseDuration(pulseSpeed);
     const elementShadowRoot = element.shadowRoot;
 
-    if (elementShadowRoot && !adoptedRoots.has(elementShadowRoot)) {
-      const css = getOrBuildNeonGlowCss();
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(css);
-      elementShadowRoot.adoptedStyleSheets = [
-        ...elementShadowRoot.adoptedStyleSheets,
-        sheet,
-      ];
-      adoptedRoots.set(elementShadowRoot, sheet);
-      rootRefCount.set(elementShadowRoot, 1);
-    } else if (elementShadowRoot) {
-      rootRefCount.set(
-        elementShadowRoot,
-        (rootRefCount.get(elementShadowRoot) || 0) + 1,
-      );
+    // Inject styles into shadow root if needed (uses shared manager)
+    if (elementShadowRoot) {
+      stylesManager.adopt(elementShadowRoot);
     }
 
     // Store original inline styles for cleanup
     elementData.set(element, {
-      ...elementData.get(element),
       originalStyles: element.getAttribute("style") || "",
     });
 
-    element.dataset.lf = LF_ATTRIBUTES.neonGlow;
-    element.dataset.lfNeonMode = mode;
-
+    // Set host element attributes and properties
+    element.dataset.lfNeonGlow = mode;
     element.style.setProperty(neonGlow.color, resolvedColor);
     element.style.setProperty(neonGlow.intensity, String(intensity));
     element.style.setProperty(neonGlow.pulseDuration, pulseDuration);
 
-    if (desync) {
-      const randomDelay = getRandomDelay(5);
-      element.style.animationDelay = randomDelay;
+    // Generate random delay for desync mode
+    const animationDelay = desync ? getRandomDelay(5) : undefined;
+    if (animationDelay) {
+      element.style.animationDelay = animationDelay;
     }
 
-    // Handle reflection if enabled
+    // Register glow layer via layer manager
+    layerManager.register(element, {
+      name: LAYER_NAMES.glow,
+      insertPosition: "prepend",
+      onSetup: (layer) => {
+        // Sync animation delay if desync is enabled
+        if (animationDelay) {
+          layer.style.animationDelay = animationDelay;
+        }
+      },
+    });
+
+    // Register reflection layer if enabled
     if (reflection) {
-      const reflectionEl = createReflection(element, {
-        color: resolvedColor,
-        reflectionBlur,
-        reflectionOffset,
-        reflectionOpacity,
-      });
+      layerManager.register(element, {
+        name: LAYER_NAMES.reflection,
+        insertPosition: "prepend",
+        onSetup: (layer) => {
+          // Set reflection-specific CSS custom properties
+          layer.style.setProperty(
+            neonGlow.reflectionBlur,
+            `${reflectionBlur}px`,
+          );
+          layer.style.setProperty(
+            neonGlow.reflectionOpacity,
+            String(reflectionOpacity),
+          );
 
-      // Sync reflection animation delay with element for consistent flickering
-      if (desync && element.style.animationDelay) {
-        reflectionEl.style.animationDelay = element.style.animationDelay;
-      }
+          // Position reflection below the element
+          layer.style.top = "auto";
+          layer.style.bottom = `-${reflectionOffset}px`;
+          layer.style.height = "50%";
+          layer.style.transform = "scaleY(-1)";
 
-      element.parentElement?.insertBefore(reflectionEl, element.nextSibling);
-
-      const resizeObserver = new ResizeObserver(() => {
-        updateReflectionPosition(element, reflectionEl, reflectionOffset);
-      });
-      resizeObserver.observe(element);
-
-      const data = elementData.get(element) || {};
-      elementData.set(element, {
-        ...data,
-        resizeObserver,
-        reflection: reflectionEl,
+          // Sync animation delay if desync is enabled
+          if (animationDelay) {
+            layer.style.animationDelay = animationDelay;
+          }
+        },
       });
     }
   },
@@ -247,11 +188,10 @@ export const neonGlowEffect = {
   unregister: (element: HTMLElement): void => {
     const { neonGlow } = LF_EFFECTS_VARS;
 
-    // Clean up data attributes (removing these removes the CSS styling)
-    delete element.dataset.lf;
-    delete element.dataset.lfNeonMode;
+    // Remove host element attributes
+    delete element.dataset.lfNeonGlow;
 
-    // Clean up CSS custom properties and restore original styles
+    // Restore original styles or clean up properties
     const data = elementData.get(element);
     if (data?.originalStyles !== undefined) {
       element.setAttribute("style", data.originalStyles);
@@ -259,91 +199,19 @@ export const neonGlowEffect = {
       element.style.removeProperty(neonGlow.color);
       element.style.removeProperty(neonGlow.intensity);
       element.style.removeProperty(neonGlow.pulseDuration);
+      element.style.removeProperty("animation-delay");
     }
+    elementData.delete(element);
 
-    // Clean up element-specific data
-    if (data) {
-      data.resizeObserver?.disconnect();
-      data.reflection?.remove();
-      elementData.delete(element);
-    }
+    // Unregister layers via layer manager
+    layerManager.unregister(element, LAYER_NAMES.glow);
+    layerManager.unregister(element, LAYER_NAMES.reflection);
 
-    // Decrement ref count and potentially clean up adopted stylesheet
-    // Check element's own shadow root first (for custom elements)
+    // Release adopted styles (uses shared manager with ref counting)
     const elementShadowRoot = element.shadowRoot;
-    const rootToClean = elementShadowRoot || element.getRootNode();
-
-    if (rootToClean instanceof ShadowRoot && adoptedRoots.has(rootToClean)) {
-      const count = (rootRefCount.get(rootToClean) || 1) - 1;
-      rootRefCount.set(rootToClean, count);
-
-      // If no more elements use neon-glow in this shadow root, remove the stylesheet
-      if (count <= 0) {
-        const sheet = adoptedRoots.get(rootToClean)!;
-        rootToClean.adoptedStyleSheets = rootToClean.adoptedStyleSheets.filter(
-          (s) => s !== sheet,
-        );
-        adoptedRoots.delete(rootToClean);
-        rootRefCount.delete(rootToClean);
-      }
+    if (elementShadowRoot) {
+      stylesManager.release(elementShadowRoot);
     }
   },
-};
-//#endregion
-
-//#region Reflection helpers
-const createReflection = (
-  element: HTMLElement,
-  options: {
-    color: string;
-    reflectionBlur: number;
-    reflectionOffset: number;
-    reflectionOpacity: number;
-  },
-): HTMLElement => {
-  const { neonGlow } = LF_EFFECTS_VARS;
-  const reflection = document.createElement("div");
-
-  // Set data attribute - SCSS handles all the base styling
-  reflection.dataset.lf = LF_ATTRIBUTES.neonGlowReflection;
-  reflection.setAttribute("aria-hidden", "true");
-
-  // Position-related values (dynamic, must be inline)
-  const rect = element.getBoundingClientRect();
-  const computedStyle = getComputedStyle(element);
-
-  reflection.style.width = `${rect.width}px`;
-  reflection.style.height = `${rect.height * 0.5}px`;
-  reflection.style.left = `${rect.left}px`;
-  reflection.style.top = `${rect.bottom + options.reflectionOffset}px`;
-  reflection.style.borderRadius = computedStyle.borderRadius;
-
-  // Set CSS custom properties for customizable values
-  reflection.style.setProperty(neonGlow.color, options.color);
-  reflection.style.setProperty(
-    neonGlow.reflectionBlur,
-    `${options.reflectionBlur}px`,
-  );
-  reflection.style.setProperty(
-    neonGlow.reflectionOffset,
-    `${options.reflectionOffset}px`,
-  );
-  reflection.style.setProperty(
-    neonGlow.reflectionOpacity,
-    String(options.reflectionOpacity),
-  );
-
-  return reflection;
-};
-
-const updateReflectionPosition = (
-  element: HTMLElement,
-  reflection: HTMLElement,
-  offset: number,
-): void => {
-  const rect = element.getBoundingClientRect();
-  reflection.style.width = `${rect.width}px`;
-  reflection.style.left = `${rect.left}px`;
-  reflection.style.top = `${rect.bottom + offset}px`;
 };
 //#endregion

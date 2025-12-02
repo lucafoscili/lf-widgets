@@ -67,99 +67,35 @@
   }
 }
 /*******************************************
- * @mixin lf-fw-neon-glow-apply
- * Applies animated neon glow effect directly to the current selector.
- * Use this mixin inside shadow DOM components or with ::part() selectors.
- *
- * @param {Color} $color - Neon glow color. Defaults to CSS var or fallback.
- * @param {Number} $intensity - Glow intensity (0-1). Defaults to 0.7.
- * @param {Time} $pulse-duration - Animation cycle duration. Defaults to 2s.
- *******************************************/
-@mixin lf-fw-neon-glow-apply(
-  $color: var(
-      --lf-ui-neon-color,
-      rgba(var(--lf-color-secondary), var(--lf-ui-alpha-glass))
-    ),
-  $intensity: var(--lf-ui-neon-intensity, 0.7),
-  $pulse-duration: var(--lf-ui-neon-pulse-duration, 8s)
-) {
-  & {
-    position: relative;
-    animation:
-      lf-neon-pulse #{$pulse-duration} ease-in-out infinite,
-      lf-neon-flicker calc(#{$pulse-duration} * 1.5) linear infinite;
-    border: 2px solid #{$color};
-    border-radius: var(--lf-ui-border-radius, 0.5em);
-    transition: box-shadow 0.3s ease;
-    box-shadow:
-      0 0 3px #{$color},
-      0 0 6px #{$color},
-      0 0 12px #{$color},
-      0 0 24px #{$color};
-
-    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
-    @include lf-keyframe(lf-neon-flicker, map.get($lf-keyframes, neon-flicker));
-  }
-
-  // Inner glow pseudo-element
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(135deg, #{$color}, transparent 50%, #{$color});
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    pointer-events: none;
-    opacity: #{$intensity};
-  }
-}
-/*******************************************
  * @mixin lf-fw-neon-glow
  * Adds animated neon glow effect with pulsating border and optional reflection.
  * Supports "outline" (border only) and "filled" (with background) modes.
- * Use for global styles targeting [data-lf="neon-glow"] attribute.
+ * Uses hierarchical attribute pattern: [data-lf-neon-glow] for composability.
+ * 
+ * Performance: The glow animation uses box-shadow on a layer element.
+ * box-shadow is GPU-accelerated and much faster than filter: drop-shadow().
+ * Using a layer element instead of ::after allows composability with tilt effect.
  *
  * @param {Color} $default-color - Fallback neon color if CSS var not set.
  *******************************************/
 @mixin lf-fw-neon-glow($default-color: rgba(var(--lf-color-secondary), 1)) {
-  [data-lf="neon-glow"] {
+  [data-lf-neon-glow] {
     --lf-ui-neon-color: #{$default-color};
     --lf-ui-neon-intensity: 0.7;
     --lf-ui-neon-pulse-duration: 8s;
 
     position: relative;
-    animation:
-      lf-neon-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite,
-      lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear
-        infinite;
     border: 2px solid var(--lf-ui-neon-color);
     border-radius: var(--lf-ui-border-radius, 0.5em);
-    transition: box-shadow 0.3s ease;
+    transform-style: preserve-3d;
 
-    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
+    // Flicker animation on the main element (opacity only - very cheap)
+    animation: lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5)
+      linear infinite;
+
     @include lf-keyframe(lf-neon-flicker, map.get($lf-keyframes, neon-flicker));
 
-    // Outline mode (default)
-    &[data-lf-neon-mode="outline"] {
-      background: transparent;
-    }
-
-    // Filled mode
-    &[data-lf-neon-mode="filled"] {
-      background: color-mix(
-        in srgb,
-        var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%),
-        transparent
-      );
-      backdrop-filter: blur(4px);
-    }
-
-    // Inner glow pseudo-element
+    // Gradient border overlay (cheap - no animation)
     &::before {
       content: "";
       position: absolute;
@@ -179,9 +115,10 @@
       -webkit-mask-composite: xor;
       pointer-events: none;
       opacity: var(--lf-ui-neon-intensity);
+      transform: translateZ(0);
     }
 
-    // Text glow for child text elements
+    // Text glow for direct children
     & > * {
       text-shadow:
         0 0 5px var(--lf-ui-neon-color),
@@ -190,20 +127,45 @@
     }
   }
 
-  // Reflection element styling
-  [data-lf="neon-glow-reflection"] {
-    // Base styling - fixed position because we use viewport coordinates from getBoundingClientRect
-    position: fixed;
-    pointer-events: none;
-    z-index: -1;
+  // Glow layer element (injected by layerManager)
+  [data-lf-effect-layer="neon-glow"] {
+    will-change: box-shadow;
+    box-shadow:
+      0 0 3px var(--lf-ui-neon-color),
+      0 0 8px var(--lf-ui-neon-color),
+      0 0 15px var(--lf-ui-neon-color),
+      inset 0 0 3px var(--lf-ui-neon-color);
+    animation: lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration) ease-in-out
+      infinite;
 
-    // Reflection-specific CSS variable defaults
+    @include lf-keyframe(
+      lf-neon-glow-pulse,
+      map.get($lf-keyframes, neon-glow-pulse)
+    );
+  }
+
+  // Outline mode (value encodes mode)
+  [data-lf-neon-glow="outline"] {
+    background: transparent;
+  }
+
+  // Filled mode
+  [data-lf-neon-glow="filled"] {
+    background: color-mix(
+      in srgb,
+      var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%),
+      transparent
+    );
+    backdrop-filter: blur(4px);
+  }
+
+  // Reflection layer element (injected by layerManager)
+  [data-lf-effect-layer="neon-glow-reflection"] {
     --lf-ui-neon-reflection-blur: 8px;
-    --lf-ui-neon-reflection-offset: 4px;
     --lf-ui-neon-reflection-opacity: 0.3;
 
-    // Reflection effect
-    transform: scaleY(-1);
+    // Reflection effect - positioned below host
+    transform: scaleY(-1) translateY(-100%);
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -213,16 +175,17 @@
     filter: blur(var(--lf-ui-neon-reflection-blur));
     opacity: var(--lf-ui-neon-reflection-opacity);
 
-    // Glow effect
     box-shadow:
       0 0 20px var(--lf-ui-neon-color),
       0 0 40px var(--lf-ui-neon-color);
 
-    // Animation - sync with main element timing
-    animation: lf-neon-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out
-      infinite;
+    animation: lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration, 8s)
+      ease-in-out infinite;
 
-    @include lf-keyframe(lf-neon-pulse, map.get($lf-keyframes, neon-pulse));
+    @include lf-keyframe(
+      lf-neon-glow-pulse,
+      map.get($lf-keyframes, neon-glow-pulse)
+    );
   }
 }
 /*******************************************
@@ -265,9 +228,10 @@
 /*******************************************
  * @mixin lf-fw-ripple
  * Defines a ripple element and its animation for material-style click feedback.
+ * Uses hierarchical attribute pattern: [data-lf-ripple] for composability.
  *******************************************/
 @mixin lf-fw-ripple {
-  [data-lf="ripple"] {
+  [data-lf-ripple] {
     animation-duration: var(--lf-ui-duration-ripple, 675ms);
     animation-fill-mode: forwards;
     animation-name: lf-ripple;
@@ -289,6 +253,7 @@
 /*******************************************
  * @mixin lf-fw-ripple-surface
  * Defines a container for ripple elements (i.e., the clickable surface).
+ * Uses utility attribute pattern: [data-lf="ripple-surface"] as it's structural.
  *******************************************/
 @mixin lf-fw-ripple-surface {
   [data-lf="ripple-surface"] {
@@ -333,43 +298,59 @@
 /*******************************************
  * @mixin lf-fw-tilt
  * Adds a 3D tilt/hover effect to the element, with a dynamic radial highlight.
+ * Uses layer-based approach for composability with other effects.
  *
  * @param {Number} $intensity - (Unused directly here) Potentially used for scaling the tilt.
  * @param {Time}   $transition - Transition duration (e.g., 275ms).
  *******************************************/
 @mixin lf-fw-tilt($intensity: 10, $transition: 275ms) {
-  & {
-    transform: rotateX(var(--lf-ui-tilt-y, 0)) rotateY(var(--lf-ui-tilt-x, 0));
-    transition: transform #{$transition} ease-out;
-    transform-style: preserve-3d;
-    will-change: transform;
-  }
-
-  &::after {
-    @include lf-el-stretch;
-    background: transparent;
-    content: "";
-    left: 0;
-    mix-blend-mode: screen;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    transition:
-      background $transition ease-out,
-      box-shadow $transition ease-in;
-  }
-
-  &:hover {
+  [data-lf-tilt] {
     & {
+      // Transform composition via CSS variables
+      // Each effect sets its own variable, then we compose them
+      --lf-ui-tilt-rotate-x: 0deg;
+      --lf-ui-tilt-rotate-y: 0deg;
+
+      perspective: 1000px;
+      transform: perspective(1000px) rotateX(var(--lf-ui-tilt-rotate-x))
+        rotateY(var(--lf-ui-tilt-rotate-y));
+      transition: transform #{$transition} ease-out;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    &:hover {
       box-shadow: 0 15px 30px rgba(var(--lf-color-on-bg), 0.375);
     }
+  }
 
-    &::after {
-      background: radial-gradient(
-        circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%),
-        rgba(var(--lf-color-primary), 0.275),
-        transparent
-      );
-    }
+  // Layer-based radial highlight (injected by effects.tilt)
+  [data-lf-effect-layer="tilt-highlight"] {
+    background: transparent;
+    border-radius: inherit;
+    inset: 0;
+    mix-blend-mode: screen;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    transition: background $transition ease-out;
+  }
+
+  // Light DOM: direct child selector
+  [data-lf-tilt]:hover > [data-lf-effect-layer="tilt-highlight"] {
+    background: radial-gradient(
+      circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%),
+      rgba(var(--lf-color-primary), 0.275),
+      transparent
+    );
+  }
+
+  // Shadow DOM: :host selector (transformed by adopted styles)
+  :host([data-lf-tilt]:hover) [data-lf-effect-layer="tilt-highlight"] {
+    background: radial-gradient(
+      circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%),
+      rgba(var(--lf-color-primary), 0.275),
+      transparent
+    );
   }
 }

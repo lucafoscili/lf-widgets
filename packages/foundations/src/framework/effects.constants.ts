@@ -1,4 +1,4 @@
-//#region
+//#region Focusables
 export const LF_EFFECTS_FOCUSABLES = [
   "a[href]",
   "area[href]",
@@ -12,6 +12,40 @@ export const LF_EFFECTS_FOCUSABLES = [
 ] as const;
 //#endregion
 
+//#region Layer
+/**
+ * Data attributes for effect layers.
+ */
+export const LF_EFFECTS_LAYER_ATTRIBUTES = {
+  /** Marks an element as a host for effect layers */
+  host: "data-lf-effect-host",
+  /** The effect layer identifier attribute */
+  layer: "data-lf-effect-layer",
+  /** The registration order attribute */
+  order: "data-lf-effect-order",
+} as const;
+
+/**
+ * Base z-index for effect layers.
+ * Layers are stacked starting from this value.
+ */
+export const LF_EFFECTS_LAYER_BASE_Z_INDEX = 1;
+
+/**
+ * Default layer configuration values.
+ */
+export const LF_EFFECTS_LAYER_DEFAULTS = {
+  insertPosition: "prepend",
+  inheritBorderRadius: true,
+  pointerEvents: false,
+} as const;
+
+/**
+ * Layer insert positions.
+ */
+export const LF_EFFECTS_LAYER_POSITIONS = ["prepend", "append"] as const;
+//#endregion
+
 //#region Effects
 export const LF_EFFECTS_LIST = [
   "backdrop",
@@ -20,6 +54,12 @@ export const LF_EFFECTS_LIST = [
   "ripple",
   "tilt",
 ] as const;
+
+/**
+ * Effects that can be registered/unregistered on elements.
+ * Unlike ripple (fire-and-forget), these persist until explicitly removed.
+ */
+export const LF_EFFECTS_REGISTERABLE = ["neon-glow", "tilt"] as const;
 
 export const LF_EFFECTS_NEON_MODES = ["filled", "outline"] as const;
 
@@ -50,9 +90,13 @@ export const LF_EFFECTS_VARS = {
     y: "--lf-ui-ripple-y",
   },
   tilt: {
-    x: "--lf-ui-tilt-x",
-    y: "--lf-ui-tilt-y",
+    /** Rotation around X axis (vertical tilt) */
+    rotateX: "--lf-ui-tilt-rotate-x",
+    /** Rotation around Y axis (horizontal tilt) */
+    rotateY: "--lf-ui-tilt-rotate-y",
+    /** Highlight position X (0-100%) */
     lightX: "--lf-ui-tilt-light-x",
+    /** Highlight position Y (0-100%) */
     lightY: "--lf-ui-tilt-light-y",
   },
   lightbox: {

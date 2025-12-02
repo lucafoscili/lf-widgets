@@ -208,173 +208,142 @@ $lf-keyframes: (
       opacity: 1,
     ),
   ),
-  neon-pulse: (
-    // Unstable glow with surge → overload pattern
-    // Jittery baseline punctuated by fast power surges that trigger brightness spikes
+  neon-glow-pulse: (
+    // Jittery baseline with surge patterns
     0%: (
-        box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-          var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","}
-          0 0 20px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
       ),
     // Micro-fluctuations in idle glow
     3%: (
-        box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 5px
-          var(--lf-ui-neon-color) #{","} 0 0 10px var(--lf-ui-neon-color) #{","}
-          0 0 18px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 2px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
       ),
     5%: (
-      box-shadow: #{0 0 4px var(--lf-ui-neon-color) #{","} 0 0 7px
-        var(--lf-ui-neon-color) #{","} 0 0 14px var(--lf-ui-neon-color) #{","} 0
-        0 22px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"},
     ),
     8%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     // SURGE - fast ramp up
     9.5%: (
-        box-shadow: #{0 0 5px var(--lf-ui-neon-color) #{","} 0 0 10px
-          var(--lf-ui-neon-color) #{","} 0 0 20px var(--lf-ui-neon-color) #{","}
-          0 0 35px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"},
       ),
     // Peak overload
     10%: (
-        box-shadow: #{0 0 12px var(--lf-ui-neon-color) #{","} 0 0 25px
-          var(--lf-ui-neon-color) #{","} 0 0 50px var(--lf-ui-neon-color) #{","}
-          0 0 100px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 10px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), 0 0 50px var(--lf-ui-neon-color), inset 0 0 8px var(--lf-ui-neon-color)"},
       ),
     // Crash after overload
     10.5%: (
-        box-shadow: #{0 0 1px var(--lf-ui-neon-color) #{","} 0 0 3px
-          var(--lf-ui-neon-color) #{","} 0 0 6px var(--lf-ui-neon-color) #{","}
-          0 0 10px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"},
       ),
     // Recovery bounce
     11%: (
-        box-shadow: #{0 0 6px var(--lf-ui-neon-color) #{","} 0 0 12px
-          var(--lf-ui-neon-color) #{","} 0 0 24px var(--lf-ui-neon-color) #{","}
-          0 0 40px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 6px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"},
       ),
     // Settle to jittery baseline
     14%: (
-        box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-          var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","}
-          0 0 20px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
       ),
     // Jittery idle
     20%: (
-        box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 5px
-          var(--lf-ui-neon-color) #{","} 0 0 10px var(--lf-ui-neon-color) #{","}
-          0 0 18px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
       ),
     25%: (
-      box-shadow: #{0 0 4px var(--lf-ui-neon-color) #{","} 0 0 7px
-        var(--lf-ui-neon-color) #{","} 0 0 14px var(--lf-ui-neon-color) #{","} 0
-        0 24px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     30%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     35%: (
-      box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 5px
-        var(--lf-ui-neon-color) #{","} 0 0 11px var(--lf-ui-neon-color) #{","} 0
-        0 19px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
     ),
     40%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     // Second smaller surge
     49%: (
-        box-shadow: #{0 0 4px var(--lf-ui-neon-color) #{","} 0 0 8px
-          var(--lf-ui-neon-color) #{","} 0 0 16px var(--lf-ui-neon-color) #{","}
-          0 0 28px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"},
       ),
     50%: (
-      box-shadow: #{0 0 8px var(--lf-ui-neon-color) #{","} 0 0 16px
-        var(--lf-ui-neon-color) #{","} 0 0 32px var(--lf-ui-neon-color) #{","} 0
-        0 60px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 8px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"},
     ),
     51%: (
-      box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 4px
-        var(--lf-ui-neon-color) #{","} 0 0 8px var(--lf-ui-neon-color) #{","} 0
-        0 15px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 2px var(--lf-ui-neon-color), 0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
     ),
     53%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     // More jitter
     60%: (
-        box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 5px
-          var(--lf-ui-neon-color) #{","} 0 0 10px var(--lf-ui-neon-color) #{","}
-          0 0 18px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
       ),
     65%: (
-      box-shadow: #{0 0 4px var(--lf-ui-neon-color) #{","} 0 0 7px
-        var(--lf-ui-neon-color) #{","} 0 0 13px var(--lf-ui-neon-color) #{","} 0
-        0 22px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     70%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     // Big surge incoming
     74%: (
-        box-shadow: #{0 0 5px var(--lf-ui-neon-color) #{","} 0 0 10px
-          var(--lf-ui-neon-color) #{","} 0 0 18px var(--lf-ui-neon-color) #{","}
-          0 0 30px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 22px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"},
       ),
     // OVERLOAD
     75%: (
-        box-shadow: #{0 0 15px var(--lf-ui-neon-color) #{","} 0 0 30px
-          var(--lf-ui-neon-color) #{","} 0 0 60px var(--lf-ui-neon-color) #{","}
-          0 0 120px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 12px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), 0 0 60px var(--lf-ui-neon-color), inset 0 0 10px var(--lf-ui-neon-color)"},
       ),
     // Crash
     75.5%: (
-        box-shadow: #{0 0 1px var(--lf-ui-neon-color) #{","} 0 0 2px
-          var(--lf-ui-neon-color) #{","} 0 0 4px var(--lf-ui-neon-color) #{","}
-          0 0 8px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"},
       ),
     // Bounce back
     76%: (
-        box-shadow: #{0 0 8px var(--lf-ui-neon-color) #{","} 0 0 15px
-          var(--lf-ui-neon-color) #{","} 0 0 30px var(--lf-ui-neon-color) #{","}
-          0 0 50px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 8px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), 0 0 35px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"},
       ),
     // Settle
     78%: (
-        box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-          var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","}
-          0 0 20px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
       ),
     // Final jittery stretch
     85%: (
-        box-shadow: #{0 0 2px var(--lf-ui-neon-color) #{","} 0 0 5px
-          var(--lf-ui-neon-color) #{","} 0 0 10px var(--lf-ui-neon-color) #{","}
-          0 0 18px var(--lf-ui-neon-color)},
+        box-shadow:
+          #{"0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"},
       ),
     90%: (
-      box-shadow: #{0 0 4px var(--lf-ui-neon-color) #{","} 0 0 7px
-        var(--lf-ui-neon-color) #{","} 0 0 13px var(--lf-ui-neon-color) #{","} 0
-        0 22px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     95%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 11px var(--lf-ui-neon-color) #{","} 0
-        0 19px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
     100%: (
-      box-shadow: #{0 0 3px var(--lf-ui-neon-color) #{","} 0 0 6px
-        var(--lf-ui-neon-color) #{","} 0 0 12px var(--lf-ui-neon-color) #{","} 0
-        0 20px var(--lf-ui-neon-color)},
+      box-shadow:
+        #{"0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"},
     ),
   ),
   pop: (
