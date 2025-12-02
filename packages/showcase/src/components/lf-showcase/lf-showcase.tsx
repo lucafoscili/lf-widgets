@@ -607,6 +607,12 @@ export class LfShowcase {
 
   //#region Lifecycle hooks
   connectedCallback() {
+    if (this.#framework) {
+      const shadowRoot = this.rootElement?.shadowRoot;
+      if (shadowRoot) {
+        this.#framework.theme.sharedStyles.adopt(shadowRoot);
+      }
+    }
     if (this.lfScrollElement) {
       this.lfScrollElement.addEventListener("scroll", this.#handleScroll);
     }
@@ -718,7 +724,12 @@ export class LfShowcase {
     );
   }
   disconnectedCallback() {
-    const { effects } = this.#framework;
+    const { effects, theme } = this.#framework;
+
+    const shadowRoot = this.rootElement?.shadowRoot;
+    if (shadowRoot) {
+      theme.sharedStyles.release(shadowRoot);
+    }
 
     if (this.lfScrollElement) {
       this.lfScrollElement.removeEventListener("scroll", this.#handleScroll);
