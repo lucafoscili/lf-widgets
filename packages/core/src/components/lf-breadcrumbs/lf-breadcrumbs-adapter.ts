@@ -28,6 +28,5 @@ export const createAdapter = (
 
 export const prepRefs = (): LfBreadcrumbsAdapterRefs => ({
   items: new Map(),
-  ripples: new Map(),
 });
 //#endregion

@@ -4,17 +4,21 @@
 import {
   CY_ATTRIBUTES,
   getComponentProps,
+  LF_EFFECTS_LAYER_ATTRIBUTES,
   LF_FRAMEWORK_EVENT_NAME,
   LfComponentName,
   LfComponentRootElement,
   LfComponentTag,
-  LfFrameworkEvent,
-  LfFrameworkInterface,
   LfEvent,
   LfEventType,
+  LfFrameworkEvent,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
-import { CY_ALIASES } from "./constants";
-import { DataCyAttributeTransformed } from "./declarations";
+import { CY_ALIASES, CY_EFFECT_LAYERS } from "./constants";
+import {
+  DataCyAttributeTransformed,
+  EffectLayerTransformed,
+} from "./declarations";
 
 let lfFramework: LfFrameworkInterface;
 
@@ -115,10 +119,26 @@ declare global {
       findCyElement(dataCy: string): Chainable;
 
       /**
+       * Finds effect layer element by layer name
+       * @param layerName - The effect layer name (e.g., 'ripple', 'neon-glow')
+       */
+      findEffectLayer(
+        layerName: (typeof CY_EFFECT_LAYERS)[keyof typeof CY_EFFECT_LAYERS],
+      ): Chainable;
+
+      /**
        * Gets element by data-cy attribute
        * @param dataCy - The data-cy attribute value to get
        */
       getCyElement(dataCy: string): Chainable;
+
+      /**
+       * Gets effect layer element by layer name
+       * @param layerName - The effect layer name (e.g., 'ripple', 'neon-glow')
+       */
+      getEffectLayer(
+        layerName: (typeof CY_EFFECT_LAYERS)[keyof typeof CY_EFFECT_LAYERS],
+      ): Chainable;
 
       /**
        * Gets LF manager instance
@@ -306,7 +326,7 @@ Cypress.Commands.add("checkRipple", (component) => {
   let initialChildCount = 0;
 
   cy.get(component)
-    .findCyElement(CY_ATTRIBUTES.rippleSurface)
+    .findEffectLayer(CY_EFFECT_LAYERS.ripple)
     .should("exist")
     .then(($ripple) => {
       cy.wrap($ripple)
@@ -360,6 +380,22 @@ Cypress.Commands.add("getCyElement", (dataCy: string) =>
 );
 //#endregion
 
+//#region findEffectLayer
+Cypress.Commands.add(
+  "findEffectLayer",
+  { prevSubject: "element" },
+  (subject, layerName: string) => {
+    cy.wrap(subject).find(transformEffectLayer(layerName) as unknown as string);
+  },
+);
+//#endregion
+
+//#region getEffectLayer
+Cypress.Commands.add("getEffectLayer", (layerName: string) =>
+  cy.get(transformEffectLayer(layerName) as unknown as string),
+);
+//#endregion
+
 //#region getLfFramework
 Cypress.Commands.add("getLfFramework", () => {
   cy.window().then(() => {
@@ -400,6 +436,11 @@ Cypress.Commands.add("waitForWebComponents", (components: string[]) => {
 
 function transformEnumValue(key: string): DataCyAttributeTransformed {
   return `[data-cy="${key}"]` as unknown as DataCyAttributeTransformed;
+}
+
+function transformEffectLayer(layerName: string): EffectLayerTransformed {
+  const attr = LF_EFFECTS_LAYER_ATTRIBUTES.layer;
+  return `[${attr}="${layerName}"]` as unknown as EffectLayerTransformed;
 }
 
 function visitManager() {

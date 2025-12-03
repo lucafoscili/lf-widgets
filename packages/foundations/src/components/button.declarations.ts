@@ -73,10 +73,8 @@ export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
 export interface LfButtonAdapterRefs extends LfComponentAdapterRefs {
   button: HTMLButtonElement;
   dropdown: HTMLButtonElement;
-  dropdownRipple: HTMLDivElement;
   icon: HTMLButtonElement;
   list: LfListElement;
-  ripple: HTMLDivElement;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.

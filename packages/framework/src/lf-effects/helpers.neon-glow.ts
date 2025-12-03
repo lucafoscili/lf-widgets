@@ -1,4 +1,7 @@
 import {
+  LF_EFFECTS_HOST_ATTRIBUTES,
+  LF_EFFECTS_LAYER_NAMES,
+  LF_EFFECTS_NEON_DEFAULTS,
   LF_EFFECTS_VARS,
   LF_THEME_COLORS,
   LfColorInput,
@@ -8,10 +11,9 @@ import {
 import { layerManager } from "./helpers.layers";
 
 //#region Constants
-const LAYER_NAMES = {
-  glow: "neon-glow",
-  reflection: "neon-glow-reflection",
-} as const;
+const LAYER_NAMES = LF_EFFECTS_LAYER_NAMES.neonGlow;
+const HOST_ATTRIBUTE = LF_EFFECTS_HOST_ATTRIBUTES.neonGlow;
+const DEFAULTS = LF_EFFECTS_NEON_DEFAULTS;
 //#endregion
 
 //#region Helpers
@@ -66,19 +68,19 @@ export const neonGlowEffect = {
   register: (
     element: HTMLElement,
     options: LfEffectsNeonGlowOptions = {},
-    defaultIntensity = 0.7,
+    defaultIntensity = DEFAULTS.intensity,
   ): void => {
     const { neonGlow } = LF_EFFECTS_VARS;
     const {
       color,
-      desync = false,
+      desync = DEFAULTS.desync,
       intensity = defaultIntensity,
-      mode = "outline",
-      pulseSpeed = "burst",
-      reflection = false,
-      reflectionBlur = 8,
-      reflectionOffset = 4,
-      reflectionOpacity = 0.3,
+      mode = DEFAULTS.mode,
+      pulseSpeed = DEFAULTS.pulseSpeed,
+      reflection = DEFAULTS.reflection,
+      reflectionBlur = DEFAULTS.reflectionBlur,
+      reflectionOffset = DEFAULTS.reflectionOffset,
+      reflectionOpacity = DEFAULTS.reflectionOpacity,
     } = options;
 
     const resolvedColor = resolveColor(color);
@@ -91,6 +93,7 @@ export const neonGlowEffect = {
     element.dataset.lfNeonGlow = mode;
     element.style.setProperty(neonGlow.color, resolvedColor);
     element.style.setProperty(neonGlow.intensity, String(intensity));
+    element.style.setProperty(neonGlow.mode, mode);
     element.style.setProperty(neonGlow.pulseDuration, pulseDuration);
 
     const animationDelay = desync ? getRandomDelay(5) : undefined;
@@ -100,6 +103,7 @@ export const neonGlowEffect = {
 
     layerManager.register(element, {
       name: LAYER_NAMES.glow,
+      hostAttribute: HOST_ATTRIBUTE,
       insertPosition: "prepend",
       onSetup: (layer) => {
         if (animationDelay) {
@@ -108,9 +112,17 @@ export const neonGlowEffect = {
       },
     });
 
+    // Border overlay layer (gradient border effect)
+    layerManager.register(element, {
+      name: LAYER_NAMES.border,
+      hostAttribute: HOST_ATTRIBUTE,
+      insertPosition: "prepend",
+    });
+
     if (reflection) {
       layerManager.register(element, {
         name: LAYER_NAMES.reflection,
+        hostAttribute: HOST_ATTRIBUTE,
         insertPosition: "prepend",
         onSetup: (layer) => {
           layer.style.setProperty(
@@ -118,14 +130,13 @@ export const neonGlowEffect = {
             `${reflectionBlur}px`,
           );
           layer.style.setProperty(
+            neonGlow.reflectionOffset,
+            `${reflectionOffset}%`,
+          );
+          layer.style.setProperty(
             neonGlow.reflectionOpacity,
             String(reflectionOpacity),
           );
-
-          layer.style.top = "auto";
-          layer.style.bottom = `-${reflectionOffset}px`;
-          layer.style.height = "50%";
-          layer.style.transform = "scaleY(-1)";
 
           if (animationDelay) {
             layer.style.animationDelay = animationDelay;
@@ -146,11 +157,13 @@ export const neonGlowEffect = {
     } else {
       element.style.removeProperty(neonGlow.color);
       element.style.removeProperty(neonGlow.intensity);
+      element.style.removeProperty(neonGlow.mode);
       element.style.removeProperty(neonGlow.pulseDuration);
       element.style.removeProperty("animation-delay");
     }
     elementData.delete(element);
 
+    layerManager.unregister(element, LAYER_NAMES.border);
     layerManager.unregister(element, LAYER_NAMES.glow);
     layerManager.unregister(element, LAYER_NAMES.reflection);
   },

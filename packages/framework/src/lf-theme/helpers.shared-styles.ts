@@ -22,9 +22,10 @@ const BOTH_CONTEXT_SELECTORS = ["::-webkit-scrollbar", "*::-webkit-scrollbar"];
  * These target the host element itself in shadow DOM.
  */
 const HOST_ATTRIBUTE_SELECTORS = [
-  "[data-lf-effect-host]",
-  "[data-lf-tilt]",
+  "[data-lf-neon-glow-host]",
   "[data-lf-neon-glow",
+  "[data-lf-ripple-host]",
+  "[data-lf-tilt-host]",
 ];
 //#endregion
 
@@ -54,7 +55,7 @@ export const isBothContextSelector = (selector: string): boolean => {
 
 /**
  * Transforms attribute selectors to :host() context for shadow DOM.
- * E.g., "[data-lf-effect-host]" → ":host([data-lf-effect-host])"
+ * E.g., "[data-lf-ripple-host]" → ":host([data-lf-ripple-host])"
  *
  * @param selector - The original selector
  * @returns The transformed selector for shadow DOM context

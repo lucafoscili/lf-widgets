@@ -591,18 +591,14 @@ export class LfTextfield implements LfTextfieldInterface {
       </label>
     );
   };
-  #prepRipple = (): VNode => {
+  #prepUnderline = (): VNode => {
     const { bemClass } = this.#framework.theme;
 
     const { textfield } = this.#b;
 
     return (
       !this.#hasOutline && (
-        <span
-          class={bemClass(textfield._, textfield.rippleSurface)}
-          data-cy={this.#cy.rippleSurface}
-          data-lf={this.#lf.rippleSurface}
-        ></span>
+        <span class={bemClass(textfield._, textfield.underline)}></span>
       )
     );
   };
@@ -765,7 +761,7 @@ export class LfTextfield implements LfTextfieldInterface {
                   this.#prepInput(),
                   this.#prepTrailingIconAction(),
                   this.#prepLabel(),
-                  this.#prepRipple(),
+                  this.#prepUnderline(),
                 ]}
           </div>
           {this.#prepHelper()}

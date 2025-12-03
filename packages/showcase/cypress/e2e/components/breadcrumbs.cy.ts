@@ -6,7 +6,11 @@ import {
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getBreadcrumbsFixtures } from "../../../src/components/lf-showcase/assets/data/breadcrumbs";
-import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
+import {
+  CY_ALIASES,
+  CY_CATEGORIES,
+  CY_EFFECT_LAYERS,
+} from "../../support/constants";
 import { getExamplesKeys } from "../../support/utils";
 
 const breadcrumbsName: LfComponentName = "LfBreadcrumbs";
@@ -35,7 +39,7 @@ describe(CY_CATEGORIES.basic, () => {
 //#region Events
 describe(CY_CATEGORIES.events, () => {
   const { eventElement } = CY_ALIASES;
-  const { check, node, rippleSurface } = CY_ATTRIBUTES;
+  const { check, node } = CY_ATTRIBUTES;
 
   it(`click`, () => {
     cy.navigate(breadcrumbs);
@@ -51,7 +55,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.checkEvent(breadcrumbs, eventType);
     // Use force:true to bypass typewriter overlay
     cy.get(`${breadcrumbsTag}#uncategorized-ripple`)
-      .findCyElement(rippleSurface)
+      .findEffectLayer(CY_EFFECT_LAYERS.ripple)
       .first()
       .click({ force: true });
     cy.getCyElement(check).should("exist");
@@ -150,7 +154,7 @@ describe(CY_CATEGORIES.props, () => {
             const { lfRipple } = $bc[0] as HTMLLfBreadcrumbsElement;
             expect(lfRipple).to.eq(true);
           })
-          .findCyElement(CY_ATTRIBUTES.rippleSurface)
+          .findEffectLayer(CY_EFFECT_LAYERS.ripple)
           .should("exist");
       });
   });

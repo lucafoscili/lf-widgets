@@ -192,16 +192,6 @@ export class LfEffects implements LfEffectsInterface {
   };
   //#endregion
 
-  //#region ripple
-  ripple = (
-    e: PointerEvent,
-    element: HTMLElement,
-    autoSurfaceRadius = true,
-  ) => {
-    rippleEffect.trigger(e, element, this.#TIMEOUT.ripple, autoSurfaceRadius);
-  };
-  //#endregion
-
   //#region Registration
   /**
    * Checks if an element has effects registered.
@@ -287,8 +277,6 @@ export class LfEffects implements LfEffectsInterface {
         return;
       }
 
-      // Ensure tilt has access to the layer manager for highlight layer
-      tiltEffect.setLayerManager(layerManager);
       tiltEffect.register(element, intensity ?? this.#INTENSITY.tilt);
       this.#addEffect(element, "tilt");
     },

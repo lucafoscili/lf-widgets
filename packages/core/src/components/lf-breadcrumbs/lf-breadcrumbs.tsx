@@ -265,17 +265,6 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
       ...(args || {}),
     };
 
-    if (
-      eventType === "pointerdown" &&
-      this.#isEnabled(this.lfRipple) &&
-      args?.node
-    ) {
-      const rippleTarget = this.#adapter?.elements.refs.ripples.get(
-        args.node.id,
-      );
-      this.#framework?.effects.ripple(e as PointerEvent, rippleTarget);
-    }
-
     this.lfBreadcrumbsEvent.emit(payload);
   };
   //#endregion
@@ -384,10 +373,18 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     this.currentNodeId = this.lfValue ?? null;
   }
   componentDidLoad() {
-    const { info } = this.#framework.debug;
+    const { debug, effects } = this.#framework;
+
+    if (this.#isEnabled(this.lfRipple)) {
+      this.#adapter.elements.refs.items.forEach((el) => {
+        if (el) {
+          effects.register.ripple(el);
+        }
+      });
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
-    info.update(this, "did-load");
+    debug.info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -417,7 +414,17 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    if (effects && this.#isEnabled(this.lfRipple)) {
+      this.#adapter?.elements.refs.items.forEach((el) => {
+        if (el) {
+          effects.unregister.ripple(el);
+        }
+      });
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 

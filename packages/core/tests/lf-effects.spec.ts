@@ -257,34 +257,6 @@ describe("Framework Effects Utilities", () => {
     });
   });
 
-  describe("ripple", () => {
-    it("should trigger ripple effect", () => {
-      const mockElement = document.createElement("div");
-      const mockEvent = { clientX: 100, clientY: 200 } as PointerEvent;
-
-      framework.effects.ripple(mockEvent, mockElement);
-
-      expect(framework.effects.ripple).toHaveBeenCalledWith(
-        mockEvent,
-        mockElement,
-      );
-    });
-
-    it("should trigger ripple effect with auto surface radius", () => {
-      const mockElement = document.createElement("div");
-      const mockEvent = { clientX: 100, clientY: 200 } as PointerEvent;
-      const autoSurfaceRadius = true;
-
-      framework.effects.ripple(mockEvent, mockElement, autoSurfaceRadius);
-
-      expect(framework.effects.ripple).toHaveBeenCalledWith(
-        mockEvent,
-        mockElement,
-        autoSurfaceRadius,
-      );
-    });
-  });
-
   describe("register.ripple", () => {
     it("should register ripple effect with default options", () => {
       const mockElement = document.createElement("div");
@@ -442,17 +414,19 @@ describe("Layer Manager", () => {
       expect(hostElement.lastChild).toBe(layer);
     });
 
-    it("should inherit border-radius by default", () => {
+    it("should inherit border-radius by default (no noRadius attribute)", () => {
       const config: LfEffectLayerConfig = {
         name: "border-radius-test",
       };
 
       const layer = framework.effects.layers.register(hostElement, config);
 
-      expect(layer.style.borderRadius).toBe("inherit");
+      // Border-radius is now controlled via CSS using data attributes
+      // When inheritBorderRadius is true (default), the noRadius attribute should NOT be present
+      expect(layer.hasAttribute("data-lf-no-radius")).toBe(false);
     });
 
-    it("should not inherit border-radius when disabled", () => {
+    it("should not inherit border-radius when disabled (has noRadius attribute)", () => {
       const config: LfEffectLayerConfig = {
         name: "no-border-radius-test",
         inheritBorderRadius: false,
@@ -460,20 +434,23 @@ describe("Layer Manager", () => {
 
       const layer = framework.effects.layers.register(hostElement, config);
 
-      expect(layer.style.borderRadius).not.toBe("inherit");
+      // When inheritBorderRadius is false, the noRadius attribute should be present
+      expect(layer.hasAttribute("data-lf-no-radius")).toBe(true);
     });
 
-    it("should set pointer-events to none by default", () => {
+    it("should set pointer-events to none by default (no pointerEvents attribute)", () => {
       const config: LfEffectLayerConfig = {
         name: "pointer-events-test",
       };
 
       const layer = framework.effects.layers.register(hostElement, config);
 
-      expect(layer.style.pointerEvents).toBe("none");
+      // Pointer-events is now controlled via CSS using data attributes
+      // When pointerEvents is false (default), the pointerEvents attribute should NOT be present
+      expect(layer.hasAttribute("data-lf-pointer-events")).toBe(false);
     });
 
-    it("should enable pointer-events when specified", () => {
+    it("should enable pointer-events when specified (has pointerEvents attribute)", () => {
       const config: LfEffectLayerConfig = {
         name: "pointer-events-enabled-test",
         pointerEvents: true,
@@ -481,7 +458,8 @@ describe("Layer Manager", () => {
 
       const layer = framework.effects.layers.register(hostElement, config);
 
-      expect(layer.style.pointerEvents).toBe("auto");
+      // When pointerEvents is true, the pointerEvents attribute should be present
+      expect(layer.hasAttribute("data-lf-pointer-events")).toBe(true);
     });
 
     it("should call onSetup callback after creation", () => {

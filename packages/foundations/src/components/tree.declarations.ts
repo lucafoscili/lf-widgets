@@ -231,7 +231,7 @@ export interface LfTreeAdapterJsx extends LfComponentAdapterJsx {
  * Strongly typed DOM references captured by the component adapter.
  */
 export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
-  rippleSurfaces: Record<string, HTMLElement>;
+  nodeElements: Record<string, HTMLElement>;
   filterField: HTMLElement | null;
 }
 /**
@@ -277,15 +277,17 @@ export interface LfTreeEventArguments {
 export interface LfTreeNodeProps {
   accordionLayout: boolean;
   depth: number;
-  elements: { ripple: VNode; value: VNode };
+  elements: { value: VNode };
   events: {
     onClick: (event: MouseEvent) => void;
     onClickExpand: (event: MouseEvent) => void;
     onPointerDown: (event: MouseEvent) => void;
   };
   expanded: boolean;
+  lfAttributes: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
   node: LfDataNode;
+  nodeRef: (el: HTMLElement | null) => void;
   selected: boolean;
 }
 /**

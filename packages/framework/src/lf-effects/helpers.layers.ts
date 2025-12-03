@@ -12,8 +12,20 @@ import {
 /**
  * Global order counter for z-index calculation.
  * Incremented each time a layer is registered.
+ * Resets when approaching MAX_SAFE_INTEGER to prevent overflow in long-running SPAs.
  */
 let globalOrderCounter = 0;
+const MAX_ORDER_COUNTER = Number.MAX_SAFE_INTEGER - 1000;
+
+/**
+ * Safely increments the global order counter, resetting if near overflow.
+ */
+const getNextOrder = (): number => {
+  if (globalOrderCounter >= MAX_ORDER_COUNTER) {
+    globalOrderCounter = 0;
+  }
+  return ++globalOrderCounter;
+};
 
 /**
  * Tracks layers per host element.
@@ -22,12 +34,19 @@ let globalOrderCounter = 0;
 const hostLayers = new WeakMap<HTMLElement, Map<string, LfEffectLayerData>>();
 
 /**
+ * Tracks which host attributes are set on each element.
+ * Used for cleanup when all effects of a type are removed.
+ */
+const hostAttributes = new WeakMap<HTMLElement, Set<string>>();
+
+/**
  * Tracks transform contributions per host element.
  * Each effect registers its transform with a priority for ordering.
  */
 interface TransformEntry {
   transform: string;
   priority: number;
+  hostAttribute?: string;
 }
 const hostTransforms = new WeakMap<HTMLElement, Map<string, TransformEntry>>();
 
@@ -69,6 +88,7 @@ export const layerManager: LfEffectLayerManager = {
   register: (host, config) => {
     const {
       name,
+      hostAttribute,
       insertPosition = LF_EFFECTS_LAYER_DEFAULTS.insertPosition,
       inheritBorderRadius = LF_EFFECTS_LAYER_DEFAULTS.inheritBorderRadius,
       pointerEvents = LF_EFFECTS_LAYER_DEFAULTS.pointerEvents,
@@ -79,8 +99,16 @@ export const layerManager: LfEffectLayerManager = {
     if (!layers) {
       layers = new Map();
       hostLayers.set(host, layers);
-      // Mark the host element for CSS targeting
-      host.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host, "");
+    }
+
+    if (hostAttribute) {
+      host.setAttribute(hostAttribute, "");
+      let attrs = hostAttributes.get(host);
+      if (!attrs) {
+        attrs = new Set();
+        hostAttributes.set(host, attrs);
+      }
+      attrs.add(hostAttribute);
     }
 
     const existing = layers.get(name);
@@ -89,25 +117,17 @@ export const layerManager: LfEffectLayerManager = {
     }
 
     const layer = document.createElement("div");
+    const order = getNextOrder();
     layer.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.layer, name);
-    layer.setAttribute(
-      LF_EFFECTS_LAYER_ATTRIBUTES.order,
-      String(++globalOrderCounter),
-    );
+    layer.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.order, String(order));
     layer.setAttribute("aria-hidden", "true");
 
-    const baseStyles = [
-      "position: absolute",
-      "inset: 0",
-      "overflow: hidden",
-      `pointer-events: ${pointerEvents ? "auto" : "none"}`,
-    ];
-
-    if (inheritBorderRadius) {
-      baseStyles.push("border-radius: inherit");
+    if (pointerEvents) {
+      layer.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.pointerEvents, "");
     }
-
-    layer.style.cssText = baseStyles.join("; ");
+    if (!inheritBorderRadius) {
+      layer.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.noRadius, "");
+    }
 
     const target = host.shadowRoot ?? host;
 
@@ -117,7 +137,6 @@ export const layerManager: LfEffectLayerManager = {
       target.appendChild(layer);
     }
 
-    const order = globalOrderCounter;
     layers.set(name, { layer, config, order });
 
     layerManager.reorderLayers(host);
@@ -138,6 +157,18 @@ export const layerManager: LfEffectLayerManager = {
       return;
     }
 
+    const { hostAttribute } = data.config;
+    if (hostAttribute) {
+      host.removeAttribute(hostAttribute);
+      const attrs = hostAttributes.get(host);
+      if (attrs) {
+        attrs.delete(hostAttribute);
+        if (attrs.size === 0) {
+          hostAttributes.delete(host);
+        }
+      }
+    }
+
     data.config.onCleanup?.(data.layer, host);
 
     data.layer.remove();
@@ -148,11 +179,6 @@ export const layerManager: LfEffectLayerManager = {
       layerManager.reorderLayers(host);
     } else {
       hostLayers.delete(host);
-
-      const transforms = hostTransforms.get(host);
-      if (!transforms || transforms.size === 0) {
-        host.removeAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host);
-      }
     }
   },
 
@@ -189,15 +215,19 @@ export const layerManager: LfEffectLayerManager = {
     effectName,
     transform,
     priority = LF_EFFECTS_TRANSFORM_PRIORITY.rotate,
+    hostAttribute,
   ) => {
     let transforms = hostTransforms.get(host);
     if (!transforms) {
       transforms = new Map();
       hostTransforms.set(host, transforms);
-      host.setAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host, "");
     }
 
-    transforms.set(effectName, { transform, priority });
+    if (hostAttribute) {
+      host.setAttribute(hostAttribute, "");
+    }
+
+    transforms.set(effectName, { transform, priority, hostAttribute });
 
     composeTransforms(host);
   },
@@ -224,17 +254,24 @@ export const layerManager: LfEffectLayerManager = {
       return;
     }
 
+    const entry = transforms.get(effectName);
+    if (!entry) {
+      return;
+    }
+
+    if (entry.hostAttribute) {
+      const attrs = hostAttributes.get(host);
+      const layerUsesAttribute = attrs?.has(entry.hostAttribute);
+      if (!layerUsesAttribute) {
+        host.removeAttribute(entry.hostAttribute);
+      }
+    }
+
     transforms.delete(effectName);
 
     if (transforms.size === 0) {
       hostTransforms.delete(host);
       host.style.removeProperty(LF_EFFECTS_TRANSFORM_VAR);
-
-      // Only remove host attribute if no layers are registered either
-      const layers = hostLayers.get(host);
-      if (!layers || layers.size === 0) {
-        host.removeAttribute(LF_EFFECTS_LAYER_ATTRIBUTES.host);
-      }
     } else {
       composeTransforms(host);
     }

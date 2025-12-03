@@ -8,7 +8,11 @@ import {
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getButtonFixtures } from "../../../src/components/lf-showcase/assets/data/button";
-import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
+import {
+  CY_ALIASES,
+  CY_CATEGORIES,
+  CY_EFFECT_LAYERS,
+} from "../../support/constants";
 import { getExamplesKeys } from "../../support/utils";
 
 const buttonName: LfComponentName = "LfButton";
@@ -36,15 +40,8 @@ describe(CY_CATEGORIES.basic, () => {
 //#region Events
 describe(CY_CATEGORIES.events, () => {
   const { eventElement } = CY_ALIASES;
-  const {
-    button,
-    check,
-    dropdownButton,
-    dropdownMenu,
-    node,
-    portal,
-    rippleSurface,
-  } = CY_ATTRIBUTES;
+  const { button, check, dropdownButton, dropdownMenu, node, portal } =
+    CY_ATTRIBUTES;
 
   it(`blur`, () => {
     cy.navigate(button);
@@ -77,7 +74,10 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(button);
     const eventType: LfButtonEvent = "pointerdown";
     cy.checkEvent(button, eventType);
-    cy.get(eventElement).findCyElement(rippleSurface).first().click();
+    cy.get(eventElement)
+      .findEffectLayer(CY_EFFECT_LAYERS.ripple)
+      .first()
+      .click();
     cy.getCyElement(check).should("exist");
   });
   it(`ready`, () => {
@@ -110,7 +110,7 @@ describe(CY_CATEGORIES.methods, () => {
 describe(CY_CATEGORIES.props, () => {
   let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
-  const { dropdownButton, fIcon, rippleSurface } = CY_ATTRIBUTES;
+  const { dropdownButton, fIcon } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(button);
@@ -297,7 +297,10 @@ describe(CY_CATEGORIES.props, () => {
           .children()
           .then((children) => {
             const [rpl, label, icon] = children.toArray();
-            expect(rpl).to.have.attr("data-cy", rippleSurface);
+            expect(rpl).to.have.attr(
+              "data-lf-effect-layer",
+              CY_EFFECT_LAYERS.ripple,
+            );
             expect(label).to.have.class(
               framework.theme.bemClass("button", "label"),
             );
@@ -325,7 +328,10 @@ describe(CY_CATEGORIES.props, () => {
           .children()
           .then((children) => {
             const [rpl, icon, label] = children.toArray();
-            expect(rpl).to.have.attr("data-cy", rippleSurface);
+            expect(rpl).to.have.attr(
+              "data-lf-effect-layer",
+              CY_EFFECT_LAYERS.ripple,
+            );
             expect(icon).to.have.class(
               framework.theme.bemClass("button", "icon"),
             );

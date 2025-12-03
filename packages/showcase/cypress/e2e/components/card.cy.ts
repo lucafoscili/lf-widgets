@@ -6,7 +6,11 @@ import {
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getCardFixtures } from "../../../src/components/lf-showcase/assets/data/card";
-import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
+import {
+  CY_ALIASES,
+  CY_CATEGORIES,
+  CY_EFFECT_LAYERS,
+} from "../../support/constants";
 import { getExamplesKeys } from "../../support/utils";
 
 const cardName: LfComponentName = "LfCard";
@@ -35,7 +39,7 @@ describe(CY_CATEGORIES.basic, () => {
 //#region Events
 describe(CY_CATEGORIES.events, () => {
   const { eventElement } = CY_ALIASES;
-  const { check, rippleSurface, shape } = CY_ATTRIBUTES;
+  const { check, shape } = CY_ATTRIBUTES;
 
   it(`click`, () => {
     cy.navigate(card);
@@ -63,7 +67,7 @@ describe(CY_CATEGORIES.events, () => {
     const eventType: LfCardEvent = "pointerdown";
     cy.checkEvent(card, eventType);
     cy.get(`${cardTag}#material-material-0`)
-      .findCyElement(rippleSurface)
+      .findEffectLayer(CY_EFFECT_LAYERS.ripple)
       .parent() // the actual listener is on the parent in this case
       .click({ multiple: true });
     cy.getCyElement(check).should("exist");
@@ -135,7 +139,10 @@ describe(CY_CATEGORIES.props, () => {
         id: "#material-material-0",
         root: framework.theme.bemClass("material-layout"),
       },
-      { id: "#upload-upload-0", root: framework.theme.bemClass("upload-layout") },
+      {
+        id: "#upload-upload-0",
+        root: framework.theme.bemClass("upload-layout"),
+      },
     ];
 
     for (const { id, root } of layoutRoots) {
@@ -193,7 +200,6 @@ describe(CY_CATEGORIES.props, () => {
 describe(CY_CATEGORIES.e2e, () => {
   let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
-  const { rippleSurface } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(card);
@@ -206,10 +212,7 @@ describe(CY_CATEGORIES.e2e, () => {
     const materialRoot = framework.theme.bemClass("material-layout");
     const title = framework.theme.bemClass("text-content", "title");
     const subtitle = framework.theme.bemClass("text-content", "subtitle");
-    const description = framework.theme.bemClass(
-      "text-content",
-      "description",
-    );
+    const description = framework.theme.bemClass("text-content", "description");
 
     cy.get(lfComponentShowcase)
       .find(`${cardTag}#material-material-0`)
@@ -220,7 +223,7 @@ describe(CY_CATEGORIES.e2e, () => {
         cy.get(`.${title}`).should("exist");
         cy.get(`.${subtitle}`).should("exist");
         cy.get(`.${description}`).should("exist");
-        cy.getCyElement(rippleSurface).should("exist");
+        cy.getEffectLayer(CY_EFFECT_LAYERS.ripple).should("exist");
       });
   });
 

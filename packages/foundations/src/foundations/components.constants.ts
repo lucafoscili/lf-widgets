@@ -67,7 +67,6 @@ export const CY_ATTRIBUTES = {
   input: "input",
   node: "node",
   portal: "portal",
-  rippleSurface: "ripple-surface",
   shape: "shape",
   showcaseExample: "showcase-example",
   showcaseGridWrapper: "showcase-grid-wrapper",
@@ -98,9 +97,7 @@ export const LF_UTILITY_ATTRIBUTES = {
   fadeIn: "fade-in",
   lightbox: "lightbox",
   lightboxContent: "lightbox-content",
-  neonGlowSurface: "neon-glow-surface",
   portal: "portal",
-  rippleSurface: "ripple-surface",
 } as const;
 /**
  * State attributes for semantic coloring (mutually exclusive per element).

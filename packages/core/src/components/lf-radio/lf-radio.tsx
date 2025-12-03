@@ -230,26 +230,12 @@ export class LfRadio implements LfRadioInterface {
     _index?: number,
     node?: LfDataNode,
   ) {
-    const { effects } = this.#framework;
-    const { lfRipple } = this;
-
     const previousValue = this.value;
 
     switch (eventType) {
       case "change":
       case "click": {
         await this.#adapter.controller.set.selection.select(node?.id);
-        break;
-      }
-      case "pointerdown": {
-        if (lfRipple) {
-          const surface = node?.id
-            ? this.#adapter?.elements.refs.ripples.get(node.id)
-            : undefined;
-          if (surface) {
-            effects.ripple(e as PointerEvent, surface);
-          }
-        }
         break;
       }
     }
@@ -448,7 +434,14 @@ export class LfRadio implements LfRadioInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { info } = this.#framework.debug;
+    const { debug, effects } = this.#framework;
+    const { info } = debug;
+
+    if (this.lfRipple) {
+      this.#adapter.elements.refs.items.forEach((item) => {
+        effects.register.ripple(item);
+      });
+    }
 
     info.update(this, "did-render");
   }
@@ -471,7 +464,13 @@ export class LfRadio implements LfRadioInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework.theme.unregister(this);
+    const { effects, theme } = this.#framework;
+
+    this.#adapter.elements.refs.items.forEach((item) => {
+      effects.unregister.ripple(item);
+    });
+
+    theme.unregister(this);
   }
   //#endregion
 }

@@ -14,8 +14,16 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
   const { manager } = props;
   const { bemClass } = manager.theme;
 
-  const { accordionLayout, depth, elements, events, expanded, node, selected } =
-    props || {};
+  const {
+    accordionLayout,
+    depth,
+    elements,
+    events,
+    expanded,
+    node,
+    nodeRef,
+    selected,
+  } = props || {};
 
   const icon = node.icon ? (
     <TreeNodeContent
@@ -40,12 +48,12 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
         onClick={events.onClickExpand}
         onPointerDown={events.onPointerDown}
         part={LF_TREE_PARTS.node}
+        ref={nodeRef}
         title={node.description}
       >
         <div
           class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.content)}
         >
-          {elements.ripple}
           {icon}
           {elements.value}
           {node.children?.length ? (
@@ -76,10 +84,10 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
         key={node.id}
         onClick={events.onClick}
         onPointerDown={events.onPointerDown}
+        ref={nodeRef}
         title={node.description}
       >
         <div class="node__content">
-          {elements.ripple}
           <TreeNodeContent
             depth={depth}
             manager={manager}

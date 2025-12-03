@@ -225,7 +225,7 @@ export class LfChip implements LfChipInterface {
   #p = LF_CHIP_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: { [id: string]: HTMLElement } = {};
+  #items: { [id: string]: HTMLElement } = {};
   #nodeItems: VNode[] = [];
   //#endregion
 
@@ -247,9 +247,7 @@ export class LfChip implements LfChipInterface {
     eventType: LfChipEvent,
     args?: LfChipEventArguments,
   ) {
-    const { effects } = this.#framework;
-
-    const { expandedNodes, lfDataset, lfRipple, selectedNodes } = this;
+    const { expandedNodes, lfDataset, selectedNodes } = this;
 
     const { expansion, node } = args || {};
 
@@ -275,11 +273,6 @@ export class LfChip implements LfChipInterface {
         const nodeIndex = lfDataset?.nodes?.indexOf(node);
         if (nodeIndex > -1) {
           lfDataset.nodes.splice(nodeIndex, 1);
-        }
-        break;
-      case "pointerdown":
-        if (lfRipple && this.#isClickable()) {
-          effects.ripple(e as PointerEvent, this.#r[node.id]);
         }
         break;
     }
@@ -489,8 +482,12 @@ export class LfChip implements LfChipInterface {
         part={this.#p.item}
         role="row"
         title={node.description ?? ""}
+        ref={(el) => {
+          if (el) {
+            this.#items[node.id] = el;
+          }
+        }}
       >
-        {this.#prepRipple(node)}
         <span class={bemClass(item._, item.indent)}></span>
         {this.#prepIcons(node)}
         <span
@@ -592,22 +589,6 @@ export class LfChip implements LfChipInterface {
       }
     }
   }
-  #prepRipple(node: LfDataNode) {
-    if (this.lfRipple && this.#isClickable()) {
-      return (
-        <div
-          data-cy={this.#cy.rippleSurface}
-          data-lf={this.#lf.rippleSurface}
-          onPointerDown={(e) => this.onLfEvent(e, "pointerdown", { node })}
-          ref={(el) => {
-            if (el && this.lfRipple) {
-              this.#r[node.id] = el;
-            }
-          }}
-        ></div>
-      );
-    }
-  }
   #showChildren(node: LfDataNode) {
     return this.expandedNodes.has(node);
   }
@@ -627,7 +608,15 @@ export class LfChip implements LfChipInterface {
     }
   }
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects } = this.#framework;
+
+    if (this.lfRipple && this.#isClickable()) {
+      Object.values(this.#items).forEach((el) => {
+        if (el) {
+          effects.register.ripple(el);
+        }
+      });
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -683,7 +672,17 @@ export class LfChip implements LfChipInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    if (effects && this.lfRipple && this.#isClickable()) {
+      Object.values(this.#items).forEach((el) => {
+        if (el) {
+          effects.unregister.ripple(el);
+        }
+      });
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

@@ -1,19 +1,16 @@
 import {
+  LF_EFFECTS_HOST_ATTRIBUTES,
+  LF_EFFECTS_LAYER_NAMES,
+  LF_EFFECTS_RIPPLE_DEFAULTS,
   LF_EFFECTS_VARS,
   LfEffectsRippleOptions,
 } from "@lf-widgets/foundations";
 import { layerManager } from "./helpers.layers";
 
 //#region Constants
-const LAYER_NAME = "ripple-surface";
-
-const DEFAULTS: Required<LfEffectsRippleOptions> = {
-  autoSurfaceRadius: true,
-  color: "",
-  duration: 500,
-  easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-  scale: 1,
-};
+const LAYER_NAME = LF_EFFECTS_LAYER_NAMES.ripple.surface;
+const HOST_ATTRIBUTE = LF_EFFECTS_HOST_ATTRIBUTES.ripple;
+const DEFAULTS: Required<LfEffectsRippleOptions> = LF_EFFECTS_RIPPLE_DEFAULTS;
 //#endregion
 
 //#region State
@@ -124,13 +121,24 @@ export const rippleEffect = {
       ...options,
     };
 
+    // Determine border radius: explicit value takes precedence over auto-inherit
+    const hasBorderRadius = Boolean(resolvedOptions.borderRadius);
+
     // Create ripple surface layer via layer manager
     const surface = layerManager.register(element, {
       name: LAYER_NAME,
+      hostAttribute: HOST_ATTRIBUTE,
       insertPosition: "append", // Surface should be on top for pointer events
-      inheritBorderRadius: resolvedOptions.autoSurfaceRadius,
+      inheritBorderRadius: hasBorderRadius
+        ? false
+        : resolvedOptions.autoSurfaceRadius,
       pointerEvents: false, // Ripple surface doesn't capture events; host does
     });
+
+    // Apply custom border radius if provided
+    if (hasBorderRadius) {
+      surface.style.borderRadius = resolvedOptions.borderRadius;
+    }
 
     // Create pointerdown handler
     const handler = (e: PointerEvent) => {
@@ -159,63 +167,6 @@ export const rippleEffect = {
     }
 
     layerManager.unregister(element, LAYER_NAME);
-  },
-
-  /**
-   * @deprecated Use register() for new implementations.
-   * Creates and triggers a one-off ripple effect on an element.
-   * The ripple auto-removes after the animation completes.
-   * Kept for backward compatibility with existing component internals.
-   *
-   * @param e - The pointer event that triggered the ripple
-   * @param element - The ripple surface element to append the ripple to
-   * @param timeout - Duration before ripple removal (default: 500ms)
-   * @param autoSurfaceRadius - Whether to auto-apply parent's border radius (default: true)
-   */
-  trigger: (
-    e: PointerEvent,
-    element: HTMLElement,
-    timeout = 500,
-    autoSurfaceRadius = true,
-  ): void => {
-    if (!element) {
-      return;
-    }
-
-    const { backgroundColor, borderRadius, color } = getHostStyle(
-      element.parentElement ?? element,
-    );
-
-    const ripple = document.createElement("span");
-
-    const { left, height: h, top, width: w } = element.getBoundingClientRect();
-
-    const rippleX = e.clientX - left - w / 2;
-    const rippleY = e.clientY - top - h / 2;
-
-    if (autoSurfaceRadius) {
-      element.style.borderRadius = borderRadius;
-    }
-
-    const { background, height, width, x, y } = LF_EFFECTS_VARS.ripple;
-
-    ripple.dataset.lfRipple = "";
-
-    ripple.style.setProperty(background, color || backgroundColor);
-    ripple.style.setProperty(height, `${h}px`);
-    ripple.style.setProperty(width, `${w}px`);
-    ripple.style.setProperty(x, `${rippleX}px`);
-    ripple.style.setProperty(y, `${rippleY}px`);
-
-    element.appendChild(ripple);
-
-    setTimeout(
-      () =>
-        requestAnimationFrame(() => {
-          ripple.remove();
-        }),
-      timeout,
-    );
   },
 };
 //#endregion

@@ -25,43 +25,40 @@ export const GLOBAL_STYLES = {
   "*::-webkit-scrollbar-track": {
     "background-color": "rgb(var(--lf-color-surface))"
   },
-  "[data-lf-ripple]": {
-    "animation-duration": "var(--lf-ui-duration-ripple, 675ms)",
-    "animation-fill-mode": "forwards",
-    "animation-name": "lf-ripple",
-    "animation-timing-function": "var(--lf-ui-timing-ripple, ease-out)",
-    "background": "var(--lf-ui-ripple-background, var(--lf-color-primary))",
-    "border-radius": "var(--lf-ui-radius-ripple, 50%)",
-    "height": "var(--lf-ui-ripple-height, 100%)",
-    "left": "var(--lf-ui-ripple-x, 50%)",
-    "opacity": "var(--lf-ui-opacity-ripple, 0.5)",
-    "pointer-events": "none",
-    "position": "absolute",
-    "top": "var(--lf-ui-ripple-y, 50%)",
-    "transform": "scale(0)",
-    "width": "var(--lf-ui-ripple-width, 100%)"
-  },
-  "@keyframes lf-ripple": [
-    {
-      "from": {
-        "transform": "scale(0)"
-      }
-    },
-    {
-      "to": {
-        "opacity": "0",
-        "transform": "scale(4)"
-      }
-    }
-  ],
-  "[data-lf=ripple-surface]": {
-    "cursor": "pointer",
-    "height": "100%",
-    "left": "0",
+  "[data-lf-effect-layer]": {
+    "border-radius": "inherit",
+    "inset": "0",
     "overflow": "hidden",
-    "position": "absolute",
-    "top": "0",
-    "width": "100%"
+    "pointer-events": "none",
+    "position": "absolute"
+  },
+  "[data-lf-effect-layer][data-lf-pointer-events]": {
+    "pointer-events": "auto"
+  },
+  "[data-lf-effect-layer][data-lf-no-radius]": {
+    "border-radius": "0"
+  },
+  "[data-lf-ripple-host]": {
+    "position": "relative",
+    "overflow": "hidden"
+  },
+  "[data-lf-tilt-host]": {
+    "position": "relative",
+    "overflow": "hidden",
+    "transform": "var(--lf-ui-effects-transform, none)",
+    "transition": "transform 275ms ease-out",
+    "transform-style": "preserve-3d",
+    "will-change": "transform"
+  },
+  "[data-lf-tilt-host]:hover": {
+    "box-shadow": "0 15px 30px rgba(var(--lf-color-on-bg), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  "[data-lf-tilt-host]:hover > [data-lf-effect-layer=tilt-highlight]": {
+    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), var(--lf-ui-alpha-glass-hint, 0.275)), transparent)"
+  },
+  "[data-lf-neon-glow-host]": {
+    "overflow": "visible",
+    "transform-style": "preserve-3d"
   },
   "[data-lf-neon-glow]": {
     "--lf-ui-neon-color": "rgba(var(--lf-color-secondary), 1)",
@@ -355,9 +352,10 @@ export const GLOBAL_STYLES = {
       }
     }
   ],
-  "[data-lf-neon-glow]::before": {
-    "content": "\"\"",
-    "position": "absolute",
+  "[data-lf-neon-glow] > *": {
+    "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
+  },
+  "[data-lf-effect-layer=neon-glow-border]": {
     "inset": "-1px",
     "border-radius": "inherit",
     "padding": "2px",
@@ -365,12 +363,8 @@ export const GLOBAL_STYLES = {
     "mask": "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
     "mask-composite": "exclude",
     "-webkit-mask-composite": "xor",
-    "pointer-events": "none",
     "opacity": "var(--lf-ui-neon-intensity)",
     "transform": "translateZ(0)"
-  },
-  "[data-lf-neon-glow] > *": {
-    "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
   },
   "[data-lf-effect-layer=neon-glow]": {
     "will-change": "box-shadow",
@@ -537,30 +531,54 @@ export const GLOBAL_STYLES = {
     "backdrop-filter": "blur(4px)"
   },
   "[data-lf-effect-layer=neon-glow-reflection]": {
-    "--lf-ui-neon-reflection-blur": "8px",
-    "--lf-ui-neon-reflection-opacity": "0.3",
-    "transform": "scaleY(-1) translateY(-100%)",
-    "mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
-    "-webkit-mask-image": "linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)",
+    "--lf-ui-neon-reflection-blur": "12px",
+    "--lf-ui-neon-reflection-offset": "5%",
+    "--lf-ui-neon-reflection-opacity": "0.7",
+    "inset": "unset",
+    "top": "100%",
+    "left": "0",
+    "right": "0",
+    "height": "60%",
+    "margin-top": "var(--lf-ui-neon-reflection-offset)",
+    "transform": "perspective(200px) rotateX(25deg) scaleY(0.6)",
+    "transform-origin": "top center",
     "filter": "blur(var(--lf-ui-neon-reflection-blur))",
     "opacity": "var(--lf-ui-neon-reflection-opacity)",
-    "box-shadow": "0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color)",
+    "mask-image": "radial-gradient(ellipse 70% 90% at 50% 0%, black 0%, rgba(0, 0, 0, 0.7) 30%, transparent 65%)",
+    "-webkit-mask-image": "radial-gradient(ellipse 70% 90% at 50% 0%, black 0%, rgba(0, 0, 0, 0.7) 30%, transparent 65%)",
+    "box-shadow": "0 0 10px 5px var(--lf-ui-neon-color), 0 0 25px 15px var(--lf-ui-neon-color), 0 0 50px 25px var(--lf-ui-neon-color), 0 0 80px 40px var(--lf-ui-neon-color)",
+    "background": "radial-gradient(ellipse 90% 60% at 50% 10%, var(--lf-ui-neon-color) 0%, color-mix(in srgb, var(--lf-ui-neon-color) 70%, transparent) 30%, transparent 60%)",
     "animation": "lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out infinite"
   },
-  "[data-lf=neon-glow-surface]": {
-    "position": "relative",
-    "overflow": "visible",
-    "isolation": "isolate"
+  "[data-lf-ripple]": {
+    "animation-duration": "var(--lf-ui-ripple-duration, 675ms)",
+    "animation-fill-mode": "forwards",
+    "animation-name": "lf-ripple",
+    "animation-timing-function": "var(--lf-ui-ripple-easing, ease-out)",
+    "background": "var(--lf-ui-ripple-background, var(--lf-color-primary))",
+    "border-radius": "var(--lf-ui-ripple-border-radius, 50%)",
+    "height": "var(--lf-ui-ripple-height, 100%)",
+    "left": "var(--lf-ui-ripple-x, 50%)",
+    "opacity": "var(--lf-ui-ripple-opacity, 0.5)",
+    "pointer-events": "none",
+    "position": "absolute",
+    "top": "var(--lf-ui-ripple-y, 50%)",
+    "transform": "scale(0)",
+    "width": "var(--lf-ui-ripple-width, 100%)"
   },
-  "[data-lf-effect-host]": {
-    "transform": "var(--lf-effects-transform, none)",
-    "transition": "transform 275ms ease-out",
-    "transform-style": "preserve-3d",
-    "will-change": "transform"
-  },
-  "[data-lf-tilt]:hover": {
-    "box-shadow": "0 15px 30px rgba(var(--lf-color-on-bg), 0.375)"
-  },
+  "@keyframes lf-ripple": [
+    {
+      "from": {
+        "transform": "scale(0)"
+      }
+    },
+    {
+      "to": {
+        "opacity": "0",
+        "transform": "scale(4)"
+      }
+    }
+  ],
   "[data-lf-effect-layer=tilt-highlight]": {
     "background": "transparent",
     "border-radius": "inherit",
@@ -570,12 +588,6 @@ export const GLOBAL_STYLES = {
     "pointer-events": "none",
     "position": "absolute",
     "transition": "background 275ms ease-out"
-  },
-  "[data-lf-tilt]:hover > [data-lf-effect-layer=tilt-highlight]": {
-    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), 0.275), transparent)"
-  },
-  ":host([data-lf-tilt]:hover) [data-lf-effect-layer=tilt-highlight]": {
-    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), 0.275), transparent)"
   },
   ".lf-effects [data-lf=backdrop]": {
     "transition": "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",

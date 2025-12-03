@@ -255,9 +255,6 @@ export class LfList implements LfListInterface {
     node?: LfDataNode,
     index = 0,
   ) {
-    const { effects } = this.#framework;
-    const { ripples } = this.#adapter.elements.refs;
-
     switch (eventType) {
       case "blur":
         this.focused = null;
@@ -275,11 +272,6 @@ export class LfList implements LfListInterface {
         break;
       case "focus":
         this.focused = index;
-        break;
-      case "pointerdown":
-        if (node?.id && this.lfRipple) {
-          effects.ripple(e as PointerEvent, ripples.get(node.id));
-        }
         break;
     }
 
@@ -610,7 +602,14 @@ export class LfList implements LfListInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { info } = this.#framework.debug;
+    const { debug, effects } = this.#framework;
+    const { info } = debug;
+
+    if (this.lfRipple) {
+      this.#listItems.forEach((item) => {
+        effects.register.ripple(item);
+      });
+    }
 
     info.update(this, "did-render");
   }
@@ -683,11 +682,18 @@ export class LfList implements LfListInterface {
     );
   }
   disconnectedCallback() {
+    const { effects, theme } = this.#framework;
+
     if (this.#filterTimeout) {
       clearTimeout(this.#filterTimeout);
       this.#filterTimeout = null;
     }
-    this.#framework.theme.unregister(this);
+
+    this.#listItems.forEach((item) => {
+      effects.unregister.ripple(item);
+    });
+
+    theme.unregister(this);
   }
   //#endregion
 }

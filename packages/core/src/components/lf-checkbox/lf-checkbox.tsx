@@ -143,7 +143,7 @@ export class LfCheckbox implements LfCheckboxInterface {
   #p = LF_CHECKBOX_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: HTMLDivElement;
+  #surface: HTMLDivElement;
   //#endregion
 
   //#region Events
@@ -160,9 +160,6 @@ export class LfCheckbox implements LfCheckboxInterface {
   lfEvent: EventEmitter<LfCheckboxEventPayload>;
 
   onLfEvent(e: Event | CustomEvent, eventType: LfCheckboxEvent) {
-    const { effects } = this.#framework;
-    const { lfRipple } = this;
-
     switch (eventType) {
       case "change": {
         if (!this.#isDisabled()) {
@@ -171,12 +168,6 @@ export class LfCheckbox implements LfCheckboxInterface {
           } else {
             this.value = "off";
           }
-        }
-        break;
-      }
-      case "pointerdown": {
-        if (lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r);
         }
         break;
       }
@@ -369,7 +360,11 @@ export class LfCheckbox implements LfCheckboxInterface {
   }
 
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects } = this.#framework;
+
+    if (this.lfRipple && this.#surface) {
+      effects.register.ripple(this.#surface);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -404,6 +399,7 @@ export class LfCheckbox implements LfCheckboxInterface {
             <div
               class={bemClass(checkbox._)}
               onClick={(e) => this.onLfEvent(e, "change")}
+              ref={(el) => (this.#surface = el)}
             >
               <div
                 class={bemClass(checkbox._, checkbox.surface, {
@@ -411,8 +407,6 @@ export class LfCheckbox implements LfCheckboxInterface {
                   indeterminate: this.#isIndeterminate(),
                   disabled: this.#isDisabled(),
                 })}
-                onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
-                ref={(el) => (this.#r = el)}
                 part={this.#p.checkbox}
               >
                 {this.#prepInput()}
@@ -427,7 +421,13 @@ export class LfCheckbox implements LfCheckboxInterface {
   }
 
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    if (effects && this.lfRipple && this.#surface) {
+      effects.unregister.ripple(this.#surface);
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

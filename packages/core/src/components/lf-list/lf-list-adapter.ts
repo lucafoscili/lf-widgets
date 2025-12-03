@@ -34,7 +34,6 @@ export const prepRefs = (): LfListAdapterRefs => {
     filter: null,
     icon: null,
     node: null,
-    ripples: new Map(),
     subtitle: null,
     title: null,
   };

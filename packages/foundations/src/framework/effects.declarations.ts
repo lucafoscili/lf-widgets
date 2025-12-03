@@ -27,6 +27,13 @@ export interface LfEffectLayerConfig {
   name: string;
 
   /**
+   * The host attribute to set on the element.
+   * Each effect type has its own host attribute for targeted CSS styling.
+   * If not provided, no host attribute is set (for effects without host styling needs).
+   */
+  hostAttribute?: string;
+
+  /**
    * Where to insert the layer relative to content.
    * - "prepend": Before content (default for visual underlays like glow)
    * - "append": After content (for overlays like highlights)
@@ -141,12 +148,14 @@ export interface LfEffectLayerManager {
    * @param effectName - Unique identifier for this effect's transform
    * @param transform - CSS transform value (e.g., "rotateX(5deg) rotateY(10deg)")
    * @param priority - Order priority (lower = applied first). Use LF_EFFECTS_TRANSFORM_PRIORITY.
+   * @param hostAttribute - Optional host attribute to set for CSS targeting
    */
   registerTransform: (
     host: HTMLElement,
     effectName: string,
     transform: string,
     priority?: number,
+    hostAttribute?: string,
   ) => void;
 
   /**
@@ -237,6 +246,12 @@ export interface LfEffectsRippleOptions {
    */
   autoSurfaceRadius?: boolean;
   /**
+   * Custom border-radius for the ripple surface.
+   * Accepts any valid CSS border-radius value (e.g., "8px", "50%", "1em").
+   * When provided, overrides autoSurfaceRadius behavior.
+   */
+  borderRadius?: string;
+  /**
    * Custom ripple color (CSS color value).
    * If not provided, uses the parent element's color or backgroundColor.
    */
@@ -321,16 +336,6 @@ export interface LfEffectsInterface {
     /** Adds tilt effect behaviour to the element with optional intensity override. */
     tilt: (element: HTMLElement, intensity?: number) => void;
   };
-  /**
-   * @deprecated Use register.ripple() for new implementations.
-   * Triggers a one-off ripple animation on the provided element.
-   * Kept for backward compatibility with existing component internals.
-   */
-  ripple: (
-    e: PointerEvent,
-    element: HTMLElement,
-    autoSurfaceRadius?: boolean,
-  ) => void;
   set: {
     /** Overrides stored intensity presets for specific effects. */
     intensity: (key: keyof LfEffectsIntensities, value: number) => void;

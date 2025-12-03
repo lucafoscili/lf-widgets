@@ -130,7 +130,6 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         ripple: jest.fn(),
         tilt: jest.fn(),
       },
-      ripple: jest.fn(),
       set: {
         intensity: jest.fn(),
         timeout: jest.fn(),

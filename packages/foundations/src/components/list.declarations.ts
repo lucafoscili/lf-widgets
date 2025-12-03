@@ -109,7 +109,6 @@ export interface LfListAdapterRefs {
   filter: LfTextfieldElement | null;
   icon: HTMLElement | null;
   node: HTMLElement | null;
-  ripples: Map<string, HTMLElement>;
   subtitle: HTMLElement | null;
   title: HTMLElement | null;
 }

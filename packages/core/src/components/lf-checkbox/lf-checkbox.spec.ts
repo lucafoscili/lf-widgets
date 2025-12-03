@@ -108,21 +108,15 @@ describe("lf-checkbox component", () => {
     expect(changeEvent.isIndeterminate).toBe(false);
   });
 
-  it("emits lf-checkbox-event with eventType pointerdown on pointerdown", async () => {
-    const page = await createPage(`<lf-checkbox></lf-checkbox>`);
-    const events: any[] = [];
-    page.root.addEventListener("lf-checkbox-event", (e: CustomEvent) => {
-      events.push(e.detail);
-    });
-    const checkbox = page.root.shadowRoot.querySelector(
-      "input[data-cy='input']",
+  it("registers ripple on the surface element when lfRipple is true", async () => {
+    const page = await createPage(
+      `<lf-checkbox lf-ripple="true"></lf-checkbox>`,
     );
-    expect(checkbox).not.toBeNull();
-    checkbox!.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }));
-    await page.waitForChanges();
-    expect(events.length).toBeGreaterThan(0);
-    const pointerdownEvent = events.find((e) => e.eventType === "pointerdown");
-    expect(pointerdownEvent).toBeTruthy();
+    // The surface element is used for ripple registration (the div with class "checkbox")
+    const surface = page.root.shadowRoot.querySelector(".checkbox");
+    expect(surface).not.toBeNull();
+    // The ripple layer is added to the surface element with ripple-specific host attribute
+    expect(surface.hasAttribute("data-lf-ripple-host")).toBe(true);
   });
 
   it("renders label when lfLabel is set", async () => {
