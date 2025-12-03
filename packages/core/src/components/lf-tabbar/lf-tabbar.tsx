@@ -420,13 +420,14 @@ export class LfTabbar implements LfTabbarInterface {
     }
   }
   componentDidLoad() {
-    const { debug, drag, effects } = this.#framework;
+    const { debug, drag, effects, theme } = this.#framework;
 
     if (this.#scrollContainer) {
       drag.register.dragToScroll(this.#scrollContainer);
     }
 
-    if (this.lfRipple) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
       this.#tabs.forEach((el) => {
         if (el) {
           effects.register.ripple(el);
@@ -514,7 +515,8 @@ export class LfTabbar implements LfTabbarInterface {
       drag.unregister.dragToScroll(this.#scrollContainer);
     }
 
-    if (effects && this.lfRipple) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple) {
       this.#tabs?.forEach((el) => {
         if (el) {
           effects.unregister.ripple(el);

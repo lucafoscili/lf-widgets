@@ -10,6 +10,61 @@
   Offer a centralized and consistent set of tools to manage visual effects in LF Widgets, such as displaying modal overlays, creating ripple animations on pointer events, and adding tilt interactions to elements.
 - **Integration:**  
   Relies on the LF Widgets framework for debugging and logging (e.g., warning when multiple lightboxes are attempted) and uses the DOM to create and manipulate effect elements. It also interacts with CSS custom properties defined via the framework's effects variables.
+- **Architecture:**  
+  Uses a **Layer-Based Effects System** that enables unlimited composable visual effects on any element through real DOM elements ("layers") instead of pseudo-elements.
+
+---
+
+## Core Concepts
+
+### Layer-Based Architecture
+
+Each registerable effect creates **real DOM elements** ("layers") rather than relying on pseudo-elements:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Host Element (e.g., <lf-card>)                         │
+│  [data-lf-neon-glow-host] [data-lf-tilt-host]           │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ [data-lf-effect-layer="neon-glow"]         z:1  │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ [data-lf-effect-layer="tilt-highlight"]    z:2  │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ [data-lf-effect-layer="ripple"]            z:3  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ Component Content                               │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Benefits:**
+- **Unlimited effects** on a single element (no pseudo-element conflicts)
+- **Fire-and-forget** API: `register()` / `unregister()` handles everything
+- **Zero conflicts** between effects
+- **Consistent pattern** across all effects
+- **DOM-agnostic**: works with shadow DOM and light DOM
+
+### Effect Categories
+
+| Category | Effects | Pattern |
+|----------|---------|---------|
+| **Global overlays** | `backdrop`, `lightbox` | Show/hide API, single instance |
+| **Registerable** | `neon-glow`, `ripple`, `tilt` | Register/unregister on elements |
+
+### Per-Effect Host Attributes
+
+Each registerable effect sets its own host attribute for granular CSS targeting:
+
+| Effect | Host Attribute | Purpose |
+|--------|---------------|---------|
+| `neon-glow` | `data-lf-neon-glow-host` | `overflow: visible` for glow |
+| `ripple` | `data-lf-ripple-host` | `overflow: hidden` for containment |
+| `tilt` | `data-lf-tilt-host` | `perspective`, `transform-style` |
 
 ---
 
@@ -21,51 +76,44 @@ This section provides a step-by-step guide for adding a new effect to the LfEffe
 
 ```text
 1. [ ] Foundations: Add to LF_EFFECTS_LIST (alphabetical)
-2. [ ] Foundations: Add CSS vars to LF_EFFECTS_VARS
-3. [ ] Foundations: Add to LF_ATTRIBUTES
-4. [ ] Foundations: Define options interface (LfEffects<Name>Options)
-5. [ ] Foundations: Update LfEffectsInterface (register/unregister)
-6. [ ] Build: yarn build:foundations
-7. [ ] SCSS: Add mixin to _framework.scss (lf-fw-<name>)
-8. [ ] SCSS: Add to global.scss @include
-9. [ ] Build: yarn build:core (triggers SCSS prebuild)
-10. [ ] Framework: Create helper module (helpers/<name>.ts)
-11. [ ] Framework: Wire register/unregister in lf-effects.ts
-12. [ ] Build: yarn build (full rebuild)
-13. [ ] Tests: Add unit tests to lf-effects.spec.ts
-14. [ ] Showcase: Update effects.ts data
+2. [ ] Foundations: Add to LF_EFFECTS_REGISTERABLE (if registerable)
+3. [ ] Foundations: Add layer names to LF_EFFECTS_LAYER_NAMES
+4. [ ] Foundations: Add host attribute to LF_EFFECTS_HOST_ATTRIBUTES
+5. [ ] Foundations: Add CSS vars to LF_EFFECTS_VARS
+6. [ ] Foundations: Define options interface (LfEffects<Name>Options)
+7. [ ] Foundations: Define defaults constant (LF_EFFECTS_<NAME>_DEFAULTS)
+8. [ ] Foundations: Update LfEffectsInterface (register/unregister)
+9. [ ] Build: yarn build:foundations
+10. [ ] SCSS: Add host mixin to _framework.scss (lf-fw-<name>-host)
+11. [ ] SCSS: Add effect mixin to _framework.scss (lf-fw-<name>)
+12. [ ] SCSS: Add to global.scss @include (correct order!)
+13. [ ] Build: yarn build:core (triggers SCSS prebuild)
+14. [ ] Framework: Create helper module (helpers.<name>.ts)
+15. [ ] Framework: Wire register/unregister in lf-effects.ts
+16. [ ] Build: yarn build (full rebuild)
+17. [ ] Tests: Add unit tests to lf-effects.spec.ts
+18. [ ] Showcase: Update effects.ts data
 ```
-
-### Architecture Decision: Simple vs Fire-and-Forget
-
-| Effect Type | Examples | Pattern |
-|-------------|----------|---------|
-| **Event-driven** | `tilt`, `ripple` | Direct event handlers in LfEffects class |
-| **Fire-and-forget with CSS injection** | `neon-glow`, `frost` | Helper module in `helpers/` folder |
-
-**Use a helper module when:**
-- Effect needs CSS injection into Shadow DOM
-- Effect has complex pseudo-element styling
-- Effect requires `:host()` selector transformation for custom elements
 
 ### File Locations
 
 ```text
 packages/
 ├── foundations/src/framework/
-│   ├── effects.constants.ts      # LF_EFFECTS_LIST, LF_EFFECTS_VARS
-│   └── effects.declarations.ts   # LfEffectsInterface, options types
-├── foundations/src/foundations/
-│   └── components.constants.ts   # LF_ATTRIBUTES
+│   ├── effects.constants.ts      # LF_EFFECTS_*, layer names, host attrs, CSS vars, defaults
+│   └── effects.declarations.ts   # LfEffectsInterface, options types, layer manager types
 ├── framework/src/lf-effects/
 │   ├── lf-effects.ts             # Main class
-│   └── helpers/                  # Effect-specific modules
-│       └── <effect-name>.ts      # Fire-and-forget effects
+│   ├── helpers.layers.ts         # Layer manager (shared)
+│   ├── helpers.neon-glow.ts      # Neon glow effect
+│   ├── helpers.ripple.ts         # Ripple effect
+│   └── helpers.tilt.ts           # Tilt effect
 ├── core/src/style/
 │   ├── _variables.scss           # $lf-keyframes
+│   ├── global.scss               # Effect includes (order matters!)
 │   └── mixins/_framework.scss    # Effect mixins
-└── showcase/src/style/mixins/
-    └── _framework.scss           # Mirror of core mixins
+└── showcase/src/components/lf-showcase/assets/data/
+    └── effects.ts                # Showcase examples
 ```
 
 ### Step-by-Step Implementation
@@ -73,10 +121,11 @@ packages/
 #### 1. Foundations Layer
 
 **effects.constants.ts:**
+
 ```typescript
+// Add to LF_EFFECTS_LIST (alphabetical)
 export const LF_EFFECTS_LIST = [
   "backdrop",
-  "frost",       // alphabetical order
   "lightbox",
   "neon-glow",
   "ripple",
@@ -84,6 +133,25 @@ export const LF_EFFECTS_LIST = [
   "your-effect", // ADD
 ] as const;
 
+// Add to LF_EFFECTS_REGISTERABLE (if effect uses register/unregister)
+export const LF_EFFECTS_REGISTERABLE = ["neon-glow", "ripple", "tilt", "your-effect"] as const;
+
+// Add layer names
+export const LF_EFFECTS_LAYER_NAMES = {
+  // ... existing ...
+  yourEffect: {
+    main: "your-effect",
+    secondary: "your-effect-secondary", // if needed
+  },
+} as const;
+
+// Add host attribute
+export const LF_EFFECTS_HOST_ATTRIBUTES = {
+  // ... existing ...
+  yourEffect: "data-lf-your-effect-host",
+} as const;
+
+// Add CSS variables
 export const LF_EFFECTS_VARS = {
   // ... existing ...
   yourEffect: {
@@ -91,25 +159,29 @@ export const LF_EFFECTS_VARS = {
     prop2: "--lf-ui-your-effect-prop2",
   },
 } as const;
-```
 
-**components.constants.ts:**
-```typescript
-export const LF_ATTRIBUTES = {
-  // ... existing ...
-  yourEffect: "your-effect",
-} as const;
+// Add defaults
+export const LF_EFFECTS_YOUR_EFFECT_DEFAULTS: {
+  prop1: number;
+  prop2: string;
+} = {
+  prop1: 10,
+  prop2: "value",
+};
 ```
 
 **effects.declarations.ts:**
+
 ```typescript
+// Add options interface
 export interface LfEffectsYourEffectOptions {
-  /** Description. Defaults to X. */
+  /** Description. Defaults to 10. */
   prop1?: number;
-  /** Description. Defaults to Y. */
+  /** Description. Defaults to "value". */
   prop2?: string;
 }
 
+// Update LfEffectsInterface
 export interface LfEffectsInterface {
   register: {
     // ... existing ...
@@ -122,178 +194,155 @@ export interface LfEffectsInterface {
 }
 ```
 
-#### 2. SCSS Layer (Core + Showcase)
+#### 2. SCSS Layer
 
 **_framework.scss:**
+
 ```scss
-@mixin lf-fw-your-effect {
-  [data-lf="your-effect"] {
-    // CSS custom property defaults
-    --lf-ui-your-effect-prop1: 10px;
-    --lf-ui-your-effect-prop2: blue;
-    
-    // Base styles
+/*******************************************
+ * @mixin lf-fw-your-effect-host
+ * Host styling for elements with your-effect.
+ *******************************************/
+@mixin lf-fw-your-effect-host {
+  [data-lf-your-effect-host] {
     position: relative;
-    
-    // Pseudo-elements for visual effect
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      // Effect-specific styles using CSS vars
-    }
+    // Effect-specific host requirements
+  }
+}
+
+/*******************************************
+ * @mixin lf-fw-your-effect
+ * Layer styling for your-effect.
+ *******************************************/
+@mixin lf-fw-your-effect {
+  [data-lf-effect-layer="your-effect"] {
+    // Layer-specific styling
+    // Use CSS custom properties: var(--lf-ui-your-effect-prop1)
   }
 }
 ```
 
 **global.scss:**
+
 ```scss
-@include lf-fw-your-effect;
+// Host styles (order matters for overflow handling!)
+@include lf-fw-ripple-host;     // overflow: hidden
+@include lf-fw-tilt-host;       // overflow: hidden
+@include lf-fw-neon-glow-host;  // overflow: visible
+@include lf-fw-your-effect-host; // ADD based on overflow needs
+
+// Effect styles
+@include lf-fw-neon-glow;
+@include lf-fw-ripple;
+@include lf-fw-tilt;
+@include lf-fw-your-effect;     // ADD
 ```
 
 #### 3. Framework Layer (Helper Module)
 
-**helpers/your-effect.ts:**
+**helpers.your-effect.ts:**
+
 ```typescript
-import { LF_ATTRIBUTES } from "@lf-widgets/foundations";
-import { GLOBAL_STYLES } from "../../lf-theme/theme.global-styles.generated";
-import type { LfEffects } from "../lf-effects";
-import type { LfEffectsYourEffectOptions } from "@lf-widgets/foundations";
+import {
+  LF_EFFECTS_HOST_ATTRIBUTES,
+  LF_EFFECTS_LAYER_NAMES,
+  LF_EFFECTS_YOUR_EFFECT_DEFAULTS,
+  LF_EFFECTS_VARS,
+  LfEffectsYourEffectOptions,
+} from "@lf-widgets/foundations";
+import { layerManager } from "./helpers.layers";
 
-// ─── CSS Caching ─────────────────────────────────────────────────────────────
-let cachedHostCss: string | null = null;
+//#region Constants
+const LAYER_NAME = LF_EFFECTS_LAYER_NAMES.yourEffect.main;
+const HOST_ATTRIBUTE = LF_EFFECTS_HOST_ATTRIBUTES.yourEffect;
+const DEFAULTS = LF_EFFECTS_YOUR_EFFECT_DEFAULTS;
+//#endregion
 
-// ─── CSS Extraction ──────────────────────────────────────────────────────────
-const getYourEffectCss = (forHost = false): string => {
-  const selector = `[data-lf="${LF_ATTRIBUTES.yourEffect}"]`;
-  const regex = new RegExp(
-    `${selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^}]*\\{[^}]*\\}`,
-    "gs"
-  );
-  
-  let css = "";
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(GLOBAL_STYLES)) !== null) {
-    css += match[0] + "\n";
-  }
-  
-  if (forHost && css) {
-    // Transform [data-lf="your-effect"] → :host([data-lf="your-effect"])
-    css = css.replace(
-      new RegExp(`\\${selector}`, "g"),
-      `:host(${selector})`
-    );
-  }
-  
-  return css;
+//#region State
+const elementData = new WeakMap<HTMLElement, {
+  // Effect-specific tracked data
+  handler?: (e: Event) => void;
+  options: Required<LfEffectsYourEffectOptions>;
+}>();
+//#endregion
+
+//#region Public API
+export const yourEffectEffect = {
+  register: (element: HTMLElement, options: LfEffectsYourEffectOptions = {}): void => {
+    if (elementData.has(element)) return;
+
+    const resolvedOptions = { ...DEFAULTS, ...options };
+    const { yourEffect } = LF_EFFECTS_VARS;
+
+    // Set CSS custom properties
+    element.style.setProperty(yourEffect.prop1, `${resolvedOptions.prop1}px`);
+    element.style.setProperty(yourEffect.prop2, resolvedOptions.prop2);
+
+    // Register layer via layer manager
+    layerManager.register(element, {
+      name: LAYER_NAME,
+      hostAttribute: HOST_ATTRIBUTE,
+      insertPosition: "prepend", // or "append"
+      onSetup: (layer, host) => {
+        // Layer-specific initialization
+      },
+    });
+
+    // Store for cleanup
+    elementData.set(element, { options: resolvedOptions });
+  },
+
+  unregister: (element: HTMLElement): void => {
+    const data = elementData.get(element);
+    if (!data) return;
+
+    const { yourEffect } = LF_EFFECTS_VARS;
+
+    // Remove event listeners if any
+    // ...
+
+    // Unregister layer
+    layerManager.unregister(element, LAYER_NAME);
+
+    // Clean up CSS custom properties
+    element.style.removeProperty(yourEffect.prop1);
+    element.style.removeProperty(yourEffect.prop2);
+
+    elementData.delete(element);
+  },
 };
-
-const getOrBuildHostCss = (): string => {
-  if (!cachedHostCss) {
-    cachedHostCss = getYourEffectCss(true);
-  }
-  return cachedHostCss;
-};
-
-// ─── Registration ────────────────────────────────────────────────────────────
-export const register = (
-  element: HTMLElement,
-  options: LfEffectsYourEffectOptions,
-  effects: LfEffects,
-): void => {
-  const { prop1 = 10, prop2 = "blue" } = options;
-
-  // Set data attribute for CSS targeting
-  element.dataset.lf = LF_ATTRIBUTES.yourEffect;
-
-  // Set CSS custom properties
-  element.style.setProperty("--lf-ui-your-effect-prop1", `${prop1}px`);
-  element.style.setProperty("--lf-ui-your-effect-prop2", prop2);
-
-  // Inject :host() CSS into element's own shadow root (custom elements only)
-  if (element.shadowRoot) {
-    const css = getOrBuildHostCss();
-    if (css) {
-      const style = new CSSStyleSheet();
-      style.replaceSync(css);
-      element.shadowRoot.adoptedStyleSheets = [
-        ...element.shadowRoot.adoptedStyleSheets,
-        style,
-      ];
-    }
-  }
-  // NOTE: global.scss handles [data-lf] selectors for light DOM / parent shadow roots
-
-  // Track element
-  effects["_components"].add(element);
-};
-
-// ─── Unregistration ──────────────────────────────────────────────────────────
-export const unregister = (
-  element: HTMLElement,
-  effects: LfEffects,
-): void => {
-  // Remove data attribute
-  delete element.dataset.lf;
-
-  // Remove CSS custom properties
-  element.style.removeProperty("--lf-ui-your-effect-prop1");
-  element.style.removeProperty("--lf-ui-your-effect-prop2");
-
-  // Remove from tracking
-  effects["_components"].delete(element);
-};
+//#endregion
 ```
 
 **lf-effects.ts:**
+
 ```typescript
-import * as yourEffectHelper from "./helpers/your-effect";
+import { yourEffectEffect } from "./helpers.your-effect";
 
 export class LfEffects implements LfEffectsInterface {
   register = {
     // ... existing ...
     yourEffect: (element: HTMLElement, options: LfEffectsYourEffectOptions = {}) => {
-      if (this.isRegistered(element)) {
-        this.#MANAGER.debug.logs.new(this, "Element already registered.", "warning");
+      if (this.isRegistered(element, "your-effect")) {
+        this.#MANAGER.debug.logs.new(this, "Element already has your-effect registered.", "warning");
         return;
       }
-      yourEffectHelper.register(element, options, this);
+
+      yourEffectEffect.register(element, options);
+      this.#addEffect(element, "your-effect");
     },
   };
 
   unregister = {
     // ... existing ...
     yourEffect: (element: HTMLElement) => {
-      yourEffectHelper.unregister(element, this);
+      if (!this.isRegistered(element, "your-effect")) return;
+
+      yourEffectEffect.unregister(element);
+      this.#removeEffect(element, "your-effect");
     },
   };
 }
-```
-
-### Critical Gotchas (Shadow DOM)
-
-| Issue | Wrong | Correct |
-|-------|-------|---------|
-| Getting element's shadow root | `element.getRootNode()` | `element.shadowRoot` |
-| Host styling selector | `[data-lf="effect"]` | `:host([data-lf="effect"])` |
-| Theme color usage | `color` (RGB triplet) | `rgb(${color})` |
-| CSS injection scope | All shadow roots | Only `element.shadowRoot` |
-
-**Why `element.getRootNode()` doesn't work:**
-```typescript
-// element.getRootNode() returns the PARENT shadow root, not element's own
-const root = element.getRootNode(); // ❌ Parent's shadow root
-const own = element.shadowRoot;      // ✅ Element's own shadow root
-```
-
-**Why selector transformation is needed:**
-```scss
-// global.scss provides this (works in light DOM / parent shadow):
-[data-lf="effect"] { ... }
-
-// Custom element's own shadow root needs:
-:host([data-lf="effect"]) { ... }
 ```
 
 ### Build Commands
@@ -319,15 +368,14 @@ yarn test:unit
 ### `constructor(lfFramework: LfFrameworkInterface)`
 
 - **Description:**  
-  Instantiates an `LfEffects` instance by saving a reference to the LF Widgets framework. This reference is used for logging (through the framework’s debug module) and to ensure consistent behavior with other framework-managed components.
+  Instantiates an `LfEffects` instance by saving a reference to the LF Widgets framework. This reference is used for logging (through the framework's debug module) and to ensure consistent behavior with other framework-managed components.
 - **Usage Example:**
 
   ```ts
   import { getLfFramework } from "@lf-widgets/framework";
-  import { LfEffects } from "./LfEffects";
 
-  const lfFramework = getLfFramework();
-  const effectsManager = new LfEffects(lfFramework);
+  const lfFramework = await getLfFramework();
+  const effectsManager = lfFramework.effects;
   ```
 
 ---
@@ -337,7 +385,7 @@ yarn test:unit
 ### `#appendToWrapper(element: HTMLElement): void`
 
 - **Purpose:**  
-  Ensures that effect elements are appended to a common wrapper in the document.
+  Ensures that global effect elements (backdrop, lightbox) are appended to a common wrapper in the document.
   - If the wrapper (`<div class="lf-effects">`) does not exist, it is created and appended to `document.body`.
   - The provided element is then appended to this wrapper.
 - **Note:**  
@@ -345,17 +393,39 @@ yarn test:unit
 
 ---
 
-### `#getParentStyle(element: HTMLElement): Pick<CSSStyleDeclaration, "backgroundColor" | "borderRadius" | "color">`
+## Public Methods & Properties
 
-- **Purpose:**  
-  Retrieves key style properties (`backgroundColor`, `borderRadius`, and `color`) from the element's parent.
-  - These properties are used to ensure that effects (such as ripples) harmonize with the parent’s visual style.
-- **Usage:**  
-  Internally called by the ripple method to obtain style context for positioning and styling the effect.
+### `layers`
+
+- **Description:**  
+  The Layer Manager API for creating and managing isolated effect layers. Used internally by registerable effects, but also exposed for advanced use cases.
+- **Methods:**
+
+  - **`register(host: HTMLElement, config: LfEffectLayerConfig): HTMLElement`**  
+    Creates and injects a layer element for the given effect.
+
+  - **`unregister(host: HTMLElement, effectName: string): void`**  
+    Removes a layer and runs cleanup callbacks.
+
+  - **`getLayer(host: HTMLElement, effectName: string): HTMLElement | null`**  
+    Gets an existing layer for an effect on the host.
+
+  - **`getAllLayers(host: HTMLElement): HTMLElement[]`**  
+    Gets all layers registered on a host, ordered by z-index.
+
+  - **`reorderLayers(host: HTMLElement): void`**  
+    Recalculates z-indices for all layers on a host.
+
+  - **`registerTransform(host, effectName, transform, priority?, hostAttribute?): void`**  
+    Registers a transform contribution from an effect. The layer manager composes all transforms into `--lf-ui-effects-transform`.
+
+  - **`updateTransform(host, effectName, transform): void`**  
+    Updates an existing transform contribution (efficient for dynamic effects like tilt).
+
+  - **`unregisterTransform(host, effectName): void`**  
+    Removes a transform contribution and recomposes remaining transforms.
 
 ---
-
-## Public Methods & Properties
 
 ### `set`
 
@@ -364,19 +434,21 @@ yarn test:unit
 - **Methods:**
 
   - **`intensity(key: keyof LfEffectsIntensities, value: number): void`**  
-    Sets the intensity for a given effect (e.g., tilt).  
+    Sets the intensity for a given effect (e.g., tilt, neon-glow).  
     **Example:**
 
     ```ts
     effectsManager.set.intensity("tilt", 15);
+    effectsManager.set.intensity("neon-glow", 0.8);
     ```
 
   - **`timeout(key: keyof LfEffectsTimeouts, value: number): void`**  
-    Sets the timeout duration (in milliseconds) for timed effects like the ripple or lightbox dismissal.  
+    Sets the timeout duration (in milliseconds) for timed effects.  
     **Example:**
 
     ```ts
     effectsManager.set.timeout("ripple", 600);
+    effectsManager.set.timeout("lightbox", 400);
     ```
 
 ---
@@ -403,6 +475,7 @@ yarn test:unit
 
   - **`hide(): void`**  
     Hides the backdrop by fading its opacity to 0 and then removing it from the DOM once the transition ends.
+
   - **`isVisible(): boolean`**  
     Returns a boolean indicating whether a backdrop is currently active.
 
@@ -435,40 +508,35 @@ yarn test:unit
 
   - **`hide(): void`**  
     Hides and removes the lightbox from the DOM, and then hides the backdrop.
+
   - **`isVisible(): boolean`**  
     Returns a boolean indicating whether a lightbox is currently open.
 
 ---
 
-### `ripple`
+### `isRegistered(element: HTMLElement, effectName?: LfEffectName): boolean`
 
 - **Description:**  
-  Generates a ripple animation effect on a given element in response to a pointer event.
+  Checks if an element has effects registered.
 - **Parameters:**
-  - **`e: PointerEvent`** — The triggering pointer event.
-  - **`element: HTMLElement`** — The element on which the ripple should appear.
-  - **`autoSurfaceRadius?: boolean`** — (Optional) If `true`, automatically applies the parent's border radius to the element.
-- **How It Works:**
-  - Computes the position of the ripple based on the event coordinates and the element's bounding rectangle.
-  - Retrieves parent styles (color, background color, border radius) to style the ripple.
-  - Appends a `<span>` element with appropriate CSS custom properties to create the ripple effect.
-  - Schedules the ripple for removal after a timeout defined in `#TIMEOUT.ripple`.
-- **Example:**
-
-  ```ts
-  element.addEventListener("pointerdown", (e) => {
-    effectsManager.ripple(e, element);
-  });
-  ```
-
----
-
-### `isRegistered(element: HTMLElement): boolean`
-
-- **Description:**  
-  Checks if an element has been registered for a tilt effect.
+  - **`element`** — The element to check.
+  - **`effectName`** — (Optional) Check for a specific effect. If omitted, checks for any effect.
 - **Returns:**  
-  `true` if the element is registered; `false` otherwise.
+  `true` if the element has the specified effect (or any effect if not specified).
+
+**Example:**
+
+```ts
+// Check for specific effect
+if (effectsManager.isRegistered(element, "tilt")) {
+  console.log("Tilt effect is active");
+}
+
+// Check for any effect
+if (effectsManager.isRegistered(element)) {
+  console.log("Element has effects registered");
+}
+```
 
 ---
 
@@ -478,17 +546,65 @@ yarn test:unit
   An object providing methods to register specific effects on elements.
 - **Methods:**
 
-  - **`tilt(element: HTMLElement, intensity?: number): void`**  
-    Registers a tilt effect on the specified element by:
+  - **`neonGlow(element: HTMLElement, options?: LfEffectsNeonGlowOptions): void`**  
+    Registers a neon glow effect with pulsating border and optional reflection.
 
-    - Adding a `pointermove` event listener that calculates tilt angles and light coordinates based on pointer position.
-    - Adding a `pointerleave` listener to reset the effect.
-    - Storing the element in an internal set for tracking.
+    **Options:**
+    | Option | Type | Default | Description |
+    |--------|------|---------|-------------|
+    | `color` | `LfColorInput` | Theme secondary | Glow color |
+    | `desync` | `boolean` | `false` | Randomize timing for multiple elements |
+    | `intensity` | `number` | `0.7` | Glow intensity (0-1) |
+    | `mode` | `"outline" \| "filled"` | `"outline"` | Display mode |
+    | `pulseSpeed` | `"burst" \| "fast" \| "normal" \| "slow"` | `"burst"` | Animation speed |
+    | `reflection` | `boolean` | `false` | Show reflection below element |
+    | `reflectionBlur` | `number` | `12` | Reflection blur in pixels |
+    | `reflectionOffset` | `number` | `5` | Reflection offset percentage |
+    | `reflectionOpacity` | `number` | `0.5` | Reflection opacity (0-1) |
 
     **Example:**
 
     ```ts
-    effectsManager.register.tilt(document.querySelector(".tilt-element"), 12);
+    effectsManager.register.neonGlow(element, {
+      mode: "outline",
+      color: "#00ffff",
+      intensity: 0.8,
+      pulseSpeed: "burst",
+      desync: true,
+      reflection: true,
+    });
+    ```
+
+  - **`ripple(element: HTMLElement, options?: LfEffectsRippleOptions): void`**  
+    Registers a ripple effect that triggers on pointerdown events.
+
+    **Options:**
+    | Option | Type | Default | Description |
+    |--------|------|---------|-------------|
+    | `autoSurfaceRadius` | `boolean` | `true` | Inherit border-radius from parent |
+    | `borderRadius` | `string` | `""` | Custom border-radius (overrides auto) |
+    | `color` | `string` | `""` | Custom ripple color |
+    | `duration` | `number` | `500` | Animation duration in ms |
+    | `easing` | `string` | `"cubic-bezier(0.4, 0, 0.2, 1)"` | CSS easing function |
+    | `scale` | `number` | `1` | Scale factor for ripple size |
+
+    **Example:**
+
+    ```ts
+    effectsManager.register.ripple(element, {
+      duration: 600,
+      color: "rgba(255, 255, 255, 0.3)",
+      scale: 1.2,
+    });
+    ```
+
+  - **`tilt(element: HTMLElement, intensity?: number): void`**  
+    Registers a 3D tilt/hover effect with dynamic radial highlight.
+
+    **Example:**
+
+    ```ts
+    effectsManager.register.tilt(element, 12);
     ```
 
 ---
@@ -499,25 +615,35 @@ yarn test:unit
   An object providing methods to remove registered effects from elements.
 - **Methods:**
 
+  - **`neonGlow(element: HTMLElement): void`**  
+    Removes the neon glow effect, cleaning up layers and CSS properties.
+
+  - **`ripple(element: HTMLElement): void`**  
+    Removes the ripple effect, cleaning up the surface layer and event listener.
+
   - **`tilt(element: HTMLElement): void`**  
-    Removes the tilt effect by detaching the event listeners and removing the element from the internal tracking set.
+    Removes the tilt effect, cleaning up layers, transforms, and event listeners.
 
-    **Example:**
+**Example:**
 
-    ```ts
-    effectsManager.unregister.tilt(document.querySelector(".tilt-element"));
-    ```
+```ts
+effectsManager.unregister.neonGlow(element);
+effectsManager.unregister.ripple(element);
+effectsManager.unregister.tilt(element);
+```
 
 ---
 
 ## Integration with the LF Widgets Framework
 
 - **Logging & Debugging:**  
-  Throughout its methods, `LfEffects` leverages the framework's `debug` module to log warnings—such as attempting to open a lightbox when one is already active.
+  Throughout its methods, `LfEffects` leverages the framework's `debug` module to log warnings—such as attempting to register an effect on an element that already has it.
 - **Event Management:**  
-  By attaching and removing event listeners (for pointer events and keyboard events), it ensures that effects such as ripple and lightbox interactions remain responsive and accessible.
+  By attaching and removing event listeners (for pointer events and keyboard events), it ensures that effects such as ripple, tilt, and lightbox interactions remain responsive and accessible.
 - **DOM Manipulation:**  
-  It dynamically creates and appends DOM elements (e.g., backdrops, lightbox containers) ensuring a consistent overlay environment for effects across the application.
+  It dynamically creates and appends DOM elements (e.g., backdrops, lightbox containers, effect layers) ensuring a consistent overlay environment for effects across the application.
+- **WeakMap Tracking:**  
+  Uses WeakMap for element-specific data, ensuring automatic cleanup when elements are garbage collected.
 
 ---
 
@@ -526,8 +652,10 @@ yarn test:unit
 ```ts
 import { getLfFramework } from "@lf-widgets/framework";
 
-const lfFramework = getLfFramework();
+const lfFramework = await getLfFramework();
 const effectsManager = lfFramework.effects;
+
+// ─── Global Effects ──────────────────────────────────────────────────────────
 
 // Show a backdrop with an onClose callback
 effectsManager.backdrop.show(() => {
@@ -540,17 +668,45 @@ effectsManager.lightbox.show(contentElement, () => {
   console.log("Lightbox closed via callback.");
 });
 
-// Apply a ripple effect on pointer events
-document
-  .querySelector(".ripple-button")
-  ?.addEventListener("pointerdown", (e) => {
-    effectsManager.ripple(e, e.currentTarget as HTMLElement);
-  });
+// ─── Registerable Effects ────────────────────────────────────────────────────
 
-// Register a tilt effect on an element with a custom intensity
-const tiltElement = document.querySelector(".tilt-card") as HTMLElement;
-effectsManager.register.tilt(tiltElement, 15);
+// Neon glow with custom options
+const card = document.querySelector(".card") as HTMLElement;
+effectsManager.register.neonGlow(card, {
+  mode: "outline",
+  pulseSpeed: "burst",
+  desync: true,
+  reflection: true,
+});
 
-// Later, if needed, unregister the tilt effect
-effectsManager.unregister.tilt(tiltElement);
+// Ripple effect (triggers automatically on pointerdown)
+const button = document.querySelector(".button") as HTMLElement;
+effectsManager.register.ripple(button, {
+  duration: 500,
+  color: "rgba(255, 255, 255, 0.3)",
+});
+
+// Tilt effect with custom intensity
+const tiltCard = document.querySelector(".tilt-card") as HTMLElement;
+effectsManager.register.tilt(tiltCard, 15);
+
+// ─── Composing Multiple Effects ──────────────────────────────────────────────
+
+// Multiple effects on the same element (layer-based architecture allows this!)
+const fancyCard = document.querySelector(".fancy-card") as HTMLElement;
+effectsManager.register.neonGlow(fancyCard, { mode: "filled" });
+effectsManager.register.tilt(fancyCard, 10);
+effectsManager.register.ripple(fancyCard);
+
+// ─── Checking & Unregistering ────────────────────────────────────────────────
+
+// Check if effect is registered
+if (effectsManager.isRegistered(fancyCard, "neon-glow")) {
+  console.log("Neon glow is active on this card");
+}
+
+// Unregister effects when done
+effectsManager.unregister.neonGlow(fancyCard);
+effectsManager.unregister.tilt(fancyCard);
+effectsManager.unregister.ripple(fancyCard);
 ```

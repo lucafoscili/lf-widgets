@@ -121,10 +121,8 @@ export const rippleEffect = {
       ...options,
     };
 
-    // Determine border radius: explicit value takes precedence over auto-inherit
     const hasBorderRadius = Boolean(resolvedOptions.borderRadius);
 
-    // Create ripple surface layer via layer manager
     const surface = layerManager.register(element, {
       name: LAYER_NAME,
       hostAttribute: HOST_ATTRIBUTE,
@@ -135,20 +133,16 @@ export const rippleEffect = {
       pointerEvents: false, // Ripple surface doesn't capture events; host does
     });
 
-    // Apply custom border radius if provided
     if (hasBorderRadius) {
       surface.style.borderRadius = resolvedOptions.borderRadius;
     }
 
-    // Create pointerdown handler
     const handler = (e: PointerEvent) => {
       createRipple(e, surface, element, resolvedOptions);
     };
 
-    // Store for cleanup
     elementData.set(element, { handler, options: resolvedOptions });
 
-    // Attach event listener to host element
     element.addEventListener("pointerdown", handler);
   },
 

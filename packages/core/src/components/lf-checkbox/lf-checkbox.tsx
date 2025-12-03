@@ -360,9 +360,10 @@ export class LfCheckbox implements LfCheckboxInterface {
   }
 
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple && this.#surface) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#surface) {
       effects.register.ripple(this.#surface);
     }
 
@@ -423,7 +424,8 @@ export class LfCheckbox implements LfCheckboxInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.lfRipple && this.#surface) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#surface) {
       effects.unregister.ripple(this.#surface);
     }
 

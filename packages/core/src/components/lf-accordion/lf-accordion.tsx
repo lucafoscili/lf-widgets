@@ -404,9 +404,10 @@ export class LfAccordion implements LfAccordionInterface {
     this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
       Object.values(this.#headers).forEach((header) => {
         if (header) {
           effects.register.ripple(header);
@@ -449,7 +450,8 @@ export class LfAccordion implements LfAccordionInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.lfRipple) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple) {
       Object.values(this.#headers).forEach((header) => {
         if (header) {
           effects.unregister.ripple(header);

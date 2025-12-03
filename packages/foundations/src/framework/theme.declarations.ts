@@ -4,6 +4,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfColorInput } from "./color.declarations";
 import { LfDataDataset } from "./data.declarations";
+import { LfEffectName } from "./effects.declarations";
 import {
   LF_ICONS_REGISTRY,
   LF_THEME_COLORS,
@@ -46,6 +47,7 @@ export interface LfThemeInterface {
       variables: LfThemeVariables;
       customStyles: LfThemeCustomStyles;
       font: string[];
+      hasEffect: (effect: LfEffectName) => boolean;
       isDark: boolean;
       name: string;
       full: LfThemeList[string];
@@ -126,6 +128,8 @@ export type LfThemeCustomStyles = Partial<
  * Utility interface used by the theme system.
  */
 export interface LfThemeElement {
+  /** Effects automatically applied to components when this theme is active. */
+  effects: LfEffectName[];
   isDark: boolean;
   variables: LfThemeVariables;
   customStyles?: LfThemeCustomStyles;

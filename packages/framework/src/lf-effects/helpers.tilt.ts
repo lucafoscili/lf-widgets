@@ -46,13 +46,11 @@ export const tiltEffect = {
   register: (element: HTMLElement, intensity = DEFAULTS.intensity): void => {
     const { tilt } = LF_EFFECTS_VARS;
 
-    // Initialize CSS variables for rotation (0deg default)
     element.style.setProperty(tilt.rotateX, "0deg");
     element.style.setProperty(tilt.rotateY, "0deg");
 
     let layerCleanup: (() => void) | undefined;
     if (layerManager) {
-      // Register highlight layer (inherits border-radius via layer defaults)
       const layer = layerManager.register(element, {
         name: LAYER_NAME,
         hostAttribute: HOST_ATTRIBUTE,

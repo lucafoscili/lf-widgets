@@ -1,6 +1,7 @@
 import {
   LF_THEME_ATTRIBUTE,
   LfComponent,
+  LfEffectName,
   LfFrameworkInterface,
   LfThemeBEMModifier,
   LfThemeInterface,
@@ -133,13 +134,14 @@ export class LfTheme implements LfThemeInterface {
     current: () => {
       this.#consistencyCheck();
 
-      const { variables, isDark, customStyles, font } =
+      const { variables, isDark, customStyles, font, effects } =
         this.#LIST[this.#CURRENT];
 
       return {
         variables,
         customStyles,
         font,
+        hasEffect: (effect: LfEffectName) => effects.includes(effect),
         isDark,
         name: this.#CURRENT,
         full: this.#LIST[this.#CURRENT],

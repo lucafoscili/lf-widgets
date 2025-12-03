@@ -356,9 +356,10 @@ export class LfUpload {
     }
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple && this.#label) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#label) {
       effects.register.ripple(this.#label);
     }
 
@@ -432,7 +433,8 @@ export class LfUpload {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.lfRipple && this.#label) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#label) {
       effects.unregister.ripple(this.#label);
     }
 

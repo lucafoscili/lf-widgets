@@ -161,7 +161,9 @@ Type: `Promise<void>`
 | `--lf-tree-border-radius`         | Sets the border radius for the tree component. Defaults to => var(--lf-ui-border-radius)          |
 | `--lf-tree-color-bg`              | Sets the color-bg color for the tree component. Defaults to => var(--lf-color-bg)                 |
 | `--lf-tree-color-on-bg`           | Sets the color-on-bg color for the tree component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-tree-color-on-primary`      | Sets the color-on-primary color for the tree component. Defaults to => var(--lf-color-on-primary) |
 | `--lf-tree-color-on-surface`      | Sets the color-on-surface color for the tree component. Defaults to => var(--lf-color-on-surface) |
+| `--lf-tree-color-primary`         | Sets the color-primary color for the tree component. Defaults to => var(--lf-color-primary)       |
 | `--lf-tree-color-surface`         | Sets the color-surface color for the tree component. Defaults to => var(--lf-color-surface)       |
 | `--lf-tree-font-family`           | Sets the primary font family for the tree component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-tree-font-size`             | Sets the font size for the tree component. Defaults to => var(--lf-font-size)                     |

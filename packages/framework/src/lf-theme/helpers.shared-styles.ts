@@ -143,8 +143,21 @@ const buildMediaQuery = (
 };
 
 /**
+ * Checks if a selector is a host attribute selector that should be output in both forms.
+ * These selectors need to match both host elements and inner shadow DOM elements.
+ *
+ * @param selector - The CSS selector to check
+ * @returns true if the selector should be output in both :host() and original forms
+ */
+export const isHostAttributeSelector = (selector: string): boolean => {
+  return HOST_ATTRIBUTE_SELECTORS.some((attr) => selector.startsWith(attr));
+};
+
+/**
  * Builds CSS string from GLOBAL_STYLES for adopted stylesheets.
  * Excludes document-only selectors and transforms host-targeting attribute selectors.
+ * Host attribute selectors are output in BOTH :host() form (for host element) and
+ * original form (for inner shadow DOM elements).
  *
  * @returns CSS string suitable for shadow DOM adoption
  */
@@ -161,6 +174,14 @@ export const buildAdoptableCss = (): string => {
       css += buildKeyframes(selector, rules);
     } else if (selector.startsWith("@media")) {
       css += buildMediaQuery(selector, rules, false);
+    } else if (isHostAttributeSelector(selector)) {
+      // Output BOTH forms for host attribute selectors:
+      // 1. :host([attr]) - for when the host element has the attribute
+      // 2. [attr] - for inner shadow DOM elements with the attribute
+      const hostSelector = transformToHostSelector(selector);
+      const rulesStr = buildRules(rules);
+      css += `${hostSelector} { ${rulesStr} } `;
+      css += `${selector} { ${rulesStr} } `;
     } else {
       // Transform attribute selectors to :host() context
       const outputSelector = transformToHostSelector(selector);

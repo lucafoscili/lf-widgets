@@ -323,9 +323,10 @@ export class LfSlider implements LfSliderInterface {
     }
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple && this.#thumb) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#thumb) {
       effects.register.ripple(this.#thumb);
     }
 
@@ -438,7 +439,8 @@ export class LfSlider implements LfSliderInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.lfRipple && this.#thumb) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#thumb) {
       effects.unregister.ripple(this.#thumb);
     }
 

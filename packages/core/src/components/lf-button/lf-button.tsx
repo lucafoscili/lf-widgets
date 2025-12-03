@@ -525,10 +525,11 @@ export class LfButton implements LfButtonInterface {
     }
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
     const { button, dropdown } = this.#adapter.elements.refs;
 
-    if (this.lfRipple) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
       if (button) {
         effects.register.ripple(button);
       }
@@ -590,7 +591,8 @@ export class LfButton implements LfButtonInterface {
         portal.close(list);
       }
 
-      if (effects && this.lfRipple) {
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple) {
         if (button) {
           effects.unregister.ripple(button);
         }

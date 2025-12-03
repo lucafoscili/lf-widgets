@@ -373,9 +373,10 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     this.currentNodeId = this.lfValue ?? null;
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.#isEnabled(this.lfRipple)) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.#isEnabled(this.lfRipple) && hasThemeRipple) {
       this.#adapter.elements.refs.items.forEach((el) => {
         if (el) {
           effects.register.ripple(el);
@@ -416,7 +417,8 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.#isEnabled(this.lfRipple)) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.#isEnabled(this.lfRipple) && hasThemeRipple) {
       this.#adapter?.elements.refs.items.forEach((el) => {
         if (el) {
           effects.unregister.ripple(el);

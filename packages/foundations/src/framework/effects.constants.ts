@@ -154,7 +154,7 @@ export const LF_EFFECTS_NEON_DEFAULTS: {
   pulseSpeed: "burst",
   reflection: false,
   reflectionBlur: 12,
-  reflectionOffset: 5,
+  reflectionOffset: 2.5,
   reflectionOpacity: 0.5,
 };
 

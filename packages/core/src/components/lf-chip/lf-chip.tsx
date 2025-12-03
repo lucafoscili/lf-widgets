@@ -608,9 +608,10 @@ export class LfChip implements LfChipInterface {
     }
   }
   componentDidLoad() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple && this.#isClickable()) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#isClickable()) {
       Object.values(this.#items).forEach((el) => {
         if (el) {
           effects.register.ripple(el);
@@ -674,7 +675,8 @@ export class LfChip implements LfChipInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects && this.lfRipple && this.#isClickable()) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#isClickable()) {
       Object.values(this.#items).forEach((el) => {
         if (el) {
           effects.unregister.ripple(el);

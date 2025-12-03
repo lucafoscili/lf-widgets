@@ -434,10 +434,11 @@ export class LfRadio implements LfRadioInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
     const { info } = debug;
 
-    if (this.lfRipple) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
       this.#adapter.elements.refs.items.forEach((item) => {
         effects.register.ripple(item);
       });
@@ -466,9 +467,12 @@ export class LfRadio implements LfRadioInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework;
 
-    this.#adapter.elements.refs.items.forEach((item) => {
-      effects.unregister.ripple(item);
-    });
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (hasThemeRipple) {
+      this.#adapter.elements.refs.items.forEach((item) => {
+        effects.unregister.ripple(item);
+      });
+    }
 
     theme.unregister(this);
   }

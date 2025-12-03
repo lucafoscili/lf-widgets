@@ -333,6 +333,7 @@ export const LF_THEME_BASE_VARS = {
 
 //#region Dark theme
 export const DARK: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -370,6 +371,7 @@ export const DARK: LfThemeElement = {
 
 //#region Light theme
 export const LIGHT: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: false,
   variables: {
@@ -405,6 +407,7 @@ export const LIGHT: LfThemeElement = {
 
 //#region Abyss
 export const ABYSS: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.staatliches,
     LF_THEME_FONTS_FONTFACE.oswald,
@@ -446,6 +449,7 @@ export const ABYSS: LfThemeElement = {
 
 //#region Bloodmoon
 export const BLOODMOON: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.cormorantGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
@@ -497,6 +501,7 @@ export const BLOODMOON: LfThemeElement = {
 
 //#region Eris
 export const ERIS: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -528,6 +533,7 @@ export const ERIS: LfThemeElement = {
 
 //#region Neon
 export const NEON: LfThemeElement = {
+  effects: ["ripple", "neon-glow"],
   font: [
     LF_THEME_FONTS_FONTFACE.orbitron,
     LF_THEME_FONTS_FONTFACE.lato,
@@ -569,6 +575,7 @@ export const NEON: LfThemeElement = {
 
 //#region Night
 export const NIGHT: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.bebasNeue,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
@@ -608,6 +615,7 @@ export const NIGHT: LfThemeElement = {
 
 //#region Pastel
 export const PASTEL: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.raleway,
     LF_THEME_FONTS_FONTFACE.sourceCodePro,
@@ -647,6 +655,7 @@ export const PASTEL: LfThemeElement = {
 
 //#region Sakura
 export const SAKURA: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.sawarabiMincho,
     LF_THEME_FONTS_FONTFACE.raleway,
@@ -688,6 +697,7 @@ export const SAKURA: LfThemeElement = {
 
 //#region Sepulchre
 export const SEPULCHRE: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.ebGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
@@ -740,6 +750,7 @@ export const SEPULCHRE: LfThemeElement = {
 
 //#region Steampunk
 export const STEAMPUNK: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.IMFellEnglishSC,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
@@ -781,6 +792,7 @@ export const STEAMPUNK: LfThemeElement = {
 
 //#region Urban
 export const URBAN: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.lato,
     LF_THEME_FONTS_FONTFACE.merriweather,
@@ -819,6 +831,7 @@ export const URBAN: LfThemeElement = {
 
 //#region Voidforge
 export const VOIDFORGE: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -855,6 +868,7 @@ export const VOIDFORGE: LfThemeElement = {
 
 //#region Wizardry
 export const WIZARDRY: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.uncialAntiqua,
     LF_THEME_FONTS_FONTFACE.cinzel,

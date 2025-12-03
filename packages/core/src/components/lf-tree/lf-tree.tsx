@@ -640,9 +640,10 @@ export class LfTree implements LfTreeInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { debug, effects } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
 
-    if (this.lfRipple) {
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
       const nodeElements = this.#adapter?.elements.refs.nodeElements;
       if (nodeElements) {
         Object.values(nodeElements).forEach((el) => {
@@ -680,7 +681,8 @@ export class LfTree implements LfTreeInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    if (effects) {
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && hasThemeRipple) {
       const nodeElements = this.#adapter?.elements.refs.nodeElements;
       if (nodeElements) {
         Object.values(nodeElements).forEach((el) => {
