@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-rc.0](https://github.com/lucafoscili/lf-widgets/compare/v3.0.0...3.1.0-rc.0) (2025-12-04)
+
+
+### Bug Fixes
+
+* Adopt and release shared styles in lifecycle hooks ([0afbac8](https://github.com/lucafoscili/lf-widgets/commit/0afbac891cb64cbe4da999503dc28f81f9dbe13e))
+
+
+### Features
+
+* Add lf-accordion as supported shape and dependency ([fb2f3a8](https://github.com/lucafoscili/lf-widgets/commit/fb2f3a8071ba4bd566e810e2e03de364d5d1c5ef))
+* Add message attachments chipset to chat toolbar ([4965016](https://github.com/lucafoscili/lf-widgets/commit/49650169e16da9091bc277d7aba6896c3d434db5))
+* Add neon glow effect to LfEffects system ([727977d](https://github.com/lucafoscili/lf-widgets/commit/727977de358f5b9755e2533eb05130e105ddfbe8))
+* Centralize global styles adoption for shadow roots ([48df6f1](https://github.com/lucafoscili/lf-widgets/commit/48df6f1edf6e297a9773780e2da0bacd12548040))
+* Refactor effects system: layer manager, composable attributes, and neon glow ([9238bd9](https://github.com/lucafoscili/lf-widgets/commit/9238bd9bfcd615df23245f55e7233d7bba2e7533))
+* Refactor lf-chat to use unified lfConfig and add tool toggling ([6d38454](https://github.com/lucafoscili/lf-widgets/commit/6d3845478563a017e49173a22b43202c37fcb339))
+* Refactor tilt effect to use composed transform variable ([0989edf](https://github.com/lucafoscili/lf-widgets/commit/0989edff83ab6352b6d0ffb0e400d3fc62db402f))
+
+
+
+
+
 # [3.0.0](https://github.com/lucafoscili/lf-widgets/compare/v2.0.1...3.0.0) (2025-11-30)
 
 
