@@ -84,8 +84,11 @@
 
   [data-lf="lightbox-content"] {
     @include lf-el-stretch;
-    border: 1px solid rgba(var(--lf-color-border), 0.375);
+    backdrop-filter: blur(8px);
+    border: 1px solid
+      rgba(var(--lf-color-border), var(--lf-ui-alpha-glass-heavy, 0.75));
     border-radius: var(--lf-ui-border-radius);
+    box-shadow: var(--lf-ui-box-shadow-modal);
     box-sizing: border-box;
     outline: none;
     z-index: calc(var(--lf-ui-zindex-lightbox, 900) + 1);
