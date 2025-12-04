@@ -1,4 +1,7 @@
-import { LfFrameworkInterface, LfLLMToolResponse } from "@lf-widgets/foundations";
+import {
+  LfFrameworkInterface,
+  LfLLMToolResponse,
+} from "@lf-widgets/foundations";
 import { LfFramework } from "../../framework/src/lf-framework/lf-framework";
 import { LfLLM } from "../../framework/src/lf-llm/lf-llm";
 
@@ -208,41 +211,41 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     llm = new LfLLM(framework);
   });
 
-  it("exposes builtin weather and docs tools via registry", () => {
-    expect(llm.getBuiltinToolsByCategory).toBeDefined();
+  it("exposes builtin tool definitions via registry", () => {
+    expect(llm.getBuiltinToolDefinitions).toBeDefined();
 
-    const registry = llm.getBuiltinToolsByCategory();
+    const definitions = llm.getBuiltinToolDefinitions();
 
-    expect(registry).toBeDefined();
-    expect(registry.general).toBeDefined();
-    expect(registry.lfw).toBeDefined();
+    expect(definitions).toBeDefined();
+    expect(definitions.general).toBeDefined();
+    expect(definitions.lfw).toBeDefined();
 
-    const weatherTool = registry.general["get_weather"];
-    const docsTool = registry.lfw["get_component_docs"];
+    const weatherDef = definitions.general["get_weather"];
+    const docsDef = definitions.lfw["get_component_docs"];
 
-    expect(weatherTool).toBeDefined();
-    expect(weatherTool.type).toBe("function");
-    expect(weatherTool.function.name).toBe("get_weather");
+    expect(weatherDef).toBeDefined();
+    expect(weatherDef.type).toBe("function");
+    expect(weatherDef.function.name).toBe("get_weather");
 
-    expect(docsTool).toBeDefined();
-    expect(docsTool.type).toBe("function");
-    expect(docsTool.function.name).toBe("get_component_docs");
+    expect(docsDef).toBeDefined();
+    expect(docsDef.type).toBe("function");
+    expect(docsDef.function.name).toBe("get_component_docs");
   });
 
-  it("flattens builtin tools via getBuiltinTools", () => {
-    expect(llm.getBuiltinTools).toBeDefined();
+  it("exposes builtin tool handlers keyed by tool name", () => {
+    expect(llm.getBuiltinToolHandlers).toBeDefined();
 
-    const tools = llm.getBuiltinTools();
-    const names = tools.map((t) => t.function.name);
+    const handlers = llm.getBuiltinToolHandlers();
+    const names = Object.keys(handlers);
 
     expect(names).toEqual(
       expect.arrayContaining(["get_weather", "get_component_docs"]),
     );
   });
 
-  it("builtin weather tool returns an article response on success", async () => {
-    const registry = llm.getBuiltinToolsByCategory();
-    const weatherTool = registry.general["get_weather"];
+  it("builtin weather handler returns an article response on success", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const weatherHandler = handlers["get_weather"];
 
     // Sample payload in the shape of wttr.in responses
     const samplePayload = {
@@ -272,7 +275,7 @@ describe("Framework LLM Builtin Tools (integration)", () => {
       json: async () => samplePayload,
     });
 
-    const result = await weatherTool.function.execute?.({
+    const result = await weatherHandler({
       location: "Rome",
     } as Record<string, unknown>);
 
@@ -296,9 +299,9 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     }
   });
 
-  it("builtin docs tool returns structured content for a known component", async () => {
-    const registry = llm.getBuiltinToolsByCategory();
-    const docsTool = registry.lfw["get_component_docs"];
+  it("builtin docs handler returns structured content for a known component", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const docsHandler = handlers["get_component_docs"];
 
     const originalFetch = (global as any).fetch;
     (global as any).fetch = jest.fn().mockResolvedValue({
@@ -306,7 +309,7 @@ describe("Framework LLM Builtin Tools (integration)", () => {
       text: async () => "# lf-button\n\nButton component README content",
     });
 
-    const result = await docsTool.function.execute?.({
+    const result = await docsHandler({
       component: "lf-button",
     } as Record<string, unknown>);
 

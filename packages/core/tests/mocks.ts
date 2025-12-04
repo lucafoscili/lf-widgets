@@ -143,6 +143,8 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
     llm: {
       createAbort: jest.fn(),
       fetch: jest.fn(),
+      getBuiltinToolDefinitions: jest.fn(() => ({ general: {}, lfw: {} })),
+      getBuiltinToolHandlers: jest.fn(() => ({})),
       poll: jest.fn(),
       speechToText: jest.fn(),
       stream: jest.fn(),

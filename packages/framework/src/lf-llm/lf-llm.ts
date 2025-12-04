@@ -1,24 +1,40 @@
 import {
+  LF_LLM_DOCS_TOOL_DEFINITION,
+  LF_LLM_WEATHER_TOOL_DEFINITION,
   LfButtonElement,
   LfFrameworkInterface,
-  LfLLMBuiltinToolsRegistry,
+  LfLLMBuiltinToolDefinitionsRegistry,
+  LfLLMBuiltinToolHandlersRegistry,
   LfLLMCompletionObject,
   LfLLMInterface,
   LfLLMRequest,
   LfLLMRetryPolicy,
-  LfLLMTool,
   LfLLMUtils,
   LfTextfieldElement,
 } from "@lf-widgets/foundations";
-import { createComponentDocsTool } from "./helpers.tool.docs";
-import { createWeatherTool } from "./helpers.tool.weather";
+import { createDocsToolHandler } from "./helpers.tool.docs";
+import { createWeatherToolHandler } from "./helpers.tool.weather";
 
 export class LfLLM implements LfLLMInterface {
   #DONE_RESPONSE = "data: [DONE]";
   #IS_ABORT_ERROR = (e: unknown): e is DOMException =>
     e instanceof DOMException && e.name === "AbortError";
   #LF_MANAGER: LfFrameworkInterface;
-  #BUILTIN_TOOLS: LfLLMBuiltinToolsRegistry;
+
+  /**
+   * Strips the `meta` field from tool definitions before sending to the LLM.
+   * The `meta` field is used only for UI organization and is not part of the OpenAI spec.
+   */
+  #sanitizeRequest = (request: LfLLMRequest): LfLLMRequest => {
+    if (!request.tools || request.tools.length === 0) {
+      return request;
+    }
+
+    return {
+      ...request,
+      tools: request.tools.map(({ meta: _, ...tool }) => tool),
+    };
+  };
 
   /**
    * Utility functions for LLM operations including request hashing and token estimation.
@@ -85,28 +101,7 @@ export class LfLLM implements LfLLMInterface {
 
   constructor(lfFramework: LfFrameworkInterface) {
     this.#LF_MANAGER = lfFramework;
-    this.#BUILTIN_TOOLS = this.#createBuiltinToolsRegistry();
   }
-
-  /**
-   * Builds the registry of builtin tools exposed by the framework. Tools are
-   * grouped by loosely defined categories so consumers can organise them in
-   * UIs while still being able to retrieve a flat list via `getBuiltinTools`.
-   */
-  #createBuiltinToolsRegistry = (): LfLLMBuiltinToolsRegistry => {
-    const general: Record<string, LfLLMTool> = {
-      get_weather: createWeatherTool(this.#LF_MANAGER),
-    };
-
-    const lfw: Record<string, LfLLMTool> = {
-      get_component_docs: createComponentDocsTool(this.#LF_MANAGER),
-    };
-
-    return {
-      general,
-      lfw,
-    };
-  };
 
   //#region Fetch
   /**
@@ -122,12 +117,13 @@ export class LfLLM implements LfLLMInterface {
     url: string,
   ): Promise<LfLLMCompletionObject> => {
     try {
+      const sanitized = this.#sanitizeRequest(request);
       const response = await fetch(`${url}/v1/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(request),
+        body: JSON.stringify(sanitized),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -143,27 +139,36 @@ export class LfLLM implements LfLLMInterface {
 
   //#region Builtin tools
   /**
-   * Returns builtin tools grouped by category. Consumers can merge these with
-   * user-defined tools when configuring components like `lf-chat`.
+   * Returns serializable builtin tool definitions grouped by category.
+   * These definitions contain only the schema (no execute function).
+   * Use with getBuiltinToolHandlers() to get the corresponding execute functions.
    */
-  getBuiltinToolsByCategory = (): LfLLMBuiltinToolsRegistry => {
-    return this.#BUILTIN_TOOLS;
+  getBuiltinToolDefinitions = (): LfLLMBuiltinToolDefinitionsRegistry => {
+    return {
+      general: {
+        [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]:
+          LF_LLM_WEATHER_TOOL_DEFINITION,
+      },
+      lfw: {
+        [LF_LLM_DOCS_TOOL_DEFINITION.function.name]:
+          LF_LLM_DOCS_TOOL_DEFINITION,
+      },
+    };
   };
 
   /**
-   * Returns a flattened list of builtin tools across all categories.
+   * Returns a flat map of builtin tool handlers keyed by tool name.
+   * These are the non-serializable execute functions for builtin tools.
    */
-  getBuiltinTools = (): LfLLMTool[] => {
-    const tools: LfLLMTool[] = [];
-    const registry = this.getBuiltinToolsByCategory();
-
-    Object.values(registry).forEach((group) => {
-      Object.values(group).forEach((tool) => {
-        tools.push(tool);
-      });
-    });
-
-    return tools;
+  getBuiltinToolHandlers = (): LfLLMBuiltinToolHandlersRegistry => {
+    return {
+      [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]: createWeatherToolHandler(
+        this.#LF_MANAGER,
+      ),
+      [LF_LLM_DOCS_TOOL_DEFINITION.function.name]: createDocsToolHandler(
+        this.#LF_MANAGER,
+      ),
+    };
   };
   //#endregion
 
@@ -238,7 +243,8 @@ export class LfLLM implements LfLLMInterface {
     url: string,
     opts?: { signal?: AbortSignal },
   ) {
-    const payload = { ...request, stream: request.stream ?? true };
+    const sanitized = this.#sanitizeRequest(request);
+    const payload = { ...sanitized, stream: request.stream ?? true };
     let response: Response | null = null;
     try {
       response = await fetch(`${url}/v1/chat/completions`, {

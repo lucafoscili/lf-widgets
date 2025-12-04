@@ -56,14 +56,15 @@ export interface LfLLMInterface {
     policy?: Partial<LfLLMRetryPolicy>,
   ) => Promise<T>;
   /**
-   * Returns the list of builtin tools available to consumers. These are
-   * provided by the framework and can be merged with user-defined tools.
+   * Returns serializable builtin tool definitions grouped by category.
+   * Use with getBuiltinToolHandlers() to get the corresponding execute functions.
    */
-  getBuiltinTools?: () => LfLLMTool[];
+  getBuiltinToolDefinitions: () => LfLLMBuiltinToolDefinitionsRegistry;
   /**
-   * Returns builtin tools grouped by category (e.g. "general", "lfw").
+   * Returns a flat map of builtin tool handlers keyed by tool name.
+   * These are the non-serializable execute functions for builtin tools.
    */
-  getBuiltinToolsByCategory?: () => LfLLMBuiltinToolsRegistry;
+  getBuiltinToolHandlers: () => LfLLMBuiltinToolHandlersRegistry;
 }
 //#endregion
 
@@ -221,15 +222,20 @@ export type LfLLMToolResponse =
   | { type: "article"; dataset: LfArticleDataset; content?: string };
 
 /**
- * Registry structure used to organise builtin tools exposed by the framework.
- * Categories are intentionally loose so additional groups can be introduced
- * without breaking existing consumers.
+ * Registry structure for builtin tool definitions (serializable, no execute).
+ * Categories group tools for UI organization.
  */
-export interface LfLLMBuiltinToolsRegistry {
-  general: Record<string, LfLLMTool>;
-  lfw: Record<string, LfLLMTool>;
-  [category: string]: Record<string, LfLLMTool>;
+export interface LfLLMBuiltinToolDefinitionsRegistry {
+  general: Record<string, LfLLMToolDefinition>;
+  lfw: Record<string, LfLLMToolDefinition>;
+  [category: string]: Record<string, LfLLMToolDefinition>;
 }
+
+/**
+ * Registry structure for builtin tool handlers (non-serializable functions).
+ * Flat map keyed by tool name.
+ */
+export type LfLLMBuiltinToolHandlersRegistry = LfLLMToolHandlers;
 /**
  * Utility interface used by the LLM integration helpers.
  */

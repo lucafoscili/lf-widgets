@@ -1,22 +1,19 @@
 import {
   LfDataDataset,
   LfFrameworkInterface,
-  LfLLMTool,
+  LfLLMToolHandlers,
   LfLLMToolResponse,
 } from "@lf-widgets/foundations";
 
+//#region Weather Tool Handler
 /**
- * Creates the builtin `get_weather` tool. Uses the public wttr.in endpoint
- * and returns a rich article dataset that leverages the `lf-card` weather
- * layout for visualisation.
+ * Creates the handler function for the weather tool.
+ * Uses the public wttr.in endpoint and returns a rich article dataset.
  */
-export const createWeatherTool = (
+export const createWeatherToolHandler = (
   framework: LfFrameworkInterface,
-): LfLLMTool => {
-  //#region Execute
-  const execute = async (
-    args: Record<string, unknown>,
-  ): Promise<LfLLMToolResponse> => {
+): LfLLMToolHandlers[string] => {
+  return async (args: Record<string, unknown>): Promise<LfLLMToolResponse> => {
     const rawLocation = args.location;
     const location =
       typeof rawLocation === "string" && rawLocation.trim().length > 0
@@ -199,26 +196,5 @@ export const createWeatherTool = (
       };
     }
   };
-  //#endregion
-
-  return {
-    type: "function",
-    function: {
-      name: "get_weather",
-      description:
-        "Get real-time weather information for a city or location. Returns temperature, conditions, humidity, and wind speed.",
-      parameters: {
-        type: "object",
-        properties: {
-          location: {
-            type: "string",
-            description:
-              "City name or generic location (e.g. 'London', 'New York', 'Tokyo').",
-          },
-        },
-        required: ["location"],
-      },
-      execute,
-    },
-  };
 };
+//#endregion

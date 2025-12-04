@@ -2,8 +2,8 @@ import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import {
   LfDataDataset,
-  LfLLMTool,
   LfLLMToolCall,
+  LfLLMToolDefinition,
 } from "@lf-widgets/foundations";
 import {
   mergeToolCalls,
@@ -171,7 +171,7 @@ describe("lf-chat", () => {
   });
 
   it("merges builtin tools with user tools from config without duplicates", () => {
-    const userTool: LfLLMTool = {
+    const userTool: LfLLMToolDefinition = {
       type: "function",
       function: {
         name: "user_tool",
@@ -183,7 +183,7 @@ describe("lf-chat", () => {
       },
     };
 
-    const builtinTool: LfLLMTool = {
+    const builtinTool: LfLLMToolDefinition = {
       type: "function",
       function: {
         name: "builtin_tool",
@@ -192,6 +192,9 @@ describe("lf-chat", () => {
           type: "object",
           properties: {},
         },
+      },
+      meta: {
+        category: "general",
       },
     };
 
@@ -215,7 +218,10 @@ describe("lf-chat", () => {
               },
             },
             llm: {
-              getBuiltinTools: () => [builtinTool],
+              getBuiltinToolDefinitions: () => ({
+                general: { builtin_tool: builtinTool },
+              }),
+              getBuiltinToolHandlers: () => ({}),
             },
           },
         },
@@ -231,7 +237,7 @@ describe("lf-chat", () => {
   });
 
   it("prefers user tools over builtin tools with the same name", () => {
-    const userTool: LfLLMTool = {
+    const userTool: LfLLMToolDefinition = {
       type: "function",
       function: {
         name: "get_weather",
@@ -243,7 +249,7 @@ describe("lf-chat", () => {
       },
     };
 
-    const builtinTool: LfLLMTool = {
+    const builtinTool: LfLLMToolDefinition = {
       type: "function",
       function: {
         name: "get_weather",
@@ -252,6 +258,9 @@ describe("lf-chat", () => {
           type: "object",
           properties: {},
         },
+      },
+      meta: {
+        category: "general",
       },
     };
 
@@ -275,7 +284,10 @@ describe("lf-chat", () => {
               },
             },
             llm: {
-              getBuiltinTools: () => [builtinTool],
+              getBuiltinToolDefinitions: () => ({
+                general: { get_weather: builtinTool },
+              }),
+              getBuiltinToolHandlers: () => ({}),
             },
           },
         },

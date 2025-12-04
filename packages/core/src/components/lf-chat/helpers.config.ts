@@ -42,7 +42,7 @@ const DEFAULT_CONFIG = {
 //#region Config utility
 /**
  * Gets the effective configuration by merging user-provided lfConfig with defaults.
- * Also merges builtin tools from the LLM service (converted to definitions).
+ * Also merges builtin tool definitions from the LLM service.
  *
  * @param adapter - The chat adapter instance
  * @returns Effective config object with all settings resolved
@@ -75,21 +75,11 @@ export const getEffectiveConfig = (
 
   const userDefinitions: LfLLMToolDefinition[] =
     config.tools?.definitions ?? [];
-  const builtinTools = llm.getBuiltinTools?.() ?? [];
 
-  const builtinDefinitions: LfLLMToolDefinition[] = builtinTools.map(
-    (tool) => ({
-      type: "function" as const,
-      function: {
-        name: tool.function.name,
-        description: tool.function.description,
-        parameters: tool.function.parameters,
-      },
-      meta: {
-        category: "builtin",
-      },
-    }),
-  );
+  const builtinRegistry = llm.getBuiltinToolDefinitions();
+  const builtinDefinitions: LfLLMToolDefinition[] = Object.values(
+    builtinRegistry,
+  ).flatMap((categoryTools) => Object.values(categoryTools));
 
   const allDefinitions: LfLLMToolDefinition[] = [...userDefinitions];
   for (const builtin of builtinDefinitions) {
@@ -111,7 +101,6 @@ export const getEffectiveConfig = (
     config.ui?.showToolExecutionIndicator ??
     DEFAULT_CONFIG.ui.showToolExecutionIndicator;
 
-  // Attachments config
   const uploadTimeout =
     config.attachments?.uploadTimeout ??
     DEFAULT_CONFIG.attachments.uploadTimeout;
@@ -148,7 +137,9 @@ export const getEffectiveConfig = (
     },
   };
 };
+//#endregion
 
+//#region Tool utilities
 /**
  * Gets the list of enabled tool definitions for sending to the LLM.
  * Filters based on the `enabled` array if provided.
@@ -162,12 +153,10 @@ export const getEnabledToolDefinitions = (
   const config = getEffectiveConfig(adapter);
   const { definitions, enabled } = config.tools;
 
-  // If no enabled filter, return all definitions
   if (!enabled || enabled.length === 0) {
     return definitions;
   }
 
-  // Filter to only enabled tools
   return definitions.filter((def) =>
     enabled.includes(def.function?.name ?? ""),
   );
@@ -188,15 +177,8 @@ export const getAllToolHandlers = (
   const { llm } = manager;
   const component = compInstance as LfChat;
 
-  // Extract handlers from builtin tools
-  const builtinHandlers: LfLLMToolHandlers = {};
-  const builtinTools = llm.getBuiltinTools?.() ?? [];
-  for (const tool of builtinTools) {
-    const name = tool.function?.name;
-    if (name && tool.function.execute) {
-      builtinHandlers[name] = tool.function.execute;
-    }
-  }
+  // Get builtin handlers directly from the new API (already properly typed)
+  const builtinHandlers = llm.getBuiltinToolHandlers();
 
   // Merge with user-provided handlers (user handlers take precedence)
   const userHandlers = component.lfToolHandlers || {};
