@@ -192,17 +192,6 @@ export const createJsx = (
           accordionLayout={get.compInstance.lfAccordionLayout && depth === 0}
           depth={depth}
           elements={{
-            ripple: (
-              <div
-                data-cy={get.cyAttributes.rippleSurface}
-                data-lf={get.lfAttributes.rippleSurface}
-                ref={(el) => {
-                  if (el && get.compInstance.lfRipple) {
-                    elements.refs.rippleSurfaces[node.id] = el as HTMLElement;
-                  }
-                }}
-              ></div>
-            ),
             value: valueVNode,
           }}
           events={{
@@ -211,8 +200,14 @@ export const createJsx = (
             onPointerDown: (e) => handlers.node.pointerDown(e, node),
           }}
           expanded={expanded}
+          lfAttributes={get.lfAttributes}
           manager={manager}
           node={node}
+          nodeRef={(el) => {
+            if (el) {
+              elements.refs.nodeElements[node.id] = el as HTMLElement;
+            }
+          }}
           selected={selected}
         ></TreeNode>
       );

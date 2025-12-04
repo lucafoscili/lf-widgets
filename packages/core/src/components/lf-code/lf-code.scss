@@ -150,8 +150,20 @@ pre {
 }
 
 .token.code {
-  display: block;
-  height: var(--lf-code-height, auto);
+  display: inline-block;
+  /**
+  * @prop --lf-#{$comp}-font-family-monospace: Sets the monospace font family for the #{$comp} component.
+  *                                            Defaults to => var(--lf-font-family-monospace)
+  */
+  font-family: var(
+    --lf-#{$comp}-font-family-monospace,
+    var(--lf-font-family-monospace)
+  );
+  /**
+  * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+  *                             Defaults to => auto
+  */
+  height: var(--lf-#{$comp}-height, auto);
 }
 
 .token.cdata,

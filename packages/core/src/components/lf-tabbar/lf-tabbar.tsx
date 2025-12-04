@@ -190,7 +190,7 @@ export class LfTabbar implements LfTabbarInterface {
   #p = LF_TABBAR_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: HTMLElement[];
+  #tabs: HTMLElement[] = [];
   #scrollContainer: HTMLDivElement;
   //#endregion
 
@@ -213,20 +213,12 @@ export class LfTabbar implements LfTabbarInterface {
     index = 0,
     node?: LfDataNode,
   ) {
-    const { effects } = this.#framework;
-
     switch (eventType) {
       case "click":
         this.value = {
           index,
           node,
         };
-        break;
-
-      case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r[index]);
-        }
         break;
     }
 
@@ -335,7 +327,7 @@ export class LfTabbar implements LfTabbarInterface {
     const { bemClass } = theme;
 
     const { tab } = this.#b;
-    const { lfRipple, value } = this;
+    const { value } = this;
     const isSelected = node === value?.node;
 
     return (
@@ -366,16 +358,12 @@ export class LfTabbar implements LfTabbarInterface {
         role="tab"
         tabIndex={index}
         title={node?.description || ""}
+        ref={(el) => {
+          if (el) {
+            this.#tabs.push(el);
+          }
+        }}
       >
-        <div
-          data-cy={this.#cy.rippleSurface}
-          data-lf={this.#lf.rippleSurface}
-          ref={(el) => {
-            if (el && lfRipple) {
-              this.#r.push(el);
-            }
-          }}
-        ></div>
         <span class={bemClass(tab._, tab.content)} data-cy={this.#cy.node}>
           {node.icon && this.#prepIcon(node)}
           {node.value && (
@@ -435,10 +423,19 @@ export class LfTabbar implements LfTabbarInterface {
     }
   }
   componentDidLoad() {
-    const { debug, drag } = this.#framework;
+    const { debug, drag, effects, theme } = this.#framework;
 
     if (this.#scrollContainer) {
       drag.register.dragToScroll(this.#scrollContainer);
+    }
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
+      this.#tabs.forEach((el) => {
+        if (el) {
+          effects.register.ripple(el);
+        }
+      });
     }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
@@ -467,7 +464,7 @@ export class LfTabbar implements LfTabbarInterface {
       return;
     }
 
-    this.#r = [];
+    this.#tabs = [];
     const nodes = lfDataset.nodes;
 
     return (
@@ -515,11 +512,22 @@ export class LfTabbar implements LfTabbarInterface {
     );
   }
   disconnectedCallback() {
-    if (this.#framework?.drag.getActiveSession(this.#scrollContainer)) {
-      this.#framework?.drag.unregister.dragToScroll(this.#scrollContainer);
+    const { drag, effects, theme } = this.#framework ?? {};
+
+    if (drag?.getActiveSession(this.#scrollContainer)) {
+      drag.unregister.dragToScroll(this.#scrollContainer);
     }
 
-    this.#framework?.theme.unregister(this);
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple) {
+      this.#tabs?.forEach((el) => {
+        if (el) {
+          effects.unregister.ripple(el);
+        }
+      });
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

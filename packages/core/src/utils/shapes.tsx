@@ -44,6 +44,17 @@ export const LfShape: FunctionalComponent<LfShapePropsInterface> = ({
   };
 
   switch (shape) {
+    case "accordion":
+      return (
+        <lf-accordion
+          {...sanitizeProps(
+            decorator("LfAccordion", shape, cell, index),
+            "LfAccordion",
+          )}
+          onLf-accordion-event={handler}
+          ref={refCallback}
+        ></lf-accordion>
+      );
     case "badge":
       return (
         <lf-badge

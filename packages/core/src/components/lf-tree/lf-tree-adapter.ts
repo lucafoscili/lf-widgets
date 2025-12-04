@@ -24,7 +24,7 @@ export const createAdapter = (
 
 //#region Refs
 export const createRefs = (): LfTreeAdapterRefs => ({
-  rippleSurfaces: {},
+  nodeElements: {},
   filterField: null,
 });
 //#endregion

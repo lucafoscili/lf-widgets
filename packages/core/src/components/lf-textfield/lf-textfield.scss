@@ -68,7 +68,7 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
 
   &--filled,
   &--focused {
-    .textfield__ripple-surface:after {
+    .textfield__underline:after {
       width: 100%;
     }
   }
@@ -288,7 +288,7 @@ $primaryC: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     transform-origin: left top;
   }
 
-  &__ripple-surface {
+  &__underline {
     & {
       max-width: 100%;
       overflow: hidden;

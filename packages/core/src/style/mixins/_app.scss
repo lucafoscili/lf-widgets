@@ -3,18 +3,22 @@
 /*******************************************
  * @mixin lf-app-scrollbar
  * Styles a custom scrollbar (WebKit-based).
+ * Uses * selector to target ALL scrollable elements.
  *******************************************/
 @mixin lf-app-scrollbar {
-  ::-webkit-scrollbar {
+  *::-webkit-scrollbar {
     width: 9px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
     @include lf-el-transition("elastic-snap");
-    background-color: rgb(var(--lf-color-primary));
+    background-color: rgba(
+      var(--lf-color-on-surface),
+      var(--lf-ui-alpha-glass-solid)
+    );
   }
 
-  ::-webkit-scrollbar-track {
-    background-color: rgb(var(--lf-color-bg));
+  *::-webkit-scrollbar-track {
+    background-color: rgb(var(--lf-color-surface));
   }
 }

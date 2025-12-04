@@ -1,5 +1,5 @@
-import { LfArticleDataset } from "../components/article.declarations";
 import { LfDataDataset } from ".";
+import { LfArticleDataset } from "../components/article.declarations";
 import { LfButtonElement } from "../components/button.declarations";
 import { LfTextfieldElement } from "../components/textfield.declarations";
 import { LF_LLM_ROLES } from "./llm.constants";
@@ -56,14 +56,15 @@ export interface LfLLMInterface {
     policy?: Partial<LfLLMRetryPolicy>,
   ) => Promise<T>;
   /**
-   * Returns the list of builtin tools available to consumers. These are
-   * provided by the framework and can be merged with user-defined tools.
+   * Returns serializable builtin tool definitions grouped by category.
+   * Use with getBuiltinToolHandlers() to get the corresponding execute functions.
    */
-  getBuiltinTools?: () => LfLLMTool[];
+  getBuiltinToolDefinitions: () => LfLLMBuiltinToolDefinitionsRegistry;
   /**
-   * Returns builtin tools grouped by category (e.g. "general", "lfw").
+   * Returns a flat map of builtin tool handlers keyed by tool name.
+   * These are the non-serializable execute functions for builtin tools.
    */
-  getBuiltinToolsByCategory?: () => LfLLMBuiltinToolsRegistry;
+  getBuiltinToolHandlers: () => LfLLMBuiltinToolHandlersRegistry;
 }
 //#endregion
 
@@ -171,6 +172,47 @@ export interface LfLLMTool {
 }
 
 /**
+ * Serializable tool definition following OpenAI function calling schema.
+ * Does NOT include the execute function - that's provided separately via LfLLMToolHandlers.
+ * This type is JSON-serializable and can be stored, transferred, or cached.
+ */
+export interface LfLLMToolDefinition {
+  type: "function";
+  function: {
+    /** Unique name for the tool (used to match with handlers) */
+    name: string;
+    /** Human-readable description shown to the LLM */
+    description: string;
+    /** JSON Schema for the tool's parameters */
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: string[];
+    };
+  };
+  /** Optional metadata for UI display and organization */
+  meta?: {
+    /** Category for grouping tools in the UI */
+    category?: string;
+    /** Icon identifier for the tool */
+    icon?: string;
+    /** Display name (defaults to function.name) */
+    displayName?: string;
+  };
+}
+
+/**
+ * Map of tool names to their execution handlers.
+ * This is non-serializable and provided as a separate prop.
+ */
+export type LfLLMToolHandlers = Record<
+  string,
+  (
+    args: Record<string, unknown>,
+  ) => Promise<string | LfLLMToolResponse> | string | LfLLMToolResponse
+>;
+
+/**
  * Discriminated union describing the structured result that tools may return.
  * Tools can either emit plain text or a rich `lf-article` dataset (optionally
  * accompanied by a short textual summary for the LLM).
@@ -180,15 +222,20 @@ export type LfLLMToolResponse =
   | { type: "article"; dataset: LfArticleDataset; content?: string };
 
 /**
- * Registry structure used to organise builtin tools exposed by the framework.
- * Categories are intentionally loose so additional groups can be introduced
- * without breaking existing consumers.
+ * Registry structure for builtin tool definitions (serializable, no execute).
+ * Categories group tools for UI organization.
  */
-export interface LfLLMBuiltinToolsRegistry {
-  general: Record<string, LfLLMTool>;
-  lfw: Record<string, LfLLMTool>;
-  [category: string]: Record<string, LfLLMTool>;
+export interface LfLLMBuiltinToolDefinitionsRegistry {
+  general: Record<string, LfLLMToolDefinition>;
+  lfw: Record<string, LfLLMToolDefinition>;
+  [category: string]: Record<string, LfLLMToolDefinition>;
 }
+
+/**
+ * Registry structure for builtin tool handlers (non-serializable functions).
+ * Flat map keyed by tool name.
+ */
+export type LfLLMBuiltinToolHandlersRegistry = LfLLMToolHandlers;
 /**
  * Utility interface used by the LLM integration helpers.
  */
@@ -215,7 +262,7 @@ export interface LfLLMRequest {
     role: LfLLMRole;
     content: string | LfLLMContentPart[];
   }>;
-  tools?: LfLLMTool[];
+  tools?: LfLLMToolDefinition[];
 }
 /**
  * Utility interface used by the LLM integration helpers.

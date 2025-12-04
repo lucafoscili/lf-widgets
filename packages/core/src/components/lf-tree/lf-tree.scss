@@ -38,7 +38,7 @@ $comp: "tree";
     &:hover {
       @include lf-comp-color(
         $comp,
-        "bg",
+        "primary",
         "bg",
         var(--lf-ui-alpha-glass-hint, 0.125)
       );
@@ -48,18 +48,18 @@ $comp: "tree";
       & {
         @include lf-comp-color(
           $comp,
+          "primary",
           "bg",
-          "bg",
-          var(--lf-ui-alpha-glass-hint, 0.125)
+          var(--lf-ui-alpha-glass, 0.375)
         );
       }
 
       &:hover {
         @include lf-comp-color(
           $comp,
-          "bg",
-          "bg",
-          var(--lf-ui-alpha-glass, 0.375)
+          "primary",
+          "all",
+          var(--lf-ui-alpha-glass-heavy, 0.75)
         );
       }
     }

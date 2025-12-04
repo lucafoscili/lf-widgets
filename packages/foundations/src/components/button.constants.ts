@@ -34,7 +34,6 @@ export const LF_BUTTON_PARTS = {
   icon: "icon",
   label: "label",
   list: "list",
-  rippleSurface: "ripple-surface",
   spinner: "spinner",
 } as const;
 //#endregion

@@ -169,7 +169,7 @@ export class LfAccordion implements LfAccordionInterface {
   #p = LF_ACCORDION_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: { [id: string]: HTMLDivElement } = {};
+  #headers: { [id: string]: HTMLDivElement } = {};
   //#endregion
 
   //#region Events
@@ -185,27 +185,11 @@ export class LfAccordion implements LfAccordionInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfAccordionEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfAccordionEvent,
-    node?: LfDataNode,
-  ) {
-    const { effects } = this.#framework;
-
-    const { lfRipple, rootElement } = this;
-
-    switch (eventType) {
-      case "pointerdown":
-        if (lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r[node.id]);
-        }
-        break;
-    }
-
+  onLfEvent(e: Event | CustomEvent, eventType: LfAccordionEvent) {
     this.lfEvent.emit({
       comp: this,
       eventType,
-      id: rootElement.id,
+      id: this.rootElement.id,
       originalEvent: e,
     });
   }
@@ -345,23 +329,16 @@ export class LfAccordion implements LfAccordionInterface {
             })}
             data-cy={!isExpandible && this.#cy.button}
             onClick={(e) => this.toggleNode(node.id, e)}
-            onPointerDown={(e) => {
-              this.onLfEvent(e, "pointerdown", node);
-            }}
+            onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
             part={this.#p.header}
             tabindex="1"
             title={node.description}
+            ref={(el) => {
+              if (el) {
+                this.#headers[node.id] = el;
+              }
+            }}
           >
-            <div
-              data-cy={this.#cy.rippleSurface}
-              data-lf={this.#lf.rippleSurface}
-              part={this.#p.rippleSurface}
-              ref={(el) => {
-                if (el && this.lfRipple) {
-                  this.#r[node.id] = el;
-                }
-              }}
-            ></div>
             {node.icon ? this.#prepIcon(node.icon) : null}
             <span
               class={bemClass(this.#b.node._, this.#b.node.text)}
@@ -428,10 +405,19 @@ export class LfAccordion implements LfAccordionInterface {
     this.#framework = await awaitFramework(this);
   }
   componentDidLoad() {
-    const { info } = this.#framework.debug;
+    const { debug, effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
+      Object.values(this.#headers).forEach((header) => {
+        if (header) {
+          effects.register.ripple(header);
+        }
+      });
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
-    info.update(this, "did-load");
+    debug.info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -447,7 +433,7 @@ export class LfAccordion implements LfAccordionInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
 
-    this.#r = {};
+    this.#headers = {};
 
     const { accordion } = this.#b;
 
@@ -463,7 +449,18 @@ export class LfAccordion implements LfAccordionInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple) {
+      Object.values(this.#headers).forEach((header) => {
+        if (header) {
+          effects.unregister.ripple(header);
+        }
+      });
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

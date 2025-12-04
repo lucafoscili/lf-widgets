@@ -14,7 +14,6 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
   const {
     blocks,
     compInstance,
-    cyAttributes,
     defaults,
     lfAttributes,
     manager,
@@ -22,7 +21,7 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
     shapes,
   } = getAdapter().controller.get;
   const { material } = defaults;
-  const { effects, theme } = manager;
+  const { theme } = manager;
   const { bemClass } = theme;
   const { materialLayout, textContent } = blocks;
 
@@ -85,7 +84,7 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
   const description = (hasText && text?.[2]?.value) || null;
   //#endregion
 
-  let rippleSurface: HTMLDivElement;
+  const { refs } = getAdapter().elements;
 
   return (
     <div
@@ -93,10 +92,12 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
         "has-actions": hasButton,
       })}
       data-lf={lfAttributes[comp.lfUiState]}
-      onPointerDown={(e) => {
-        effects.ripple(e as PointerEvent, rippleSurface);
-      }}
       part={parts.materialLayout}
+      ref={(el: HTMLDivElement) => {
+        if (el) {
+          refs.layouts.material = el;
+        }
+      }}
     >
       {hasImage && (
         <div class={bemClass(materialLayout._, materialLayout.coverSection)}>
@@ -118,11 +119,6 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
           </div>
         )}
       </div>
-      <div
-        data-cy={cyAttributes.rippleSurface}
-        data-lf={lfAttributes.rippleSurface}
-        ref={(r: HTMLDivElement) => (rippleSurface = r)}
-      ></div>
       {hasButton && (
         <div class={bemClass(materialLayout._, materialLayout.actionsSection)}>
           {buttons}

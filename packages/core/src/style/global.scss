@@ -1,9 +1,62 @@
-// The output of this file will be the global styles for the app.
-// It will be bundled with the theme.
-// This is a manual process for now.
+// ============================================================================
+// GLOBAL STYLES
+// ============================================================================
+// This file generates GLOBAL_STYLES which is used in two contexts:
+//
+// 1. DOCUMENT-LEVEL (injected via <style> in <head>):
+//    - .lf-effects, .lf-portal wrappers (light DOM containers)
+//    - :root variables and @font-face are handled separately by theme.set()
+//
+// 2. SHADOW DOM (adopted via shared CSSStyleSheet):
+//    - All other selectors are adopted into shadow roots automatically
+//    - Components get these styles via theme.register() → sharedStyles.adopt()
+//
+// Benefits of this unified approach:
+// - ONE CSSStyleSheet instance shared across all shadow roots
+// - No duplication of ripple/keyframes/effects in each component's CSS
+// - Automatic adoption/release in component lifecycle
+// ============================================================================
 
+// -----------------------------------------------------------------------------
+// Functional Component Styles (FIcon, etc.)
+// -----------------------------------------------------------------------------
+// Base styles for functional components - source in _fcomponents.scss
+@use "./mixins/fcomponents";
+
+// -----------------------------------------------------------------------------
+// Scrollbar Styles
+// -----------------------------------------------------------------------------
 @include lf-app-scrollbar;
 
+// -----------------------------------------------------------------------------
+// Effect Layer Base Styles
+// -----------------------------------------------------------------------------
+// Base styles for ALL effect layers - avoids inline style duplication
+@include lf-fw-effect-layers;
+
+// -----------------------------------------------------------------------------
+// Effect Host Styles
+// -----------------------------------------------------------------------------
+// Per-effect host styling - each effect has its own host attribute for
+// granular CSS control. Only the required properties are applied per effect.
+// IMPORTANT: Order matters here - effects with overflow:hidden must come first
+// to avoid cutting off effects that require overflow:visible.
+@include lf-fw-ripple-host; // priority -2 => overflow hidden
+@include lf-fw-tilt-host; // priority -1 => overflow hidden, perspective
+@include lf-fw-neon-glow-host; // priority 0 => overflow visible
+
+// -----------------------------------------------------------------------------
+// Visual Effects (neon-glow, ripple, tilt, layers)
+// -----------------------------------------------------------------------------
+@include lf-fw-neon-glow;
+@include lf-fw-ripple;
+@include lf-fw-tilt;
+
+// -----------------------------------------------------------------------------
+// Light DOM Containers (document-level only)
+// -----------------------------------------------------------------------------
+// These selectors target elements outside shadow DOM and must be in the
+// document <style> element. They are filtered out from adopted stylesheets.
 .lf-effects {
   @include lf-fw-backdrop;
   @include lf-fw-lightbox;

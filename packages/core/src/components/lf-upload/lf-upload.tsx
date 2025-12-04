@@ -139,7 +139,7 @@ export class LfUpload {
   #p = LF_UPLOAD_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: HTMLElement;
+  #label: HTMLElement;
   #input: HTMLInputElement;
   //#endregion
 
@@ -157,17 +157,9 @@ export class LfUpload {
   })
   lfEvent: EventEmitter<LfUploadEventPayload>;
   onLfEvent(e: Event | CustomEvent, eventType: LfUploadEvent, file?: File) {
-    const { effects } = this.#framework;
-
     switch (eventType) {
       case "delete":
         this.selectedFiles = this.selectedFiles.filter((f) => f !== file);
-        break;
-
-      case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r);
-        }
         break;
     }
 
@@ -364,7 +356,12 @@ export class LfUpload {
     }
   }
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#label) {
+      effects.register.ripple(this.#label);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -384,7 +381,7 @@ export class LfUpload {
     const { bemClass, setLfStyle } = theme;
 
     const { fileInfo, fileUpload, upload } = this.#b;
-    const { lfLabel, lfRipple, lfStyle, selectedFiles } = this;
+    const { lfLabel, lfStyle, selectedFiles } = this;
 
     const hasSelectedFiles = !!selectedFiles?.length;
     return (
@@ -396,10 +393,7 @@ export class LfUpload {
               "has-description": Boolean(selectedFiles?.length),
             })}
           >
-            <div
-              class={bemClass(fileUpload._)}
-              onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
-            >
+            <div class={bemClass(fileUpload._)}>
               <input
                 {...sanitizeProps(this.lfHtmlAttributes)}
                 class={bemClass(fileUpload._, fileUpload.input)}
@@ -416,12 +410,11 @@ export class LfUpload {
               />
               <label
                 class={bemClass(fileUpload._, fileUpload.label)}
-                data-cy={this.#cy.rippleSurface}
-                data-lf={this.#lf.rippleSurface}
                 htmlFor="upload-input"
+                onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
                 ref={(el) => {
-                  if (lfRipple) {
-                    this.#r = el;
+                  if (el) {
+                    this.#label = el;
                   }
                 }}
               >
@@ -439,7 +432,14 @@ export class LfUpload {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#label) {
+      effects.unregister.ripple(this.#label);
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

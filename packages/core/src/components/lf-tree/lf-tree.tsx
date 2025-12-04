@@ -336,18 +336,7 @@ export class LfTree implements LfTreeInterface {
     eventType: LfTreeEvent,
     args: LfTreeEventArguments = {},
   ): void {
-    const framework = this.#framework;
     const node = args.node ?? null;
-
-    if (framework && eventType === "pointerdown" && this.lfRipple) {
-      const nodeId = getNodeId(node);
-      const surface = nodeId
-        ? this.#adapter?.elements.refs.rippleSurfaces[nodeId]
-        : undefined;
-      if (surface) {
-        framework.effects.ripple(e as PointerEvent, surface);
-      }
-    }
 
     const payload: LfTreeEventPayload = {
       comp: this,
@@ -651,7 +640,17 @@ export class LfTree implements LfTreeInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { debug } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
+      const nodeElements = this.#adapter?.elements.refs.nodeElements;
+      if (nodeElements) {
+        Object.values(nodeElements).forEach((el) => {
+          effects.register.ripple(el);
+        });
+      }
+    }
 
     debug.info.update(this, "did-render");
   }
@@ -680,7 +679,19 @@ export class LfTree implements LfTreeInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && hasThemeRipple) {
+      const nodeElements = this.#adapter?.elements.refs.nodeElements;
+      if (nodeElements) {
+        Object.values(nodeElements).forEach((el) => {
+          effects.unregister.ripple(el);
+        });
+      }
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

@@ -56,6 +56,7 @@ $comp: null !default;
     * Defaults to => inherit
     */
     text-transform: var(--lf-#{$comp}-item-text-transform, inherit);
+    user-select: none;
   }
 
   &__icon--leading {

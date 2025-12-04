@@ -237,10 +237,6 @@ export interface LfRadioAdapterRefs extends LfComponentAdapterRefs {
    * Map of node ID to radio item element.
    */
   items: Map<string, HTMLElement>;
-  /**
-   * Map of node ID to ripple container element.
-   */
-  ripples: Map<string, HTMLElement>;
 }
 /**
  * JSX factory functions for the radio adapter.

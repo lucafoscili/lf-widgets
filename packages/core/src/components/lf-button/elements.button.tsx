@@ -73,7 +73,6 @@ export const prepButton = (
           ref={assignRef(refs, "button")}
           type={lfType ?? "button"}
         >
-          {prepRipple(adapter)}
           {lfTrailingIcon
             ? [prepLabel(adapter), lfIcon && prepIcon(adapter)]
             : [lfIcon && prepIcon(adapter), prepLabel(adapter)]}
@@ -117,11 +116,10 @@ export const prepButton = (
             data-lf={lfAttributes[lfUiState]}
             disabled={isDisabled()}
             onClick={() => list()}
-            onPointerDown={(e) => comp.onLfEvent(e, "pointerdown", true)}
+            onPointerDown={(e) => comp.onLfEvent(e, "pointerdown")}
             part={parts.dropdown}
             ref={assignRef(refs, "dropdown")}
           >
-            {prepRipple(adapter, true)}
             {prepIcon(adapter, true)}
           </button>
           <lf-list
@@ -196,7 +194,6 @@ export const prepButton = (
           value={comp.value}
           type={lfType ? lfType : "button"}
         >
-          {prepRipple(adapter)}
           {prepIcon(adapter)}
           {prepSpinner(adapter)}
         </button>
@@ -262,31 +259,6 @@ const prepNode = (node: LfDataNode): VNode => {
     </Fragment>
   ) : (
     currentNode
-  );
-};
-const prepRipple = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
-  const { controller, elements } = adapter;
-  const { compInstance, cyAttributes, lfAttributes, parts } = controller.get;
-  const { refs } = elements;
-  const { lfRipple } = compInstance;
-
-  return (
-    lfRipple && (
-      <div
-        data-cy={cyAttributes.rippleSurface}
-        data-lf={lfAttributes.rippleSurface}
-        part={isDropdown ? parts.dropdownRipple : parts.rippleSurface}
-        ref={(el) => {
-          if (el && lfRipple) {
-            if (isDropdown) {
-              refs.dropdownRipple = el;
-            } else {
-              refs.ripple = el;
-            }
-          }
-        }}
-      ></div>
-    )
   );
 };
 const prepSpinner = (adapter: LfButtonAdapter): VNode => {

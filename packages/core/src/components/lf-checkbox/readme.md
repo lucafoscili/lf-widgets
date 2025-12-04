@@ -130,6 +130,19 @@ Type: `Promise<void>`
 | `--lf-checkbox-surface-size`           | Sets the size for the checkbox surface. Defaults to => 3.5em                                          |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-chat](../lf-chat)
+
+### Graph
+```mermaid
+graph TD;
+  lf-chat --> lf-checkbox
+  style lf-checkbox fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

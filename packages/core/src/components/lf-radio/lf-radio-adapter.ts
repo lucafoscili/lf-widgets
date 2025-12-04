@@ -12,7 +12,6 @@ import { createHandlers } from "./handlers.radio";
 //#region Elements - Refs
 export const createRefs = (): LfRadioAdapterRefs => ({
   items: new Map(),
-  ripples: new Map(),
   inputs: new Map(),
 });
 //#endregion

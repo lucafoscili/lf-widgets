@@ -13,14 +13,13 @@ export const prepRadio = (
     control: (node: LfDataNode): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, compInstance, cyAttributes, manager, parts, state, ui } =
+      const { blocks, compInstance, cyAttributes, manager, parts, state } =
         controller.get;
       const { blur, change, focus } = handlers;
       const { theme } = manager;
       const { bemClass } = theme;
 
       const isSelected = state.isSelected(node.id);
-      const hasRipple = ui.hasRipple();
       const inputName = `${compInstance.rootElement.id || "lf-radio"}-group`;
 
       return (
@@ -53,18 +52,6 @@ export const prepRadio = (
             class={bemClass(blocks.control._, blocks.control.circle)}
             part={parts.circle}
           >
-            {hasRipple && (
-              <div
-                class={bemClass(blocks.control._, blocks.control.ripple)}
-                data-cy={cyAttributes.rippleSurface}
-                part={parts.ripple}
-                ref={(el) => {
-                  if (el) {
-                    elements.refs.ripples.set(node.id, el);
-                  }
-                }}
-              ></div>
-            )}
             <div
               class={bemClass(blocks.control._, blocks.control.dot)}
               part={parts.dot}

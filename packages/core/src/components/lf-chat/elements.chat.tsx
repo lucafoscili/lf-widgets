@@ -5,6 +5,7 @@ import {
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { getEffectiveConfig } from "./helpers.config";
 
 export const prepChat = (
   getAdapter: () => LfChatAdapter,
@@ -233,10 +234,12 @@ export const prepChat = (
 
     //#region Progressbar
     progressbar: () => {
-      const { controller, elements } = getAdapter();
+      const adapter = getAdapter();
+      const { controller, elements } = adapter;
       const { chat } = elements.refs;
-      const { blocks, compInstance, currentTokens, manager } = controller.get;
-      const { lfContextWindow } = compInstance;
+      const { blocks, currentTokens, manager } = controller.get;
+      const effectiveConfig = getEffectiveConfig(adapter);
+      const lfContextWindow = effectiveConfig.llm.contextWindow;
       const { assignRef, theme } = manager;
       const { bemClass, get } = theme;
 

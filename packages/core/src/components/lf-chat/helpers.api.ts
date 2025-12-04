@@ -4,6 +4,7 @@ import {
   LfLLMRequest,
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
+import { getEffectiveConfig } from "./helpers.config";
 import { newRequest } from "./helpers.request";
 import {
   createInitialToolDataset,
@@ -54,9 +55,10 @@ const handleStreamingResponse = async (
 ): Promise<void> => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
-  const { lfEndpointUrl } = compInstance;
   const { llm } = manager;
   const comp = compInstance as LfChat;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const endpointUrl = effectiveConfig.llm.endpointUrl;
 
   const abortController = llm.createAbort?.();
   set.currentAbortStreaming(abortController);
@@ -69,6 +71,10 @@ const handleStreamingResponse = async (
     let toolExecutionShown = false;
     let messageCreated = false;
 
+    // Circuit breaker: track unique tool call IDs to detect runaway LLM
+    const seenToolCallIds = new Set<string>();
+    const MAX_UNIQUE_TOOL_CALLS = 5; // Hard limit on tool calls per response
+
     const findLastAssistantIndex = () => {
       const h = history();
       let index = h.length - 1;
@@ -78,9 +84,19 @@ const handleStreamingResponse = async (
       return index;
     };
 
-    for await (const chunk of llm.stream(request, lfEndpointUrl, {
+    for await (const chunk of llm.stream(request, endpointUrl, {
       signal: abortController?.signal,
     })) {
+      // Circuit breaker: abort if too many unique tool calls detected
+      if (seenToolCallIds.size >= MAX_UNIQUE_TOOL_CALLS) {
+        manager.debug.logs.new(
+          compInstance,
+          `Circuit breaker: ${seenToolCallIds.size} unique tool calls detected (max ${MAX_UNIQUE_TOOL_CALLS}). Aborting stream.`,
+          "warning",
+        );
+        abortController?.abort();
+        break;
+      }
       if (chunk?.contentDelta) {
         accumulatedContent += chunk.contentDelta;
 
@@ -127,10 +143,17 @@ const handleStreamingResponse = async (
       }
 
       if (chunk?.toolCalls && Array.isArray(chunk.toolCalls)) {
-        accumulatedToolCalls.push(...chunk.toolCalls);
+        // Track unique tool call IDs for circuit breaker
+        for (const tc of chunk.toolCalls) {
+          if (tc.id) {
+            seenToolCallIds.add(tc.id);
+          }
+          accumulatedToolCalls.push(tc);
+        }
+
         manager.debug.logs.new(
           compInstance,
-          `Tool call chunk received: ${JSON.stringify(chunk.toolCalls)}`,
+          `Tool calls accumulated: ${accumulatedToolCalls.length}`,
           "informational",
         );
 
@@ -199,23 +222,70 @@ const handleStreamingResponse = async (
       const normalizedToolCalls =
         normalizeToolCallsForStreaming(accumulatedToolCalls);
 
-      // Execute tools and update the existing toolExecution dataset
-      const finalDataset = await handleToolCalls(adapter, normalizedToolCalls);
+      manager.debug.logs.new(
+        compInstance,
+        `After normalization: ${normalizedToolCalls.length} tool calls`,
+        "informational",
+      );
+
+      // Final safety dedupe: collapse identical function+args regardless of ID
+      const finalDeduped: LfLLMToolCall[] = [];
+      const seenSignatures = new Set<string>();
+
+      for (const call of normalizedToolCalls) {
+        const name = call.function?.name;
+        const args = call.function?.arguments || "{}";
+
+        if (!name) {
+          finalDeduped.push(call);
+          continue;
+        }
+
+        let canonicalArgs = args;
+        try {
+          const parsed = JSON.parse(args);
+          canonicalArgs = JSON.stringify(parsed, Object.keys(parsed).sort());
+        } catch {
+          // Keep original
+        }
+
+        const signature = `${name}::${canonicalArgs}`;
+
+        if (seenSignatures.has(signature)) {
+          manager.debug.logs.new(
+            compInstance,
+            `Final dedupe: removing duplicate ${name}(${args})`,
+            "warning",
+          );
+          continue;
+        }
+
+        seenSignatures.add(signature);
+        finalDeduped.push(call);
+      }
+
+      if (finalDeduped.length < normalizedToolCalls.length) {
+        manager.debug.logs.new(
+          compInstance,
+          `Final dedupe removed ${normalizedToolCalls.length - finalDeduped.length} duplicates, executing ${finalDeduped.length}`,
+          "warning",
+        );
+      }
+
+      // Execute tools - tool_calls are saved to history INSIDE handleToolCalls
+      // before the recursive apiCall, enabling history-based deduplication
+      const finalDataset = await handleToolCalls(adapter, finalDeduped);
+
       if (finalDataset && lastIndex >= 0) {
-        // Update the existing toolExecution dataset and ensure tool_calls are attached
+        // Update the toolExecution dataset after tool execution completes
         set.history(() => {
           const h = history();
           const msg = h[lastIndex];
           if (msg) {
-            const mergedCalls = mergeToolCalls(
-              msg.tool_calls as LfLLMToolCall[] | undefined,
-              normalizedToolCalls,
-            );
             const mergedDataset = msg.toolExecution
               ? mergeToolExecutionDatasets(msg.toolExecution, finalDataset)
               : finalDataset;
 
-            msg.tool_calls = mergedCalls;
             msg.toolExecution = mergedDataset;
           }
         });
@@ -243,19 +313,54 @@ const handleFetchResponse = async (
   updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
-  const { compInstance, history, manager } = get;
-  const { lfEndpointUrl } = compInstance;
+  const { history, manager } = get;
   const { llm } = manager;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const endpointUrl = effectiveConfig.llm.endpointUrl;
 
-  const response = await llm.fetch(request, lfEndpointUrl);
+  const response = await llm.fetch(request, endpointUrl);
 
   const message = response.choices?.[0]?.message?.content;
   const rawToolCalls = response.choices?.[0]?.message?.tool_calls;
 
-  const toolCalls =
+  let toolCalls =
     rawToolCalls && rawToolCalls.length > 0
       ? normalizeToolCallsForStreaming(rawToolCalls)
       : undefined;
+
+  // Final safety dedupe for fetch path
+  if (toolCalls && toolCalls.length > 1) {
+    const finalDeduped: LfLLMToolCall[] = [];
+    const seenSignatures = new Set<string>();
+
+    for (const call of toolCalls) {
+      const name = call.function?.name;
+      const args = call.function?.arguments || "{}";
+
+      if (!name) {
+        finalDeduped.push(call);
+        continue;
+      }
+
+      let canonicalArgs = args;
+      try {
+        const parsed = JSON.parse(args);
+        canonicalArgs = JSON.stringify(parsed, Object.keys(parsed).sort());
+      } catch {
+        // Keep original
+      }
+
+      const signature = `${name}::${canonicalArgs}`;
+
+      if (!seenSignatures.has(signature)) {
+        seenSignatures.add(signature);
+        finalDeduped.push(call);
+      }
+    }
+
+    toolCalls = finalDeduped;
+  }
+
   const llmMessage: LfLLMChoiceMessage = {
     role: "assistant",
     content: message,

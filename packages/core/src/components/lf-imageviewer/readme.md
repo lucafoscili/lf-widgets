@@ -206,6 +206,7 @@ graph TD;
   lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-tree --> lf-textfield
+  lf-tree --> lf-accordion
   lf-tree --> lf-badge
   lf-tree --> lf-button
   lf-tree --> lf-canvas
@@ -220,7 +221,24 @@ graph TD;
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
+  lf-accordion --> lf-accordion
+  lf-accordion --> lf-badge
+  lf-accordion --> lf-button
+  lf-accordion --> lf-canvas
+  lf-accordion --> lf-card
+  lf-accordion --> lf-chart
+  lf-accordion --> lf-chat
+  lf-accordion --> lf-chip
+  lf-accordion --> lf-code
+  lf-accordion --> lf-image
+  lf-accordion --> lf-photoframe
+  lf-accordion --> lf-progressbar
+  lf-accordion --> lf-textfield
+  lf-accordion --> lf-toggle
+  lf-accordion --> lf-typewriter
+  lf-accordion --> lf-upload
   lf-badge --> lf-image
+  lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
   lf-card --> lf-canvas
@@ -238,11 +256,14 @@ graph TD;
   lf-card --> lf-upload
   lf-chat --> lf-spinner
   lf-chat --> lf-article
+  lf-chat --> lf-accordion
   lf-chat --> lf-button
   lf-chat --> lf-chip
   lf-chat --> lf-textfield
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-checkbox
+  lf-article --> lf-accordion
   lf-article --> lf-badge
   lf-article --> lf-button
   lf-article --> lf-canvas
@@ -260,6 +281,7 @@ graph TD;
   lf-article --> lf-upload
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
   lf-masonry --> lf-button
   lf-masonry --> lf-canvas

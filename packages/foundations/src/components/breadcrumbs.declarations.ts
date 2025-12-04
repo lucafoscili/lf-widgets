@@ -123,7 +123,6 @@ export interface LfBreadcrumbsAdapterJsx extends LfComponentAdapterJsx {
 }
 export interface LfBreadcrumbsAdapterRefs extends LfComponentAdapterRefs {
   items: Map<string, HTMLElement>;
-  ripples: Map<string, HTMLElement>;
 }
 export interface LfBreadcrumbsAdapterHandlers
   extends LfComponentAdapterHandlers {

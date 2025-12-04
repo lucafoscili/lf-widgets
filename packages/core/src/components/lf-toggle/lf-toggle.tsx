@@ -178,7 +178,7 @@ export class LfToggle implements LfToggleInterface {
   #p = LF_TOGGLE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #r: HTMLDivElement;
+  #thumb: HTMLDivElement;
   //#endregion
 
   //#region Events
@@ -195,17 +195,7 @@ export class LfToggle implements LfToggleInterface {
   })
   lfEvent: EventEmitter<LfToggleEventPayload>;
   onLfEvent(e: Event | CustomEvent, eventType: LfToggleEvent) {
-    const { effects } = this.#framework;
-
-    const { lfRipple, value } = this;
-
-    switch (eventType) {
-      case "pointerdown":
-        if (lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r);
-        }
-        break;
-    }
+    const { value } = this;
 
     this.lfEvent.emit({
       comp: this,
@@ -319,7 +309,12 @@ export class LfToggle implements LfToggleInterface {
     }
   }
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#thumb) {
+      effects.register.ripple(this.#thumb);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -338,8 +333,7 @@ export class LfToggle implements LfToggleInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { formField, toggle } = this.#b;
-    const { lfAriaLabel, lfLabel, lfLeadingLabel, lfRipple, lfStyle, value } =
-      this;
+    const { lfAriaLabel, lfLabel, lfLeadingLabel, lfStyle, value } = this;
     const accessibleLabel = (
       lfAriaLabel ||
       lfLabel ||
@@ -368,17 +362,14 @@ export class LfToggle implements LfToggleInterface {
                 part={this.#p.track}
               ></div>
               <div class={bemClass(toggle._, toggle.thumbUnderlay)}>
-                <div class={bemClass(toggle._, toggle.thumb)}>
-                  <div
-                    data-cy={this.#cy.rippleSurface}
-                    data-lf={this.#lf.rippleSurface}
-                    ref={(el) => {
-                      if (el && lfRipple) {
-                        this.#r = el;
-                      }
-                    }}
-                  ></div>
-                </div>
+                <div
+                  class={bemClass(toggle._, toggle.thumb)}
+                  ref={(el) => {
+                    if (el) {
+                      this.#thumb = el;
+                    }
+                  }}
+                ></div>
                 <input
                   class={bemClass(toggle._, toggle.nativeControl)}
                   checked={this.#isOn()}
@@ -419,7 +410,14 @@ export class LfToggle implements LfToggleInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#thumb) {
+      effects.unregister.ripple(this.#thumb);
+    }
+
+    theme?.unregister(this);
   }
   //#endregion
 }

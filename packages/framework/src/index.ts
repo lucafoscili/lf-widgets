@@ -64,6 +64,10 @@ function initLfFramework() {
 
   if (isClient) {
     finalize(framework);
+  } else {
+    // In non-browser environments (e.g., Jest/Node), still mark the framework as ready
+    // so that components awaiting onFrameworkReady don't hang forever.
+    markFrameworkReady(framework);
   }
 }
 const finalize = (framework: LfFrameworkInterface) => {

@@ -21,7 +21,7 @@ export const config: Config = {
   hydratedFlag: { name: "lf-hydrated", selector: "attribute" },
   plugins: [
     sass({
-      includePaths: ["./node_modules", "./src/style"],
+      includePaths: ["./node_modules", "../core/src/style"],
     }),
   ],
   rollupConfig: {

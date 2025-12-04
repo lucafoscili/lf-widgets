@@ -25,8 +25,17 @@ export const prepChat = (
       return (
         <lf-chat
           key={current().id}
-          lfLayout="bottom"
-          lfSystem={system}
+          lfConfig={{
+            ...(chat() || {}),
+            llm: {
+              ...(chat()?.lfConfig?.llm || {}),
+              systemPrompt: system,
+            },
+            ui: {
+              ...(chat()?.lfConfig?.ui || {}),
+              layout: "bottom",
+            },
+          }}
           lfValue={JSON.parse(history())}
           {...sanitizeProps(chat(), "LfChat")}
           onLf-chat-event={handlers.chat.chat}

@@ -1,14 +1,21 @@
 import {
   LfChatAdapter,
+  LfChatAgentState,
   LfDataDataset,
   LfDataNode,
   LfIconType,
   LfLLMChoiceMessage,
-  LfLLMTool,
   LfLLMToolCall,
+  LfLLMToolDefinition,
+  LfLLMToolHandlers,
   LfLLMToolResponse,
 } from "@lf-widgets/foundations";
-import { getEffectiveConfig } from "./helpers.config";
+import {
+  getAllToolHandlers,
+  getEffectiveConfig,
+  getEnabledToolDefinitions,
+} from "./helpers.config";
+import { LfChat } from "./lf-chat";
 
 //#region Tool dataset
 /**
@@ -89,6 +96,17 @@ export const normalizeToolCallsForStreaming = (
     return [];
   }
 
+  // Helper to create a canonical key from function arguments
+  const canonicalizeArgs = (args: string | undefined): string => {
+    if (!args) return "{}";
+    try {
+      const parsed = JSON.parse(args);
+      return JSON.stringify(parsed, Object.keys(parsed).sort());
+    } catch {
+      return args;
+    }
+  };
+
   type PartialCall = LfLLMToolCall & {
     index?: number;
     function?: {
@@ -122,7 +140,9 @@ export const normalizeToolCallsForStreaming = (
       // Non-streaming or already-assembled calls: group identical function
       // invocations (same name + arguments) to avoid executing the same tool
       // multiple times in a single assistant turn.
-      key = `fn_${raw.function.name}::${raw.function.arguments}`;
+      // Use canonical JSON to handle whitespace differences.
+      const canonicalArgs = canonicalizeArgs(raw.function.arguments);
+      key = `fn_${raw.function.name}::${canonicalArgs}`;
     } else {
       key = raw.id || `anon_${rawIndex}`;
     }
@@ -174,18 +194,31 @@ export const normalizeToolCallsForStreaming = (
 
   // Second-stage dedupe: collapse identical logical calls (same name + args)
   // that may have been emitted multiple times in a single assistant turn.
+  // We compare parsed JSON to handle formatting differences (e.g., whitespace).
   const deduped: LfLLMToolCall[] = [];
-  const seen = new Set<string>();
+  const seen = new Map<string, string>(); // name -> canonical args JSON
 
   aggregated.forEach((call, index) => {
     const fn = call.function;
-    const key =
-      fn?.name && typeof fn.arguments === "string"
-        ? `${fn.name}::${fn.arguments}`
-        : (call.id ?? `idx_${index}`);
+    if (!fn?.name) {
+      // Keep calls without a function name (edge case)
+      deduped.push(call);
+      return;
+    }
+
+    // Normalize arguments by parsing and re-stringifying
+    let canonicalArgs = "{}";
+    try {
+      const parsed = JSON.parse(fn.arguments || "{}");
+      canonicalArgs = JSON.stringify(parsed, Object.keys(parsed).sort());
+    } catch {
+      canonicalArgs = fn.arguments || "{}";
+    }
+
+    const key = `${fn.name}::${canonicalArgs}`;
 
     if (!seen.has(key)) {
-      seen.add(key);
+      seen.set(key, call.id ?? `idx_${index}`);
       deduped.push(call);
     }
   });
@@ -282,9 +315,20 @@ export const mergeToolCalls = (
 //#endregion
 
 //#region Execute tools
+/**
+ * Executes tool calls by looking up handlers from the provided handlers map.
+ * Tool definitions (schemas) are used only to validate that a tool exists.
+ * The actual execution function comes from the handlers map.
+ *
+ * @param toolCalls - Array of tool calls from the LLM
+ * @param availableDefinitions - Array of tool definitions (schemas only)
+ * @param handlers - Map of tool names to their execution functions
+ * @returns Array of tool result messages to add to conversation history
+ */
 export const executeTools = async (
   toolCalls: LfLLMToolCall[],
-  availableTools: LfLLMTool[] = [],
+  availableDefinitions: LfLLMToolDefinition[] = [],
+  handlers: LfLLMToolHandlers = {},
 ): Promise<LfLLMChoiceMessage[]> => {
   // Execute all tools in parallel for better performance
   const executionPromises = toolCalls.map(async (call) => {
@@ -295,19 +339,23 @@ export const executeTools = async (
     const func = call.function;
     let result: string | LfLLMToolResponse = "";
 
-    const matchingTool = availableTools.find(
-      (tool) => tool.function?.name === func.name,
+    // Check if tool is defined in available definitions
+    const matchingDefinition = availableDefinitions.find(
+      (def) => def.function?.name === func.name,
     );
 
-    if (matchingTool) {
+    // Look up the handler function
+    const handler = handlers[func.name];
+
+    if (matchingDefinition) {
       // Valid tool found - try to execute
       try {
         const args = JSON.parse(func.arguments || "{}");
 
-        if (matchingTool.function.execute) {
-          result = await matchingTool.function.execute(args);
+        if (handler) {
+          result = await handler(args);
         } else {
-          result = `Error: Tool "${func.name}" has no execute function defined. This is a configuration error.`;
+          result = `Error: Tool "${func.name}" has no handler defined. This is a configuration error - please provide a handler in lfToolHandlers.`;
         }
       } catch (parseError) {
         result = `Error: Failed to parse arguments for tool "${func.name}". ${
@@ -316,7 +364,7 @@ export const executeTools = async (
       }
     } else {
       // Tool not found - provide helpful error message
-      const availableToolNames = availableTools
+      const availableToolNames = availableDefinitions
         .map((t) => `"${t.function?.name}"`)
         .join(", ");
 
@@ -388,9 +436,138 @@ export const createInitialToolDataset = (
 };
 //#endregion
 
+//#region Agent state helpers
+/**
+ * Gets the current agent state or initializes a new one if agent mode is enabled.
+ *
+ * @param adapter - The chat adapter instance
+ * @param toolCalls - Current tool calls to track
+ * @returns Updated agent state or null if agent mode is disabled
+ */
+const getOrInitAgentState = (
+  adapter: LfChatAdapter,
+  toolCalls: LfLLMToolCall[],
+): LfChatAgentState | null => {
+  const { get, set } = adapter.controller;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const agentConfig = effectiveConfig.agent;
+
+  if (!agentConfig?.enabled) {
+    return null;
+  }
+
+  const currentState = get.agentState();
+  const maxIterations = agentConfig.maxIterations ?? 10;
+  const toolNames = toolCalls
+    .map((tc) => tc.function?.name)
+    .filter(Boolean) as string[];
+
+  if (currentState) {
+    const newState: LfChatAgentState = {
+      ...currentState,
+      iteration: currentState.iteration + 1,
+      toolsCalled: toolNames,
+      totalToolCalls: currentState.totalToolCalls + toolCalls.length,
+      isComplete: false,
+    };
+    set.agentState(newState);
+    return newState;
+  } else {
+    const newState: LfChatAgentState = {
+      iteration: 1,
+      maxIterations,
+      toolsCalled: toolNames,
+      totalToolCalls: toolCalls.length,
+      isComplete: false,
+    };
+    set.agentState(newState);
+    return newState;
+  }
+};
+
+/**
+ * Checks if the agent should continue based on iteration limits and callbacks.
+ *
+ * @param adapter - The chat adapter instance
+ * @param state - Current agent state
+ * @returns Whether the agent should continue
+ */
+const shouldAgentContinue = async (
+  adapter: LfChatAdapter,
+  state: LfChatAgentState,
+): Promise<boolean> => {
+  const { get, set } = adapter.controller;
+  const { debug } = get.manager;
+  const { compInstance } = get;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const agentConfig = effectiveConfig.agent;
+
+  if (state.iteration >= state.maxIterations) {
+    debug.logs.new(
+      compInstance,
+      `Agent reached max iterations (${state.maxIterations}). Stopping.`,
+      "warning",
+    );
+    set.agentState({ ...state, isComplete: true });
+    return false;
+  }
+
+  // Check user callback
+  if (agentConfig?.onIteration) {
+    try {
+      const shouldContinue = await agentConfig.onIteration(state);
+      if (!shouldContinue) {
+        debug.logs.new(
+          compInstance,
+          "Agent stopped by onIteration callback.",
+          "informational",
+        );
+        set.agentState({ ...state, isComplete: true });
+        return false;
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      debug.logs.new(
+        compInstance,
+        `Agent onIteration callback error: ${errorMsg}`,
+        "error",
+      );
+      set.agentState({ ...state, isComplete: true, lastError: errorMsg });
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Marks the agent run as complete (no more tool calls).
+ *
+ * @param adapter - The chat adapter instance
+ */
+export const markAgentComplete = (adapter: LfChatAdapter): void => {
+  const { get, set } = adapter.controller;
+  const currentState = get.agentState();
+
+  if (currentState) {
+    set.agentState({ ...currentState, isComplete: true });
+  }
+};
+
+/**
+ * Resets the agent state for a new conversation turn.
+ *
+ * @param adapter - The chat adapter instance
+ */
+export const resetAgentState = (adapter: LfChatAdapter): void => {
+  adapter.controller.set.agentState(null);
+};
+//#endregion
+
 //#region Handle tool calls
 /**
  * Handles tool calls received from the LLM, executes valid tools, and continues the conversation.
+ * In agent mode, tracks iterations and respects configured limits.
  *
  * @param adapter - The chat adapter instance
  * @param toolCalls - Array of tool calls from the LLM
@@ -408,7 +585,139 @@ export const handleToolCalls = async (
 
   const hasToolCalls = Array.isArray(toolCalls) && toolCalls.length > 0;
   if (!hasToolCalls) {
+    markAgentComplete(adapter);
     return null;
+  }
+
+  // Deduplicate tool calls against previously executed tools in the CURRENT turn
+  // Only check tool_calls from assistant messages AFTER the last user message
+  // This prevents infinite loops while still allowing the same tool in different conversations
+  const executedToolSignatures = new Set<string>();
+  const h = history();
+
+  // Find the index of the last user message
+  let lastUserMessageIndex = -1;
+  for (let i = h.length - 1; i >= 0; i--) {
+    if (h[i].role === "user") {
+      lastUserMessageIndex = i;
+      break;
+    }
+  }
+
+  // Scan history for tool_calls only AFTER the last user message
+  for (let i = lastUserMessageIndex + 1; i < h.length; i++) {
+    const msg = h[i];
+    // Look for assistant messages with tool_calls
+    if (msg.role === "assistant" && Array.isArray(msg.tool_calls)) {
+      for (const tc of msg.tool_calls as LfLLMToolCall[]) {
+        if (tc.function?.name && tc.function?.arguments) {
+          try {
+            const parsed = JSON.parse(tc.function.arguments);
+            const canonical = JSON.stringify(
+              parsed,
+              Object.keys(parsed).sort(),
+            );
+            executedToolSignatures.add(`${tc.function.name}::${canonical}`);
+          } catch {
+            executedToolSignatures.add(
+              `${tc.function.name}::${tc.function.arguments}`,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // Filter out already-executed tool calls and track blocked ones
+  const blockedToolCalls: LfLLMToolCall[] = [];
+  const newToolCalls = toolCalls.filter((call) => {
+    if (!call.function?.name || !call.function?.arguments) {
+      return true; // Keep calls without proper structure
+    }
+    try {
+      const parsed = JSON.parse(call.function.arguments);
+      const canonical = JSON.stringify(parsed, Object.keys(parsed).sort());
+      const signature = `${call.function.name}::${canonical}`;
+      if (executedToolSignatures.has(signature)) {
+        debug.logs.new(
+          compInstance,
+          `Skipping duplicate tool call: ${call.function.name}(${call.function.arguments}) - already executed`,
+          "informational",
+        );
+        blockedToolCalls.push(call);
+        return false;
+      }
+      return true;
+    } catch {
+      return true;
+    }
+  });
+
+  if (newToolCalls.length === 0) {
+    debug.logs.new(
+      compInstance,
+      "All tool calls were duplicates - skipping execution",
+      "informational",
+    );
+
+    // Create a dataset showing blocked tools as failed
+    const blockedIcon = theme.get.current().variables["--lf-icon-warning"];
+    const blockedChildren: LfDataNode[] = blockedToolCalls.map((call) => ({
+      description: `Tool "${call.function?.name}" was blocked - duplicate call detected`,
+      icon: blockedIcon,
+      id: call.id || `blocked-${Date.now()}`,
+      value: call.function?.name || "Unknown tool",
+      children: [] as LfDataNode[],
+    }));
+
+    const blockedDataset: LfDataDataset = {
+      nodes: [
+        {
+          description: "Duplicate tool calls blocked to prevent infinite loop",
+          icon: blockedIcon,
+          id: "tool-exec-root",
+          value: "Blocked (duplicates)",
+          children: blockedChildren,
+        },
+      ],
+    };
+
+    // Update the UI if showing indicator
+    const showIndicator =
+      effectiveConfig.ui.showToolExecutionIndicator !== false;
+    if (showIndicator && toolExecution) {
+      toolExecution.lfDataset = blockedDataset;
+    }
+
+    markAgentComplete(adapter);
+    return blockedDataset;
+  }
+
+  if (newToolCalls.length < toolCalls.length) {
+    debug.logs.new(
+      compInstance,
+      `Filtered ${toolCalls.length - newToolCalls.length} duplicate tool call(s), executing ${newToolCalls.length}`,
+      "informational",
+    );
+  }
+
+  const agentState = getOrInitAgentState(adapter, newToolCalls);
+
+  if (agentState) {
+    const shouldContinue = await shouldAgentContinue(adapter, agentState);
+    if (!shouldContinue) {
+      debug.logs.new(
+        compInstance,
+        `Agent iteration ${agentState.iteration}/${agentState.maxIterations} - stopping`,
+        "informational",
+      );
+      return null;
+    }
+    debug.logs.new(
+      compInstance,
+      `Agent iteration ${agentState.iteration}/${agentState.maxIterations} - executing ${newToolCalls.length} tool(s)`,
+      "informational",
+    );
   }
 
   const showIndicator = effectiveConfig.ui.showToolExecutionIndicator !== false;
@@ -425,7 +734,7 @@ export const handleToolCalls = async (
     ],
   };
 
-  for (const call of toolCalls) {
+  for (const call of newToolCalls) {
     if (call && call.function?.name && call.id) {
       children.push({
         description: `Tool "${call.function.name}" is being executed...`,
@@ -437,9 +746,13 @@ export const handleToolCalls = async (
     }
   }
 
+  const enabledDefinitions = getEnabledToolDefinitions(adapter);
+  const handlers = getAllToolHandlers(adapter);
+
   const toolResults = await executeTools(
-    toolCalls,
-    effectiveConfig.tools.definitions,
+    newToolCalls,
+    enabledDefinitions,
+    handlers,
   );
 
   const successIcon = theme.get.current().variables["--lf-icon-success"];
@@ -469,6 +782,10 @@ export const handleToolCalls = async (
       warningIcon,
     );
     toolExecution?.refresh();
+
+    // Scroll to bottom when tool execution updates
+    const comp = compInstance as LfChat;
+    requestAnimationFrame(() => comp.scrollToBottom(true));
   }
 
   const hasValidToolResults = successFlags.some((flag) => flag);
@@ -486,9 +803,6 @@ export const handleToolCalls = async (
     return null;
   }
 
-  // Attach rich article content (when available) to the last assistant
-  // message so the article becomes part of the main chat bubble rather
-  // than a separate internal tool entry.
   const firstArticleResult = toolResults.find((r) => r.articleContent) as
     | LfLLMChoiceMessage
     | undefined;
@@ -508,11 +822,35 @@ export const handleToolCalls = async (
           msg.articleContent ?? firstArticleResult.articleContent;
       }
     });
+
+    // Scroll to bottom when article content is rendered
+    const comp = compInstance as LfChat;
+    requestAnimationFrame(() => comp.scrollToBottom(true));
   }
 
   for (const result of toolResults) {
     set.history(() => history().push(result));
   }
+
+  // Save tool_calls to history BEFORE the recursive apiCall
+  // This enables history-based deduplication in the NEXT iteration to detect
+  // these tool calls as already-executed
+  set.history(() => {
+    const h = history();
+    // Find the assistant message that these tool calls belong to
+    // It should be the message right before the tool results we just pushed
+    for (let i = h.length - toolResults.length - 1; i >= 0; i--) {
+      if (h[i].role === "assistant") {
+        const msg = h[i] as LfLLMChoiceMessage;
+        const existingCalls = (msg.tool_calls as LfLLMToolCall[]) || [];
+        // Merge new tool calls with existing ones
+        const existingIds = new Set(existingCalls.map((c) => c.id));
+        const newCalls = newToolCalls.filter((c) => !existingIds.has(c.id));
+        msg.tool_calls = [...existingCalls, ...newCalls];
+        break;
+      }
+    }
+  });
 
   const { apiCall } = await import("./helpers.api");
 

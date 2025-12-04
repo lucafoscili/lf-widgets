@@ -92,8 +92,7 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
     //#region Node
     node: (node, index, isSelected) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, lfAttributes, manager, parts } =
-        controller.get;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { jsx, refs } = elements;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
@@ -119,15 +118,6 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
           tabindex={isSelected || isFocused ? "0" : "-1"}
           title={stringify(node.value) || stringify(node.description)}
         >
-          <div
-            data-cy={cyAttributes.rippleSurface}
-            data-lf={lfAttributes.rippleSurface}
-            ref={(el) => {
-              if (el) {
-                refs.ripples.set(node.id, el);
-              }
-            }}
-          ></div>
           {node.icon && jsx.icon(node)}
           <span class={bemClass(blocks.node._, blocks.node.text)}>
             {hasValue && jsx.title(node)}

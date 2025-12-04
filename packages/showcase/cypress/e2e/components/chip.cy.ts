@@ -35,7 +35,7 @@ describe(CY_CATEGORIES.basic, () => {
 //#region Events
 describe(CY_CATEGORIES.events, () => {
   const { eventElement } = CY_ALIASES;
-  const { check, fIcon, input } = CY_ATTRIBUTES;
+  const { check, input } = CY_ATTRIBUTES;
 
   it(`blur`, () => {
     cy.navigate(chip);
@@ -55,7 +55,10 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(chip);
     const eventType: LfChipEvent = "delete";
     cy.checkEvent(chip, eventType);
-    cy.get(`${chipTag}#input-simple`).findCyElement(fIcon).first().click();
+    cy.get(`${chipTag}#input-simple`)
+      .find(".item__icon--trailing")
+      .first()
+      .click();
     cy.getCyElement(check).should("exist");
   });
   it(`focus`, () => {

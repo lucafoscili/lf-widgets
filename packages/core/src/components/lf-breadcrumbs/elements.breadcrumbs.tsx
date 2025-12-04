@@ -66,14 +66,8 @@ export const prepBreadcrumbsJsx = (
     totalItems: number,
   ): VNode[] => {
     const { controller, elements, handlers } = getAdapter();
-    const {
-      blocks,
-      compInstance,
-      cyAttributes,
-      isInteractive,
-      manager,
-      parts,
-    } = controller.get;
+    const { blocks, cyAttributes, isInteractive, manager, parts } =
+      controller.get;
     const { refs } = elements;
     const fw = manager();
     const { bemClass } = fw.theme;
@@ -81,7 +75,6 @@ export const prepBreadcrumbsJsx = (
     const isCurrent = index === totalItems - 1;
     const interactive = isInteractive();
     const isItemInteractive = interactive && !isCurrent;
-    const ripple = compInstance.lfRipple && isItemInteractive;
     const label = fw.data.cell.stringify(node.value);
 
     return [
@@ -108,22 +101,11 @@ export const prepBreadcrumbsJsx = (
           isItemInteractive &&
           handlers.item.keydown(e as KeyboardEvent, node, index)
         }
+        onPointerDown={(e) =>
+          isItemInteractive &&
+          handlers.item.pointerdown(e as PointerEvent, node, index)
+        }
       >
-        {ripple && (
-          <div
-            class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.ripple)}
-            data-cy={cyAttributes.rippleSurface}
-            onPointerDown={(e) =>
-              handlers.item.pointerdown(e as PointerEvent, node, index)
-            }
-            part={parts.ripple}
-            ref={(el) => {
-              if (el && node.id) {
-                refs.ripples.set(node.id, el);
-              }
-            }}
-          ></div>
-        )}
         <span
           class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.label)}
           part={parts.label}

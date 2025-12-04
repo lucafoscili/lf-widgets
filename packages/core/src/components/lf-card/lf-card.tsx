@@ -311,6 +311,13 @@ export class LfCard implements LfCardInterface {
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
+    const { effects } = this.#framework;
+
+    // Register ripple on material layout
+    const materialLayout = this.#adapter?.elements.refs.layouts.material;
+    if (materialLayout) {
+      effects.register.ripple(materialLayout);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
@@ -363,6 +370,12 @@ export class LfCard implements LfCardInterface {
     );
   }
   disconnectedCallback() {
+    // Unregister ripple from material layout
+    const materialLayout = this.#adapter?.elements.refs.layouts.material;
+    if (materialLayout) {
+      this.#framework?.effects.unregister.ripple(materialLayout);
+    }
+
     this.#framework?.theme.unregister(this);
   }
   //#endregion

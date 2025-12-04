@@ -16,12 +16,8 @@ const PAYLOAD_NAME: LfEventPayloadName<"LfChat"> = "LfChatEventPayload";
 const TAG_NAME: LfComponentTag<"LfChat"> = "lf-chat";
 
 export const getChatFixtures = (
-  framework: LfFrameworkInterface,
+  _framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-chat"> => {
-  const builtinTools = framework.llm.getBuiltinToolsByCategory?.();
-  const builtinWeatherTool = builtinTools?.general?.get_weather;
-  const builtinDocsTool = builtinTools?.lfw?.get_component_docs;
-
   //#region documentation
   const documentation: LfArticleDataset = {
     nodes: [
@@ -90,13 +86,21 @@ export const getChatFixtures = (
         bottomLayout: {
           description: "Chat with textarea below",
           props: {
-            lfLayout: "bottom",
+            lfConfig: {
+              ui: {
+                layout: "bottom",
+              },
+            },
           },
         },
         simple: {
           description: "Chat with textarea above",
           props: {
-            lfLayout: "top",
+            lfConfig: {
+              ui: {
+                layout: "top",
+              },
+            },
           },
         },
         initialValue: {
@@ -117,10 +121,23 @@ export const getChatFixtures = (
         },
         attachmentsEditing: {
           description:
-            "Demo: attachments (image/file), preview and message editing",
+            "Demo: attachments (image/file), preview (click to open), and message editing",
           props: {
             lfValue: [
-              { role: "user", content: "Here is an image for context:" },
+              {
+                role: "user",
+                content: "Here is an image for context:",
+                attachments: [
+                  {
+                    id: "user-img-1",
+                    type: "image_url",
+                    image_url: {
+                      url: "https://picsum.photos/seed/user/320/180",
+                    },
+                    name: "user_screenshot.png",
+                  },
+                ],
+              },
               {
                 role: "assistant",
                 content: "I received the image. See preview below.",
@@ -132,6 +149,18 @@ export const getChatFixtures = (
                       url: "https://picsum.photos/seed/picsum/320/180",
                     },
                     name: "sample.jpg",
+                  },
+                ],
+              },
+              {
+                role: "user",
+                content: "Here is a document to review.",
+                attachments: [
+                  {
+                    id: "file-1",
+                    type: "file",
+                    name: "document.pdf",
+                    content: "Sample file content",
                   },
                 ],
               },
@@ -150,13 +179,31 @@ export const getChatFixtures = (
         },
         tools: {
           description:
-            "Chat with builtin tools for external actions (real APIs)",
+            "Chat with tool definitions (definitions only - handlers provided separately)",
           props: {
             lfConfig: {
               tools: {
-                definitions: [builtinDocsTool, builtinWeatherTool].filter(
-                  (tool): tool is NonNullable<typeof tool> => Boolean(tool),
-                ),
+                definitions: [
+                  {
+                    type: "function",
+                    function: {
+                      name: "get_weather",
+                      description: "Get the current weather for a location",
+                      parameters: {
+                        type: "object",
+                        properties: {
+                          location: {
+                            type: "string",
+                            description:
+                              "The city and country, e.g. 'London, UK'",
+                          },
+                        },
+                        required: ["location"],
+                      },
+                    },
+                    meta: { category: "general" },
+                  },
+                ],
               },
             },
           },
@@ -226,11 +273,6 @@ export const getChatFixtures = (
                         },
                         required: ["expression"],
                       },
-                      execute: async (args: Record<string, unknown>) => {
-                        const expr = (args.expression as string) || "0";
-                        // Mock calculator - in production, use a safe math parser library
-                        return `Calculated "${expr}": This is a mock result. Use a safe math parser like math.js in production.`;
-                      },
                     },
                   },
                 ],
@@ -242,6 +284,12 @@ export const getChatFixtures = (
               },
               ui: {
                 emptyMessage: "Chat with tool-enabled assistant...",
+              },
+            },
+            lfToolHandlers: {
+              calculate: async (args: Record<string, unknown>) => {
+                const expr = args.expression || "0";
+                return `Calculated "${expr}": This is a mock result. Use a safe math parser like math.js in production.`;
               },
             },
           },

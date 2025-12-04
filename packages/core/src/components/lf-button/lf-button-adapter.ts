@@ -79,10 +79,8 @@ export const createRefs = (): LfButtonAdapterRefs => {
   return {
     button: null,
     dropdown: null,
-    dropdownRipple: null,
     icon: null,
     list: null,
-    ripple: null,
   };
 };
 //#endregion

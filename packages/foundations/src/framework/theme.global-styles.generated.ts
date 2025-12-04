@@ -15,15 +15,579 @@ export const GLOBAL_STYLES = {
     "height": "100%",
     "width": "100%"
   },
-  "::-webkit-scrollbar": {
+  "*::-webkit-scrollbar": {
     "width": "9px"
   },
-  "::-webkit-scrollbar-thumb": {
+  "*::-webkit-scrollbar-thumb": {
     "transition": "all 400ms cubic-bezier(0.8, -0.5, 0.2, 1.4)",
-    "background-color": "rgb(var(--lf-color-primary))"
+    "background-color": "rgba(var(--lf-color-on-surface), var(--lf-ui-alpha-glass-solid))"
   },
-  "::-webkit-scrollbar-track": {
-    "background-color": "rgb(var(--lf-color-bg))"
+  "*::-webkit-scrollbar-track": {
+    "background-color": "rgb(var(--lf-color-surface))"
+  },
+  "[data-lf-effect-layer]": {
+    "border-radius": "inherit",
+    "inset": "0",
+    "overflow": "hidden",
+    "pointer-events": "none",
+    "position": "absolute"
+  },
+  "[data-lf-effect-layer][data-lf-pointer-events]": {
+    "pointer-events": "auto"
+  },
+  "[data-lf-effect-layer][data-lf-no-radius]": {
+    "border-radius": "0"
+  },
+  "[data-lf-ripple-host]": {
+    "position": "relative",
+    "overflow": "hidden"
+  },
+  "[data-lf-tilt-host]": {
+    "position": "relative",
+    "overflow": "hidden",
+    "transform": "var(--lf-ui-effects-transform, none)",
+    "transition": "transform 275ms ease-out",
+    "transform-style": "preserve-3d",
+    "will-change": "transform"
+  },
+  "[data-lf-tilt-host]:hover": {
+    "box-shadow": "0 15px 30px rgba(var(--lf-color-on-bg), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  "[data-lf-tilt-host]:hover > [data-lf-effect-layer=tilt-highlight]": {
+    "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), var(--lf-ui-alpha-glass-hint, 0.275)), transparent)"
+  },
+  "[data-lf-neon-glow-host]": {
+    "overflow": "visible",
+    "transform-style": "preserve-3d"
+  },
+  "[data-lf-neon-glow]": {
+    "--lf-ui-neon-color": "rgba(var(--lf-color-secondary), 1)",
+    "--lf-ui-neon-intensity": "0.7",
+    "--lf-ui-neon-pulse-duration": "8s",
+    "position": "relative",
+    "border": "2px solid var(--lf-ui-neon-color)",
+    "border-radius": "var(--lf-ui-border-radius, 0.5em)",
+    "transform-style": "preserve-3d",
+    "animation": "lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite"
+  },
+  "@keyframes lf-neon-flicker": [
+    {
+      "0%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "2%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "3%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "5%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "5.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "7%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "8%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "9.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "9.8%": {
+        "opacity": "1.1"
+      }
+    },
+    {
+      "10%": {
+        "opacity": "0.3"
+      }
+    },
+    {
+      "10.3%": {
+        "opacity": "0.9"
+      }
+    },
+    {
+      "10.5%": {
+        "opacity": "0.2"
+      }
+    },
+    {
+      "10.8%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "11.2%": {
+        "opacity": "0.5"
+      }
+    },
+    {
+      "11.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "14%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "15%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "20%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "21%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "25%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "25.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "30%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "31%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "40%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "41%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "45%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "46%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "49.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "49.8%": {
+        "opacity": "1.05"
+      }
+    },
+    {
+      "50%": {
+        "opacity": "0.6"
+      }
+    },
+    {
+      "50.3%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "50.6%": {
+        "opacity": "0.7"
+      }
+    },
+    {
+      "51%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "55%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "56%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "60%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "60.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "65%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "66%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "74.5%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "74.8%": {
+        "opacity": "1.15"
+      }
+    },
+    {
+      "75%": {
+        "opacity": "0.15"
+      }
+    },
+    {
+      "75.2%": {
+        "opacity": "0.8"
+      }
+    },
+    {
+      "75.4%": {
+        "opacity": "0.1"
+      }
+    },
+    {
+      "75.7%": {
+        "opacity": "0.95"
+      }
+    },
+    {
+      "76%": {
+        "opacity": "0.3"
+      }
+    },
+    {
+      "76.4%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "80%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "81%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "85%": {
+        "opacity": "0.96"
+      }
+    },
+    {
+      "86%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "90%": {
+        "opacity": "0.98"
+      }
+    },
+    {
+      "91%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "95%": {
+        "opacity": "0.97"
+      }
+    },
+    {
+      "96%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "100%": {
+        "opacity": "1"
+      }
+    }
+  ],
+  "[data-lf-neon-glow] > *": {
+    "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
+  },
+  "[data-lf-effect-layer=neon-glow-border]": {
+    "inset": "-1px",
+    "border-radius": "inherit",
+    "padding": "2px",
+    "background": "linear-gradient(135deg, var(--lf-ui-neon-color), transparent 50%, var(--lf-ui-neon-color))",
+    "mask": "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+    "mask-composite": "exclude",
+    "-webkit-mask-composite": "xor",
+    "opacity": "var(--lf-ui-neon-intensity)",
+    "transform": "translateZ(0)"
+  },
+  "[data-lf-effect-layer=neon-glow]": {
+    "will-change": "box-shadow",
+    "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)",
+    "animation": "lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration) ease-in-out infinite"
+  },
+  "@keyframes lf-neon-glow-pulse": [
+    {
+      "0%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "3%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "5%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "8%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "9.5%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10%": {
+        "box-shadow": "0 0 10px var(--lf-ui-neon-color), 0 0 25px var(--lf-ui-neon-color), 0 0 50px var(--lf-ui-neon-color), inset 0 0 8px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "10.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "11%": {
+        "box-shadow": "0 0 6px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), inset 0 0 5px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "14%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "20%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "25%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "30%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "35%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "40%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "49%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "50%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color), 0 0 40px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "51%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "53%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "60%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "65%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "70%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "74%": {
+        "box-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 12px var(--lf-ui-neon-color), 0 0 22px var(--lf-ui-neon-color), inset 0 0 4px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75%": {
+        "box-shadow": "0 0 12px var(--lf-ui-neon-color), 0 0 30px var(--lf-ui-neon-color), 0 0 60px var(--lf-ui-neon-color), inset 0 0 10px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "75.5%": {
+        "box-shadow": "0 0 1px var(--lf-ui-neon-color), 0 0 3px var(--lf-ui-neon-color), 0 0 6px var(--lf-ui-neon-color), inset 0 0 1px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "76%": {
+        "box-shadow": "0 0 8px var(--lf-ui-neon-color), 0 0 18px var(--lf-ui-neon-color), 0 0 35px var(--lf-ui-neon-color), inset 0 0 6px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "78%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "85%": {
+        "box-shadow": "0 0 2px var(--lf-ui-neon-color), 0 0 7px var(--lf-ui-neon-color), 0 0 13px var(--lf-ui-neon-color), inset 0 0 2px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "90%": {
+        "box-shadow": "0 0 4px var(--lf-ui-neon-color), 0 0 9px var(--lf-ui-neon-color), 0 0 17px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "95%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 14px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    },
+    {
+      "100%": {
+        "box-shadow": "0 0 3px var(--lf-ui-neon-color), 0 0 8px var(--lf-ui-neon-color), 0 0 15px var(--lf-ui-neon-color), inset 0 0 3px var(--lf-ui-neon-color)"
+      }
+    }
+  ],
+  "[data-lf-neon-glow=outline]": {
+    "background": "transparent"
+  },
+  "[data-lf-neon-glow=filled]": {
+    "background": "color-mix(in srgb, var(--lf-ui-neon-color) calc(var(--lf-ui-neon-intensity) * 15%), transparent)",
+    "backdrop-filter": "blur(4px)"
+  },
+  "[data-lf-effect-layer=neon-glow-reflection]": {
+    "--lf-ui-neon-reflection-blur": "12px",
+    "--lf-ui-neon-reflection-offset": "5%",
+    "--lf-ui-neon-reflection-opacity": "0.7",
+    "inset": "unset",
+    "top": "100%",
+    "left": "0",
+    "right": "0",
+    "height": "60%",
+    "margin-top": "var(--lf-ui-neon-reflection-offset)",
+    "transform": "perspective(200px) rotateX(25deg) scaleY(0.6)",
+    "transform-origin": "top center",
+    "filter": "blur(var(--lf-ui-neon-reflection-blur))",
+    "opacity": "var(--lf-ui-neon-reflection-opacity)",
+    "mask-image": "radial-gradient(ellipse 70% 90% at 50% 0%, black 0%, rgba(0, 0, 0, 0.7) 30%, transparent 65%)",
+    "-webkit-mask-image": "radial-gradient(ellipse 70% 90% at 50% 0%, black 0%, rgba(0, 0, 0, 0.7) 30%, transparent 65%)",
+    "box-shadow": "0 0 10px 5px var(--lf-ui-neon-color), 0 0 25px 15px var(--lf-ui-neon-color), 0 0 50px 25px var(--lf-ui-neon-color), 0 0 80px 40px var(--lf-ui-neon-color)",
+    "background": "radial-gradient(ellipse 90% 60% at 50% 10%, var(--lf-ui-neon-color) 0%, color-mix(in srgb, var(--lf-ui-neon-color) 70%, transparent) 30%, transparent 60%)",
+    "animation": "lf-neon-glow-pulse var(--lf-ui-neon-pulse-duration, 8s) ease-in-out infinite"
+  },
+  "[data-lf-ripple]": {
+    "animation-duration": "var(--lf-ui-ripple-duration, 675ms)",
+    "animation-fill-mode": "forwards",
+    "animation-name": "lf-ripple",
+    "animation-timing-function": "var(--lf-ui-ripple-easing, ease-out)",
+    "background": "var(--lf-ui-ripple-background, var(--lf-color-primary))",
+    "border-radius": "var(--lf-ui-ripple-border-radius, 50%)",
+    "height": "var(--lf-ui-ripple-height, 100%)",
+    "left": "var(--lf-ui-ripple-x, 50%)",
+    "opacity": "var(--lf-ui-ripple-opacity, 0.5)",
+    "pointer-events": "none",
+    "position": "absolute",
+    "top": "var(--lf-ui-ripple-y, 50%)",
+    "transform": "scale(0)",
+    "width": "var(--lf-ui-ripple-width, 100%)"
+  },
+  "@keyframes lf-ripple": [
+    {
+      "from": {
+        "transform": "scale(0)"
+      }
+    },
+    {
+      "to": {
+        "opacity": "0",
+        "transform": "scale(4)"
+      }
+    }
+  ],
+  "[data-lf-effect-layer=tilt-highlight]": {
+    "background": "transparent",
+    "border-radius": "inherit",
+    "inset": "0",
+    "mix-blend-mode": "screen",
+    "overflow": "hidden",
+    "pointer-events": "none",
+    "position": "absolute",
+    "transition": "background 275ms ease-out"
   },
   ".lf-effects [data-lf=backdrop]": {
     "transition": "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",
@@ -62,8 +626,10 @@ export const GLOBAL_STYLES = {
   ".lf-effects [data-lf=lightbox-content]": {
     "width": "100%",
     "height": "100%",
-    "border": "1px solid rgba(var(--lf-color-border), 0.375)",
+    "backdrop-filter": "blur(8px)",
+    "border": "1px solid rgba(var(--lf-color-border), var(--lf-ui-alpha-glass-heavy, 0.75))",
     "border-radius": "var(--lf-ui-border-radius)",
+    "box-shadow": "var(--lf-ui-box-shadow-modal)",
     "box-sizing": "border-box",
     "outline": "none",
     "z-index": "calc(var(--lf-ui-zindex-lightbox, 900) + 1)"

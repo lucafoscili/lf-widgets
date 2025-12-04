@@ -75,6 +75,7 @@ export const createRefs = (): LfCardAdapterRefs => {
     layouts: {
       debug: { button: null, code: null, toggle: null },
       keywords: { button: null, chip: null },
+      material: null,
     },
   };
 };

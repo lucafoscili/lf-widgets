@@ -118,6 +118,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
@@ -138,6 +139,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-card --> lf-card
+  lf-accordion --> lf-card
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
@@ -145,15 +147,16 @@ graph TD;
   lf-canvas --> lf-image
   lf-chat --> lf-spinner
   lf-chat --> lf-article
+  lf-chat --> lf-accordion
   lf-chat --> lf-button
   lf-chat --> lf-chip
   lf-chat --> lf-textfield
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-checkbox
   lf-article --> lf-card
   lf-code --> lf-button
   lf-photoframe --> lf-image
-  lf-accordion --> lf-card
   lf-breadcrumbs --> lf-card
   lf-carousel --> lf-card
   lf-compare --> lf-card

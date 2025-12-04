@@ -31,7 +31,6 @@ export const LF_ACCORDION_PARTS = {
   expand: "expand",
   header: "header",
   icon: "icon",
-  rippleSurface: "ripple-surface",
   text: "text",
 } as const;
 //#endregion

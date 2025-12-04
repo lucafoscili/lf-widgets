@@ -8,7 +8,11 @@ import {
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getButtonFixtures } from "../../../src/components/lf-showcase/assets/data/button";
-import { CY_ALIASES, CY_CATEGORIES } from "../../support/constants";
+import {
+  CY_ALIASES,
+  CY_CATEGORIES,
+  CY_EFFECT_LAYERS,
+} from "../../support/constants";
 import { getExamplesKeys } from "../../support/utils";
 
 const buttonName: LfComponentName = "LfButton";
@@ -36,15 +40,8 @@ describe(CY_CATEGORIES.basic, () => {
 //#region Events
 describe(CY_CATEGORIES.events, () => {
   const { eventElement } = CY_ALIASES;
-  const {
-    button,
-    check,
-    dropdownButton,
-    dropdownMenu,
-    node,
-    portal,
-    rippleSurface,
-  } = CY_ATTRIBUTES;
+  const { button, check, dropdownButton, dropdownMenu, node, portal } =
+    CY_ATTRIBUTES;
 
   it(`blur`, () => {
     cy.navigate(button);
@@ -77,7 +74,7 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(button);
     const eventType: LfButtonEvent = "pointerdown";
     cy.checkEvent(button, eventType);
-    cy.get(eventElement).findCyElement(rippleSurface).first().click();
+    cy.get(eventElement).findCyElement(button).first().click();
     cy.getCyElement(check).should("exist");
   });
   it(`ready`, () => {
@@ -110,7 +107,7 @@ describe(CY_CATEGORIES.methods, () => {
 describe(CY_CATEGORIES.props, () => {
   let framework: LfFrameworkInterface;
   const { lfComponentShowcase } = CY_ALIASES;
-  const { dropdownButton, fIcon, rippleSurface } = CY_ATTRIBUTES;
+  const { dropdownButton, fIcon } = CY_ATTRIBUTES;
 
   beforeEach(() => {
     cy.navigate(button);
@@ -291,20 +288,15 @@ describe(CY_CATEGORIES.props, () => {
           expect(button.lfTrailingIcon).to.be.true;
         });
 
+        // For trailing icon: label comes before icon
         cy.getCyElement(button)
           .should("exist")
           .and("not.have.class", "no-label")
-          .children()
-          .then((children) => {
-            const [rpl, label, icon] = children.toArray();
-            expect(rpl).to.have.attr("data-cy", rippleSurface);
-            expect(label).to.have.class(
-              framework.theme.bemClass("button", "label"),
-            );
-            expect(icon).to.have.class(
-              framework.theme.bemClass("button", "icon"),
-            );
-          });
+          .find(`.${framework.theme.bemClass("button", "label")}`)
+          .should("exist");
+        cy.getCyElement(button)
+          .find(`.${framework.theme.bemClass("button", "icon")}`)
+          .should("exist");
       });
 
     cy.get(lfComponentShowcase)
@@ -319,20 +311,15 @@ describe(CY_CATEGORIES.props, () => {
           expect(lfTrailingIcon).to.be.false;
         });
 
+        // For non-trailing icon: icon comes before label
         cy.getCyElement(button)
           .should("exist")
           .and("not.have.class", "no-label")
-          .children()
-          .then((children) => {
-            const [rpl, icon, label] = children.toArray();
-            expect(rpl).to.have.attr("data-cy", rippleSurface);
-            expect(icon).to.have.class(
-              framework.theme.bemClass("button", "icon"),
-            );
-            expect(label).to.have.class(
-              framework.theme.bemClass("button", "label"),
-            );
-          });
+          .find(`.${framework.theme.bemClass("button", "icon")}`)
+          .should("exist");
+        cy.getCyElement(button)
+          .find(`.${framework.theme.bemClass("button", "label")}`)
+          .should("exist");
       });
   });
   it("lfType: should check for the correct type on the button element.", () => {

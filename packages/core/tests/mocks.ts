@@ -54,6 +54,8 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
           separator: jest.fn(),
         },
         shapes: {
+          accordion: jest.fn(),
+          accordionCodeBlock: jest.fn(),
           progressRow: jest.fn(),
           buttonRow: jest.fn(),
           card: jest.fn(),
@@ -108,26 +110,43 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         show: jest.fn(),
       },
       isRegistered: jest.fn(),
+      layers: {
+        getAllLayers: jest.fn().mockReturnValue([]),
+        getLayer: jest.fn().mockReturnValue(null),
+        register: jest
+          .fn()
+          .mockImplementation(() => document.createElement("div")),
+        registerTransform: jest.fn(),
+        reorderLayers: jest.fn(),
+        unregister: jest.fn(),
+        unregisterTransform: jest.fn(),
+        updateTransform: jest.fn(),
+      },
       lightbox: {
         hide: jest.fn(),
         isVisible: jest.fn(),
         show: jest.fn(),
       },
       register: {
+        neonGlow: jest.fn(),
+        ripple: jest.fn(),
         tilt: jest.fn(),
       },
-      ripple: jest.fn(),
       set: {
         intensity: jest.fn(),
         timeout: jest.fn(),
       },
       unregister: {
+        neonGlow: jest.fn(),
+        ripple: jest.fn(),
         tilt: jest.fn(),
       },
     },
     llm: {
       createAbort: jest.fn(),
       fetch: jest.fn(),
+      getBuiltinToolDefinitions: jest.fn(() => ({ general: {}, lfw: {} })),
+      getBuiltinToolHandlers: jest.fn(() => ({})),
       poll: jest.fn(),
       speechToText: jest.fn(),
       stream: jest.fn(),
@@ -180,6 +199,11 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       randomize: jest.fn(),
       register: jest.fn(),
       unregister: jest.fn(),
+      sharedStyles: {
+        adopt: jest.fn(),
+        release: jest.fn(),
+        isAdopted: jest.fn().mockReturnValue(false),
+      },
     },
     addClickCallback: jest.fn(),
     assignRef: jest.fn(),

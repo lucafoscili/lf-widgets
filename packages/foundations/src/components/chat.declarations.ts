@@ -17,13 +17,14 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
-import { LfLLMTool } from "../framework/llm.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfLLMAttachment,
   LfLLMChoiceMessage,
   LfLLMRole,
+  LfLLMToolDefinition,
+  LfLLMToolHandlers,
 } from "../framework/llm.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
@@ -35,6 +36,10 @@ import {
   LF_CHAT_STATUS,
   LF_CHAT_VIEW,
 } from "./chat.constants";
+import {
+  LfCheckboxElement,
+  LfCheckboxEventPayload,
+} from "./checkbox.declarations";
 import { LfChipElement, LfChipEventPayload } from "./chip.declarations";
 import { LfProgressbarElement } from "./progressbar.declarations";
 import { LfSpinnerElement } from "./spinner.declarations";
@@ -123,6 +128,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     paragraph: (children: (VNode | string)[]) => VNode;
   };
   settings: {
+    agentSettings: () => VNode;
     back: () => VNode;
     contextWindow: () => VNode;
     endpoint: () => VNode;
@@ -135,12 +141,17 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     system: () => VNode;
     temperature: () => VNode;
     seed: () => VNode;
+    tools: () => VNode;
     topP: () => VNode;
   };
   toolbar: {
     copyContent: (m: LfLLMChoiceMessage) => VNode;
     deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     editMessage: (m: LfLLMChoiceMessage) => VNode;
+    messageAttachments: (
+      m: LfLLMChoiceMessage,
+      isEditing?: boolean,
+    ) => VNode | null;
     regenerate: (m: LfLLMChoiceMessage) => VNode;
     toolExecution: (m: LfLLMChoiceMessage) => VNode | null;
   };
@@ -169,6 +180,9 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     toolExecutionChip: LfChipElement | null;
   };
   settings: {
+    agentEnabled: LfCheckboxElement | null;
+    agentMaxIterations: LfTextfieldElement | null;
+    agentSystemPromptSuffix: LfTextfieldElement | null;
     back: LfButtonElement | null;
     contextWindow: LfTextfieldElement | null;
     endpoint: LfTextfieldElement | null;
@@ -182,12 +196,14 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     system: LfTextfieldElement | null;
     seed: LfTextfieldElement | null;
     temperature: LfTextfieldElement | null;
+    tools: Map<string, LfCheckboxElement>;
     topP: LfTextfieldElement | null;
   };
   toolbar: {
     copyContent: LfButtonElement | null;
     deleteMessage: LfButtonElement | null;
     editMessage: LfButtonElement | null;
+    messageAttachments: Map<string, LfChipElement>;
     regenerate: LfButtonElement | null;
     toolExecution: LfChipElement | null;
   };
@@ -202,6 +218,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   };
   settings: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
+    checkbox: (e: CustomEvent<LfCheckboxEventPayload>) => void;
     textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
   toolbar: {
@@ -209,6 +226,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
       e: CustomEvent<LfButtonEventPayload>,
       m: LfLLMChoiceMessage,
     ) => void;
+    chip: (e: CustomEvent<LfChipEventPayload>, m: LfLLMChoiceMessage) => void;
   };
 }
 /**
@@ -216,6 +234,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
  */
 export type LfChatAdapterInitializerGetters = Pick<
   LfChatAdapterControllerGetters,
+  | "agentState"
   | "blocks"
   | "compInstance"
   | "currentAbortStreaming"
@@ -239,6 +258,7 @@ export type LfChatAdapterInitializerGetters = Pick<
  */
 export type LfChatAdapterInitializerSetters = Pick<
   LfChatAdapterControllerSetters,
+  | "agentState"
   | "currentAbortStreaming"
   | "currentAttachments"
   | "currentEditingIndex"
@@ -254,6 +274,7 @@ export type LfChatAdapterInitializerSetters = Pick<
  */
 export interface LfChatAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChatInterface> {
+  agentState: () => LfChatAgentState | null;
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
   currentAbortStreaming: () => AbortController | null;
@@ -277,6 +298,7 @@ export interface LfChatAdapterControllerGetters
  */
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  agentState: (value: LfChatAgentState | null) => void;
   currentAbortStreaming: (value: AbortController | null) => void;
   currentAttachments: (value: LfLLMAttachment[]) => void;
   currentEditingIndex: (value: number) => void;
@@ -306,6 +328,40 @@ export interface LfChatEventPayload
 
 //#region States
 /**
+ * State information passed to agent iteration callbacks.
+ * Provides visibility into the agent's progress during multi-step execution.
+ */
+export interface LfChatAgentState {
+  /**
+   * Current iteration number (1-based).
+   */
+  iteration: number;
+  /**
+   * Maximum iterations configured.
+   */
+  maxIterations: number;
+  /**
+   * Names of tools called in the current iteration.
+   */
+  toolsCalled: string[];
+  /**
+   * Total number of tool calls made across all iterations.
+   */
+  totalToolCalls: number;
+  /**
+   * Estimated tokens used so far (if available).
+   */
+  tokensUsed?: number;
+  /**
+   * Whether the LLM indicated task completion (no more tool calls).
+   */
+  isComplete: boolean;
+  /**
+   * Last error encountered (if any).
+   */
+  lastError?: string;
+}
+/**
  * Utility interface used by the `lf-chat` component.
  */
 export interface LfChatCurrentTokens {
@@ -332,6 +388,42 @@ export type LfChatView = (typeof LF_CHAT_VIEW)[number];
  * of related settings for LLM behavior, UI preferences, and feature toggles.
  */
 export interface LfChatConfig {
+  /**
+   * Agent mode configuration for autonomous multi-step task execution.
+   * When enabled, the LLM can chain multiple tool calls to complete complex tasks.
+   */
+  agent?: {
+    /**
+     * Enable agent mode for autonomous multi-step execution.
+     * When true, the LLM will automatically continue after tool execution
+     * until the task is complete or limits are reached.
+     * @default false
+     */
+    enabled?: boolean;
+    /**
+     * Maximum number of consecutive tool-calling iterations allowed.
+     * Prevents infinite loops and controls resource usage.
+     * @default 10
+     */
+    maxIterations?: number;
+    /**
+     * Maximum total tokens (input + output) allowed per agent run.
+     * Helps control costs for complex multi-step tasks.
+     * @default undefined (no limit)
+     */
+    maxTotalTokens?: number;
+    /**
+     * Callback invoked after each iteration with current state.
+     * Return `false` to stop the agent early (e.g., based on custom conditions).
+     */
+    onIteration?: (state: LfChatAgentState) => boolean | Promise<boolean>;
+    /**
+     * Additional system prompt instructions appended when agent mode is active.
+     * Helps guide the LLM to properly handle tool results.
+     * @default "After receiving tool results, respond to the user with the information. Never call the same tool twice with identical arguments."
+     */
+    systemPromptSuffix?: string;
+  };
   /**
    * LLM provider and API configuration.
    */
@@ -378,13 +470,25 @@ export interface LfChatConfig {
     seed?: number;
   };
   /**
-   * Tool calling configuration.
+   * Tool calling configuration (serializable).
    */
   tools?: {
     /**
-     * Array of available tools with OpenAI function calling schema.
+     * Array of available tool definitions with OpenAI function calling schema.
+     * These are serializable - execution handlers are provided via lfToolHandlers prop.
      */
-    definitions?: LfLLMTool[];
+    definitions?: LfLLMToolDefinition[];
+    /**
+     * Tool names to enable for requests. If undefined, all definitions are enabled.
+     * Use this to filter which tools are sent to the LLM.
+     */
+    enabled?: string[];
+    /**
+     * Group tools by category for UI organization.
+     * Keys are category names, values are arrays of tool names.
+     * @example { "Weather": ["get_weather", "get_forecast"], "Search": ["search_web"] }
+     */
+    categories?: Record<string, string[]>;
   };
   /**
    * User interface and display preferences.
@@ -419,10 +523,6 @@ export interface LfChatConfig {
      * Allowed MIME types (e.g., ["image/*", "application/pdf"]).
      */
     allowedTypes?: string[];
-    /**
-     * Optional callback for uploading files to external storage.
-     */
-    uploadCallback?: (files: File[]) => Promise<LfLLMAttachment[]>;
   };
 }
 
@@ -432,79 +532,43 @@ export interface LfChatConfig {
 export interface LfChatPropsInterface {
   /**
    * Configuration object for LLM, tools, UI, and attachments.
-   * Recommended for new implementations; legacy individual props remain supported.
+   * Contains only serializable settings for easy JSON storage/transfer.
    */
   lfConfig?: LfChatConfig;
   /**
-   * @deprecated Use `lfConfig.attachments.uploadTimeout` instead.
-   * Timeout in milliseconds to apply to the upload callback. If the callback does
-   * not resolve within this time it will be considered failed. Default is 60000 (60s).
+   * Custom styling for the component.
    */
-  lfAttachmentUploadTimeout?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.contextWindow` instead.
-   */
-  lfContextWindow?: number;
-  /**
-   * @deprecated Use `lfConfig.ui.emptyMessage` instead.
-   */
-  lfEmpty?: string;
-  /**
-   * @deprecated Use `lfConfig.llm.endpointUrl` instead.
-   */
-  lfEndpointUrl?: string;
-  /**
-   * @deprecated Use `lfConfig.llm.frequencyPenalty` instead.
-   */
-  lfFrequencyPenalty?: number;
-  /**
-   * @deprecated Use `lfConfig.ui.layout` instead.
-   */
-  lfLayout?: LfChatLayout;
-  /**
-   * @deprecated Use `lfConfig.llm.maxTokens` instead.
-   */
-  lfMaxTokens?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.pollingInterval` instead.
-   */
-  lfPollingInterval?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.presencePenalty` instead.
-   */
-  lfPresencePenalty?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.seed` instead.
-   */
-  lfSeed?: number;
   lfStyle?: string;
   /**
-   * @deprecated Use `lfConfig.llm.systemPrompt` instead.
+   * Map of tool names to their execution handler functions.
+   * Each handler receives the parsed arguments and returns a result.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
+   *
+   * @example
+   * ```tsx
+   * <lf-chat
+   *   lfToolHandlers={{
+   *     get_weather: async (args) => `Weather in ${args.city}: Sunny`,
+   *     search_docs: async (args) => ({ type: "article", dataset: myDataset })
+   *   }}
+   * />
+   * ```
    */
-  lfSystem?: string;
+  lfToolHandlers?: LfLLMToolHandlers;
   /**
-   * @deprecated Use `lfConfig.llm.temperature` instead.
+   * The size of the component.
    */
-  lfTemperature?: number;
-  /**
-   * @deprecated Use `lfConfig.tools.definitions` instead.
-   */
-  lfTools?: LfLLMTool[];
-  /**
-   * @deprecated Use `lfConfig.llm.topP` instead.
-   */
-  lfTopP?: number;
   lfUiSize?: LfThemeUISize;
-  lfValue?: LfChatHistory;
   /**
-   * @deprecated Use `lfConfig.attachments.uploadCallback` instead.
-   * Optional callback provided by the host to upload files. If present the component
-   * will call this function with the selected File[] and expect a Promise resolving
-   * to an array of `LfLLMAttachment` objects describing uploaded files (including
-   * public `url` entries). If omitted the component falls back to inline base64
-   * encoding using the `data` field on attachments.
+   * Callback for uploading files to external storage.
+   * Returns attachment metadata after upload completes.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
    */
   lfUploadCallback?: (files: File[]) => Promise<LfLLMAttachment[]>;
+  /**
+   * Sets the initial history of the chat.
+   */
+  lfValue?: LfChatHistory;
 }
 /**
  * Union of layouts listed in `LF_CHAT_LAYOUT`.

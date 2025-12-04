@@ -107,7 +107,7 @@ export const LF_THEME_UI_NUMERICS = [
   "alphaGlassHint",
   "alphaGlassSolid",
   "opacityDisabled",
-  "opacityRipple",
+  "rippleOpacity",
   "zindexBackdrop",
   "zindexDrawer",
   "zindexHeader",
@@ -134,12 +134,12 @@ export const LF_THEME_UI = {
   alphaGlassSolid: `${LF_THEME_UI_PREFIX}alpha-glass-solid`,
   borderRadius: `${LF_THEME_UI_PREFIX}border-radius`,
   boxShadowModal: `${LF_THEME_UI_PREFIX}box-shadow-modal`,
-  durationRipple: `${LF_THEME_UI_PREFIX}duration-ripple`,
   heightHeader: `${LF_THEME_UI_PREFIX}height-header`,
   opacityDisabled: `${LF_THEME_UI_PREFIX}opacity-disabled`,
-  opacityRipple: `${LF_THEME_UI_PREFIX}opacity-ripple`,
-  radiusRipple: `${LF_THEME_UI_PREFIX}radius-ripple`,
-  timingRipple: `${LF_THEME_UI_PREFIX}timing-ripple`,
+  rippleDuration: `${LF_THEME_UI_PREFIX}ripple-duration`,
+  rippleEasing: `${LF_THEME_UI_PREFIX}ripple-easing`,
+  rippleOpacity: `${LF_THEME_UI_PREFIX}ripple-opacity`,
+  rippleRadius: `${LF_THEME_UI_PREFIX}ripple-radius`,
   widthDrawer: `${LF_THEME_UI_PREFIX}width-drawer`,
   zindexBackdrop: `${LF_THEME_UI_PREFIX}zindex-backdrop`,
   zindexDrawer: `${LF_THEME_UI_PREFIX}zindex-drawer`,
@@ -307,11 +307,12 @@ export const LF_THEME_BASE_VARS = {
   "--lf-ui-alpha-glass-heavy": 0.75,
   "--lf-ui-alpha-glass-solid": 0.875,
   "--lf-ui-box-shadow-modal": "0px 0px 7.5px 0px rgba(128, 128, 128, 0.5)",
-  "--lf-ui-duration-ripple": "750ms",
   "--lf-ui-height-header": "80px",
   "--lf-ui-opacity-disabled": 0.6,
-  "--lf-ui-opacity-ripple": 0.275,
-  "--lf-ui-radius-ripple": "0",
+  "--lf-ui-ripple-duration": "750ms",
+  "--lf-ui-ripple-easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+  "--lf-ui-ripple-opacity": 0.275,
+  "--lf-ui-ripple-radius": "0",
   "--lf-ui-size-large": 1.15,
   "--lf-ui-size-medium": 1,
   "--lf-ui-size-small": 0.85,
@@ -319,7 +320,6 @@ export const LF_THEME_BASE_VARS = {
   "--lf-ui-size-xsmall": 0.75,
   "--lf-ui-size-xxlarge": 1.35,
   "--lf-ui-size-xxsmall": 0.65,
-  "--lf-ui-timing-ripple": "cubic-bezier(0.4, 0, 0.2, 1)",
   "--lf-ui-width-drawer": "320px",
   "--lf-ui-zindex-backdrop": 899,
   "--lf-ui-zindex-drawer": 900,
@@ -333,6 +333,7 @@ export const LF_THEME_BASE_VARS = {
 
 //#region Dark theme
 export const DARK: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -370,6 +371,7 @@ export const DARK: LfThemeElement = {
 
 //#region Light theme
 export const LIGHT: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: false,
   variables: {
@@ -405,6 +407,7 @@ export const LIGHT: LfThemeElement = {
 
 //#region Abyss
 export const ABYSS: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.staatliches,
     LF_THEME_FONTS_FONTFACE.oswald,
@@ -435,7 +438,7 @@ export const ABYSS: LfThemeElement = {
     "--lf-color-spinner": "#2a5060",
     "--lf-color-on-spinner": "#b3ecff",
     "--lf-ui-border-radius": "0.25em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Staatliches, sans-serif",
     "--lf-font-family-secondary": "Oswald, sans-serif",
@@ -446,6 +449,7 @@ export const ABYSS: LfThemeElement = {
 
 //#region Bloodmoon
 export const BLOODMOON: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.cormorantGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
@@ -486,7 +490,7 @@ export const BLOODMOON: LfThemeElement = {
     "--lf-color-spinner": "#ff5500",
     "--lf-color-on-spinner": "#ffe6d9",
     "--lf-ui-border-radius": "0.5em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-font-family-primary": "Cormorant Garamond, serif",
     "--lf-font-family-monospace": "Jet Brains Mono, monospace",
     "--lf-font-family-secondary": "Cinzel, serif",
@@ -497,6 +501,7 @@ export const BLOODMOON: LfThemeElement = {
 
 //#region Eris
 export const ERIS: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -516,8 +521,8 @@ export const ERIS: LfThemeElement = {
     "--lf-color-on-bg": "#f5f5f5",
     "--lf-color-on-surface": "#e2e2e2",
     "--lf-ui-box-shadow-modal": "0px 0px 15px rgba(109, 93, 252, 0.4)",
-    "--lf-ui-opacity-ripple": 0.6,
-    "--lf-ui-radius-ripple": "60%",
+    "--lf-ui-ripple-opacity": 0.6,
+    "--lf-ui-ripple-radius": "60%",
     "--lf-color-header": "#181427",
     "--lf-color-drawer": "#151024",
     "--lf-color-on-header": "#f0f0f0",
@@ -528,6 +533,7 @@ export const ERIS: LfThemeElement = {
 
 //#region Neon
 export const NEON: LfThemeElement = {
+  effects: ["ripple", "neon-glow"],
   font: [
     LF_THEME_FONTS_FONTFACE.orbitron,
     LF_THEME_FONTS_FONTFACE.lato,
@@ -562,13 +568,14 @@ export const NEON: LfThemeElement = {
     "--lf-font-family-secondary": "Lato, sans-serif",
     "--lf-font-size": "14px",
     "--lf-ui-border-radius": "0.5em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
   },
 } as const;
 //#endregion
 
 //#region Night
 export const NIGHT: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.bebasNeue,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
@@ -601,13 +608,14 @@ export const NIGHT: LfThemeElement = {
     "--lf-font-family-monospace": "Share Tech Mono, monospace",
     "--lf-font-family-primary": "Bebas Neue, sans-serif",
     "--lf-ui-border-radius": "0.25em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
   },
 } as const;
 //#endregion
 
 //#region Pastel
 export const PASTEL: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.raleway,
     LF_THEME_FONTS_FONTFACE.sourceCodePro,
@@ -640,13 +648,14 @@ export const PASTEL: LfThemeElement = {
     "--lf-font-family-monospace": "Source Code Pro, monospace",
     "--lf-font-family-primary": "Raleway, sans-serif",
     "--lf-ui-border-radius": "0.25em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
   },
 } as const;
 //#endregion
 
 //#region Sakura
 export const SAKURA: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.sawarabiMincho,
     LF_THEME_FONTS_FONTFACE.raleway,
@@ -677,7 +686,7 @@ export const SAKURA: LfThemeElement = {
     "--lf-color-spinner": "#dfb5ba",
     "--lf-color-on-spinner": "#511f22",
     "--lf-ui-border-radius": "0.75em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-font-size": "17px",
     "--lf-font-family-primary": "Sawarabi Mincho, serif",
     "--lf-font-family-monospace": "Raleway, sans-serif",
@@ -688,6 +697,7 @@ export const SAKURA: LfThemeElement = {
 
 //#region Sepulchre
 export const SEPULCHRE: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.ebGaramond,
     LF_THEME_FONTS_FONTFACE.jetBrainsMono,
@@ -732,7 +742,7 @@ export const SEPULCHRE: LfThemeElement = {
     "--lf-font-family-secondary": "'Cormorant Garamond', serif",
     "--lf-font-size": "16px",
     "--lf-ui-border-radius": "0.35rem",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-ui-box-shadow-modal": "0 18px 45px rgba(80, 55, 20, 0.45)",
   },
 } as const;
@@ -740,6 +750,7 @@ export const SEPULCHRE: LfThemeElement = {
 
 //#region Steampunk
 export const STEAMPUNK: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.IMFellEnglishSC,
     LF_THEME_FONTS_FONTFACE.shareTechMono,
@@ -770,7 +781,7 @@ export const STEAMPUNK: LfThemeElement = {
     "--lf-color-spinner": "#3b2f23",
     "--lf-color-on-spinner": "#f7f3eb",
     "--lf-ui-border-radius": "0.25em",
-    "--lf-ui-radius-ripple": "30%",
+    "--lf-ui-ripple-radius": "30%",
     "--lf-font-size": "16px",
     "--lf-font-family-primary": "IM Fell English SC, serif",
     "--lf-font-family-monospace": "Share Tech Mono, monospace",
@@ -781,6 +792,7 @@ export const STEAMPUNK: LfThemeElement = {
 
 //#region Urban
 export const URBAN: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.lato,
     LF_THEME_FONTS_FONTFACE.merriweather,
@@ -812,13 +824,14 @@ export const URBAN: LfThemeElement = {
     "--lf-color-on-spinner": "#333333",
     "--lf-font-family-monospace": "Merriweather, monospace",
     "--lf-font-family-primary": "Lato, sans-serif",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
   },
 } as const;
 //#endregion
 
 //#region Voidforge
 export const VOIDFORGE: LfThemeElement = {
+  effects: ["ripple"],
   font: [LF_THEME_FONTS_FONTFACE.oswald, LF_THEME_FONTS_FONTFACE.xanhMono],
   isDark: true,
   variables: {
@@ -847,7 +860,7 @@ export const VOIDFORGE: LfThemeElement = {
     "--lf-color-spinner": "#262a3c",
     "--lf-color-on-spinner": "#cfe5ff",
     "--lf-ui-border-radius": "0.75em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-font-size": "15px",
   },
 } as const;
@@ -855,6 +868,7 @@ export const VOIDFORGE: LfThemeElement = {
 
 //#region Wizardry
 export const WIZARDRY: LfThemeElement = {
+  effects: ["ripple"],
   font: [
     LF_THEME_FONTS_FONTFACE.uncialAntiqua,
     LF_THEME_FONTS_FONTFACE.cinzel,
@@ -885,7 +899,7 @@ export const WIZARDRY: LfThemeElement = {
     "--lf-color-spinner": "#4e3b4e",
     "--lf-color-on-spinner": "#e3d8c6",
     "--lf-ui-border-radius": "1.5em",
-    "--lf-ui-radius-ripple": "50%",
+    "--lf-ui-ripple-radius": "50%",
     "--lf-font-size": "15px",
     "--lf-font-family-primary": "Uncial Antiqua, serif",
     "--lf-font-family-monospace": "Cinzel, serif",

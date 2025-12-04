@@ -111,8 +111,3 @@ $box-shadow-color: var(--lf-#{$comp}-color-primary, var(--lf-color-primary));
     }
   }
 }
-
-[data-lf="ripple-surface"] {
-  pointer-events: none;
-  z-index: 1;
-}

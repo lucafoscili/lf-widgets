@@ -21,23 +21,15 @@ import { LfMessenger } from "./lf-messenger";
  * @param chatCell - The source chat cell containing the properties to extract
  * @param target - The target object where the properties will be assigned
  * @remarks
- * The following properties are extracted and assigned:
- * - lfEndpointUrl
- * - lfMaxTokens
- * - lfPollingInterval
- * - lfTemperature
+ * The lfConfig property is copied from the chat cell to the target.
  */
 export const extractPropsFromChatCell = (
   chatCell: LfDataCell<"chat">,
   target: LfChatPropsInterface,
 ) => {
-  const { lfEndpointUrl, lfMaxTokens, lfPollingInterval, lfTemperature } =
-    chatCell;
-
-  target.lfEndpointUrl = lfEndpointUrl;
-  target.lfMaxTokens = lfMaxTokens;
-  target.lfPollingInterval = lfPollingInterval;
-  target.lfTemperature = lfTemperature;
+  if (chatCell.lfConfig) {
+    target.lfConfig = chatCell.lfConfig;
+  }
 };
 //#endregion
 
@@ -146,29 +138,15 @@ export const downloadJson = (strJson: string, node: LfDataNode) => {
  *
  * @param chatCell - The chat cell instance to update
  * @param source - Source object containing chat configuration properties
- * @param source.lfEndpointUrl - URL endpoint for the chat service
- * @param source.lfMaxTokens - Maximum number of tokens allowed
- * @param source.lfPollingInterval - Interval for polling updates
- * @param source.lfSystem - System configuration
- * @param source.lfTemperature - Temperature parameter for response generation
+ * @param source.lfConfig - The chat configuration object
  */
 export const assignPropsToChatCell = (
   chatCell: LfDataCell<"chat">,
   source: LfChatPropsInterface,
 ) => {
-  const {
-    lfEndpointUrl,
-    lfMaxTokens,
-    lfPollingInterval,
-    lfSystem,
-    lfTemperature,
-  } = source;
-
-  chatCell.lfEndpointUrl = lfEndpointUrl;
-  chatCell.lfMaxTokens = lfMaxTokens;
-  chatCell.lfPollingInterval = lfPollingInterval;
-  chatCell.lfSystem = lfSystem;
-  chatCell.lfTemperature = lfTemperature;
+  if (source.lfConfig) {
+    chatCell.lfConfig = source.lfConfig;
+  }
 };
 //#endregion
 

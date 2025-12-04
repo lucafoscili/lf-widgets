@@ -19,7 +19,7 @@ export const LF_TEXTFIELD_BLOCKS = {
     input: "input",
     label: "label",
     resizer: "resizer",
-    rippleSurface: "ripple-surface",
+    underline: "underline",
   },
 } as const;
 //#endregion

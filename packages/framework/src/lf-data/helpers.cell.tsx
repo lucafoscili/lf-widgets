@@ -100,6 +100,7 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
   }
 
   const shapes: LfDataShapesMap = {
+    accordion: [],
     badge: [],
     button: [],
     canvas: [],
@@ -131,6 +132,9 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
         const cell = cells[key];
         const extracted = cellGetShape(cell, deepCopy);
         switch (cell.shape) {
+          case "accordion":
+            shapes.accordion.push(extracted as LfDataCell<"accordion">);
+            break;
           case "badge":
             shapes.badge.push(extracted as LfDataCell<"badge">);
             break;
@@ -158,11 +162,17 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
           case "image":
             shapes.image.push(extracted as LfDataCell<"image">);
             break;
+          case "number":
+            shapes.number.push(cell as LfDataCell<"number">);
+            break;
           case "photoframe":
             shapes.photoframe.push(extracted as LfDataCell<"photoframe">);
             break;
           case "progressbar":
             shapes.progressbar.push(extracted as LfDataCell<"progressbar">);
+            break;
+          case "slot":
+            shapes.slot.push(cell);
             break;
           case "textfield":
             shapes.textfield.push(extracted as LfDataCell<"textfield">);
@@ -173,14 +183,8 @@ export const cellGetAllShapes = (dataset: LfDataDataset, deepCopy = true) => {
           case "typewriter":
             shapes.typewriter.push(extracted as LfDataCell<"typewriter">);
             break;
-          case "number":
-            shapes.number.push(cell as LfDataCell<"number">);
-            break;
           case "upload":
             shapes.upload.push(extracted as LfDataCell<"upload">);
-            break;
-          case "slot":
-            shapes.slot.push(cell);
             break;
           case "text":
           default:

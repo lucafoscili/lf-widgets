@@ -1,7 +1,7 @@
-@use "../../style/_variables" as *;
-@use "../../style/mixins" as *;
+@use "_variables" as *;
+@use "mixins" as *;
 @use "./styles/component-template" as *;
-@use "./styles/mixins" as *;
+@use "./styles/showcase-mixins" as *;
 
 $gap: 1.5em;
 
@@ -33,15 +33,7 @@ $gap: 1.5em;
   }
 
   &__card {
-    & {
-      perspective: 600px;
-    }
-
     &::part(card) {
-      & {
-        @include lf-fw-tilt;
-      }
-
       &:after {
         @include lf-comp-border("", "radius");
       }

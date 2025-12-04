@@ -325,25 +325,10 @@ export class LfButton implements LfButtonInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfButtonEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfButtonEvent,
-    isDropdown = false,
-  ) {
-    const { dropdownRipple, ripple } = this.#adapter.elements.refs;
-    const { effects } = this.#framework;
-
+  onLfEvent(e: Event | CustomEvent, eventType: LfButtonEvent) {
     switch (eventType) {
       case "click":
         this.#updateState(this.#isOn() ? "off" : "on");
-        break;
-      case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(
-            e as PointerEvent,
-            isDropdown ? dropdownRipple : ripple,
-          );
-        }
         break;
     }
 
@@ -540,7 +525,18 @@ export class LfButton implements LfButtonInterface {
     }
   }
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
+    const { button, dropdown } = this.#adapter.elements.refs;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
+      if (button) {
+        effects.register.ripple(button);
+      }
+      if (dropdown) {
+        effects.register.ripple(dropdown);
+      }
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -586,14 +582,27 @@ export class LfButton implements LfButtonInterface {
     );
   }
   disconnectedCallback() {
-    if (this.#adapter) {
-      const { list } = this.#adapter.elements.refs;
+    const { effects, portal, theme } = this.#framework ?? {};
 
-      if (list && this.#framework?.portal.isInPortal(list)) {
-        this.#framework?.portal.close(list);
+    if (this.#adapter) {
+      const { button, dropdown, list } = this.#adapter.elements.refs;
+
+      if (list && portal?.isInPortal(list)) {
+        portal.close(list);
+      }
+
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple) {
+        if (button) {
+          effects.unregister.ripple(button);
+        }
+        if (dropdown) {
+          effects.unregister.ripple(dropdown);
+        }
       }
     }
-    this.#framework?.theme.unregister(this);
+
+    theme?.unregister(this);
   }
   //#endregion
 }

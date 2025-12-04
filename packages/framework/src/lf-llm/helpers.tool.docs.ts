@@ -1,13 +1,17 @@
 import {
   LfFrameworkInterface,
-  LfLLMTool,
+  LfLLMToolHandlers,
   LfLLMToolResponse,
 } from "@lf-widgets/foundations";
 
-export const createComponentDocsTool = (
+//#region Docs
+/**
+ * Creates the handler function for the component docs tool.
+ * Fetches README from GitHub and returns an article with the markdown.
+ */
+export const createDocsToolHandler = (
   framework: LfFrameworkInterface,
-): LfLLMTool => {
-  //#region Article
+): LfLLMToolHandlers[string] => {
   const buildArticleFromReadme = async (
     componentName: string,
   ): Promise<LfLLMToolResponse> => {
@@ -33,16 +37,17 @@ export const createComponentDocsTool = (
       const article = framework.data.article;
       const builder = article.builder.create({
         id: "docs-article",
-        title: normalizedTag,
       });
 
       builder.section.add.withLeaf({
         sectionId: "docs-readme",
-        sectionTitle: "README.md",
-        text: "",
+        sectionTitle: "",
+        text: `Here's the official documentation for the **${normalizedTag}** component! 📄`,
         layout: "stack",
-        leaf: article.shapes.codeBlock({
-          id: "docs-readme",
+        leaf: article.shapes.accordionCodeBlock({
+          id: "docs-readme-accordion",
+          title: "README.md",
+          icon: "file",
           language: "markdown",
           code: markdown,
         }),
@@ -66,10 +71,7 @@ export const createComponentDocsTool = (
   };
   //#endregion
 
-  //#region Execute
-  const execute = async (
-    args: Record<string, unknown>,
-  ): Promise<LfLLMToolResponse> => {
+  return async (args: Record<string, unknown>): Promise<LfLLMToolResponse> => {
     const rawComponent = args.component;
     const componentName =
       typeof rawComponent === "string" ? rawComponent.trim() : "";
@@ -93,28 +95,5 @@ export const createComponentDocsTool = (
       };
     }
   };
-  //#endregion
-
-  return {
-    type: "function",
-    function: {
-      name: "get_component_docs",
-      description: [
-        "Retrieve authoritative documentation for an lf-widgets web component.",
-        "Always use this tool whenever the user asks about lf-widgets components.",
-        "If documentation cannot be fetched, clearly say that docs are unavailable instead of fabricating details.",
-      ].join(" "),
-      parameters: {
-        type: "object",
-        properties: {
-          component: {
-            type: "string",
-            description:
-              "Component tag to query (e.g. 'lf-button', 'lf-chat'). Leave empty for a high-level framework overview.",
-          },
-        },
-      },
-      execute,
-    },
-  };
 };
+//#endregion

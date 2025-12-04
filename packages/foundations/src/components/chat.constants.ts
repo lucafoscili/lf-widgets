@@ -56,18 +56,29 @@ export const LF_CHAT_BLOCKS = {
   request: { _: "request" },
   settings: {
     _: "settings",
+    accordion: "accordion",
+    agentContainer: "agent-container",
+    agentHeader: "agent-header",
     back: "back",
     configuration: "configuration",
     exportHistory: "export-history",
     header: "header",
     importHistory: "import-history",
+    slotContent: "slot-content",
     textarea: "textarea",
     textfield: "textfield",
+    tools: "tools",
+    toolsCategory: "tools-category",
+    toolsCheckbox: "tools-checkbox",
+    toolsContainer: "tools-container",
+    toolsHeader: "tools-header",
+    toolsItem: "tools-item",
   },
   toolbar: {
     _: "toolbar",
     button: "button",
     buttons: "buttons",
+    messageAttachments: "message-attachments",
     toolExecution: "tool-execution",
   },
 } as const;
@@ -100,6 +111,9 @@ export const LF_CHAT_IDS = {
     stt: "chat-stt",
   },
   options: {
+    agentEnabled: "option-agent-enabled",
+    agentMaxIterations: "option-agent-max-iterations",
+    agentSystemPromptSuffix: "option-agent-system-prompt-suffix",
     back: "option-back",
     contextWindow: "option-context",
     endpointUrl: "option-endpoint",
@@ -112,6 +126,7 @@ export const LF_CHAT_IDS = {
     seed: "option-seed",
     system: "option-system",
     temperature: "option-temperature",
+    tools: "option-tools",
     topP: "option-top-p",
   },
   toolbar: {
@@ -129,6 +144,10 @@ export const LF_CHAT_LAYOUT = ["bottom", "top"] as const;
 
 //#region Parts
 export const LF_CHAT_PARTS = {
+  agentEnabled: "agent-enabled",
+  agentMaxIterations: "agent-max-iterations",
+  agentSettings: "agent-settings",
+  agentSystemPromptSuffix: "agent-system-prompt-suffix",
   attachFile: "attach-file",
   attachImage: "attach-image",
   attachments: "attachments",
@@ -150,6 +169,7 @@ export const LF_CHAT_PARTS = {
   frequencyPenalty: "frequency-penalty",
   importHistory: "import-history",
   maxTokens: "max-tokens",
+  messageAttachments: "message-attachments",
   polling: "polling",
   presencePenalty: "presence-penalty",
   prompt: "prompt",
@@ -161,29 +181,19 @@ export const LF_CHAT_PARTS = {
   system: "system",
   temperature: "temperature",
   toolbar: "toolbar",
+  tools: "tools",
   topP: "top-p",
 } as const;
 //#endregion
 
 //#region Props
 export const LF_CHAT_PROPS = [
-  "lfAttachmentUploadTimeout",
-  "lfContextWindow",
-  "lfEmpty",
-  "lfEndpointUrl",
-  "lfFrequencyPenalty",
-  "lfLayout",
-  "lfMaxTokens",
-  "lfPollingInterval",
-  "lfPresencePenalty",
-  "lfSeed",
+  "lfConfig",
   "lfStyle",
-  "lfSystem",
-  "lfTemperature",
-  "lfTopP",
+  "lfToolHandlers",
   "lfUiSize",
-  "lfValue",
   "lfUploadCallback",
+  "lfValue",
 ] as const satisfies (keyof LfChatPropsInterface)[];
 //#endregion
 

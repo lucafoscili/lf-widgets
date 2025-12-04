@@ -11,14 +11,93 @@ import {
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 
+//#region Accordion helpers
 /**
- * Lightweight helpers for building `lf-article` datasets.
+ * Creates an accordion article node that wraps content in a collapsible container.
+ * Ideal for large content like READMEs that would otherwise overwhelm the UI.
  *
- * These builders are pure and framework-agnostic: they only assemble
- * `LfArticleDataset` / `LfArticleNode` structures without touching theme,
- * services, or DOM. Higher-level code (e.g. LLM tools) can compose them
- * to create rich articles without rewriting boilerplate.
+ * @param options - Configuration for the accordion
+ * @param options.id - Unique identifier for the node
+ * @param options.dataset - The dataset containing nodes to display in the accordion
+ * @param options.uiSize - Optional size of the accordion
+ * @param options.uiState - Optional color state of the accordion
+ * @param options.style - Optional custom CSS styles
+ * @returns An LfArticleNode configured with an accordion shape
  */
+export const accordion = (options: {
+  id: string;
+  dataset: LfDataDataset;
+  uiSize?: LfThemeUISize;
+  uiState?: LfThemeUIState;
+  style?: string;
+}): LfArticleNode => ({
+  id: options.id,
+  value: "",
+  cells: {
+    lfAccordion: {
+      shape: "accordion",
+      value: "",
+      lfDataset: options.dataset,
+      lfUiSize: options.uiSize,
+      lfUiState: options.uiState,
+      lfStyle: options.style,
+    },
+  },
+});
+/**
+ * Creates an accordion wrapping a code block - perfect for collapsible documentation.
+ * The accordion contains a single expandable section with the code content.
+ *
+ * @param options - Configuration for the accordion with code
+ * @param options.id - Unique identifier for the node
+ * @param options.title - Title shown on the accordion header (collapsed state)
+ * @param options.code - The code/text content to display
+ * @param options.icon - Optional icon shown in the accordion header
+ * @param options.language - Optional language for syntax highlighting
+ * @param options.uiSize - Optional size of the accordion
+ * @param options.uiState - Optional color state of the accordion
+ * @param options.style - Optional custom CSS styles
+ * @returns An LfArticleNode configured with an accordion containing a code block
+ */
+export const accordionCodeBlock = (options: {
+  id: string;
+  title: string;
+  code: string;
+  icon?: LfIconType;
+  language?: string;
+  uiSize?: LfThemeUISize;
+  uiState?: LfThemeUIState;
+  style?: string;
+}): LfArticleNode => ({
+  id: options.id,
+  value: "",
+  cells: {
+    lfAccordion: {
+      shape: "accordion",
+      value: "",
+      lfDataset: {
+        nodes: [
+          {
+            id: `${options.id}-section`,
+            value: options.title,
+            icon: options.icon,
+            cells: {
+              lfCode: {
+                shape: "code",
+                value: options.code,
+                lfLanguage: options.language,
+              },
+            },
+          },
+        ],
+      },
+      lfUiSize: options.uiSize,
+      lfUiState: options.uiState,
+      lfStyle: options.style,
+    },
+  },
+});
+//#endregion
 
 //#region Core builders
 export const createArticle = (

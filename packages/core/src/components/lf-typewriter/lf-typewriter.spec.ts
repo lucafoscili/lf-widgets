@@ -80,18 +80,14 @@ describe("lf-typewriter component", () => {
     expect(page.root).toBeTruthy();
   });
 
-  it("emits lf-typewriter-event on typing complete", async () => {
+  it("has event emitter configured", async () => {
     const page = await createPage(
       `<lf-typewriter lf-value="Test"></lf-typewriter>`,
     );
-    const spy = jest.fn();
-    page.root.addEventListener("lf-typewriter-event", spy);
+    const component = page.rootInstance as LfTypewriter;
 
-    // Wait for typing to complete (assuming default speed)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await page.waitForChanges();
-
-    // The event might not fire immediately, but we can check the setup
+    // Verify the component has the event emitter configured
+    expect(component.lfEvent).toBeDefined();
     expect(page.root).toBeDefined();
   });
 });

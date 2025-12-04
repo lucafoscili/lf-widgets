@@ -204,7 +204,7 @@ export class LfSlider implements LfSliderInterface {
   #v = LF_SLIDER_CSS_VARIABLES;
   #w = LF_WRAPPER_ID;
   #input: HTMLInputElement;
-  #r: HTMLElement;
+  #thumb: HTMLElement;
   //#endregion
 
   //#region Events
@@ -221,8 +221,6 @@ export class LfSlider implements LfSliderInterface {
   })
   lfEvent: EventEmitter<LfSliderEventPayload>;
   onLfEvent(e: Event | CustomEvent, eventType: LfSliderEvent) {
-    const { effects } = this.#framework;
-
     switch (eventType) {
       case "change":
         this.setValue(+this.#input.value);
@@ -232,10 +230,6 @@ export class LfSlider implements LfSliderInterface {
         this.value.display = +this.#input.value;
         this.refresh();
         break;
-      case "pointerdown":
-        if (this.lfRipple) {
-          effects.ripple(e as PointerEvent, this.#r);
-        }
     }
     this.lfEvent.emit({
       comp: this,
@@ -329,7 +323,12 @@ export class LfSlider implements LfSliderInterface {
     }
   }
   componentDidLoad() {
-    const { debug } = this.#framework;
+    const { debug, effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple && this.#thumb) {
+      effects.register.ripple(this.#thumb);
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     debug.info.update(this, "did-load");
@@ -348,16 +347,8 @@ export class LfSlider implements LfSliderInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { formField, slider } = this.#b;
-    const {
-      lfLabel,
-      lfLeadingLabel,
-      lfMax,
-      lfMin,
-      lfRipple,
-      lfStep,
-      lfStyle,
-      value,
-    } = this;
+    const { lfLabel, lfLeadingLabel, lfMax, lfMin, lfStep, lfStyle, value } =
+      this;
 
     return (
       <Host>
@@ -418,12 +409,10 @@ export class LfSlider implements LfSliderInterface {
                 <div class={bemClass(slider._, slider.thumbUnderlay)}>
                   <div
                     class={bemClass(slider._, slider.thumb)}
-                    data-cy={this.#cy.rippleSurface}
-                    data-lf={this.#lf.rippleSurface}
                     part={this.#p.thumb}
                     ref={(el) => {
-                      if (lfRipple) {
-                        this.#r = el;
+                      if (el) {
+                        this.#thumb = el;
                       }
                     }}
                   ></div>
@@ -448,7 +437,14 @@ export class LfSlider implements LfSliderInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework ?? {};
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && this.#thumb) {
+      effects.unregister.ripple(this.#thumb);
+    }
+
+    theme?.unregister(this);
   }
 }
 //#endregion

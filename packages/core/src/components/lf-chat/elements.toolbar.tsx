@@ -116,6 +116,56 @@ export const prepToolbar = (
     },
     //#endregion
 
+    //#region Message attachments
+    messageAttachments: (m, isEditing = false) => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, history, manager, parts } = controller.get;
+      const { toolbar } = elements.refs;
+      const { chip } = handlers.toolbar;
+      const { theme } = manager;
+      const { bemClass, get } = theme;
+
+      const attachments = m.attachments;
+      if (!attachments || attachments.length === 0) {
+        return null;
+      }
+
+      const messageIndex = history().indexOf(m);
+      const refKey = String(messageIndex);
+
+      const styling = isEditing ? "input" : "choice";
+
+      return (
+        <div
+          class={bemClass(blocks.toolbar._, blocks.toolbar.messageAttachments)}
+        >
+          <lf-chip
+            lfDataset={{
+              nodes: attachments.map((att) => ({
+                description: att.name,
+                icon:
+                  att.type === "image_url"
+                    ? get.current().variables["--lf-icon-image"]
+                    : get.current().variables["--lf-icon-attachment"],
+                id: att.id,
+                value: att.name,
+              })),
+            }}
+            lfStyling={styling}
+            lfUiSize="xsmall"
+            onLf-chip-event={(e) => chip(e, m)}
+            part={parts.messageAttachments}
+            ref={(el) => {
+              if (el) {
+                toolbar.messageAttachments.set(refKey, el);
+              }
+            }}
+          />
+        </div>
+      );
+    },
+    //#endregion
+
     //#region Tool chip
     toolExecution: (m) => {
       const { controller, elements } = getAdapter();

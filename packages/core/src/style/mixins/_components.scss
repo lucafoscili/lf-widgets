@@ -158,11 +158,15 @@
 /*******************************************
  * @mixin lf-comp-setup
  * One-stop setup for a component: applies default font-size,
- * scrollbar, ripple states, fade in, etc.
+ * scrollbar, state colors, fade in, etc.
+ *
+ * NOTE: Ripple and scrollbar styles are now centralized in GLOBAL_STYLES
+ * and automatically adopted via theme.register(). The $has-ripple param
+ * is kept for documentation but no longer emits CSS (removing duplicates).
  *
  * @param {String}  $comp              - Component ID/key
  * @param {String}  $has-states        - "true" to include fw-state-colors, otherwise "false"
- * @param {String}  $has-ripple        - "true" to include ripple styles, otherwise "false"
+ * @param {String}  $has-ripple        - "true" to indicate component uses ripple (documentation only)
  * @param {String}  $has-fade-in       - "true" to include fade-in transitions, otherwise "false"
  * @param {String}  $has-portal        - "true" to include portal styles, otherwise "false"
  * @param {String}  $has-glassmorphism - "true" to apply backdrop-filter blur on :host for Light DOM blurring
@@ -177,12 +181,9 @@
   $has-glassmorphism: "false",
   $glassmorphism-blur: 8px
 ) {
+  // Scrollbar styles - included directly in each component for shadow DOM support
+  // (adoptedStyleSheets don't reliably apply scrollbar pseudo-elements in all browsers)
   @include lf-app-scrollbar;
-
-  @if $has-ripple == "true" {
-    @include lf-fw-ripple;
-    @include lf-fw-ripple-surface;
-  }
 
   @if $has-states == "true" {
     @include lf-fw-state-colors($comp);
