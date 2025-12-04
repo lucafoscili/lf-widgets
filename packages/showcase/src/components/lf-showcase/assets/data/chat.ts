@@ -121,10 +121,23 @@ export const getChatFixtures = (
         },
         attachmentsEditing: {
           description:
-            "Demo: attachments (image/file), preview and message editing",
+            "Demo: attachments (image/file), preview (click to open), and message editing",
           props: {
             lfValue: [
-              { role: "user", content: "Here is an image for context:" },
+              {
+                role: "user",
+                content: "Here is an image for context:",
+                attachments: [
+                  {
+                    id: "user-img-1",
+                    type: "image_url",
+                    image_url: {
+                      url: "https://picsum.photos/seed/user/320/180",
+                    },
+                    name: "user_screenshot.png",
+                  },
+                ],
+              },
               {
                 role: "assistant",
                 content: "I received the image. See preview below.",
@@ -136,6 +149,18 @@ export const getChatFixtures = (
                       url: "https://picsum.photos/seed/picsum/320/180",
                     },
                     name: "sample.jpg",
+                  },
+                ],
+              },
+              {
+                role: "user",
+                content: "Here is a document to review.",
+                attachments: [
+                  {
+                    id: "file-1",
+                    type: "file",
+                    name: "document.pdf",
+                    content: "Sample file content",
                   },
                 ],
               },

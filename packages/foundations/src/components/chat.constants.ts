@@ -74,6 +74,7 @@ export const LF_CHAT_BLOCKS = {
     _: "toolbar",
     button: "button",
     buttons: "buttons",
+    messageAttachments: "message-attachments",
     toolExecution: "tool-execution",
   },
 } as const;
@@ -157,6 +158,7 @@ export const LF_CHAT_PARTS = {
   frequencyPenalty: "frequency-penalty",
   importHistory: "import-history",
   maxTokens: "max-tokens",
+  messageAttachments: "message-attachments",
   polling: "polling",
   presencePenalty: "presence-penalty",
   prompt: "prompt",

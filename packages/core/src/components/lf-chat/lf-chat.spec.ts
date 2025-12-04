@@ -329,4 +329,80 @@ describe("lf-chat", () => {
     const article = page.root?.shadowRoot?.querySelector("lf-article");
     expect(article).not.toBeNull();
   });
+
+  it("renders message attachments chipset when message has attachments", async () => {
+    const page = await createPage(`<lf-chat></lf-chat>`);
+    const component = page.rootInstance as LfChat;
+
+    component.history = [
+      {
+        role: "user",
+        content: "Here is an image",
+        attachments: [
+          {
+            id: "img-1",
+            type: "image_url",
+            name: "screenshot.png",
+            image_url: { url: "data:image/png;base64,test" },
+          },
+        ],
+      },
+    ] as any;
+    component.status = "ready";
+
+    await page.waitForChanges();
+
+    const chipset = page.root?.shadowRoot?.querySelector(
+      ".toolbar__message-attachments lf-chip",
+    );
+    expect(chipset).not.toBeNull();
+  });
+
+  it("renders file icon for file attachments", async () => {
+    const page = await createPage(`<lf-chat></lf-chat>`);
+    const component = page.rootInstance as LfChat;
+
+    component.history = [
+      {
+        role: "user",
+        content: "Here is a file",
+        attachments: [
+          {
+            id: "file-1",
+            type: "file",
+            name: "document.pdf",
+            url: "blob:http://localhost/test",
+          },
+        ],
+      },
+    ] as any;
+    component.status = "ready";
+
+    await page.waitForChanges();
+
+    const chipset = page.root?.shadowRoot?.querySelector(
+      ".toolbar__message-attachments lf-chip",
+    );
+    expect(chipset).not.toBeNull();
+  });
+
+  it("does not render message attachments when there are none", async () => {
+    const page = await createPage(`<lf-chat></lf-chat>`);
+    const component = page.rootInstance as LfChat;
+
+    component.history = [
+      {
+        role: "user",
+        content: "Just a message without attachments",
+      },
+    ] as any;
+    component.status = "ready";
+
+    await page.waitForChanges();
+
+    const chipset = page.root?.shadowRoot?.querySelector(
+      ".toolbar__message-attachments",
+    );
+    expect(chipset).toBeNull();
+  });
 });

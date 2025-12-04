@@ -27,7 +27,7 @@ const DEFAULT_CONFIG = {
     categories: undefined as Record<string, string[]> | undefined,
   },
   ui: {
-    layout: "top" as const,
+    layout: "bottom" as const,
     emptyMessage: "Your chat history is empty!",
     showToolExecutionIndicator: true,
   },

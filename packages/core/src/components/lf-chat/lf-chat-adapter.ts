@@ -135,6 +135,7 @@ export const createRefs = (): LfChatAdapterRefs => {
       copyContent: null,
       deleteMessage: null,
       editMessage: null,
+      messageAttachments: new Map(),
       regenerate: null,
       toolExecution: null,
     },

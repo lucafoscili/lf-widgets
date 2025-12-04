@@ -1,4 +1,8 @@
-import { LfLLMAttachment } from "@lf-widgets/foundations";
+import {
+  LfChatAdapter,
+  LfLLMAttachment,
+  LfLLMChoiceMessage,
+} from "@lf-widgets/foundations";
 import { LfChat } from "./lf-chat";
 
 //#region Image
@@ -181,5 +185,96 @@ export const handleRemove = async (comp: LfChat, id: string): Promise<void> => {
     } catch {}
   }
   comp.currentAttachments = comp.currentAttachments.filter((a) => a.id !== id);
+};
+//#endregion
+
+//#region Click (message attachments)
+/**
+ * Handles click on a message attachment chip.
+ * Opens images in lightbox, downloads files for non-images.
+ *
+ * @param adapter - The chat adapter
+ * @param message - The message containing the attachment
+ * @param attachmentId - The ID of the clicked attachment
+ */
+export const handleAttachmentClick = async (
+  adapter: LfChatAdapter,
+  message: LfLLMChoiceMessage,
+  attachmentId: string,
+): Promise<void> => {
+  const attachment = message.attachments?.find((a) => a.id === attachmentId);
+  if (!attachment) {
+    return;
+  }
+
+  const { manager } = adapter.controller.get;
+  const { effects } = manager;
+
+  if (attachment.type === "image_url") {
+    // Open image in lightbox
+    const imageUrl =
+      attachment.image_url?.url || attachment.data || attachment.url;
+    if (imageUrl) {
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = attachment.name || "Attachment";
+      img.style.maxWidth = "90vw";
+      img.style.maxHeight = "90vh";
+      img.style.objectFit = "contain";
+      img.style.borderRadius = "var(--lf-ui-border-radius, 8px)";
+      await effects.lightbox.show(img);
+    }
+  } else {
+    // Download file
+    const fileUrl = attachment.data || attachment.url;
+    if (fileUrl) {
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = attachment.name || "attachment";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+};
+//#endregion
+
+//#region Delete (message attachments)
+/**
+ * Handles deletion of an attachment from a sent message.
+ * Updates the message in history with the attachment removed.
+ *
+ * @param adapter - The chat adapter
+ * @param message - The message containing the attachment
+ * @param attachmentId - The ID of the attachment to delete
+ */
+export const handleAttachmentDelete = async (
+  adapter: LfChatAdapter,
+  message: LfLLMChoiceMessage,
+  attachmentId: string,
+): Promise<void> => {
+  const { controller } = adapter;
+  const { get, set } = controller;
+  const comp = get.compInstance as LfChat;
+
+  const messageIndex = get.history().indexOf(message);
+  if (messageIndex === -1) {
+    return;
+  }
+
+  await set.history(() => {
+    const history = get.history();
+    const updatedHistory = history.map((m, i) => {
+      if (i === messageIndex) {
+        return {
+          ...m,
+          attachments: m.attachments?.filter((a) => a.id !== attachmentId),
+        };
+      }
+      return m;
+    });
+    comp.history = updatedHistory;
+  });
 };
 //#endregion

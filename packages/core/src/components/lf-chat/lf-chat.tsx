@@ -218,6 +218,7 @@ export class LfChat implements LfChatInterface {
   #interval: NodeJS.Timeout;
   #lastMessage: HTMLDivElement | null = null;
   #messagesContainer: HTMLDivElement | null = null;
+  #pollVersion = 0;
   #adapter: LfChatAdapter;
   //#endregion
 
@@ -270,7 +271,8 @@ export class LfChat implements LfChatInterface {
       return;
     }
 
-    // Update polling interval when config changes
+    this.#pollVersion++;
+
     const effectiveConfig = getEffectiveConfig(this.#adapter);
     clearInterval(this.#interval);
     this.#interval = setInterval(
@@ -278,7 +280,8 @@ export class LfChat implements LfChatInterface {
       effectiveConfig.llm.pollingInterval,
     );
 
-    // Recalculate tokens when system prompt changes
+    this.#checkLLMStatus();
+
     this.updateTokensCount();
   }
   async updateTokensCount() {
@@ -498,6 +501,8 @@ export class LfChat implements LfChatInterface {
     );
   };
   async #checkLLMStatus() {
+    const currentVersion = this.#pollVersion;
+
     const { llm } = this.#framework;
     const effectiveConfig = getEffectiveConfig(this.#adapter);
     const endpointUrl = effectiveConfig.llm.endpointUrl;
@@ -507,6 +512,10 @@ export class LfChat implements LfChatInterface {
     }
     try {
       const response = await llm.poll(endpointUrl);
+
+      if (currentVersion !== this.#pollVersion) {
+        return;
+      }
 
       if (!response.ok) {
         this.status = "offline";
@@ -519,6 +528,9 @@ export class LfChat implements LfChatInterface {
         this.status = "ready";
       }
     } catch (error) {
+      if (currentVersion !== this.#pollVersion) {
+        return;
+      }
       this.status = "offline";
     }
     this.onLfEvent(new CustomEvent("polling"), "polling");
@@ -595,7 +607,7 @@ export class LfChat implements LfChatInterface {
                     >
                       {isEditing ? editableMessage(m) : this.#prepContent(m)}
                     </div>
-                    {this.#prepToolbar(m)}
+                    {this.#prepToolbar(m, isEditing)}
                   </div>
                 );
               })
@@ -717,13 +729,14 @@ export class LfChat implements LfChatInterface {
       </Fragment>
     );
   };
-  #prepToolbar = (m: LfLLMChoiceMessage): VNode => {
+  #prepToolbar = (m: LfLLMChoiceMessage, isEditing = false): VNode => {
     const { bemClass } = this.#framework.theme;
 
     const { toolbar } = this.#b;
     const {
       copyContent,
       deleteMessage,
+      messageAttachments,
       regenerate,
       editMessage,
       toolExecution,
@@ -731,6 +744,7 @@ export class LfChat implements LfChatInterface {
 
     return (
       <div class={bemClass(toolbar._)} part={this.#p.toolbar}>
+        {messageAttachments(m, isEditing)}
         <div class={bemClass(toolbar._, toolbar.buttons)}>
           {deleteMessage(m)}
           {copyContent(m)}

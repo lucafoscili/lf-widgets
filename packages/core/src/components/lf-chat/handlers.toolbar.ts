@@ -8,6 +8,10 @@ import {
   editMessage,
   regenerateMessage,
 } from "./helpers.messages";
+import {
+  handleAttachmentClick,
+  handleAttachmentDelete,
+} from "./helpers.attachments";
 
 export const prepToolbarHandlers = (
   getAdapter: () => LfChatAdapter,
@@ -37,6 +41,22 @@ export const prepToolbarHandlers = (
               regenerateMessage(getAdapter(), m);
               break;
           }
+      }
+    },
+    //#endregion
+
+    //#region Chip (message attachments)
+    chip: async (e, m) => {
+      const { eventType, node } = e.detail;
+      const adapter = getAdapter();
+
+      switch (eventType) {
+        case "click":
+          await handleAttachmentClick(adapter, m, node.id);
+          break;
+        case "delete":
+          await handleAttachmentDelete(adapter, m, node.id);
+          break;
       }
     },
     //#endregion

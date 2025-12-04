@@ -147,6 +147,10 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     copyContent: (m: LfLLMChoiceMessage) => VNode;
     deleteMessage: (m: LfLLMChoiceMessage) => VNode;
     editMessage: (m: LfLLMChoiceMessage) => VNode;
+    messageAttachments: (
+      m: LfLLMChoiceMessage,
+      isEditing?: boolean,
+    ) => VNode | null;
     regenerate: (m: LfLLMChoiceMessage) => VNode;
     toolExecution: (m: LfLLMChoiceMessage) => VNode | null;
   };
@@ -195,6 +199,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     copyContent: LfButtonElement | null;
     deleteMessage: LfButtonElement | null;
     editMessage: LfButtonElement | null;
+    messageAttachments: Map<string, LfChipElement>;
     regenerate: LfButtonElement | null;
     toolExecution: LfChipElement | null;
   };
@@ -217,6 +222,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
       e: CustomEvent<LfButtonEventPayload>,
       m: LfLLMChoiceMessage,
     ) => void;
+    chip: (e: CustomEvent<LfChipEventPayload>, m: LfLLMChoiceMessage) => void;
   };
 }
 /**
