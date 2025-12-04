@@ -5,6 +5,7 @@ import {
 } from "@lf-widgets/foundations";
 import { apiCall } from "./helpers.api";
 import { getEffectiveConfig } from "./helpers.config";
+import { resetAgentState } from "./helpers.tools";
 import { LfChat } from "./lf-chat";
 
 //#region calcTokens
@@ -179,6 +180,8 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
   const { history, compInstance } = get;
   const comp = compInstance as LfChat;
 
+  resetAgentState(adapter);
+
   const userMessage = await get.newPrompt();
   const hasAttachments =
     comp?.currentAttachments && comp.currentAttachments.length > 0;
@@ -187,11 +190,9 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
     set.currentPrompt(userMessage);
   });
 
-  // Proceed if we have either text content or attachments
   if (userMessage || hasAttachments) {
     let messageToSend = userMessage;
 
-    // If no text message but we have attachments, create a message with just attachments
     if (!userMessage && hasAttachments) {
       messageToSend = {
         role: "user" as const,
@@ -199,18 +200,18 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
         attachments: comp.currentAttachments,
       };
     } else if (userMessage && hasAttachments) {
-      // Add attachments to existing message
       const userWithAttachments = userMessage;
       userWithAttachments.attachments = comp.currentAttachments;
     }
 
-    // Clear attachments after using them
     if (hasAttachments) {
       comp.currentAttachments = [];
     }
 
     if (messageToSend) {
       set.history(() => history().push(messageToSend));
+      // Scroll to bottom after user message is added
+      requestAnimationFrame(() => comp.scrollToBottom(true));
       await apiCall(adapter);
     }
   }

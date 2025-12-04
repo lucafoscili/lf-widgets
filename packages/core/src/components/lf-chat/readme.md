@@ -263,6 +263,7 @@ Type: `Promise<void>`
 
 - [lf-spinner](../lf-spinner)
 - [lf-article](../lf-article)
+- [lf-accordion](../lf-accordion)
 - [lf-button](../lf-button)
 - [lf-chip](../lf-chip)
 - [lf-textfield](../lf-textfield)
@@ -275,6 +276,7 @@ Type: `Promise<void>`
 graph TD;
   lf-chat --> lf-spinner
   lf-chat --> lf-article
+  lf-chat --> lf-accordion
   lf-chat --> lf-button
   lf-chat --> lf-chip
   lf-chat --> lf-textfield

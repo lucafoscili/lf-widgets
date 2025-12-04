@@ -115,6 +115,9 @@ export const createRefs = (): LfChatAdapterRefs => {
       toolExecutionChip: null,
     },
     settings: {
+      agentEnabled: null,
+      agentMaxIterations: null,
+      agentSystemPromptSuffix: null,
       back: null,
       contextWindow: null,
       endpoint: null,

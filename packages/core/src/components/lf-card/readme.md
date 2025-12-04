@@ -147,6 +147,7 @@ graph TD;
   lf-canvas --> lf-image
   lf-chat --> lf-spinner
   lf-chat --> lf-article
+  lf-chat --> lf-accordion
   lf-chat --> lf-button
   lf-chat --> lf-chip
   lf-chat --> lf-textfield

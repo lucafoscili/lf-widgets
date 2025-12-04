@@ -128,6 +128,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     paragraph: (children: (VNode | string)[]) => VNode;
   };
   settings: {
+    agentSettings: () => VNode;
     back: () => VNode;
     contextWindow: () => VNode;
     endpoint: () => VNode;
@@ -179,6 +180,9 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     toolExecutionChip: LfChipElement | null;
   };
   settings: {
+    agentEnabled: LfCheckboxElement | null;
+    agentMaxIterations: LfTextfieldElement | null;
+    agentSystemPromptSuffix: LfTextfieldElement | null;
     back: LfButtonElement | null;
     contextWindow: LfTextfieldElement | null;
     endpoint: LfTextfieldElement | null;
@@ -230,6 +234,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
  */
 export type LfChatAdapterInitializerGetters = Pick<
   LfChatAdapterControllerGetters,
+  | "agentState"
   | "blocks"
   | "compInstance"
   | "currentAbortStreaming"
@@ -253,6 +258,7 @@ export type LfChatAdapterInitializerGetters = Pick<
  */
 export type LfChatAdapterInitializerSetters = Pick<
   LfChatAdapterControllerSetters,
+  | "agentState"
   | "currentAbortStreaming"
   | "currentAttachments"
   | "currentEditingIndex"
@@ -268,6 +274,7 @@ export type LfChatAdapterInitializerSetters = Pick<
  */
 export interface LfChatAdapterControllerGetters
   extends LfComponentAdapterGetters<LfChatInterface> {
+  agentState: () => LfChatAgentState | null;
   blocks: typeof LF_CHAT_BLOCKS;
   compInstance: LfChatInterface;
   currentAbortStreaming: () => AbortController | null;
@@ -291,6 +298,7 @@ export interface LfChatAdapterControllerGetters
  */
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  agentState: (value: LfChatAgentState | null) => void;
   currentAbortStreaming: (value: AbortController | null) => void;
   currentAttachments: (value: LfLLMAttachment[]) => void;
   currentEditingIndex: (value: number) => void;
@@ -320,6 +328,40 @@ export interface LfChatEventPayload
 
 //#region States
 /**
+ * State information passed to agent iteration callbacks.
+ * Provides visibility into the agent's progress during multi-step execution.
+ */
+export interface LfChatAgentState {
+  /**
+   * Current iteration number (1-based).
+   */
+  iteration: number;
+  /**
+   * Maximum iterations configured.
+   */
+  maxIterations: number;
+  /**
+   * Names of tools called in the current iteration.
+   */
+  toolsCalled: string[];
+  /**
+   * Total number of tool calls made across all iterations.
+   */
+  totalToolCalls: number;
+  /**
+   * Estimated tokens used so far (if available).
+   */
+  tokensUsed?: number;
+  /**
+   * Whether the LLM indicated task completion (no more tool calls).
+   */
+  isComplete: boolean;
+  /**
+   * Last error encountered (if any).
+   */
+  lastError?: string;
+}
+/**
  * Utility interface used by the `lf-chat` component.
  */
 export interface LfChatCurrentTokens {
@@ -346,6 +388,42 @@ export type LfChatView = (typeof LF_CHAT_VIEW)[number];
  * of related settings for LLM behavior, UI preferences, and feature toggles.
  */
 export interface LfChatConfig {
+  /**
+   * Agent mode configuration for autonomous multi-step task execution.
+   * When enabled, the LLM can chain multiple tool calls to complete complex tasks.
+   */
+  agent?: {
+    /**
+     * Enable agent mode for autonomous multi-step execution.
+     * When true, the LLM will automatically continue after tool execution
+     * until the task is complete or limits are reached.
+     * @default false
+     */
+    enabled?: boolean;
+    /**
+     * Maximum number of consecutive tool-calling iterations allowed.
+     * Prevents infinite loops and controls resource usage.
+     * @default 10
+     */
+    maxIterations?: number;
+    /**
+     * Maximum total tokens (input + output) allowed per agent run.
+     * Helps control costs for complex multi-step tasks.
+     * @default undefined (no limit)
+     */
+    maxTotalTokens?: number;
+    /**
+     * Callback invoked after each iteration with current state.
+     * Return `false` to stop the agent early (e.g., based on custom conditions).
+     */
+    onIteration?: (state: LfChatAgentState) => boolean | Promise<boolean>;
+    /**
+     * Additional system prompt instructions appended when agent mode is active.
+     * Helps guide the LLM to properly handle tool results.
+     * @default "After receiving tool results, respond to the user with the information. Never call the same tool twice with identical arguments."
+     */
+    systemPromptSuffix?: string;
+  };
   /**
    * LLM provider and API configuration.
    */

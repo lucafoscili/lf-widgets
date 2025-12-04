@@ -8,6 +8,18 @@ import { LfChat } from "./lf-chat";
 
 //#region Default values
 const DEFAULT_CONFIG = {
+  agent: {
+    enabled: false,
+    maxIterations: 10,
+    maxTotalTokens: undefined as number | undefined,
+    onIteration: undefined as
+      | ((
+          state: import("@lf-widgets/foundations").LfChatAgentState,
+        ) => boolean | Promise<boolean>)
+      | undefined,
+    systemPromptSuffix:
+      "After receiving tool results, respond to the user with the information. Never call the same tool twice with identical arguments.",
+  },
   llm: {
     endpointUrl: "http://localhost:5001",
     contextWindow: 8192,
@@ -107,13 +119,35 @@ export const getEffectiveConfig = (
   const maxSize = config.attachments?.maxSize;
   const allowedTypes = config.attachments?.allowedTypes;
 
+  // Agent config
+  const agentEnabled = config.agent?.enabled ?? DEFAULT_CONFIG.agent.enabled;
+  const agentMaxIterations =
+    config.agent?.maxIterations ?? DEFAULT_CONFIG.agent.maxIterations;
+  const agentMaxTotalTokens = config.agent?.maxTotalTokens;
+  const agentOnIteration = config.agent?.onIteration;
+  const agentSystemPromptSuffix =
+    config.agent?.systemPromptSuffix ?? DEFAULT_CONFIG.agent.systemPromptSuffix;
+
+  // Enhance system prompt with agent suffix when agent mode is active
+  const effectiveSystemPrompt =
+    agentEnabled && agentSystemPromptSuffix
+      ? `${systemPrompt}\n\n${agentSystemPromptSuffix}`
+      : systemPrompt;
+
   return {
+    agent: {
+      enabled: agentEnabled,
+      maxIterations: agentMaxIterations,
+      maxTotalTokens: agentMaxTotalTokens,
+      onIteration: agentOnIteration,
+      systemPromptSuffix: agentSystemPromptSuffix,
+    },
     llm: {
       endpointUrl,
       contextWindow,
       maxTokens,
       pollingInterval,
-      systemPrompt,
+      systemPrompt: effectiveSystemPrompt,
       temperature,
       topP,
       frequencyPenalty,

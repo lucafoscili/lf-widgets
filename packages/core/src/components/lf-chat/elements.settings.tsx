@@ -38,6 +38,68 @@ export const prepSettings = (
     },
     //#endregion
 
+    //#region Agent Settings
+    agentSettings: () => {
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { settings } = elements.refs;
+      const { checkbox, textfield } = handlers.settings;
+      const { assignRef, data, theme } = manager;
+      const { stringify } = data.cell;
+      const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
+
+      const agentEnabled = effectiveConfig.agent.enabled;
+      const maxIterations = effectiveConfig.agent.maxIterations;
+      const systemPromptSuffix = effectiveConfig.agent.systemPromptSuffix || "";
+
+      return (
+        <Fragment>
+          <lf-checkbox
+            data-cy={cyAttributes.input}
+            id={LF_CHAT_IDS.options.agentEnabled}
+            lfLabel="Enable Agent Mode"
+            lfValue={agentEnabled}
+            onLf-checkbox-event={checkbox}
+            part={parts.agentEnabled}
+            ref={assignRef(settings, "agentEnabled")}
+            title="When enabled, the assistant can autonomously execute multiple tool calls to complete a task."
+          ></lf-checkbox>
+          <lf-textfield
+            class={bemClass(blocks.settings._, blocks.settings.textfield)}
+            data-cy={cyAttributes.input}
+            id={LF_CHAT_IDS.options.agentMaxIterations}
+            lfHtmlAttributes={{
+              min: 1,
+              max: 50,
+              type: "number",
+            }}
+            lfIcon={get.icon("refresh")}
+            lfLabel="Max Iterations"
+            lfValue={stringify(maxIterations)}
+            onLf-textfield-event={textfield}
+            part={parts.agentMaxIterations}
+            ref={assignRef(settings, "agentMaxIterations")}
+            title="Maximum number of tool call iterations the agent can perform in a single request."
+          ></lf-textfield>
+          <lf-textfield
+            class={bemClass(blocks.settings._, blocks.settings.textarea)}
+            data-cy={cyAttributes.input}
+            id={LF_CHAT_IDS.options.agentSystemPromptSuffix}
+            lfLabel="Agent System Prompt Suffix"
+            lfStyling="textarea"
+            lfValue={systemPromptSuffix}
+            onLf-textfield-event={textfield}
+            part={parts.agentSystemPromptSuffix}
+            ref={assignRef(settings, "agentSystemPromptSuffix")}
+            title="Additional instructions appended to the system prompt when agent mode is active."
+          ></lf-textfield>
+        </Fragment>
+      );
+    },
+    //#endregion
+
     //#region Context Window
     contextWindow: () => {
       const adapter = getAdapter();
@@ -371,18 +433,22 @@ export const prepSettings = (
     tools: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { blocks, cyAttributes, manager } = controller.get;
       const { settings } = elements.refs;
       const { checkbox } = handlers.settings;
       const { theme } = manager;
-      const { bemClass, get } = theme;
+      const { bemClass } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       const { definitions, enabled, categories } = effectiveConfig.tools;
 
       // If no tools, don't render the section
       if (!definitions || definitions.length === 0) {
-        return <Fragment></Fragment>;
+        return (
+          <span class={bemClass(blocks.settings._, blocks.settings.tools)}>
+            No tools available
+          </span>
+        );
       }
 
       // Group tools by category
@@ -398,17 +464,7 @@ export const prepSettings = (
       };
 
       return (
-        <div
-          class={bemClass(blocks.settings._, blocks.settings.toolsContainer)}
-          part={parts.tools}
-        >
-          <div class={bemClass(blocks.settings._, blocks.settings.toolsHeader)}>
-            <lf-icon
-              lfIcon={get.icon("adjustmentsHorizontal")}
-              lfSize="1.25em"
-            ></lf-icon>
-            <span>Available Tools</span>
-          </div>
+        <Fragment>
           {categoryNames.map((category) => (
             <div
               class={bemClass(blocks.settings._, blocks.settings.toolsCategory)}
@@ -453,7 +509,7 @@ export const prepSettings = (
               })}
             </div>
           ))}
-        </div>
+        </Fragment>
       );
     },
     //#endregion

@@ -109,6 +109,87 @@ describe("lf-chat", () => {
     expect(merged[0].function.arguments).toBe('{"location":"Tokyo"}');
   });
 
+  it("deduplicates identical tool calls with different JSON formatting", () => {
+    // This simulates what happens when an LLM outputs the same tool call
+    // multiple times with different JSON whitespace formatting
+    const rawCalls: Array<LfLLMToolCall & { index?: number }> = [
+      {
+        id: "call_1",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{"location":"Tokyo"}', // no space
+        },
+      },
+      {
+        id: "call_2",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{"location": "Tokyo"}', // space after colon
+        },
+      },
+      {
+        id: "call_3",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{ "location" : "Tokyo" }', // extra spaces
+        },
+      },
+    ];
+
+    const merged = normalizeToolCallsForStreaming(rawCalls);
+
+    // All three should be deduplicated to a single call
+    expect(merged).toHaveLength(1);
+    expect(merged[0].function.name).toBe("get_weather");
+  });
+
+  it("deduplicates streaming tool calls with different indices but same function+args", () => {
+    // This is the critical bug case: LLM sends multiple identical tool calls
+    // in separate streaming chunks, each with different index values
+    const rawCalls: Array<LfLLMToolCall & { index?: number }> = [
+      {
+        index: 0,
+        id: "call_xyz_1",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{"location": "Tokyo"}',
+        },
+      },
+      {
+        index: 1,
+        id: "call_xyz_2",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{"location": "Tokyo"}',
+        },
+      },
+      {
+        index: 2,
+        id: "call_xyz_3",
+        type: "function",
+        function: {
+          name: "get_weather",
+          arguments: '{"location": "Tokyo"}',
+        },
+      },
+    ];
+
+    const merged = normalizeToolCallsForStreaming(rawCalls);
+
+    // All three should be deduplicated to a single call
+    // The second-stage dedupe should catch these even though they have different indices
+    expect(merged).toHaveLength(1);
+    expect(merged[0].function.name).toBe("get_weather");
+    expect(JSON.parse(merged[0].function.arguments)).toEqual({
+      location: "Tokyo",
+    });
+  });
+
   it("merges tool execution datasets while preserving children", () => {
     const existing: LfDataDataset = {
       nodes: [

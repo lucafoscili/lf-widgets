@@ -56,11 +56,15 @@ export const LF_CHAT_BLOCKS = {
   request: { _: "request" },
   settings: {
     _: "settings",
+    accordion: "accordion",
+    agentContainer: "agent-container",
+    agentHeader: "agent-header",
     back: "back",
     configuration: "configuration",
     exportHistory: "export-history",
     header: "header",
     importHistory: "import-history",
+    slotContent: "slot-content",
     textarea: "textarea",
     textfield: "textfield",
     tools: "tools",
@@ -107,6 +111,9 @@ export const LF_CHAT_IDS = {
     stt: "chat-stt",
   },
   options: {
+    agentEnabled: "option-agent-enabled",
+    agentMaxIterations: "option-agent-max-iterations",
+    agentSystemPromptSuffix: "option-agent-system-prompt-suffix",
     back: "option-back",
     contextWindow: "option-context",
     endpointUrl: "option-endpoint",
@@ -137,6 +144,10 @@ export const LF_CHAT_LAYOUT = ["bottom", "top"] as const;
 
 //#region Parts
 export const LF_CHAT_PARTS = {
+  agentEnabled: "agent-enabled",
+  agentMaxIterations: "agent-max-iterations",
+  agentSettings: "agent-settings",
+  agentSystemPromptSuffix: "agent-system-prompt-suffix",
   attachFile: "attach-file",
   attachImage: "attach-image",
   attachments: "attachments",

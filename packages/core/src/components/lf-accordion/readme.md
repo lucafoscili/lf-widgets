@@ -141,6 +141,7 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
+ - [lf-chat](../lf-chat)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-tree](../lf-tree)
@@ -174,14 +175,7 @@ graph TD;
   lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
-  lf-chat --> lf-spinner
-  lf-chat --> lf-article
-  lf-chat --> lf-button
-  lf-chat --> lf-chip
-  lf-chat --> lf-textfield
-  lf-chat --> lf-progressbar
-  lf-chat --> lf-code
-  lf-chat --> lf-checkbox
+  lf-chat --> lf-accordion
   lf-article --> lf-accordion
   lf-code --> lf-button
   lf-photoframe --> lf-image

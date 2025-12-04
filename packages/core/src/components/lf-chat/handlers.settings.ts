@@ -61,7 +61,7 @@ export const prepSettingsHandlers = (
 
     //#region Checkbox
     checkbox: (e) => {
-      const { eventType, value } = e.detail;
+      const { eventType, id, value } = e.detail;
 
       const adapter = getAdapter();
       const { get } = adapter.controller;
@@ -71,6 +71,13 @@ export const prepSettingsHandlers = (
 
       switch (eventType) {
         case "change": {
+          // Handle agent enabled checkbox
+          if (id === LF_CHAT_IDS.options.agentEnabled) {
+            const isEnabled = value === "on";
+            updateConfig(comp, "agent", "enabled", isEnabled);
+            break;
+          }
+
           // Extract tool name from the element's data attribute
           const checkboxEl = e.target as HTMLElement;
           const toolName = checkboxEl.getAttribute("data-tool-name");
@@ -116,6 +123,14 @@ export const prepSettingsHandlers = (
       switch (eventType) {
         case "change":
           switch (id) {
+            // Agent settings
+            case LF_CHAT_IDS.options.agentMaxIterations:
+              updateConfig(comp, "agent", "maxIterations", parseInt(value));
+              break;
+            case LF_CHAT_IDS.options.agentSystemPromptSuffix:
+              updateConfig(comp, "agent", "systemPromptSuffix", value);
+              break;
+            // LLM settings
             case LF_CHAT_IDS.options.contextWindow:
               updateConfig(comp, "llm", "contextWindow", parseInt(value));
               break;

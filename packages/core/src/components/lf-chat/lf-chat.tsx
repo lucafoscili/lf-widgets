@@ -7,6 +7,7 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatAdapter,
+  LfChatAgentState,
   LfChatConfig,
   LfChatCurrentTokens,
   LfChatElement,
@@ -94,6 +95,7 @@ export class LfChat implements LfChatInterface {
   @Element() rootElement: LfChatElement;
 
   //#region States
+  @State() agentState: LfChatAgentState | null = null;
   @State() currentAbortStreaming: AbortController | null = null;
   @State() currentAttachments: LfLLMAttachment[] = [];
   @State() currentEditingIndex: number | null = null;
@@ -220,6 +222,7 @@ export class LfChat implements LfChatInterface {
   #messagesContainer: HTMLDivElement | null = null;
   #pollVersion = 0;
   #adapter: LfChatAdapter;
+  #settingsAccordionDataset: LfDataDataset | null = null;
   //#endregion
 
   //#region Events
@@ -460,6 +463,7 @@ export class LfChat implements LfChatInterface {
   #initAdapter = () => {
     this.#adapter = createAdapter(
       {
+        agentState: () => this.agentState,
         blocks: this.#b,
         compInstance: this,
         currentAbortStreaming: () => this.currentAbortStreaming,
@@ -483,6 +487,7 @@ export class LfChat implements LfChatInterface {
         view: () => this.view,
       },
       {
+        agentState: (value) => (this.agentState = value),
         currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
         currentAttachments: (value) => (this.currentAttachments = value),
         currentEditingIndex: (value) => (this.currentEditingIndex = value),
@@ -681,10 +686,11 @@ export class LfChat implements LfChatInterface {
     );
   };
   #prepSettings = () => {
-    const { bemClass } = this.#framework.theme;
+    const { bemClass, get } = this.#framework.theme;
 
     const { settings } = this.#b;
     const {
+      agentSettings,
       back,
       contextWindow,
       endpoint,
@@ -701,6 +707,46 @@ export class LfChat implements LfChatInterface {
       topP,
     } = this.#adapter.elements.jsx.settings;
 
+    // Create stable dataset reference to prevent accordion collapse on re-render
+    if (!this.#settingsAccordionDataset) {
+      this.#settingsAccordionDataset = {
+        nodes: [
+          {
+            cells: {
+              slot: { shape: "slot", value: "llm" },
+            },
+            icon: get.icon("ai"),
+            id: "llm",
+            value: "LLM Configuration",
+          },
+          {
+            cells: {
+              slot: { shape: "slot", value: "advanced" },
+            },
+            icon: get.icon("settings"),
+            id: "advanced",
+            value: "Advanced Settings",
+          },
+          {
+            cells: {
+              slot: { shape: "slot", value: "agent" },
+            },
+            icon: get.icon("robot"),
+            id: "agent",
+            value: "Agent Mode",
+          },
+          {
+            cells: {
+              slot: { shape: "slot", value: "tools" },
+            },
+            icon: get.icon("adjustmentsHorizontal"),
+            id: "tools",
+            value: "Tools",
+          },
+        ],
+      };
+    }
+
     return (
       <Fragment>
         <div class={bemClass(settings._, settings.header)}>
@@ -712,19 +758,41 @@ export class LfChat implements LfChatInterface {
           class={bemClass(settings._, settings.configuration)}
           part={this.#p.settings}
         >
-          {system()}
-          {endpoint()}
-          {temperature()}
-          {maxTokens()}
-          {topP()}
-          {frequencyPenalty()}
-          {presencePenalty()}
-          <div class={bemClass(settings._, "divider")} />
-          {contextWindow()}
-          {seed()}
-          {polling()}
-          <div class={bemClass(settings._, "divider")} />
-          {tools()}
+          <lf-accordion
+            class={bemClass(settings._, settings.accordion)}
+            lfDataset={this.#settingsAccordionDataset}
+            lfRipple={true}
+          >
+            <div slot="llm" class={bemClass(settings._, settings.slotContent)}>
+              {system()}
+              {endpoint()}
+              {temperature()}
+              {maxTokens()}
+              {topP()}
+              {frequencyPenalty()}
+              {presencePenalty()}
+            </div>
+            <div
+              slot="advanced"
+              class={bemClass(settings._, settings.slotContent)}
+            >
+              {contextWindow()}
+              {seed()}
+              {polling()}
+            </div>
+            <div
+              slot="agent"
+              class={bemClass(settings._, settings.slotContent)}
+            >
+              {agentSettings()}
+            </div>
+            <div
+              slot="tools"
+              class={bemClass(settings._, settings.slotContent)}
+            >
+              {tools()}
+            </div>
+          </lf-accordion>
         </div>
       </Fragment>
     );
