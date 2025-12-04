@@ -408,6 +408,7 @@ export class LfChip implements LfChipInterface {
           trailing: true,
         })}
         onClick={(e) => {
+          e.stopPropagation();
           this.onLfEvent(e, "delete", { node });
         }}
       />
@@ -477,6 +478,9 @@ export class LfChip implements LfChipInterface {
         data-lf={this.#lf[this.lfUiState]}
         data-value={node.id}
         onClick={(e) => {
+          if (e.button !== 0) {
+            return;
+          }
           this.onLfEvent(e, "click", { node });
         }}
         part={this.#p.item}
