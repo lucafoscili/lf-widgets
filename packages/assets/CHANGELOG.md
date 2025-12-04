@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-rc.0](https://github.com/lucafoscili/lf-assets/compare/v3.0.0...3.1.0-rc.0) (2025-12-04)
+
+**Note:** Version bump only for package @lf-widgets/assets
+
+
+
+
+
 # [3.0.0](https://github.com/lucafoscili/lf-assets/compare/v2.0.1...3.0.0) (2025-11-30)
 
 **Note:** Version bump only for package @lf-widgets/assets
