@@ -1,4 +1,5 @@
 import {
+  LfAccordionInterface,
   LfBadgePropsInterface,
   LfButtonPropsInterface,
   LfButtonStyling,
@@ -27,6 +28,17 @@ import {
   randomState,
   randomString,
 } from "./fixtures.helpers";
+
+//#region Accordion
+function randomAccordionCell(): LfDataCell<"accordion"> {
+  const partialProps: Partial<LfAccordionInterface> = {};
+  return {
+    shape: "accordion",
+    value: "",
+    ...partialProps,
+  };
+}
+//#endregion
 
 //#region Badge
 function randomBadgeCell(): LfDataCell<"badge"> {
@@ -209,6 +221,7 @@ function randomUploadCell(): LfDataCell<"upload"> {
 }
 
 const shapeRandomizers: Record<LfDataShapes, () => LfDataCell<LfDataShapes>> = {
+  accordion: randomAccordionCell,
   badge: randomBadgeCell,
   button: randomButtonCell,
   canvas: randomCanvasCell,

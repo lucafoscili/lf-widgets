@@ -13,15 +13,15 @@ The carousel component can be used to display images, videos, or other content i
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                                                                         | Type                                                                                                                                                                                                                    | Default   |
-| -------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `lfAutoPlay`   | `lf-auto-play`  | Enable or disable autoplay for the carousel.                                                                                        | `boolean`                                                                                                                                                                                                               | `false`   |
-| `lfDataset`    | --              | The data set for the LF Carousel component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                                                                                                                                                         | `null`    |
-| `lfInterval`   | `lf-interval`   | Interval in milliseconds for autoplay.                                                                                              | `number`                                                                                                                                                                                                                | `3000`    |
-| `lfLightbox`   | `lf-lightbox`   | Determines whether the carousel should display a lightbox when an item is clicked.                                                  | `boolean`                                                                                                                                                                                                               | `false`   |
-| `lfNavigation` | `lf-navigation` | Determines whether the carousel should display navigation controls (prev/next buttons).                                             | `boolean`                                                                                                                                                                                                               | `false`   |
-| `lfShape`      | `lf-shape`      | Sets the type of shapes to compare.                                                                                                 | `"badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "progressbar" \| "slot" \| "text" \| "textfield" \| "toggle" \| "typewriter" \| "upload"` | `"image"` |
-| `lfStyle`      | `lf-style`      | Custom styling for the component.                                                                                                   | `string`                                                                                                                                                                                                                | `""`      |
+| Property       | Attribute       | Description                                                                                                                         | Type                                                                                                                                                                                                                                   | Default   |
+| -------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `lfAutoPlay`   | `lf-auto-play`  | Enable or disable autoplay for the carousel.                                                                                        | `boolean`                                                                                                                                                                                                                              | `false`   |
+| `lfDataset`    | --              | The data set for the LF Carousel component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                                                                                                                                                                        | `null`    |
+| `lfInterval`   | `lf-interval`   | Interval in milliseconds for autoplay.                                                                                              | `number`                                                                                                                                                                                                                               | `3000`    |
+| `lfLightbox`   | `lf-lightbox`   | Determines whether the carousel should display a lightbox when an item is clicked.                                                  | `boolean`                                                                                                                                                                                                                              | `false`   |
+| `lfNavigation` | `lf-navigation` | Determines whether the carousel should display navigation controls (prev/next buttons).                                             | `boolean`                                                                                                                                                                                                                              | `false`   |
+| `lfShape`      | `lf-shape`      | Sets the type of shapes to compare.                                                                                                 | `"accordion" \| "badge" \| "button" \| "canvas" \| "card" \| "chart" \| "chat" \| "chip" \| "code" \| "image" \| "number" \| "photoframe" \| "progressbar" \| "slot" \| "text" \| "textfield" \| "toggle" \| "typewriter" \| "upload"` | `"image"` |
+| `lfStyle`      | `lf-style`      | Custom styling for the component.                                                                                                   | `string`                                                                                                                                                                                                                               | `""`      |
 
 
 ## Events
@@ -136,6 +136,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
@@ -155,6 +156,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  lf-carousel --> lf-accordion
   lf-carousel --> lf-badge
   lf-carousel --> lf-button
   lf-carousel --> lf-canvas
@@ -170,11 +172,28 @@ graph TD;
   lf-carousel --> lf-toggle
   lf-carousel --> lf-typewriter
   lf-carousel --> lf-upload
+  lf-accordion --> lf-accordion
+  lf-accordion --> lf-badge
+  lf-accordion --> lf-button
+  lf-accordion --> lf-canvas
+  lf-accordion --> lf-card
+  lf-accordion --> lf-chart
+  lf-accordion --> lf-chat
+  lf-accordion --> lf-chip
+  lf-accordion --> lf-code
+  lf-accordion --> lf-image
+  lf-accordion --> lf-photoframe
+  lf-accordion --> lf-progressbar
+  lf-accordion --> lf-textfield
+  lf-accordion --> lf-toggle
+  lf-accordion --> lf-typewriter
+  lf-accordion --> lf-upload
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
+  lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
   lf-card --> lf-canvas
@@ -198,6 +217,7 @@ graph TD;
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-chat --> lf-checkbox
+  lf-article --> lf-accordion
   lf-article --> lf-badge
   lf-article --> lf-button
   lf-article --> lf-canvas

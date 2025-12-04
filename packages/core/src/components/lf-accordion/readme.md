@@ -134,8 +134,20 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [lf-accordion](.)
+ - [lf-article](../lf-article)
+ - [lf-breadcrumbs](../lf-breadcrumbs)
+ - [lf-card](../lf-card)
+ - [lf-carousel](../lf-carousel)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+ - [lf-tree](../lf-tree)
+
 ### Depends on
 
+- [lf-accordion](.)
 - [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
@@ -155,41 +167,13 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
-  lf-accordion --> lf-badge
-  lf-accordion --> lf-button
-  lf-accordion --> lf-canvas
-  lf-accordion --> lf-card
-  lf-accordion --> lf-chart
-  lf-accordion --> lf-chat
-  lf-accordion --> lf-chip
-  lf-accordion --> lf-code
-  lf-accordion --> lf-image
-  lf-accordion --> lf-photoframe
-  lf-accordion --> lf-progressbar
-  lf-accordion --> lf-textfield
-  lf-accordion --> lf-toggle
-  lf-accordion --> lf-typewriter
-  lf-accordion --> lf-upload
+  lf-accordion --> lf-accordion
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
-  lf-card --> lf-badge
-  lf-card --> lf-button
-  lf-card --> lf-canvas
-  lf-card --> lf-card
-  lf-card --> lf-chart
-  lf-card --> lf-chat
-  lf-card --> lf-chip
-  lf-card --> lf-code
-  lf-card --> lf-image
-  lf-card --> lf-photoframe
-  lf-card --> lf-progressbar
-  lf-card --> lf-textfield
-  lf-card --> lf-toggle
-  lf-card --> lf-typewriter
-  lf-card --> lf-upload
+  lf-card --> lf-accordion
   lf-chat --> lf-spinner
   lf-chat --> lf-article
   lf-chat --> lf-button
@@ -198,23 +182,14 @@ graph TD;
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-chat --> lf-checkbox
-  lf-article --> lf-badge
-  lf-article --> lf-button
-  lf-article --> lf-canvas
-  lf-article --> lf-card
-  lf-article --> lf-chart
-  lf-article --> lf-chat
-  lf-article --> lf-chip
-  lf-article --> lf-code
-  lf-article --> lf-image
-  lf-article --> lf-photoframe
-  lf-article --> lf-progressbar
-  lf-article --> lf-textfield
-  lf-article --> lf-toggle
-  lf-article --> lf-typewriter
-  lf-article --> lf-upload
+  lf-article --> lf-accordion
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-breadcrumbs --> lf-accordion
+  lf-carousel --> lf-accordion
+  lf-compare --> lf-accordion
+  lf-masonry --> lf-accordion
+  lf-tree --> lf-accordion
   style lf-accordion fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -182,6 +182,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-textfield](../lf-textfield)
+- [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
@@ -201,6 +202,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-tree --> lf-textfield
+  lf-tree --> lf-accordion
   lf-tree --> lf-badge
   lf-tree --> lf-button
   lf-tree --> lf-canvas
@@ -215,11 +217,28 @@ graph TD;
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
+  lf-accordion --> lf-accordion
+  lf-accordion --> lf-badge
+  lf-accordion --> lf-button
+  lf-accordion --> lf-canvas
+  lf-accordion --> lf-card
+  lf-accordion --> lf-chart
+  lf-accordion --> lf-chat
+  lf-accordion --> lf-chip
+  lf-accordion --> lf-code
+  lf-accordion --> lf-image
+  lf-accordion --> lf-photoframe
+  lf-accordion --> lf-progressbar
+  lf-accordion --> lf-textfield
+  lf-accordion --> lf-toggle
+  lf-accordion --> lf-typewriter
+  lf-accordion --> lf-upload
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
+  lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
   lf-card --> lf-canvas
@@ -243,6 +262,7 @@ graph TD;
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-chat --> lf-checkbox
+  lf-article --> lf-accordion
   lf-article --> lf-badge
   lf-article --> lf-button
   lf-article --> lf-canvas

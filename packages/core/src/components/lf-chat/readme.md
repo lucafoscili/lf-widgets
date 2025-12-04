@@ -282,6 +282,7 @@ graph TD;
   lf-chat --> lf-code
   lf-chat --> lf-checkbox
   lf-article --> lf-chat
+  lf-accordion --> lf-chat
   lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
@@ -290,7 +291,6 @@ graph TD;
   lf-card --> lf-chat
   lf-code --> lf-button
   lf-photoframe --> lf-image
-  lf-accordion --> lf-chat
   lf-breadcrumbs --> lf-chat
   lf-carousel --> lf-chat
   lf-compare --> lf-chat

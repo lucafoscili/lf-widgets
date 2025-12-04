@@ -39,6 +39,37 @@ import {
 export class LfData implements LfDataInterface {
   constructor(_lfFramework: LfFrameworkInterface) {}
 
+  //#region Article
+  /**
+   * Provides builders and utilities for constructing article-related components.
+   *
+   * This object contains core builders for fundamental article elements (e.g., paragraphs, sections),
+   * shape-specific builders for specialized UI components (e.g., accordions, charts, cards),
+   * and a general builder method for creating custom article structures.
+   */
+  article: LfDataInterface["article"] = {
+    core: {
+      create: articleBuilders.createArticle,
+      paragraph: articleBuilders.paragraph,
+      section: articleBuilders.section,
+      separator: articleBuilders.separator,
+    },
+    shapes: {
+      accordion: articleBuilders.accordion,
+      accordionCodeBlock: articleBuilders.accordionCodeBlock,
+      buttonRow: articleBuilders.buttonRow,
+      card: articleBuilders.card,
+      chart: articleBuilders.chart,
+      codeBlock: articleBuilders.codeBlock,
+      progressRow: articleBuilders.progressRow,
+      textfieldRow: articleBuilders.textfieldRow,
+    },
+    builder: {
+      create: (options) => createArticleBuilder(options),
+    },
+  };
+  //#endregion
+
   //#region Cell
   /**
    * Contains methods and utilities for cell management.
@@ -140,33 +171,6 @@ export class LfData implements LfDataInterface {
         nullable?: boolean;
       },
     ) => extractCellMetadata<T>(node, cellId, schema),
-  };
-  //#endregion
-
-  //#region Article
-  /**
-   * Lightweight helpers for building `lf-article` datasets using common patterns.
-   * These helpers are thin wrappers around pure builder functions and are safe
-   * to use from any layer that already depends on the framework.
-   */
-  article: LfDataInterface["article"] = {
-    core: {
-      create: articleBuilders.createArticle,
-      section: articleBuilders.section,
-      paragraph: articleBuilders.paragraph,
-      separator: articleBuilders.separator,
-    },
-    shapes: {
-      progressRow: articleBuilders.progressRow,
-      buttonRow: articleBuilders.buttonRow,
-      codeBlock: articleBuilders.codeBlock,
-      textfieldRow: articleBuilders.textfieldRow,
-      card: articleBuilders.card,
-      chart: articleBuilders.chart,
-    },
-    builder: {
-      create: (options) => createArticleBuilder(options),
-    },
   };
   //#endregion
 }

@@ -1,9 +1,9 @@
-// Import from the built framework runtime (CJS) instead of source helpers to
-// mirror production usage and avoid deep module resolution issues in Jest.
+import type {
+  LfArticleNode,
+  LfFrameworkInterface,
+} from "@lf-widgets/foundations";
 import { getLfFramework } from "@lf-widgets/framework";
-import type { LfFrameworkInterface } from "@lf-widgets/foundations";
 
-// Framework runtime reference populated in beforeAll; helpers read the mutable `data` binding at invocation time.
 let framework: LfFrameworkInterface | undefined;
 let data: any; // runtime service bag (typed loosely for test resilience)
 beforeAll(async () => {
@@ -463,5 +463,94 @@ describe("Article helpers", () => {
     // The returned leaf should be appended to the paragraph children.
     expect(paragraphNode.children).toContain(leaf);
     expect(leaf.cells?.lfCard).toBeDefined();
+  });
+
+  it("article.shapes.accordion creates an accordion node", () => {
+    const article = data?.article;
+
+    const accordionNode = article.shapes.accordion({
+      id: "test-accordion",
+      dataset: {
+        nodes: [
+          { id: "item-1", value: "Section 1" },
+          { id: "item-2", value: "Section 2" },
+        ],
+      },
+      uiSize: "small",
+      uiState: "primary",
+    });
+
+    expect(accordionNode).toBeDefined();
+    expect(accordionNode.id).toBe("test-accordion");
+    expect(accordionNode.cells?.lfAccordion).toBeDefined();
+    expect(accordionNode.cells?.lfAccordion?.shape).toBe("accordion");
+    expect(accordionNode.cells?.lfAccordion?.lfDataset?.nodes).toHaveLength(2);
+    expect(accordionNode.cells?.lfAccordion?.lfUiSize).toBe("small");
+    expect(accordionNode.cells?.lfAccordion?.lfUiState).toBe("primary");
+  });
+
+  it("article.shapes.accordionCodeBlock creates a collapsible code block", () => {
+    const article = data?.article;
+
+    const accordionCodeNode = article.shapes.accordionCodeBlock({
+      id: "docs-accordion",
+      title: "README.md",
+      code: "# Hello World\n\nThis is a test.",
+      language: "markdown",
+      uiSize: "medium",
+    });
+
+    expect(accordionCodeNode).toBeDefined();
+    expect(accordionCodeNode.id).toBe("docs-accordion");
+    expect(accordionCodeNode.cells?.lfAccordion).toBeDefined();
+    expect(accordionCodeNode.cells?.lfAccordion?.shape).toBe("accordion");
+
+    const innerDataset = accordionCodeNode.cells?.lfAccordion?.lfDataset;
+    expect(innerDataset?.nodes).toHaveLength(1);
+
+    const sectionNode = innerDataset?.nodes?.[0];
+    expect(sectionNode?.value).toBe("README.md");
+    expect(sectionNode?.cells?.lfCode).toBeDefined();
+    expect(sectionNode?.cells?.lfCode?.shape).toBe("code");
+    expect(sectionNode?.cells?.lfCode?.value).toBe(
+      "# Hello World\n\nThis is a test.",
+    );
+    expect(sectionNode?.cells?.lfCode?.lfLanguage).toBe("markdown");
+  });
+
+  it("builder integrates accordion shape as leaf node", () => {
+    const article = data?.article;
+
+    const builder = article.builder.create({
+      id: "article-with-accordion",
+      title: "Documentation Article",
+    });
+
+    builder.section.add.withLeaf({
+      sectionId: "docs-section",
+      sectionTitle: "Component Docs",
+      leaf: article.shapes.accordionCodeBlock({
+        id: "readme-accordion",
+        title: "README.md",
+        code: "# Component\n\nDescription here.",
+        language: "markdown",
+      }),
+    });
+
+    const dataset = builder.getDataset();
+    expect(dataset.nodes).toBeDefined();
+
+    const rootNode = dataset.nodes![0];
+    const sectionNode = rootNode.children![0];
+    const paragraphNode = sectionNode.children![0];
+
+    // Find the accordion leaf in paragraph children
+    const accordionLeaf = paragraphNode.children?.find(
+      (c: LfArticleNode) => c.cells?.lfAccordion,
+    );
+    expect(accordionLeaf).toBeDefined();
+    expect(
+      accordionLeaf?.cells?.lfAccordion?.lfDataset?.nodes?.[0]?.value,
+    ).toBe("README.md");
   });
 });

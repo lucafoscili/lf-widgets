@@ -168,6 +168,7 @@ graph TD;
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
   lf-chat --> lf-checkbox
+  lf-article --> lf-accordion
   lf-article --> lf-badge
   lf-article --> lf-button
   lf-article --> lf-canvas
@@ -183,8 +184,25 @@ graph TD;
   lf-article --> lf-toggle
   lf-article --> lf-typewriter
   lf-article --> lf-upload
+  lf-accordion --> lf-accordion
+  lf-accordion --> lf-badge
+  lf-accordion --> lf-button
+  lf-accordion --> lf-canvas
+  lf-accordion --> lf-card
+  lf-accordion --> lf-chart
+  lf-accordion --> lf-chat
+  lf-accordion --> lf-chip
+  lf-accordion --> lf-code
+  lf-accordion --> lf-image
+  lf-accordion --> lf-photoframe
+  lf-accordion --> lf-progressbar
+  lf-accordion --> lf-textfield
+  lf-accordion --> lf-toggle
+  lf-accordion --> lf-typewriter
+  lf-accordion --> lf-upload
   lf-badge --> lf-image
   lf-canvas --> lf-image
+  lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
   lf-card --> lf-canvas

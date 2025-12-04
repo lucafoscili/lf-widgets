@@ -1,11 +1,18 @@
-import { LfArticleDataset, LfArticleNode } from "../components/article.declarations";
+import { LfAccordionPropsInterface } from "../components/accordion.declarations";
+import {
+  LfArticleDataset,
+  LfArticleNode,
+} from "../components/article.declarations";
 import { LfBadgePropsInterface } from "../components/badge.declarations";
 import {
   LfButtonPropsInterface,
   LfButtonStyling,
 } from "../components/button.declarations";
 import { LfCanvasPropsInterface } from "../components/canvas.declarations";
-import { LfCardLayout, LfCardPropsInterface } from "../components/card.declarations";
+import {
+  LfCardLayout,
+  LfCardPropsInterface,
+} from "../components/card.declarations";
 import {
   LfChartLegendPlacement,
   LfChartPropsInterface,
@@ -307,6 +314,23 @@ export interface LfDataInterface {
       }) => LfArticleNode;
     };
     shapes: {
+      accordion: (options: {
+        id: string;
+        dataset: LfDataDataset;
+        uiSize?: LfThemeUISize;
+        uiState?: LfThemeUIState;
+        style?: string;
+      }) => LfArticleNode;
+      accordionCodeBlock: (options: {
+        id: string;
+        title: string;
+        code: string;
+        icon?: LfIconType;
+        language?: string;
+        uiSize?: LfThemeUISize;
+        uiState?: LfThemeUIState;
+        style?: string;
+      }) => LfArticleNode;
       progressRow: (options: {
         id: string;
         label: string;
@@ -467,115 +491,121 @@ export interface LfDataBaseCell {
  * Cell descriptor storing typed values for the data framework.
  */
 export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
-  T extends "badge"
-    ? Partial<LfBadgePropsInterface> & {
-        shape: "badge";
+  T extends "accordion"
+    ? Partial<LfAccordionPropsInterface> & {
+        shape: "accordion";
         value: string;
         htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
       }
-    : T extends "button"
-      ? Partial<LfButtonPropsInterface> & {
-          shape: "button";
+    : T extends "badge"
+      ? Partial<LfBadgePropsInterface> & {
+          shape: "badge";
           value: string;
           htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
         }
-      : T extends "canvas"
-        ? Partial<LfCanvasPropsInterface> & {
-            shape: "canvas";
+      : T extends "button"
+        ? Partial<LfButtonPropsInterface> & {
+            shape: "button";
             value: string;
             htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
           }
-        : T extends "card"
-          ? Partial<LfCardPropsInterface> & {
-              shape: "card";
+        : T extends "canvas"
+          ? Partial<LfCanvasPropsInterface> & {
+              shape: "canvas";
               value: string;
               htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
             }
-          : T extends "chart"
-            ? Partial<LfChartPropsInterface> & {
-                shape: "chart";
+          : T extends "card"
+            ? Partial<LfCardPropsInterface> & {
+                shape: "card";
                 value: string;
                 htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
               }
-            : T extends "chat"
-              ? Partial<LfChatPropsInterface> & {
-                  shape: "chat";
-                  value: LfChatHistory;
+            : T extends "chart"
+              ? Partial<LfChartPropsInterface> & {
+                  shape: "chart";
+                  value: string;
                   htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                 }
-              : T extends "chip"
-                ? Partial<LfChipPropsInterface> & {
-                    shape: "chip";
-                    value: string;
+              : T extends "chat"
+                ? Partial<LfChatPropsInterface> & {
+                    shape: "chat";
+                    value: LfChatHistory;
                     htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                   }
-                : T extends "code"
-                  ? Partial<LfCodePropsInterface> & {
-                      shape: "code";
+                : T extends "chip"
+                  ? Partial<LfChipPropsInterface> & {
+                      shape: "chip";
                       value: string;
                       htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                     }
-                  : T extends "image"
-                    ? Partial<LfImagePropsInterface> & {
-                        shape: "image";
+                  : T extends "code"
+                    ? Partial<LfCodePropsInterface> & {
+                        shape: "code";
                         value: string;
                         htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                       }
-                    : T extends "number"
-                      ? {
-                          shape: "number";
-                          value: number;
+                    : T extends "image"
+                      ? Partial<LfImagePropsInterface> & {
+                          shape: "image";
+                          value: string;
                           htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                         }
-                      : T extends "photoframe"
-                        ? Partial<LfPhotoframePropsInterface> & {
-                            shape: "photoframe";
-                            value: string;
+                      : T extends "number"
+                        ? {
+                            shape: "number";
+                            value: number;
                             htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                           }
-                        : T extends "progressbar"
-                          ? Partial<LfProgressbarPropsInterface> & {
-                              shape: "progressbar";
-                              value: number;
+                        : T extends "photoframe"
+                          ? Partial<LfPhotoframePropsInterface> & {
+                              shape: "photoframe";
+                              value: string;
                               htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                             }
-                          : T extends "slot"
-                            ? {
-                                shape: "slot";
-                                value: string;
+                          : T extends "progressbar"
+                            ? Partial<LfProgressbarPropsInterface> & {
+                                shape: "progressbar";
+                                value: number;
                                 htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                               }
-                            : T extends "textfield"
-                              ? Partial<LfTextfieldPropsInterface> & {
-                                  shape: "textfield";
+                            : T extends "slot"
+                              ? {
+                                  shape: "slot";
                                   value: string;
                                   htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                 }
-                              : T extends "toggle"
-                                ? Partial<LfTogglePropsInterface> & {
-                                    shape: "toggle";
-                                    value: boolean;
+                              : T extends "textfield"
+                                ? Partial<LfTextfieldPropsInterface> & {
+                                    shape: "textfield";
+                                    value: string;
                                     htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                   }
-                                : T extends "upload"
-                                  ? Partial<LfUploadPropsInterface> & {
-                                      shape: "upload";
-                                      value: string;
+                                : T extends "toggle"
+                                  ? Partial<LfTogglePropsInterface> & {
+                                      shape: "toggle";
+                                      value: boolean;
                                       htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                     }
-                                  : T extends "typewriter"
-                                    ? Partial<LfTypewriterPropsInterface> & {
-                                        shape: "typewriter";
+                                  : T extends "upload"
+                                    ? Partial<LfUploadPropsInterface> & {
+                                        shape: "upload";
                                         value: string;
                                         htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                       }
-                                    : T extends "text"
-                                      ? {
-                                          shape?: "text";
+                                    : T extends "typewriter"
+                                      ? Partial<LfTypewriterPropsInterface> & {
+                                          shape: "typewriter";
                                           value: string;
                                           htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
                                         }
-                                      : LfDataBaseCell;
+                                      : T extends "text"
+                                        ? {
+                                            shape?: "text";
+                                            value: string;
+                                            htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
+                                          }
+                                        : LfDataBaseCell;
 /**
  * Data shape helper describing cell name to for the data framework.
  */
@@ -589,6 +619,7 @@ export type LfDataCellFromName<T extends keyof LfDataCellNameToShape> =
  * Container holding typed cell values consumed by the data framework.
  */
 export interface LfDataCellContainer {
+  lfAccordion?: LfDataCellFromName<"lfAccordion">;
   lfBadge?: LfDataCellFromName<"lfBadge">;
   lfButton?: LfDataCellFromName<"lfButton">;
   lfCanvas?: LfDataCellFromName<"lfCanvas">;

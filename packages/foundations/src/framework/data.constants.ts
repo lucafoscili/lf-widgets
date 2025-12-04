@@ -1,5 +1,6 @@
 //#region Shapes
 export const LF_DATA_SHAPE_MAP = {
+  lfAccordion: "accordion",
   lfBadge: "badge",
   lfButton: "button",
   lfCanvas: "canvas",
@@ -20,6 +21,7 @@ export const LF_DATA_SHAPE_MAP = {
   lfUpload: "upload",
 } as const;
 export const LF_DATA_SHAPES = [
+  "accordion",
   "badge",
   "button",
   "canvas",
