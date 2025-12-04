@@ -5,6 +5,8 @@ $comp: null !default;
 
 .messages {
   & {
+    --lf-article-padding: 0.75em 0;
+
     align-content: start;
     box-sizing: border-box;
     display: grid;

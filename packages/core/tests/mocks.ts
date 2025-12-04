@@ -54,6 +54,8 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
           separator: jest.fn(),
         },
         shapes: {
+          accordion: jest.fn(),
+          accordionCodeBlock: jest.fn(),
           progressRow: jest.fn(),
           buttonRow: jest.fn(),
           card: jest.fn(),

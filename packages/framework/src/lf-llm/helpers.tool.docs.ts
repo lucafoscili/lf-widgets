@@ -4,6 +4,7 @@ import {
   LfLLMToolResponse,
 } from "@lf-widgets/foundations";
 
+//#region Docs
 /**
  * Creates the handler function for the component docs tool.
  * Fetches README from GitHub and returns an article with the markdown.
@@ -11,7 +12,6 @@ import {
 export const createDocsToolHandler = (
   framework: LfFrameworkInterface,
 ): LfLLMToolHandlers[string] => {
-  //#region Article builder
   const buildArticleFromReadme = async (
     componentName: string,
   ): Promise<LfLLMToolResponse> => {
@@ -37,16 +37,17 @@ export const createDocsToolHandler = (
       const article = framework.data.article;
       const builder = article.builder.create({
         id: "docs-article",
-        title: normalizedTag,
       });
 
       builder.section.add.withLeaf({
         sectionId: "docs-readme",
-        sectionTitle: "README.md",
-        text: "",
+        sectionTitle: "",
+        text: `Here's the official documentation for the **${normalizedTag}** component! 📄`,
         layout: "stack",
-        leaf: article.shapes.codeBlock({
-          id: "docs-readme",
+        leaf: article.shapes.accordionCodeBlock({
+          id: "docs-readme-accordion",
+          title: "README.md",
+          icon: "file",
           language: "markdown",
           code: markdown,
         }),
@@ -95,3 +96,4 @@ export const createDocsToolHandler = (
     }
   };
 };
+//#endregion

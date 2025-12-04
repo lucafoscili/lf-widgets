@@ -8,6 +8,8 @@ export const LF_LLM_ROLES = ["system", "user", "assistant", "tool"] as const;
 export const LF_LLM_TOOL_NAMES = {
   GET_WEATHER: "get_weather",
   GET_COMPONENT_DOCS: "get_component_docs",
+  SET_THEME: "set_theme",
+  TOGGLE_DEBUG: "toggle_debug",
 } as const;
 //#endregion
 
@@ -69,6 +71,71 @@ export const LF_LLM_DOCS_TOOL_DEFINITION: LfLLMToolDefinition = {
     category: "lfw",
     icon: "document",
     displayName: "Component Docs",
+  },
+};
+
+/**
+ * Serializable definition for the theme tool.
+ * Changes the active theme of the lf-widgets framework.
+ */
+export const LF_LLM_THEME_TOOL_DEFINITION: LfLLMToolDefinition = {
+  type: "function",
+  function: {
+    name: LF_LLM_TOOL_NAMES.SET_THEME,
+    description: [
+      "Change the visual theme of the lf-widgets library.",
+      "Available themes include: abyss, blade, breath, cyborg, eclipse, emerald, ethereal, goldfish, graphite, grass, nightfall, nord, obsidian, pastel, sakura, sepulchre, steampunk, urban, voidforge, wizardry.",
+      "Use 'random' to pick a random theme, or 'list' to see all available themes.",
+    ].join(" "),
+    parameters: {
+      type: "object",
+      properties: {
+        theme: {
+          type: "string",
+          description:
+            "Theme name to apply (e.g. 'sakura', 'emerald', 'nightfall'). Use 'random' for a random theme or 'list' to show available themes.",
+        },
+      },
+      required: ["theme"],
+    },
+  },
+  meta: {
+    category: "lfw",
+    icon: "palette",
+    displayName: "Set Theme",
+  },
+};
+
+/**
+ * Serializable definition for the debug tool.
+ * Toggles debug mode and prints debug logs.
+ */
+export const LF_LLM_DEBUG_TOOL_DEFINITION: LfLLMToolDefinition = {
+  type: "function",
+  function: {
+    name: LF_LLM_TOOL_NAMES.TOGGLE_DEBUG,
+    description: [
+      "Control the debug mode of lf-widgets.",
+      "Can enable/disable debug logging and print current debug logs to the browser console.",
+      "Use action 'on' to enable, 'off' to disable, 'print' to output logs to console, or 'status' to check current state.",
+    ].join(" "),
+    parameters: {
+      type: "object",
+      properties: {
+        action: {
+          type: "string",
+          enum: ["on", "off", "print", "status"],
+          description:
+            "Action to perform: 'on' enables debug, 'off' disables it, 'print' outputs logs to console, 'status' shows current debug state.",
+        },
+      },
+      required: ["action"],
+    },
+  },
+  meta: {
+    category: "lfw",
+    icon: "bug",
+    displayName: "Debug Mode",
   },
 };
 //#endregion

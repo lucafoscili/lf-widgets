@@ -222,6 +222,8 @@ describe("Framework LLM Builtin Tools (integration)", () => {
 
     const weatherDef = definitions.general["get_weather"];
     const docsDef = definitions.lfw["get_component_docs"];
+    const themeDef = definitions.lfw["set_theme"];
+    const debugDef = definitions.lfw["toggle_debug"];
 
     expect(weatherDef).toBeDefined();
     expect(weatherDef.type).toBe("function");
@@ -230,6 +232,14 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     expect(docsDef).toBeDefined();
     expect(docsDef.type).toBe("function");
     expect(docsDef.function.name).toBe("get_component_docs");
+
+    expect(themeDef).toBeDefined();
+    expect(themeDef.type).toBe("function");
+    expect(themeDef.function.name).toBe("set_theme");
+
+    expect(debugDef).toBeDefined();
+    expect(debugDef.type).toBe("function");
+    expect(debugDef.function.name).toBe("toggle_debug");
   });
 
   it("exposes builtin tool handlers keyed by tool name", () => {
@@ -239,7 +249,12 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     const names = Object.keys(handlers);
 
     expect(names).toEqual(
-      expect.arrayContaining(["get_weather", "get_component_docs"]),
+      expect.arrayContaining([
+        "get_weather",
+        "get_component_docs",
+        "set_theme",
+        "toggle_debug",
+      ]),
     );
   });
 
@@ -328,5 +343,144 @@ describe("Framework LLM Builtin Tools (integration)", () => {
         expect(result.content).toContain("lf-button");
       }
     }
+  });
+
+  it("builtin theme handler lists available themes", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const themeHandler = handlers["set_theme"];
+
+    const result = await themeHandler({
+      theme: "list",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("Available Themes");
+    expect(structured.content).toContain("Current theme");
+  });
+
+  it("builtin theme handler sets a valid theme", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const themeHandler = handlers["set_theme"];
+
+    const result = await themeHandler({
+      theme: "sakura",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("sakura");
+    expect(structured.content).toContain("Theme changed");
+  });
+
+  it("builtin theme handler randomizes theme", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const themeHandler = handlers["set_theme"];
+
+    const result = await themeHandler({
+      theme: "random",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("randomized");
+  });
+
+  it("builtin theme handler reports unknown theme", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const themeHandler = handlers["set_theme"];
+
+    const result = await themeHandler({
+      theme: "nonexistent_theme_xyz",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("not found");
+  });
+
+  it("builtin debug handler returns status", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const debugHandler = handlers["toggle_debug"];
+
+    const result = await debugHandler({
+      action: "status",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("Debug Status");
+  });
+
+  it("builtin debug handler toggles debug on and off", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const debugHandler = handlers["toggle_debug"];
+
+    // Enable debug
+    const onResult = await debugHandler({
+      action: "on",
+    } as Record<string, unknown>);
+
+    expect(onResult).toBeDefined();
+    const onStructured = onResult as LfLLMToolResponse;
+    expect(onStructured.type).toBe("text");
+    expect(onStructured.content).toContain("enabled");
+
+    // Disable debug
+    const offResult = await debugHandler({
+      action: "off",
+    } as Record<string, unknown>);
+
+    expect(offResult).toBeDefined();
+    const offStructured = offResult as LfLLMToolResponse;
+    expect(offStructured.type).toBe("text");
+    expect(offStructured.content).toContain("disabled");
+  });
+
+  it("builtin debug handler prints logs", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const debugHandler = handlers["toggle_debug"];
+
+    const result = await debugHandler({
+      action: "print",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("browser console");
+  });
+
+  it("builtin debug handler handles unknown action", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const debugHandler = handlers["toggle_debug"];
+
+    const result = await debugHandler({
+      action: "invalid_action",
+    } as Record<string, unknown>);
+
+    expect(result).toBeDefined();
+    expect(typeof result).not.toBe("string");
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("text");
+    expect(structured.content).toContain("Unknown action");
   });
 });

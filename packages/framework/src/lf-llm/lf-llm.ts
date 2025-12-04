@@ -1,5 +1,7 @@
 import {
+  LF_LLM_DEBUG_TOOL_DEFINITION,
   LF_LLM_DOCS_TOOL_DEFINITION,
+  LF_LLM_THEME_TOOL_DEFINITION,
   LF_LLM_WEATHER_TOOL_DEFINITION,
   LfButtonElement,
   LfFrameworkInterface,
@@ -12,7 +14,9 @@ import {
   LfLLMUtils,
   LfTextfieldElement,
 } from "@lf-widgets/foundations";
+import { createDebugToolHandler } from "./helpers.tool.debug";
 import { createDocsToolHandler } from "./helpers.tool.docs";
+import { createThemeToolHandler } from "./helpers.tool.theme";
 import { createWeatherToolHandler } from "./helpers.tool.weather";
 
 export class LfLLM implements LfLLMInterface {
@@ -21,10 +25,6 @@ export class LfLLM implements LfLLMInterface {
     e instanceof DOMException && e.name === "AbortError";
   #LF_MANAGER: LfFrameworkInterface;
 
-  /**
-   * Strips the `meta` field from tool definitions before sending to the LLM.
-   * The `meta` field is used only for UI organization and is not part of the OpenAI spec.
-   */
   #sanitizeRequest = (request: LfLLMRequest): LfLLMRequest => {
     if (!request.tools || request.tools.length === 0) {
       return request;
@@ -152,6 +152,10 @@ export class LfLLM implements LfLLMInterface {
       lfw: {
         [LF_LLM_DOCS_TOOL_DEFINITION.function.name]:
           LF_LLM_DOCS_TOOL_DEFINITION,
+        [LF_LLM_THEME_TOOL_DEFINITION.function.name]:
+          LF_LLM_THEME_TOOL_DEFINITION,
+        [LF_LLM_DEBUG_TOOL_DEFINITION.function.name]:
+          LF_LLM_DEBUG_TOOL_DEFINITION,
       },
     };
   };
@@ -162,10 +166,16 @@ export class LfLLM implements LfLLMInterface {
    */
   getBuiltinToolHandlers = (): LfLLMBuiltinToolHandlersRegistry => {
     return {
-      [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]: createWeatherToolHandler(
+      [LF_LLM_DEBUG_TOOL_DEFINITION.function.name]: createDebugToolHandler(
         this.#LF_MANAGER,
       ),
       [LF_LLM_DOCS_TOOL_DEFINITION.function.name]: createDocsToolHandler(
+        this.#LF_MANAGER,
+      ),
+      [LF_LLM_THEME_TOOL_DEFINITION.function.name]: createThemeToolHandler(
+        this.#LF_MANAGER,
+      ),
+      [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]: createWeatherToolHandler(
         this.#LF_MANAGER,
       ),
     };
