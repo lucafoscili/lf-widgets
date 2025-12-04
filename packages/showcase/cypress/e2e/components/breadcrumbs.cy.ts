@@ -53,9 +53,9 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(breadcrumbs);
     const eventType: LfBreadcrumbsEvent = "pointerdown";
     cy.checkEvent(breadcrumbs, eventType);
-    // Use force:true to bypass typewriter overlay
+    // Click on node element to trigger pointerdown
     cy.get(`${breadcrumbsTag}#uncategorized-ripple`)
-      .findEffectLayer(CY_EFFECT_LAYERS.ripple)
+      .findCyElement(node)
       .first()
       .click({ force: true });
     cy.getCyElement(check).should("exist");

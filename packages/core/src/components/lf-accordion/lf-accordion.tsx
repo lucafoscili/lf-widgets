@@ -329,6 +329,7 @@ export class LfAccordion implements LfAccordionInterface {
             })}
             data-cy={!isExpandible && this.#cy.button}
             onClick={(e) => this.toggleNode(node.id, e)}
+            onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
             part={this.#p.header}
             tabindex="1"
             title={node.description}

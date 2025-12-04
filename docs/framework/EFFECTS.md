@@ -21,7 +21,7 @@
 
 Each registerable effect creates **real DOM elements** ("layers") rather than relying on pseudo-elements:
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────────┐
 │  Host Element (e.g., <lf-card>)                         │
 │  [data-lf-neon-glow-host] [data-lf-tilt-host]           │
@@ -43,6 +43,7 @@ Each registerable effect creates **real DOM elements** ("layers") rather than re
 ```
 
 **Benefits:**
+
 - **Unlimited effects** on a single element (no pseudo-element conflicts)
 - **Fire-and-forget** API: `register()` / `unregister()` handles everything
 - **Zero conflicts** between effects
@@ -550,6 +551,7 @@ if (effectsManager.isRegistered(element)) {
     Registers a neon glow effect with pulsating border and optional reflection.
 
     **Options:**
+
     | Option | Type | Default | Description |
     |--------|------|---------|-------------|
     | `color` | `LfColorInput` | Theme secondary | Glow color |
@@ -579,6 +581,7 @@ if (effectsManager.isRegistered(element)) {
     Registers a ripple effect that triggers on pointerdown events.
 
     **Options:**
+
     | Option | Type | Default | Description |
     |--------|------|---------|-------------|
     | `autoSurfaceRadius` | `boolean` | `true` | Inherit border-radius from parent |

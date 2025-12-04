@@ -411,6 +411,7 @@ export class LfUpload {
               <label
                 class={bemClass(fileUpload._, fileUpload.label)}
                 htmlFor="upload-input"
+                onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
                 ref={(el) => {
                   if (el) {
                     this.#label = el;

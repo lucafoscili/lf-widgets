@@ -351,6 +351,9 @@ export class LfTabbar implements LfTabbarInterface {
         onClick={(e) => {
           this.onLfEvent(e, "click", index, node);
         }}
+        onPointerDown={(e) => {
+          this.onLfEvent(e, "pointerdown", index, node);
+        }}
         part={this.#p.tab}
         role="tab"
         tabIndex={index}

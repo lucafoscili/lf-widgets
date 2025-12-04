@@ -55,7 +55,10 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(chip);
     const eventType: LfChipEvent = "delete";
     cy.checkEvent(chip, eventType);
-    cy.get(`${chipTag}#input-simple`).find(".item__icon--trailing").click();
+    cy.get(`${chipTag}#input-simple`)
+      .find(".item__icon--trailing")
+      .first()
+      .click();
     cy.getCyElement(check).should("exist");
   });
   it(`focus`, () => {

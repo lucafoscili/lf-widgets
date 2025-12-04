@@ -101,6 +101,10 @@ export const prepBreadcrumbsJsx = (
           isItemInteractive &&
           handlers.item.keydown(e as KeyboardEvent, node, index)
         }
+        onPointerDown={(e) =>
+          isItemInteractive &&
+          handlers.item.pointerdown(e as PointerEvent, node, index)
+        }
       >
         <span
           class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.label)}

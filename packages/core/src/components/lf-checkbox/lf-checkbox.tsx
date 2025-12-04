@@ -400,6 +400,7 @@ export class LfCheckbox implements LfCheckboxInterface {
             <div
               class={bemClass(checkbox._)}
               onClick={(e) => this.onLfEvent(e, "change")}
+              onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
               ref={(el) => (this.#surface = el)}
             >
               <div

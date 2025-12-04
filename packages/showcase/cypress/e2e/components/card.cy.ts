@@ -66,10 +66,12 @@ describe(CY_CATEGORIES.events, () => {
     cy.navigate(card);
     const eventType: LfCardEvent = "pointerdown";
     cy.checkEvent(card, eventType);
+    // Click on the card element directly
     cy.get(`${cardTag}#material-material-0`)
-      .findEffectLayer(CY_EFFECT_LAYERS.ripple)
-      .parent() // the actual listener is on the parent in this case
-      .click({ multiple: true });
+      .shadow()
+      .find("[part='card']")
+      .first()
+      .click({ force: true });
     cy.getCyElement(check).should("exist");
   });
   it(`ready`, () => {
