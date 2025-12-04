@@ -4,6 +4,7 @@ import {
   LfLLMRequest,
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
+import { getEffectiveConfig } from "./helpers.config";
 import { newRequest } from "./helpers.request";
 import {
   createInitialToolDataset,
@@ -54,9 +55,10 @@ const handleStreamingResponse = async (
 ): Promise<void> => {
   const { get, set } = adapter.controller;
   const { compInstance, history, manager } = get;
-  const { lfEndpointUrl } = compInstance;
   const { llm } = manager;
   const comp = compInstance as LfChat;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const endpointUrl = effectiveConfig.llm.endpointUrl;
 
   const abortController = llm.createAbort?.();
   set.currentAbortStreaming(abortController);
@@ -78,7 +80,7 @@ const handleStreamingResponse = async (
       return index;
     };
 
-    for await (const chunk of llm.stream(request, lfEndpointUrl, {
+    for await (const chunk of llm.stream(request, endpointUrl, {
       signal: abortController?.signal,
     })) {
       if (chunk?.contentDelta) {
@@ -243,11 +245,12 @@ const handleFetchResponse = async (
   updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
-  const { compInstance, history, manager } = get;
-  const { lfEndpointUrl } = compInstance;
+  const { history, manager } = get;
   const { llm } = manager;
+  const effectiveConfig = getEffectiveConfig(adapter);
+  const endpointUrl = effectiveConfig.llm.endpointUrl;
 
-  const response = await llm.fetch(request, lfEndpointUrl);
+  const response = await llm.fetch(request, endpointUrl);
 
   const message = response.choices?.[0]?.message?.content;
   const rawToolCalls = response.choices?.[0]?.message?.tool_calls;

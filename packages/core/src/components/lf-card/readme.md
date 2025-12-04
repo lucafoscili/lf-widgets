@@ -150,6 +150,7 @@ graph TD;
   lf-chat --> lf-textfield
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-checkbox
   lf-article --> lf-card
   lf-code --> lf-button
   lf-photoframe --> lf-image

@@ -2,8 +2,32 @@ import {
   LF_CHAT_IDS,
   LfChatAdapter,
   LfChatAdapterHandlers,
+  LfChatConfig,
 } from "@lf-widgets/foundations";
+import { getEffectiveConfig } from "./helpers.config";
 import { LfChat } from "./lf-chat";
+
+/**
+ * Helper to update a nested property in lfConfig immutably.
+ * Creates a new config object with the updated value.
+ */
+const updateConfig = (
+  comp: LfChat,
+  section: keyof LfChatConfig,
+  key: string,
+  value: unknown,
+) => {
+  const currentConfig = comp.lfConfig || {};
+  const currentSection = currentConfig[section] || {};
+
+  comp.lfConfig = {
+    ...currentConfig,
+    [section]: {
+      ...currentSection,
+      [key]: value,
+    },
+  };
+};
 
 export const prepSettingsHandlers = (
   getAdapter: () => LfChatAdapter,
@@ -35,45 +59,92 @@ export const prepSettingsHandlers = (
     },
     //#endregion
 
+    //#region Checkbox
+    checkbox: (e) => {
+      const { eventType, value } = e.detail;
+
+      const adapter = getAdapter();
+      const { get } = adapter.controller;
+      const { compInstance } = get;
+      const comp = compInstance as LfChat;
+      const effectiveConfig = getEffectiveConfig(adapter);
+
+      switch (eventType) {
+        case "change": {
+          // Extract tool name from the element's data attribute
+          const checkboxEl = e.target as HTMLElement;
+          const toolName = checkboxEl.getAttribute("data-tool-name");
+
+          if (!toolName) {
+            break;
+          }
+
+          // Get current enabled tools or create from all definitions
+          const currentEnabled = effectiveConfig.tools.enabled
+            ? [...effectiveConfig.tools.enabled]
+            : effectiveConfig.tools.definitions.map(
+                (d) => d.function?.name ?? "",
+              );
+
+          // Toggle the tool in the enabled array
+          // value comes as "on"/"off" string from checkbox
+          const isNowEnabled = value === "on";
+          const toolIndex = currentEnabled.indexOf(toolName);
+
+          if (isNowEnabled && toolIndex === -1) {
+            currentEnabled.push(toolName);
+          } else if (!isNowEnabled && toolIndex !== -1) {
+            currentEnabled.splice(toolIndex, 1);
+          }
+
+          // Update config
+          updateConfig(comp, "tools", "enabled", currentEnabled);
+          break;
+        }
+      }
+    },
+    //#endregion
+
     //#region Textfield
     textfield: (e) => {
       const { eventType, id, value } = e.detail;
 
       const { get } = getAdapter().controller;
       const { compInstance } = get;
+      const comp = compInstance as LfChat;
 
       switch (eventType) {
         case "change":
           switch (id) {
             case LF_CHAT_IDS.options.contextWindow:
-              compInstance.lfContextWindow = parseInt(value);
+              updateConfig(comp, "llm", "contextWindow", parseInt(value));
               break;
             case LF_CHAT_IDS.options.seed:
-              compInstance.lfSeed = parseInt(value);
+              updateConfig(comp, "llm", "seed", parseInt(value));
               break;
             case LF_CHAT_IDS.options.topP:
-              compInstance.lfTopP = parseFloat(value);
+              updateConfig(comp, "llm", "topP", parseFloat(value));
               break;
             case LF_CHAT_IDS.options.frequencyPenalty:
-              compInstance.lfFrequencyPenalty = parseFloat(value);
+              updateConfig(comp, "llm", "frequencyPenalty", parseFloat(value));
               break;
             case LF_CHAT_IDS.options.presencePenalty:
-              compInstance.lfPresencePenalty = parseFloat(value);
+              updateConfig(comp, "llm", "presencePenalty", parseFloat(value));
               break;
             case LF_CHAT_IDS.options.endpointUrl:
-              compInstance.lfEndpointUrl = value;
+              updateConfig(comp, "llm", "endpointUrl", value);
               break;
             case LF_CHAT_IDS.options.maxTokens:
-              compInstance.lfMaxTokens = parseInt(value);
+              updateConfig(comp, "llm", "maxTokens", parseInt(value));
               break;
             case LF_CHAT_IDS.options.polling:
-              compInstance.lfPollingInterval = parseInt(value);
+              updateConfig(comp, "llm", "pollingInterval", parseInt(value));
               break;
             case LF_CHAT_IDS.options.system:
-              compInstance.lfSystem = value;
+              updateConfig(comp, "llm", "systemPrompt", value);
               break;
             case LF_CHAT_IDS.options.temperature:
-              compInstance.lfTemperature = parseFloat(value);
+              updateConfig(comp, "llm", "temperature", parseFloat(value));
               break;
           }
           break;

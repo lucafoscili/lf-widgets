@@ -2,8 +2,10 @@ import {
   LF_CHAT_IDS,
   LfChatAdapter,
   LfChatAdapterJsx,
+  LfLLMToolDefinition,
 } from "@lf-widgets/foundations";
-import { h } from "@stencil/core";
+import { Fragment, h } from "@stencil/core";
+import { getEffectiveConfig } from "./helpers.config";
 
 export const prepSettings = (
   getAdapter: () => LfChatAdapter,
@@ -38,14 +40,15 @@ export const prepSettings = (
 
     //#region Context Window
     contextWindow: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -58,7 +61,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("arrowAutofitContent")}
           lfLabel="Context Window Size"
-          lfValue={stringify(compInstance.lfContextWindow)}
+          lfValue={stringify(effectiveConfig.llm.contextWindow)}
           onLf-textfield-event={textfield}
           part={parts.contextWindow}
           ref={assignRef(settings, "contextWindow")}
@@ -69,13 +72,14 @@ export const prepSettings = (
 
     //#region Endpoint
     endpoint: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, theme } = manager;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -84,7 +88,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.endpointUrl}
           lfIcon={get.icon("network")}
           lfLabel="Endpoint URL"
-          lfValue={compInstance.lfEndpointUrl}
+          lfValue={effectiveConfig.llm.endpointUrl}
           onLf-textfield-event={textfield}
           part={parts.endpointUrl}
           ref={assignRef(settings, "endpoint")}
@@ -120,14 +124,15 @@ export const prepSettings = (
 
     //#region Frequency penalty
     frequencyPenalty: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -140,7 +145,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("codeCircle2")}
           lfLabel="Frequency Penalty"
-          lfValue={stringify(compInstance.lfFrequencyPenalty)}
+          lfValue={stringify(effectiveConfig.llm.frequencyPenalty)}
           onLf-textfield-event={textfield}
           part={parts.frequencyPenalty}
           ref={assignRef(settings, "frequencyPenalty")}
@@ -176,14 +181,15 @@ export const prepSettings = (
 
     //#region Max tokens
     maxTokens: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -196,7 +202,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("numbers")}
           lfLabel="Max tokens count"
-          lfValue={stringify(compInstance.lfMaxTokens)}
+          lfValue={stringify(effectiveConfig.llm.maxTokens)}
           onLf-textfield-event={textfield}
           part={parts.maxTokens}
           ref={assignRef(settings, "maxTokens")}
@@ -207,14 +213,15 @@ export const prepSettings = (
 
     //#region Polling
     polling: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -227,7 +234,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("hourglassLow")}
           lfLabel="Polling interval"
-          lfValue={stringify(compInstance.lfPollingInterval)}
+          lfValue={stringify(effectiveConfig.llm.pollingInterval)}
           onLf-textfield-event={textfield}
           part={parts.polling}
           ref={assignRef(settings, "polling")}
@@ -238,14 +245,15 @@ export const prepSettings = (
 
     //#region Presence penalty
     presencePenalty: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -258,7 +266,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("schema")}
           lfLabel="Presence penalty"
-          lfValue={stringify(compInstance.lfPresencePenalty)}
+          lfValue={stringify(effectiveConfig.llm.presencePenalty)}
           onLf-textfield-event={textfield}
           part={parts.presencePenalty}
           ref={assignRef(settings, "presencePenalty")}
@@ -269,14 +277,15 @@ export const prepSettings = (
 
     //#region Seed
     seed: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -288,7 +297,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("ikosaedr")}
           lfLabel="Random Seed (-1 for random)"
-          lfValue={stringify(compInstance.lfSeed)}
+          lfValue={stringify(effectiveConfig.llm.seed)}
           onLf-textfield-event={textfield}
           part={parts.seed}
           ref={assignRef(settings, "seed")}
@@ -299,13 +308,14 @@ export const prepSettings = (
 
     //#region System
     system: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -314,7 +324,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.system}
           lfLabel="System prompt"
           lfStyling="textarea"
-          lfValue={compInstance.lfSystem}
+          lfValue={effectiveConfig.llm.systemPrompt}
           onLf-textfield-event={textfield}
           part={parts.system}
           ref={assignRef(settings, "system")}
@@ -326,14 +336,15 @@ export const prepSettings = (
 
     //#region Temperature
     temperature: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -347,7 +358,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("temperature")}
           lfLabel="Temperature"
-          lfValue={stringify(compInstance.lfTemperature)}
+          lfValue={stringify(effectiveConfig.llm.temperature)}
           onLf-textfield-event={textfield}
           part={parts.temperature}
           ref={assignRef(settings, "temperature")}
@@ -356,16 +367,108 @@ export const prepSettings = (
     },
     //#endregion
 
+    //#region Tools
+    tools: () => {
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { settings } = elements.refs;
+      const { checkbox } = handlers.settings;
+      const { theme } = manager;
+      const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
+
+      const { definitions, enabled, categories } = effectiveConfig.tools;
+
+      // If no tools, don't render the section
+      if (!definitions || definitions.length === 0) {
+        return <Fragment></Fragment>;
+      }
+
+      // Group tools by category
+      const groupedTools = groupToolsByCategory(definitions, categories);
+      const categoryNames = Object.keys(groupedTools).sort();
+
+      // Determine which tools are enabled
+      const isToolEnabled = (toolName: string): boolean => {
+        if (!enabled || enabled.length === 0) {
+          return true; // All enabled by default
+        }
+        return enabled.includes(toolName);
+      };
+
+      return (
+        <div
+          class={bemClass(blocks.settings._, blocks.settings.toolsContainer)}
+          part={parts.tools}
+        >
+          <div class={bemClass(blocks.settings._, blocks.settings.toolsHeader)}>
+            <lf-icon
+              lfIcon={get.icon("adjustmentsHorizontal")}
+              lfSize="1.25em"
+            ></lf-icon>
+            <span>Available Tools</span>
+          </div>
+          {categoryNames.map((category) => (
+            <div
+              class={bemClass(blocks.settings._, blocks.settings.toolsCategory)}
+              key={category}
+            >
+              <span class={bemClass(blocks.settings._, blocks.settings.tools)}>
+                {category}
+              </span>
+              {groupedTools[category].map((tool) => {
+                const toolName = tool.function?.name || "";
+                const toolDescription = tool.function?.description || "";
+                const isEnabled = isToolEnabled(toolName);
+
+                return (
+                  <div
+                    class={bemClass(
+                      blocks.settings._,
+                      blocks.settings.toolsItem,
+                    )}
+                    key={toolName}
+                    title={toolDescription}
+                  >
+                    <lf-checkbox
+                      class={bemClass(
+                        blocks.settings._,
+                        blocks.settings.toolsCheckbox,
+                      )}
+                      data-cy={cyAttributes.input}
+                      data-tool-name={toolName}
+                      id={`${LF_CHAT_IDS.options.tools}-${toolName}`}
+                      lfLabel={toolName}
+                      lfValue={isEnabled}
+                      onLf-checkbox-event={checkbox}
+                      ref={(el) => {
+                        if (el) {
+                          settings.tools.set(toolName, el);
+                        }
+                      }}
+                    ></lf-checkbox>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    //#endregion
+
     //#region Top P
     topP: () => {
-      const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
-        controller.get;
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { blocks, cyAttributes, manager, parts } = controller.get;
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = manager;
       const { stringify } = data.cell;
       const { bemClass, get } = theme;
+      const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
         <lf-textfield
@@ -380,7 +483,7 @@ export const prepSettings = (
           }}
           lfIcon={get.icon("template")}
           lfLabel="Top P"
-          lfValue={stringify(compInstance.lfTopP)}
+          lfValue={stringify(effectiveConfig.llm.topP)}
           onLf-textfield-event={textfield}
           part={parts.topP}
           ref={assignRef(settings, "topP")}
@@ -390,3 +493,49 @@ export const prepSettings = (
     //#endregion
   };
 };
+
+//#region Helper functions
+/**
+ * Groups tool definitions by their category.
+ * Uses the categories config if provided, otherwise falls back to tool.meta.category.
+ *
+ * @param definitions - Array of tool definitions
+ * @param categories - Optional category groupings from config
+ * @returns Record mapping category names to arrays of tool definitions
+ */
+const groupToolsByCategory = (
+  definitions: LfLLMToolDefinition[],
+  categories?: Record<string, string[]>,
+): Record<string, LfLLMToolDefinition[]> => {
+  const grouped: Record<string, LfLLMToolDefinition[]> = {};
+
+  if (categories) {
+    // Use provided category mappings
+    for (const [category, toolNames] of Object.entries(categories)) {
+      grouped[category] = definitions.filter((def) =>
+        toolNames.includes(def.function?.name ?? ""),
+      );
+    }
+
+    // Add uncategorized tools
+    const categorizedTools = new Set(Object.values(categories).flat());
+    const uncategorized = definitions.filter(
+      (def) => !categorizedTools.has(def.function?.name ?? ""),
+    );
+    if (uncategorized.length > 0) {
+      grouped["Other"] = uncategorized;
+    }
+  } else {
+    // Fall back to meta.category
+    for (const def of definitions) {
+      const category = def.meta?.category || "General";
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(def);
+    }
+  }
+
+  return grouped;
+};
+//#endregion

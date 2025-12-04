@@ -4,11 +4,16 @@ import {
   LfDataNode,
   LfIconType,
   LfLLMChoiceMessage,
-  LfLLMTool,
   LfLLMToolCall,
+  LfLLMToolDefinition,
+  LfLLMToolHandlers,
   LfLLMToolResponse,
 } from "@lf-widgets/foundations";
-import { getEffectiveConfig } from "./helpers.config";
+import {
+  getAllToolHandlers,
+  getEffectiveConfig,
+  getEnabledToolDefinitions,
+} from "./helpers.config";
 
 //#region Tool dataset
 /**
@@ -282,9 +287,20 @@ export const mergeToolCalls = (
 //#endregion
 
 //#region Execute tools
+/**
+ * Executes tool calls by looking up handlers from the provided handlers map.
+ * Tool definitions (schemas) are used only to validate that a tool exists.
+ * The actual execution function comes from the handlers map.
+ *
+ * @param toolCalls - Array of tool calls from the LLM
+ * @param availableDefinitions - Array of tool definitions (schemas only)
+ * @param handlers - Map of tool names to their execution functions
+ * @returns Array of tool result messages to add to conversation history
+ */
 export const executeTools = async (
   toolCalls: LfLLMToolCall[],
-  availableTools: LfLLMTool[] = [],
+  availableDefinitions: LfLLMToolDefinition[] = [],
+  handlers: LfLLMToolHandlers = {},
 ): Promise<LfLLMChoiceMessage[]> => {
   // Execute all tools in parallel for better performance
   const executionPromises = toolCalls.map(async (call) => {
@@ -295,19 +311,23 @@ export const executeTools = async (
     const func = call.function;
     let result: string | LfLLMToolResponse = "";
 
-    const matchingTool = availableTools.find(
-      (tool) => tool.function?.name === func.name,
+    // Check if tool is defined in available definitions
+    const matchingDefinition = availableDefinitions.find(
+      (def) => def.function?.name === func.name,
     );
 
-    if (matchingTool) {
+    // Look up the handler function
+    const handler = handlers[func.name];
+
+    if (matchingDefinition) {
       // Valid tool found - try to execute
       try {
         const args = JSON.parse(func.arguments || "{}");
 
-        if (matchingTool.function.execute) {
-          result = await matchingTool.function.execute(args);
+        if (handler) {
+          result = await handler(args);
         } else {
-          result = `Error: Tool "${func.name}" has no execute function defined. This is a configuration error.`;
+          result = `Error: Tool "${func.name}" has no handler defined. This is a configuration error - please provide a handler in lfToolHandlers.`;
         }
       } catch (parseError) {
         result = `Error: Failed to parse arguments for tool "${func.name}". ${
@@ -316,7 +336,7 @@ export const executeTools = async (
       }
     } else {
       // Tool not found - provide helpful error message
-      const availableToolNames = availableTools
+      const availableToolNames = availableDefinitions
         .map((t) => `"${t.function?.name}"`)
         .join(", ");
 
@@ -437,9 +457,14 @@ export const handleToolCalls = async (
     }
   }
 
+  // Get enabled tool definitions and all handlers (builtin + user)
+  const enabledDefinitions = getEnabledToolDefinitions(adapter);
+  const handlers = getAllToolHandlers(adapter);
+
   const toolResults = await executeTools(
     toolCalls,
-    effectiveConfig.tools.definitions,
+    enabledDefinitions,
+    handlers,
   );
 
   const successIcon = theme.get.current().variables["--lf-icon-success"];

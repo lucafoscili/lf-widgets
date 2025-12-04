@@ -167,6 +167,7 @@ graph TD;
   lf-chat --> lf-textfield
   lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-checkbox
   lf-article --> lf-badge
   lf-article --> lf-button
   lf-article --> lf-canvas

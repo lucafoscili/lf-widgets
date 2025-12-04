@@ -17,13 +17,14 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
-import { LfLLMTool } from "../framework/llm.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfLLMAttachment,
   LfLLMChoiceMessage,
   LfLLMRole,
+  LfLLMToolDefinition,
+  LfLLMToolHandlers,
 } from "../framework/llm.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
@@ -35,6 +36,10 @@ import {
   LF_CHAT_STATUS,
   LF_CHAT_VIEW,
 } from "./chat.constants";
+import {
+  LfCheckboxElement,
+  LfCheckboxEventPayload,
+} from "./checkbox.declarations";
 import { LfChipElement, LfChipEventPayload } from "./chip.declarations";
 import { LfProgressbarElement } from "./progressbar.declarations";
 import { LfSpinnerElement } from "./spinner.declarations";
@@ -135,6 +140,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     system: () => VNode;
     temperature: () => VNode;
     seed: () => VNode;
+    tools: () => VNode;
     topP: () => VNode;
   };
   toolbar: {
@@ -182,6 +188,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     system: LfTextfieldElement | null;
     seed: LfTextfieldElement | null;
     temperature: LfTextfieldElement | null;
+    tools: Map<string, LfCheckboxElement>;
     topP: LfTextfieldElement | null;
   };
   toolbar: {
@@ -202,6 +209,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   };
   settings: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
+    checkbox: (e: CustomEvent<LfCheckboxEventPayload>) => void;
     textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
   toolbar: {
@@ -378,13 +386,25 @@ export interface LfChatConfig {
     seed?: number;
   };
   /**
-   * Tool calling configuration.
+   * Tool calling configuration (serializable).
    */
   tools?: {
     /**
-     * Array of available tools with OpenAI function calling schema.
+     * Array of available tool definitions with OpenAI function calling schema.
+     * These are serializable - execution handlers are provided via lfToolHandlers prop.
      */
-    definitions?: LfLLMTool[];
+    definitions?: LfLLMToolDefinition[];
+    /**
+     * Tool names to enable for requests. If undefined, all definitions are enabled.
+     * Use this to filter which tools are sent to the LLM.
+     */
+    enabled?: string[];
+    /**
+     * Group tools by category for UI organization.
+     * Keys are category names, values are arrays of tool names.
+     * @example { "Weather": ["get_weather", "get_forecast"], "Search": ["search_web"] }
+     */
+    categories?: Record<string, string[]>;
   };
   /**
    * User interface and display preferences.
@@ -419,10 +439,6 @@ export interface LfChatConfig {
      * Allowed MIME types (e.g., ["image/*", "application/pdf"]).
      */
     allowedTypes?: string[];
-    /**
-     * Optional callback for uploading files to external storage.
-     */
-    uploadCallback?: (files: File[]) => Promise<LfLLMAttachment[]>;
   };
 }
 
@@ -432,79 +448,43 @@ export interface LfChatConfig {
 export interface LfChatPropsInterface {
   /**
    * Configuration object for LLM, tools, UI, and attachments.
-   * Recommended for new implementations; legacy individual props remain supported.
+   * Contains only serializable settings for easy JSON storage/transfer.
    */
   lfConfig?: LfChatConfig;
   /**
-   * @deprecated Use `lfConfig.attachments.uploadTimeout` instead.
-   * Timeout in milliseconds to apply to the upload callback. If the callback does
-   * not resolve within this time it will be considered failed. Default is 60000 (60s).
+   * Custom styling for the component.
    */
-  lfAttachmentUploadTimeout?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.contextWindow` instead.
-   */
-  lfContextWindow?: number;
-  /**
-   * @deprecated Use `lfConfig.ui.emptyMessage` instead.
-   */
-  lfEmpty?: string;
-  /**
-   * @deprecated Use `lfConfig.llm.endpointUrl` instead.
-   */
-  lfEndpointUrl?: string;
-  /**
-   * @deprecated Use `lfConfig.llm.frequencyPenalty` instead.
-   */
-  lfFrequencyPenalty?: number;
-  /**
-   * @deprecated Use `lfConfig.ui.layout` instead.
-   */
-  lfLayout?: LfChatLayout;
-  /**
-   * @deprecated Use `lfConfig.llm.maxTokens` instead.
-   */
-  lfMaxTokens?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.pollingInterval` instead.
-   */
-  lfPollingInterval?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.presencePenalty` instead.
-   */
-  lfPresencePenalty?: number;
-  /**
-   * @deprecated Use `lfConfig.llm.seed` instead.
-   */
-  lfSeed?: number;
   lfStyle?: string;
   /**
-   * @deprecated Use `lfConfig.llm.systemPrompt` instead.
+   * Map of tool names to their execution handler functions.
+   * Each handler receives the parsed arguments and returns a result.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
+   *
+   * @example
+   * ```tsx
+   * <lf-chat
+   *   lfToolHandlers={{
+   *     get_weather: async (args) => `Weather in ${args.city}: Sunny`,
+   *     search_docs: async (args) => ({ type: "article", dataset: myDataset })
+   *   }}
+   * />
+   * ```
    */
-  lfSystem?: string;
+  lfToolHandlers?: LfLLMToolHandlers;
   /**
-   * @deprecated Use `lfConfig.llm.temperature` instead.
+   * The size of the component.
    */
-  lfTemperature?: number;
-  /**
-   * @deprecated Use `lfConfig.tools.definitions` instead.
-   */
-  lfTools?: LfLLMTool[];
-  /**
-   * @deprecated Use `lfConfig.llm.topP` instead.
-   */
-  lfTopP?: number;
   lfUiSize?: LfThemeUISize;
-  lfValue?: LfChatHistory;
   /**
-   * @deprecated Use `lfConfig.attachments.uploadCallback` instead.
-   * Optional callback provided by the host to upload files. If present the component
-   * will call this function with the selected File[] and expect a Promise resolving
-   * to an array of `LfLLMAttachment` objects describing uploaded files (including
-   * public `url` entries). If omitted the component falls back to inline base64
-   * encoding using the `data` field on attachments.
+   * Callback for uploading files to external storage.
+   * Returns attachment metadata after upload completes.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
    */
   lfUploadCallback?: (files: File[]) => Promise<LfLLMAttachment[]>;
+  /**
+   * Sets the initial history of the chat.
+   */
+  lfValue?: LfChatHistory;
 }
 /**
  * Union of layouts listed in `LF_CHAT_LAYOUT`.

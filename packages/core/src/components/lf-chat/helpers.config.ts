@@ -1,15 +1,48 @@
 import {
   LfChatAdapter,
   LfChatConfig,
-  LfLLMTool,
+  LfLLMToolDefinition,
+  LfLLMToolHandlers,
 } from "@lf-widgets/foundations";
 import { LfChat } from "./lf-chat";
 
-//#region Config merge utility
+//#region Default values
+const DEFAULT_CONFIG = {
+  llm: {
+    endpointUrl: "http://localhost:5001",
+    contextWindow: 8192,
+    maxTokens: 2048,
+    pollingInterval: 10000,
+    systemPrompt:
+      "You are a helpful and cheerful assistant eager to help the user out with his tasks.",
+    temperature: 0.7,
+    topP: 0.9,
+    frequencyPenalty: 0,
+    presencePenalty: 0,
+    seed: -1,
+  },
+  tools: {
+    definitions: [] as LfLLMToolDefinition[],
+    enabled: undefined as string[] | undefined,
+    categories: undefined as Record<string, string[]> | undefined,
+  },
+  ui: {
+    layout: "top" as const,
+    emptyMessage: "Your chat history is empty!",
+    showToolExecutionIndicator: true,
+  },
+  attachments: {
+    uploadTimeout: 60000,
+    maxSize: undefined as number | undefined,
+    allowedTypes: undefined as string[] | undefined,
+  },
+};
+//#endregion
+
+//#region Config utility
 /**
- * Merges the new lfConfig prop with legacy individual props.
- * Legacy props take precedence if set (for backward compatibility).
- * Logs warnings for deprecated props via LfDebug.
+ * Gets the effective configuration by merging user-provided lfConfig with defaults.
+ * Also merges builtin tools from the LLM service (converted to definitions).
  *
  * @param adapter - The chat adapter instance
  * @returns Effective config object with all settings resolved
@@ -19,128 +52,69 @@ export const getEffectiveConfig = (
 ): Required<LfChatConfig> => {
   const { get } = adapter.controller;
   const { compInstance, manager } = get;
-  const { debug, llm } = manager;
+  const { llm } = manager;
   const component = compInstance as LfChat;
   const config = component.lfConfig || {};
-  const hasConfig = !!component.lfConfig;
 
-  // Helper to log deprecation warnings
-  const warnDeprecated = (oldProp: string, newPath: string) => {
-    if (!hasConfig) return; // Only warn if using both config and legacy props
-    debug.logs.new(
-      component,
-      `Prop "${oldProp}" is deprecated. Use "lfConfig.${newPath}" instead. Legacy prop takes precedence.`,
-      "warning",
-    );
-  };
-
-  // LLM config with legacy prop overrides
-  const endpointUrl =
-    component.lfEndpointUrl !== "http://localhost:5001"
-      ? (warnDeprecated("lfEndpointUrl", "llm.endpointUrl"),
-        component.lfEndpointUrl)
-      : (config.llm?.endpointUrl ?? "http://localhost:5001");
-
+  // LLM config
+  const endpointUrl = config.llm?.endpointUrl ?? DEFAULT_CONFIG.llm.endpointUrl;
   const contextWindow =
-    component.lfContextWindow !== 8192
-      ? (warnDeprecated("lfContextWindow", "llm.contextWindow"),
-        component.lfContextWindow)
-      : (config.llm?.contextWindow ?? 8192);
-
-  const maxTokens =
-    component.lfMaxTokens !== 2048
-      ? (warnDeprecated("lfMaxTokens", "llm.maxTokens"), component.lfMaxTokens)
-      : (config.llm?.maxTokens ?? 2048);
-
+    config.llm?.contextWindow ?? DEFAULT_CONFIG.llm.contextWindow;
+  const maxTokens = config.llm?.maxTokens ?? DEFAULT_CONFIG.llm.maxTokens;
   const pollingInterval =
-    component.lfPollingInterval !== 10000
-      ? (warnDeprecated("lfPollingInterval", "llm.pollingInterval"),
-        component.lfPollingInterval)
-      : (config.llm?.pollingInterval ?? 10000);
-
+    config.llm?.pollingInterval ?? DEFAULT_CONFIG.llm.pollingInterval;
   const systemPrompt =
-    component.lfSystem !==
-    "You are a helpful and cheerful assistant eager to help the user out with his tasks."
-      ? (warnDeprecated("lfSystem", "llm.systemPrompt"), component.lfSystem)
-      : (config.llm?.systemPrompt ??
-        "You are a helpful and cheerful assistant eager to help the user out with his tasks.");
-
-  const temperature =
-    component.lfTemperature !== 0.7
-      ? (warnDeprecated("lfTemperature", "llm.temperature"),
-        component.lfTemperature)
-      : (config.llm?.temperature ?? 0.7);
-
-  const topP =
-    component.lfTopP !== 0.9
-      ? (warnDeprecated("lfTopP", "llm.topP"), component.lfTopP)
-      : (config.llm?.topP ?? 0.9);
-
+    config.llm?.systemPrompt ?? DEFAULT_CONFIG.llm.systemPrompt;
+  const temperature = config.llm?.temperature ?? DEFAULT_CONFIG.llm.temperature;
+  const topP = config.llm?.topP ?? DEFAULT_CONFIG.llm.topP;
   const frequencyPenalty =
-    component.lfFrequencyPenalty !== 0
-      ? (warnDeprecated("lfFrequencyPenalty", "llm.frequencyPenalty"),
-        component.lfFrequencyPenalty)
-      : (config.llm?.frequencyPenalty ?? 0);
-
+    config.llm?.frequencyPenalty ?? DEFAULT_CONFIG.llm.frequencyPenalty;
   const presencePenalty =
-    component.lfPresencePenalty !== 0
-      ? (warnDeprecated("lfPresencePenalty", "llm.presencePenalty"),
-        component.lfPresencePenalty)
-      : (config.llm?.presencePenalty ?? 0);
+    config.llm?.presencePenalty ?? DEFAULT_CONFIG.llm.presencePenalty;
+  const seed = config.llm?.seed ?? DEFAULT_CONFIG.llm.seed;
 
-  const seed =
-    component.lfSeed !== -1
-      ? (warnDeprecated("lfSeed", "llm.seed"), component.lfSeed)
-      : (config.llm?.seed ?? -1);
+  const userDefinitions: LfLLMToolDefinition[] =
+    config.tools?.definitions ?? [];
+  const builtinTools = llm.getBuiltinTools?.() ?? [];
 
-  // Tools config
-  const explicitTools: LfLLMTool[] =
-    component.lfTools?.length > 0
-      ? (warnDeprecated("lfTools", "tools.definitions"), component.lfTools)
-      : (config.tools?.definitions ?? []);
+  const builtinDefinitions: LfLLMToolDefinition[] = builtinTools.map(
+    (tool) => ({
+      type: "function" as const,
+      function: {
+        name: tool.function.name,
+        description: tool.function.description,
+        parameters: tool.function.parameters,
+      },
+      meta: {
+        category: "builtin",
+      },
+    }),
+  );
 
-  const builtinTools: LfLLMTool[] = llm.getBuiltinTools?.() ?? [];
-
-  // Merge builtin tools with user tools, giving precedence to user tools
-  const tools: LfLLMTool[] = [...explicitTools];
-  for (const builtin of builtinTools) {
+  const allDefinitions: LfLLMToolDefinition[] = [...userDefinitions];
+  for (const builtin of builtinDefinitions) {
     const name = builtin.function?.name;
     if (!name) continue;
-    const exists = tools.some((t) => t.function?.name === name);
+    const exists = allDefinitions.some((d) => d.function?.name === name);
     if (!exists) {
-      tools.push(builtin);
+      allDefinitions.push(builtin);
     }
   }
 
-  // UI config
-  const layout =
-    component.lfLayout !== "top"
-      ? (warnDeprecated("lfLayout", "ui.layout"), component.lfLayout)
-      : (config.ui?.layout ?? "top");
+  const enabled = config.tools?.enabled;
+  const categories = config.tools?.categories;
 
+  const layout = config.ui?.layout ?? DEFAULT_CONFIG.ui.layout;
   const emptyMessage =
-    component.lfEmpty !== "Your chat history is empty!"
-      ? (warnDeprecated("lfEmpty", "ui.emptyMessage"), component.lfEmpty)
-      : (config.ui?.emptyMessage ?? "Your chat history is empty!");
-
+    config.ui?.emptyMessage ?? DEFAULT_CONFIG.ui.emptyMessage;
   const showToolExecutionIndicator =
-    config.ui?.showToolExecutionIndicator ?? true;
+    config.ui?.showToolExecutionIndicator ??
+    DEFAULT_CONFIG.ui.showToolExecutionIndicator;
 
   // Attachments config
   const uploadTimeout =
-    component.lfAttachmentUploadTimeout !== 60000
-      ? (warnDeprecated(
-          "lfAttachmentUploadTimeout",
-          "attachments.uploadTimeout",
-        ),
-        component.lfAttachmentUploadTimeout!)
-      : (config.attachments?.uploadTimeout ?? 60000);
-
-  const uploadCallback = component.lfUploadCallback
-    ? (warnDeprecated("lfUploadCallback", "attachments.uploadCallback"),
-      component.lfUploadCallback)
-    : config.attachments?.uploadCallback;
-
+    config.attachments?.uploadTimeout ??
+    DEFAULT_CONFIG.attachments.uploadTimeout;
   const maxSize = config.attachments?.maxSize;
   const allowedTypes = config.attachments?.allowedTypes;
 
@@ -158,7 +132,9 @@ export const getEffectiveConfig = (
       seed,
     },
     tools: {
-      definitions: tools,
+      definitions: allDefinitions,
+      enabled,
+      categories,
     },
     ui: {
       layout,
@@ -169,8 +145,65 @@ export const getEffectiveConfig = (
       uploadTimeout,
       maxSize,
       allowedTypes,
-      uploadCallback,
     },
+  };
+};
+
+/**
+ * Gets the list of enabled tool definitions for sending to the LLM.
+ * Filters based on the `enabled` array if provided.
+ *
+ * @param adapter - The chat adapter instance
+ * @returns Array of enabled tool definitions
+ */
+export const getEnabledToolDefinitions = (
+  adapter: LfChatAdapter,
+): LfLLMToolDefinition[] => {
+  const config = getEffectiveConfig(adapter);
+  const { definitions, enabled } = config.tools;
+
+  // If no enabled filter, return all definitions
+  if (!enabled || enabled.length === 0) {
+    return definitions;
+  }
+
+  // Filter to only enabled tools
+  return definitions.filter((def) =>
+    enabled.includes(def.function?.name ?? ""),
+  );
+};
+
+/**
+ * Gets all tool handlers by merging builtin tool handlers with user-provided handlers.
+ * User-provided handlers take precedence over builtin handlers.
+ *
+ * @param adapter - The chat adapter instance
+ * @returns Combined tool handlers map
+ */
+export const getAllToolHandlers = (
+  adapter: LfChatAdapter,
+): LfLLMToolHandlers => {
+  const { get } = adapter.controller;
+  const { compInstance, manager } = get;
+  const { llm } = manager;
+  const component = compInstance as LfChat;
+
+  // Extract handlers from builtin tools
+  const builtinHandlers: LfLLMToolHandlers = {};
+  const builtinTools = llm.getBuiltinTools?.() ?? [];
+  for (const tool of builtinTools) {
+    const name = tool.function?.name;
+    if (name && tool.function.execute) {
+      builtinHandlers[name] = tool.function.execute;
+    }
+  }
+
+  // Merge with user-provided handlers (user handlers take precedence)
+  const userHandlers = component.lfToolHandlers || {};
+
+  return {
+    ...builtinHandlers,
+    ...userHandlers,
   };
 };
 //#endregion

@@ -33,21 +33,24 @@ describe("lf-chat", () => {
     const page = await createPage(`<lf-chat></lf-chat>`);
     const component = page.rootInstance as LfChat;
 
-    expect(component.lfContextWindow).toBe(8192);
-    expect(component.lfEmpty).toBe("Your chat history is empty!");
-    expect(component.lfEndpointUrl).toBe("http://localhost:5001");
-    expect(component.lfTools).toEqual([]);
-    expect(component.lfFrequencyPenalty).toBe(0);
+    expect(component.lfConfig).toEqual({});
+    expect(component.lfStyle).toBe("");
+    expect(component.lfUiSize).toBe("medium");
+    expect(component.lfValue).toEqual([]);
   });
 
-  it("should set props", async () => {
-    const page = await createPage(
-      `<lf-chat lf-context-window="4096" lf-empty="No messages"></lf-chat>`,
-    );
+  it("should set props via lfConfig", async () => {
+    const page = await createPage(`<lf-chat></lf-chat>`);
     const component = page.rootInstance as LfChat;
 
-    expect(component.lfContextWindow).toBe(4096);
-    expect(component.lfEmpty).toBe("No messages");
+    component.lfConfig = {
+      llm: { contextWindow: 4096 },
+      ui: { emptyMessage: "No messages" },
+    };
+    await page.waitForChanges();
+
+    expect(component.lfConfig?.llm?.contextWindow).toBe(4096);
+    expect(component.lfConfig?.ui?.emptyMessage).toBe("No messages");
   });
 
   it("should get props", async () => {
@@ -55,8 +58,8 @@ describe("lf-chat", () => {
     const component = page.rootInstance as LfChat;
 
     const props = await component.getProps();
-    expect(props.lfContextWindow).toBe(8192);
-    expect(props.lfEmpty).toBe("Your chat history is empty!");
+    expect(props.lfConfig).toEqual({});
+    expect(props.lfStyle).toBe("");
   });
 
   it("should refresh", async () => {
@@ -196,21 +199,6 @@ describe("lf-chat", () => {
       controller: {
         get: {
           compInstance: {
-            lfAttachmentUploadTimeout: 60000,
-            lfContextWindow: 8192,
-            lfEmpty: "Your chat history is empty!",
-            lfEndpointUrl: "http://localhost:5001",
-            lfFrequencyPenalty: 0,
-            lfLayout: "top",
-            lfMaxTokens: 2048,
-            lfPollingInterval: 10000,
-            lfPresencePenalty: 0,
-            lfSeed: -1,
-            lfSystem:
-              "You are a helpful and cheerful assistant eager to help the user out with his tasks.",
-            lfTemperature: 0.7,
-            lfTopP: 0.9,
-            lfTools: [],
             lfConfig: {
               llm: {},
               tools: {
@@ -271,21 +259,6 @@ describe("lf-chat", () => {
       controller: {
         get: {
           compInstance: {
-            lfAttachmentUploadTimeout: 60000,
-            lfContextWindow: 8192,
-            lfEmpty: "Your chat history is empty!",
-            lfEndpointUrl: "http://localhost:5001",
-            lfFrequencyPenalty: 0,
-            lfLayout: "top",
-            lfMaxTokens: 2048,
-            lfPollingInterval: 10000,
-            lfPresencePenalty: 0,
-            lfSeed: -1,
-            lfSystem:
-              "You are a helpful and cheerful assistant eager to help the user out with his tasks.",
-            lfTemperature: 0.7,
-            lfTopP: 0.9,
-            lfTools: [],
             lfConfig: {
               llm: {},
               tools: {

@@ -14,7 +14,6 @@ import {
   LfChatEventPayload,
   LfChatHistory,
   LfChatInterface,
-  LfChatLayout,
   LfChatPropsInterface,
   LfChatStatus,
   LfChatView,
@@ -24,7 +23,7 @@ import {
   LfIconType,
   LfLLMAttachment,
   LfLLMChoiceMessage,
-  LfLLMTool,
+  LfLLMToolHandlers,
   LfThemeUISize,
 } from "@lf-widgets/foundations";
 import {
@@ -46,6 +45,7 @@ import {
 import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
+import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
 import { calcTokens, submitPrompt } from "./helpers.messages";
 import { parseMessageContent } from "./helpers.parsing";
@@ -63,14 +63,21 @@ import { createAdapter } from "./lf-chat-adapter";
  * @remarks
  * The `lf-chat` component is a chat interface that connects to a language model
  * endpoint to provide conversational responses. The component supports various
- * settings, such as the context window size, empty message text, and endpoint URL.
+ * settings through the lfConfig prop.
  *
  * @example
  * <lf-chat
- * lfContextWindow={8192}
- * lfEmpty="Your chat history is empty!"
- * lfEndpointUrl="http://localhost:5001"
- * lfLayout="top"
+ *   lfConfig={{
+ *     llm: {
+ *       endpointUrl: "http://localhost:5001",
+ *       contextWindow: 8192,
+ *       temperature: 0.7
+ *     },
+ *     ui: {
+ *       layout: "top",
+ *       emptyMessage: "Your chat history is empty!"
+ *     }
+ *   }}
  * ></lf-chat>
  *
  * @fires {CustomEvent} lf-chat-event - Emitted for various component events
@@ -101,25 +108,11 @@ export class LfChat implements LfChatInterface {
 
   //#region Props
   /**
-   * @deprecated Use lfConfig.attachments.uploadTimeout instead.
-   * Timeout (ms) to apply to the upload callback. Default 60000ms.
-   *
-   * @type {number}
-   * @default 60000
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfAttachmentUploadTimeout={60000}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfAttachmentUploadTimeout?: number = 60000;
-  /**
    * Configuration object for LLM, tools, UI, and attachments.
-   * Recommended for new implementations; legacy individual props remain supported.
+   * All chat settings are configured through this single prop.
    *
    * @type {LfChatConfig}
-   * @default undefined
+   * @default {}
    * @mutable
    *
    * @example
@@ -132,142 +125,7 @@ export class LfChat implements LfChatInterface {
    * }}></lf-chat>
    * ```
    */
-  @Prop({ mutable: true }) lfConfig?: LfChatConfig;
-  /**
-   * How many tokens the context window can handle, used to calculate the occupied space.
-   *
-   * @type {number}
-   * @default 8192
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfContextWindow={8192}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfContextWindow: number = 8192;
-  /**
-   * Empty text displayed when there is no data.
-   *
-   * @type {string}
-   * @default "Your chat history is empty!"
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfEmpty="No messages yet"></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfEmpty: string = "Your chat history is empty!";
-  /**
-   * The URL endpoint for the chat service.
-   *
-   * @type {string}
-   * @default "http://localhost:5001"
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfEndpointUrl="http://localhost:5001"></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfEndpointUrl: string = "http://localhost:5001";
-  /**
-   * The tools available for the LLM to use during the conversation.
-   * These enable the model to perform actions like web searches or data fetching.
-   *
-   * @type {LfLLMTool[]}
-   * @default []
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfTools='[{"type": "function", "function": {"name": "web_search", "description": "Search the web", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}}}}]'></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfTools: LfLLMTool[] = [];
-  /**
-   * The frequency penalty for the LLM's answer.
-   * This parameter is used to reduce the likelihood of the model repeating the same tokens.
-   *
-   * @type {number}
-   * @default 0
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfFrequencyPenalty={0.5}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfFrequencyPenalty: number = 0;
-  /**
-   * Sets the layout of the chat.
-   *
-   * @type {LfChatLayout}
-   * @default "top"
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfLayout="bottom"></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfLayout: LfChatLayout = "top";
-  /**
-   * The maximum amount of tokens allowed in the LLM's answer.
-   * This parameter is used to control the length of the generated output.
-   *
-   * @type {number}
-   * @default 2048
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfMaxTokens={2048}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfMaxTokens: number = 2048;
-  /**
-   * How often the component checks whether the LLM endpoint is online or not.
-   *
-   * @type {number}
-   * @default 10000
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfPollingInterval={10000}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfPollingInterval: number = 10000;
-  /**
-   * The presence penalty for the LLM's answer.
-   * This parameter is used to reduce the likelihood of the model repeating the same information.
-   *
-   * @type {number}
-   * @default undefined
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfPresencePenalty={0.5}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfPresencePenalty: number = 0;
-  /**
-   * The seed of the LLM's answer.
-   * This parameter is used to control the randomness of the output.
-   *
-   * @type {number}
-   * @default -1
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfSeed={-1}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfSeed: number = -1;
+  @Prop({ mutable: true }) lfConfig: LfChatConfig = {};
   /**
    * Custom styling for the component.
    *
@@ -282,47 +140,25 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true }) lfStyle: string = "";
   /**
-   * System message for the LLM.
+   * Map of tool names to their execution handler functions.
+   * Each handler receives the parsed arguments and returns a result.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
    *
-   * @type {string}
-   * @default "You are a helpful and cheerful assistant eager to help the user out with his tasks."
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfSystem="You are a helpful assistant"></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfSystem: string =
-    "You are a helpful and cheerful assistant eager to help the user out with his tasks.";
-  /**
-   * Sets the creative boundaries of the LLM.
-   *
-   * @type {number}
-   * @default 0.7
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfTemperature={0.7}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfTemperature: number = 0.7;
-  /**
-   * The top-p sampling value for the LLM's answer.
-   * This parameter controls the diversity of the generated output by limiting the
-   * model's consideration to the top-p most probable tokens.
-   *
-   * @type {number}
+   * @type {LfLLMToolHandlers}
    * @default undefined
    * @mutable
    *
    * @example
    * ```tsx
-   * <lf-chat lfTopP={0.9}></lf-chat>
+   * <lf-chat
+   *   lfToolHandlers={{
+   *     get_weather: async (args) => `Weather in ${args.city}: Sunny`,
+   *     search_docs: async (args) => ({ type: "article", dataset: myDataset })
+   *   }}
+   * />
    * ```
    */
-  @Prop({ mutable: true }) lfTopP: number = 0.9;
+  @Prop({ mutable: true }) lfToolHandlers?: LfLLMToolHandlers;
   /**
    * The size of the component.
    *
@@ -337,6 +173,26 @@ export class LfChat implements LfChatInterface {
    */
   @Prop({ mutable: true, reflect: true }) lfUiSize: LfThemeUISize = "medium";
   /**
+   * Callback for uploading files to external storage.
+   * Returns attachment metadata after upload completes.
+   * This is kept as a separate prop (not in lfConfig) because functions are not serializable.
+   *
+   * @type {(files: File[]) => Promise<LfLLMAttachment[]>}
+   * @default undefined
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-chat lfUploadCallback={async (files) => {
+   *   // Upload files and return attachment metadata
+   *   return files.map(f => ({ id: crypto.randomUUID(), name: f.name, url: '...' }));
+   * }}></lf-chat>
+   * ```
+   */
+  @Prop({ mutable: true }) lfUploadCallback?: (
+    files: File[],
+  ) => Promise<LfLLMAttachment[]>;
+  /**
    * Sets the initial history of the chat.
    *
    * @type {LfChatHistory}
@@ -349,23 +205,6 @@ export class LfChat implements LfChatInterface {
    * ```
    */
   @Prop({ mutable: true }) lfValue: LfChatHistory = [];
-  /**
-   * If set, the component will call this
-   * function with the selected File[] and await the returned attachments. If not
-   * provided the component falls back to embedding base64 data in the `data` field.
-   *
-   * @type {(files: File[]) => Promise<LfLLMAttachment[]>}
-   * @default undefined
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-chat lfUploadCallback={myUploadFunction}></lf-chat>
-   * ```
-   */
-  @Prop({ mutable: true }) lfUploadCallback?: (
-    files: File[],
-  ) => Promise<LfLLMAttachment[]>;
   //#endregion
 
   //#region Internal variables
@@ -425,18 +264,25 @@ export class LfChat implements LfChatInterface {
   //#endregion
 
   //#region Watchers
-  @Watch("lfPollingInterval")
-  updatePollingInterval() {
+  @Watch("lfConfig")
+  updateConfig() {
     if (!this.#framework) {
       return;
     }
 
+    // Update polling interval when config changes
+    const effectiveConfig = getEffectiveConfig(this.#adapter);
     clearInterval(this.#interval);
-    this.#interval = setInterval(this.#checkLLMStatus, this.lfPollingInterval);
+    this.#interval = setInterval(
+      () => this.#checkLLMStatus(),
+      effectiveConfig.llm.pollingInterval,
+    );
+
+    // Recalculate tokens when system prompt changes
+    this.updateTokensCount();
   }
-  @Watch("lfSystem")
   async updateTokensCount() {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
@@ -653,12 +499,14 @@ export class LfChat implements LfChatInterface {
   };
   async #checkLLMStatus() {
     const { llm } = this.#framework;
+    const effectiveConfig = getEffectiveConfig(this.#adapter);
+    const endpointUrl = effectiveConfig.llm.endpointUrl;
 
     if (this.status === "offline") {
       this.status = "connecting";
     }
     try {
-      const response = await llm.poll(this.lfEndpointUrl);
+      const response = await llm.poll(endpointUrl);
 
       if (!response.ok) {
         this.status = "offline";
@@ -677,6 +525,8 @@ export class LfChat implements LfChatInterface {
   }
   #prepChat = (): VNode => {
     const { bemClass } = this.#framework.theme;
+    const effectiveConfig = getEffectiveConfig(this.#adapter);
+    const emptyMessage = effectiveConfig.ui.emptyMessage;
 
     const { chat, commands, input, messages, request } = this.#b;
     const {
@@ -692,7 +542,7 @@ export class LfChat implements LfChatInterface {
       stt,
       textarea,
     } = this.#adapter.elements.jsx.chat;
-    const { history, lfEmpty } = this;
+    const { history } = this;
 
     return (
       <Fragment>
@@ -750,7 +600,9 @@ export class LfChat implements LfChatInterface {
                 );
               })
           ) : (
-            <div class={bemClass(messages._, messages.empty)}>{lfEmpty}</div>
+            <div class={bemClass(messages._, messages.empty)}>
+              {emptyMessage}
+            </div>
           )}
         </div>
         <div class={bemClass(chat._, chat.spinnerBar)}>{spinner()}</div>
@@ -833,6 +685,7 @@ export class LfChat implements LfChatInterface {
       system,
       seed,
       temperature,
+      tools,
       topP,
     } = this.#adapter.elements.jsx.settings;
 
@@ -859,6 +712,7 @@ export class LfChat implements LfChatInterface {
           {seed()}
           {polling()}
           <div class={bemClass(settings._, "divider")} />
+          {tools()}
         </div>
       </Fragment>
     );
@@ -915,10 +769,11 @@ export class LfChat implements LfChatInterface {
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
+    const effectiveConfig = getEffectiveConfig(this.#adapter);
 
     this.#interval = setInterval(
       async () => this.#checkLLMStatus(),
-      this.lfPollingInterval,
+      effectiveConfig.llm.pollingInterval,
     );
     this.onLfEvent(new CustomEvent("ready"), "ready");
     this.#checkLLMStatus();
@@ -936,9 +791,11 @@ export class LfChat implements LfChatInterface {
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
+    const effectiveConfig = getEffectiveConfig(this.#adapter);
+    const layout = effectiveConfig.ui.layout;
 
     const { chat } = this.#b;
-    const { lfLayout, lfStyle, status, view } = this;
+    const { lfStyle, status, view } = this;
 
     return (
       <Host>
@@ -947,7 +804,7 @@ export class LfChat implements LfChatInterface {
           <div
             class={bemClass(chat._, null, {
               [view]: true,
-              [lfLayout]: true,
+              [layout]: true,
               [status]: true,
             })}
             part={this.#p.chat}

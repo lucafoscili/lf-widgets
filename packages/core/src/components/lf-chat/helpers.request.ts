@@ -3,7 +3,10 @@ import {
   LfLLMContentPart,
   LfLLMRequest,
 } from "@lf-widgets/foundations";
-import { getEffectiveConfig } from "./helpers.config";
+import {
+  getEffectiveConfig,
+  getEnabledToolDefinitions,
+} from "./helpers.config";
 
 //#region newRequest
 /**
@@ -76,6 +79,9 @@ export const newRequest = (adapter: LfChatAdapter): LfLLMRequest => {
     }
   }
 
+  // Get enabled tools for sending to the LLM
+  const enabledTools = getEnabledToolDefinitions(adapter);
+
   return {
     frequency_penalty: effectiveConfig.llm.frequencyPenalty,
     max_tokens: effectiveConfig.llm.maxTokens,
@@ -83,7 +89,7 @@ export const newRequest = (adapter: LfChatAdapter): LfLLMRequest => {
     presence_penalty: effectiveConfig.llm.presencePenalty,
     seed: effectiveConfig.llm.seed,
     temperature: effectiveConfig.llm.temperature,
-    tools: effectiveConfig.tools.definitions,
+    tools: enabledTools,
     top_p: effectiveConfig.llm.topP,
   };
 };

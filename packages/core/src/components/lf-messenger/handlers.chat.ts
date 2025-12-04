@@ -36,25 +36,14 @@ export const prepChatHandlers = (
     //#region Chat
     chat: async (e) => {
       const { comp, eventType, history, status } = e.detail;
-      const {
-        lfEndpointUrl,
-        lfMaxTokens,
-        lfPollingInterval,
-        lfSystem,
-        lfTemperature,
-      } = comp;
+      const { lfConfig } = comp;
 
       const { set } = getAdapter().controller;
 
       switch (eventType) {
         case "config":
-          set.character.chat({
-            lfEndpointUrl,
-            lfMaxTokens,
-            lfPollingInterval,
-            lfSystem,
-            lfTemperature,
-          });
+          // Save the updated lfConfig to the character's chat cell
+          set.character.chat({ lfConfig });
           break;
         case "polling":
           set.status.connection(status);

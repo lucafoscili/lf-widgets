@@ -128,6 +128,7 @@ export const createRefs = (): LfChatAdapterRefs => {
       seed: null,
       system: null,
       temperature: null,
+      tools: new Map(),
       topP: null,
     },
     toolbar: {
