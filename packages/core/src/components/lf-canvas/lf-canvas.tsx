@@ -213,6 +213,7 @@ export class LfCanvas implements LfCanvasInterface {
   #w = LF_WRAPPER_ID;
   #adapter: LfCanvasAdapter;
   #container: HTMLDivElement;
+  #lastParentDimensions: { width: number; height: number } = null;
   #resizeObserver: ResizeObserver;
   #resizeTimeout: NodeJS.Timeout;
   //#endregion
@@ -477,13 +478,29 @@ export class LfCanvas implements LfCanvasInterface {
    * that would occur if the Host's boxing CSS changes triggered the observer, which would
    * recalculate boxing, triggering CSS changes again, etc.
    *
-   * The observer debounces resize events with a 100ms timeout to avoid excessive
-   * recalculations during continuous resize operations.
+   * The observer debounces resize events with a 100ms timeout and skips recalculation
+   * if the parent dimensions haven't actually changed.
    */
   #initResizeObserver = () => {
     const observeTarget = this.rootElement.parentElement || this.rootElement;
 
-    this.#resizeObserver = new ResizeObserver(() => {
+    this.#resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+
+      const { width, height } = entry.contentRect;
+
+      // Skip if dimensions haven't changed (prevents loops from boxing CSS changes)
+      if (
+        this.#lastParentDimensions &&
+        this.#lastParentDimensions.width === width &&
+        this.#lastParentDimensions.height === height
+      ) {
+        return;
+      }
+
+      this.#lastParentDimensions = { width, height };
+
       clearTimeout(this.#resizeTimeout);
       this.#resizeTimeout = setTimeout(() => {
         this.resizeCanvas();
