@@ -748,7 +748,7 @@ export class LfChat implements LfChatInterface {
     }
 
     return (
-      <Fragment>
+      <div class={bemClass(settings._)} part={this.#p.settings}>
         <div class={bemClass(settings._, settings.header)}>
           {back()}
           {importHistory()}
@@ -756,7 +756,7 @@ export class LfChat implements LfChatInterface {
         </div>
         <div
           class={bemClass(settings._, settings.configuration)}
-          part={this.#p.settings}
+          part={this.#p.configuration}
         >
           <lf-accordion
             class={bemClass(settings._, settings.accordion)}
@@ -794,7 +794,7 @@ export class LfChat implements LfChatInterface {
             </div>
           </lf-accordion>
         </div>
-      </Fragment>
+      </div>
     );
   };
   #prepToolbar = (m: LfLLMChoiceMessage, isEditing = false): VNode => {
