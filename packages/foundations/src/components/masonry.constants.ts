@@ -10,6 +10,7 @@ export const LF_MASONRY_BLOCKS = {
     _: "grid",
     actions: "actions",
     addColumn: "add-column",
+    capture: "capture",
     changeViewe: "change-view",
     column: "column",
     removeColumn: "remove-column",
@@ -49,6 +50,7 @@ export const LF_MASONRY_PARTS = {
 //#region Props
 export const LF_MASONRY_PROPS = [
   "lfActions",
+  "lfCaptureSelection",
   "lfCollapseColumns",
   "lfColumns",
   "lfDataset",
