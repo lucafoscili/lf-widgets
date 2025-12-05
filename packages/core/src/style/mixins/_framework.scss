@@ -310,8 +310,9 @@
 @mixin lf-fw-ripple-host {
   // Light DOM selector - transformed to :host() for shadow DOM by shared-styles
   [data-lf-ripple-host] {
-    position: relative;
+    cursor: pointer;
     overflow: hidden;
+    position: relative;
   }
 }
 /*******************************************
