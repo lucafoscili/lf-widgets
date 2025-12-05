@@ -68,6 +68,29 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
       },
     ],
     [
+      "register.spotlight",
+      {
+        code: `lfEffects.register.spotlight(element, {
+  beam: "cone",           // "cone", "narrow", "diffuse", or "soft"
+  color: "rgba(255, 255, 255, 0.85)", // Beam color
+  angle: 45,              // Beam spread angle in degrees
+  intensity: 0.8,         // Beam intensity (0-1)
+  originX: 50,            // Horizontal beam origin (0-100%)
+  surfaceGlow: true,      // Show illumination where beam hits
+  surfaceGlowIntensity: 0.4, // Surface glow intensity (0-1)
+  followPointer: false,   // Beam follows cursor position
+  sway: false,            // Enable subtle beam sway animation
+  swayDuration: 3000,     // Sway animation duration in ms
+  swayAmplitude: 5,       // Sway amplitude in degrees
+  trigger: "hover",       // "hover", "always", or "manual"
+  fadeInDuration: 300,    // Fade-in duration in ms
+  fadeOutDuration: 200,   // Fade-out duration in ms
+});`,
+        description:
+          "Registers a theatrical spotlight effect that creates a dramatic light beam from above. Supports multiple beam presets, pointer-follow mode, and animated sway.",
+      },
+    ],
+    [
       "register.tilt",
       {
         code: "lfEffects.register.tilt(element);",
@@ -86,6 +109,14 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
       {
         code: "lfEffects.unregister.neonGlow(element);",
         description: "Removes the neon glow effect from the element.",
+      },
+    ],
+    [
+      "unregister.spotlight",
+      {
+        code: "lfEffects.unregister.spotlight(element);",
+        description:
+          "Removes the spotlight effect from the element, including all layers and event listeners.",
       },
     ],
     [
@@ -124,7 +155,7 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
                   {
                     id: DOC_IDS.content,
                     value:
-                      "It provides methods for creating and managing backdrop, lightbox, neon glow, ripple, and tilt effects.",
+                      "It provides methods for creating and managing backdrop, lightbox, neon glow, ripple, spotlight, and tilt effects.",
                   },
                 ],
                 id: DOC_IDS.paragraph,

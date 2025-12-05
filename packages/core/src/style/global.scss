@@ -42,14 +42,16 @@
 // IMPORTANT: Order matters here - effects with overflow:hidden must come first
 // to avoid cutting off effects that require overflow:visible.
 @include lf-fw-ripple-host; // priority -2 => overflow hidden
+@include lf-fw-spotlight-host; // priority -1.5 => overflow hidden
 @include lf-fw-tilt-host; // priority -1 => overflow hidden, perspective
 @include lf-fw-neon-glow-host; // priority 0 => overflow visible
 
 // -----------------------------------------------------------------------------
-// Visual Effects (neon-glow, ripple, tilt, layers)
+// Visual Effects (neon-glow, ripple, spotlight, tilt, layers)
 // -----------------------------------------------------------------------------
 @include lf-fw-neon-glow;
 @include lf-fw-ripple;
+@include lf-fw-spotlight;
 @include lf-fw-tilt;
 
 // -----------------------------------------------------------------------------

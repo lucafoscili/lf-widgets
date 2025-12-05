@@ -42,6 +42,10 @@ export const GLOBAL_STYLES = {
     "position": "relative",
     "overflow": "hidden"
   },
+  "[data-lf-spotlight-host]": {
+    "position": "relative",
+    "overflow": "hidden"
+  },
   "[data-lf-tilt-host]": {
     "position": "relative",
     "overflow": "hidden",
@@ -576,6 +580,61 @@ export const GLOBAL_STYLES = {
       "to": {
         "opacity": "0",
         "transform": "scale(4)"
+      }
+    }
+  ],
+  "[data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "0",
+    "transition": "opacity var(--lf-ui-spotlight-fade-in, 300ms) ease-out",
+    "background": "conic-gradient(from 180deg at var(--lf-ui-spotlight-origin-x, 50%) 0%, transparent 0deg, transparent calc(90deg - var(--lf-ui-spotlight-angle, 45deg) / 2), color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 30%, transparent) calc(90deg - var(--lf-ui-spotlight-angle, 45deg) / 4), var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 90deg, color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 30%, transparent) calc(90deg + var(--lf-ui-spotlight-angle, 45deg) / 4), transparent calc(90deg + var(--lf-ui-spotlight-angle, 45deg) / 2), transparent 360deg)",
+    "mask-image": "linear-gradient(to bottom, black 0%, black 30%, transparent 100%)",
+    "-webkit-mask-image": "linear-gradient(to bottom, black 0%, black 30%, transparent 100%)"
+  },
+  "[data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "0",
+    "transition": "opacity var(--lf-ui-spotlight-fade-in, 300ms) ease-out",
+    "background": "radial-gradient(ellipse 60% 25% at var(--lf-ui-spotlight-origin-x, 50%) 100%, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 0%, color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 50%, transparent) 30%, transparent 70%)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=fading] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "var(--lf-ui-spotlight-intensity, 0.8)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=on] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "var(--lf-ui-spotlight-intensity, 0.8)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=fading] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "var(--lf-ui-spotlight-surface-glow, 0.4)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=on] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "var(--lf-ui-spotlight-surface-glow, 0.4)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=dimming] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "0",
+    "transition-duration": "var(--lf-ui-spotlight-fade-out, 200ms)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=dimming] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "0",
+    "transition-duration": "var(--lf-ui-spotlight-fade-out, 200ms)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight-sway] [data-lf-effect-layer=spotlight-beam]": {
+    "animation": "lf-spotlight-sway var(--lf-ui-spotlight-sway-duration, 3s) ease-in-out infinite"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight-sway] [data-lf-effect-layer=spotlight-glow]": {
+    "animation": "lf-spotlight-sway var(--lf-ui-spotlight-sway-duration, 3s) ease-in-out infinite"
+  },
+  "@keyframes lf-spotlight-sway": [
+    {
+      "0%": {
+        "transform": "translateX(calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1))"
+      }
+    },
+    {
+      "50%": {
+        "transform": "translateX(var(--lf-ui-spotlight-sway-amplitude, 5deg))"
+      }
+    },
+    {
+      "100%": {
+        "transform": "translateX(calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1))"
       }
     }
   ],

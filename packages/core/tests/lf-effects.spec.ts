@@ -3,6 +3,7 @@ import {
   LfEffectLayerConfig,
   LfEffectsNeonGlowOptions,
   LfEffectsRippleOptions,
+  LfEffectsSpotlightOptions,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { getLfFramework } from "@lf-widgets/framework";
@@ -28,6 +29,7 @@ describe("Framework Effects Utilities", () => {
         register: {
           neonGlow: jest.fn(),
           ripple: jest.fn(),
+          spotlight: jest.fn(),
           tilt: jest.fn(),
         },
         ripple: jest.fn(),
@@ -38,6 +40,7 @@ describe("Framework Effects Utilities", () => {
         unregister: {
           neonGlow: jest.fn(),
           ripple: jest.fn(),
+          spotlight: jest.fn(),
           tilt: jest.fn(),
         },
       },
@@ -232,6 +235,151 @@ describe("Framework Effects Utilities", () => {
       });
     });
 
+    describe("spotlight", () => {
+      it("should register spotlight effect with default options", () => {
+        const mockElement = document.createElement("div");
+
+        framework.effects.register.spotlight(mockElement);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+        );
+      });
+
+      it("should register spotlight effect with custom options", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          beam: "narrow",
+          color: "rgba(255, 200, 100, 0.9)",
+          angle: 30,
+          intensity: 0.9,
+          surfaceGlow: true,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with cone beam preset", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          beam: "cone",
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with diffuse beam preset", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          beam: "diffuse",
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with pointer follow enabled", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          followPointer: true,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with sway animation", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          sway: true,
+          swayDuration: 5000,
+          swayAmplitude: 10,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with always trigger mode", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          trigger: "always",
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with custom fade durations", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          fadeInDuration: 500,
+          fadeOutDuration: 300,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with custom origin position", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          originX: 25,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+
+      it("should register spotlight effect with surface glow disabled", () => {
+        const mockElement = document.createElement("div");
+        const options: LfEffectsSpotlightOptions = {
+          surfaceGlow: false,
+        };
+
+        framework.effects.register.spotlight(mockElement, options);
+
+        expect(framework.effects.register.spotlight).toHaveBeenCalledWith(
+          mockElement,
+          options,
+        );
+      });
+    });
+
     describe("tilt", () => {
       it("should register tilt effect", () => {
         const mockElement = document.createElement("div");
@@ -334,6 +482,18 @@ describe("Framework Effects Utilities", () => {
         framework.effects.unregister.neonGlow(mockElement);
 
         expect(framework.effects.unregister.neonGlow).toHaveBeenCalledWith(
+          mockElement,
+        );
+      });
+    });
+
+    describe("spotlight", () => {
+      it("should unregister spotlight effect", () => {
+        const mockElement = document.createElement("div");
+
+        framework.effects.unregister.spotlight(mockElement);
+
+        expect(framework.effects.unregister.spotlight).toHaveBeenCalledWith(
           mockElement,
         );
       });

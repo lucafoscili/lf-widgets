@@ -130,6 +130,7 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       register: {
         neonGlow: jest.fn(),
         ripple: jest.fn(),
+        spotlight: jest.fn(),
         tilt: jest.fn(),
       },
       set: {
@@ -139,6 +140,7 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       unregister: {
         neonGlow: jest.fn(),
         ripple: jest.fn(),
+        spotlight: jest.fn(),
         tilt: jest.fn(),
       },
     },

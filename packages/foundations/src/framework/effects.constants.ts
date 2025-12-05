@@ -37,6 +37,8 @@ export const LF_EFFECTS_HOST_ATTRIBUTES = {
   neonGlow: "data-lf-neon-glow-host",
   /** Host attribute for ripple effect */
   ripple: "data-lf-ripple-host",
+  /** Host attribute for spotlight effect */
+  spotlight: "data-lf-spotlight-host",
   /** Host attribute for tilt effect */
   tilt: "data-lf-tilt-host",
 } as const;
@@ -90,6 +92,7 @@ export const LF_EFFECTS_LIST = [
   "lightbox",
   "neon-glow",
   "ripple",
+  "spotlight",
   "tilt",
 ] as const;
 
@@ -97,7 +100,12 @@ export const LF_EFFECTS_LIST = [
  * Effects that can be registered/unregistered on elements.
  * These persist until explicitly removed.
  */
-export const LF_EFFECTS_REGISTERABLE = ["neon-glow", "ripple", "tilt"] as const;
+export const LF_EFFECTS_REGISTERABLE = [
+  "neon-glow",
+  "ripple",
+  "spotlight",
+  "tilt",
+] as const;
 
 /**
  * Layer names for each effect.
@@ -112,6 +120,10 @@ export const LF_EFFECTS_LAYER_NAMES = {
   ripple: {
     surface: "ripple",
   },
+  spotlight: {
+    beam: "spotlight-beam",
+    glow: "spotlight-glow",
+  },
   tilt: {
     highlight: "tilt-highlight",
   },
@@ -123,6 +135,7 @@ export const LF_EFFECTS_LAYER_NAMES = {
 export const LF_EFFECTS_IDS = {
   neonGlow: "neon-glow",
   ripple: "ripple",
+  spotlight: "spotlight",
   tilt: "tilt",
 } as const;
 
@@ -178,6 +191,88 @@ export const LF_EFFECTS_RIPPLE_DEFAULTS: {
 };
 
 /**
+ * Beam shape presets for spotlight effect.
+ */
+export const LF_EFFECTS_SPOTLIGHT_BEAMS = [
+  "cone",
+  "diffuse",
+  "narrow",
+  "soft",
+] as const;
+
+/**
+ * Trigger modes for spotlight effect.
+ */
+export const LF_EFFECTS_SPOTLIGHT_TRIGGERS = [
+  "always",
+  "hover",
+  "manual",
+] as const;
+
+/**
+ * Default values for spotlight effect options.
+ */
+export const LF_EFFECTS_SPOTLIGHT_DEFAULTS: {
+  angle: number;
+  beam: "cone" | "diffuse" | "narrow" | "soft";
+  color: string;
+  fadeInDuration: number;
+  fadeOutDuration: number;
+  followPointer: boolean;
+  intensity: number;
+  originX: number;
+  surfaceGlow: boolean;
+  surfaceGlowIntensity: number;
+  sway: boolean;
+  swayAmplitude: number;
+  swayDuration: number;
+  trigger: "always" | "hover" | "manual";
+} = {
+  angle: 45,
+  beam: "cone",
+  color: "rgba(255, 255, 255, 0.85)",
+  fadeInDuration: 300,
+  fadeOutDuration: 200,
+  followPointer: false,
+  intensity: 0.8,
+  originX: 50,
+  surfaceGlow: true,
+  surfaceGlowIntensity: 0.4,
+  sway: false,
+  swayAmplitude: 5,
+  swayDuration: 3000,
+  trigger: "hover",
+};
+
+/**
+ * Preset configurations for spotlight beam types.
+ */
+export const LF_EFFECTS_SPOTLIGHT_PRESETS: Record<
+  "cone" | "diffuse" | "narrow" | "soft",
+  Partial<typeof LF_EFFECTS_SPOTLIGHT_DEFAULTS>
+> = {
+  cone: {
+    angle: 45,
+    intensity: 0.8,
+  },
+  diffuse: {
+    angle: 90,
+    intensity: 0.5,
+    surfaceGlowIntensity: 0.3,
+  },
+  narrow: {
+    angle: 15,
+    intensity: 0.95,
+    surfaceGlowIntensity: 0.6,
+  },
+  soft: {
+    angle: 60,
+    intensity: 0.6,
+    surfaceGlowIntensity: 0.35,
+  },
+};
+
+/**
  * Default values for tilt effect options.
  */
 export const LF_EFFECTS_TILT_DEFAULTS: {
@@ -209,6 +304,26 @@ export const LF_EFFECTS_VARS = {
     width: "--lf-ui-ripple-width",
     x: "--lf-ui-ripple-x",
     y: "--lf-ui-ripple-y",
+  },
+  spotlight: {
+    /** Beam spread angle in degrees */
+    angle: "--lf-ui-spotlight-angle",
+    /** Primary beam color */
+    color: "--lf-ui-spotlight-color",
+    /** Fade-in transition duration */
+    fadeIn: "--lf-ui-spotlight-fade-in",
+    /** Fade-out transition duration */
+    fadeOut: "--lf-ui-spotlight-fade-out",
+    /** Beam opacity/intensity */
+    intensity: "--lf-ui-spotlight-intensity",
+    /** Horizontal beam origin as percentage */
+    originX: "--lf-ui-spotlight-origin-x",
+    /** Surface glow intensity */
+    surfaceGlow: "--lf-ui-spotlight-surface-glow",
+    /** Sway animation amplitude in degrees */
+    swayAmplitude: "--lf-ui-spotlight-sway-amplitude",
+    /** Sway animation duration */
+    swayDuration: "--lf-ui-spotlight-sway-duration",
   },
   tilt: {
     /** Highlight position X (0-100%) */
