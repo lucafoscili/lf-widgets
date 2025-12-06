@@ -39,8 +39,9 @@ export const GLOBAL_STYLES = {
     "border-radius": "0"
   },
   "[data-lf-ripple-host]": {
-    "position": "relative",
-    "overflow": "hidden"
+    "cursor": "pointer",
+    "overflow": "hidden",
+    "position": "relative"
   },
   "[data-lf-spotlight-host]": {
     "position": "relative",
