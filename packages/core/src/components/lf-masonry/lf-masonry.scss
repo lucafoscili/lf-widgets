@@ -78,6 +78,11 @@ $comp: "masonry";
     align-items: var(--lf-#{$comp}-grid-items-alignment, start);
     column-gap: var(--lf-#{$comp}-grid-gap, 0.5em);
     display: grid;
+    /**
+    * @prop --lf-#{$comp}-grid-overflow: Sets the overflow for the grid of the #{$comp} component.
+    *                                    Defaults to => auto
+    */
+    overflow: var(--lf-#{$comp}-grid-overflow, auto);
   }
 
   &--horizontal {
