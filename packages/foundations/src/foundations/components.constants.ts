@@ -16,7 +16,7 @@ import { LF_COMPARE_PROPS } from "../components/compare.constants";
 import { LF_DRAWER_PROPS } from "../components/drawer.constants";
 import { LF_HEADER_PROPS } from "../components/header.constants";
 import { LF_IMAGE_PROPS } from "../components/image.constants";
-import { LF_IMAGEVIEWER_PROPS } from "../components/imageviewer.constants";
+import { LF_SHAPEEDITOR_PROPS } from "../components/shapeeditor.constants";
 import { LF_LIST_PROPS } from "../components/list.constants";
 import { LF_MASONRY_PROPS } from "../components/masonry.constants";
 import { LF_MESSENGER_PROPS } from "../components/messenger.constants";
@@ -176,7 +176,7 @@ export const getComponentProps = (): {
     LfDrawer: LF_DRAWER_PROPS,
     LfHeader: LF_HEADER_PROPS,
     LfImage: LF_IMAGE_PROPS,
-    LfImageviewer: LF_IMAGEVIEWER_PROPS,
+    LfShapeeditor: LF_SHAPEEDITOR_PROPS,
     LfList: LF_LIST_PROPS,
     LfMasonry: LF_MASONRY_PROPS,
     LfMessenger: LF_MESSENGER_PROPS,

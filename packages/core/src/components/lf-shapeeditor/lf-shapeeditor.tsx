@@ -1,26 +1,27 @@
 import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
-  LF_IMAGEVIEWER_BLOCKS,
-  LF_IMAGEVIEWER_PARTS,
-  LF_IMAGEVIEWER_PROPS,
+  LF_SHAPEEDITOR_BLOCKS,
+  LF_SHAPEEDITOR_PARTS,
+  LF_SHAPEEDITOR_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfDataCell,
   LfDataDataset,
+  LfDataShapes,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfImageviewerAdapter,
-  LfImageviewerAdapterRefs,
-  LfImageviewerElement,
-  LfImageviewerEvent,
-  LfImageviewerEventPayload,
-  LfImageviewerHistory,
-  LfImageviewerInterface,
-  LfImageviewerLoadCallback,
-  LfImageviewerNavigation,
-  LfImageviewerPropsInterface,
   LfMasonrySelectedShape,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterRefs,
+  LfShapeeditorElement,
+  LfShapeeditorEvent,
+  LfShapeeditorEventPayload,
+  LfShapeeditorHistory,
+  LfShapeeditorInterface,
+  LfShapeeditorLoadCallback,
+  LfShapeeditorNavigation,
+  LfShapeeditorPropsInterface,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -30,6 +31,7 @@ import {
   forceUpdate,
   h,
   Host,
+  Listen,
   Method,
   Prop,
   State,
@@ -42,63 +44,68 @@ import {
   newShape,
   updateValue,
 } from "./helpers.utils";
-import { createAdapter } from "./lf-imageviewer-adapter";
+import { createAdapter } from "./lf-shapeeditor-adapter";
 
 /**
- * Represents an image viewer component that displays a collection of images in a masonry layout.
- * The image viewer allows users to navigate through images, view details, and interact with the images.
- * The component supports various customization options, including image loading, navigation, and styling.
+ * A universal 4-panel interactive explorer that transforms any LfShape type
+ * into an explorable, configurable, and previewable experience.
+ *
+ * The shapeeditor provides:
+ * - Categories panel (masonry) for high-level grouping
+ * - Items panel (tree) for detailed selection and history
+ * - Preview panel (any LfShape) for visual output
+ * - Configuration panel (slot) for parameter editing
  *
  * @component
- * @tag lf-imageviewer
+ * @tag lf-shapeeditor
  * @shadow true
  *
  * @remarks
  * This component uses the Stencil.js framework to provide a customizable,
- * reusable UI element for displaying images in a masonry layout.
+ * reusable UI element for exploring and editing any shape type.
  *
  * @example
- * <lf-imageviewer
- * lfDataset={dataset}
- * lfLoadCallback={loadCallback}
- * ></lf-imageviewer>
+ * <lf-shapeeditor
+ *   lfDataset={dataset}
+ *   lfShape="image"
+ * ></lf-shapeeditor>
  *
- * @fires {CustomEvent} lf-imageviewer-event - Emitted for various component events
+ * @fires {CustomEvent} lf-shapeeditor-event - Emitted for various component events
  */
 @Component({
-  tag: "lf-imageviewer",
-  styleUrl: "lf-imageviewer.scss",
+  tag: "lf-shapeeditor",
+  styleUrl: "lf-shapeeditor.scss",
   shadow: true,
 })
-export class LfImageviewer implements LfImageviewerInterface {
+export class LfShapeeditor implements LfShapeeditorInterface {
   /**
-   * References the root HTML element of the component (<lf-imageviewer>).
+   * References the root HTML element of the component (<lf-shapeeditor>).
    */
-  @Element() rootElement: LfImageviewerElement;
+  @Element() rootElement: LfShapeeditorElement;
 
   //#region States
   /**
    * Debug information state property created through LFManager debug utility.
-   * Used to store and manage debug-related information for the accordion component.
+   * Used to store and manage debug-related information for the component.
    * @remarks This state property is initialized using the debug.info.create() method from the lfFramework instance.
    */
   @State() debugInfo: LfDebugLifecycleInfo;
   /**
    * The currently selected shape in the masonry layout.
-   * Represents the dimensions and position of the selected image.
+   * Represents the dimensions and position of the selected item.
    * @internal
    * @type {LfMasonrySelectedShape}
    */
   @State() currentShape: LfMasonrySelectedShape = {};
   /**
-   * History state of the image viewer component.
-   * Tracks the navigation history of viewed images.
-   * @property {LfImageviewerHistory} history - An object storing the viewing history information
+   * History state of the shapeeditor component.
+   * Tracks the navigation history of viewed shapes.
+   * @property {LfShapeeditorHistory} history - An object storing the viewing history information
    */
-  @State() history: LfImageviewerHistory = {};
+  @State() history: LfShapeeditorHistory = {};
   /**
-   * The current index position in the image history navigation.
-   * Used to track and manage navigation through previously viewed images.
+   * The current index position in the shape history navigation.
+   * Used to track and manage navigation through previously viewed shapes.
    * @remarks When null, indicates no history navigation is active
    */
   @State() historyIndex: number = null;
@@ -107,15 +114,15 @@ export class LfImageviewer implements LfImageviewerInterface {
    */
   @State() isNavigationTreeOpen = false;
   /**
-   * Represents the loading state of the image viewer.
-   * When true, displays a loading spinner while the image is being loaded.
+   * Represents the loading state of the shapeeditor.
+   * When true, displays a loading spinner while the shape is being loaded.
    */
   @State() isSpinnerActive = false;
   //#endregion
 
   //#region Props
   /**
-   * The data set for the LF Imageviewer component.
+   * The data set for the LF Shapeeditor component.
    * This property is mutable, meaning it can be changed after the component is initialized.
    *
    * @type {LfDataDataset}
@@ -126,19 +133,28 @@ export class LfImageviewer implements LfImageviewerInterface {
   /**
    * Callback invoked when the load button is clicked.
    *
-   * @type {LfImageviewerLoadCallback}
+   * @type {LfShapeeditorLoadCallback}
    * @default null
    * @mutable
    */
-  @Prop({ mutable: true }) lfLoadCallback: LfImageviewerLoadCallback = null;
+  @Prop({ mutable: true }) lfLoadCallback: LfShapeeditorLoadCallback = null;
   /**
    * Configuration options for the navigation panel.
    *
-   * @type {LfImageviewerNavigation}
+   * @type {LfShapeeditorNavigation}
    * @default undefined
    * @mutable
    */
-  @Prop({ mutable: true }) lfNavigation?: LfImageviewerNavigation;
+  @Prop({ mutable: true }) lfNavigation?: LfShapeeditorNavigation;
+  /**
+   * The shape type to render in the preview area.
+   * Determines which LfShape component is used for preview.
+   *
+   * @type {LfDataShapes}
+   * @default "image"
+   * @mutable
+   */
+  @Prop({ mutable: true }) lfShape: LfDataShapes = "image";
   /**
    * Custom styling for the component.
    *
@@ -159,13 +175,13 @@ export class LfImageviewer implements LfImageviewerInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
-  #b = LF_IMAGEVIEWER_BLOCKS;
+  #b = LF_SHAPEEDITOR_BLOCKS;
   #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
-  #p = LF_IMAGEVIEWER_PARTS;
+  #p = LF_SHAPEEDITOR_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #adapter: LfImageviewerAdapter;
+  #adapter: LfShapeeditorAdapter;
   //#endregion
 
   //#region Events
@@ -175,19 +191,50 @@ export class LfImageviewer implements LfImageviewerInterface {
    * and optionally `data` for additional details.
    */
   @Event({
-    eventName: "lf-imageviewer-event",
+    eventName: "lf-shapeeditor-event",
     composed: true,
     cancelable: false,
     bubbles: true,
   })
-  lfEvent: EventEmitter<LfImageviewerEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfImageviewerEvent) {
+  lfEvent: EventEmitter<LfShapeeditorEventPayload>;
+  onLfEvent(e: Event | CustomEvent, eventType: LfShapeeditorEvent) {
     this.lfEvent.emit({
       comp: this,
       eventType,
       id: this.rootElement.id,
       originalEvent: e,
     });
+  }
+  //#endregion
+
+  //#region Listeners
+  /**
+   * Handles keyboard shortcuts for undo (Ctrl+Z) and redo (Ctrl+Y).
+   */
+  @Listen("keydown")
+  handleKeyDown(e: KeyboardEvent) {
+    if (!this.currentShape || !Object.keys(this.currentShape)?.length) {
+      return;
+    }
+
+    const history = this.history[this.currentShape.index];
+    if (!history?.length) {
+      return;
+    }
+
+    if (e.ctrlKey && e.key === "z") {
+      e.preventDefault();
+      if (this.historyIndex > 0) {
+        this.#adapter.controller.set.history.index(this.historyIndex - 1);
+      }
+    }
+
+    if (e.ctrlKey && e.key === "y") {
+      e.preventDefault();
+      if (this.historyIndex < history.length - 1) {
+        this.#adapter.controller.set.history.index(this.historyIndex + 1);
+      }
+    }
   }
   //#endregion
 
@@ -229,7 +276,7 @@ export class LfImageviewer implements LfImageviewerInterface {
    * This method is used to retrieve the references to the subcomponents.
    */
   @Method()
-  async getComponents(): Promise<LfImageviewerAdapterRefs> {
+  async getComponents(): Promise<LfShapeeditorAdapterRefs> {
     return this.#adapter.elements.refs;
   }
   /**
@@ -253,16 +300,16 @@ export class LfImageviewer implements LfImageviewerInterface {
   }
   /**
    * Used to retrieve component's properties and descriptions.
-   * @returns {Promise<LfImageviewerPropsInterface>} Promise resolved with an object containing the component's properties.
+   * @returns {Promise<LfShapeeditorPropsInterface>} Promise resolved with an object containing the component's properties.
    */
   @Method()
-  async getProps(): Promise<LfImageviewerPropsInterface> {
-    const entries = LF_IMAGEVIEWER_PROPS.map(
+  async getProps(): Promise<LfShapeeditorPropsInterface> {
+    const entries = LF_SHAPEEDITOR_PROPS.map(
       (
         prop,
       ): [
-        keyof LfImageviewerPropsInterface,
-        LfImageviewerPropsInterface[typeof prop],
+        keyof LfShapeeditorPropsInterface,
+        LfShapeeditorPropsInterface[typeof prop],
       ] => [prop, this[prop]],
     );
     return Object.fromEntries(entries);
@@ -402,11 +449,11 @@ export class LfImageviewer implements LfImageviewerInterface {
 
     const { detailsGrid } = this.#b;
     const {
-      canvas,
       clearHistory,
       deleteShape,
       redo,
       save,
+      shape,
       spinner,
       tree,
       undo,
@@ -415,7 +462,7 @@ export class LfImageviewer implements LfImageviewerInterface {
     return (
       <div class={bemClass(detailsGrid._)} part={this.#p.details}>
         <div class={bemClass(detailsGrid._, detailsGrid.preview)}>
-          {canvas()}
+          {shape()}
           {spinner()}
         </div>
         <div class={bemClass(detailsGrid._, detailsGrid.actions)}>
@@ -432,7 +479,7 @@ export class LfImageviewer implements LfImageviewerInterface {
       </div>
     );
   }
-  #prepImageviewer(): VNode {
+  #prepShapeeditor(): VNode {
     const { bemClass } = this.#framework.theme;
 
     const { currentShape } = this.#adapter.controller.get;
@@ -456,6 +503,7 @@ export class LfImageviewer implements LfImageviewerInterface {
     const navBlock = this.#b.navigationGrid;
     const hasNav = Boolean(this.lfNavigation?.treeProps?.lfDataset);
 
+    const shouldShowLoad = Boolean(this.lfLoadCallback);
     const shouldShowNavToggle =
       hasNav && Boolean(this.lfNavigation?.treeProps?.lfDataset);
     const shouldShowTree = shouldShowNavToggle && this.isNavigationTreeOpen;
@@ -468,8 +516,7 @@ export class LfImageviewer implements LfImageviewerInterface {
       <div class={wrapperClass} part={this.#p.navigation}>
         {tree()}
         {navToggle()}
-        {textfield()}
-        {load()}
+        {shouldShowLoad && [textfield(), load()]}
         {masonry()}
       </div>
     );
@@ -514,10 +561,10 @@ export class LfImageviewer implements LfImageviewerInterface {
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div
-            class={bemClass(this.#b.imageviewer._)}
-            part={this.#p.imageviewer}
+            class={bemClass(this.#b.shapeeditor._)}
+            part={this.#p.shapeeditor}
           >
-            {this.#prepImageviewer()}
+            {this.#prepShapeeditor()}
           </div>
         </div>
       </Host>

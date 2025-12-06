@@ -1,7 +1,7 @@
 import {
   IDS,
-  LfImageviewerAdapter,
-  LfImageviewerAdapterHandlers,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterHandlers,
 } from "@lf-widgets/foundations";
 import {
   clearHistory,
@@ -11,11 +11,11 @@ import {
   toggleButtonSpinner,
   undo,
 } from "./helpers.utils";
-import { LfImageviewer } from "./lf-imageviewer";
+import { LfShapeeditor } from "./lf-shapeeditor";
 
 export const prepDetailsHandlers = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterHandlers["details"] => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterHandlers["details"] => {
   return {
     //#region Button handler
     button: async (e) => {
@@ -24,7 +24,7 @@ export const prepDetailsHandlers = (
       const adapter = getAdapter();
       const { compInstance, currentShape } = adapter.controller.get;
 
-      const c = compInstance as LfImageviewer;
+      const c = compInstance as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
@@ -54,12 +54,12 @@ export const prepDetailsHandlers = (
     },
     //#endregion
 
-    //#region Canvas handler
-    canvas: (e) => {
+    //#region Shape handler
+    shape: (e) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfImageviewer;
+      const comp = compInstance as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },
@@ -70,7 +70,7 @@ export const prepDetailsHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfImageviewer;
+      const comp = compInstance as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },

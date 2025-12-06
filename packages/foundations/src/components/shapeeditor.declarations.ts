@@ -17,15 +17,14 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfDataDataset } from "../framework/data.declarations";
+import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
-import { LfCanvasElement, LfCanvasEventPayload } from "./canvas.declarations";
 import {
-  LF_IMAGEVIEWER_BLOCKS,
-  LF_IMAGEVIEWER_EVENTS,
-  LF_IMAGEVIEWER_PARTS,
-} from "./imageviewer.constants";
+  LF_SHAPEEDITOR_BLOCKS,
+  LF_SHAPEEDITOR_EVENTS,
+  LF_SHAPEEDITOR_PARTS,
+} from "./shapeeditor.constants";
 import {
   LfMasonryElement,
   LfMasonryEventPayload,
@@ -44,15 +43,17 @@ import {
 
 //#region Class
 /**
- * Primary interface implemented by the `lf-imageviewer` component. It merges the shared component contract with the component-specific props.
+ * Primary interface implemented by the `lf-shapeeditor` component.
+ * A universal 4-panel interactive explorer that transforms any LfShape type
+ * into an explorable, configurable, and previewable experience.
  */
-export interface LfImageviewerInterface
-  extends LfComponent<"LfImageviewer">,
-    LfImageviewerPropsInterface {
+export interface LfShapeeditorInterface
+  extends LfComponent<"LfShapeeditor">,
+    LfShapeeditorPropsInterface {
   addSnapshot: (value: string) => Promise<void>;
   clearHistory: (index?: number) => Promise<void>;
   clearSelection: () => Promise<void>;
-  getComponents: () => Promise<LfImageviewerAdapterRefs>;
+  getComponents: () => Promise<LfShapeeditorAdapterRefs>;
   getCurrentSnapshot: () => Promise<{
     shape: LfMasonrySelectedShape;
     value: string;
@@ -61,39 +62,39 @@ export interface LfImageviewerInterface
   setSpinnerStatus: (status: boolean) => Promise<void>;
 }
 /**
- * DOM element type for the custom element registered as `lf-imageviewer`.
+ * DOM element type for the custom element registered as `lf-shapeeditor`.
  */
-export interface LfImageviewerElement
+export interface LfShapeeditorElement
   extends HTMLStencilElement,
-    Omit<LfImageviewerInterface, LfComponentClassProperties> {}
+    Omit<LfShapeeditorInterface, LfComponentClassProperties> {}
 //#endregion
 
 //#region Adapter
 /**
- * Adapter contract that wires `lf-imageviewer` into host integrations.
+ * Adapter contract that wires `lf-shapeeditor` into host integrations.
  */
-export interface LfImageviewerAdapter
-  extends LfComponentAdapter<LfImageviewerInterface> {
+export interface LfShapeeditorAdapter
+  extends LfComponentAdapter<LfShapeeditorInterface> {
   controller: {
-    get: LfImageviewerAdapterControllerGetters;
-    set: LfImageviewerAdapterControllerSetters;
+    get: LfShapeeditorAdapterControllerGetters;
+    set: LfShapeeditorAdapterControllerSetters;
   };
   elements: {
-    jsx: LfImageviewerAdapterJsx;
-    refs: LfImageviewerAdapterRefs;
+    jsx: LfShapeeditorAdapterJsx;
+    refs: LfShapeeditorAdapterRefs;
   };
-  handlers: LfImageviewerAdapterHandlers;
+  handlers: LfShapeeditorAdapterHandlers;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
  */
-export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
+export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
   details: {
-    canvas: () => VNode;
     clearHistory: () => VNode;
     deleteShape: () => VNode;
     redo: () => VNode;
     save: () => VNode;
+    shape: () => VNode;
     spinner: () => VNode;
     tree: () => VNode;
     undo: () => VNode;
@@ -109,13 +110,13 @@ export interface LfImageviewerAdapterJsx extends LfComponentAdapterJsx {
 /**
  * Strongly typed DOM references captured by the component adapter.
  */
-export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
+export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
   details: {
-    canvas: LfCanvasElement;
     clearHistory: LfButtonElement;
     deleteShape: LfButtonElement;
     redo: LfButtonElement;
     save: LfButtonElement;
+    shape: HTMLElement;
     spinner: LfSpinnerElement;
     tree: LfTreeElement;
     undo: LfButtonElement;
@@ -131,11 +132,11 @@ export interface LfImageviewerAdapterRefs extends LfComponentAdapterRefs {
 /**
  * Handler map consumed by the adapter to react to framework events.
  */
-export interface LfImageviewerAdapterHandlers
+export interface LfShapeeditorAdapterHandlers
   extends LfComponentAdapterHandlers {
   details: {
     button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
-    canvas: (e: CustomEvent<LfCanvasEventPayload>) => void;
+    shape: (e: CustomEvent) => void;
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
   };
   navigation: {
@@ -149,8 +150,8 @@ export interface LfImageviewerAdapterHandlers
 /**
  * Subset of adapter getters required during initialisation.
  */
-export type LfImageviewerAdapterInitializerGetters = Pick<
-  LfImageviewerAdapterControllerGetters,
+export type LfShapeeditorAdapterInitializerGetters = Pick<
+  LfShapeeditorAdapterControllerGetters,
   | "blocks"
   | "compInstance"
   | "currentShape"
@@ -165,17 +166,17 @@ export type LfImageviewerAdapterInitializerGetters = Pick<
 /**
  * Subset of adapter setters required during initialisation.
  */
-export type LfImageviewerAdapterInitializerSetters = Pick<
-  LfImageviewerAdapterControllerSetters,
+export type LfShapeeditorAdapterInitializerSetters = Pick<
+  LfShapeeditorAdapterControllerSetters,
   "currentShape" | "history" | "navigation"
 >;
 /**
  * Read-only controller surface exposed by the adapter for integration code.
  */
-export interface LfImageviewerAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfImageviewerInterface> {
-  blocks: typeof LF_IMAGEVIEWER_BLOCKS;
-  compInstance: LfImageviewerInterface;
+export interface LfShapeeditorAdapterControllerGetters
+  extends LfComponentAdapterGetters<LfShapeeditorInterface> {
+  blocks: typeof LF_SHAPEEDITOR_BLOCKS;
+  compInstance: LfShapeeditorInterface;
   currentShape: () => { shape: LfMasonrySelectedShape; value: string };
   cyAttributes: typeof CY_ATTRIBUTES;
   history: {
@@ -184,19 +185,19 @@ export interface LfImageviewerAdapterControllerGetters
       shape: LfMasonrySelectedShape;
       value: string;
     };
-    full: () => LfImageviewerHistory;
+    full: () => LfShapeeditorHistory;
     index: () => number;
   };
   lfAttribute: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
   navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
-  parts: typeof LF_IMAGEVIEWER_PARTS;
+  parts: typeof LF_SHAPEEDITOR_PARTS;
   spinnerStatus: () => boolean;
 }
 /**
  * Imperative controller callbacks exposed by the adapter.
  */
-export interface LfImageviewerAdapterControllerSetters
+export interface LfShapeeditorAdapterControllerSetters
   extends LfComponentAdapterSetters {
   currentShape: (node: LfMasonrySelectedShape) => void;
   history: {
@@ -211,50 +212,50 @@ export interface LfImageviewerAdapterControllerSetters
 
 //#region Events
 /**
- * Union of event identifiers emitted by `lf-imageviewer`.
+ * Union of event identifiers emitted by `lf-shapeeditor`.
  */
-export type LfImageviewerEvent = (typeof LF_IMAGEVIEWER_EVENTS)[number];
+export type LfShapeeditorEvent = (typeof LF_SHAPEEDITOR_EVENTS)[number];
 /**
- * Detail payload structure dispatched with `lf-imageviewer` events.
+ * Detail payload structure dispatched with `lf-shapeeditor` events.
  */
-export interface LfImageviewerEventPayload
-  extends LfEventPayload<"LfImageviewer", LfImageviewerEvent> {}
+export interface LfShapeeditorEventPayload
+  extends LfEventPayload<"LfShapeeditor", LfShapeeditorEvent> {}
 //#endregion
 
 //#region State
 /**
  * History snapshot maintained by the component to enable undo/redo flows.
  */
-export type LfImageviewerHistory = {
+export type LfShapeeditorHistory = {
   [index: number]: Array<LfMasonrySelectedShape>;
 };
 //#endregion
 
 //#region Props
 /**
- * Public props accepted by the `lf-imageviewer` component.
+ * Public props accepted by the `lf-shapeeditor` component.
  */
-export interface LfImageviewerPropsInterface {
+export interface LfShapeeditorPropsInterface {
   lfDataset?: LfDataDataset;
-  lfLoadCallback?: LfImageviewerLoadCallback;
-  lfNavigation?: LfImageviewerNavigation;
+  lfLoadCallback?: LfShapeeditorLoadCallback;
+  lfNavigation?: LfShapeeditorNavigation;
+  lfShape?: LfDataShapes;
   lfStyle?: string;
   lfValue?: LfDataDataset;
 }
 /**
  * Callback invoked when the component finishes loading assets or data.
  */
-export type LfImageviewerLoadCallback = (
-  imageviewer: LfImageviewerInterface,
+export type LfShapeeditorLoadCallback = (
+  shapeeditor: LfShapeeditorInterface,
   dir: string,
 ) => Promise<void>;
 /**
  * Configuration options for the navigation panel.
- * @property defaultDirectory - The initial directory to load in the navigation tree.
  * @property isTreeOpen - When true, the navigation tree panel is expanded by default.
  * @property treeProps - Additional props to pass to the underlying `lf-tree` component.
  */
-export interface LfImageviewerNavigation {
+export interface LfShapeeditorNavigation {
   isTreeOpen?: boolean;
   treeProps?: Partial<LfTreePropsInterface>;
 }

@@ -1,7 +1,7 @@
 @use "variables" as *;
 @use "mixins" as *;
 
-$comp: "imageviewer";
+$comp: "shapeeditor";
 $borderC: 1px solid rgba(var(--lf-color-border));
 @include lf-comp-setup($comp, "false", "false", "true", "false", "true");
 
@@ -15,7 +15,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   @include lf-el-stretch;
 }
 
-.imageviewer {
+.shapeeditor {
   @include lf-el-stretch;
 }
 
@@ -135,15 +135,22 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     grid-area: actions;
   }
 
-  &__canvas {
+  &__preview {
+    --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
+
+    align-content: center;
     border-bottom: $borderC;
     box-sizing: border-box;
+    display: grid;
+    grid-area: image;
+    overflow: hidden;
+    position: relative;
   }
 
-  &__preview {
-    align-content: center;
-    grid-area: image;
-    position: relative;
+  &__shape {
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   &__spinner {

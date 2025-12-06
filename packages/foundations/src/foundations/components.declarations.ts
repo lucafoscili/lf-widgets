@@ -89,10 +89,10 @@ import {
   LfImagePropsInterface,
 } from "../components/image.declarations";
 import {
-  LfImageviewerElement,
-  LfImageviewerInterface,
-  LfImageviewerPropsInterface,
-} from "../components/imageviewer.declarations";
+  LfShapeeditorElement,
+  LfShapeeditorInterface,
+  LfShapeeditorPropsInterface,
+} from "../components/shapeeditor.declarations";
 import {
   LfListElement,
   LfListInterface,
@@ -258,7 +258,7 @@ export type LfComponentElementMap = {
   LfDrawer: LfDrawerElement;
   LfHeader: LfHeaderElement;
   LfImage: LfImageElement;
-  LfImageviewer: LfImageviewerElement;
+  LfShapeeditor: LfShapeeditorElement;
   LfList: LfListElement;
   LfMasonry: LfMasonryElement;
   LfMessenger: LfMessengerElement;

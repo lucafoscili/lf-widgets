@@ -1,21 +1,26 @@
 import {
   IDS,
-  LfImageviewerAdapter,
-  LfImageviewerAdapterJsx,
+  LfDataCell,
+  LfDataShapes,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfShape } from "../../utils/shapes";
 
 export const prepDetails = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterJsx["details"] => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterJsx["details"] => {
   return {
-    // #region Canvas
-    canvas: () => {
+    // #region Shape
+    shape: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, history, lfAttribute, manager } = controller.get;
+      const { blocks, compInstance, history, lfAttribute, manager } =
+        controller.get;
       const { details } = elements.refs;
-      const { canvas } = handlers.details;
+      const { shape } = handlers.details;
       const { currentSnapshot } = history;
+      const { lfShape } = compInstance;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
@@ -24,15 +29,34 @@ export const prepDetails = (
         return;
       }
 
+      // Use the original cell from the snapshot (contains full props like lfDataset, lfSeries, etc.)
+      // Fall back to a minimal cell with just value for backwards compatibility
+      const originalCell = snapshot.shape?.shape;
+      const cell = (
+        originalCell
+          ? { ...originalCell, shape: lfShape }
+          : {
+              shape: lfShape,
+              value: snapshot.value,
+              lfValue: snapshot.value,
+            }
+      ) as LfDataCell<LfDataShapes>;
+
       return (
-        <lf-canvas
-          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.canvas)}
+        <div
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.shape)}
           data-lf={lfAttribute.fadeIn}
-          id={IDS.details.canvas}
-          lfImageProps={{ lfValue: snapshot.value }}
-          onLf-canvas-event={canvas}
-          ref={assignRef(details, "canvas")}
-        ></lf-canvas>
+          id={IDS.details.shape}
+          ref={assignRef(details, "shape")}
+        >
+          <LfShape
+            cell={cell}
+            eventDispatcher={async (e) => shape(e)}
+            framework={manager}
+            index={snapshot.shape?.index ?? 0}
+            shape={lfShape}
+          />
+        </div>
       );
     },
     // #endregion
@@ -88,7 +112,7 @@ export const prepDetails = (
           data-cy={cyAttributes.button}
           id={IDS.details.deleteShape}
           lfIcon={icon}
-          lfLabel="Delete image"
+          lfLabel="Delete"
           lfStretchX={true}
           lfUiState="danger"
           onLf-button-event={button}

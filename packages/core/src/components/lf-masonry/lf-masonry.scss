@@ -200,7 +200,6 @@ $comp: "masonry";
 
   &__capture {
     & {
-      --lf-chart-min-height: 200px;
       /**
       * @prop --lf-#{$comp}-capture-border-radius: Sets the border radius for the capture overlay.
       *                                            Defaults to => 4px
@@ -220,6 +219,15 @@ $comp: "masonry";
       height: 100%;
       pointer-events: none;
       width: 100%;
+    }
+
+    &:has([data-component="LfChart"]) {
+      /**
+      * @prop --lf-#{$comp}-chart-min-height: Sets the minimum height for the chart inside the capture.
+      *                                       Defaults to => 150px
+      */
+      height: var(--lf-#{$comp}-chart-min-height, 150px);
+      --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
     }
 
     &:hover,

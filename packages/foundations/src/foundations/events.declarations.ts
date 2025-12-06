@@ -16,7 +16,7 @@ import { LfCompareEvent } from "../components/compare.declarations";
 import { LfDrawerEvent } from "../components/drawer.declarations";
 import { LfHeaderEvent } from "../components/header.declarations";
 import { LfImageEvent } from "../components/image.declarations";
-import { LfImageviewerEvent } from "../components/imageviewer.declarations";
+import { LfShapeeditorEvent } from "../components/shapeeditor.declarations";
 import { LfListEvent } from "../components/list.declarations";
 import { LfMasonryEvent } from "../components/masonry.declarations";
 import { LfMessengerEvent } from "../components/messenger.declarations";
@@ -123,7 +123,7 @@ export type ComponentEventMap = {
   LfDrawer: LfDrawerEvent;
   LfHeader: LfHeaderEvent;
   LfImage: LfImageEvent;
-  LfImageviewer: LfImageviewerEvent;
+  LfShapeeditor: LfShapeeditorEvent;
   LfList: LfListEvent;
   LfMasonry: LfMasonryEvent;
   LfMessenger: LfMessengerEvent;

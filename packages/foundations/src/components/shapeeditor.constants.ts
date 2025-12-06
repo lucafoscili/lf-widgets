@@ -1,22 +1,22 @@
-import { LfImageviewerPropsInterface } from "./imageviewer.declarations";
+import { LfShapeeditorPropsInterface } from "./shapeeditor.declarations";
 
 //#region Blocks
-export const LF_IMAGEVIEWER_BLOCKS = {
+export const LF_SHAPEEDITOR_BLOCKS = {
   detailsGrid: {
     _: "details-grid",
     actions: "actions",
-    canvas: "canvas",
+    preview: "preview",
     clearHistory: "clear-history",
     delete: "delete",
     redo: "details-redo",
     commitChanges: "commit-changes",
-    preview: "preview",
+    shape: "shape",
     settings: "settings",
     spinner: "spinner",
     tree: "tree",
     undo: "undo",
   },
-  imageviewer: { _: "imageviewer" },
+  shapeeditor: { _: "shapeeditor" },
   mainGrid: { _: "main-grid" },
   navigationGrid: {
     _: "navigation-grid",
@@ -30,17 +30,17 @@ export const LF_IMAGEVIEWER_BLOCKS = {
 //#endregion
 
 //#region Events
-export const LF_IMAGEVIEWER_EVENTS = ["lf-event", "ready", "unmount"] as const;
+export const LF_SHAPEEDITOR_EVENTS = ["lf-event", "ready", "unmount"] as const;
 //#endregion
 
 //#region Ids
-export const IDS = {
+export const LF_SHAPEEDITOR_IDS = {
   details: {
-    canvas: "details-canvas",
     clearHistory: "details-clear-history",
     deleteShape: "details-delete-shape",
     redo: "details-redo",
     save: "details-save",
+    shape: "details-shape",
     spinner: "details-spinner",
     tree: "details-tree",
     undo: "details-undo",
@@ -53,22 +53,25 @@ export const IDS = {
     textfield: "navigation-textfield",
   },
 } as const;
+/** Alias for convenience in component files */
+export { LF_SHAPEEDITOR_IDS as IDS };
 //#endregion
 
 //#region Parts
-export const LF_IMAGEVIEWER_PARTS = {
+export const LF_SHAPEEDITOR_PARTS = {
   details: "details",
-  imageviewer: "imageviewer",
+  shapeeditor: "shapeeditor",
   navigation: "navigation",
 } as const;
 //#endregion
 
 //#region Props
-export const LF_IMAGEVIEWER_PROPS = [
+export const LF_SHAPEEDITOR_PROPS = [
   "lfDataset",
   "lfLoadCallback",
   "lfNavigation",
+  "lfShape",
   "lfStyle",
   "lfValue",
-] as const satisfies (keyof LfImageviewerPropsInterface)[];
+] as const satisfies (keyof LfShapeeditorPropsInterface)[];
 //#endregion
