@@ -12,6 +12,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfMasonrySelectedShape,
+  LfPlaygroundControlConfig,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterRefs,
   LfShapeeditorElement,
@@ -19,6 +20,7 @@ import {
   LfShapeeditorEventPayload,
   LfShapeeditorHistory,
   LfShapeeditorInterface,
+  LfShapeeditorLayout,
   LfShapeeditorLoadCallback,
   LfShapeeditorNavigation,
   LfShapeeditorPropsInterface,
@@ -118,6 +120,18 @@ export class LfShapeeditor implements LfShapeeditorInterface {
    * When true, displays a loading spinner while the shape is being loaded.
    */
   @State() isSpinnerActive = false;
+  /**
+   * Declarative control definitions driving the configuration panel.
+   */
+  @State() configControls: LfPlaygroundControlConfig[] = [];
+  /**
+   * Optional layout describing how controls are grouped.
+   */
+  @State() configLayout: LfShapeeditorLayout;
+  /**
+   * Current settings values derived from the active controls.
+   */
+  @State() configSettings: Record<string, unknown> = {};
   //#endregion
 
   //#region Props
@@ -355,6 +369,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       {
         blocks: this.#b,
         compInstance: this,
+        config: {
+          controls: () => this.configControls,
+          layout: () => this.configLayout,
+          settings: () => this.configSettings,
+        },
         currentShape: () => this.#getSelectedShapeValue(this.currentShape),
         cyAttributes: this.#cy,
         history: {
@@ -382,6 +401,17 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         spinnerStatus: () => this.isSpinnerActive,
       },
       {
+        config: {
+          controls: (controls) => {
+            this.configControls = controls || [];
+          },
+          layout: (layout) => {
+            this.configLayout = layout;
+          },
+          settings: (settings) => {
+            this.configSettings = { ...settings };
+          },
+        },
         currentShape: (node) => (this.currentShape = node),
         history: {
           index: (index) => (this.historyIndex = index),
@@ -453,6 +483,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       deleteShape,
       redo,
       save,
+      settings,
       shape,
       spinner,
       tree,
@@ -474,7 +505,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         </div>
         {tree()}
         <div class={bemClass(detailsGrid._, detailsGrid.settings)}>
-          <slot name="settings"></slot>
+          {settings()}
         </div>
       </div>
     );

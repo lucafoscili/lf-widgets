@@ -3,9 +3,11 @@
 import {
   LfButtonInterface,
   LfDataCell,
+  LfDataNode,
   LfDataShapes,
   LfMasonrySelectedShape,
   LfShapeeditorAdapter,
+  LfShapeeditorConfigDsl,
 } from "@lf-widgets/foundations";
 
 /**
@@ -260,6 +262,31 @@ export const updateValue = (
   shape.value = value;
   if (s.lfValue) {
     s.lfValue = value;
+  }
+};
+//#endregion
+
+//#region Config DSL
+export const parseConfigDslFromNode = (
+  node: LfDataNode | undefined,
+): LfShapeeditorConfigDsl | null => {
+  if (!node || !node.cells || !("lfCode" in node.cells)) {
+    return null;
+  }
+
+  const cell = node.cells.lfCode;
+  if (!cell?.value) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(cell.value) as LfShapeeditorConfigDsl;
+    if (!parsed || !Array.isArray(parsed.controls)) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
   }
 };
 //#endregion

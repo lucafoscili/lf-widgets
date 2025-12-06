@@ -6,6 +6,7 @@ import {
 import {
   clearHistory,
   deleteShape,
+  parseConfigDslFromNode,
   redo,
   save,
   toggleButtonSpinner,
@@ -17,7 +18,7 @@ export const prepDetailsHandlers = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterHandlers["details"] => {
   return {
-    //#region Button handler
+    //#region Button
     button: async (e) => {
       const { comp, eventType, id } = e.detail;
 
@@ -54,7 +55,7 @@ export const prepDetailsHandlers = (
     },
     //#endregion
 
-    //#region Shape handler
+    //#region Shape
     shape: (e) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
@@ -65,12 +66,48 @@ export const prepDetailsHandlers = (
     },
     //#endregion
 
-    //#region Tree handler
+    //#region Tree
     tree: (e) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
+      const { compInstance, manager } = adapter.controller.get;
 
       const comp = compInstance as LfShapeeditor;
+
+      const { data } = manager;
+      const { find } = data.node;
+      const { lfValue } = compInstance;
+      const { node } = e.detail;
+
+      if (node.id) {
+        const node = find(lfValue, (n) => n.id === node.id);
+        const dsl = parseConfigDslFromNode(node as any);
+
+        if (dsl) {
+          const { set } = adapter.controller;
+
+          set.config.controls(dsl.controls || []);
+          set.config.layout(dsl.layout);
+          set.config.settings(dsl.defaultSettings || {});
+        }
+      }
+
+      comp.onLfEvent(e, "lf-event");
+    },
+    //#endregion
+
+    //#region Control
+    controlChange: (e, controlId, value) => {
+      const adapter = getAdapter();
+      const { compInstance, config } = adapter.controller.get;
+
+      const comp = compInstance as LfShapeeditor;
+
+      const currentSettings = {
+        ...(config?.settings?.() || {}),
+        [controlId]: value,
+      };
+
+      adapter.controller.set.config.settings(currentSettings);
 
       comp.onLfEvent(e, "lf-event");
     },

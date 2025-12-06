@@ -2,10 +2,11 @@ import {
   IDS,
   LfDataCell,
   LfDataShapes,
+  LfPlaygroundControlConfig,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterJsx,
 } from "@lf-widgets/foundations";
-import { h } from "@stencil/core";
+import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
 
 export const prepDetails = (
@@ -269,5 +270,206 @@ export const prepDetails = (
       );
     },
     // #endregion
+
+    // #region Settings
+    settings: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, config, manager } = controller.get;
+      const { details } = elements.refs;
+      const { controlChange } = handlers.details;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const controls = config?.controls?.() || [];
+      const layout = config?.layout?.();
+      const settings = config?.settings?.() || {};
+
+      const hasControls = controls.length > 0;
+
+      if (!hasControls) {
+        return (
+          <div
+            class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.settings)}
+            ref={assignRef(details, "settings")}
+          >
+            <slot name="settings"></slot>
+          </div>
+        );
+      }
+
+      const groupedControls =
+        layout && layout.length
+          ? layout.map((group) => ({
+              id: group.id,
+              label: group.label,
+              controls: controls.filter((c) => group.controlIds.includes(c.id)),
+            }))
+          : [
+              {
+                id: "default",
+                label: "Settings",
+                controls,
+              },
+            ];
+
+      const renderControl = (config: LfPlaygroundControlConfig): VNode =>
+        createControl(config, settings[config.id], (e, id, value) =>
+          controlChange(e, id, value),
+        );
+
+      return (
+        <lf-accordion
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.settings)}
+          ref={assignRef(details, "settings")}
+        >
+          {groupedControls.map((group) => (
+            <lf-accordion-item
+              key={group.id}
+              lfLabel={group.label}
+              lfOpen={true}
+            >
+              {group.controls.map(renderControl)}
+            </lf-accordion-item>
+          ))}
+        </lf-accordion>
+      );
+    },
+    // #endregion
   };
 };
+
+//#region Helpers
+const createControl = (
+  config: LfPlaygroundControlConfig,
+  currentValue: unknown,
+  onChange: (e: CustomEvent | Event, controlId: string, value: unknown) => void,
+): VNode => {
+  const value = currentValue ?? getDefaultValue(config);
+
+  switch (config.type) {
+    case "slider":
+      return (
+        <div key={config.id} class="control-item">
+          <label>{config.label}</label>
+          <lf-slider
+            lfMin={config.min}
+            lfMax={config.max}
+            lfStep={config.step}
+            lfValue={value as number}
+            onLf-slider-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-slider>
+          {config.unit && <span class="unit">{config.unit}</span>}
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "toggle":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-toggle
+            lfLabel={config.label}
+            lfValue={value as boolean}
+            onLf-toggle-event={(e) => {
+              if (e.detail.eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-toggle>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "textfield":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-textfield
+            lfLabel={config.label}
+            lfValue={value as string}
+            onLf-textfield-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-textfield>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "colorpicker":
+      return (
+        <div key={config.id} class="control-item">
+          <label>{config.label}</label>
+          <input
+            type="color"
+            value={value as string}
+            onInput={(e) => {
+              onChange(e, config.id, (e.target as HTMLInputElement).value);
+            }}
+          />
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "select":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-select
+            lfTextfieldProps={{ lfLabel: config.label }}
+            lfValue={value as string}
+            lfDataset={{
+              nodes: config.options.map((opt) => ({
+                id: opt.value,
+                value: opt.label,
+              })),
+            }}
+            onLf-select-event={(e) => {
+              if (e.detail.eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-select>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "number":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-textfield
+            lfLabel={config.label}
+            lfValue={String(value)}
+            onLf-textfield-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
+              }
+            }}
+          ></lf-textfield>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    default:
+      return null;
+  }
+};
+
+const getDefaultValue = (config: LfPlaygroundControlConfig): unknown => {
+  switch (config.type) {
+    case "slider":
+    case "number":
+      return config.defaultValue;
+    case "toggle":
+      return config.defaultValue;
+    case "textfield":
+    case "colorpicker":
+    case "select":
+      return config.defaultValue;
+    default:
+      return null;
+  }
+};
+//#endregion

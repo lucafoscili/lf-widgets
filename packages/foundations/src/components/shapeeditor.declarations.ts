@@ -1,3 +1,4 @@
+import { LfIconType } from "../foundations";
 import {
   LfComponentAdapter,
   LfComponentAdapterGetters,
@@ -21,15 +22,16 @@ import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
-  LF_SHAPEEDITOR_BLOCKS,
-  LF_SHAPEEDITOR_EVENTS,
-  LF_SHAPEEDITOR_PARTS,
-} from "./shapeeditor.constants";
-import {
   LfMasonryElement,
   LfMasonryEventPayload,
   LfMasonrySelectedShape,
 } from "./masonry.declarations";
+import { LfPlaygroundControlConfig } from "./playground.declarations";
+import {
+  LF_SHAPEEDITOR_BLOCKS,
+  LF_SHAPEEDITOR_EVENTS,
+  LF_SHAPEEDITOR_PARTS,
+} from "./shapeeditor.constants";
 import { LfSpinnerElement } from "./spinner.declarations";
 import {
   LfTextfieldElement,
@@ -94,6 +96,7 @@ export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
     deleteShape: () => VNode;
     redo: () => VNode;
     save: () => VNode;
+    settings: () => VNode;
     shape: () => VNode;
     spinner: () => VNode;
     tree: () => VNode;
@@ -116,6 +119,7 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
     deleteShape: LfButtonElement;
     redo: LfButtonElement;
     save: LfButtonElement;
+    settings: HTMLElement;
     shape: HTMLElement;
     spinner: LfSpinnerElement;
     tree: LfTreeElement;
@@ -136,6 +140,11 @@ export interface LfShapeeditorAdapterHandlers
   extends LfComponentAdapterHandlers {
   details: {
     button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    controlChange: (
+      e: CustomEvent | Event,
+      controlId: string,
+      value: unknown,
+    ) => void;
     shape: (e: CustomEvent) => void;
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
   };
@@ -154,6 +163,7 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
   LfShapeeditorAdapterControllerGetters,
   | "blocks"
   | "compInstance"
+  | "config"
   | "currentShape"
   | "cyAttributes"
   | "history"
@@ -168,7 +178,7 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
  */
 export type LfShapeeditorAdapterInitializerSetters = Pick<
   LfShapeeditorAdapterControllerSetters,
-  "currentShape" | "history" | "navigation"
+  "config" | "currentShape" | "history" | "navigation"
 >;
 /**
  * Read-only controller surface exposed by the adapter for integration code.
@@ -177,6 +187,11 @@ export interface LfShapeeditorAdapterControllerGetters
   extends LfComponentAdapterGetters<LfShapeeditorInterface> {
   blocks: typeof LF_SHAPEEDITOR_BLOCKS;
   compInstance: LfShapeeditorInterface;
+  config: {
+    controls: () => LfPlaygroundControlConfig[];
+    layout: () => LfShapeeditorLayout | undefined;
+    settings: () => Record<string, unknown>;
+  };
   currentShape: () => { shape: LfMasonrySelectedShape; value: string };
   cyAttributes: typeof CY_ATTRIBUTES;
   history: {
@@ -199,6 +214,11 @@ export interface LfShapeeditorAdapterControllerGetters
  */
 export interface LfShapeeditorAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  config: {
+    controls: (controls: LfPlaygroundControlConfig[]) => void;
+    layout: (layout?: LfShapeeditorLayout) => void;
+    settings: (settings: Record<string, unknown>) => void;
+  };
   currentShape: (node: LfMasonrySelectedShape) => void;
   history: {
     index: (index: number) => void;
@@ -229,6 +249,30 @@ export interface LfShapeeditorEventPayload
 export type LfShapeeditorHistory = {
   [index: number]: Array<LfMasonrySelectedShape>;
 };
+
+/**
+ * Layout group used to organise configuration controls into accordion sections.
+ */
+export interface LfShapeeditorLayoutGroup {
+  icon?: LfIconType;
+  id: string;
+  label: string;
+  controlIds: string[];
+}
+/**
+ * Linear layout definition for the configuration panel.
+ */
+export type LfShapeeditorLayout = LfShapeeditorLayoutGroup[];
+
+/**
+ * Shapeeditor-agnostic configuration DSL.
+ * Consumers provide control definitions and optional layout + defaults.
+ */
+export interface LfShapeeditorConfigDsl {
+  controls: LfPlaygroundControlConfig[];
+  defaultSettings?: Record<string, unknown>;
+  layout?: LfShapeeditorLayout;
+}
 //#endregion
 
 //#region Props

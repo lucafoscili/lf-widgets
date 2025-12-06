@@ -75,6 +75,7 @@ export const createRefs = (): LfShapeeditorAdapterRefs => {
       deleteShape: null,
       redo: null,
       save: null,
+      settings: null,
       shape: null,
       spinner: null,
       tree: null,

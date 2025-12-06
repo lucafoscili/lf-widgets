@@ -195,6 +195,10 @@ Type: `Promise<void>`
 - [lf-spinner](../lf-spinner)
 - [lf-tree](../lf-tree)
 - [lf-accordion](../lf-accordion)
+- [lf-slider](../lf-slider)
+- [lf-toggle](../lf-toggle)
+- [lf-textfield](../lf-textfield)
+- [lf-select](../lf-select)
 - [lf-badge](../lf-badge)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
@@ -205,8 +209,6 @@ Type: `Promise<void>`
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
 - [lf-progressbar](../lf-progressbar)
-- [lf-textfield](../lf-textfield)
-- [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
 - [lf-masonry](../lf-masonry)
@@ -218,6 +220,10 @@ graph TD;
   lf-shapeeditor --> lf-spinner
   lf-shapeeditor --> lf-tree
   lf-shapeeditor --> lf-accordion
+  lf-shapeeditor --> lf-slider
+  lf-shapeeditor --> lf-toggle
+  lf-shapeeditor --> lf-textfield
+  lf-shapeeditor --> lf-select
   lf-shapeeditor --> lf-badge
   lf-shapeeditor --> lf-canvas
   lf-shapeeditor --> lf-card
@@ -228,8 +234,6 @@ graph TD;
   lf-shapeeditor --> lf-image
   lf-shapeeditor --> lf-photoframe
   lf-shapeeditor --> lf-progressbar
-  lf-shapeeditor --> lf-textfield
-  lf-shapeeditor --> lf-toggle
   lf-shapeeditor --> lf-typewriter
   lf-shapeeditor --> lf-upload
   lf-shapeeditor --> lf-masonry
@@ -313,6 +317,8 @@ graph TD;
   lf-article --> lf-upload
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-select --> lf-list
+  lf-select --> lf-textfield
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
   lf-masonry --> lf-button

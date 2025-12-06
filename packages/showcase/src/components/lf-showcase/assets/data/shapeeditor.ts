@@ -6,6 +6,8 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
+  LfPlaygroundEffectDefinition,
+  LfShapeeditorConfigDsl,
   LfShapeeditorLoadCallback,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
@@ -23,6 +25,66 @@ export const getShapeeditorFixtures = (
   framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-shapeeditor"> => {
   const { get } = framework.assets;
+
+  const spotlightEffect: LfPlaygroundEffectDefinition = {
+    id: "spotlight",
+    name: "Spotlight",
+    description: "Simple spotlight controls mapped through DSL.",
+    icon: "lightbulb",
+    defaultSettings: {
+      intensity: 0.8,
+      angle: 45,
+    },
+    presets: [],
+    controls: [
+      {
+        id: "intensity",
+        type: "slider",
+        label: "Intensity",
+        description: "Overall brightness of the spotlight beam",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.8,
+        unit: "",
+      },
+      {
+        id: "angle",
+        type: "slider",
+        label: "Beam Angle",
+        description: "Spread angle of the spotlight in degrees",
+        min: 10,
+        max: 90,
+        step: 5,
+        defaultValue: 45,
+        unit: "°",
+      },
+      {
+        id: "followPointer",
+        type: "toggle",
+        label: "Follow Pointer",
+        description: "Enable pointer tracking",
+        defaultValue: false,
+      },
+    ],
+  };
+
+  const spotlightDsl: LfShapeeditorConfigDsl = {
+    controls: spotlightEffect.controls,
+    layout: [
+      {
+        id: "beam",
+        label: "Beam",
+        controlIds: ["intensity", "angle"],
+      },
+      {
+        id: "behaviour",
+        label: "Behaviour",
+        controlIds: ["followPointer"],
+      },
+    ],
+    defaultSettings: spotlightEffect.defaultSettings,
+  };
 
   //#region mock data
   //#region Canvas data
@@ -81,8 +143,7 @@ export const getShapeeditorFixtures = (
             cells: {
               lfCode: {
                 shape: "code",
-                value:
-                  '{"slider":[{"ariaLabel":"Clarity strength","defaultValue":"0.5","id":"clarity_strength","max":"5","min":"0","step":"0.1","title":"Controls the amount of contrast enhancement in midtones."},{"ariaLabel":"Sharpen amount","max":"5","min":"0","id":"sharpen_amount","defaultValue":"1.0","step":"0.1","title":"Controls how much sharpening is applied to the image."},{"ariaLabel":"Blur kernel size","max":"15","min":"1","id":"blur_kernel_size","defaultValue":"7","step":"2","title":"Controls the size of the Gaussian blur kernel. Higher values mean more smoothing."}]}',
+                value: JSON.stringify(spotlightDsl),
               },
             },
             id: "clarity",
@@ -436,7 +497,6 @@ def calculate_statistics(data: List[float]) -> dict:
       },
     ],
   };
-  //#endregion
 
   const data: { [index: string]: LfDataDataset } = {
     canvasDataset,
@@ -445,8 +505,25 @@ def calculate_statistics(data: List[float]) -> dict:
     chartSettingsDataset,
     codeDataset,
     codeSettingsDataset,
+    effectsDataset: {
+      nodes: [
+        {
+          cells: {
+            lfImage: {
+              lfValue: "settings",
+              shape: "image",
+              value: "",
+            },
+          },
+          id: "spotlight_0",
+          value: "Spotlight",
+        },
+      ],
+    },
   };
+  //#endregion
 
+  //#region Navigation tree grid
   const navigationTreeGridDataset: LfDataDataset = {
     columns: [
       { id: "name", title: "Name" },
@@ -668,6 +745,15 @@ def calculate_statistics(data: List[float]) -> dict:
             lfLoadCallback: loadCanvasDataset,
             lfShape: "canvas",
             lfValue: data.canvasSettingsDataset,
+          },
+        },
+        spotlightEffectDsl: {
+          description:
+            "Shapeeditor configured via DSL for Spotlight effect controls",
+          props: {
+            lfDataset: data.effectsDataset,
+            lfShape: "image",
+            lfValue: data.effectsSettingsDataset,
           },
         },
       },
