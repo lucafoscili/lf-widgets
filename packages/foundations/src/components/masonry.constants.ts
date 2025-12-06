@@ -25,7 +25,12 @@ export const LF_MASONRY_DEFAULT_COLUMNS = [640, 768, 1024, 1920, 2560] as const;
 //#endregion
 
 //#region Events
-export const LF_MASONRY_EVENTS = ["lf-event", "ready", "unmount"] as const;
+export const LF_MASONRY_EVENTS = [
+  "click",
+  "lf-event",
+  "ready",
+  "unmount",
+] as const;
 //#endregion
 
 //#region Ids
@@ -50,7 +55,6 @@ export const LF_MASONRY_PARTS = {
 //#region Props
 export const LF_MASONRY_PROPS = [
   "lfActions",
-  "lfCaptureSelection",
   "lfCollapseColumns",
   "lfColumns",
   "lfDataset",

@@ -78,8 +78,9 @@ export interface LfMasonryAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfMasonryAdapterRefs extends LfComponentAdapterRefs {
   addColumn: LfButtonElement;
-  removeColumn: LfButtonElement;
   changeView: LfButtonElement;
+  removeColumn: LfButtonElement;
+  shapes: Map<string, HTMLElement>;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
@@ -151,7 +152,6 @@ export type LfMasonrySelectedShape = {
  */
 export interface LfMasonryPropsInterface {
   lfActions?: boolean;
-  lfCaptureSelection?: boolean;
   lfCollapseColumns?: boolean;
   lfColumns?: LfMasonryColumns;
   lfDataset?: LfDataDataset;

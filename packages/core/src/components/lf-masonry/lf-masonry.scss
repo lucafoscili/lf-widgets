@@ -9,7 +9,7 @@ $comp: "masonry";
 }
 
 :host([lf-selectable]) {
-  lf-image {
+  [data-component] {
     & {
       @include lf-el-transition("fade-in-out");
       box-sizing: border-box;
@@ -194,22 +194,16 @@ $comp: "masonry";
   }
 
   &__capture {
-    /**
-    * @prop --lf-#{$comp}-capture-border-radius: Sets the border radius for the capture overlay.
-    *                                            Defaults to => 4px
-    */
-    border-radius: var(--lf-#{$comp}-capture-border-radius, 4px);
-    box-sizing: border-box;
-    cursor: pointer;
-    /**
-    * @prop --lf-#{$comp}-capture-min-height: Sets the minimum height for capture containers.
-    *                                         Defaults to => 150px
-    */
-    min-height: var(--lf-#{$comp}-capture-min-height, 150px);
-    overflow: hidden;
-    position: relative;
+    & {
+      --lf-chart-min-height: 200px;
+      /**
+      * @prop --lf-#{$comp}-capture-border-radius: Sets the border radius for the capture overlay.
+      *                                            Defaults to => 4px
+      */
+      border-radius: var(--lf-#{$comp}-capture-border-radius, 4px);
+      box-sizing: border-box;
+    }
 
-    // Transparent overlay that captures all pointer events
     &::after {
       content: "";
       position: absolute;
@@ -217,7 +211,6 @@ $comp: "masonry";
       z-index: 1;
     }
 
-    // Disable pointer events and fix dimensions on child shapes
     > * {
       height: 100%;
       pointer-events: none;
@@ -225,7 +218,7 @@ $comp: "masonry";
     }
 
     &:hover,
-    &[data-selected="true"] {
+    &:has([data-selected="true"]) {
       /**
       * @prop --lf-#{$comp}-capture-selected-filter: Sets the filter for the selected capture item.
       *                                              Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
@@ -236,7 +229,7 @@ $comp: "masonry";
       );
     }
 
-    &[data-selected="true"] {
+    &:has([data-selected="true"]) {
       /**
       * @prop --lf-#{$comp}-capture-selected-border: Sets the border for the selected capture item.
       *                                              Defaults to => 2px solid rgba(var(--lf-color-secondary), 0.875)

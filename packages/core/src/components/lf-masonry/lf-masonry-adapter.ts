@@ -46,6 +46,7 @@ export const createRefs = (): LfMasonryAdapterRefs => {
     addColumn: null,
     removeColumn: null,
     changeView: null,
+    shapes: new Map<string, HTMLElement>(),
   };
 };
 //#endregion

@@ -13,7 +13,6 @@ import {
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
-  LfEvent,
   LfFrameworkInterface,
   LfMasonryAdapter,
   LfMasonryColumns,
@@ -97,20 +96,6 @@ export class LfMasonry implements LfMasonryInterface {
    * ```
    */
   @Prop({ mutable: true }) lfActions: boolean = false;
-  /**
-   * When true and lfSelectable is enabled, captures selection events on a transparent overlay
-   * preventing deeper interaction with the contained shapes (e.g., prevents drawing on a canvas).
-   *
-   * @type {boolean}
-   * @default false
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-masonry lfCaptureSelection={true} lfSelectable={true}></lf-masonry>
-   * ```
-   */
-  @Prop({ mutable: true }) lfCaptureSelection: boolean = false;
   /**
    * When true the masonry will collapse the number of columns to the number of items
    * when the number of items is less than the configured columns. Set to false to
@@ -237,26 +222,25 @@ export class LfMasonry implements LfMasonryInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfMasonryEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfMasonryEvent) {
+  onLfEvent(
+    e: Event | CustomEvent,
+    eventType: LfMasonryEvent,
+    refKey?: string,
+  ): void {
     const { lfSelectable, lfShape, selectedShape, shapes } = this;
 
     let shouldUpdateState = false;
     const state: LfMasonrySelectedShape = {};
 
     switch (eventType) {
-      case "lf-event":
-        const { comp, eventType } = (e as LfEvent).detail;
-        switch (eventType) {
-          case "click":
-            if (lfSelectable) {
-              const index = parseInt(comp.rootElement.dataset.index);
-              if (selectedShape.index !== index) {
-                state.index = index;
-                state.shape = shapes[lfShape][index];
-              }
-              shouldUpdateState = true;
-            }
-            break;
+      case "click":
+        if (lfSelectable) {
+          const index = parseInt(refKey?.split("-")[1] || "", 10);
+          if (selectedShape.index !== index) {
+            state.index = index;
+            state.shape = shapes[lfShape][index];
+          }
+          shouldUpdateState = true;
         }
         break;
     }
@@ -463,8 +447,8 @@ export class LfMasonry implements LfMasonryInterface {
     return 1;
   }
   #divideShapesIntoColumns = (): VNode[][] => {
-    const { lfCaptureSelection, lfSelectable, lfShape, selectedShape, shapes } =
-      this;
+    const { refs } = this.#adapter.elements;
+    const { lfSelectable, lfShape, selectedShape, shapes } = this;
     const { bemClass } = this.#framework.theme;
     const { grid } = this.#b;
 
@@ -488,29 +472,33 @@ export class LfMasonry implements LfMasonryInterface {
       [],
     );
 
-    const shouldCapture = lfCaptureSelection && lfSelectable;
-
     for (let index = 0; index < shapes[lfShape].length; index++) {
       const cell = shapes[lfShape][index];
       const defaultCell = props[index];
+      const refKey = `${lfShape}-${index}`;
 
       const shapeElement = (
         <LfShape
           cell={Object.assign(defaultCell, cell)}
-          index={index}
-          shape={lfShape}
-          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", refKey)}
           framework={this.#framework}
+          index={index}
+          refCallback={(r) => refs.shapes.set(refKey, r)}
+          shape={lfShape}
         ></LfShape>
       );
 
-      if (shouldCapture) {
+      if (lfSelectable) {
         columns[index % this.#currentColumns].push(
           <div
             class={bemClass(grid._, grid.capture)}
-            data-index={index}
-            data-selected={selectedShape.index === index ? "true" : ""}
-            onClick={(e) => this.#handleCaptureClick(e, index)}
+            onClick={async (e) => {
+              e.stopPropagation();
+              this.onLfEvent(e, "click", refKey);
+            }}
+            onPointerDown={async (e) => {
+              e.stopPropagation();
+            }}
             ref={(el) => {
               if (el && !this.#captureElements.includes(el)) {
                 this.#captureElements.push(el);
@@ -526,34 +514,6 @@ export class LfMasonry implements LfMasonryInterface {
     }
 
     return columns;
-  };
-  #handleCaptureClick = (e: MouseEvent, index: number) => {
-    e.stopPropagation();
-
-    const { lfShape, selectedShape, shapes } = this;
-    let shouldUpdateState = false;
-    const state: LfMasonrySelectedShape = {};
-
-    if (selectedShape.index !== index) {
-      state.index = index;
-      state.shape = shapes[lfShape][index];
-      shouldUpdateState = true;
-    } else {
-      // Clicking same item deselects
-      shouldUpdateState = true;
-    }
-
-    if (shouldUpdateState) {
-      this.selectedShape = state;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType: "lf-event",
-      id: this.rootElement.id,
-      originalEvent: e,
-      selectedShape: this.selectedShape,
-    });
   };
   #handleResize = this.#debounce(() => {
     this.viewportWidth = window.innerWidth;
@@ -647,7 +607,7 @@ export class LfMasonry implements LfMasonryInterface {
     const { debug, effects, theme } = this.#framework;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfCaptureSelection && hasThemeRipple) {
+    if (this.lfSelectable && hasThemeRipple) {
       this.#captureElements.forEach((item) => {
         effects.register.ripple(item);
       });
