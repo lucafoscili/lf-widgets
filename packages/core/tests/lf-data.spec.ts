@@ -338,8 +338,8 @@ describe("Article helpers", () => {
       sectionId: section.id,
       node: article.shapes.card({
         id: "weather-card",
-        dataset: { nodes: [] },
-        layout: "weather",
+        lfDataset: { nodes: [] },
+        lfLayout: "weather",
       }),
     });
 
@@ -435,8 +435,8 @@ describe("Article helpers", () => {
 
     const cardNode = article.shapes.card({
       id: "tool-card",
-      dataset: { nodes: [] },
-      layout: "weather",
+      lfDataset: { nodes: [] },
+      lfLayout: "weather",
     });
 
     const { section, paragraph, leaf } = builder.section.add.withLeaf({

@@ -4,26 +4,19 @@ import {
   LfArticleNode,
 } from "../components/article.declarations";
 import { LfBadgePropsInterface } from "../components/badge.declarations";
-import {
-  LfButtonPropsInterface,
-  LfButtonStyling,
-} from "../components/button.declarations";
+import { LfButtonPropsInterface } from "../components/button.declarations";
 import { LfCanvasPropsInterface } from "../components/canvas.declarations";
-import {
-  LfCardLayout,
-  LfCardPropsInterface,
-} from "../components/card.declarations";
-import {
-  LfChartLegendPlacement,
-  LfChartPropsInterface,
-  LfChartType,
-} from "../components/chart.declarations";
+import { LfCardPropsInterface } from "../components/card.declarations";
+import { LfChartPropsInterface } from "../components/chart.declarations";
 import {
   LfChatHistory,
   LfChatPropsInterface,
 } from "../components/chat.declarations";
 import { LfChipPropsInterface } from "../components/chip.declarations";
-import { LfCodePropsInterface } from "../components/code.declarations";
+import {
+  LfCodeInterface,
+  LfCodePropsInterface,
+} from "../components/code.declarations";
 import { LfImagePropsInterface } from "../components/image.declarations";
 import { LfPhotoframePropsInterface } from "../components/photoframe.declarations";
 import { LfProgressbarPropsInterface } from "../components/progressbar.declarations";
@@ -43,7 +36,6 @@ import {
 } from "../foundations/events.declarations";
 import { LF_DATA_SHAPE_MAP, LF_DATA_SHAPES } from "./data.constants";
 import { LfFrameworkAllowedKeysMap } from "./framework.declarations";
-import { LfThemeUISize, LfThemeUIState } from "./theme.declarations";
 
 //#region Article builder
 /**
@@ -52,12 +44,12 @@ import { LfThemeUISize, LfThemeUIState } from "./theme.declarations";
  * on container nodes; the `lf-article` component itself remains layout-agnostic.
  */
 export type LfDataArticleLayoutPreset =
-  | "stack"
-  | "row"
-  | "two-columns"
-  | "hero-top"
+  | "cards-grid"
   | "hero-side"
-  | "cards-grid";
+  | "hero-top"
+  | "row"
+  | "stack"
+  | "two-columns";
 /**
  * Options used when creating a new high-level article builder.
  *
@@ -314,70 +306,36 @@ export interface LfDataInterface {
       }) => LfArticleNode;
     };
     shapes: {
-      accordion: (options: {
-        id: string;
-        dataset: LfDataDataset;
-        uiSize?: LfThemeUISize;
-        uiState?: LfThemeUIState;
-        style?: string;
-      }) => LfArticleNode;
-      accordionCodeBlock: (options: {
-        id: string;
-        title: string;
-        code: string;
-        icon?: LfIconType;
-        language?: string;
-        uiSize?: LfThemeUISize;
-        uiState?: LfThemeUIState;
-        style?: string;
-      }) => LfArticleNode;
-      progressRow: (options: {
-        id: string;
-        label: string;
-        value: number;
-        icon?: LfIconType;
-        uiState?: LfThemeUIState;
-      }) => LfArticleNode;
-      buttonRow: (options: {
-        id: string;
-        label: string;
-        icon?: LfIconType;
-        styling?: LfButtonStyling;
-        uiState?: LfThemeUIState;
-        style?: string;
-      }) => LfArticleNode;
-      card: (options: {
-        id: string;
-        dataset: LfDataDataset;
-        layout?: LfCardLayout;
-        uiSize?: LfThemeUISize;
-        uiState?: LfThemeUIState;
-        style?: string;
-      }) => LfArticleNode;
-      chart: (options: {
-        id: string;
-        dataset: LfDataDataset;
-        types?: LfChartType[];
-        axis?: string | string[];
-        legend?: LfChartLegendPlacement;
-        sizeX?: string;
-        sizeY?: string;
-        style?: string;
-      }) => LfArticleNode;
-      codeBlock: (options: {
-        id: string;
-        code: string;
-        language?: string;
-        cssStyle?: LfArticleNode["cssStyle"];
-      }) => LfArticleNode;
-      textfieldRow: (options: {
-        id: string;
-        label: string;
-        value?: string;
-        type?: string;
-        style?: string;
-        helperText?: string;
-      }) => LfArticleNode;
+      accordion: (
+        id: string,
+        props: Partial<LfAccordionPropsInterface>,
+      ) => LfArticleNode;
+      accordionCodeBlock: (
+        id: string,
+        node: LfDataNode,
+        props: Partial<LfCodeInterface>,
+      ) => LfArticleNode;
+      buttonRow: (
+        id: string,
+        props: Partial<LfButtonPropsInterface>,
+      ) => LfArticleNode;
+      card: (id: string, props: Partial<LfCardPropsInterface>) => LfArticleNode;
+      chart: (
+        id: string,
+        props: Partial<LfChartPropsInterface>,
+      ) => LfArticleNode;
+      codeBlock: (
+        id: string,
+        props: Partial<LfCodePropsInterface>,
+      ) => LfArticleNode;
+      progressRow: (
+        id: string,
+        props: Partial<LfProgressbarPropsInterface>,
+      ) => LfArticleNode;
+      textfieldRow: (
+        id: string,
+        props: Partial<LfTextfieldPropsInterface>,
+      ) => LfArticleNode;
     };
     /**
      * High-level fluent builder that assists with constructing hierarchical

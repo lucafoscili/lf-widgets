@@ -112,6 +112,7 @@ class ArticleBuilder implements LfArticleBuilder {
     },
   };
 
+  //#region addSection
   addSection(options: {
     id?: string;
     title?: string;
@@ -137,19 +138,27 @@ class ArticleBuilder implements LfArticleBuilder {
 
     return section;
   }
+  //#endregion
 
+  //#region getDataset
   getDataset(): LfArticleDataset {
     return this.#dataset;
   }
+  //#endregion
 
+  //#region getSection
   getSection(id: string): LfArticleNode | undefined {
     return this.#sections.get(id);
   }
+  //#endregion
 
+  //#region toDataset
   toDataset(): LfArticleDataset {
     return this.getDataset();
   }
+  //#endregion
 
+  //#region addParagraph
   addParagraph(
     sectionId: string,
     options?: {
@@ -187,11 +196,15 @@ class ArticleBuilder implements LfArticleBuilder {
 
     return paragraph;
   }
+  //#endregion
 
+  //#region getParagraph
   getParagraph(id: string): LfArticleNode | undefined {
     return this.#paragraphs.get(id);
   }
+  //#endregion
 
+  //#region addLeaf
   addLeaf(options: {
     sectionId: string;
     paragraphId?: string;
@@ -223,7 +236,9 @@ class ArticleBuilder implements LfArticleBuilder {
 
     return node;
   }
+  //#endregion
 
+  //#region addSectionWithText
   addSectionWithText(options: {
     sectionId?: string;
     sectionTitle: string;
@@ -253,7 +268,9 @@ class ArticleBuilder implements LfArticleBuilder {
 
     return { section, paragraph };
   }
+  //#endregion
 
+  //#region addSectionWithLeaf
   addSectionWithLeaf(options: {
     sectionId?: string;
     sectionTitle: string;
@@ -289,7 +306,10 @@ class ArticleBuilder implements LfArticleBuilder {
     return { section, paragraph, leaf: options.leaf };
   }
 }
+//#endregion
 
+//#region Factory function
 export const createArticleBuilder = (
   options?: LfArticleBuilderCreateOptions,
 ): LfArticleBuilder => new ArticleBuilder(options);
+//#endregion
