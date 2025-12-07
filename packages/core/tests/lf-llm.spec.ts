@@ -221,6 +221,7 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     expect(definitions.lfw).toBeDefined();
 
     const weatherDef = definitions.general["get_weather"];
+    const wikipediaDef = definitions.general["get_random_wikipedia_article"];
     const docsDef = definitions.lfw["get_component_docs"];
     const themeDef = definitions.lfw["set_theme"];
     const debugDef = definitions.lfw["toggle_debug"];
@@ -228,6 +229,10 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     expect(weatherDef).toBeDefined();
     expect(weatherDef.type).toBe("function");
     expect(weatherDef.function.name).toBe("get_weather");
+
+    expect(wikipediaDef).toBeDefined();
+    expect(wikipediaDef.type).toBe("function");
+    expect(wikipediaDef.function.name).toBe("get_random_wikipedia_article");
 
     expect(docsDef).toBeDefined();
     expect(docsDef.type).toBe("function");
@@ -251,6 +256,7 @@ describe("Framework LLM Builtin Tools (integration)", () => {
     expect(names).toEqual(
       expect.arrayContaining([
         "get_weather",
+        "get_random_wikipedia_article",
         "get_component_docs",
         "set_theme",
         "toggle_debug",
@@ -311,6 +317,48 @@ describe("Framework LLM Builtin Tools (integration)", () => {
       expect(structured.dataset).toBeDefined();
       expect(Array.isArray(structured.dataset.nodes)).toBe(true);
       expect(structured.dataset.nodes!.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("builtin wikipedia handler returns an article response on success", async () => {
+    const handlers = llm.getBuiltinToolHandlers();
+    const wikipediaHandler = handlers["get_random_wikipedia_article"];
+
+    const samplePayload = {
+      title: "Example Article",
+      extract: "This is a sample extract from a random Wikipedia article.",
+      lang: "en",
+      content_urls: {
+        desktop: {
+          page: "https://en.wikipedia.org/wiki/Example_Article",
+        },
+      },
+    };
+
+    const originalFetch = (global as any).fetch;
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => samplePayload,
+    });
+
+    const result = await wikipediaHandler({} as Record<string, unknown>);
+
+    (global as any).fetch = originalFetch;
+
+    expect(result).toBeDefined();
+
+    if (typeof result === "string") {
+      expect(result.length).toBeGreaterThan(0);
+      return;
+    }
+
+    const structured = result as LfLLMToolResponse;
+    expect(structured.type).toBe("article");
+    if (structured.type === "article") {
+      expect(structured.dataset).toBeDefined();
+      expect(Array.isArray(structured.dataset.nodes)).toBe(true);
+      expect(structured.dataset.nodes!.length).toBeGreaterThan(0);
+      expect(structured.content).toContain("Example Article");
     }
   });
 
