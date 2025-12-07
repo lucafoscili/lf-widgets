@@ -506,6 +506,10 @@ export class LfChat implements LfChatInterface {
     );
   };
   async #checkLLMStatus() {
+    if (this.view === "settings") {
+      return;
+    }
+
     const currentVersion = this.#pollVersion;
 
     const { llm } = this.#framework;
