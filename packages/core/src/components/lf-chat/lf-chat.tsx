@@ -36,7 +36,6 @@ import {
   Fragment,
   h,
   Host,
-  Listen,
   Method,
   Prop,
   State,
@@ -48,7 +47,7 @@ import { awaitFramework } from "../../utils/setup";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
-import { calcTokens, submitPrompt } from "./helpers.messages";
+import { calcTokens } from "./helpers.messages";
 import { parseMessageContent } from "./helpers.parsing";
 import { createAdapter } from "./lf-chat-adapter";
 
@@ -250,43 +249,8 @@ export class LfChat implements LfChatInterface {
   }
   //#endregion
 
-  //#region Listeners
-  @Listen("keydown")
-  listenKeydown(e: KeyboardEvent) {
-    switch (e.key) {
-      case "Enter":
-        if (e.ctrlKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          submitPrompt(this.#adapter);
-        }
-        break;
-      default:
-        e.stopPropagation();
-    }
-  }
-  //#endregion
-
   //#region Watchers
   @Watch("lfConfig")
-  updateConfig() {
-    if (!this.#framework) {
-      return;
-    }
-
-    this.#pollVersion++;
-
-    const effectiveConfig = getEffectiveConfig(this.#adapter);
-    clearInterval(this.#interval);
-    this.#interval = setInterval(
-      () => this.#checkLLMStatus(),
-      effectiveConfig.llm.pollingInterval,
-    );
-
-    this.#checkLLMStatus();
-
-    this.updateTokensCount();
-  }
   async updateTokensCount() {
     if (!this.#framework || !this.#adapter) {
       return;
@@ -305,6 +269,13 @@ export class LfChat implements LfChatInterface {
     if (this.currentAbortStreaming) {
       this.currentAbortStreaming.abort();
     }
+  }
+  /**
+   * Exports current history as JSON file
+   */
+  @Method()
+  async exportHistory(): Promise<void> {
+    await exportH(this);
   }
   /**
    * Retrieves the debug information reflecting the current state of the component.
@@ -378,6 +349,14 @@ export class LfChat implements LfChatInterface {
   async refresh(): Promise<void> {
     forceUpdate(this);
   }
+  @Method()
+  /**
+   * Retries the connection by checking the LLM status.
+   * This method attempts to re-establish the connection asynchronously.
+   */
+  async retryConnection(): Promise<void> {
+    await this.#checkLLMStatus();
+  }
   /**
    * Scrolls the chat message list to the bottom.
    *
@@ -437,14 +416,6 @@ export class LfChat implements LfChatInterface {
   @Method()
   async setHistory(history: string, fromFile: boolean = false): Promise<void> {
     await setH(this.#adapter, this, history, fromFile);
-  }
-
-  /**
-   * Exports current history as JSON file
-   */
-  @Method()
-  async exportHistory(): Promise<void> {
-    await exportH(this);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -669,7 +640,7 @@ export class LfChat implements LfChatInterface {
     const { bemClass, get } = this.#framework.theme;
 
     const { chat } = this.#b;
-    const { configuration } = this.#adapter.elements.jsx.chat;
+    const { configuration, retry } = this.#adapter.elements.jsx.chat;
     const icon = get.icon("door");
 
     return (
@@ -686,6 +657,7 @@ export class LfChat implements LfChatInterface {
           </div>
         </div>
         {configuration()}
+        {retry()}
       </Fragment>
     );
   };

@@ -1,4 +1,5 @@
 import {
+  LfArticleDataset,
   LfChatAdapter,
   LfChatAgentState,
   LfDataDataset,
@@ -803,10 +804,9 @@ export const handleToolCalls = async (
     return null;
   }
 
-  const firstArticleResult = toolResults.find((r) => r.articleContent) as
-    | LfLLMChoiceMessage
-    | undefined;
-  if (firstArticleResult?.articleContent) {
+  const articles = toolResults.filter((r) => Boolean(r.articleContent));
+
+  if (articles.length > 0) {
     set.history(() => {
       const h = history();
       let lastAssistantIndex = h.length - 1;
@@ -817,9 +817,43 @@ export const handleToolCalls = async (
         lastAssistantIndex--;
       }
       if (lastAssistantIndex >= 0) {
-        const msg = h[lastAssistantIndex] as LfLLMChoiceMessage;
-        msg.articleContent =
-          msg.articleContent ?? firstArticleResult.articleContent;
+        const msg = h[lastAssistantIndex];
+
+        const existing = msg.articleContent;
+        const incomingDatasets = articles
+          .map((r) => r.articleContent)
+          .filter(Boolean);
+
+        if (incomingDatasets.length === 0) {
+          return;
+        }
+
+        let merged: LfArticleDataset;
+
+        if (!existing) {
+          if (incomingDatasets.length === 1) {
+            merged = incomingDatasets[0];
+          } else {
+            const [first, ...rest] = incomingDatasets;
+            merged = {
+              ...first,
+              nodes: [
+                ...(first.nodes ?? []),
+                ...rest.flatMap((ds) => ds.nodes ?? []),
+              ],
+            };
+          }
+        } else {
+          merged = {
+            ...existing,
+            nodes: [
+              ...(existing.nodes ?? []),
+              ...incomingDatasets.flatMap((ds) => ds.nodes ?? []),
+            ],
+          };
+        }
+
+        msg.articleContent = merged;
       }
     });
 

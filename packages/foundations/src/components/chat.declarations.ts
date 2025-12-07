@@ -63,6 +63,7 @@ export interface LfChatInterface
   handleImageAttachment: () => Promise<void>;
   refresh: () => Promise<void>;
   removeAttachment: (id: string) => Promise<void>;
+  retryConnection: () => Promise<void>;
   scrollToBottom: (block?: ScrollLogicalPosition | boolean) => Promise<void>;
   setHistory: (value: string, fromFile?: boolean) => Promise<void>;
   unmount: (ms?: number) => Promise<void>;
@@ -103,6 +104,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     editableMessage: (m: LfLLMChoiceMessage) => VNode;
     messageBlock: (text: string, role: LfLLMRole) => VNode;
     progressbar: () => VNode;
+    retry: () => VNode;
     send: () => VNode;
     settings: () => VNode;
     spinner: () => VNode;
@@ -172,6 +174,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     fileInput: HTMLInputElement | null;
     imageInput: HTMLInputElement | null;
     progressbar: LfProgressbarElement | null;
+    retry: LfButtonElement | null;
     send: LfButtonElement | null;
     settings: LfButtonElement | null;
     spinner: LfSpinnerElement | null;
@@ -215,6 +218,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   chat: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
     chip: (e: CustomEvent<LfChipEventPayload>) => void;
+    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
   settings: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;

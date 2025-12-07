@@ -261,6 +261,34 @@ export const prepChat = (
     },
     //#endregion
 
+    //#region Retry
+    retry: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { chat } = elements.refs;
+      const { button } = handlers.chat;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      const icon = get.current().variables["--lf-icon-refresh"];
+
+      return (
+        <lf-button
+          lfAriaLabel="Retry connection"
+          class={bemClass(blocks.chat._, blocks.chat.retry)}
+          data-cy={cyAttributes.button}
+          id={LF_CHAT_IDS.chat.retry}
+          lfIcon={icon}
+          lfStyling={"icon"}
+          onLf-button-event={button}
+          part={parts.retry}
+          ref={assignRef(chat, "retry")}
+          title="Retry connection to the server."
+        ></lf-button>
+      );
+    },
+    //#endregion
+
     //#region Send
     send: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -376,10 +404,11 @@ export const prepChat = (
 
     //#region Textarea
     textarea: () => {
-      const { controller, elements } = getAdapter();
+      const { controller, elements, handlers } = getAdapter();
       const { blocks, currentPrompt, cyAttributes, manager, parts } =
         controller.get;
       const { chat } = elements.refs;
+      const { textfield } = handlers.chat;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
@@ -392,6 +421,7 @@ export const prepChat = (
           lfLabel="What's on your mind?"
           lfStyling="textarea"
           lfUiState={currentPrompt() ? "disabled" : "primary"}
+          onLf-textfield-event={textfield}
           part={parts.prompt}
           ref={assignRef(chat, "textarea")}
         ></lf-textfield>

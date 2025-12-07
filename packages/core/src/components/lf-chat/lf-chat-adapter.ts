@@ -107,6 +107,7 @@ export const createRefs = (): LfChatAdapterRefs => {
       fileInput: null,
       imageInput: null,
       progressbar: null,
+      retry: null,
       send: null,
       settings: null,
       spinner: null,

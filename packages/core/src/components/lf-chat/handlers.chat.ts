@@ -29,42 +29,40 @@ export const prepChatHandlers = (
       switch (eventType) {
         case "click":
           switch (id) {
+            // Attach File
+            case LF_CHAT_IDS.chat.attachFile: {
+              await get.compInstance.handleFileAttachment();
+              break;
+            }
+
+            // Attach Image
+            case LF_CHAT_IDS.chat.attachImage: {
+              await get.compInstance.handleImageAttachment();
+              break;
+            }
+
             // Clear
             case LF_CHAT_IDS.chat.clear: {
               clearTextarea(adapter);
               set.currentAttachments([]);
               break;
             }
-            // Send
-            case LF_CHAT_IDS.chat.send: {
-              if (get.currentAbortStreaming()) {
-                comp.abortStreaming();
-              } else {
-                submitPrompt(adapter);
-              }
-              break;
-            }
+
             // Configuration
             case LF_CHAT_IDS.chat.configuration:
             case LF_CHAT_IDS.chat.settings: {
               set.view("settings");
               break;
             }
-            // STT
-            case LF_CHAT_IDS.chat.stt: {
-              llm.speechToText(textarea, stt);
+
+            // Edit Cancel
+            case LF_CHAT_IDS.chat.editCancel: {
+              const { controller } = adapter;
+              const { set } = controller;
+              set.currentEditingIndex(null);
               break;
             }
-            // Attach Image
-            case LF_CHAT_IDS.chat.attachImage: {
-              await get.compInstance.handleImageAttachment();
-              break;
-            }
-            // Attach File
-            case LF_CHAT_IDS.chat.attachFile: {
-              await get.compInstance.handleFileAttachment();
-              break;
-            }
+
             // Edit Confirm
             case LF_CHAT_IDS.chat.editConfirm: {
               try {
@@ -93,11 +91,26 @@ export const prepChatHandlers = (
               } catch (err) {}
               break;
             }
-            // Edit Cancel
-            case LF_CHAT_IDS.chat.editCancel: {
-              const { controller } = adapter;
-              const { set } = controller;
-              set.currentEditingIndex(null);
+
+            // Retry
+            case LF_CHAT_IDS.chat.retry: {
+              await comp.retryConnection();
+              break;
+            }
+
+            // Send
+            case LF_CHAT_IDS.chat.send: {
+              if (get.currentAbortStreaming()) {
+                comp.abortStreaming();
+              } else {
+                submitPrompt(adapter);
+              }
+              break;
+            }
+
+            // STT
+            case LF_CHAT_IDS.chat.stt: {
+              llm.speechToText(textarea, stt);
               break;
             }
           }
@@ -120,6 +133,29 @@ export const prepChatHandlers = (
           break;
         default:
           break;
+      }
+    },
+    //#endregion
+
+    //region Textarea
+    textfield: (e) => {
+      const adapter = getAdapter();
+      const { eventType, originalEvent } = e.detail;
+
+      switch (eventType) {
+        case "keydown":
+          const { ctrlKey, key } = originalEvent as KeyboardEvent;
+          switch (key) {
+            case "Enter":
+              if (ctrlKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                submitPrompt(adapter);
+              }
+              break;
+            default:
+              e.stopPropagation();
+          }
       }
     },
     //#endregion
