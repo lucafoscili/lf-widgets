@@ -81,8 +81,8 @@ export class LfAccordion implements LfAccordionInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() expandedNodes: Set<LfDataNode> = new Set();
-  @State() selectedNodes: Set<LfDataNode> = new Set();
+  @State() expandedNodeIds: Set<string> = new Set();
+  @State() selectedNodeIds: Set<string> = new Set();
   //#endregion
 
   //#region Props
@@ -107,6 +107,20 @@ export class LfAccordion implements LfAccordionInterface {
    * ```
    */
   @Prop({ mutable: true }) lfDataset: LfDataDataset = null;
+  /**
+   * IDs of nodes that should be expanded. When provided, the accordion will sync
+   * its internal expanded state with this array.
+   *
+   * @type {string[]}
+   * @default []
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-accordion lfExpanded={["node-1", "node-2"]}></lf-accordion>
+   * ```
+   */
+  @Prop({ mutable: true }) lfExpanded: string[] = [];
   /**
    * Indicates whether the ripple effect is enabled for the accordion component.
    *
@@ -221,12 +235,20 @@ export class LfAccordion implements LfAccordionInterface {
     return Object.fromEntries(entries);
   }
   /**
-   * Returns the selected nodes.
-   * @returns {Promise<LfDataNode[]>} Selected nodes.
+   * Returns the expanded node IDs.
+   * @returns {Promise<Set<string>>} Expanded node IDs.
    */
   @Method()
-  async getSelectedNodes(): Promise<Set<LfDataNode>> {
-    return this.selectedNodes;
+  async getExpandedNodes(): Promise<Set<string>> {
+    return this.expandedNodeIds;
+  }
+  /**
+   * Returns the selected node IDs.
+   * @returns {Promise<Set<string>>} Selected node IDs.
+   */
+  @Method()
+  async getSelectedNodes(): Promise<Set<string>> {
+    return this.selectedNodeIds;
   }
   /**
    * This method is used to trigger a new render of the component.
@@ -249,14 +271,15 @@ export class LfAccordion implements LfAccordionInterface {
 
     if (this.#isExpandible(node)) {
       if (this.#isExpanded(node)) {
-        this.expandedNodes.delete(node);
+        this.expandedNodeIds.delete(id);
       } else {
-        this.expandedNodes.add(node);
+        this.expandedNodeIds.add(id);
       }
+      this.onLfEvent(e || new CustomEvent("expand"), "expand");
     } else if (this.#isSelected(node)) {
-      this.selectedNodes.delete(node);
+      this.selectedNodeIds.delete(id);
     } else {
-      this.selectedNodes.add(node);
+      this.selectedNodeIds.add(id);
     }
 
     if (!this.#isExpandible(node)) {
@@ -280,13 +303,13 @@ export class LfAccordion implements LfAccordionInterface {
 
   //#region Private methods
   #isExpanded(node: LfDataNode) {
-    return this.expandedNodes.has(node);
+    return this.expandedNodeIds.has(node.id);
   }
   #isExpandible(node: LfDataNode) {
     return node.cells && Object.keys(node.cells).length > 0;
   }
   #isSelected(node: LfDataNode) {
-    return this.selectedNodes.has(node);
+    return this.selectedNodeIds.has(node.id);
   }
   #prepIcon(icon: LfIconType): VNode {
     const { theme } = this.#framework;
@@ -403,6 +426,15 @@ export class LfAccordion implements LfAccordionInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#syncExpandedFromProp();
+  }
+  componentWillUpdate() {
+    this.#syncExpandedFromProp();
+  }
+  #syncExpandedFromProp() {
+    if (this.lfExpanded?.length) {
+      this.expandedNodeIds = new Set(this.lfExpanded);
+    }
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;

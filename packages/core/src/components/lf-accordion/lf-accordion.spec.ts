@@ -126,15 +126,15 @@ describe("lf-accordion component", () => {
       await page.waitForChanges();
 
       // Initially not expanded
-      expect(component.expandedNodes.size).toBe(0);
+      expect(component.expandedNodeIds.size).toBe(0);
 
       // Expand
       await component.toggleNode("1");
-      expect(component.expandedNodes.size).toBe(1);
+      expect(component.expandedNodeIds.size).toBe(1);
 
       // Expand again (should collapse)
       await component.toggleNode("1");
-      expect(component.expandedNodes.size).toBe(0);
+      expect(component.expandedNodeIds.size).toBe(0);
     });
   });
 
@@ -290,7 +290,7 @@ describe("lf-accordion component", () => {
       await page.waitForChanges();
 
       // Initially not expanded
-      expect(component.expandedNodes.size).toBe(0);
+      expect(component.expandedNodeIds.size).toBe(0);
 
       // Click to expand
       const header = page.root.shadowRoot.querySelector(".node__header");
@@ -298,14 +298,14 @@ describe("lf-accordion component", () => {
       await page.waitForChanges();
 
       // Should be expanded now
-      expect(component.expandedNodes.size).toBe(1);
+      expect(component.expandedNodeIds.size).toBe(1);
 
       // Click again to collapse
       header.dispatchEvent(new MouseEvent("click", { bubbles: true }));
       await page.waitForChanges();
 
       // Should be collapsed
-      expect(component.expandedNodes.size).toBe(0);
+      expect(component.expandedNodeIds.size).toBe(0);
     });
 
     it("maintains selection state for non-expandable nodes", async () => {
@@ -317,7 +317,7 @@ describe("lf-accordion component", () => {
       await page.waitForChanges();
 
       // Initially not selected
-      expect(component.selectedNodes.size).toBe(0);
+      expect(component.selectedNodeIds.size).toBe(0);
 
       // Click to select
       const header = page.root.shadowRoot.querySelector(".node__header");
@@ -325,14 +325,14 @@ describe("lf-accordion component", () => {
       await page.waitForChanges();
 
       // Should be selected
-      expect(component.selectedNodes.size).toBe(1);
+      expect(component.selectedNodeIds.size).toBe(1);
 
       // Click again to deselect
       header.dispatchEvent(new MouseEvent("click", { bubbles: true }));
       await page.waitForChanges();
 
       // Should be deselected
-      expect(component.selectedNodes.size).toBe(0);
+      expect(component.selectedNodeIds.size).toBe(0);
     });
   });
 
@@ -347,8 +347,8 @@ describe("lf-accordion component", () => {
 
       // Should not throw or change state
       await component.toggleNode("invalid-id");
-      expect(component.selectedNodes.size).toBe(0);
-      expect(component.expandedNodes.size).toBe(0);
+      expect(component.selectedNodeIds.size).toBe(0);
+      expect(component.expandedNodeIds.size).toBe(0);
     });
 
     it("renders nodes with icons", async () => {

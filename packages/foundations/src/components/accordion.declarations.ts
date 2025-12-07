@@ -14,7 +14,9 @@ import { LF_ACCORDION_EVENTS } from "./accordion.constants";
  */
 export interface LfAccordionInterface
   extends LfComponent<"LfAccordion">,
-    LfAccordionPropsInterface {}
+    LfAccordionPropsInterface {
+  getExpandedNodes: () => Promise<Set<string>>;
+}
 /**
  * DOM element type for the custom element registered as `lf-accordion`.
  */
@@ -41,6 +43,7 @@ export interface LfAccordionEventPayload
  */
 export interface LfAccordionPropsInterface {
   lfDataset?: LfDataDataset;
+  lfExpanded?: string[];
   lfRipple?: boolean;
   lfStyle?: string;
   lfUiSize?: LfThemeUISize;

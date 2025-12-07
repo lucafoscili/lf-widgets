@@ -17,6 +17,7 @@ export const LF_ACCORDION_BLOCKS = {
 //#region Events
 export const LF_ACCORDION_EVENTS = [
   "click",
+  "expand",
   "lf-event",
   "pointerdown",
   "ready",
@@ -38,6 +39,7 @@ export const LF_ACCORDION_PARTS = {
 //#region Props
 export const LF_ACCORDION_PROPS = [
   "lfDataset",
+  "lfExpanded",
   "lfRipple",
   "lfStyle",
   "lfUiSize",
