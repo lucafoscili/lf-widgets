@@ -27,3 +27,6 @@ packages/core/tests/*.js
 
 packages/core/doc.json
 packages/core/doc.d.ts
+
+.claude/
+CLAUDE.md
