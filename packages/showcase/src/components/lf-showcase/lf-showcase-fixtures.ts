@@ -65,7 +65,6 @@ export const LF_SHOWCASE_COMPONENTS = (
     messages,
     notification,
     photo,
-    photoSearch,
     pictureInPictureTop,
     playstationCircle,
     progress,
@@ -76,6 +75,7 @@ export const LF_SHOWCASE_COMPONENTS = (
     squareToggle,
     toggleRight,
     upload,
+    wand,
     writing,
   } = icons;
 
@@ -198,12 +198,6 @@ export const LF_SHOWCASE_COMPONENTS = (
         value: "Image",
       },
       {
-        description: "A layout designed to display images.",
-        icon: photoSearch,
-        id: "Imageviewer",
-        value: "Image viewer",
-      },
-      {
         description: "A component that displays a list of items.",
         icon: list,
         id: "List",
@@ -262,6 +256,13 @@ export const LF_SHOWCASE_COMPONENTS = (
         icon: select,
         id: "Select",
         value: "Select",
+      },
+      {
+        description:
+          "A universal 4-panel explorer for interactive editing and preview of any shape type.",
+        icon: wand,
+        id: "Shapeeditor",
+        value: "Shape editor",
       },
       {
         description: "Simple component for selecting a range of values.",

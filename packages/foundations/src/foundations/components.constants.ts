@@ -16,7 +16,6 @@ import { LF_COMPARE_PROPS } from "../components/compare.constants";
 import { LF_DRAWER_PROPS } from "../components/drawer.constants";
 import { LF_HEADER_PROPS } from "../components/header.constants";
 import { LF_IMAGE_PROPS } from "../components/image.constants";
-import { LF_SHAPEEDITOR_PROPS } from "../components/shapeeditor.constants";
 import { LF_LIST_PROPS } from "../components/list.constants";
 import { LF_MASONRY_PROPS } from "../components/masonry.constants";
 import { LF_MESSENGER_PROPS } from "../components/messenger.constants";
@@ -26,6 +25,7 @@ import { LF_PLACEHOLDER_PROPS } from "../components/placeholder.constants";
 import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
 import { LF_RADIO_PROPS } from "../components/radio.constants";
 import { LF_SELECT_PROPS } from "../components/select.constants";
+import { LF_SHAPEEDITOR_PROPS } from "../components/shapeeditor.constants";
 import { LF_SLIDER_PROPS } from "../components/slider.constants";
 import { LF_SNACKBAR_PROPS } from "../components/snackbar.constants";
 import { LF_SPINNER_PROPS } from "../components/spinner.constants";
@@ -176,7 +176,6 @@ export const getComponentProps = (): {
     LfDrawer: LF_DRAWER_PROPS,
     LfHeader: LF_HEADER_PROPS,
     LfImage: LF_IMAGE_PROPS,
-    LfShapeeditor: LF_SHAPEEDITOR_PROPS,
     LfList: LF_LIST_PROPS,
     LfMasonry: LF_MASONRY_PROPS,
     LfMessenger: LF_MESSENGER_PROPS,
@@ -186,6 +185,7 @@ export const getComponentProps = (): {
     LfProgressbar: LF_PROGRESSBAR_PROPS,
     LfRadio: LF_RADIO_PROPS,
     LfSelect: LF_SELECT_PROPS,
+    LfShapeeditor: LF_SHAPEEDITOR_PROPS,
     LfSlider: LF_SLIDER_PROPS,
     LfSnackbar: LF_SNACKBAR_PROPS,
     LfSpinner: LF_SPINNER_PROPS,

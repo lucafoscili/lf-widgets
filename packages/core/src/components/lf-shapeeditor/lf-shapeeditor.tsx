@@ -12,9 +12,10 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfMasonrySelectedShape,
-  LfPlaygroundControlConfig,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterRefs,
+  LfShapeeditorConfigSettings,
+  LfShapeeditorControlConfig,
   LfShapeeditorElement,
   LfShapeeditorEvent,
   LfShapeeditorEventPayload,
@@ -44,6 +45,7 @@ import {
   clearHistory,
   clearSelection,
   newShape,
+  parseConfigDslFromNode,
   updateValue,
 } from "./helpers.utils";
 import { createAdapter } from "./lf-shapeeditor-adapter";
@@ -123,7 +125,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   /**
    * Declarative control definitions driving the configuration panel.
    */
-  @State() configControls: LfPlaygroundControlConfig[] = [];
+  @State() configControls: LfShapeeditorControlConfig[] = [];
   /**
    * Optional layout describing how controls are grouped.
    */
@@ -131,7 +133,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   /**
    * Current settings values derived from the active controls.
    */
-  @State() configSettings: Record<string, unknown> = {};
+  @State() configSettings: LfShapeeditorConfigSettings = {};
+  /**
+   * IDs of expanded accordion groups in the settings panel.
+   */
+  @State() expandedSettingsGroups: string[] = [];
   //#endregion
 
   //#region Props
@@ -329,6 +335,14 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     return Object.fromEntries(entries);
   }
   /**
+   * Returns the current configuration settings.
+   * @returns {Promise<LfShapeeditorConfigSettings>} The current settings object.
+   */
+  @Method()
+  async getSettings(): Promise<LfShapeeditorConfigSettings> {
+    return { ...this.configSettings };
+  }
+  /**
    * This method is used to trigger a new render of the component.
    */
   @Method()
@@ -342,6 +356,22 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   async reset(): Promise<void> {
     await clearHistory(this.#adapter);
     await clearSelection(this.#adapter);
+  }
+  /**
+   * Updates the configuration settings programmatically.
+   * @param {LfShapeeditorConfigSettings} settings - The settings to merge or replace.
+   * @param {boolean} replace - If true, replaces all settings; if false, merges with existing.
+   */
+  @Method()
+  async setSettings(
+    settings: LfShapeeditorConfigSettings,
+    replace: boolean = false,
+  ): Promise<void> {
+    if (replace) {
+      this.configSettings = { ...settings };
+    } else {
+      this.configSettings = { ...this.configSettings, ...settings };
+    }
   }
   /**
    * Displays/hides the spinner over the preview.
@@ -371,6 +401,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         compInstance: this,
         config: {
           controls: () => this.configControls,
+          expandedGroups: () => this.expandedSettingsGroups,
           layout: () => this.configLayout,
           settings: () => this.configSettings,
         },
@@ -405,11 +436,14 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           controls: (controls) => {
             this.configControls = controls || [];
           },
+          expandedGroups: (groups) => {
+            this.expandedSettingsGroups = groups || [];
+          },
           layout: (layout) => {
             this.configLayout = layout;
           },
           settings: (settings) => {
-            this.configSettings = { ...settings };
+            this.configSettings = { ...(settings || {}) };
           },
         },
         currentShape: (node) => (this.currentShape = node),
@@ -565,6 +599,19 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     this.#initAdapter();
     if (this.#adapter.controller.get.navigation.hasNav()) {
       this.isNavigationTreeOpen = true;
+    }
+
+    // Initialise configuration DSL from the first matching node in lfValue, if present.
+    const { data } = this.#framework;
+    const { find } = data.node;
+    const nodeWithDsl = find(this.lfValue, (n) =>
+      Boolean((n as any).cells && "lfCode" in (n as any).cells),
+    );
+    const dsl = parseConfigDslFromNode(nodeWithDsl as any);
+    if (dsl) {
+      this.configControls = dsl.controls || [];
+      this.configLayout = dsl.layout;
+      this.configSettings = dsl.defaultSettings || {};
     }
   }
   componentDidLoad() {

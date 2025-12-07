@@ -1,5 +1,6 @@
 import {
   IDS,
+  LfAccordionEventPayload,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterHandlers,
 } from "@lf-widgets/foundations";
@@ -18,6 +19,22 @@ export const prepDetailsHandlers = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterHandlers["details"] => {
   return {
+    //#region Accordion
+    accordionToggle: async (e) => {
+      const { eventType } = e.detail;
+
+      if (eventType !== "expand") {
+        return;
+      }
+
+      const adapter = getAdapter();
+      const accordion = (e.detail as LfAccordionEventPayload).comp;
+      const expanded = await accordion.getExpandedNodes();
+
+      adapter.controller.set.config.expandedGroups(Array.from(expanded));
+    },
+    //#endregion
+
     //#region Button
     button: async (e) => {
       const { comp, eventType, id } = e.detail;
@@ -69,26 +86,23 @@ export const prepDetailsHandlers = (
     //#region Tree
     tree: (e) => {
       const adapter = getAdapter();
-      const { compInstance, manager } = adapter.controller.get;
-
+      const { compInstance } = adapter.controller.get;
       const comp = compInstance as LfShapeeditor;
 
-      const { data } = manager;
-      const { find } = data.node;
-      const { lfValue } = compInstance;
-      const { node } = e.detail;
+      const { eventType, node } = e.detail;
 
-      if (node.id) {
-        const node = find(lfValue, (n) => n.id === node.id);
-        const dsl = parseConfigDslFromNode(node as any);
+      switch (eventType) {
+        case "click":
+          const dsl = parseConfigDslFromNode(node);
 
-        if (dsl) {
-          const { set } = adapter.controller;
+          if (dsl) {
+            const { set } = adapter.controller;
 
-          set.config.controls(dsl.controls || []);
-          set.config.layout(dsl.layout);
-          set.config.settings(dsl.defaultSettings || {});
-        }
+            set.config.controls(dsl.controls || []);
+            set.config.layout(dsl.layout);
+            set.config.settings(dsl.defaultSettings || {});
+          }
+          break;
       }
 
       comp.onLfEvent(e, "lf-event");
@@ -104,7 +118,7 @@ export const prepDetailsHandlers = (
 
       const currentSettings = {
         ...(config?.settings?.() || {}),
-        [controlId]: value,
+        [controlId]: value as string | number | boolean,
       };
 
       adapter.controller.set.config.settings(currentSettings);

@@ -20,13 +20,13 @@ import {
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
+import { LfAccordionEventPayload } from "./accordion.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LfMasonryElement,
   LfMasonryEventPayload,
   LfMasonrySelectedShape,
 } from "./masonry.declarations";
-import { LfPlaygroundControlConfig } from "./playground.declarations";
 import {
   LF_SHAPEEDITOR_BLOCKS,
   LF_SHAPEEDITOR_EVENTS,
@@ -139,6 +139,7 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
 export interface LfShapeeditorAdapterHandlers
   extends LfComponentAdapterHandlers {
   details: {
+    accordionToggle: (e: CustomEvent<LfAccordionEventPayload>) => Promise<void>;
     button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
     controlChange: (
       e: CustomEvent | Event,
@@ -188,9 +189,10 @@ export interface LfShapeeditorAdapterControllerGetters
   blocks: typeof LF_SHAPEEDITOR_BLOCKS;
   compInstance: LfShapeeditorInterface;
   config: {
-    controls: () => LfPlaygroundControlConfig[];
+    controls: () => LfShapeeditorControlConfig[];
+    expandedGroups: () => string[];
     layout: () => LfShapeeditorLayout | undefined;
-    settings: () => Record<string, unknown>;
+    settings: () => LfShapeeditorConfigSettings;
   };
   currentShape: () => { shape: LfMasonrySelectedShape; value: string };
   cyAttributes: typeof CY_ATTRIBUTES;
@@ -215,9 +217,10 @@ export interface LfShapeeditorAdapterControllerGetters
 export interface LfShapeeditorAdapterControllerSetters
   extends LfComponentAdapterSetters {
   config: {
-    controls: (controls: LfPlaygroundControlConfig[]) => void;
+    controls: (controls: LfShapeeditorControlConfig[]) => void;
+    expandedGroups: (groups: string[]) => void;
     layout: (layout?: LfShapeeditorLayout) => void;
-    settings: (settings: Record<string, unknown>) => void;
+    settings: (settings: LfShapeeditorConfigSettings) => void;
   };
   currentShape: (node: LfMasonrySelectedShape) => void;
   history: {
@@ -251,12 +254,144 @@ export type LfShapeeditorHistory = {
 };
 
 /**
+ * Primitive value supported by shapeeditor configuration controls.
+ */
+export type LfShapeeditorControlValue = string | number | boolean;
+
+/**
+ * Settings map for a configuration context, keyed by control id.
+ */
+export type LfShapeeditorConfigSettings = Record<
+  string,
+  LfShapeeditorControlValue
+>;
+
+/**
+ * Control types supported in shapeeditor configuration panels.
+ */
+export type LfShapeeditorControlType =
+  | "checkbox"
+  | "colorpicker"
+  | "multiinput"
+  | "number"
+  | "select"
+  | "slider"
+  | "textfield"
+  | "toggle";
+
+/**
+ * Base configuration for a shapeeditor control.
+ */
+export interface LfShapeeditorControlConfigBase<
+  T extends LfShapeeditorControlType,
+> {
+  /** Unique control identifier. */
+  id: string;
+  /** Control type discriminator. */
+  type: T;
+  /** Display label for the control. */
+  label: string;
+  /** Optional description/tooltip for the control. */
+  description?: string;
+}
+
+/**
+ * Checkbox control configuration.
+ */
+export interface LfShapeeditorCheckboxConfig
+  extends LfShapeeditorControlConfigBase<"checkbox"> {
+  defaultValue: boolean;
+}
+
+/**
+ * Multiinput control configuration.
+ */
+export interface LfShapeeditorMultiinputConfig
+  extends LfShapeeditorControlConfigBase<"multiinput"> {
+  defaultValue: string;
+  placeholder?: string;
+}
+
+/**
+ * Slider control configuration.
+ */
+export interface LfShapeeditorSliderConfig
+  extends LfShapeeditorControlConfigBase<"slider"> {
+  min: number;
+  max: number;
+  step: number;
+  defaultValue: number;
+  /** Optional unit suffix (e.g., "px", "%", "ms"). */
+  unit?: string;
+}
+
+/**
+ * Toggle control configuration.
+ */
+export interface LfShapeeditorToggleConfig
+  extends LfShapeeditorControlConfigBase<"toggle"> {
+  defaultValue: boolean;
+}
+
+/**
+ * Textfield control configuration.
+ */
+export interface LfShapeeditorTextfieldConfig
+  extends LfShapeeditorControlConfigBase<"textfield"> {
+  defaultValue: string;
+  placeholder?: string;
+  pattern?: string;
+}
+
+/**
+ * Colorpicker control configuration.
+ */
+export interface LfShapeeditorColorpickerConfig
+  extends LfShapeeditorControlConfigBase<"colorpicker"> {
+  defaultValue: string;
+  swatches?: string[];
+}
+
+/**
+ * Select control configuration.
+ */
+export interface LfShapeeditorSelectConfig
+  extends LfShapeeditorControlConfigBase<"select"> {
+  options: Array<{ value: string; label: string }>;
+  defaultValue: string;
+}
+
+/**
+ * Number control configuration.
+ */
+export interface LfShapeeditorNumberConfig
+  extends LfShapeeditorControlConfigBase<"number"> {
+  min?: number;
+  max?: number;
+  step?: number;
+  defaultValue: number;
+}
+
+/**
+ * Union of all control configurations.
+ */
+export type LfShapeeditorControlConfig =
+  | LfShapeeditorCheckboxConfig
+  | LfShapeeditorColorpickerConfig
+  | LfShapeeditorMultiinputConfig
+  | LfShapeeditorNumberConfig
+  | LfShapeeditorSelectConfig
+  | LfShapeeditorSliderConfig
+  | LfShapeeditorTextfieldConfig
+  | LfShapeeditorToggleConfig;
+
+/**
  * Layout group used to organise configuration controls into accordion sections.
  */
 export interface LfShapeeditorLayoutGroup {
-  icon?: LfIconType;
   id: string;
   label: string;
+  icon?: LfIconType;
   controlIds: string[];
 }
 /**
@@ -269,8 +404,8 @@ export type LfShapeeditorLayout = LfShapeeditorLayoutGroup[];
  * Consumers provide control definitions and optional layout + defaults.
  */
 export interface LfShapeeditorConfigDsl {
-  controls: LfPlaygroundControlConfig[];
-  defaultSettings?: Record<string, unknown>;
+  controls: LfShapeeditorControlConfig[];
+  defaultSettings?: LfShapeeditorConfigSettings;
   layout?: LfShapeeditorLayout;
 }
 //#endregion

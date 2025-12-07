@@ -280,11 +280,15 @@ export const parseConfigDslFromNode = (
   }
 
   try {
-    const parsed = JSON.parse(cell.value) as LfShapeeditorConfigDsl;
+    const parsed = JSON.parse(cell.value) as Partial<LfShapeeditorConfigDsl>;
     if (!parsed || !Array.isArray(parsed.controls)) {
       return null;
     }
-    return parsed;
+    return {
+      controls: parsed.controls,
+      layout: parsed.layout,
+      defaultSettings: parsed.defaultSettings || {},
+    };
   } catch {
     return null;
   }

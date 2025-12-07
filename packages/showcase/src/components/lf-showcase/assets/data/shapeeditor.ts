@@ -6,7 +6,6 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
-  LfPlaygroundEffectDefinition,
   LfShapeeditorConfigDsl,
   LfShapeeditorLoadCallback,
 } from "@lf-widgets/foundations";
@@ -14,6 +13,7 @@ import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { LfShowcaseComponentFixture } from "../../lf-showcase-declarations";
+import { SPOTLIGHT_EFFECT } from "./effects";
 
 const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
 const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
@@ -26,64 +26,31 @@ export const getShapeeditorFixtures = (
 ): LfShowcaseComponentFixture<"lf-shapeeditor"> => {
   const { get } = framework.assets;
 
-  const spotlightEffect: LfPlaygroundEffectDefinition = {
-    id: "spotlight",
-    name: "Spotlight",
-    description: "Simple spotlight controls mapped through DSL.",
-    icon: "lightbulb",
-    defaultSettings: {
-      intensity: 0.8,
-      angle: 45,
-    },
-    presets: [],
-    controls: [
-      {
-        id: "intensity",
-        type: "slider",
-        label: "Intensity",
-        description: "Overall brightness of the spotlight beam",
-        min: 0,
-        max: 1,
-        step: 0.05,
-        defaultValue: 0.8,
-        unit: "",
-      },
-      {
-        id: "angle",
-        type: "slider",
-        label: "Beam Angle",
-        description: "Spread angle of the spotlight in degrees",
-        min: 10,
-        max: 90,
-        step: 5,
-        defaultValue: 45,
-        unit: "°",
-      },
-      {
-        id: "followPointer",
-        type: "toggle",
-        label: "Follow Pointer",
-        description: "Enable pointer tracking",
-        defaultValue: false,
-      },
-    ],
-  };
-
   const spotlightDsl: LfShapeeditorConfigDsl = {
-    controls: spotlightEffect.controls,
+    controls: SPOTLIGHT_EFFECT.controls,
     layout: [
       {
         id: "beam",
         label: "Beam",
-        controlIds: ["intensity", "angle"],
+        controlIds: ["beam", "color", "angle", "intensity", "originX"],
+      },
+      {
+        id: "surface",
+        label: "Surface",
+        controlIds: ["surfaceGlow", "surfaceGlowIntensity"],
       },
       {
         id: "behaviour",
         label: "Behaviour",
-        controlIds: ["followPointer"],
+        controlIds: ["followPointer", "sway", "swayAmplitude", "swayDuration"],
+      },
+      {
+        id: "trigger",
+        label: "Trigger & Timing",
+        controlIds: ["trigger", "fadeInDuration", "fadeOutDuration"],
       },
     ],
-    defaultSettings: spotlightEffect.defaultSettings,
+    defaultSettings: SPOTLIGHT_EFFECT.defaultSettings,
   };
 
   //#region mock data
@@ -498,6 +465,44 @@ def calculate_statistics(data: List[float]) -> dict:
     ],
   };
 
+  const effectsDataset: LfDataDataset = {
+    nodes: [
+      {
+        cells: {
+          lfImage: {
+            lfValue: "settings",
+            shape: "image",
+            value: "",
+          },
+        },
+        id: "spotlight_0",
+        value: "Spotlight",
+      },
+    ],
+  };
+
+  const effectsSettingsDataset: LfDataDataset = {
+    nodes: [
+      {
+        id: "effects",
+        value: "Effects",
+        icon: "settings",
+        children: [
+          {
+            cells: {
+              lfCode: {
+                shape: "code",
+                value: JSON.stringify(spotlightDsl),
+              },
+            },
+            id: "spotlight",
+            value: "Spotlight",
+          },
+        ],
+      },
+    ],
+  };
+
   const data: { [index: string]: LfDataDataset } = {
     canvasDataset,
     canvasSettingsDataset,
@@ -505,21 +510,8 @@ def calculate_statistics(data: List[float]) -> dict:
     chartSettingsDataset,
     codeDataset,
     codeSettingsDataset,
-    effectsDataset: {
-      nodes: [
-        {
-          cells: {
-            lfImage: {
-              lfValue: "settings",
-              shape: "image",
-              value: "",
-            },
-          },
-          id: "spotlight_0",
-          value: "Spotlight",
-        },
-      ],
-    },
+    effectsDataset,
+    effectsSettingsDataset,
   };
   //#endregion
 

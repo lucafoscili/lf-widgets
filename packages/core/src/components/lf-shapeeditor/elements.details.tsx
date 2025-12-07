@@ -1,10 +1,11 @@
 import {
   IDS,
   LfDataCell,
+  LfDataDataset,
   LfDataShapes,
-  LfPlaygroundControlConfig,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterJsx,
+  LfShapeeditorControlConfig,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
@@ -276,11 +277,12 @@ export const prepDetails = (
       const { controller, elements, handlers } = getAdapter();
       const { blocks, config, manager } = controller.get;
       const { details } = elements.refs;
-      const { controlChange } = handlers.details;
+      const { accordionToggle, controlChange } = handlers.details;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
       const controls = config?.controls?.() || [];
+      const expandedGroups = config?.expandedGroups?.() || [];
       const layout = config?.layout?.();
       const settings = config?.settings?.() || {};
 
@@ -312,26 +314,41 @@ export const prepDetails = (
               },
             ];
 
-      const renderControl = (config: LfPlaygroundControlConfig): VNode =>
+      const renderControl = (config: LfShapeeditorControlConfig): VNode =>
         createControl(config, settings[config.id], (e, id, value) =>
           controlChange(e, id, value),
         );
 
+      const accordionDataset: LfDataDataset = {
+        nodes: groupedControls.map((group) => ({
+          id: group.id,
+          value: group.label,
+          cells: {
+            lfSlot: {
+              shape: "slot",
+              value: group.id,
+            },
+          },
+        })),
+      };
+
       return (
-        <lf-accordion
+        <div
           class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.settings)}
           ref={assignRef(details, "settings")}
         >
-          {groupedControls.map((group) => (
-            <lf-accordion-item
-              key={group.id}
-              lfLabel={group.label}
-              lfOpen={true}
-            >
-              {group.controls.map(renderControl)}
-            </lf-accordion-item>
-          ))}
-        </lf-accordion>
+          <lf-accordion
+            lfDataset={accordionDataset}
+            lfExpanded={expandedGroups}
+            onLf-accordion-event={accordionToggle}
+          >
+            {groupedControls.map((group) => (
+              <div key={group.id} slot={group.id}>
+                {group.controls.map(renderControl)}
+              </div>
+            ))}
+          </lf-accordion>
+        </div>
       );
     },
     // #endregion
@@ -340,13 +357,54 @@ export const prepDetails = (
 
 //#region Helpers
 const createControl = (
-  config: LfPlaygroundControlConfig,
+  config: LfShapeeditorControlConfig,
   currentValue: unknown,
-  onChange: (e: CustomEvent | Event, controlId: string, value: unknown) => void,
+  onChange: (
+    e: CustomEvent | Event,
+    controlId: string,
+    value: string | number | boolean,
+  ) => void,
 ): VNode => {
   const value = currentValue ?? getDefaultValue(config);
 
   switch (config.type) {
+    case "checkbox":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-checkbox
+            lfLabel={config.label}
+            lfValue={value as boolean}
+            onLf-checkbox-event={(e) => {
+              if (e.detail.eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-checkbox>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "multiinput":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-multiinput
+            lfTextfieldProps={{
+              lfLabel: config.label,
+              lfHtmlAttributes: config.placeholder
+                ? { placeholder: config.placeholder }
+                : undefined,
+            }}
+            lfValue={value as string}
+            onLf-multiinput-event={(e) => {
+              if (e.detail.eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-multiinput>
+          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
     case "slider":
       return (
         <div key={config.id} class="control-item">
@@ -457,16 +515,20 @@ const createControl = (
   }
 };
 
-const getDefaultValue = (config: LfPlaygroundControlConfig): unknown => {
+const getDefaultValue = (
+  config: LfShapeeditorControlConfig,
+): string | number | boolean | null => {
   switch (config.type) {
-    case "slider":
-    case "number":
-      return config.defaultValue;
+    case "checkbox":
     case "toggle":
       return config.defaultValue;
-    case "textfield":
     case "colorpicker":
+    case "multiinput":
     case "select":
+    case "textfield":
+      return config.defaultValue;
+    case "number":
+    case "slider":
       return config.defaultValue;
     default:
       return null;
