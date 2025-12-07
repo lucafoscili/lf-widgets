@@ -121,6 +121,16 @@ Type: `Promise<LfShapeeditorPropsInterface>`
 
 Promise resolved with an object containing the component's properties.
 
+### `getSettings() => Promise<LfShapeeditorConfigSettings>`
+
+Returns the current configuration settings.
+
+#### Returns
+
+Type: `Promise<LfShapeeditorConfigSettings>`
+
+The current settings object.
+
 ### `refresh() => Promise<void>`
 
 This method is used to trigger a new render of the component.
@@ -134,6 +144,23 @@ Type: `Promise<void>`
 ### `reset() => Promise<void>`
 
 Clears the full history and clears the current selection.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setSettings(settings: LfShapeeditorConfigSettings, replace?: boolean) => Promise<void>`
+
+Updates the configuration settings programmatically.
+
+#### Parameters
+
+| Name       | Type                                          | Description                                                       |
+| ---------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| `settings` | `{ [x: string]: LfShapeeditorControlValue; }` | - The settings to merge or replace.                               |
+| `replace`  | `boolean`                                     | - If true, replaces all settings; if false, merges with existing. |
 
 #### Returns
 
@@ -195,6 +222,8 @@ Type: `Promise<void>`
 - [lf-spinner](../lf-spinner)
 - [lf-tree](../lf-tree)
 - [lf-accordion](../lf-accordion)
+- [lf-checkbox](../lf-checkbox)
+- [lf-multiinput](../lf-multiinput)
 - [lf-slider](../lf-slider)
 - [lf-toggle](../lf-toggle)
 - [lf-textfield](../lf-textfield)
@@ -220,6 +249,8 @@ graph TD;
   lf-shapeeditor --> lf-spinner
   lf-shapeeditor --> lf-tree
   lf-shapeeditor --> lf-accordion
+  lf-shapeeditor --> lf-checkbox
+  lf-shapeeditor --> lf-multiinput
   lf-shapeeditor --> lf-slider
   lf-shapeeditor --> lf-toggle
   lf-shapeeditor --> lf-textfield
@@ -317,6 +348,8 @@ graph TD;
   lf-article --> lf-upload
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-multiinput --> lf-chip
+  lf-multiinput --> lf-textfield
   lf-select --> lf-list
   lf-select --> lf-textfield
   lf-masonry --> lf-accordion

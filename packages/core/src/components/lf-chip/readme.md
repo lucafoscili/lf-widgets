@@ -147,6 +147,7 @@ Type: `Promise<void>`
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-multiinput](../lf-multiinput)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Graph
@@ -162,6 +163,7 @@ graph TD;
   lf-masonry --> lf-chip
   lf-messenger --> lf-chip
   lf-multiinput --> lf-chip
+  lf-shapeeditor --> lf-chip
   lf-tree --> lf-chip
   style lf-chip fill:#f9f,stroke:#333,stroke-width:4px
 ```

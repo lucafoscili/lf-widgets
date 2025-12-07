@@ -170,6 +170,10 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [lf-shapeeditor](../lf-shapeeditor)
+
 ### Depends on
 
 - [lf-chip](../lf-chip)
@@ -180,6 +184,7 @@ Type: `Promise<void>`
 graph TD;
   lf-multiinput --> lf-chip
   lf-multiinput --> lf-textfield
+  lf-shapeeditor --> lf-multiinput
   style lf-multiinput fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

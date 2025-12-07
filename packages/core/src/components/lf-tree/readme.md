@@ -177,7 +177,7 @@ Type: `Promise<void>`
 ### Used by
 
  - [lf-compare](../lf-compare)
- - [lf-imageviewer](../lf-imageviewer)
+ - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Depends on
 
@@ -282,7 +282,7 @@ graph TD;
   lf-code --> lf-button
   lf-photoframe --> lf-image
   lf-compare --> lf-tree
-  lf-imageviewer --> lf-tree
+  lf-shapeeditor --> lf-tree
   style lf-tree fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

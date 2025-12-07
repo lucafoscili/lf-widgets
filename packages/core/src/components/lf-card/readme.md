@@ -114,6 +114,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Depends on
@@ -161,6 +162,7 @@ graph TD;
   lf-carousel --> lf-card
   lf-compare --> lf-card
   lf-masonry --> lf-card
+  lf-shapeeditor --> lf-card
   lf-tree --> lf-card
   style lf-card fill:#f9f,stroke:#333,stroke-width:4px
 ```

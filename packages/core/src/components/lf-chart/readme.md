@@ -104,6 +104,8 @@ Type: `Promise<void>`
 | `--lf-chart-color-on-bg` | Sets the color-on-bg color for the chart component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-chart-font-family` | Sets the primary font family for the chart component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-chart-font-size`   | Sets the font size for the chart component. Defaults to => var(--lf-font-size)                     |
+| `--lf-chart-min-height`  | Sets the minimum height for the chart component. Defaults to => var(--lf_chart_height, 100%)       |
+| `--lf-chart-min-width`   | Sets the minimum width for the chart component. Defaults to => var(--lf_chart_width, 100%)         |
 
 
 ## Dependencies
@@ -117,6 +119,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Graph
@@ -129,6 +132,7 @@ graph TD;
   lf-carousel --> lf-chart
   lf-compare --> lf-chart
   lf-masonry --> lf-chart
+  lf-shapeeditor --> lf-chart
   lf-tree --> lf-chart
   style lf-chart fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -135,6 +135,19 @@ Type: `Promise<void>`
 | `--lf-slider-value-bottom-position` | Sets the bottom position for the slider component's value. Defaults to => -3em                                                                   |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-shapeeditor](../lf-shapeeditor)
+
+### Graph
+```mermaid
+graph TD;
+  lf-shapeeditor --> lf-slider
+  style lf-slider fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

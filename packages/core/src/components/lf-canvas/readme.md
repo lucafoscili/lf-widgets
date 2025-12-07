@@ -207,8 +207,8 @@ Type: `Promise<void>`
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
- - [lf-imageviewer](../lf-imageviewer)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Depends on
@@ -225,8 +225,8 @@ graph TD;
   lf-card --> lf-canvas
   lf-carousel --> lf-canvas
   lf-compare --> lf-canvas
-  lf-imageviewer --> lf-canvas
   lf-masonry --> lf-canvas
+  lf-shapeeditor --> lf-canvas
   lf-tree --> lf-canvas
   style lf-canvas fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -23,7 +23,7 @@ import { getEffectsFixtures } from "../assets/data/effects";
 import { getFrameworkFixtures } from "../assets/data/framework";
 import { getHeaderFixtures } from "../assets/data/header";
 import { getImageFixtures } from "../assets/data/image";
-import { getImageviewerFixtures } from "../assets/data/imageviewer";
+import { getShapeeditorFixtures } from "../assets/data/shapeeditor";
 import { getListFixtures } from "../assets/data/list";
 import { getLlmFixtures } from "../assets/data/llm";
 import { getMasonryFixtures } from "../assets/data/masonry";
@@ -92,8 +92,8 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
       return getHeaderFixtures(showcase);
     case "lf-image":
       return getImageFixtures(framework);
-    case "lf-imageviewer":
-      return getImageviewerFixtures(framework);
+    case "lf-shapeeditor":
+      return getShapeeditorFixtures(framework);
     case "lf-list":
       return getListFixtures(framework);
     case "lf-masonry":

@@ -127,6 +127,10 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [lf-shapeeditor](../lf-shapeeditor)
+
 ### Depends on
 
 - [lf-list](../lf-list)
@@ -138,6 +142,7 @@ graph TD;
   lf-select --> lf-list
   lf-select --> lf-textfield
   lf-list --> lf-textfield
+  lf-shapeeditor --> lf-select
   style lf-select fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

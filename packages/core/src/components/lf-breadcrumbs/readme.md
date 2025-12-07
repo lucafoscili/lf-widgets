@@ -42,7 +42,7 @@ Key features include:
 
 | Event                  | Description | Type                                                                                                                                                     |
 | ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lf-breadcrumbs-event` |             | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount" \| "expand"> & LfBreadcrumbsEventArguments>` |
+| `lf-breadcrumbs-event` |             | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "expand" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount"> & LfBreadcrumbsEventArguments>` |
 
 
 ## Methods

@@ -169,9 +169,9 @@ Type: `Promise<void>`
  - [lf-chat](../lf-chat)
  - [lf-code](../lf-code)
  - [lf-compare](../lf-compare)
- - [lf-imageviewer](../lf-imageviewer)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tabbar](../lf-tabbar)
  - [lf-tree](../lf-tree)
 
@@ -194,9 +194,9 @@ graph TD;
   lf-chat --> lf-button
   lf-code --> lf-button
   lf-compare --> lf-button
-  lf-imageviewer --> lf-button
   lf-masonry --> lf-button
   lf-messenger --> lf-button
+  lf-shapeeditor --> lf-button
   lf-tabbar --> lf-button
   lf-tree --> lf-button
   style lf-button fill:#f9f,stroke:#333,stroke-width:4px
