@@ -60,7 +60,12 @@ export interface LfShapeeditorInterface
     shape: LfMasonrySelectedShape;
     value: string;
   }>;
+  getSettings: () => Promise<LfShapeeditorConfigSettings>;
   reset: () => Promise<void>;
+  setSettings: (
+    settings: LfShapeeditorConfigSettings,
+    replace?: boolean,
+  ) => Promise<void>;
   setSpinnerStatus: (status: boolean) => Promise<void>;
 }
 /**

@@ -1661,6 +1661,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "(id: string) => Promise<void>",
       },
       {
+        name: "retryConnection",
+        docs: "",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
         name: "scrollToBottom",
         docs: 'Scrolls the chat message list to the bottom.\n\nThe method first checks the component controller status via this.#adapter.controller.get;\nif the controller is not in the "ready" state the method returns early without performing any scrolling.\n\nBehavior:\n- If blockOrScroll === true, performs a passive scroll of the messages container by calling\n  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).\n  This path is intended for initial loads where a container-level scroll is sufficient.\n- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })\n  to bring the last message element into view for active user interactions. The block argument is\n  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").\n\nNotes:\n- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling\n  animation to complete; the promise resolves after issuing the scroll command.\n- If the messages container or last message element is not present, the corresponding scroll call\n  is a no-op.\n- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend\n  to use scrollIntoView should pass a valid ScrollLogicalPosition value.',
         returns: {
@@ -1722,10 +1731,6 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
     styles: [
-      {
-        name: "--lf-chat-article-margin-top",
-        docs: "Sets the top margin for lf-article content rendered inside messages. Defaults to => 0.75em",
-      },
       {
         name: "--lf-chat-attachments-padding",
         docs: "Sets the attachments padding for the chat component. Defaults to => 0 1em",

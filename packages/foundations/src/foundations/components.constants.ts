@@ -113,27 +113,12 @@ export const LF_STATE_ATTRIBUTES = {
   warning: "warning",
 } as const;
 /**
- * @deprecated Use LF_EFFECT_ATTRIBUTES, LF_UTILITY_ATTRIBUTES, or LF_STATE_ATTRIBUTES instead.
- * Kept for backward compatibility during migration.
- *
  * Shared set of boolean host attributes that influence component styling or behaviour.
  * Centralises attribute names so adapters and components avoid hard-coding strings.
- *
- * NOTE: For effects (neonGlow, tilt, ripple), components should use the dataset API
- * directly (e.g., element.dataset.lfNeonGlow) for hierarchical composability.
- * The values here maintain backward compatibility for components still using data-lf="...".
  */
 export const LF_ATTRIBUTES = {
-  // Utilities (mutually exclusive, data-lf="value")
   ...LF_UTILITY_ATTRIBUTES,
-  // States (semantic colors, data-lf="value")
   ...LF_STATE_ATTRIBUTES,
-  // Backward compat: old effect names for data-lf="value" pattern
-  // Components should migrate to dataset API for composability
-  neonGlow: "neon-glow",
-  neonGlowReflection: "neon-glow-reflection",
-  ripple: "ripple",
-  tilt: "tilt",
 } as const;
 /**
  * DOM id assigned to the global `<style>` element injected by the runtime.
