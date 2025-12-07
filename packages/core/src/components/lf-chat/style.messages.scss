@@ -5,7 +5,7 @@ $comp: null !default;
 
 .messages {
   & {
-    --lf-article-padding: 0.75em 0;
+    --lf-article-padding: 0 0.75em 1em 0.75em;
 
     align-content: start;
     box-sizing: border-box;
@@ -93,15 +93,6 @@ $comp: null !default;
     max-width: 100%;
     padding: 0.75em;
     white-space: pre-line;
-
-    lf-article {
-      display: block;
-      /**
-      * @prop --lf-#{$comp}-article-margin-top: Sets the top margin for lf-article content rendered inside messages.
-      *                                        Defaults to => 0.75em
-      */
-      margin-top: var(--lf-#{$comp}-article-margin-top, 0.75em);
-    }
   }
 
   &__code {
