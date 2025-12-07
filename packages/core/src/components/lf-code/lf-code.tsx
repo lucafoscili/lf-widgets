@@ -367,17 +367,21 @@ export class LfCode implements LfCodeInterface {
 
     return (
       <div
-        class={bemClass(code._, code.header, {
+        class={bemClass(code.header._, null, {
           sticky: this.lfStickyHeader,
         })}
         data-lf={this.#lf[this.lfUiState]}
         part={this.#p.header}
       >
-        <span class={bemClass(code._, code.title)} part={this.#p.title}>
+        <span
+          class={bemClass(code.header._, code.header.title)}
+          part={this.#p.title}
+        >
           {lfLanguage}
         </span>
         {lfShowCopy && (
           <lf-button
+            class={bemClass(code.header._, code.header.copy)}
             data-cy={this.#cy.button}
             lfIcon={copy}
             lfLabel="Copy"

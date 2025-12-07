@@ -32,50 +32,54 @@ $borderC: 1px solid rgb(var(--lf-color-border));
   &--has-header {
     grid-template-rows: auto 1fr;
   }
+}
 
-  &__header {
-    & {
-      @include lf-comp-border($comp, "radius");
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      @include lf-comp-color(
-        $comp,
-        "surface",
-        "all",
-        var(--lf-ui-alpha-glass-solid, 0.875)
-      );
-      align-items: center;
-      border-left-color: rgb(
-        var(--lf-#{$comp}-color-primary, rgb(var(--lf-color-primary)))
-      );
-      border-left-style: outset;
-      border-left-width: 0.25em;
-      /**
+.header {
+  & {
+    @include lf-comp-border($comp, "radius");
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    @include lf-comp-color(
+      $comp,
+      "surface",
+      "all",
+      var(--lf-ui-alpha-glass-solid, 0.875)
+    );
+    align-items: center;
+    border-left-color: rgb(
+      var(--lf-#{$comp}-color-primary, rgb(var(--lf-color-primary)))
+    );
+    border-left-style: outset;
+    border-left-width: 0.25em;
+    /**
       * @prop --lf-#{$comp}-border-right: Sets the border right for the #{$comp} component.
       *                                   Defaults to => 1px solid var(--lf-color-border)
       */
-      border-right: var(--lf-#{$comp}-border-right, $borderC);
-      /**
+    border-right: var(--lf-#{$comp}-border-right, $borderC);
+    /**
       * @prop --lf-#{$comp}-border-top: Sets the border top for the #{$comp} component.
       *                                 Defaults to => 1px solid var(--lf-color-border)
       */
-      border-top: var(--lf-#{comp}-border-top, $borderC);
-      box-sizing: border-box;
-      display: flex;
-      height: var(--lf-#{$comp}-header-height, 2.25em);
-      justify-content: var(--lf-#{$comp}-header-justify, space-between);
-      padding: var(--lf-#{$comp}-header-padding, 0.25em 0.75em);
-    }
+    border-top: var(--lf-#{comp}-border-top, $borderC);
+    box-sizing: border-box;
+    display: flex;
+    height: var(--lf-#{$comp}-header-height, 2.25em);
+    justify-content: var(--lf-#{$comp}-header-justify, space-between);
+    padding: var(--lf-#{$comp}-header-padding, 0.25em 0.75em);
+  }
 
-    &--sticky {
-      /**
+  &--sticky {
+    /**
       * @prop --lf-#{$comp}-header-position: Sets the position for the header.
       *                                      Defaults to => sticky
       */
-      position: var(--lf-#{$comp}-header-position, sticky);
-      top: 0;
-      z-index: 1;
-    }
+    position: var(--lf-#{$comp}-header-position, sticky);
+    top: 0;
+    z-index: 1;
+  }
+
+  &__copy {
+    backdrop-filter: unset;
   }
 
   &__title {

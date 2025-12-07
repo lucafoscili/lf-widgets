@@ -2,7 +2,14 @@ import { LfCodePropsInterface } from "./code.declarations";
 
 //#region Blocks
 export const LF_CODE_BLOCKS = {
-  code: { _: "code", header: "header", title: "title" },
+  code: {
+    _: "code",
+    header: {
+      _: "header",
+      copy: "copy",
+      title: "title",
+    },
+  },
 } as const;
 //#endregion
 
