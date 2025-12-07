@@ -152,14 +152,8 @@ $comp: "slider";
 
   &__thumb-underlay {
     @include lf-el-transition("springy");
-    align-items: center;
     border-radius: 50%;
     display: flex;
-    /**
-    * @prop --lf-#{$comp}-thumb-height: Sets the height for the #{$comp} component's thumb.
-    *                                   Defaults to => 1.25em
-    */
-    height: var(--lf-#{$comp}-thumb-height, 1.25em);
     justify-content: center;
     left: var(--lf_#{$comp}_value);
     pointer-events: none;
@@ -170,11 +164,6 @@ $comp: "slider";
     */
     top: var(--lf-#{$comp}-thumb-underlay-top, -0.6em);
     transform: translateX(-50%);
-    /**
-    * @prop --lf-#{$comp}-thumb-width: Sets the width for the #{$comp} component's thumb.
-    *                                  Defaults to => 1.25em
-    */
-    width: var(--lf-#{$comp}-thumb-width, 1.25em);
   }
 
   &__thumb {
@@ -197,7 +186,15 @@ $comp: "slider";
           rgba(var(--lf-#{comp}-color-on-bg, var(--lf-color-on-bg)), 0.2)
       );
       cursor: pointer;
+      /**
+      * @prop --lf-#{$comp}-thumb-height: Sets the height for the #{$comp} component's thumb.
+      *                                   Defaults to => 1.25em
+      */
       height: var(--lf-#{$comp}-thumb-height, 1.5em);
+      /**
+      * @prop --lf-#{$comp}-thumb-width: Sets the width for the #{$comp} component's thumb.
+      *                                  Defaults to => 1.25em
+      */
       width: var(--lf-#{$comp}-thumb-width, 1.5em);
     }
 
