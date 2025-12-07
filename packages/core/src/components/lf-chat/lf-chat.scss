@@ -65,6 +65,10 @@ $comp: "chat";
     grid-template-rows: repeat(3, auto);
   }
 
+  &--settings {
+    align-content: flex-start;
+  }
+
   &__attachments {
     box-sizing: border-box;
     grid-area: attachments;
