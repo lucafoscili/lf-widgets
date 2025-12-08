@@ -135,6 +135,17 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     grid-area: actions;
   }
 
+  &__control-item {
+    align-items: center;
+    display: flex;
+    padding: 0.5em 1em;
+  }
+
+  &__info-icon {
+    height: 1.5em;
+    width: 1.5em;
+  }
+
   &__preview {
     --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
 

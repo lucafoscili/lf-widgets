@@ -8,7 +8,9 @@ import {
   LfShapeeditorControlConfig,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { FIcon } from "../../utils/icon";
 import { LfShape } from "../../utils/shapes";
+import { LfShapeeditor } from "./lf-shapeeditor";
 
 export const prepDetails = (
   getAdapter: () => LfShapeeditorAdapter,
@@ -274,7 +276,8 @@ export const prepDetails = (
 
     // #region Settings
     settings: () => {
-      const { controller, elements, handlers } = getAdapter();
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
       const { blocks, config, manager } = controller.get;
       const { details } = elements.refs;
       const { accordionToggle, controlChange } = handlers.details;
@@ -315,8 +318,11 @@ export const prepDetails = (
             ];
 
       const renderControl = (config: LfShapeeditorControlConfig): VNode =>
-        createControl(config, settings[config.id], (e, id, value) =>
-          controlChange(e, id, value),
+        createControl(
+          config,
+          settings[config.id],
+          (e, id, value) => controlChange(e, id, value),
+          adapter,
         );
 
       const accordionDataset: LfDataDataset = {
@@ -356,6 +362,35 @@ export const prepDetails = (
 };
 
 //#region Helpers
+/**
+ * Renders an info icon that displays a tooltip on hover.
+ * The tooltip is registered via the framework's tooltip service.
+ */
+const renderInfoIcon = (
+  adapter: LfShapeeditorAdapter,
+  description: string,
+): VNode => {
+  const { controller, elements } = adapter;
+  const { blocks, manager } = controller.get;
+  const { refs } = elements;
+  const { bemClass } = manager.theme;
+
+  return (
+    <div
+      aria-label={description}
+      class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.infoIcon)}
+      ref={(el) => {
+        if (el) {
+          refs.details.infoIcons.set(description, el);
+        }
+      }}
+      tabindex="0"
+    >
+      <FIcon framework={manager} icon="--lf-icon-info"></FIcon>
+    </div>
+  );
+};
+
 const createControl = (
   config: LfShapeeditorControlConfig,
   currentValue: unknown,
@@ -364,13 +399,27 @@ const createControl = (
     controlId: string,
     value: string | number | boolean,
   ) => void,
+  adapter: LfShapeeditorAdapter,
 ): VNode => {
+  const { controller } = adapter;
+  const { blocks, compInstance, manager } = controller.get;
+  const { detailsGrid } = blocks;
+  const { logs } = manager.debug;
+  const { bemClass } = manager.theme;
+
   const value = currentValue ?? getDefaultValue(config);
+  const comp = compInstance as LfShapeeditor;
+  const infoIcon = config.description
+    ? renderInfoIcon(adapter, config.description)
+    : null;
 
   switch (config.type) {
     case "checkbox":
       return (
-        <div key={config.id} class="control-item">
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-checkbox
             lfLabel={config.label}
             lfValue={value as boolean}
@@ -380,13 +429,38 @@ const createControl = (
               }
             }}
           ></lf-checkbox>
-          {config.description && <small>{config.description}</small>}
+          {infoIcon}
+        </div>
+      );
+
+    case "colorpicker":
+      return (
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
+          <lf-textfield
+            lfHtmlAttributes={{
+              type: "color",
+            }}
+            lfLabel={config.label}
+            lfValue={String(value)}
+            onLf-textfield-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
+              }
+            }}
+          ></lf-textfield>
+          {infoIcon}
         </div>
       );
 
     case "multiinput":
       return (
-        <div key={config.id} class="control-item">
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-multiinput
             lfTextfieldProps={{
               lfLabel: config.label,
@@ -401,15 +475,63 @@ const createControl = (
               }
             }}
           ></lf-multiinput>
-          {config.description && <small>{config.description}</small>}
+          {infoIcon}
+        </div>
+      );
+
+    case "number":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-textfield
+            lfHtmlAttributes={{
+              max: config.max,
+              min: config.min,
+              step: config.step,
+              type: "number",
+            }}
+            lfLabel={config.label}
+            lfValue={String(value)}
+            onLf-textfield-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
+              }
+            }}
+          ></lf-textfield>
+          {infoIcon}
+        </div>
+      );
+
+    case "select":
+      return (
+        <div key={config.id} class="control-item">
+          <lf-select
+            lfDataset={{
+              nodes: config.options.map((opt) => ({
+                id: opt.value,
+                value: opt.label,
+              })),
+            }}
+            lfTextfieldProps={{ lfLabel: config.label }}
+            lfValue={value as string}
+            onLf-select-event={(e) => {
+              if (e.detail.eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-select>
+          {infoIcon}
         </div>
       );
 
     case "slider":
       return (
-        <div key={config.id} class="control-item">
-          <label>{config.label}</label>
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-slider
+            lfLabel={config.label}
+            lfLeadingLabel={true}
             lfMin={config.min}
             lfMax={config.max}
             lfStep={config.step}
@@ -421,15 +543,38 @@ const createControl = (
             }}
           ></lf-slider>
           {config.unit && <span class="unit">{config.unit}</span>}
-          {config.description && <small>{config.description}</small>}
+        </div>
+      );
+
+    case "textfield":
+      return (
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
+          <lf-textfield
+            lfLabel={config.label}
+            lfValue={value as string}
+            onLf-textfield-event={(e) => {
+              if (e.detail.eventType === "input") {
+                onChange(e, config.id, e.detail.comp.lfValue);
+              }
+            }}
+          ></lf-textfield>
+          {infoIcon}
         </div>
       );
 
     case "toggle":
       return (
-        <div key={config.id} class="control-item">
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-toggle
+            lfAriaLabel={config.label}
             lfLabel={config.label}
+            lfLeadingLabel={true}
             lfValue={value as boolean}
             onLf-toggle-event={(e) => {
               if (e.detail.eventType === "change") {
@@ -437,80 +582,16 @@ const createControl = (
               }
             }}
           ></lf-toggle>
-          {config.description && <small>{config.description}</small>}
-        </div>
-      );
-
-    case "textfield":
-      return (
-        <div key={config.id} class="control-item">
-          <lf-textfield
-            lfLabel={config.label}
-            lfValue={value as string}
-            onLf-textfield-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, e.detail.comp.lfValue);
-              }
-            }}
-          ></lf-textfield>
-          {config.description && <small>{config.description}</small>}
-        </div>
-      );
-
-    case "colorpicker":
-      return (
-        <div key={config.id} class="control-item">
-          <label>{config.label}</label>
-          <input
-            type="color"
-            value={value as string}
-            onInput={(e) => {
-              onChange(e, config.id, (e.target as HTMLInputElement).value);
-            }}
-          />
-          {config.description && <small>{config.description}</small>}
-        </div>
-      );
-
-    case "select":
-      return (
-        <div key={config.id} class="control-item">
-          <lf-select
-            lfTextfieldProps={{ lfLabel: config.label }}
-            lfValue={value as string}
-            lfDataset={{
-              nodes: config.options.map((opt) => ({
-                id: opt.value,
-                value: opt.label,
-              })),
-            }}
-            onLf-select-event={(e) => {
-              if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue);
-              }
-            }}
-          ></lf-select>
-          {config.description && <small>{config.description}</small>}
-        </div>
-      );
-
-    case "number":
-      return (
-        <div key={config.id} class="control-item">
-          <lf-textfield
-            lfLabel={config.label}
-            lfValue={String(value)}
-            onLf-textfield-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
-              }
-            }}
-          ></lf-textfield>
-          {config.description && <small>{config.description}</small>}
+          {infoIcon}
         </div>
       );
 
     default:
+      logs.new(
+        comp,
+        "Unsupported control type: " + (config as any).type,
+        "warning",
+      );
       return null;
   }
 };
@@ -519,14 +600,17 @@ const getDefaultValue = (
   config: LfShapeeditorControlConfig,
 ): string | number | boolean | null => {
   switch (config.type) {
+    // boolean
     case "checkbox":
     case "toggle":
       return config.defaultValue;
+    // string
     case "colorpicker":
     case "multiinput":
     case "select":
     case "textfield":
       return config.defaultValue;
+    // number
     case "number":
     case "slider":
       return config.defaultValue;

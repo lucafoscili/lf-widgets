@@ -6,6 +6,7 @@ import {
   LfComponentTag,
   LfDataDataset,
   LfEvent,
+  LfShapeeditorPropsInterface,
 } from "@lf-widgets/foundations";
 import { FIXTURES_CATEGORIES } from "./helpers/constants";
 
@@ -62,9 +63,16 @@ export interface LfShowcaseActions {
     label: string;
   };
 }
+export interface LfShowcasePlayground {
+  description: string;
+  props: LfShapeeditorPropsInterface;
+  events?: Record<string, (event: LfEvent) => void>;
+  slots?: Array<string>;
+}
 export interface LfShowcaseFixture {
   actions?: LfShowcaseActions;
   documentation: LfArticleDataset;
+  playground?: LfShowcasePlayground;
 }
 export interface LfShowcaseComponentFixture<C extends LfComponentTag>
   extends LfShowcaseFixture {

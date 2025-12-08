@@ -122,6 +122,7 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
   details: {
     clearHistory: LfButtonElement;
     deleteShape: LfButtonElement;
+    infoIcons: Map<string, HTMLElement>;
     redo: LfButtonElement;
     save: LfButtonElement;
     settings: HTMLElement;

@@ -223,11 +223,11 @@ Type: `Promise<void>`
 - [lf-tree](../lf-tree)
 - [lf-accordion](../lf-accordion)
 - [lf-checkbox](../lf-checkbox)
+- [lf-textfield](../lf-textfield)
 - [lf-multiinput](../lf-multiinput)
+- [lf-select](../lf-select)
 - [lf-slider](../lf-slider)
 - [lf-toggle](../lf-toggle)
-- [lf-textfield](../lf-textfield)
-- [lf-select](../lf-select)
 - [lf-badge](../lf-badge)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
@@ -250,11 +250,11 @@ graph TD;
   lf-shapeeditor --> lf-tree
   lf-shapeeditor --> lf-accordion
   lf-shapeeditor --> lf-checkbox
+  lf-shapeeditor --> lf-textfield
   lf-shapeeditor --> lf-multiinput
+  lf-shapeeditor --> lf-select
   lf-shapeeditor --> lf-slider
   lf-shapeeditor --> lf-toggle
-  lf-shapeeditor --> lf-textfield
-  lf-shapeeditor --> lf-select
   lf-shapeeditor --> lf-badge
   lf-shapeeditor --> lf-canvas
   lf-shapeeditor --> lf-card

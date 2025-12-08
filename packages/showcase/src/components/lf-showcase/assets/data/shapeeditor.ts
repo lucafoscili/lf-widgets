@@ -7,20 +7,13 @@ import {
   LfEventPayloadName,
   LfFrameworkInterface,
   LfShapeeditorConfigDsl,
-  LfShapeeditorElement,
-  LfShapeeditorEventPayload,
   LfShapeeditorLoadCallback,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { LfShowcaseComponentFixture } from "../../lf-showcase-declarations";
-import {
-  NEON_GLOW_EFFECT,
-  RIPPLE_EFFECT,
-  SPOTLIGHT_EFFECT,
-  TILT_EFFECT,
-} from "./effects";
+import { SPOTLIGHT_EFFECT } from "./effects";
 
 const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
 const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
@@ -58,57 +51,6 @@ export const getShapeeditorFixtures = (
       },
     ],
     defaultSettings: SPOTLIGHT_EFFECT.defaultSettings,
-  };
-
-  const neonGlowDsl: LfShapeeditorConfigDsl = {
-    controls: NEON_GLOW_EFFECT.controls,
-    layout: [
-      {
-        id: "appearance",
-        label: "Appearance",
-        controlIds: ["mode", "intensity", "pulseSpeed", "desync"],
-      },
-      {
-        id: "reflection",
-        label: "Reflection",
-        controlIds: [
-          "reflection",
-          "reflectionOpacity",
-          "reflectionBlur",
-          "reflectionOffset",
-        ],
-      },
-    ],
-    defaultSettings: NEON_GLOW_EFFECT.defaultSettings,
-  };
-
-  const tiltDsl: LfShapeeditorConfigDsl = {
-    controls: TILT_EFFECT.controls,
-    layout: [
-      {
-        id: "tilt",
-        label: "Tilt Settings",
-        controlIds: ["intensity"],
-      },
-    ],
-    defaultSettings: TILT_EFFECT.defaultSettings,
-  };
-
-  const rippleDsl: LfShapeeditorConfigDsl = {
-    controls: RIPPLE_EFFECT.controls,
-    layout: [
-      {
-        id: "animation",
-        label: "Animation",
-        controlIds: ["duration", "scale"],
-      },
-      {
-        id: "shape",
-        label: "Shape",
-        controlIds: ["autoSurfaceRadius", "borderRadius"],
-      },
-    ],
-    defaultSettings: RIPPLE_EFFECT.defaultSettings,
   };
 
   //#region mock data
@@ -523,132 +465,6 @@ def calculate_statistics(data: List[float]) -> dict:
     ],
   };
 
-  const effectsDataset: LfDataDataset = {
-    nodes: [
-      {
-        cells: {
-          lfImage: {
-            lfValue: get(`./assets/showcase/avatar_thor.png`).path,
-            shape: "image",
-            value: get(`./assets/showcase/avatar_thor.png`).path,
-          },
-        },
-        id: "spotlight_thor",
-        value: "Thor Avatar",
-      },
-      {
-        cells: {
-          lfImage: {
-            lfValue: get(`./assets/showcase/avatar_freya.png`).path,
-            shape: "image",
-            value: get(`./assets/showcase/avatar_freya.png`).path,
-          },
-        },
-        id: "spotlight_freya",
-        value: "Freya Avatar",
-      },
-      {
-        cells: {
-          lfImage: {
-            lfValue: get(`./assets/showcase/location_forest.png`).path,
-            shape: "image",
-            value: get(`./assets/showcase/location_forest.png`).path,
-          },
-        },
-        id: "spotlight_forest",
-        value: "Forest Scene",
-      },
-    ],
-  };
-
-  const spotlightSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "spotlight",
-        value: "Spotlight Settings",
-        icon: "camera",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(spotlightDsl),
-              },
-            },
-            id: "spotlight_config",
-            value: "Configuration",
-          },
-        ],
-      },
-    ],
-  };
-
-  const neonGlowSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "neon_glow",
-        value: "Neon Glow Settings",
-        icon: "highlight",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(neonGlowDsl),
-              },
-            },
-            id: "neon_config",
-            value: "Configuration",
-          },
-        ],
-      },
-    ],
-  };
-
-  const tiltSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "tilt",
-        value: "Tilt Settings",
-        icon: "ikosaedr",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(tiltDsl),
-              },
-            },
-            id: "tilt_config",
-            value: "Configuration",
-          },
-        ],
-      },
-    ],
-  };
-
-  const rippleSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "ripple",
-        value: "Ripple Settings",
-        icon: "droplet",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(rippleDsl),
-              },
-            },
-            id: "ripple_config",
-            value: "Configuration",
-          },
-        ],
-      },
-    ],
-  };
-
   const data: { [index: string]: LfDataDataset } = {
     canvasDataset,
     canvasSettingsDataset,
@@ -656,11 +472,6 @@ def calculate_statistics(data: List[float]) -> dict:
     chartSettingsDataset,
     codeDataset,
     codeSettingsDataset,
-    effectsDataset,
-    neonGlowSettingsDataset,
-    rippleSettingsDataset,
-    spotlightSettingsDataset,
-    tiltSettingsDataset,
   };
   //#endregion
 
@@ -886,178 +697,6 @@ def calculate_statistics(data: List[float]) -> dict:
             lfLoadCallback: loadCanvasDataset,
             lfShape: "canvas",
             lfValue: data.canvasSettingsDataset,
-          },
-        },
-        spotlightEffectPlayground: {
-          description:
-            "Effects playground: Spotlight effect with live preview (hover to see effect)",
-          props: {
-            lfDataset: data.effectsDataset,
-            lfShape: "image",
-            lfValue: data.spotlightSettingsDataset,
-          },
-          events: {
-            "lf-shapeeditor-event": async (
-              e: CustomEvent<LfShapeeditorEventPayload>,
-            ) => {
-              const { comp, eventType } = e.detail;
-              if (eventType !== "lf-event") return;
-
-              const shapeeditor = comp as unknown as LfShapeeditorElement;
-              const components = await shapeeditor.getComponents();
-              const settings = await shapeeditor.getSettings();
-              const imageEl =
-                components.details.shape?.querySelector("lf-image");
-
-              if (!imageEl) return;
-
-              const { effects } = framework;
-              effects.unregister.spotlight(imageEl);
-              effects.register.spotlight(imageEl, {
-                beam: settings.beam as
-                  | "cone"
-                  | "narrow"
-                  | "diffuse"
-                  | "soft"
-                  | undefined,
-                color: settings.color as string | undefined,
-                angle: settings.angle as number | undefined,
-                intensity: settings.intensity as number | undefined,
-                originX: settings.originX as number | undefined,
-                surfaceGlow: settings.surfaceGlow as boolean | undefined,
-                surfaceGlowIntensity: settings.surfaceGlowIntensity as
-                  | number
-                  | undefined,
-                followPointer: settings.followPointer as boolean | undefined,
-                sway: settings.sway as boolean | undefined,
-                swayDuration: settings.swayDuration as number | undefined,
-                swayAmplitude: settings.swayAmplitude as number | undefined,
-                trigger: settings.trigger as
-                  | "hover"
-                  | "always"
-                  | "manual"
-                  | undefined,
-                fadeInDuration: settings.fadeInDuration as number | undefined,
-                fadeOutDuration: settings.fadeOutDuration as number | undefined,
-              });
-            },
-          },
-        },
-        neonGlowEffectPlayground: {
-          description:
-            "Effects playground: Neon Glow effect with pulsating border",
-          props: {
-            lfDataset: data.effectsDataset,
-            lfShape: "image",
-            lfValue: data.neonGlowSettingsDataset,
-          },
-          events: {
-            "lf-shapeeditor-event": async (
-              e: CustomEvent<LfShapeeditorEventPayload>,
-            ) => {
-              const { comp, eventType } = e.detail;
-              if (eventType !== "lf-event") return;
-
-              const shapeeditor = comp as unknown as LfShapeeditorElement;
-              const components = await shapeeditor.getComponents();
-              const settings = await shapeeditor.getSettings();
-              const imageEl =
-                components.details.shape?.querySelector("lf-image");
-
-              if (!imageEl) return;
-
-              const { effects } = framework;
-              effects.unregister.neonGlow(imageEl);
-              effects.register.neonGlow(imageEl, {
-                mode: settings.mode as "outline" | "filled" | undefined,
-                intensity: settings.intensity as number | undefined,
-                pulseSpeed: settings.pulseSpeed as
-                  | "burst"
-                  | "slow"
-                  | "normal"
-                  | "fast"
-                  | undefined,
-                desync: settings.desync as boolean | undefined,
-                reflection: settings.reflection as boolean | undefined,
-                reflectionOpacity: settings.reflectionOpacity as
-                  | number
-                  | undefined,
-                reflectionBlur: settings.reflectionBlur as number | undefined,
-                reflectionOffset: settings.reflectionOffset as
-                  | number
-                  | undefined,
-              });
-            },
-          },
-        },
-        tiltEffectPlayground: {
-          description:
-            "Effects playground: Tilt effect with 3D perspective (move mouse over preview)",
-          props: {
-            lfDataset: data.effectsDataset,
-            lfShape: "image",
-            lfValue: data.tiltSettingsDataset,
-          },
-          events: {
-            "lf-shapeeditor-event": async (
-              e: CustomEvent<LfShapeeditorEventPayload>,
-            ) => {
-              const { comp, eventType } = e.detail;
-              if (eventType !== "lf-event") return;
-
-              const shapeeditor = comp as unknown as LfShapeeditorElement;
-              const components = await shapeeditor.getComponents();
-              const settings = await shapeeditor.getSettings();
-              const imageEl =
-                components.details.shape?.querySelector("lf-image");
-
-              if (!imageEl) return;
-
-              const { effects } = framework;
-              effects.unregister.tilt(imageEl);
-              effects.register.tilt(
-                imageEl,
-                settings.intensity as number | undefined,
-              );
-            },
-          },
-        },
-        rippleEffectPlayground: {
-          description:
-            "Effects playground: Ripple effect (click on preview to see effect)",
-          props: {
-            lfDataset: data.effectsDataset,
-            lfShape: "image",
-            lfValue: data.rippleSettingsDataset,
-          },
-          events: {
-            "lf-shapeeditor-event": async (
-              e: CustomEvent<LfShapeeditorEventPayload>,
-            ) => {
-              const { comp, eventType } = e.detail;
-              if (eventType !== "lf-event") return;
-
-              const shapeeditor = comp as unknown as LfShapeeditorElement;
-              const components = await shapeeditor.getComponents();
-              const settings = await shapeeditor.getSettings();
-              const imageEl =
-                components.details.shape?.querySelector("lf-image");
-
-              if (!imageEl) return;
-
-              // Ripple effect is registered on the element
-              // The effect will trigger on pointerdown events
-              const { effects } = framework;
-              effects.unregister.ripple(imageEl);
-              effects.register.ripple(imageEl, {
-                duration: settings.duration as number | undefined,
-                scale: settings.scale as number | undefined,
-                autoSurfaceRadius: settings.autoSurfaceRadius as
-                  | boolean
-                  | undefined,
-                borderRadius: settings.borderRadius as string | undefined,
-              });
-            },
           },
         },
       },

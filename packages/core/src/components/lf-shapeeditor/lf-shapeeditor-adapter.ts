@@ -73,6 +73,7 @@ export const createRefs = (): LfShapeeditorAdapterRefs => {
     details: {
       clearHistory: null,
       deleteShape: null,
+      infoIcons: new Map<string, HTMLElement>(),
       redo: null,
       save: null,
       settings: null,

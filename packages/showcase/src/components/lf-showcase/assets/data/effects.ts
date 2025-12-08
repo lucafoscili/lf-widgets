@@ -1,6 +1,10 @@
 import {
   LfArticleDataset,
+  LfDataDataset,
+  LfFrameworkInterface,
   LfShapeeditorConfigDsl,
+  LfShapeeditorElement,
+  LfShapeeditorEventPayload,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { PARAGRAPH_FACTORY } from "../../helpers/doc.paragraph";
@@ -587,7 +591,9 @@ export const EFFECTS_DEFINITIONS: EffectDefinition[] = [
   RIPPLE_EFFECT,
 ];
 
-export const getEffectsFixtures = (): LfShowcaseFixture => {
+export const getEffectsFixtures = (
+  framework?: LfFrameworkInterface,
+): LfShowcaseFixture => {
   //#region example map
   const CODE = new Map<string, { code: string; description: string }>([
     [
@@ -762,7 +768,186 @@ export const getEffectsFixtures = (): LfShowcaseFixture => {
   };
   //#endregion
 
+  //#region Playground
+  const effectsDataset: LfDataDataset = {
+    nodes: EFFECTS_DEFINITIONS.map((effect) => ({
+      cells: {
+        lfImage: {
+          shape: "image" as const,
+          value: effect.icon,
+        },
+      },
+      id: effect.id,
+      value: effect.name,
+    })),
+  };
+
+  const unifiedEffectsDsl: LfShapeeditorConfigDsl = {
+    controls: [
+      ...SPOTLIGHT_EFFECT.controls,
+      ...NEON_GLOW_EFFECT.controls.map((c) => ({
+        ...c,
+        id: `neonGlow_${c.id}`,
+      })),
+      ...TILT_EFFECT.controls.map((c) => ({ ...c, id: `tilt_${c.id}` })),
+      ...RIPPLE_EFFECT.controls.map((c) => ({ ...c, id: `ripple_${c.id}` })),
+    ],
+    layout: [
+      {
+        id: "spotlight",
+        label: "Spotlight",
+        controlIds: SPOTLIGHT_EFFECT.controls.map((c) => c.id),
+      },
+      {
+        id: "neonGlow",
+        label: "Neon Glow",
+        controlIds: NEON_GLOW_EFFECT.controls.map((c) => `neonGlow_${c.id}`),
+      },
+      {
+        id: "tilt",
+        label: "Tilt",
+        controlIds: TILT_EFFECT.controls.map((c) => `tilt_${c.id}`),
+      },
+      {
+        id: "ripple",
+        label: "Ripple",
+        controlIds: RIPPLE_EFFECT.controls.map((c) => `ripple_${c.id}`),
+      },
+    ],
+    defaultSettings: {
+      ...SPOTLIGHT_EFFECT.defaultSettings,
+      ...Object.fromEntries(
+        Object.entries(NEON_GLOW_EFFECT.defaultSettings).map(([k, v]) => [
+          `neonGlow_${k}`,
+          v,
+        ]),
+      ),
+      ...Object.fromEntries(
+        Object.entries(TILT_EFFECT.defaultSettings).map(([k, v]) => [
+          `tilt_${k}`,
+          v,
+        ]),
+      ),
+      ...Object.fromEntries(
+        Object.entries(RIPPLE_EFFECT.defaultSettings).map(([k, v]) => [
+          `ripple_${k}`,
+          v,
+        ]),
+      ),
+    },
+  };
+
+  const effectsSettingsDataset: LfDataDataset = {
+    nodes: [
+      {
+        id: "effects",
+        value: "Effects Settings",
+        icon: "wand",
+        children: [
+          {
+            cells: {
+              lfCode: {
+                shape: "code",
+                value: JSON.stringify(unifiedEffectsDsl),
+              },
+            },
+            id: "effects_config",
+            value: "Configuration",
+          },
+        ],
+      },
+    ],
+  };
+
+  const playgroundEventHandler = framework
+    ? async (e: CustomEvent<LfShapeeditorEventPayload>) => {
+        const { comp, eventType } = e.detail;
+        if (eventType !== "lf-event") {
+          return;
+        }
+
+        const shapeeditor = comp as unknown as LfShapeeditorElement;
+        const components = await shapeeditor.getComponents();
+        const settings = await shapeeditor.getSettings();
+        const surfaceEl = components.details.shape as HTMLElement | null;
+
+        if (!surfaceEl) {
+          return;
+        }
+
+        const { effects } = framework;
+
+        // Unregister all effects first
+        effects.unregister.spotlight(surfaceEl);
+        effects.unregister.neonGlow(surfaceEl);
+        effects.unregister.tilt(surfaceEl);
+        effects.unregister.ripple(surfaceEl);
+
+        // Register spotlight
+        effects.register.spotlight(surfaceEl, {
+          beam: settings.beam as "cone" | "narrow" | "diffuse" | "soft",
+          color: settings.color as string,
+          angle: settings.angle as number,
+          intensity: settings.intensity as number,
+          originX: settings.originX as number,
+          surfaceGlow: settings.surfaceGlow as boolean,
+          surfaceGlowIntensity: settings.surfaceGlowIntensity as number,
+          followPointer: settings.followPointer as boolean,
+          sway: settings.sway as boolean,
+          swayDuration: settings.swayDuration as number,
+          swayAmplitude: settings.swayAmplitude as number,
+          trigger: settings.trigger as "hover" | "always" | "manual",
+          fadeInDuration: settings.fadeInDuration as number,
+          fadeOutDuration: settings.fadeOutDuration as number,
+        });
+
+        // Register neon glow
+        effects.register.neonGlow(surfaceEl, {
+          mode: settings.neonGlow_mode as "outline" | "filled",
+          intensity: settings.neonGlow_intensity as number,
+          pulseSpeed: settings.neonGlow_pulseSpeed as
+            | "burst"
+            | "slow"
+            | "normal"
+            | "fast",
+          desync: settings.neonGlow_desync as boolean,
+          reflection: settings.neonGlow_reflection as boolean,
+          reflectionOpacity: settings.neonGlow_reflectionOpacity as number,
+          reflectionBlur: settings.neonGlow_reflectionBlur as number,
+          reflectionOffset: settings.neonGlow_reflectionOffset as number,
+        });
+
+        // Register tilt
+        effects.register.tilt(surfaceEl, settings.tilt_intensity as number);
+
+        // Register ripple
+        effects.register.ripple(surfaceEl, {
+          duration: settings.ripple_duration as number,
+          scale: settings.ripple_scale as number,
+          autoSurfaceRadius: settings.ripple_autoSurfaceRadius as boolean,
+          borderRadius: settings.ripple_borderRadius as string,
+        });
+      }
+    : undefined;
+
+  const playground = framework
+    ? {
+        description:
+          "Interactive effects playground - configure and preview all visual effects",
+        props: {
+          lfDataset: effectsDataset,
+          lfShape: "image" as const,
+          lfValue: effectsSettingsDataset,
+        },
+        events: playgroundEventHandler
+          ? { "lf-shapeeditor-event": playgroundEventHandler }
+          : undefined,
+      }
+    : undefined;
+  //#endregion
+
   return {
     documentation,
+    playground,
   };
 };

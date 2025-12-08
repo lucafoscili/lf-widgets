@@ -3097,12 +3097,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfCollapseColumns",
-        docs: "When true the masonry will collapse the number of columns to the number of items\r\nwhen the number of items is less than the configured columns. Set to false to\r\npreserve the configured column count even if there are fewer items.",
+        docs: "When true the masonry will collapse the number of columns to the number of items\nwhen the number of items is less than the configured columns. Set to false to\npreserve the configured column count even if there are fewer items.",
         type: "boolean",
       },
       {
         name: "lfColumns",
-        docs: "Number of columns of the masonry, doesn't affect sequential views.\r\nCan be set with a number or an array of numbers that identify each breakpoint.",
+        docs: "Number of columns of the masonry, doesn't affect sequential views.\nCan be set with a number or an array of numbers that identify each breakpoint.",
         type: "number | number[]",
       },
       {
