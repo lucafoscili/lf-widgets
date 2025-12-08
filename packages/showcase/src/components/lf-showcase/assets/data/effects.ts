@@ -2,6 +2,7 @@ import {
   LfArticleDataset,
   LfDataDataset,
   LfFrameworkInterface,
+  LfIconType,
   LfShapeeditorConfigDsl,
   LfShapeeditorElement,
   LfShapeeditorEventPayload,
@@ -769,6 +770,7 @@ export const getEffectsFixtures = (
   //#endregion
 
   //#region Playground
+  // Dataset for the masonry - shows a preview surface for each effect
   const effectsDataset: LfDataDataset = {
     nodes: EFFECTS_DEFINITIONS.map((effect) => ({
       cells: {
@@ -782,82 +784,148 @@ export const getEffectsFixtures = (
     })),
   };
 
-  const unifiedEffectsDsl: LfShapeeditorConfigDsl = {
-    controls: [
-      ...SPOTLIGHT_EFFECT.controls,
-      ...NEON_GLOW_EFFECT.controls.map((c) => ({
-        ...c,
-        id: `neonGlow_${c.id}`,
-      })),
-      ...TILT_EFFECT.controls.map((c) => ({ ...c, id: `tilt_${c.id}` })),
-      ...RIPPLE_EFFECT.controls.map((c) => ({ ...c, id: `ripple_${c.id}` })),
-    ],
-    layout: [
-      {
-        id: "spotlight",
-        label: "Spotlight",
-        controlIds: SPOTLIGHT_EFFECT.controls.map((c) => c.id),
-      },
-      {
-        id: "neonGlow",
-        label: "Neon Glow",
-        controlIds: NEON_GLOW_EFFECT.controls.map((c) => `neonGlow_${c.id}`),
-      },
-      {
-        id: "tilt",
-        label: "Tilt",
-        controlIds: TILT_EFFECT.controls.map((c) => `tilt_${c.id}`),
-      },
-      {
-        id: "ripple",
-        label: "Ripple",
-        controlIds: RIPPLE_EFFECT.controls.map((c) => `ripple_${c.id}`),
-      },
-    ],
-    defaultSettings: {
-      ...SPOTLIGHT_EFFECT.defaultSettings,
-      ...Object.fromEntries(
-        Object.entries(NEON_GLOW_EFFECT.defaultSettings).map(([k, v]) => [
-          `neonGlow_${k}`,
-          v,
-        ]),
-      ),
-      ...Object.fromEntries(
-        Object.entries(TILT_EFFECT.defaultSettings).map(([k, v]) => [
-          `tilt_${k}`,
-          v,
-        ]),
-      ),
-      ...Object.fromEntries(
-        Object.entries(RIPPLE_EFFECT.defaultSettings).map(([k, v]) => [
-          `ripple_${k}`,
-          v,
-        ]),
-      ),
-    },
+  // "Enabled" toggle control added to each effect
+  const ENABLED_CONTROL: LfShapeeditorConfigDsl["controls"][number] = {
+    id: "enabled",
+    type: "toggle",
+    label: "Enabled",
+    description: "Toggle this effect on/off",
+    defaultValue: false,
   };
 
-  const effectsSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "effects",
-        value: "Effects Settings",
-        icon: "wand",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(unifiedEffectsDsl),
-              },
+  // Helper to create DSL for each effect with logical groupings
+  const createEffectDsl = (
+    effect: EffectDefinition,
+  ): LfShapeeditorConfigDsl => {
+    // Group controls logically based on effect type
+    const getLayout = () => {
+      switch (effect.id) {
+        case "spotlight":
+          return [
+            {
+              id: "general",
+              label: "General",
+              controlIds: ["enabled"],
             },
-            id: "effects_config",
-            value: "Configuration",
-          },
-        ],
+            {
+              id: "beam",
+              label: "Beam",
+              controlIds: ["beam", "color", "angle", "intensity", "originX"],
+            },
+            {
+              id: "surface",
+              label: "Surface",
+              controlIds: ["surfaceGlow", "surfaceGlowIntensity"],
+            },
+            {
+              id: "behaviour",
+              label: "Behaviour",
+              controlIds: [
+                "followPointer",
+                "sway",
+                "swayAmplitude",
+                "swayDuration",
+              ],
+            },
+            {
+              id: "trigger",
+              label: "Trigger & Timing",
+              controlIds: ["trigger", "fadeInDuration", "fadeOutDuration"],
+            },
+          ];
+        case "neon-glow":
+          return [
+            {
+              id: "general",
+              label: "General",
+              controlIds: ["enabled"],
+            },
+            {
+              id: "glow",
+              label: "Glow",
+              controlIds: ["mode", "intensity", "pulseSpeed", "desync"],
+            },
+            {
+              id: "reflection",
+              label: "Reflection",
+              controlIds: [
+                "reflection",
+                "reflectionOpacity",
+                "reflectionBlur",
+                "reflectionOffset",
+              ],
+            },
+          ];
+        case "tilt":
+          return [
+            {
+              id: "general",
+              label: "General",
+              controlIds: ["enabled"],
+            },
+            {
+              id: "settings",
+              label: "Settings",
+              controlIds: ["intensity"],
+            },
+          ];
+        case "ripple":
+          return [
+            {
+              id: "general",
+              label: "General",
+              controlIds: ["enabled"],
+            },
+            {
+              id: "animation",
+              label: "Animation",
+              controlIds: ["duration", "scale"],
+            },
+            {
+              id: "shape",
+              label: "Shape",
+              controlIds: ["autoSurfaceRadius", "borderRadius"],
+            },
+          ];
+        default:
+          return [
+            {
+              id: "general",
+              label: "General",
+              controlIds: ["enabled"],
+            },
+          ];
+      }
+    };
+
+    return {
+      controls: [ENABLED_CONTROL, ...effect.controls],
+      layout: getLayout(),
+      defaultSettings: {
+        enabled: false,
+        ...effect.defaultSettings,
       },
-    ],
+    };
   };
+
+  // Settings dataset with tree structure - each effect is a selectable node
+  const effectsSettingsDataset: LfDataDataset = {
+    nodes: EFFECTS_DEFINITIONS.map((effect) => ({
+      id: effect.id,
+      value: effect.name,
+      icon: effect.icon as LfIconType,
+      cells: {
+        lfCode: {
+          shape: "code" as const,
+          value: JSON.stringify(createEffectDsl(effect)),
+        },
+      },
+      description: effect.description,
+    })),
+  };
+
+  // Track which effects are currently registered
+  const registeredEffects = new Set<string>();
 
   const playgroundEventHandler = framework
     ? async (e: CustomEvent<LfShapeeditorEventPayload>) => {
@@ -876,57 +944,109 @@ export const getEffectsFixtures = (
         }
 
         const { effects } = framework;
+        const isEnabled = settings.enabled as boolean;
 
-        // Unregister all effects first
-        effects.unregister.spotlight(surfaceEl);
-        effects.unregister.neonGlow(surfaceEl);
-        effects.unregister.tilt(surfaceEl);
-        effects.unregister.ripple(surfaceEl);
+        // Determine which effect is currently being configured from the tree selection
+        const snapshot = await shapeeditor.getCurrentSnapshot();
+        const shapeIndex = snapshot?.shape?.index;
 
-        // Register spotlight
-        effects.register.spotlight(surfaceEl, {
-          beam: settings.beam as "cone" | "narrow" | "diffuse" | "soft",
-          color: settings.color as string,
-          angle: settings.angle as number,
-          intensity: settings.intensity as number,
-          originX: settings.originX as number,
-          surfaceGlow: settings.surfaceGlow as boolean,
-          surfaceGlowIntensity: settings.surfaceGlowIntensity as number,
-          followPointer: settings.followPointer as boolean,
-          sway: settings.sway as boolean,
-          swayDuration: settings.swayDuration as number,
-          swayAmplitude: settings.swayAmplitude as number,
-          trigger: settings.trigger as "hover" | "always" | "manual",
-          fadeInDuration: settings.fadeInDuration as number,
-          fadeOutDuration: settings.fadeOutDuration as number,
-        });
+        if (shapeIndex === undefined) {
+          return;
+        }
 
-        // Register neon glow
-        effects.register.neonGlow(surfaceEl, {
-          mode: settings.neonGlow_mode as "outline" | "filled",
-          intensity: settings.neonGlow_intensity as number,
-          pulseSpeed: settings.neonGlow_pulseSpeed as
-            | "burst"
-            | "slow"
-            | "normal"
-            | "fast",
-          desync: settings.neonGlow_desync as boolean,
-          reflection: settings.neonGlow_reflection as boolean,
-          reflectionOpacity: settings.neonGlow_reflectionOpacity as number,
-          reflectionBlur: settings.neonGlow_reflectionBlur as number,
-          reflectionOffset: settings.neonGlow_reflectionOffset as number,
-        });
+        // Get the effect ID from the dataset using the index
+        const currentEffectId = effectsDataset.nodes?.[shapeIndex]?.id;
 
-        // Register tilt
-        effects.register.tilt(surfaceEl, settings.tilt_intensity as number);
+        if (!currentEffectId) {
+          return;
+        }
 
-        // Register ripple
-        effects.register.ripple(surfaceEl, {
-          duration: settings.ripple_duration as number,
-          scale: settings.ripple_scale as number,
-          autoSurfaceRadius: settings.ripple_autoSurfaceRadius as boolean,
-          borderRadius: settings.ripple_borderRadius as string,
-        });
+        // Handle enable/disable for the current effect
+        const wasRegistered = registeredEffects.has(currentEffectId);
+
+        if (isEnabled && !wasRegistered) {
+          // First time enabling - register the effect
+          registeredEffects.add(currentEffectId);
+        } else if (!isEnabled && wasRegistered) {
+          // Disabling - unregister the effect
+          registeredEffects.delete(currentEffectId);
+          switch (currentEffectId) {
+            case "spotlight":
+              effects.unregister.spotlight(surfaceEl);
+              break;
+            case "neon-glow":
+              effects.unregister.neonGlow(surfaceEl);
+              break;
+            case "tilt":
+              effects.unregister.tilt(surfaceEl);
+              break;
+            case "ripple":
+              effects.unregister.ripple(surfaceEl);
+              break;
+          }
+          return;
+        }
+
+        // Only apply settings if the effect is enabled
+        if (!isEnabled) {
+          return;
+        }
+
+        // Apply effect settings (re-register to update)
+        switch (currentEffectId) {
+          case "spotlight":
+            effects.unregister.spotlight(surfaceEl);
+            effects.register.spotlight(surfaceEl, {
+              beam: settings.beam as "cone" | "narrow" | "diffuse" | "soft",
+              color: settings.color as string,
+              angle: settings.angle as number,
+              intensity: settings.intensity as number,
+              originX: settings.originX as number,
+              surfaceGlow: settings.surfaceGlow as boolean,
+              surfaceGlowIntensity: settings.surfaceGlowIntensity as number,
+              followPointer: settings.followPointer as boolean,
+              sway: settings.sway as boolean,
+              swayDuration: settings.swayDuration as number,
+              swayAmplitude: settings.swayAmplitude as number,
+              trigger: settings.trigger as "hover" | "always" | "manual",
+              fadeInDuration: settings.fadeInDuration as number,
+              fadeOutDuration: settings.fadeOutDuration as number,
+            });
+            break;
+
+          case "neon-glow":
+            effects.unregister.neonGlow(surfaceEl);
+            effects.register.neonGlow(surfaceEl, {
+              mode: settings.mode as "outline" | "filled",
+              intensity: settings.intensity as number,
+              pulseSpeed: settings.pulseSpeed as
+                | "burst"
+                | "slow"
+                | "normal"
+                | "fast",
+              desync: settings.desync as boolean,
+              reflection: settings.reflection as boolean,
+              reflectionOpacity: settings.reflectionOpacity as number,
+              reflectionBlur: settings.reflectionBlur as number,
+              reflectionOffset: settings.reflectionOffset as number,
+            });
+            break;
+
+          case "tilt":
+            effects.unregister.tilt(surfaceEl);
+            effects.register.tilt(surfaceEl, settings.intensity as number);
+            break;
+
+          case "ripple":
+            effects.unregister.ripple(surfaceEl);
+            effects.register.ripple(surfaceEl, {
+              duration: settings.duration as number,
+              scale: settings.scale as number,
+              autoSurfaceRadius: settings.autoSurfaceRadius as boolean,
+              borderRadius: settings.borderRadius as string,
+            });
+            break;
+        }
       }
     : undefined;
 
