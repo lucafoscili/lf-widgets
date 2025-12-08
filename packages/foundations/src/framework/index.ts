@@ -18,3 +18,5 @@ export * from "./portal.declarations";
 export * from "./syntax.declarations";
 export * from "./theme.constants";
 export * from "./theme.declarations";
+export * from "./tooltip.constants";
+export * from "./tooltip.declarations";

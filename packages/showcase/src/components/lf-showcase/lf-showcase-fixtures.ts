@@ -359,6 +359,7 @@ export const LF_SHOWCASE_FRAMEWORK = (
     palette,
     robot,
     schema,
+    tooltip,
   } = icons;
 
   return {
@@ -422,6 +423,12 @@ export const LF_SHOWCASE_FRAMEWORK = (
         icon: colorSwatch,
         id: "Theme",
         value: "Theme",
+      },
+      {
+        description: "Tooltip system for contextual help.",
+        icon: tooltip,
+        id: "Tooltip",
+        value: "Tooltip",
       },
     ],
   };

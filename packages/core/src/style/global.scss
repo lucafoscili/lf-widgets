@@ -66,3 +66,6 @@
 .lf-portal {
   @include lf-fw-portal(true);
 }
+.lf-tooltip {
+  @include lf-fw-tooltip;
+}

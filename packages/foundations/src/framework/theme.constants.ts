@@ -946,9 +946,11 @@ export const LF_ICONS_REGISTRY = {
   brandX: "brand-x",
   brush: "brush",
   bug: "bug",
+  bulb: "bulb",
   calendarClock: "calendar-clock",
   camera: "camera",
   cameraAi: "camera-ai",
+  candle: "candle",
   caretDown: "caret-down",
   caretLeft: "caret-left",
   caretRight: "caret-right",
@@ -997,6 +999,7 @@ export const LF_ICONS_REGISTRY = {
   exclamationCircle: "exclamation-circle",
   file: "file",
   filterSearch: "filter-search",
+  flare: "flare",
   folder: "folder",
   folderOpen: "folder-open",
   forms: "forms",
@@ -1082,6 +1085,8 @@ export const LF_ICONS_REGISTRY = {
   settings: "settings",
   share2: "share-2",
   shirt: "shirt",
+  skew: "skew",
+  sparkles: "sparkles",
   slideshow: "slideshow",
   squareToggle: "square-toggle",
   squareX: "square-x",
@@ -1094,6 +1099,7 @@ export const LF_ICONS_REGISTRY = {
   terminal2: "terminal-2",
   timeDuration30: "time-duration-30",
   toggleRight: "toggle-right",
+  tooltip: "tooltip",
   upload: "upload",
   viewportTall: "viewport-tall",
   viewportWide: "viewport-wide",
@@ -1105,5 +1111,34 @@ export const LF_ICONS_REGISTRY = {
 //#endregion
 
 //#region Global styles
+/**
+ * Selectors that should ONLY be in document-level <style>, not adopted sheets.
+ * These target light DOM elements outside shadow roots.
+ */
+export const LF_DOCUMENT_ONLY_SELECTORS = [
+  ".lf-effects",
+  ".lf-portal",
+  ".lf-tooltip",
+];
+/**
+ * Selectors that should be in BOTH document-level and adopted stylesheets.
+ * Scrollbar pseudo-elements need to be in both places since scrollbars appear
+ * in both light DOM and inside shadow DOM components.
+ */
+export const LF_BOTH_CONTEXT_SELECTORS = [
+  "::-webkit-scrollbar",
+  "*::-webkit-scrollbar",
+];
+/**
+ * Attribute selectors that should be transformed to :host() context.
+ * These target the host element itself in shadow DOM.
+ */
+export const LF_HOST_ATTRIBUTE_SELECTORS = [
+  "[data-lf-tooltip-host]",
+  "[data-lf-neon-glow-host]",
+  "[data-lf-ripple-host]",
+  "[data-lf-spotlight-host]",
+  "[data-lf-tilt-host]",
+];
 export { GLOBAL_STYLES } from "./theme.global-styles.generated";
 //#endregion

@@ -181,6 +181,15 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       isLanguageLoaded: jest.fn(),
       loadLanguage: jest.fn(),
     },
+    tooltip: {
+      register: jest.fn(),
+      unregister: jest.fn(),
+      isRegistered: jest.fn(),
+      updateContent: jest.fn(),
+      show: jest.fn(),
+      hide: jest.fn(),
+      hideAll: jest.fn(),
+    },
     utilities: {},
     theme: {
       bemClass: jest.fn(),
