@@ -2,12 +2,12 @@ import type {
   LfArticleNode,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
+import { LfFramework } from "../../framework/src/lf-framework/lf-framework";
 
 let framework: LfFrameworkInterface | undefined;
 let data: any; // runtime service bag (typed loosely for test resilience)
 beforeAll(async () => {
-  framework = await getLfFramework();
+  framework = new LfFramework();
   data = framework.data;
 });
 
@@ -470,14 +470,14 @@ describe("Article helpers", () => {
 
     const accordionNode = article.shapes.accordion({
       id: "test-accordion",
-      dataset: {
+      lfDataset: {
         nodes: [
           { id: "item-1", value: "Section 1" },
           { id: "item-2", value: "Section 2" },
         ],
       },
-      uiSize: "small",
-      uiState: "primary",
+      lfUiSize: "small",
+      lfUiState: "primary",
     });
 
     expect(accordionNode).toBeDefined();

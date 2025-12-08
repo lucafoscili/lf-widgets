@@ -97,7 +97,7 @@ export class LfChat implements LfChatInterface {
   @State() agentState: LfChatAgentState | null = null;
   @State() currentAbortStreaming: AbortController | null = null;
   @State() currentAttachments: LfLLMAttachment[] = [];
-  @State() currentEditingIndex: number | null = null;
+  @State() currentEditingId: string | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
   @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
@@ -439,7 +439,7 @@ export class LfChat implements LfChatInterface {
         compInstance: this,
         currentAbortStreaming: () => this.currentAbortStreaming,
         currentAttachments: () => this.currentAttachments,
-        currentEditingIndex: () => this.currentEditingIndex,
+        currentEditingId: () => this.currentEditingId,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
         currentToolExecution: () => this.currentToolExecution,
@@ -461,7 +461,7 @@ export class LfChat implements LfChatInterface {
         agentState: (value) => (this.agentState = value),
         currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
         currentAttachments: (value) => (this.currentAttachments = value),
-        currentEditingIndex: (value) => (this.currentEditingIndex = value),
+        currentEditingId: (value) => (this.currentEditingId = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
         currentToolExecution: (value) => (this.currentToolExecution = value),
@@ -566,7 +566,9 @@ export class LfChat implements LfChatInterface {
                 return true;
               })
               .map((m, index) => {
-                const isEditing = this.currentEditingIndex === index;
+                const isEditing =
+                  Boolean(this.currentEditingId) &&
+                  m.id === this.currentEditingId;
                 return (
                   <div
                     class={bemClass(messages._, messages.container, {

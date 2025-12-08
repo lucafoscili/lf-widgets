@@ -59,7 +59,7 @@ export const prepChatHandlers = (
             case LF_CHAT_IDS.chat.editCancel: {
               const { controller } = adapter;
               const { set } = controller;
-              set.currentEditingIndex(null);
+              set.currentEditingId(null);
               break;
             }
 
@@ -70,21 +70,27 @@ export const prepChatHandlers = (
                 const { get, set } = controller;
                 const comp = get.compInstance as LfChat;
 
-                const idx = get.currentEditingIndex();
+                const editingId = get.currentEditingId();
+                if (!editingId) {
+                  break;
+                }
+
                 const content =
                   (await elements.refs.chat.editTextarea.getValue()) || "";
 
                 await set.history(() => {
                   const h = get.history();
-                  const updated = h.map((it, i) =>
-                    i === idx ? { ...it, content } : it,
+                  const updated = h.map((it) =>
+                    it.id === editingId ? { ...it, content } : it,
                   );
                   comp.history = updated;
                 });
 
-                set.currentEditingIndex(null);
+                set.currentEditingId(null);
 
-                const updatedMsg = get.history()?.[idx];
+                const updatedMsg = get
+                  .history()
+                  ?.find((msg) => msg.id === editingId);
                 if (updatedMsg && updatedMsg.role === "user") {
                   await regenerateMessage(adapter, updatedMsg);
                 }

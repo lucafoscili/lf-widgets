@@ -1,4 +1,5 @@
 import { LfChatAdapter, LfLLMChoiceMessage } from "@lf-widgets/foundations";
+import { ensureMessageId } from "./helpers.message-id";
 import { LfChat } from "./lf-chat";
 
 //#region Set
@@ -23,7 +24,11 @@ export const setH = async (
 
   if (!fromFile) {
     try {
-      set.history(() => (comp.history = JSON.parse(history)));
+      const parsed = JSON.parse(history) as LfLLMChoiceMessage[];
+      const normalized = Array.isArray(parsed)
+        ? parsed.map((msg) => ensureMessageId(msg))
+        : [];
+      set.history(() => (comp.history = normalized));
     } catch {}
   } else {
     const input = document.createElement("input");
@@ -49,8 +54,9 @@ export const setH = async (
             }
           }
 
+          const normalized = importedHistory.map((msg) => ensureMessageId(msg));
           set.history(() => {
-            comp.history = importedHistory;
+            comp.history = normalized;
           });
 
           debug.logs.new(

@@ -171,8 +171,8 @@ describe("lf-accordion component", () => {
 
       const selectedNodes = await page.rootInstance.getSelectedNodes();
       expect(selectedNodes.size).toBe(1);
-      const nodeArray = Array.from(selectedNodes);
-      expect((nodeArray[0] as any).id).toBe("1");
+      const ids = Array.from(selectedNodes);
+      expect(ids[0]).toBe("1");
     });
 
     it("returns component props via getProps method", async () => {

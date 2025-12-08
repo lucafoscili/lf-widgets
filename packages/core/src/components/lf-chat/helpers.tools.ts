@@ -16,6 +16,7 @@ import {
   getEffectiveConfig,
   getEnabledToolDefinitions,
 } from "./helpers.config";
+import { ensureMessageId } from "./helpers.message-id";
 import { LfChat } from "./lf-chat";
 
 //#region Tool dataset
@@ -392,7 +393,7 @@ export const executeTools = async (
     (r) => r !== null,
   ) as LfLLMChoiceMessage[];
 
-  return results;
+  return results.map((msg) => ensureMessageId(msg));
 };
 //#endregion
 

@@ -243,7 +243,7 @@ export type LfChatAdapterInitializerGetters = Pick<
   | "compInstance"
   | "currentAbortStreaming"
   | "currentAttachments"
-  | "currentEditingIndex"
+  | "currentEditingId"
   | "currentPrompt"
   | "currentTokens"
   | "currentToolExecution"
@@ -265,7 +265,7 @@ export type LfChatAdapterInitializerSetters = Pick<
   | "agentState"
   | "currentAbortStreaming"
   | "currentAttachments"
-  | "currentEditingIndex"
+  | "currentEditingId"
   | "currentPrompt"
   | "currentTokens"
   | "currentToolExecution"
@@ -283,7 +283,7 @@ export interface LfChatAdapterControllerGetters
   compInstance: LfChatInterface;
   currentAbortStreaming: () => AbortController | null;
   currentAttachments: () => LfLLMAttachment[];
-  currentEditingIndex: () => number;
+  currentEditingId: () => string | null;
   currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
   currentToolExecution: () => LfDataDataset | null;
@@ -305,7 +305,7 @@ export interface LfChatAdapterControllerSetters
   agentState: (value: LfChatAgentState | null) => void;
   currentAbortStreaming: (value: AbortController | null) => void;
   currentAttachments: (value: LfLLMAttachment[]) => void;
-  currentEditingIndex: (value: number) => void;
+  currentEditingId: (value: string | null) => void;
   currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   currentToolExecution: (value: LfDataDataset | null) => void;

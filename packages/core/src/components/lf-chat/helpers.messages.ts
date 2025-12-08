@@ -5,6 +5,7 @@ import {
 } from "@lf-widgets/foundations";
 import { apiCall } from "./helpers.api";
 import { getEffectiveConfig } from "./helpers.config";
+import { ensureMessageId } from "./helpers.message-id";
 import { resetAgentState } from "./helpers.tools";
 import { LfChat } from "./lf-chat";
 
@@ -96,9 +97,13 @@ export const editMessage = (adapter: LfChatAdapter, m: LfLLMChoiceMessage) => {
   const { get, set } = adapter.controller;
 
   const h = get.history();
-  const index = h.indexOf(m);
-  if (index !== -1) {
-    set.currentEditingIndex(index);
+  if (!h.includes(m)) {
+    return;
+  }
+
+  const messageWithId = ensureMessageId(m);
+  if (messageWithId.id) {
+    set.currentEditingId(messageWithId.id);
   }
 };
 //#endregion
@@ -183,6 +188,9 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
   resetAgentState(adapter);
 
   const userMessage = await get.newPrompt();
+  if (userMessage) {
+    ensureMessageId(userMessage);
+  }
   const hasAttachments =
     comp?.currentAttachments && comp.currentAttachments.length > 0;
 
@@ -194,11 +202,11 @@ export const submitPrompt = async (adapter: LfChatAdapter) => {
     let messageToSend = userMessage;
 
     if (!userMessage && hasAttachments) {
-      messageToSend = {
+      messageToSend = ensureMessageId({
         role: "user" as const,
         content: "",
         attachments: comp.currentAttachments,
-      };
+      } as LfLLMChoiceMessage);
     } else if (userMessage && hasAttachments) {
       const userWithAttachments = userMessage;
       userWithAttachments.attachments = comp.currentAttachments;
