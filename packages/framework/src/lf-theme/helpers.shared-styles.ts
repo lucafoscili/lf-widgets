@@ -1,33 +1,10 @@
 import {
   GLOBAL_STYLES,
+  LF_BOTH_CONTEXT_SELECTORS,
+  LF_DOCUMENT_ONLY_SELECTORS,
+  LF_HOST_ATTRIBUTE_SELECTORS,
   LfThemeSharedStylesManager,
 } from "@lf-widgets/foundations";
-
-//#region Constants
-/**
- * Selectors that should ONLY be in document-level <style>, not adopted sheets.
- * These target light DOM elements outside shadow roots.
- */
-const DOCUMENT_ONLY_SELECTORS = [".lf-effects", ".lf-portal"];
-
-/**
- * Selectors that should be in BOTH document-level and adopted stylesheets.
- * Scrollbar pseudo-elements need to be in both places since scrollbars appear
- * in both light DOM and inside shadow DOM components.
- */
-const BOTH_CONTEXT_SELECTORS = ["::-webkit-scrollbar", "*::-webkit-scrollbar"];
-
-/**
- * Attribute selectors that should be transformed to :host() context.
- * These target the host element itself in shadow DOM.
- */
-const HOST_ATTRIBUTE_SELECTORS = [
-  "[data-lf-neon-glow-host]",
-  "[data-lf-neon-glow",
-  "[data-lf-ripple-host]",
-  "[data-lf-tilt-host]",
-];
-//#endregion
 
 //#region Selector Utilities
 /**
@@ -38,7 +15,7 @@ const HOST_ATTRIBUTE_SELECTORS = [
  * @returns true if the selector should only be in document-level styles
  */
 export const isDocumentOnlySelector = (selector: string): boolean => {
-  return DOCUMENT_ONLY_SELECTORS.some(
+  return LF_DOCUMENT_ONLY_SELECTORS.some(
     (prefix) => selector.startsWith(prefix) || selector.includes(` ${prefix}`),
   );
 };
@@ -50,7 +27,9 @@ export const isDocumentOnlySelector = (selector: string): boolean => {
  * @returns true if the selector should be in both contexts
  */
 export const isBothContextSelector = (selector: string): boolean => {
-  return BOTH_CONTEXT_SELECTORS.some((prefix) => selector.startsWith(prefix));
+  return LF_BOTH_CONTEXT_SELECTORS.some((prefix) =>
+    selector.startsWith(prefix),
+  );
 };
 
 /**
@@ -61,7 +40,7 @@ export const isBothContextSelector = (selector: string): boolean => {
  * @returns The transformed selector for shadow DOM context
  */
 export const transformToHostSelector = (selector: string): string => {
-  for (const attr of HOST_ATTRIBUTE_SELECTORS) {
+  for (const attr of LF_HOST_ATTRIBUTE_SELECTORS) {
     if (selector.startsWith(attr)) {
       // Transform [attr] to :host([attr]) and preserve any suffix
       return selector.replace(
@@ -150,7 +129,7 @@ const buildMediaQuery = (
  * @returns true if the selector should be output in both :host() and original forms
  */
 export const isHostAttributeSelector = (selector: string): boolean => {
-  return HOST_ATTRIBUTE_SELECTORS.some((attr) => selector.startsWith(attr));
+  return LF_HOST_ATTRIBUTE_SELECTORS.some((attr) => selector.startsWith(attr));
 };
 
 /**

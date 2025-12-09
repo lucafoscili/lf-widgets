@@ -26,6 +26,7 @@
   },
   "license": "Apache-2.0",
   "scripts": {
+    "generate:fixtures": "node ./scripts/generateFixtures.js",
     "generate:sprite": "node ./scripts/generateSprite.js"
   }
 }

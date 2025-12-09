@@ -5,18 +5,19 @@ import {
   LfComponentName,
 } from "../foundations/components.declarations";
 import { LfColorInterface } from "./color.declarations";
-import { LfFrameworkInterface } from "./framework.declarations";
 import { LfDataInterface } from "./data.declarations";
-import { LfDragInterface } from "./drag.declarations";
-import { LfEffectsInterface } from "./effects.declarations";
-import { LfLLMInterface } from "./llm.declarations";
-import { LfPortalInterface } from "./portal.declarations";
-import { LfThemeInterface } from "./theme.declarations";
 import {
   LF_DEBUG_CATEGORIES,
   LF_DEBUG_LIFECYCLES,
   LF_DEBUG_LOG_TYPES,
 } from "./debug.constants";
+import { LfDragInterface } from "./drag.declarations";
+import { LfEffectsInterface } from "./effects.declarations";
+import { LfFrameworkInterface } from "./framework.declarations";
+import { LfLLMInterface } from "./llm.declarations";
+import { LfPortalInterface } from "./portal.declarations";
+import { LfThemeInterface } from "./theme.declarations";
+import { LfTooltipInterface } from "./tooltip.declarations";
 
 //#region Class
 /**
@@ -131,7 +132,8 @@ export type LfDebugLogClass =
   | LfFrameworkInterface
   | LfPortalInterface
   | LfEffectsInterface
-  | LfThemeInterface;
+  | LfThemeInterface
+  | LfTooltipInterface;
 /**
  * Utility type used by the debug tooling.
  */

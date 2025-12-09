@@ -2,10 +2,10 @@ import {
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -196,8 +196,13 @@ export const getMasonryFixtures = (
             PAYLOAD_NAME,
             [
               {
+                type: "click",
+                description: "emitted when a shape is selected",
+              },
+              {
                 type: "lf-event",
-                description: "emitted by shapes",
+                description:
+                  "emitted by shapes (not when selectable is enabled, as it's captured by the component)",
               },
               {
                 type: "ready",

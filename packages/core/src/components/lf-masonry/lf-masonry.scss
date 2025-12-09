@@ -9,7 +9,7 @@ $comp: "masonry";
 }
 
 :host([lf-selectable]) {
-  lf-image {
+  [data-component] {
     & {
       @include lf-el-transition("fade-in-out");
       box-sizing: border-box;
@@ -78,6 +78,11 @@ $comp: "masonry";
     align-items: var(--lf-#{$comp}-grid-items-alignment, start);
     column-gap: var(--lf-#{$comp}-grid-gap, 0.5em);
     display: grid;
+    /**
+    * @prop --lf-#{$comp}-grid-overflow: Sets the overflow for the grid of the #{$comp} component.
+    *                                    Defaults to => auto
+    */
+    overflow: var(--lf-#{$comp}-grid-overflow, auto);
   }
 
   &--horizontal {
@@ -191,5 +196,61 @@ $comp: "masonry";
     *                                           Defaults to => 0.25em
     */
     grid-gap: var(--lf-#{$comp}-grid-gap-actions-sub, 0.25em);
+  }
+
+  &__capture {
+    & {
+      /**
+      * @prop --lf-#{$comp}-capture-border-radius: Sets the border radius for the capture overlay.
+      *                                            Defaults to => 4px
+      */
+      border-radius: var(--lf-#{$comp}-capture-border-radius, 4px);
+      box-sizing: border-box;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    > * {
+      height: 100%;
+      pointer-events: none;
+      width: 100%;
+    }
+
+    &:has([data-component="LfChart"]) {
+      /**
+      * @prop --lf-#{$comp}-chart-min-height: Sets the minimum height for the chart inside the capture.
+      *                                       Defaults to => 150px
+      */
+      height: var(--lf-#{$comp}-chart-min-height, 150px);
+      --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
+    }
+
+    &:hover,
+    &:has([data-selected="true"]) {
+      /**
+      * @prop --lf-#{$comp}-capture-selected-filter: Sets the filter for the selected capture item.
+      *                                              Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      */
+      filter: var(
+        --lf-#{$comp}-capture-selected-filter,
+        brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      );
+    }
+
+    &:has([data-selected="true"]) {
+      /**
+      * @prop --lf-#{$comp}-capture-selected-border: Sets the border for the selected capture item.
+      *                                              Defaults to => 2px solid rgba(var(--lf-color-secondary), 0.875)
+      */
+      border: var(
+        --lf-#{$comp}-capture-selected-border,
+        2px solid rgba(var(--lf-color-secondary), 0.875)
+      );
+    }
   }
 }

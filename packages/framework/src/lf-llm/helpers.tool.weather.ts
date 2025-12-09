@@ -173,10 +173,9 @@ export const createWeatherToolHandler = (
         sectionId: "weather-section",
         sectionTitle: "",
         layout: "hero-top",
-        leaf: article.shapes.card({
-          id: "weather-card",
-          dataset: weatherDataset,
-          layout: "weather",
+        leaf: article.shapes.card("weather-card", {
+          lfDataset: weatherDataset,
+          lfLayout: "weather",
         }),
       });
 

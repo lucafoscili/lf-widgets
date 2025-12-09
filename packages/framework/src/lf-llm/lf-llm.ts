@@ -3,6 +3,7 @@ import {
   LF_LLM_DOCS_TOOL_DEFINITION,
   LF_LLM_THEME_TOOL_DEFINITION,
   LF_LLM_WEATHER_TOOL_DEFINITION,
+  LF_LLM_WIKIPEDIA_TOOL_DEFINITION,
   LfButtonElement,
   LfFrameworkInterface,
   LfLLMBuiltinToolDefinitionsRegistry,
@@ -18,6 +19,7 @@ import { createDebugToolHandler } from "./helpers.tool.debug";
 import { createDocsToolHandler } from "./helpers.tool.docs";
 import { createThemeToolHandler } from "./helpers.tool.theme";
 import { createWeatherToolHandler } from "./helpers.tool.weather";
+import { createWikipediaToolHandler } from "./helpers.tool.wikipedia";
 
 export class LfLLM implements LfLLMInterface {
   #DONE_RESPONSE = "data: [DONE]";
@@ -148,6 +150,8 @@ export class LfLLM implements LfLLMInterface {
       general: {
         [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]:
           LF_LLM_WEATHER_TOOL_DEFINITION,
+        [LF_LLM_WIKIPEDIA_TOOL_DEFINITION.function.name]:
+          LF_LLM_WIKIPEDIA_TOOL_DEFINITION,
       },
       lfw: {
         [LF_LLM_DOCS_TOOL_DEFINITION.function.name]:
@@ -178,6 +182,8 @@ export class LfLLM implements LfLLMInterface {
       [LF_LLM_WEATHER_TOOL_DEFINITION.function.name]: createWeatherToolHandler(
         this.#LF_MANAGER,
       ),
+      [LF_LLM_WIKIPEDIA_TOOL_DEFINITION.function.name]:
+        createWikipediaToolHandler(this.#LF_MANAGER),
     };
   };
   //#endregion

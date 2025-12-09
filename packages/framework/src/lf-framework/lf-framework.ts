@@ -22,6 +22,7 @@ import {
   LfPortalInterface,
   LfSyntaxInterface,
   LfThemeInterface,
+  LfTooltipInterface,
 } from "@lf-widgets/foundations";
 import { LfColor } from "../lf-color/lf-color";
 import { LfData } from "../lf-data/lf-data";
@@ -32,6 +33,7 @@ import { LfLLM } from "../lf-llm/lf-llm";
 import { LfPortal } from "../lf-portal/lf-portal";
 import { LfSyntax } from "../lf-syntax/lf-syntax";
 import { LfTheme } from "../lf-theme/lf-theme";
+import { LfTooltip } from "../lf-tooltip/lf-tooltip";
 
 // Fallback asset path functions for environments without Stencil
 let ASSET_BASE_PATH = "";
@@ -65,6 +67,7 @@ export class LfFramework implements LfFrameworkInterface {
   #llm?: LfLLMInterface;
   #portal?: LfPortalInterface;
   #syntax?: LfSyntaxInterface;
+  #tooltip?: LfTooltipInterface;
 
   assets: {
     get: LfFrameworkGetAssetPath;
@@ -216,6 +219,17 @@ export class LfFramework implements LfFrameworkInterface {
       this.#syntax = new LfSyntax(this);
     }
     return this.#syntax;
+  }
+
+  /**
+   * Tooltip module - lazy initialized on first access.
+   * Provides fire-and-forget tooltip registration for elements.
+   */
+  get tooltip(): LfTooltipInterface {
+    if (!this.#tooltip) {
+      this.#tooltip = new LfTooltip(this);
+    }
+    return this.#tooltip;
   }
   //#endregion
 

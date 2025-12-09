@@ -141,6 +141,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Graph
@@ -153,6 +154,7 @@ graph TD;
   lf-carousel --> lf-toggle
   lf-compare --> lf-toggle
   lf-masonry --> lf-toggle
+  lf-shapeeditor --> lf-toggle
   lf-tree --> lf-toggle
   style lf-toggle fill:#f9f,stroke:#333,stroke-width:4px
 ```

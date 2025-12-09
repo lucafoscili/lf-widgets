@@ -2,12 +2,12 @@ import type {
   LfArticleNode,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
-import { getLfFramework } from "@lf-widgets/framework";
+import { LfFramework } from "../../framework/src/lf-framework/lf-framework";
 
 let framework: LfFrameworkInterface | undefined;
 let data: any; // runtime service bag (typed loosely for test resilience)
 beforeAll(async () => {
-  framework = await getLfFramework();
+  framework = new LfFramework();
   data = framework.data;
 });
 
@@ -338,8 +338,8 @@ describe("Article helpers", () => {
       sectionId: section.id,
       node: article.shapes.card({
         id: "weather-card",
-        dataset: { nodes: [] },
-        layout: "weather",
+        lfDataset: { nodes: [] },
+        lfLayout: "weather",
       }),
     });
 
@@ -435,8 +435,8 @@ describe("Article helpers", () => {
 
     const cardNode = article.shapes.card({
       id: "tool-card",
-      dataset: { nodes: [] },
-      layout: "weather",
+      lfDataset: { nodes: [] },
+      lfLayout: "weather",
     });
 
     const { section, paragraph, leaf } = builder.section.add.withLeaf({
@@ -468,16 +468,15 @@ describe("Article helpers", () => {
   it("article.shapes.accordion creates an accordion node", () => {
     const article = data?.article;
 
-    const accordionNode = article.shapes.accordion({
-      id: "test-accordion",
-      dataset: {
+    const accordionNode = article.shapes.accordion("test-accordion", {
+      lfDataset: {
         nodes: [
           { id: "item-1", value: "Section 1" },
           { id: "item-2", value: "Section 2" },
         ],
       },
-      uiSize: "small",
-      uiState: "primary",
+      lfUiSize: "small",
+      lfUiState: "primary",
     });
 
     expect(accordionNode).toBeDefined();
@@ -492,13 +491,26 @@ describe("Article helpers", () => {
   it("article.shapes.accordionCodeBlock creates a collapsible code block", () => {
     const article = data?.article;
 
-    const accordionCodeNode = article.shapes.accordionCodeBlock({
-      id: "docs-accordion",
-      title: "README.md",
-      code: "# Hello World\n\nThis is a test.",
-      language: "markdown",
-      uiSize: "medium",
+    // Create a code block node
+    const codeNode = article.shapes.codeBlock("code-node", {
+      lfValue: "# Hello World\n\nThis is a test.",
+      lfLanguage: "markdown",
     });
+
+    // Create a section node that contains the code block
+    const sectionNode = {
+      id: "section-node",
+      value: "README.md",
+      children: [codeNode],
+    };
+
+    const accordionCodeNode = article.shapes.accordionCodeBlock(
+      "docs-accordion",
+      sectionNode,
+      {
+        uiSize: "medium",
+      },
+    );
 
     expect(accordionCodeNode).toBeDefined();
     expect(accordionCodeNode.id).toBe("docs-accordion");
@@ -508,14 +520,17 @@ describe("Article helpers", () => {
     const innerDataset = accordionCodeNode.cells?.lfAccordion?.lfDataset;
     expect(innerDataset?.nodes).toHaveLength(1);
 
-    const sectionNode = innerDataset?.nodes?.[0];
-    expect(sectionNode?.value).toBe("README.md");
-    expect(sectionNode?.cells?.lfCode).toBeDefined();
-    expect(sectionNode?.cells?.lfCode?.shape).toBe("code");
-    expect(sectionNode?.cells?.lfCode?.value).toBe(
+    const sectionNodeResult = innerDataset?.nodes?.[0];
+    expect(sectionNodeResult?.value).toBe("README.md");
+    expect(sectionNodeResult?.children).toHaveLength(1);
+    expect(sectionNodeResult?.children?.[0]?.cells?.lfCode).toBeDefined();
+    expect(sectionNodeResult?.children?.[0]?.cells?.lfCode?.shape).toBe("code");
+    expect(sectionNodeResult?.children?.[0]?.cells?.lfCode?.value).toBe(
       "# Hello World\n\nThis is a test.",
     );
-    expect(sectionNode?.cells?.lfCode?.lfLanguage).toBe("markdown");
+    expect(sectionNodeResult?.children?.[0]?.cells?.lfCode?.lfLanguage).toBe(
+      "markdown",
+    );
   });
 
   it("builder integrates accordion shape as leaf node", () => {
@@ -526,23 +541,31 @@ describe("Article helpers", () => {
       title: "Documentation Article",
     });
 
+    // Create a code block node
+    const codeNode = article.shapes.codeBlock("code-node", {
+      lfValue: "# Component\n\nDescription here.",
+      lfLanguage: "markdown",
+    });
+
+    // Create a section node that contains the code block
+    const sectionNode = {
+      id: "section-node",
+      value: "README.md",
+      children: [codeNode],
+    };
+
     builder.section.add.withLeaf({
       sectionId: "docs-section",
       sectionTitle: "Component Docs",
-      leaf: article.shapes.accordionCodeBlock({
-        id: "readme-accordion",
-        title: "README.md",
-        code: "# Component\n\nDescription here.",
-        language: "markdown",
-      }),
+      leaf: article.shapes.accordionCodeBlock("readme-accordion", sectionNode),
     });
 
     const dataset = builder.getDataset();
     expect(dataset.nodes).toBeDefined();
 
     const rootNode = dataset.nodes![0];
-    const sectionNode = rootNode.children![0];
-    const paragraphNode = sectionNode.children![0];
+    const sectionNodeResult = rootNode.children![0];
+    const paragraphNode = sectionNodeResult.children![0];
 
     // Find the accordion leaf in paragraph children
     const accordionLeaf = paragraphNode.children?.find(

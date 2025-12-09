@@ -10,4 +10,12 @@ node_modules/
 *.d.ts
 
 # Ignore specific files (e.g., generated docs)
-packages/lf-widgets/src/components/lf-showcase/assets/doc.ts
+packages/showcase/src/components/lf-showcase/assets/doc.ts
+
+# Ignore auto-generated source files (convention: *.generated.*)
+**/*.generated.ts
+**/*.generated.tsx
+**/*.generated.json
+
+# Ignore automatically generated readme files
+packages/core/src/components/**/readme.md

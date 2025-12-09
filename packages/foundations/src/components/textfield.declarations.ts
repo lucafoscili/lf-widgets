@@ -65,6 +65,7 @@ export type LfTextfieldModifiers = (typeof LF_TEXTFIELD_MODIFIERS)[number];
  * Public props accepted by the `lf-textfield` component.
  */
 export interface LfTextfieldPropsInterface {
+  lfCaptureShortcuts?: boolean;
   lfFormatJSON?: LfTextfieldFormatJSON | null;
   lfHelper?: LfTextfieldHelper;
   lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;

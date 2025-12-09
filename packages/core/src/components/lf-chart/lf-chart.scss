@@ -6,8 +6,16 @@ $comp: "chart";
 
 :host {
   height: var(--lf_#{$comp}_height, 100%);
-  min-height: var(--lf_#{$comp}_height, 100%);
-  min-width: var(--lf_#{$comp}_width, 100%);
+  /**
+  * @prop --lf-#{$comp}-min-height: Sets the minimum height for the #{$comp} component.
+  *                                 Defaults to => var(--lf_#{$comp}_height, 100%)
+  */
+  min-height: var(--lf-#{$comp}-min-height, var(--lf_#{$comp}_height, 100%));
+  /**
+  * @prop --lf-#{$comp}-min-width: Sets the minimum width for the #{$comp} component.
+  *                                Defaults to => var(--lf_#{$comp}_width, 100%)
+  */
+  min-width: var(--lf-#{$comp}-min-width, var(--lf_#{$comp}_width, 100%));
   width: var(--lf_#{$comp}_width, 100%);
 }
 

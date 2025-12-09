@@ -63,6 +63,7 @@ export interface LfChatInterface
   handleImageAttachment: () => Promise<void>;
   refresh: () => Promise<void>;
   removeAttachment: (id: string) => Promise<void>;
+  retryConnection: () => Promise<void>;
   scrollToBottom: (block?: ScrollLogicalPosition | boolean) => Promise<void>;
   setHistory: (value: string, fromFile?: boolean) => Promise<void>;
   unmount: (ms?: number) => Promise<void>;
@@ -101,8 +102,10 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     clear: () => VNode;
     configuration: () => VNode;
     editableMessage: (m: LfLLMChoiceMessage) => VNode;
+    fullScreen: () => VNode;
     messageBlock: (text: string, role: LfLLMRole) => VNode;
     progressbar: () => VNode;
+    retry: () => VNode;
     send: () => VNode;
     settings: () => VNode;
     spinner: () => VNode;
@@ -170,8 +173,10 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     editConfirm: LfButtonElement | null;
     editTextarea: LfTextfieldElement | null;
     fileInput: HTMLInputElement | null;
+    fullScreen: LfButtonElement | null;
     imageInput: HTMLInputElement | null;
     progressbar: LfProgressbarElement | null;
+    retry: LfButtonElement | null;
     send: LfButtonElement | null;
     settings: LfButtonElement | null;
     spinner: LfSpinnerElement | null;
@@ -215,6 +220,7 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   chat: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
     chip: (e: CustomEvent<LfChipEventPayload>) => void;
+    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
   };
   settings: {
     button: (e: CustomEvent<LfButtonEventPayload>) => void;
@@ -239,7 +245,7 @@ export type LfChatAdapterInitializerGetters = Pick<
   | "compInstance"
   | "currentAbortStreaming"
   | "currentAttachments"
-  | "currentEditingIndex"
+  | "currentEditingId"
   | "currentPrompt"
   | "currentTokens"
   | "currentToolExecution"
@@ -261,12 +267,13 @@ export type LfChatAdapterInitializerSetters = Pick<
   | "agentState"
   | "currentAbortStreaming"
   | "currentAttachments"
-  | "currentEditingIndex"
+  | "currentEditingId"
   | "currentPrompt"
   | "currentTokens"
   | "currentToolExecution"
   | "history"
   | "status"
+  | "toggleFullScreen"
   | "view"
 >;
 /**
@@ -279,7 +286,7 @@ export interface LfChatAdapterControllerGetters
   compInstance: LfChatInterface;
   currentAbortStreaming: () => AbortController | null;
   currentAttachments: () => LfLLMAttachment[];
-  currentEditingIndex: () => number;
+  currentEditingId: () => string | null;
   currentPrompt: () => LfLLMChoiceMessage | null;
   currentTokens: () => LfChatCurrentTokens;
   currentToolExecution: () => LfDataDataset | null;
@@ -301,12 +308,13 @@ export interface LfChatAdapterControllerSetters
   agentState: (value: LfChatAgentState | null) => void;
   currentAbortStreaming: (value: AbortController | null) => void;
   currentAttachments: (value: LfLLMAttachment[]) => void;
-  currentEditingIndex: (value: number) => void;
+  currentEditingId: (value: string | null) => void;
   currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   currentToolExecution: (value: LfDataDataset | null) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
+  toggleFullScreen: () => void;
   view: (view: LfChatView) => void;
 }
 //#endregion

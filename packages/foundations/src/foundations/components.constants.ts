@@ -16,7 +16,6 @@ import { LF_COMPARE_PROPS } from "../components/compare.constants";
 import { LF_DRAWER_PROPS } from "../components/drawer.constants";
 import { LF_HEADER_PROPS } from "../components/header.constants";
 import { LF_IMAGE_PROPS } from "../components/image.constants";
-import { LF_IMAGEVIEWER_PROPS } from "../components/imageviewer.constants";
 import { LF_LIST_PROPS } from "../components/list.constants";
 import { LF_MASONRY_PROPS } from "../components/masonry.constants";
 import { LF_MESSENGER_PROPS } from "../components/messenger.constants";
@@ -26,6 +25,7 @@ import { LF_PLACEHOLDER_PROPS } from "../components/placeholder.constants";
 import { LF_PROGRESSBAR_PROPS } from "../components/progressbar.constants";
 import { LF_RADIO_PROPS } from "../components/radio.constants";
 import { LF_SELECT_PROPS } from "../components/select.constants";
+import { LF_SHAPEEDITOR_PROPS } from "../components/shapeeditor.constants";
 import { LF_SLIDER_PROPS } from "../components/slider.constants";
 import { LF_SNACKBAR_PROPS } from "../components/snackbar.constants";
 import { LF_SPINNER_PROPS } from "../components/spinner.constants";
@@ -113,27 +113,12 @@ export const LF_STATE_ATTRIBUTES = {
   warning: "warning",
 } as const;
 /**
- * @deprecated Use LF_EFFECT_ATTRIBUTES, LF_UTILITY_ATTRIBUTES, or LF_STATE_ATTRIBUTES instead.
- * Kept for backward compatibility during migration.
- *
  * Shared set of boolean host attributes that influence component styling or behaviour.
  * Centralises attribute names so adapters and components avoid hard-coding strings.
- *
- * NOTE: For effects (neonGlow, tilt, ripple), components should use the dataset API
- * directly (e.g., element.dataset.lfNeonGlow) for hierarchical composability.
- * The values here maintain backward compatibility for components still using data-lf="...".
  */
 export const LF_ATTRIBUTES = {
-  // Utilities (mutually exclusive, data-lf="value")
   ...LF_UTILITY_ATTRIBUTES,
-  // States (semantic colors, data-lf="value")
   ...LF_STATE_ATTRIBUTES,
-  // Backward compat: old effect names for data-lf="value" pattern
-  // Components should migrate to dataset API for composability
-  neonGlow: "neon-glow",
-  neonGlowReflection: "neon-glow-reflection",
-  ripple: "ripple",
-  tilt: "tilt",
 } as const;
 /**
  * DOM id assigned to the global `<style>` element injected by the runtime.
@@ -176,7 +161,6 @@ export const getComponentProps = (): {
     LfDrawer: LF_DRAWER_PROPS,
     LfHeader: LF_HEADER_PROPS,
     LfImage: LF_IMAGE_PROPS,
-    LfImageviewer: LF_IMAGEVIEWER_PROPS,
     LfList: LF_LIST_PROPS,
     LfMasonry: LF_MASONRY_PROPS,
     LfMessenger: LF_MESSENGER_PROPS,
@@ -186,6 +170,7 @@ export const getComponentProps = (): {
     LfProgressbar: LF_PROGRESSBAR_PROPS,
     LfRadio: LF_RADIO_PROPS,
     LfSelect: LF_SELECT_PROPS,
+    LfShapeeditor: LF_SHAPEEDITOR_PROPS,
     LfSlider: LF_SLIDER_PROPS,
     LfSnackbar: LF_SNACKBAR_PROPS,
     LfSpinner: LF_SPINNER_PROPS,

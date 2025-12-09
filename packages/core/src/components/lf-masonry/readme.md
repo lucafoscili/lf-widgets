@@ -119,33 +119,38 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                 | Description                                                                                                                                            |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--lf-masonry-actions-backdrop`      | Sets the backdrop filter for the actions of the masonry component. Defaults to => blur(10px)                                                           |
-| `--lf-masonry-actions-background`    | Sets the background for the actions of the masonry component. Defaults to => rgba(var(--lf-color-surface), 0.75)                                       |
-| `--lf-masonry-actions-border-radius` | Sets the border radius for the actions of the masonry component. Defaults to => 50px                                                                   |
-| `--lf-masonry-actions-margin`        | Sets the margin for the actions of the masonry component. Defaults to => 0 0.5em 0.5em 0                                                               |
-| `--lf-masonry-actions-padding`       | Sets the padding for the actions of the masonry component. Defaults to => 0.75em                                                                       |
-| `--lf-masonry-actions-z-index`       | Sets the z index for the actions of the masonry component. Defaults to => 2                                                                            |
-| `--lf-masonry-button-bottom`         | Sets the bottom for the button of the masonry component. Defaults to => 1em                                                                            |
-| `--lf-masonry-button-right`          | Sets the right for the button of the masonry component. Defaults to => 1em                                                                             |
-| `--lf-masonry-column-size`           | Sets the column size for the grid of the masonry component. Defaults to => minmax(0px, 1fr)                                                            |
-| `--lf-masonry-font-family`           | Sets the primary font family for the masonry component. Defaults to => var(--lf-font-family-primary)                                                   |
-| `--lf-masonry-font-size`             | Sets the font size for the masonry component. Defaults to => var(--lf-font-size)                                                                       |
-| `--lf-masonry-grid-gap`              | Sets the gap for the grid of the masonry component. Defaults to => 0.5em                                                                               |
-| `--lf-masonry-grid-gap-actions`      | Sets the gap for the actions of the masonry component. Defaults to => 0.5em                                                                            |
-| `--lf-masonry-grid-gap-actions-sub`  | Sets the gap for the actions sub of the masonry component. Defaults to => 0.25em                                                                       |
-| `--lf-masonry-grid-items-alignment`  | Sets the items alignment for the grid of the masonry component. Defaults to => start                                                                   |
-| `--lf-masonry-padding`               | Sets the padding for the grid of the masonry component. Defaults to => 0.75em                                                                          |
-| `--lf-masonry-selected-border`       | Sets the border for the selected image of the masonry component. Defaults to => 1px solid rgba(var(--lf-color-secondary, 0.875))                       |
-| `--lf-masonry-selected-filter`       | Sets the filter for the selected image of the masonry component. Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary))) |
+| Name                                   | Description                                                                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--lf-masonry-actions-backdrop`        | Sets the backdrop filter for the actions of the masonry component. Defaults to => blur(10px)                                                           |
+| `--lf-masonry-actions-background`      | Sets the background for the actions of the masonry component. Defaults to => rgba(var(--lf-color-surface), 0.75)                                       |
+| `--lf-masonry-actions-border-radius`   | Sets the border radius for the actions of the masonry component. Defaults to => 50px                                                                   |
+| `--lf-masonry-actions-margin`          | Sets the margin for the actions of the masonry component. Defaults to => 0 0.5em 0.5em 0                                                               |
+| `--lf-masonry-actions-padding`         | Sets the padding for the actions of the masonry component. Defaults to => 0.75em                                                                       |
+| `--lf-masonry-actions-z-index`         | Sets the z index for the actions of the masonry component. Defaults to => 2                                                                            |
+| `--lf-masonry-button-bottom`           | Sets the bottom for the button of the masonry component. Defaults to => 1em                                                                            |
+| `--lf-masonry-button-right`            | Sets the right for the button of the masonry component. Defaults to => 1em                                                                             |
+| `--lf-masonry-capture-border-radius`   | Sets the border radius for the capture overlay. Defaults to => 4px                                                                                     |
+| `--lf-masonry-capture-selected-border` | Sets the border for the selected capture item. Defaults to => 2px solid rgba(var(--lf-color-secondary), 0.875)                                         |
+| `--lf-masonry-capture-selected-filter` | Sets the filter for the selected capture item. Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))                   |
+| `--lf-masonry-chart-min-height`        | Sets the minimum height for the chart inside the capture. Defaults to => 150px                                                                         |
+| `--lf-masonry-column-size`             | Sets the column size for the grid of the masonry component. Defaults to => minmax(0px, 1fr)                                                            |
+| `--lf-masonry-font-family`             | Sets the primary font family for the masonry component. Defaults to => var(--lf-font-family-primary)                                                   |
+| `--lf-masonry-font-size`               | Sets the font size for the masonry component. Defaults to => var(--lf-font-size)                                                                       |
+| `--lf-masonry-grid-gap`                | Sets the gap for the grid of the masonry component. Defaults to => 0.5em                                                                               |
+| `--lf-masonry-grid-gap-actions`        | Sets the gap for the actions of the masonry component. Defaults to => 0.5em                                                                            |
+| `--lf-masonry-grid-gap-actions-sub`    | Sets the gap for the actions sub of the masonry component. Defaults to => 0.25em                                                                       |
+| `--lf-masonry-grid-items-alignment`    | Sets the items alignment for the grid of the masonry component. Defaults to => start                                                                   |
+| `--lf-masonry-grid-overflow`           | Sets the overflow for the grid of the masonry component. Defaults to => auto                                                                           |
+| `--lf-masonry-padding`                 | Sets the padding for the grid of the masonry component. Defaults to => 0.75em                                                                          |
+| `--lf-masonry-selected-border`         | Sets the border for the selected image of the masonry component. Defaults to => 1px solid rgba(var(--lf-color-secondary, 0.875))                       |
+| `--lf-masonry-selected-filter`         | Sets the filter for the selected image of the masonry component. Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary))) |
 
 
 ## Dependencies
 
 ### Used by
 
- - [lf-imageviewer](../lf-imageviewer)
+ - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Depends on
 
@@ -249,7 +254,7 @@ graph TD;
   lf-article --> lf-upload
   lf-code --> lf-button
   lf-photoframe --> lf-image
-  lf-imageviewer --> lf-masonry
+  lf-shapeeditor --> lf-masonry
   style lf-masonry fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

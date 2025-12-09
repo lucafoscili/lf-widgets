@@ -1,13 +1,13 @@
 import {
   IDS,
-  LfImageviewerAdapter,
-  LfImageviewerAdapterJsx,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 
 export const prepNavigation = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterJsx["navigation"] => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterJsx["navigation"] => {
   return {
     // #region Load
     load: () => {
@@ -48,7 +48,7 @@ export const prepNavigation = (
       const { blocks, compInstance, manager } = controller.get;
       const { navigation } = elements.refs;
       const { masonry } = handlers.navigation;
-      const { lfDataset } = compInstance;
+      const { lfDataset, lfShape } = compInstance;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
@@ -62,6 +62,7 @@ export const prepNavigation = (
           lfActions={true}
           lfDataset={lfDataset}
           lfSelectable={true}
+          lfShape={lfShape}
           onLf-masonry-event={masonry}
           ref={assignRef(navigation, "masonry")}
         ></lf-masonry>

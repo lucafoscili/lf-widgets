@@ -1,10 +1,10 @@
 import {
   LfChatAdapter,
-  LfLLMChoiceMessage,
   LfLLMRequest,
   LfLLMToolCall,
 } from "@lf-widgets/foundations";
 import { getEffectiveConfig } from "./helpers.config";
+import { ensureMessageId } from "./helpers.message-id";
 import { newRequest } from "./helpers.request";
 import {
   createInitialToolDataset,
@@ -111,19 +111,23 @@ const handleStreamingResponse = async (
               });
             } else {
               set.history(() =>
-                history().push({
-                  role: "assistant",
-                  content: accumulatedContent,
-                }),
+                history().push(
+                  ensureMessageId({
+                    role: "assistant",
+                    content: accumulatedContent,
+                  }),
+                ),
               );
               lastIndex = history().length - 1;
             }
           } else {
             set.history(() =>
-              history().push({
-                role: "assistant",
-                content: accumulatedContent,
-              }),
+              history().push(
+                ensureMessageId({
+                  role: "assistant",
+                  content: accumulatedContent,
+                }),
+              ),
             );
             lastIndex = history().length - 1;
           }
@@ -169,14 +173,24 @@ const handleStreamingResponse = async (
               } else {
                 messageCreated = true;
                 set.history(() =>
-                  history().push({ role: "assistant", content: "" }),
+                  history().push(
+                    ensureMessageId({
+                      role: "assistant",
+                      content: "",
+                    }),
+                  ),
                 );
                 lastIndex = history().length - 1;
               }
             } else {
               messageCreated = true;
               set.history(() =>
-                history().push({ role: "assistant", content: "" }),
+                history().push(
+                  ensureMessageId({
+                    role: "assistant",
+                    content: "",
+                  }),
+                ),
               );
               lastIndex = history().length - 1;
             }
@@ -207,7 +221,12 @@ const handleStreamingResponse = async (
     if (!messageCreated && accumulatedToolCalls.length > 0) {
       messageCreated = true;
       set.history(() =>
-        history().push({ role: "assistant", content: accumulatedContent }),
+        history().push(
+          ensureMessageId({
+            role: "assistant",
+            content: accumulatedContent,
+          }),
+        ),
       );
       lastIndex = history().length - 1;
     }
@@ -361,11 +380,11 @@ const handleFetchResponse = async (
     toolCalls = finalDeduped;
   }
 
-  const llmMessage: LfLLMChoiceMessage = {
+  const llmMessage = ensureMessageId({
     role: "assistant",
     content: message,
     tool_calls: toolCalls,
-  };
+  });
 
   if (toolCalls && toolCalls.length > 0) {
     const toolDataset = await handleToolCalls(adapter, toolCalls);
@@ -383,7 +402,7 @@ const handleFetchResponse = async (
     if (lastIndex >= 0) {
       set.history(() => {
         const h = history();
-        const existing = h[lastIndex] as LfLLMChoiceMessage;
+        const existing = h[lastIndex];
         const mergedCalls = toolCalls
           ? mergeToolCalls(existing.tool_calls, toolCalls)
           : existing.tool_calls;

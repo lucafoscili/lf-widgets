@@ -1,4 +1,5 @@
 import { newSpecPage } from "@stencil/core/testing";
+import { LF_CODE_BLOCKS } from "@lf-widgets/foundations";
 import { LfCode } from "./lf-code";
 // Ensure framework initializes so component's awaitFramework() resolves
 import { getLfFramework } from "@lf-widgets/framework";
@@ -16,7 +17,9 @@ describe("lf-code component", () => {
   it("renders with default props", async () => {
     const page = await createPage(`<lf-code></lf-code>`);
     expect(page.root).toBeDefined();
-    const code = page.root.shadowRoot.querySelector(".code");
+    const framework = getLfFramework();
+    const headerClass = framework.theme.bemClass(LF_CODE_BLOCKS.code._);
+    const code = page.root.shadowRoot.querySelector(`.${headerClass}`);
     expect(code).not.toBeNull();
   });
 
@@ -33,18 +36,35 @@ describe("lf-code component", () => {
     const page = await createPage(`<lf-code></lf-code>`);
     page.rootInstance.lfLanguage = "typescript";
     await page.waitForChanges();
-    const header = page.root.shadowRoot.querySelector(".code__header");
+
+    const framework = getLfFramework();
+    const { bemClass } = framework.theme;
+    const blocks = LF_CODE_BLOCKS.code;
+
+    const headerClass = bemClass(blocks.header._);
+    const titleClass = bemClass(blocks.header._, blocks.header.title);
+
+    const header = page.root.shadowRoot.querySelector(
+      `.${headerClass}`,
+    ) as HTMLElement | null;
     expect(header).not.toBeNull();
-    const title = header.querySelector(".code__title");
+
+    const title = header!.querySelector(`.${titleClass}`) as HTMLElement | null;
     expect(title).not.toBeNull();
-    expect(title.textContent.trim()).toBe("typescript");
+    expect(title!.textContent!.trim()).toBe("typescript");
   });
 
   it("hides header when lfShowHeader is false", async () => {
     const page = await createPage(`<lf-code></lf-code>`);
     page.rootInstance.lfShowHeader = false;
     await page.waitForChanges();
-    const header = page.root.shadowRoot.querySelector(".code__header");
+
+    const framework = getLfFramework();
+    const { bemClass } = framework.theme;
+    const blocks = LF_CODE_BLOCKS.code;
+    const headerClass = bemClass(blocks.header._);
+
+    const header = page.root.shadowRoot.querySelector(`.${headerClass}`);
     expect(header).toBeNull();
   });
 

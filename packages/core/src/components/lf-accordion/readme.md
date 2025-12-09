@@ -15,13 +15,14 @@ disabled via a property.
 
 ## Properties
 
-| Property    | Attribute     | Description                                                                                                                          | Type                                                                                     | Default     |
-| ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ----------- |
-| `lfDataset` | --            | The data set for the LF Accordion component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`      |
-| `lfRipple`  | `lf-ripple`   | Indicates whether the ripple effect is enabled for the accordion component.                                                          | `boolean`                                                                                | `true`      |
-| `lfStyle`   | `lf-style`    | Custom styling for the component.                                                                                                    | `string`                                                                                 | `""`        |
-| `lfUiSize`  | `lf-ui-size`  | The size of the component.                                                                                                           | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
-| `lfUiState` | `lf-ui-state` | The color theme state for the component.                                                                                             | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
+| Property     | Attribute     | Description                                                                                                                          | Type                                                                                     | Default     |
+| ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ----------- |
+| `lfDataset`  | --            | The data set for the LF Accordion component. This property is mutable, meaning it can be changed after the component is initialized. | `LfDataDataset`                                                                          | `null`      |
+| `lfExpanded` | --            | IDs of nodes that should be expanded. When provided, the accordion will sync its internal expanded state with this array.            | `string[]`                                                                               | `[]`        |
+| `lfRipple`   | `lf-ripple`   | Indicates whether the ripple effect is enabled for the accordion component.                                                          | `boolean`                                                                                | `true`      |
+| `lfStyle`    | `lf-style`    | Custom styling for the component.                                                                                                    | `string`                                                                                 | `""`        |
+| `lfUiSize`   | `lf-ui-size`  | The size of the component.                                                                                                           | `"large" \| "medium" \| "small" \| "xlarge" \| "xsmall" \| "xxlarge" \| "xxsmall"`       | `"medium"`  |
+| `lfUiState`  | `lf-ui-state` | The color theme state for the component.                                                                                             | `"danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"` | `"primary"` |
 
 
 ## Events
@@ -43,6 +44,16 @@ Type: `Promise<LfDebugLifecycleInfo>`
 
 A promise that resolves with the debug information object.
 
+### `getExpandedNodes() => Promise<Set<string>>`
+
+Returns the expanded node IDs.
+
+#### Returns
+
+Type: `Promise<Set<string>>`
+
+Expanded node IDs.
+
 ### `getProps() => Promise<LfAccordionPropsInterface>`
 
 Used to retrieve component's properties and descriptions.
@@ -53,15 +64,15 @@ Type: `Promise<LfAccordionPropsInterface>`
 
 Promise resolved with an object containing the component's properties.
 
-### `getSelectedNodes() => Promise<Set<LfDataNode>>`
+### `getSelectedNodes() => Promise<Set<string>>`
 
-Returns the selected nodes.
+Returns the selected node IDs.
 
 #### Returns
 
-Type: `Promise<Set<LfDataNode>>`
+Type: `Promise<Set<string>>`
 
-Selected nodes.
+Selected node IDs.
 
 ### `refresh() => Promise<void>`
 
@@ -144,6 +155,7 @@ Type: `Promise<void>`
  - [lf-chat](../lf-chat)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Depends on
@@ -183,6 +195,7 @@ graph TD;
   lf-carousel --> lf-accordion
   lf-compare --> lf-accordion
   lf-masonry --> lf-accordion
+  lf-shapeeditor --> lf-accordion
   lf-tree --> lf-accordion
   style lf-accordion fill:#f9f,stroke:#333,stroke-width:4px
 ```

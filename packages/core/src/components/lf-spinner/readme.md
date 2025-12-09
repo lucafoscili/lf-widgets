@@ -107,7 +107,7 @@ Type: `Promise<void>`
  - [lf-autocomplete](../lf-autocomplete)
  - [lf-button](../lf-button)
  - [lf-chat](../lf-chat)
- - [lf-imageviewer](../lf-imageviewer)
+ - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Graph
 ```mermaid
@@ -115,7 +115,7 @@ graph TD;
   lf-autocomplete --> lf-spinner
   lf-button --> lf-spinner
   lf-chat --> lf-spinner
-  lf-imageviewer --> lf-spinner
+  lf-shapeeditor --> lf-spinner
   style lf-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

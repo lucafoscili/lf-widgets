@@ -3,22 +3,24 @@
 import {
   LfButtonInterface,
   LfDataCell,
+  LfDataNode,
   LfDataShapes,
-  LfImageviewerAdapter,
   LfMasonrySelectedShape,
+  LfShapeeditorAdapter,
+  LfShapeeditorConfigDsl,
 } from "@lf-widgets/foundations";
 
 /**
- * Clears the history of operations in the image viewer adapter.
+ * Clears the history of operations in the shape editor adapter.
  * If an index is provided, it removes the history entry at that specific index.
  * Otherwise, it removes the last history entry and clears the current selection.
  *
- * @param adapter - The image viewer adapter instance containing the controller and history
+ * @param adapter - The shape editor adapter instance containing the controller and history
  * @param index - Optional index to remove a specific history entry. If null, removes the last entry
  * @returns Promise that resolves when history clearing is complete
  */
 export const clearHistory = async (
-  adapter: LfImageviewerAdapter,
+  adapter: LfShapeeditorAdapter,
   index: number = null,
 ) => {
   const { history } = adapter.controller.set;
@@ -34,13 +36,13 @@ export const clearHistory = async (
 
 //#region Clear selection
 /**
- * Clears the current selection state in the image viewer.
+ * Clears the current selection state in the shape editor.
  * This includes resetting the current shape, history index, and selected shape in the masonry layout.
  *
- * @param adapter - The image viewer adapter containing controller and element references
+ * @param adapter - The shape editor adapter containing controller and element references
  * @returns A Promise that resolves when the selection has been cleared
  */
-export const clearSelection = async (adapter: LfImageviewerAdapter) => {
+export const clearSelection = async (adapter: LfShapeeditorAdapter) => {
   const { controller, elements } = adapter;
   const { masonry } = elements.refs.navigation;
   const { set } = controller;
@@ -55,14 +57,14 @@ export const clearSelection = async (adapter: LfImageviewerAdapter) => {
 
 //#region Delete shape
 /**
- * Deletes the currently selected shape from the image viewer.
+ * Deletes the currently selected shape from the shape editor.
  * This operation includes clearing the shape's history, removing it from the data structure,
  * and clearing the current selection.
  *
- * @param adapter - The LfImageviewer adapter instance containing the component and controller references
+ * @param adapter - The LfShapeeditor adapter instance containing the component and controller references
  * @returns A Promise that resolves when the shape deletion is complete
  */
-export const deleteShape = async (adapter: LfImageviewerAdapter) => {
+export const deleteShape = async (adapter: LfShapeeditorAdapter) => {
   const { compInstance, currentShape, manager } = adapter.controller.get;
   const { lfDataset } = compInstance;
   const { findNodeByCell, pop } = manager.data.node;
@@ -80,16 +82,16 @@ export const deleteShape = async (adapter: LfImageviewerAdapter) => {
 
 //#region Find image
 /**
- * Finds a specific image cell within the LogicFlow data structure based on the current shape.
+ * Finds a specific image cell within the data structure based on the current shape.
  *
- * @param adapter - The LogicFlow imageviewer adapter instance containing controller and component data
+ * @param adapter - The shape editor adapter instance containing controller and component data
  * @returns The matching image cell if found, undefined otherwise
  *
  * @remarks
  * The function compares the value or lfValue of image cells with the current shape's value
  * to find a matching cell.
  */
-export const findImage = (adapter: LfImageviewerAdapter) => {
+export const findImage = (adapter: LfShapeeditorAdapter) => {
   const { compInstance, currentShape, manager } = adapter.controller.get;
   const { lfDataset } = compInstance;
   const { getAll } = manager.data.cell.shapes;
@@ -105,14 +107,14 @@ export const findImage = (adapter: LfImageviewerAdapter) => {
 
 //#region Load
 /**
- * Asynchronously loads images via the provided adapter's callback.
+ * Asynchronously loads data via the provided adapter's callback.
  * After a successful load operation, the history is cleared.
  *
- * @param adapter - The LfImageviewerAdapter instance containing controller and element references
+ * @param adapter - The LfShapeeditorAdapter instance containing controller and element references
  * @throws {Error} When the load operation fails
  * @returns A Promise that resolves when the load operation completes
  */
-export const load = async (adapter: LfImageviewerAdapter) => {
+export const load = async (adapter: LfShapeeditorAdapter) => {
   const { controller, elements } = adapter;
   const { textfield } = elements.refs.navigation;
   const { compInstance } = controller.get;
@@ -129,13 +131,13 @@ export const load = async (adapter: LfImageviewerAdapter) => {
 
 //#region Redo
 /**
- * Performs a redo operation on the image viewer.
+ * Performs a redo operation on the shape editor.
  * Advances the history index forward if there are changes to redo.
  *
- * @param adapter - The image viewer adapter instance containing controller and history state
+ * @param adapter - The shape editor adapter instance containing controller and history state
  * @returns A promise that resolves when the redo operation is complete
  */
-export const redo = async (adapter: LfImageviewerAdapter) => {
+export const redo = async (adapter: LfShapeeditorAdapter) => {
   const { controller } = adapter;
   const { get, set } = controller;
   const { current, index } = get.history;
@@ -150,16 +152,16 @@ export const redo = async (adapter: LfImageviewerAdapter) => {
 
 //#region Save
 /**
- * Saves the current state of the image editor.
+ * Saves the current state of the shape editor.
  * This function updates both the internal state and the data model with the current shape's value,
  * and clears the editing history afterwards.
  *
- * @param adapter - The LfImageviewer adapter instance containing component and controller information
+ * @param adapter - The LfShapeeditor adapter instance containing component and controller information
  * @returns A promise that resolves when the save operation and history clearing are complete
  *
  * @throws Will return early if no current shape is selected
  */
-export const save = async (adapter: LfImageviewerAdapter) => {
+export const save = async (adapter: LfShapeeditorAdapter) => {
   const { compInstance, currentShape, history } = adapter.controller.get;
   const { lfDataset } = compInstance;
 
@@ -226,13 +228,13 @@ export const toggleButtonSpinner = async (
 
 //#region Undo
 /**
- * Moves back one step in the image manipulation history if possible.
+ * Moves back one step in the shape editor history if possible.
  * This function decrements the history index by one if it's greater than zero.
  *
- * @param adapter - The LfImageviewerAdapter instance containing the controller with history management
+ * @param adapter - The LfShapeeditorAdapter instance containing the controller with history management
  * @returns Promise<void>
  */
-export const undo = async (adapter: LfImageviewerAdapter) => {
+export const undo = async (adapter: LfShapeeditorAdapter) => {
   const { controller } = adapter;
   const { get, set } = controller;
   const { history } = get;
@@ -260,6 +262,35 @@ export const updateValue = (
   shape.value = value;
   if (s.lfValue) {
     s.lfValue = value;
+  }
+};
+//#endregion
+
+//#region Config DSL
+export const parseConfigDslFromNode = (
+  node: LfDataNode | undefined,
+): LfShapeeditorConfigDsl | null => {
+  if (!node || !node.cells || !("lfCode" in node.cells)) {
+    return null;
+  }
+
+  const cell = node.cells.lfCode;
+  if (!cell?.value) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(cell.value) as Partial<LfShapeeditorConfigDsl>;
+    if (!parsed || !Array.isArray(parsed.controls)) {
+      return null;
+    }
+    return {
+      controls: parsed.controls,
+      layout: parsed.layout,
+      defaultSettings: parsed.defaultSettings || {},
+    };
+  } catch {
+    return null;
   }
 };
 //#endregion

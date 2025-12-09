@@ -213,6 +213,7 @@ export class LfCanvas implements LfCanvasInterface {
   #w = LF_WRAPPER_ID;
   #adapter: LfCanvasAdapter;
   #container: HTMLDivElement;
+  #resizeCooldown = false;
   #resizeObserver: ResizeObserver;
   #resizeTimeout: NodeJS.Timeout;
   //#endregion
@@ -473,20 +474,33 @@ export class LfCanvas implements LfCanvasInterface {
   /**
    * Initializes the ResizeObserver to monitor dimension changes.
    *
-   * Observes the parent element (not the Host element itself) to prevent infinite loops
-   * that would occur if the Host's boxing CSS changes triggered the observer, which would
-   * recalculate boxing, triggering CSS changes again, etc.
+   * Observes the parent element (not the Host element itself) to prevent
+   * direct observation of boxing CSS changes on the host.
    *
-   * The observer debounces resize events with a 100ms timeout to avoid excessive
-   * recalculations during continuous resize operations.
+   * The observer debounces resize events with a 100ms timeout and uses
+   * a cooldown period after each resize to prevent infinite loops caused
+   * by boxing CSS changes triggering new resize events.
    */
   #initResizeObserver = () => {
     const observeTarget = this.rootElement.parentElement || this.rootElement;
 
     this.#resizeObserver = new ResizeObserver(() => {
+      // Skip if in cooldown period (prevents loops from boxing CSS changes)
+      if (this.#resizeCooldown) {
+        return;
+      }
+
       clearTimeout(this.#resizeTimeout);
-      this.#resizeTimeout = setTimeout(() => {
-        this.resizeCanvas();
+      this.#resizeTimeout = setTimeout(async () => {
+        // Set cooldown before resize
+        this.#resizeCooldown = true;
+
+        await this.resizeCanvas();
+
+        // Clear cooldown after a delay to allow legitimate future resizes
+        setTimeout(() => {
+          this.#resizeCooldown = false;
+        }, 200);
       }, 100);
     });
     this.#resizeObserver.observe(observeTarget);

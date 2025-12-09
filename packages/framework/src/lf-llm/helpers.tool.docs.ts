@@ -44,13 +44,19 @@ export const createDocsToolHandler = (
         sectionTitle: "",
         text: `Here's the official documentation for the **${normalizedTag}** component! 📄`,
         layout: "stack",
-        leaf: article.shapes.accordionCodeBlock({
-          id: "docs-readme-accordion",
-          title: "README.md",
-          icon: "file",
-          language: "markdown",
-          code: markdown,
-        }),
+        leaf: article.shapes.accordionCodeBlock(
+          "docs-readme-accordion",
+          {
+            description: `README.md for the ${normalizedTag} component`,
+            icon: "file",
+            id: "docs-readme-accordion",
+            value: "README.md",
+          },
+          {
+            lfLanguage: "markdown",
+            lfValue: markdown,
+          },
+        ),
       });
 
       const dataset = builder.getDataset();

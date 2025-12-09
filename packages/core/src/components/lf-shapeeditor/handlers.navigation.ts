@@ -1,14 +1,13 @@
 import {
-  LfEvent,
-  LfImageviewerAdapter,
-  LfImageviewerAdapterHandlers,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterHandlers,
 } from "@lf-widgets/foundations";
 import { clearSelection, load, toggleButtonSpinner } from "./helpers.utils";
-import { LfImageviewer } from "./lf-imageviewer";
+import { LfShapeeditor } from "./lf-shapeeditor";
 
 export const prepNavigationHandlers = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterHandlers["navigation"] => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterHandlers["navigation"] => {
   return {
     //#region Button handler
     button: async (e) => {
@@ -17,7 +16,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const c = compInstance as LfImageviewer;
+      const c = compInstance as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
@@ -31,7 +30,7 @@ export const prepNavigationHandlers = (
 
     //#region Masonry handler
     masonry: (e) => {
-      const { eventType, originalEvent, selectedShape } = e.detail;
+      const { eventType, selectedShape } = e.detail;
 
       const adapter = getAdapter();
       const { controller } = adapter;
@@ -39,27 +38,23 @@ export const prepNavigationHandlers = (
       const { compInstance, history } = get;
       const { current } = history;
 
-      const c = compInstance as LfImageviewer;
+      const c = compInstance as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
       switch (eventType) {
-        case "lf-event":
-          const orig = originalEvent as LfEvent;
-          switch (orig.detail.eventType) {
-            case "click":
-              const currentShape = get.currentShape();
-              if (currentShape?.shape?.index === selectedShape.index) {
-                clearSelection(adapter);
-              } else {
-                set.currentShape(selectedShape);
+        case "click":
+          const currentShape = get.currentShape();
+          if (currentShape?.shape?.index === selectedShape.index) {
+            clearSelection(adapter);
+          } else {
+            set.currentShape(selectedShape);
 
-                const h = current();
-                set.history.index(h ? h.length - 1 : 0);
-                set.history.new(selectedShape);
-              }
-              break;
+            const h = current();
+            set.history.index(h ? h.length - 1 : 0);
+            set.history.new(selectedShape);
           }
+          break;
       }
     },
     //#endregion
@@ -73,7 +68,7 @@ export const prepNavigationHandlers = (
       const { get, set } = controller;
       const { compInstance } = get;
 
-      const comp = compInstance as LfImageviewer;
+      const comp = compInstance as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
 
@@ -90,7 +85,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfImageviewer;
+      const comp = compInstance as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },
@@ -101,7 +96,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfImageviewer;
+      const comp = compInstance as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },

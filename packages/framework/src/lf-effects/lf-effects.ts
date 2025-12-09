@@ -2,17 +2,19 @@ import {
   CY_ATTRIBUTES,
   LF_UTILITY_ATTRIBUTES,
   LfComponentRootElement,
+  LfEffectName,
   LfEffectsIntensities,
   LfEffectsInterface,
   LfEffectsNeonGlowOptions,
   LfEffectsRippleOptions,
+  LfEffectsSpotlightOptions,
   LfEffectsTimeouts,
-  LfEffectName,
   LfFrameworkInterface,
 } from "@lf-widgets/foundations";
 import { layerManager } from "./helpers.layers";
 import { neonGlowEffect } from "./helpers.neon-glow";
 import { rippleEffect } from "./helpers.ripple";
+import { spotlightEffect } from "./helpers.spotlight";
 import { tiltEffect } from "./helpers.tilt";
 
 export class LfEffects implements LfEffectsInterface {
@@ -267,6 +269,23 @@ export class LfEffects implements LfEffectsInterface {
       this.#addEffect(element, "ripple");
     },
 
+    spotlight: (
+      element: HTMLElement,
+      options: LfEffectsSpotlightOptions = {},
+    ) => {
+      if (this.isRegistered(element, "spotlight")) {
+        this.#MANAGER.debug.logs.new(
+          this,
+          "Element already has spotlight registered.",
+          "warning",
+        );
+        return;
+      }
+
+      spotlightEffect.register(element, options);
+      this.#addEffect(element, "spotlight");
+    },
+
     tilt: (element: HTMLElement, intensity?: number) => {
       if (this.isRegistered(element, "tilt")) {
         this.#MANAGER.debug.logs.new(
@@ -299,6 +318,15 @@ export class LfEffects implements LfEffectsInterface {
 
       rippleEffect.unregister(element);
       this.#removeEffect(element, "ripple");
+    },
+
+    spotlight: (element: HTMLElement) => {
+      if (!this.isRegistered(element, "spotlight")) {
+        return;
+      }
+
+      spotlightEffect.unregister(element);
+      this.#removeEffect(element, "spotlight");
     },
 
     tilt: (element: HTMLElement) => {

@@ -65,7 +65,21 @@ $comp: "chat";
     grid-template-rows: repeat(3, auto);
   }
 
+  &--settings {
+    align-content: flex-start;
+  }
+
+  &--full {
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: var(--lf-ui-z-index-fullscreen, 9999);
+  }
+
   &__attachments {
+    backdrop-filter: unset;
     box-sizing: border-box;
     grid-area: attachments;
     height: auto;
@@ -78,7 +92,9 @@ $comp: "chat";
     width: 100%;
   }
 
-  &__configuration {
+  &__configuration,
+  &__retry {
+    backdrop-filter: unset;
     justify-self: center;
   }
 
@@ -128,18 +144,6 @@ $comp: "chat";
     @include lf-el-text("title");
     text-align: center;
   }
-}
-
-.request {
-  box-sizing: border-box;
-  grid-area: request;
-  max-width: 100%;
-  /**
-  * @prop --lf-#{$comp}-inner-padding: Sets the inner padding for the #{$comp} component.
-  *                                    Defaults to => 0 1em
-  */
-  padding: var(--lf-#{$comp}-inner-padding, 0 1em);
-  width: 100%;
 }
 
 .commands {
@@ -195,20 +199,37 @@ $comp: "chat";
   }
 }
 
+.request {
+  box-sizing: border-box;
+  grid-area: request;
+  max-width: 100%;
+  /**
+  * @prop --lf-#{$comp}-inner-padding: Sets the inner padding for the #{$comp} component.
+  *                                    Defaults to => 0 1em
+  */
+  padding: var(--lf-#{$comp}-inner-padding, 0 1em);
+  width: 100%;
+}
+
 .settings {
   & {
     display: grid;
     grid-gap: 0.5em;
+    grid-template-areas:
+      "header"
+      "configuration";
     grid-template-rows: auto 1fr;
     height: 100%;
   }
 
   &__configuration {
     overflow: auto;
+    grid-area: configuration;
   }
 
   &__header {
     display: flex;
+    grid-area: header;
     width: 100%;
   }
 

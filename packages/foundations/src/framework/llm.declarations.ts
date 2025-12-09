@@ -81,6 +81,13 @@ export interface LfLLMChoice {
  * Utility interface used by the LLM integration helpers.
  */
 export interface LfLLMChoiceMessage {
+  /**
+   * Optional unique identifier for the message.
+   * When present, UI layers can rely on this id instead of array indices
+   * to track and edit specific messages, even if hidden/system/tool messages
+   * are present in the history.
+   */
+  id?: string;
   attachments?: LfLLMAttachment[];
   role: LfLLMRole;
   content: string;

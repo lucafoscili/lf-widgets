@@ -6,14 +6,48 @@ export const LF_LLM_ROLES = ["system", "user", "assistant", "tool"] as const;
 
 //#region Builtin Tool Names
 export const LF_LLM_TOOL_NAMES = {
-  GET_WEATHER: "get_weather",
   GET_COMPONENT_DOCS: "get_component_docs",
+  GET_RANDOM_WIKIPEDIA_ARTICLE: "get_random_wikipedia_article",
+  GET_WEATHER: "get_weather",
   SET_THEME: "set_theme",
   TOGGLE_DEBUG: "toggle_debug",
 } as const;
 //#endregion
 
-//#region Builtin Tool Definitions
+//#region Wikipedia
+/**
+ * Serializable definition for the random Wikipedia article tool.
+ * Fetches a random Wikipedia article summary and returns it as a rich article.
+ */
+export const LF_LLM_WIKIPEDIA_TOOL_DEFINITION: LfLLMToolDefinition = {
+  type: "function",
+  function: {
+    name: LF_LLM_TOOL_NAMES.GET_RANDOM_WIKIPEDIA_ARTICLE,
+    description: [
+      "Fetch a random Wikipedia article and return a human-readable summary.",
+      "Use this whenever you need an unexpected real-world concept, place, or person as inspiration or context.",
+      "The response is general-purpose and not tied to any specific output format.",
+    ].join(" "),
+    parameters: {
+      type: "object",
+      properties: {
+        language: {
+          type: "string",
+          description:
+            "Optional ISO language code for Wikipedia (e.g. 'en', 'it'). Defaults to 'en' when omitted or invalid.",
+        },
+      },
+    },
+  },
+  meta: {
+    category: "general",
+    icon: "globe",
+    displayName: "Random Wikipedia Article",
+  },
+};
+//#endregion
+
+//#region Weather
 /**
  * Serializable definition for the weather tool.
  * Fetches real-time weather from wttr.in and returns a rich article.
@@ -42,7 +76,9 @@ export const LF_LLM_WEATHER_TOOL_DEFINITION: LfLLMToolDefinition = {
     displayName: "Weather",
   },
 };
+//#endregion
 
+//#region Component Docs
 /**
  * Serializable definition for the component docs tool.
  * Fetches README.md from GitHub for lf-widgets components.
@@ -73,7 +109,9 @@ export const LF_LLM_DOCS_TOOL_DEFINITION: LfLLMToolDefinition = {
     displayName: "Component Docs",
   },
 };
+//#endregion
 
+//#region Theme
 /**
  * Serializable definition for the theme tool.
  * Changes the active theme of the lf-widgets framework.
@@ -105,7 +143,9 @@ export const LF_LLM_THEME_TOOL_DEFINITION: LfLLMToolDefinition = {
     displayName: "Set Theme",
   },
 };
+//#endregion
 
+//#region Debug
 /**
  * Serializable definition for the debug tool.
  * Toggles debug mode and prints debug logs.

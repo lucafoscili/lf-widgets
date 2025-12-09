@@ -135,11 +135,13 @@ Type: `Promise<void>`
 ### Used by
 
  - [lf-chat](../lf-chat)
+ - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-chat --> lf-checkbox
+  lf-shapeeditor --> lf-checkbox
   style lf-checkbox fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

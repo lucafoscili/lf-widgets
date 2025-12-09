@@ -365,6 +365,21 @@ $lf-keyframes: (
       transform: scale(4),
     ),
   ),
+  spotlight-sway: (
+    0%: (
+      transform: translateX(
+          calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1)
+        ),
+    ),
+    50%: (
+      transform: translateX(var(--lf-ui-spotlight-sway-amplitude, 5deg)),
+    ),
+    100%: (
+      transform: translateX(
+          calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1)
+        ),
+    ),
+  ),
   zoom: (
     from: (
       transform: scale(1),

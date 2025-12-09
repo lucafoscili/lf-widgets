@@ -7,7 +7,6 @@ import {
   LfChatAdapterInitializerSetters,
   LfChatAdapterJsx,
   LfChatAdapterRefs,
-  LfLLMChoiceMessage,
 } from "@lf-widgets/foundations";
 import { prepChat } from "./elements.chat";
 import { prepContentElements } from "./elements.content";
@@ -16,6 +15,7 @@ import { prepToolbar } from "./elements.toolbar";
 import { prepChatHandlers } from "./handlers.chat";
 import { prepSettingsHandlers } from "./handlers.settings";
 import { prepToolbarHandlers } from "./handlers.toolbar";
+import { ensureMessageId } from "./helpers.message-id";
 
 export const createAdapter = (
   getters: LfChatAdapterInitializerGetters,
@@ -49,10 +49,10 @@ export const createGetters = (
       await textarea.setBlur();
       const message = await textarea.getValue();
       if (message) {
-        const newMessage: LfLLMChoiceMessage = {
+        const newMessage = ensureMessageId({
           role: "user",
           content: message,
-        };
+        });
         return newMessage;
       } else {
         return null;
@@ -105,8 +105,10 @@ export const createRefs = (): LfChatAdapterRefs => {
       editConfirm: null,
       editTextarea: null,
       fileInput: null,
+      fullScreen: null,
       imageInput: null,
       progressbar: null,
+      retry: null,
       send: null,
       settings: null,
       spinner: null,

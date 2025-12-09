@@ -1,5 +1,5 @@
-import { LfTextfieldPropsInterface } from "./textfield.declarations";
 import { LfThemeBEMModifier } from "../framework/theme.declarations";
+import { LfTextfieldPropsInterface } from "./textfield.declarations";
 
 //#region Blocks
 export const LF_TEXTFIELD_BLOCKS = {
@@ -50,6 +50,7 @@ export const LF_TEXTFIELD_PARTS = {
 
 //#region Props
 export const LF_TEXTFIELD_PROPS = [
+  "lfCaptureShortcuts",
   "lfFormatJSON",
   "lfHelper",
   "lfHtmlAttributes",

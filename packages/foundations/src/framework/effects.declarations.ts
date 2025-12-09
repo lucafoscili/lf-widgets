@@ -5,6 +5,8 @@ import {
   LF_EFFECTS_NEON_MODES,
   LF_EFFECTS_NEON_PULSE_SPEEDS,
   LF_EFFECTS_REGISTERABLE,
+  LF_EFFECTS_SPOTLIGHT_BEAMS,
+  LF_EFFECTS_SPOTLIGHT_TRIGGERS,
 } from "./effects.constants";
 
 //#region Layer Manager
@@ -276,6 +278,103 @@ export interface LfEffectsRippleOptions {
 }
 //#endregion
 
+//#region Spotlight
+/**
+ * Beam shape preset for spotlight effect.
+ */
+export type LfEffectsSpotlightBeam =
+  (typeof LF_EFFECTS_SPOTLIGHT_BEAMS)[number];
+
+/**
+ * Trigger mode for spotlight effect.
+ */
+export type LfEffectsSpotlightTrigger =
+  (typeof LF_EFFECTS_SPOTLIGHT_TRIGGERS)[number];
+
+/**
+ * State of the spotlight effect.
+ */
+export type LfEffectsSpotlightState = "dimming" | "fading" | "off" | "on";
+
+/**
+ * Configuration options for the spotlight effect.
+ */
+export interface LfEffectsSpotlightOptions {
+  /**
+   * Beam spread angle in degrees.
+   * Defaults to 45.
+   */
+  angle?: number;
+  /**
+   * Beam shape preset.
+   * Defaults to "cone".
+   */
+  beam?: LfEffectsSpotlightBeam;
+  /**
+   * Beam color (CSS color value).
+   * Defaults to "rgba(255, 255, 255, 0.85)".
+   */
+  color?: string;
+  /**
+   * Fade-in duration in milliseconds.
+   * Defaults to 300.
+   */
+  fadeInDuration?: number;
+  /**
+   * Fade-out duration in milliseconds.
+   * Defaults to 200.
+   */
+  fadeOutDuration?: number;
+  /**
+   * Enable mouse-follow mode where beam follows cursor position.
+   * Defaults to false.
+   */
+  followPointer?: boolean;
+  /**
+   * Beam intensity from 0 to 1.
+   * Defaults to 0.8.
+   */
+  intensity?: number;
+  /**
+   * Beam origin horizontal position as percentage (0-100).
+   * Defaults to 50 (centered).
+   */
+  originX?: number;
+  /**
+   * Show surface glow where beam hits the bottom.
+   * Defaults to true.
+   */
+  surfaceGlow?: boolean;
+  /**
+   * Surface glow intensity from 0 to 1.
+   * Defaults to 0.4.
+   */
+  surfaceGlowIntensity?: number;
+  /**
+   * Enable subtle beam sway animation.
+   * Defaults to false.
+   */
+  sway?: boolean;
+  /**
+   * Sway animation amplitude in degrees.
+   * Defaults to 5.
+   */
+  swayAmplitude?: number;
+  /**
+   * Sway animation duration in milliseconds.
+   * Defaults to 3000.
+   */
+  swayDuration?: number;
+  /**
+   * Trigger mode for the spotlight.
+   * - "hover": Show on hover (default)
+   * - "always": Always visible
+   * - "manual": Controlled programmatically via state attribute
+   * Defaults to "hover".
+   */
+  trigger?: LfEffectsSpotlightTrigger;
+}
+//#endregion
 //#region Registerable Effects
 /**
  * Effect names that can be registered/unregistered on elements.
@@ -333,6 +432,16 @@ export interface LfEffectsInterface {
      * @param options - Configuration options (duration, color, scale, easing)
      */
     ripple: (element: HTMLElement, options?: LfEffectsRippleOptions) => void;
+    /**
+     * Registers spotlight effect on an element.
+     * Creates a light beam that shines from above with configurable options.
+     * @param element - The element to add spotlight effect to
+     * @param options - Configuration options (beam type, color, intensity, etc.)
+     */
+    spotlight: (
+      element: HTMLElement,
+      options?: LfEffectsSpotlightOptions,
+    ) => void;
     /** Adds tilt effect behaviour to the element with optional intensity override. */
     tilt: (element: HTMLElement, intensity?: number) => void;
   };
@@ -348,6 +457,8 @@ export interface LfEffectsInterface {
     neonGlow: (element: HTMLElement) => void;
     /** Removes ripple effect from the element. */
     ripple: (element: HTMLElement) => void;
+    /** Removes spotlight effect from the element. */
+    spotlight: (element: HTMLElement) => void;
     /** Removes tilt effect listeners for the element. */
     tilt: (element: HTMLElement) => void;
   };

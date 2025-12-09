@@ -17,6 +17,7 @@ import { LfLLMInterface } from "./llm.declarations";
 import { LfPortalInterface } from "./portal.declarations";
 import { LfSyntaxInterface } from "./syntax.declarations";
 import { LfThemeInterface } from "./theme.declarations";
+import { LfTooltipInterface } from "./tooltip.declarations";
 
 //#region Class
 /**
@@ -35,8 +36,9 @@ export interface LfFrameworkInterface {
   llm: LfLLMInterface;
   portal: LfPortalInterface;
   syntax: LfSyntaxInterface;
-  utilities: LfFrameworkUtilities;
   theme: LfThemeInterface;
+  tooltip: LfTooltipInterface;
+  utilities: LfFrameworkUtilities;
   addClickCallback: (cb: LfFrameworkClickCb, async?: boolean) => void;
   assignRef: <R extends string>(
     refs: Record<R, HTMLElement>,

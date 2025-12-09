@@ -138,6 +138,16 @@ Type: `Promise<void>`
 
 
 
+### `retryConnection() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `scrollToBottom(blockOrScroll?: ScrollLogicalPosition | boolean) => Promise<void>`
 
 Scrolls the chat message list to the bottom.
@@ -211,7 +221,6 @@ Type: `Promise<void>`
 
 | Name                                  | Description                                                                                       |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-chat-article-margin-top`        | Sets the top margin for lf-article content rendered inside messages. Defaults to => 0.75em        |
 | `--lf-chat-attachments-padding`       | Sets the attachments padding for the chat component. Defaults to => 0 1em                         |
 | `--lf-chat-blockquote-border-opacity` | Sets the border opacity for blockquotes. Defaults to => 0.3                                       |
 | `--lf-chat-blockquote-border-width`   | Sets the border width for blockquotes. Defaults to => 3px                                         |
@@ -257,6 +266,7 @@ Type: `Promise<void>`
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Depends on
@@ -298,6 +308,7 @@ graph TD;
   lf-compare --> lf-chat
   lf-masonry --> lf-chat
   lf-messenger --> lf-chat
+  lf-shapeeditor --> lf-chat
   lf-tree --> lf-chat
   style lf-chat fill:#f9f,stroke:#333,stroke-width:4px
 ```

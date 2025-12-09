@@ -240,6 +240,10 @@ const prepSlot = <C extends LfComponentTag>(
             <lf-spinner></lf-spinner>
           </div>
         );
+      } else if (name === "glass-surface") {
+        return (
+          <div class={bemClass("example", "glass-surface")} slot={name}></div>
+        );
       } else {
         return (
           <div class={bemClass("example", "simple-slot")} slot={name}>

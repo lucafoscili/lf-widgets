@@ -109,6 +109,7 @@ Type: `Promise<void>`
  - [lf-carousel](../lf-carousel)
  - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
+ - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
 ### Graph
@@ -121,6 +122,7 @@ graph TD;
   lf-carousel --> lf-typewriter
   lf-compare --> lf-typewriter
   lf-masonry --> lf-typewriter
+  lf-shapeeditor --> lf-typewriter
   lf-tree --> lf-typewriter
   style lf-typewriter fill:#f9f,stroke:#333,stroke-width:4px
 ```

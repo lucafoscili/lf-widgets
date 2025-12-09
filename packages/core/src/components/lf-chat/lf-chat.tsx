@@ -36,7 +36,6 @@ import {
   Fragment,
   h,
   Host,
-  Listen,
   Method,
   Prop,
   State,
@@ -48,7 +47,7 @@ import { awaitFramework } from "../../utils/setup";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
-import { calcTokens, submitPrompt } from "./helpers.messages";
+import { calcTokens } from "./helpers.messages";
 import { parseMessageContent } from "./helpers.parsing";
 import { createAdapter } from "./lf-chat-adapter";
 
@@ -98,11 +97,12 @@ export class LfChat implements LfChatInterface {
   @State() agentState: LfChatAgentState | null = null;
   @State() currentAbortStreaming: AbortController | null = null;
   @State() currentAttachments: LfLLMAttachment[] = [];
-  @State() currentEditingIndex: number | null = null;
+  @State() currentEditingId: string | null = null;
   @State() currentPrompt: LfLLMChoiceMessage;
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
   @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
   @State() debugInfo: LfDebugLifecycleInfo;
+  @State() fullScreen: boolean = false;
   @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
   @State() view: LfChatView = "main";
@@ -250,43 +250,8 @@ export class LfChat implements LfChatInterface {
   }
   //#endregion
 
-  //#region Listeners
-  @Listen("keydown")
-  listenKeydown(e: KeyboardEvent) {
-    switch (e.key) {
-      case "Enter":
-        if (e.ctrlKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          submitPrompt(this.#adapter);
-        }
-        break;
-      default:
-        e.stopPropagation();
-    }
-  }
-  //#endregion
-
   //#region Watchers
   @Watch("lfConfig")
-  updateConfig() {
-    if (!this.#framework) {
-      return;
-    }
-
-    this.#pollVersion++;
-
-    const effectiveConfig = getEffectiveConfig(this.#adapter);
-    clearInterval(this.#interval);
-    this.#interval = setInterval(
-      () => this.#checkLLMStatus(),
-      effectiveConfig.llm.pollingInterval,
-    );
-
-    this.#checkLLMStatus();
-
-    this.updateTokensCount();
-  }
   async updateTokensCount() {
     if (!this.#framework || !this.#adapter) {
       return;
@@ -305,6 +270,13 @@ export class LfChat implements LfChatInterface {
     if (this.currentAbortStreaming) {
       this.currentAbortStreaming.abort();
     }
+  }
+  /**
+   * Exports current history as JSON file
+   */
+  @Method()
+  async exportHistory(): Promise<void> {
+    await exportH(this);
   }
   /**
    * Retrieves the debug information reflecting the current state of the component.
@@ -378,6 +350,14 @@ export class LfChat implements LfChatInterface {
   async refresh(): Promise<void> {
     forceUpdate(this);
   }
+  @Method()
+  /**
+   * Retries the connection by checking the LLM status.
+   * This method attempts to re-establish the connection asynchronously.
+   */
+  async retryConnection(): Promise<void> {
+    await this.#checkLLMStatus();
+  }
   /**
    * Scrolls the chat message list to the bottom.
    *
@@ -438,14 +418,6 @@ export class LfChat implements LfChatInterface {
   async setHistory(history: string, fromFile: boolean = false): Promise<void> {
     await setH(this.#adapter, this, history, fromFile);
   }
-
-  /**
-   * Exports current history as JSON file
-   */
-  @Method()
-  async exportHistory(): Promise<void> {
-    await exportH(this);
-  }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
    * @param {number} ms - Number of milliseconds
@@ -468,7 +440,7 @@ export class LfChat implements LfChatInterface {
         compInstance: this,
         currentAbortStreaming: () => this.currentAbortStreaming,
         currentAttachments: () => this.currentAttachments,
-        currentEditingIndex: () => this.currentEditingIndex,
+        currentEditingId: () => this.currentEditingId,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
         currentToolExecution: () => this.currentToolExecution,
@@ -490,7 +462,7 @@ export class LfChat implements LfChatInterface {
         agentState: (value) => (this.agentState = value),
         currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
         currentAttachments: (value) => (this.currentAttachments = value),
-        currentEditingIndex: (value) => (this.currentEditingIndex = value),
+        currentEditingId: (value) => (this.currentEditingId = value),
         currentPrompt: (value) => (this.currentPrompt = value),
         currentTokens: (value) => (this.currentTokens = value),
         currentToolExecution: (value) => (this.currentToolExecution = value),
@@ -500,12 +472,17 @@ export class LfChat implements LfChatInterface {
           this.onLfEvent(new CustomEvent("update"), "update");
         },
         status: (status) => (this.status = status),
+        toggleFullScreen: () => (this.fullScreen = !this.fullScreen),
         view: (view) => (this.view = view),
       },
       () => this.#adapter,
     );
   };
   async #checkLLMStatus() {
+    if (this.view === "settings") {
+      return;
+    }
+
     const currentVersion = this.#pollVersion;
 
     const { llm } = this.#framework;
@@ -591,7 +568,9 @@ export class LfChat implements LfChatInterface {
                 return true;
               })
               .map((m, index) => {
-                const isEditing = this.currentEditingIndex === index;
+                const isEditing =
+                  Boolean(this.currentEditingId) &&
+                  m.id === this.currentEditingId;
                 return (
                   <div
                     class={bemClass(messages._, messages.container, {
@@ -665,7 +644,7 @@ export class LfChat implements LfChatInterface {
     const { bemClass, get } = this.#framework.theme;
 
     const { chat } = this.#b;
-    const { configuration } = this.#adapter.elements.jsx.chat;
+    const { configuration, retry } = this.#adapter.elements.jsx.chat;
     const icon = get.icon("door");
 
     return (
@@ -682,6 +661,7 @@ export class LfChat implements LfChatInterface {
           </div>
         </div>
         {configuration()}
+        {retry()}
       </Fragment>
     );
   };
@@ -748,7 +728,7 @@ export class LfChat implements LfChatInterface {
     }
 
     return (
-      <Fragment>
+      <div class={bemClass(settings._)} part={this.#p.settings}>
         <div class={bemClass(settings._, settings.header)}>
           {back()}
           {importHistory()}
@@ -756,7 +736,7 @@ export class LfChat implements LfChatInterface {
         </div>
         <div
           class={bemClass(settings._, settings.configuration)}
-          part={this.#p.settings}
+          part={this.#p.configuration}
         >
           <lf-accordion
             class={bemClass(settings._, settings.accordion)}
@@ -794,7 +774,7 @@ export class LfChat implements LfChatInterface {
             </div>
           </lf-accordion>
         </div>
-      </Fragment>
+      </div>
     );
   };
   #prepToolbar = (m: LfLLMChoiceMessage, isEditing = false): VNode => {
@@ -888,6 +868,7 @@ export class LfChat implements LfChatInterface {
               [view]: true,
               [layout]: true,
               [status]: true,
+              full: this.fullScreen,
             })}
             part={this.#p.chat}
           >

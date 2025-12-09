@@ -13,7 +13,6 @@ import {
   LfDataShapes,
   LfDataShapesMap,
   LfDebugLifecycleInfo,
-  LfEvent,
   LfFrameworkInterface,
   LfMasonryAdapter,
   LfMasonryColumns,
@@ -207,6 +206,7 @@ export class LfMasonry implements LfMasonryInterface {
   #currentColumns: number;
   #timeout: NodeJS.Timeout;
   #adapter: LfMasonryAdapter;
+  #captureElements: HTMLDivElement[] = [];
   //#endregion
 
   //#region Events
@@ -222,26 +222,25 @@ export class LfMasonry implements LfMasonryInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfMasonryEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfMasonryEvent) {
+  onLfEvent(
+    e: Event | CustomEvent,
+    eventType: LfMasonryEvent,
+    refKey?: string,
+  ): void {
     const { lfSelectable, lfShape, selectedShape, shapes } = this;
 
     let shouldUpdateState = false;
     const state: LfMasonrySelectedShape = {};
 
     switch (eventType) {
-      case "lf-event":
-        const { comp, eventType } = (e as LfEvent).detail;
-        switch (eventType) {
-          case "click":
-            if (lfSelectable) {
-              const index = parseInt(comp.rootElement.dataset.index);
-              if (selectedShape.index !== index) {
-                state.index = index;
-                state.shape = shapes[lfShape][index];
-              }
-              shouldUpdateState = true;
-            }
-            break;
+      case "click":
+        if (lfSelectable) {
+          const index = parseInt(refKey?.split("-")[1] || "", 10);
+          if (selectedShape.index !== index) {
+            state.index = index;
+            state.shape = shapes[lfShape][index];
+          }
+          shouldUpdateState = true;
         }
         break;
     }
@@ -448,7 +447,10 @@ export class LfMasonry implements LfMasonryInterface {
     return 1;
   }
   #divideShapesIntoColumns = (): VNode[][] => {
-    const { lfShape, selectedShape, shapes } = this;
+    const { refs } = this.#adapter.elements;
+    const { lfSelectable, lfShape, selectedShape, shapes } = this;
+    const { bemClass } = this.#framework.theme;
+    const { grid } = this.#b;
 
     const props: Partial<LfDataCell<LfDataShapes>>[] = shapes[this.lfShape].map(
       () => ({
@@ -473,16 +475,42 @@ export class LfMasonry implements LfMasonryInterface {
     for (let index = 0; index < shapes[lfShape].length; index++) {
       const cell = shapes[lfShape][index];
       const defaultCell = props[index];
+      const refKey = `${lfShape}-${index}`;
 
-      columns[index % this.#currentColumns].push(
+      const shapeElement = (
         <LfShape
           cell={Object.assign(defaultCell, cell)}
-          index={index}
-          shape={lfShape}
-          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
+          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", refKey)}
           framework={this.#framework}
-        ></LfShape>,
+          index={index}
+          refCallback={(r) => refs.shapes.set(refKey, r)}
+          shape={lfShape}
+        ></LfShape>
       );
+
+      if (lfSelectable) {
+        columns[index % this.#currentColumns].push(
+          <div
+            class={bemClass(grid._, grid.capture)}
+            onClick={async (e) => {
+              e.stopPropagation();
+              this.onLfEvent(e, "click", refKey);
+            }}
+            onPointerDown={async (e) => {
+              e.stopPropagation();
+            }}
+            ref={(el) => {
+              if (el && !this.#captureElements.includes(el)) {
+                this.#captureElements.push(el);
+              }
+            }}
+          >
+            {shapeElement}
+          </div>,
+        );
+      } else {
+        columns[index % this.#currentColumns].push(shapeElement);
+      }
     }
 
     return columns;
@@ -576,9 +604,16 @@ export class LfMasonry implements LfMasonryInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { info } = this.#framework.debug;
+    const { debug, effects, theme } = this.#framework;
 
-    info.update(this, "did-render");
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfSelectable && hasThemeRipple) {
+      this.#captureElements.forEach((item) => {
+        effects.register.ripple(item);
+      });
+    }
+
+    debug.info.update(this, "did-render");
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
@@ -590,6 +625,8 @@ export class LfMasonry implements LfMasonryInterface {
       [this.#v.columns]: String(this.#currentColumns),
     };
 
+    this.#captureElements = [];
+
     return (
       <Host style={style}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
@@ -600,7 +637,16 @@ export class LfMasonry implements LfMasonryInterface {
     );
   }
   disconnectedCallback() {
-    this.#framework?.theme.unregister(this);
+    const { effects, theme } = this.#framework;
+
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (hasThemeRipple) {
+      this.#captureElements.forEach((item) => {
+        effects.unregister.ripple(item);
+      });
+    }
+
+    theme.unregister(this);
     window.removeEventListener("resize", this.#handleResize);
   }
   //#endregion

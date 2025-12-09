@@ -12,6 +12,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfDebugLifecycleInfo>",
       },
       {
+        name: "getExpandedNodes",
+        docs: "Returns the expanded node IDs.",
+        returns: {
+          type: "Promise<Set<string>>",
+          docs: "Expanded node IDs.",
+        },
+        signature: "() => Promise<Set<string>>",
+      },
+      {
         name: "getProps",
         docs: "Used to retrieve component's properties and descriptions.",
         returns: {
@@ -22,12 +31,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "getSelectedNodes",
-        docs: "Returns the selected nodes.",
+        docs: "Returns the selected node IDs.",
         returns: {
-          type: "Promise<Set<LfDataNode>>",
-          docs: "Selected nodes.",
+          type: "Promise<Set<string>>",
+          docs: "Selected node IDs.",
         },
-        signature: "() => Promise<Set<LfDataNode>>",
+        signature: "() => Promise<Set<string>>",
       },
       {
         name: "refresh",
@@ -62,6 +71,11 @@ export const LF_DOC: LfShowcaseDoc = {
         name: "lfDataset",
         docs: "The data set for the LF Accordion component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
+      },
+      {
+        name: "lfExpanded",
+        docs: "IDs of nodes that should be expanded. When provided, the accordion will sync\nits internal expanded state with this array.",
+        type: "string[]",
       },
       {
         name: "lfRipple",
@@ -481,7 +495,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Sets the props for the internal lf-textfield component.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfCaptureShortcuts?: boolean; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -865,12 +879,12 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "When set, the button will show this icon.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfIconOff",
         docs: "When set, the icon button off state will show this icon.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfLabel",
@@ -1544,6 +1558,14 @@ export const LF_DOC: LfShowcaseDoc = {
         name: "--lf-chart-font-size",
         docs: "Sets the font size for the chart component. Defaults to => var(--lf-font-size)",
       },
+      {
+        name: "--lf-chart-min-height",
+        docs: "Sets the minimum height for the chart component. Defaults to => var(--lf_chart_height, 100%)",
+      },
+      {
+        name: "--lf-chart-min-width",
+        docs: "Sets the minimum width for the chart component. Defaults to => var(--lf_chart_width, 100%)",
+      },
     ],
   },
   "lf-chat": {
@@ -1639,6 +1661,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "(id: string) => Promise<void>",
       },
       {
+        name: "retryConnection",
+        docs: "",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
         name: "scrollToBottom",
         docs: 'Scrolls the chat message list to the bottom.\n\nThe method first checks the component controller status via this.#adapter.controller.get;\nif the controller is not in the "ready" state the method returns early without performing any scrolling.\n\nBehavior:\n- If blockOrScroll === true, performs a passive scroll of the messages container by calling\n  this.#messagesContainer.scrollTo({ top: this.#messagesContainer.scrollHeight, behavior: "smooth" }).\n  This path is intended for initial loads where a container-level scroll is sufficient.\n- Otherwise, uses this.#lastMessage?.scrollIntoView({ behavior: "smooth", block: blockOrScroll })\n  to bring the last message element into view for active user interactions. The block argument is\n  treated as a ScrollLogicalPosition (for example "start" | "center" | "end" | "nearest").\n\nNotes:\n- The method is async and returns a Promise<void>, but it does not wait for the visual scrolling\n  animation to complete; the promise resolves after issuing the scroll command.\n- If the messages container or last message element is not present, the corresponding scroll call\n  is a no-op.\n- The signature accepts a boolean union for convenience (true = container scroll). Callers who intend\n  to use scrollIntoView should pass a valid ScrollLogicalPosition value.',
         returns: {
@@ -1700,10 +1731,6 @@ export const LF_DOC: LfShowcaseDoc = {
       },
     ],
     styles: [
-      {
-        name: "--lf-chat-article-margin-top",
-        docs: "Sets the top margin for lf-article content rendered inside messages. Defaults to => 0.75em",
-      },
       {
         name: "--lf-chat-attachments-padding",
         docs: "Sets the attachments padding for the chat component. Defaults to => 0 1em",
@@ -2718,7 +2745,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the image element.\nThis can include attributes like 'alt', 'aria-', etc., to further customize the behavior or appearance of the input.",
-        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfExpanded?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfCaptureShortcuts?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfShowSpinner",
@@ -2771,167 +2798,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-image-object-fit",
         docs: "Sets the object fit for the image element. Defaults to => cover",
-      },
-    ],
-  },
-  "lf-imageviewer": {
-    methods: [
-      {
-        name: "addSnapshot",
-        docs: "Appends a new snapshot to the current shape's history by duplicating it with an updated value.\r\nIt has no effect when the current shape is not set.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "(value: string) => Promise<void>",
-      },
-      {
-        name: "clearHistory",
-        docs: "Clears the history related to the shape identified by the index.\r\nWhen index is not provided, it clear the full history.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "(index?: number) => Promise<void>",
-      },
-      {
-        name: "clearSelection",
-        docs: "Clears the currently selected shape.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "() => Promise<void>",
-      },
-      {
-        name: "getComponents",
-        docs: "This method is used to retrieve the references to the subcomponents.",
-        returns: {
-          type: "Promise<LfImageviewerAdapterRefs>",
-          docs: "",
-        },
-        signature: "() => Promise<LfImageviewerAdapterRefs>",
-      },
-      {
-        name: "getCurrentSnapshot",
-        docs: "Fetches the current snapshot.",
-        returns: {
-          type: "Promise<{ shape: LfMasonrySelectedShape; value: string; }>",
-          docs: "A promise that resolves with the current snapshot's object.",
-        },
-        signature:
-          "() => Promise<{ shape: LfMasonrySelectedShape; value: string; }>",
-      },
-      {
-        name: "getDebugInfo",
-        docs: "Fetches debug information of the component's current state.",
-        returns: {
-          type: "Promise<LfDebugLifecycleInfo>",
-          docs: "A promise that resolves with the debug information object.",
-        },
-        signature: "() => Promise<LfDebugLifecycleInfo>",
-      },
-      {
-        name: "getProps",
-        docs: "Used to retrieve component's properties and descriptions.",
-        returns: {
-          type: "Promise<LfImageviewerPropsInterface>",
-          docs: "Promise resolved with an object containing the component's properties.",
-        },
-        signature: "() => Promise<LfImageviewerPropsInterface>",
-      },
-      {
-        name: "refresh",
-        docs: "This method is used to trigger a new render of the component.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "() => Promise<void>",
-      },
-      {
-        name: "reset",
-        docs: "Clears the full history and clears the current selection.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "() => Promise<void>",
-      },
-      {
-        name: "setSpinnerStatus",
-        docs: "Displays/hides the spinner over the preview.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "(status: boolean) => Promise<void>",
-      },
-      {
-        name: "unmount",
-        docs: "Initiates the unmount sequence, which removes the component from the DOM after a delay.",
-        returns: {
-          type: "Promise<void>",
-          docs: "",
-        },
-        signature: "(ms?: number) => Promise<void>",
-      },
-    ],
-    props: [
-      {
-        name: "lfDataset",
-        docs: "The data set for the LF Imageviewer component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
-        type: "LfDataDataset",
-      },
-      {
-        name: "lfLoadCallback",
-        docs: "Callback invoked when the load button is clicked.",
-        type: "(imageviewer: LfImageviewerInterface, dir: string) => Promise<void>",
-      },
-      {
-        name: "lfNavigation",
-        docs: "Configuration options for the navigation panel.",
-        type: "LfImageviewerNavigation",
-      },
-      {
-        name: "lfStyle",
-        docs: "Custom styling for the component.",
-        type: "string",
-      },
-      {
-        name: "lfValue",
-        docs: "Configuration parameters of the detail view.",
-        type: "LfDataDataset",
-      },
-    ],
-    styles: [
-      {
-        name: "--lf-imageviewer-border-color",
-        docs: "Sets the border color for the imageviewer component. Defaults to => var(--lf-color-border)",
-      },
-      {
-        name: "--lf-imageviewer-border-radius",
-        docs: "Sets the border radius for the imageviewer component. Defaults to => var(--lf-ui-border-radius)",
-      },
-      {
-        name: "--lf-imageviewer-color-bg",
-        docs: "Sets the color-bg color for the imageviewer component. Defaults to => var(--lf-color-bg)",
-      },
-      {
-        name: "--lf-imageviewer-color-on-bg",
-        docs: "Sets the color-on-bg color for the imageviewer component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-imageviewer-font-family",
-        docs: "Sets the primary font family for the imageviewer component. Defaults to => var(--lf-font-family-primary)",
-      },
-      {
-        name: "--lf-imageviewer-font-size",
-        docs: "Sets the font size for the imageviewer component. Defaults to => var(--lf-font-size)",
-      },
-      {
-        name: "--lf-imageviewer-nav-width",
-        docs: "Sets the width for the navigation panel. Defaults to => auto",
       },
     ],
   },
@@ -3231,12 +3097,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfCollapseColumns",
-        docs: "When true the masonry will collapse the number of columns to the number of items\r\nwhen the number of items is less than the configured columns. Set to false to\r\npreserve the configured column count even if there are fewer items.",
+        docs: "When true the masonry will collapse the number of columns to the number of items\nwhen the number of items is less than the configured columns. Set to false to\npreserve the configured column count even if there are fewer items.",
         type: "boolean",
       },
       {
         name: "lfColumns",
-        docs: "Number of columns of the masonry, doesn't affect sequential views.\r\nCan be set with a number or an array of numbers that identify each breakpoint.",
+        docs: "Number of columns of the masonry, doesn't affect sequential views.\nCan be set with a number or an array of numbers that identify each breakpoint.",
         type: "number | number[]",
       },
       {
@@ -3299,6 +3165,22 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the right for the button of the masonry component. Defaults to => 1em",
       },
       {
+        name: "--lf-masonry-capture-border-radius",
+        docs: "Sets the border radius for the capture overlay. Defaults to => 4px",
+      },
+      {
+        name: "--lf-masonry-capture-selected-border",
+        docs: "Sets the border for the selected capture item. Defaults to => 2px solid rgba(var(--lf-color-secondary), 0.875)",
+      },
+      {
+        name: "--lf-masonry-capture-selected-filter",
+        docs: "Sets the filter for the selected capture item. Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))",
+      },
+      {
+        name: "--lf-masonry-chart-min-height",
+        docs: "Sets the minimum height for the chart inside the capture. Defaults to => 150px",
+      },
+      {
         name: "--lf-masonry-column-size",
         docs: "Sets the column size for the grid of the masonry component. Defaults to => minmax(0px, 1fr)",
       },
@@ -3325,6 +3207,10 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-masonry-grid-items-alignment",
         docs: "Sets the items alignment for the grid of the masonry component. Defaults to => start",
+      },
+      {
+        name: "--lf-masonry-grid-overflow",
+        docs: "Sets the overflow for the grid of the masonry component. Defaults to => auto",
       },
       {
         name: "--lf-masonry-padding",
@@ -3615,7 +3501,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Props forwarded to the internal lf-textfield input.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfCaptureShortcuts?: boolean; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -3692,7 +3578,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfPlaceholder",
         docs: "Html attributes of the picture before the component enters the viewport.",
-        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfExpanded?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfCaptureShortcuts?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfStyle",
@@ -3707,7 +3593,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Html attributes of the picture after the component enters the viewport.",
-        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfExpanded?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfCaptureShortcuts?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
     ],
     styles: [
@@ -3797,12 +3683,12 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Displays an animated SVG placeholder until the component is loaded.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfProps",
         docs: "Sets the props of the component to be placeholder loaded.",
-        type: "LfImagePropsInterface | LfUploadPropsInterface | LfCodePropsInterface | LfAccordionPropsInterface | LfBadgePropsInterface | LfButtonPropsInterface | LfCanvasPropsInterface | LfCardPropsInterface | LfChartPropsInterface | LfChatPropsInterface | LfChipPropsInterface | LfPhotoframePropsInterface | LfProgressbarPropsInterface | LfTextfieldPropsInterface | LfTogglePropsInterface | LfTypewriterPropsInterface | LfArticlePropsInterface | LfAutocompletePropsInterface | LfBreadcrumbsPropsInterface | LfCarouselPropsInterface | LfCheckboxPropsInterface | LfComparePropsInterface | LfDrawerPropsInterface | LfHeaderPropsInterface | LfImageviewerPropsInterface | LfListPropsInterface | LfMasonryPropsInterface | LfMessengerPropsInterface | LfMultiInputPropsInterface | LfPlaceholderPropsInterface | LfRadioPropsInterface | LfSelectPropsInterface | LfSliderPropsInterface | LfSnackbarPropsInterface | LfSpinnerPropsInterface | LfSplashPropsInterface | LfTabbarPropsInterface | LfToastPropsInterface | LfTreePropsInterface",
+        type: "LfImagePropsInterface | LfUploadPropsInterface | LfCodePropsInterface | LfAccordionPropsInterface | LfBadgePropsInterface | LfButtonPropsInterface | LfCanvasPropsInterface | LfCardPropsInterface | LfChartPropsInterface | LfChatPropsInterface | LfChipPropsInterface | LfPhotoframePropsInterface | LfProgressbarPropsInterface | LfTextfieldPropsInterface | LfTogglePropsInterface | LfTypewriterPropsInterface | LfArticlePropsInterface | LfAutocompletePropsInterface | LfBreadcrumbsPropsInterface | LfCarouselPropsInterface | LfCheckboxPropsInterface | LfComparePropsInterface | LfDrawerPropsInterface | LfHeaderPropsInterface | LfShapeeditorPropsInterface | LfListPropsInterface | LfMasonryPropsInterface | LfMessengerPropsInterface | LfMultiInputPropsInterface | LfPlaceholderPropsInterface | LfRadioPropsInterface | LfSelectPropsInterface | LfSliderPropsInterface | LfSnackbarPropsInterface | LfSpinnerPropsInterface | LfSplashPropsInterface | LfTabbarPropsInterface | LfToastPropsInterface | LfTreePropsInterface",
       },
       {
         name: "lfStyle",
@@ -3822,7 +3708,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfValue",
         docs: "Sets the tag name of the component to be placeholder loaded.",
-        type: '"LfAccordion" | "LfArticle" | "LfAutocomplete" | "LfBadge" | "LfBreadcrumbs" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfCheckbox" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfImageviewer" | "LfList" | "LfMasonry" | "LfMessenger" | "LfMultiInput" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfRadio" | "LfSelect" | "LfSlider" | "LfSnackbar" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
+        type: '"LfAccordion" | "LfArticle" | "LfAutocomplete" | "LfBadge" | "LfBreadcrumbs" | "LfButton" | "LfCanvas" | "LfCard" | "LfCarousel" | "LfChart" | "LfChat" | "LfCheckbox" | "LfChip" | "LfCode" | "LfCompare" | "LfDrawer" | "LfHeader" | "LfImage" | "LfShapeeditor" | "LfList" | "LfMasonry" | "LfMessenger" | "LfMultiInput" | "LfPhotoframe" | "LfPlaceholder" | "LfProgressbar" | "LfRadio" | "LfSelect" | "LfSlider" | "LfSnackbar" | "LfSpinner" | "LfSplash" | "LfToggle" | "LfTabbar" | "LfTextfield" | "LfToast" | "LfTree" | "LfTypewriter" | "LfUpload"',
       },
     ],
     styles: [
@@ -4288,7 +4174,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfTextfieldProps",
         docs: "Sets the props for the internal lf-textfield component.",
-        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
+        type: '{ formatJSON?: () => Promise<void>; getElement?: () => Promise<HTMLInputElement | HTMLTextAreaElement>; getValue?: () => Promise<string>; setBlur?: () => Promise<void>; setFocus?: () => Promise<void>; setValue?: (value: string) => Promise<void>; rootElement?: LfTextfieldElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfCaptureShortcuts?: boolean; lfFormatJSON?: LfTextfieldFormatJSON; lfHelper?: LfTextfieldHelper; lfHtmlAttributes?: Partial<LfFrameworkAllowedKeysMap>; lfIcon?: LfIconType; lfLabel?: string; lfStretchY?: boolean; lfStyling?: "flat" | "outlined" | "raised" | "textarea"; lfTrailingIcon?: boolean; lfTrailingIconAction?: LfTextfieldTrailingIconAction; lfUiSize?: "large" | "medium" | "small" | "xlarge" | "xsmall" | "xxlarge" | "xxsmall"; lfUiState?: "danger" | "disabled" | "info" | "primary" | "secondary" | "success" | "warning"; lfValue?: string; }',
       },
       {
         name: "lfUiSize",
@@ -4318,6 +4204,191 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-select-font-size",
         docs: "Sets the font size for the select component. Defaults to => var(--lf-font-size)",
+      },
+    ],
+  },
+  "lf-shapeeditor": {
+    methods: [
+      {
+        name: "addSnapshot",
+        docs: "Appends a new snapshot to the current shape's history by duplicating it with an updated value.\r\nIt has no effect when the current shape is not set.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(value: string) => Promise<void>",
+      },
+      {
+        name: "clearHistory",
+        docs: "Clears the history related to the shape identified by the index.\r\nWhen index is not provided, it clear the full history.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(index?: number) => Promise<void>",
+      },
+      {
+        name: "clearSelection",
+        docs: "Clears the currently selected shape.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "getComponents",
+        docs: "This method is used to retrieve the references to the subcomponents.",
+        returns: {
+          type: "Promise<LfShapeeditorAdapterRefs>",
+          docs: "",
+        },
+        signature: "() => Promise<LfShapeeditorAdapterRefs>",
+      },
+      {
+        name: "getCurrentSnapshot",
+        docs: "Fetches the current snapshot.",
+        returns: {
+          type: "Promise<{ shape: LfMasonrySelectedShape; value: string; }>",
+          docs: "A promise that resolves with the current snapshot's object.",
+        },
+        signature:
+          "() => Promise<{ shape: LfMasonrySelectedShape; value: string; }>",
+      },
+      {
+        name: "getDebugInfo",
+        docs: "Fetches debug information of the component's current state.",
+        returns: {
+          type: "Promise<LfDebugLifecycleInfo>",
+          docs: "A promise that resolves with the debug information object.",
+        },
+        signature: "() => Promise<LfDebugLifecycleInfo>",
+      },
+      {
+        name: "getProps",
+        docs: "Used to retrieve component's properties and descriptions.",
+        returns: {
+          type: "Promise<LfShapeeditorPropsInterface>",
+          docs: "Promise resolved with an object containing the component's properties.",
+        },
+        signature: "() => Promise<LfShapeeditorPropsInterface>",
+      },
+      {
+        name: "getSettings",
+        docs: "Returns the current configuration settings.",
+        returns: {
+          type: "Promise<LfShapeeditorConfigSettings>",
+          docs: "The current settings object.",
+        },
+        signature: "() => Promise<LfShapeeditorConfigSettings>",
+      },
+      {
+        name: "refresh",
+        docs: "This method is used to trigger a new render of the component.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "reset",
+        docs: "Clears the full history and clears the current selection.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "setSettings",
+        docs: "Updates the configuration settings programmatically.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(settings: LfShapeeditorConfigSettings, replace?: boolean) => Promise<void>",
+      },
+      {
+        name: "setSpinnerStatus",
+        docs: "Displays/hides the spinner over the preview.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(status: boolean) => Promise<void>",
+      },
+      {
+        name: "unmount",
+        docs: "Initiates the unmount sequence, which removes the component from the DOM after a delay.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(ms?: number) => Promise<void>",
+      },
+    ],
+    props: [
+      {
+        name: "lfDataset",
+        docs: "The data set for the LF Shapeeditor component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        type: "LfDataDataset",
+      },
+      {
+        name: "lfLoadCallback",
+        docs: "Callback invoked when the load button is clicked.",
+        type: "(shapeeditor: LfShapeeditorInterface, dir: string) => Promise<void>",
+      },
+      {
+        name: "lfNavigation",
+        docs: "Configuration options for the navigation panel.",
+        type: "LfShapeeditorNavigation",
+      },
+      {
+        name: "lfShape",
+        docs: "The shape type to render in the preview area.\r\nDetermines which LfShape component is used for preview.",
+        type: '"accordion" | "badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "textfield" | "toggle" | "typewriter" | "upload"',
+      },
+      {
+        name: "lfStyle",
+        docs: "Custom styling for the component.",
+        type: "string",
+      },
+      {
+        name: "lfValue",
+        docs: "Configuration parameters of the detail view.",
+        type: "LfDataDataset",
+      },
+    ],
+    styles: [
+      {
+        name: "--lf-shapeeditor-border-color",
+        docs: "Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)",
+      },
+      {
+        name: "--lf-shapeeditor-border-radius",
+        docs: "Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-shapeeditor-color-bg",
+        docs: "Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)",
+      },
+      {
+        name: "--lf-shapeeditor-color-on-bg",
+        docs: "Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)",
+      },
+      {
+        name: "--lf-shapeeditor-font-family",
+        docs: "Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary)",
+      },
+      {
+        name: "--lf-shapeeditor-font-size",
+        docs: "Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-shapeeditor-nav-width",
+        docs: "Sets the width for the navigation panel. Defaults to => auto",
       },
     ],
   },
@@ -4570,7 +4641,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfCloseIcon",
         docs: "Icon shown in the close button.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfDuration",
@@ -4580,7 +4651,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfIcon",
         docs: "Optional icon shown at the start of the snackbar.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfMessage",
@@ -5116,6 +5187,11 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     props: [
       {
+        name: "lfCaptureShortcuts",
+        docs: "When enabled, prevents propagation of common keyboard shortcuts\n(e.g. Ctrl/Cmd + C, V, X, Z, Y, A) from the internal input or textarea\nto parent components.",
+        type: "boolean",
+      },
+      {
         name: "lfFormatJSON",
         docs: "Automatically formats textarea content to prettier JSON structure.",
         type: "LfTextfieldFormatJSON",
@@ -5128,12 +5204,12 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input or textarea element through additional HTML attributes.\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfExpanded?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfCaptureShortcuts?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfIcon",
         docs: "Sets the icon to be displayed within the text field.",
-        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "camera" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "slideshow" | "temperature" | "template" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
+        type: '"copy" | "download" | "edit" | "refresh" | "settings" | "search" | "upload" | "--lf-icon-add" | "--lf-icon-attachment" | "--lf-icon-broken-image" | "--lf-icon-clear" | "--lf-icon-copy" | "--lf-icon-copy-ok" | "--lf-icon-collapsed" | "--lf-icon-danger" | "--lf-icon-delete" | "--lf-icon-disabled" | "--lf-icon-download" | "--lf-icon-dropdown" | "--lf-icon-edit" | "--lf-icon-expanded" | "--lf-icon-image" | "--lf-icon-info" | "--lf-icon-loading" | "--lf-icon-minus" | "--lf-icon-next" | "--lf-icon-plus" | "--lf-icon-previous" | "--lf-icon-primary" | "--lf-icon-refresh" | "--lf-icon-secondary" | "--lf-icon-settings" | "--lf-icon-success" | "--lf-icon-search" | "--lf-icon-upload" | "--lf-icon-warning" | "ai" | "article" | "brush" | "bug" | "bulb" | "camera" | "candle" | "check" | "checkbox" | "code" | "door" | "droplet" | "file" | "flare" | "folder" | "forms" | "help" | "highlight" | "history" | "home" | "hourglass" | "id" | "ikosaedr" | "json" | "key" | "link" | "list" | "loader" | "lock" | "maximize" | "messages" | "microphone" | "moon" | "movie" | "music" | "network" | "notification" | "numbers" | "palette" | "pdf" | "photo" | "progress" | "replace" | "robot" | "schema" | "select" | "send" | "shirt" | "skew" | "sparkles" | "slideshow" | "temperature" | "template" | "tooltip" | "wand" | "writing" | "x" | "zip" | "adjustments-horizontal" | "alert-triangle" | "arrow-autofit-content" | "arrow-back" | "bell-ringing" | "brand-facebook" | "brand-github" | "brand-github-copilot" | "brand-instagram" | "brand-linkedin" | "brand-npm" | "brand-reddit" | "brand-x" | "calendar-clock" | "camera-ai" | "caret-down" | "caret-left" | "caret-right" | "caret-up" | "chart-column" | "chart-histogram" | "chevron-compact-down" | "chevron-compact-left" | "chevron-compact-right" | "chevron-compact-up" | "chevron-down" | "chevron-left" | "chevron-right" | "chevrons-down" | "chevrons-left" | "chevrons-right" | "chevrons-up" | "chevron-up" | "circle-arrow-down" | "circle-arrow-left" | "circle-arrow-right" | "circle-arrow-up" | "circle-caret-down" | "circle-caret-left" | "circle-caret-right" | "circle-caret-up" | "circle-chevron-down" | "circle-chevron-left" | "circle-chevron-right" | "circle-chevron-up" | "circle-x" | "code-circle-2" | "color-swatch" | "columns-2" | "contrast-2" | "copy-check" | "drag-drop" | "exclamation-circle" | "filter-search" | "folder-open" | "hexagon-alert" | "hexagon-info" | "hexagon-minus" | "hexagon-minus-2" | "hexagon-photo" | "hexagon-plus" | "hexagon-plus-2" | "hourglass-low" | "image-in-picture" | "inner-shadow-bottom" | "input-search" | "layout-board-split" | "layout-list" | "layout-navbar" | "layout-navbar-inactive" | "layout-sidebar" | "lf-signature" | "lf-website" | "link-plus" | "list-tree" | "loader-2" | "loader-3" | "menu-2" | "message-circle-user" | "off-brush" | "off-hexagon" | "off-highlight" | "off-id" | "off-microphone" | "off-moon" | "off-notification" | "off-palette" | "off-replace" | "off-search" | "off-send" | "off-template" | "percentage-60" | "photo-search" | "photo-x" | "picture-in-picture-top" | "player-record" | "player-stop" | "playstation-circle" | "playstation-square" | "playstation-triangle" | "playstation-x" | "route-2" | "share-2" | "square-toggle" | "square-x" | "stack-pop" | "stack-push" | "stopwatch" | "sunset-2" | "terminal-2" | "time-duration-30" | "toggle-right" | "viewport-tall" | "viewport-wide"',
       },
       {
         name: "lfLabel",
@@ -5929,7 +6005,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfHtmlAttributes",
         docs: "Allows customization of the input element through additional HTML attributes.\nThis can include attributes like 'readonly', 'placeholder', etc., to further customize the behavior or appearance of the input.",
-        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
+        type: '{ disabled?: any; id?: any; class?: any; href?: any; lfHtmlAttributes?: any; lfShowSpinner?: any; lfSizeX?: any; lfSizeY?: any; lfStyle?: any; lfUiState?: any; lfValue?: any; lfLabel?: any; lfRipple?: any; lfFadeIn?: any; lfFormat?: any; lfLanguage?: any; lfPreserveSpaces?: any; lfShowCopy?: any; lfShowHeader?: any; lfStickyHeader?: any; lfUiSize?: any; lfDataset?: any; lfExpanded?: any; lfImageProps?: any; lfPosition?: any; lfAriaLabel?: any; lfIcon?: any; lfIconOff?: any; lfStretchX?: any; lfStretchY?: any; lfStyling?: any; lfToggable?: any; lfTrailingIcon?: any; lfType?: any; lfBrush?: any; lfColor?: any; lfCursor?: any; lfOpacity?: any; lfPreview?: any; lfSize?: any; lfStrokeTolerance?: any; lfLayout?: any; lfAxis?: any; lfColors?: any; lfLegend?: any; lfSeries?: any; lfTypes?: any; lfXAxis?: any; lfYAxis?: any; lfConfig?: any; lfToolHandlers?: any; lfUploadCallback?: any; lfFlat?: any; lfOverlay?: any; lfPlaceholder?: any; lfThreshold?: any; lfAnimated?: any; lfCenteredLabel?: any; lfIsRadial?: any; lfCaptureShortcuts?: any; lfFormatJSON?: any; lfHelper?: any; lfTrailingIconAction?: any; lfLeadingLabel?: any; lfDeleteSpeed?: any; lfLoop?: any; lfPause?: any; lfSpeed?: any; lfTag?: any; lfUpdatable?: any; lfEmpty?: any; lfAllowFreeInput?: any; lfCache?: any; lfCacheTTL?: any; lfDebounceMs?: any; lfListProps?: any; lfMaxCacheSize?: any; lfMinChars?: any; lfNavigation?: any; lfSpinnerProps?: any; lfTextfieldProps?: any; lfInteractive?: any; lfMaxItems?: any; lfSeparator?: any; lfShowRoot?: any; lfAutoPlay?: any; lfInterval?: any; lfLightbox?: any; lfShape?: any; lfView?: any; lfDisplay?: any; lfResponsive?: any; lfLoadCallback?: any; lfEnableDeletions?: any; lfFilter?: any; lfSelectable?: any; lfActions?: any; lfCollapseColumns?: any; lfColumns?: any; lfAutosave?: any; lfChipProps?: any; lfMaxHistory?: any; lfMode?: any; lfProps?: any; lfTrigger?: any; lfOrientation?: any; lfMax?: any; lfMin?: any; lfStep?: any; lfAction?: any; lfActionCallback?: any; lfCloseIcon?: any; lfDuration?: any; lfMessage?: any; lfActive?: any; lfBarVariant?: any; lfDimensions?: any; lfFader?: any; lfFaderTimeout?: any; lfFullScreen?: any; lfTimeout?: any; lfCloseCallback?: any; lfTimer?: any; lfAccordionLayout?: any; lfExpandedNodeIds?: any; lfInitialExpansionDepth?: any; lfGrid?: any; lfSelectedNodeIds?: any; value?: any; htmlProps?: any; accept?: any; "accept-charset"?: any; alt?: any; autocomplete?: any; autofocus?: any; checked?: any; dataset?: any; max?: any; maxLength?: any; min?: any; minLength?: any; multiple?: any; name?: any; placeholder?: any; readonly?: any; role?: any; src?: any; srcset?: any; step?: any; title?: any; type?: any; "aria-"?: any; "data-"?: any; }',
       },
       {
         name: "lfLabel",

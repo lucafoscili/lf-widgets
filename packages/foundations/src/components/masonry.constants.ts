@@ -10,6 +10,7 @@ export const LF_MASONRY_BLOCKS = {
     _: "grid",
     actions: "actions",
     addColumn: "add-column",
+    capture: "capture",
     changeViewe: "change-view",
     column: "column",
     removeColumn: "remove-column",
@@ -24,7 +25,12 @@ export const LF_MASONRY_DEFAULT_COLUMNS = [640, 768, 1024, 1920, 2560] as const;
 //#endregion
 
 //#region Events
-export const LF_MASONRY_EVENTS = ["lf-event", "ready", "unmount"] as const;
+export const LF_MASONRY_EVENTS = [
+  "click",
+  "lf-event",
+  "ready",
+  "unmount",
+] as const;
 //#endregion
 
 //#region Ids

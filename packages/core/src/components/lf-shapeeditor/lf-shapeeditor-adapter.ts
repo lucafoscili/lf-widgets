@@ -1,11 +1,11 @@
 import {
-  LfImageviewerAdapter,
-  LfImageviewerAdapterControllerSetters,
-  LfImageviewerAdapterHandlers,
-  LfImageviewerAdapterInitializerGetters,
-  LfImageviewerAdapterInitializerSetters,
-  LfImageviewerAdapterJsx,
-  LfImageviewerAdapterRefs,
+  LfShapeeditorAdapter,
+  LfShapeeditorAdapterControllerSetters,
+  LfShapeeditorAdapterHandlers,
+  LfShapeeditorAdapterInitializerGetters,
+  LfShapeeditorAdapterInitializerSetters,
+  LfShapeeditorAdapterJsx,
+  LfShapeeditorAdapterRefs,
 } from "@lf-widgets/foundations";
 import { prepDetails } from "./elements.details";
 import { prepNavigation } from "./elements.navigation";
@@ -14,10 +14,10 @@ import { prepNavigationHandlers } from "./handlers.navigation";
 
 //#region Adapter
 export const createAdapter = (
-  getters: LfImageviewerAdapterInitializerGetters,
-  setters: LfImageviewerAdapterInitializerSetters,
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapter => {
+  getters: LfShapeeditorAdapterInitializerGetters,
+  setters: LfShapeeditorAdapterInitializerSetters,
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapter => {
   return {
     controller: {
       get: getters,
@@ -34,9 +34,9 @@ export const createAdapter = (
 
 //#region Controller
 export const createSetters = (
-  setters: LfImageviewerAdapterInitializerSetters,
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterControllerSetters => {
+  setters: LfShapeeditorAdapterInitializerSetters,
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterControllerSetters => {
   return {
     ...setters,
     spinnerStatus: (active) =>
@@ -47,8 +47,8 @@ export const createSetters = (
 
 //#region Elements
 export const createJsx = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterJsx => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterJsx => {
   return {
     details: prepDetails(getAdapter),
     navigation: prepNavigation(getAdapter),
@@ -58,8 +58,8 @@ export const createJsx = (
 
 //#region Handlers
 export const createHandlers = (
-  getAdapter: () => LfImageviewerAdapter,
-): LfImageviewerAdapterHandlers => {
+  getAdapter: () => LfShapeeditorAdapter,
+): LfShapeeditorAdapterHandlers => {
   return {
     details: prepDetailsHandlers(getAdapter),
     navigation: prepNavigationHandlers(getAdapter),
@@ -68,24 +68,26 @@ export const createHandlers = (
 //#endregion
 
 //#region Refs
-export const createRefs = (): LfImageviewerAdapterRefs => {
+export const createRefs = (): LfShapeeditorAdapterRefs => {
   return {
     details: {
-      canvas: null,
       clearHistory: null,
       deleteShape: null,
+      infoIcons: new Map<string, HTMLElement>(),
       redo: null,
       save: null,
+      settings: null,
+      shape: null,
       spinner: null,
-      undo: null,
       tree: null,
+      undo: null,
     },
     navigation: {
       load: null,
       masonry: null,
       navToggle: null,
-      tree: null,
       textfield: null,
+      tree: null,
     },
   };
 };

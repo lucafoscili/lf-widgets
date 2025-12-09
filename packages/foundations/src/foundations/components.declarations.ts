@@ -89,11 +89,6 @@ import {
   LfImagePropsInterface,
 } from "../components/image.declarations";
 import {
-  LfImageviewerElement,
-  LfImageviewerInterface,
-  LfImageviewerPropsInterface,
-} from "../components/imageviewer.declarations";
-import {
   LfListElement,
   LfListInterface,
   LfListPropsInterface,
@@ -138,6 +133,11 @@ import {
   LfSelectInterface,
   LfSelectPropsInterface,
 } from "../components/select.declarations";
+import {
+  LfShapeeditorElement,
+  LfShapeeditorInterface,
+  LfShapeeditorPropsInterface,
+} from "../components/shapeeditor.declarations";
 import {
   LfSliderElement,
   LfSliderInterface,
@@ -258,7 +258,6 @@ export type LfComponentElementMap = {
   LfDrawer: LfDrawerElement;
   LfHeader: LfHeaderElement;
   LfImage: LfImageElement;
-  LfImageviewer: LfImageviewerElement;
   LfList: LfListElement;
   LfMasonry: LfMasonryElement;
   LfMessenger: LfMessengerElement;
@@ -268,6 +267,7 @@ export type LfComponentElementMap = {
   LfProgressbar: LfProgressbarElement;
   LfRadio: LfRadioElement;
   LfSelect: LfSelectElement;
+  LfShapeeditor: LfShapeeditorElement;
   LfSlider: LfSliderElement;
   LfSnackbar: LfSnackbarElement;
   LfSpinner: LfSpinnerElement;
@@ -304,7 +304,6 @@ export type LfComponentClassMap = {
   LfDrawer: LfDrawerInterface;
   LfHeader: LfHeaderInterface;
   LfImage: LfImageInterface;
-  LfImageviewer: LfImageviewerInterface;
   LfList: LfListInterface;
   LfMasonry: LfMasonryInterface;
   LfMessenger: LfMessengerInterface;
@@ -314,6 +313,7 @@ export type LfComponentClassMap = {
   LfProgressbar: LfProgressbarInterface;
   LfRadio: LfRadioInterface;
   LfSelect: LfSelectInterface;
+  LfShapeeditor: LfShapeeditorInterface;
   LfSlider: LfSliderInterface;
   LfSnackbar: LfSnackbarInterface;
   LfSpinner: LfSpinnerInterface;
@@ -468,7 +468,7 @@ export type LfComponentName =
   | "LfDrawer"
   | "LfHeader"
   | "LfImage"
-  | "LfImageviewer"
+  | "LfShapeeditor"
   | "LfList"
   | "LfMasonry"
   | "LfMessenger"
@@ -513,7 +513,6 @@ export type LfComponentProps =
   | LfDrawerPropsInterface
   | LfHeaderPropsInterface
   | LfImagePropsInterface
-  | LfImageviewerPropsInterface
   | LfListPropsInterface
   | LfMasonryPropsInterface
   | LfMessengerPropsInterface
@@ -523,6 +522,7 @@ export type LfComponentProps =
   | LfProgressbarPropsInterface
   | LfRadioPropsInterface
   | LfSelectPropsInterface
+  | LfShapeeditorPropsInterface
   | LfSliderPropsInterface
   | LfSnackbarPropsInterface
   | LfSpinnerPropsInterface
@@ -556,7 +556,6 @@ export type LfComponentPropsMap = {
   LfDrawer: LfDrawerPropsInterface;
   LfHeader: LfHeaderPropsInterface;
   LfImage: LfImagePropsInterface;
-  LfImageviewer: LfImageviewerPropsInterface;
   LfList: LfListPropsInterface;
   LfMasonry: LfMasonryPropsInterface;
   LfMessenger: LfMessengerPropsInterface;
@@ -566,6 +565,7 @@ export type LfComponentPropsMap = {
   LfProgressbar: LfProgressbarPropsInterface;
   LfRadio: LfRadioPropsInterface;
   LfSelect: LfSelectPropsInterface;
+  LfShapeeditor: LfShapeeditorPropsInterface;
   LfSlider: LfSliderPropsInterface;
   LfSnackbar: LfSnackbarPropsInterface;
   LfSpinner: LfSpinnerPropsInterface;
@@ -600,7 +600,6 @@ export type LfComponentTagMap = {
   LfDrawer: "lf-drawer";
   LfHeader: "lf-header";
   LfImage: "lf-image";
-  LfImageviewer: "lf-imageviewer";
   LfList: "lf-list";
   LfMasonry: "lf-masonry";
   LfMessenger: "lf-messenger";
@@ -610,6 +609,7 @@ export type LfComponentTagMap = {
   LfProgressbar: "lf-progressbar";
   LfRadio: "lf-radio";
   LfSelect: "lf-select";
+  LfShapeeditor: "lf-shapeeditor";
   LfSlider: "lf-slider";
   LfSnackbar: "lf-snackbar";
   LfSpinner: "lf-spinner";
@@ -644,7 +644,6 @@ export type LfComponentReverseTagMap = {
   "lf-drawer": "LfDrawer";
   "lf-header": "LfHeader";
   "lf-image": "LfImage";
-  "lf-imageviewer": "LfImageviewer";
   "lf-list": "LfList";
   "lf-masonry": "LfMasonry";
   "lf-messenger": "LfMessenger";
@@ -654,6 +653,7 @@ export type LfComponentReverseTagMap = {
   "lf-progressbar": "LfProgressbar";
   "lf-radio": "LfRadio";
   "lf-select": "LfSelect";
+  "lf-shapeeditor": "LfShapeeditor";
   "lf-slider": "LfSlider";
   "lf-snackbar": "LfSnackbar";
   "lf-spinner": "LfSpinner";

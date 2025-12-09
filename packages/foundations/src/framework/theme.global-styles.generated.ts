@@ -39,6 +39,11 @@ export const GLOBAL_STYLES = {
     "border-radius": "0"
   },
   "[data-lf-ripple-host]": {
+    "cursor": "pointer",
+    "overflow": "hidden",
+    "position": "relative"
+  },
+  "[data-lf-spotlight-host]": {
     "position": "relative",
     "overflow": "hidden"
   },
@@ -57,18 +62,12 @@ export const GLOBAL_STYLES = {
     "background": "radial-gradient(circle at var(--lf-ui-tilt-light-x, 50%) var(--lf-ui-tilt-light-y, 50%), rgba(var(--lf-color-primary), var(--lf-ui-alpha-glass-hint, 0.275)), transparent)"
   },
   "[data-lf-neon-glow-host]": {
-    "overflow": "visible",
-    "transform-style": "preserve-3d"
-  },
-  "[data-lf-neon-glow]": {
-    "--lf-ui-neon-color": "rgba(var(--lf-color-secondary), 1)",
-    "--lf-ui-neon-intensity": "0.7",
-    "--lf-ui-neon-pulse-duration": "8s",
     "position": "relative",
     "border": "2px solid var(--lf-ui-neon-color)",
     "border-radius": "var(--lf-ui-border-radius, 0.5em)",
     "transform-style": "preserve-3d",
-    "animation": "lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite"
+    "animation": "lf-neon-flicker calc(var(--lf-ui-neon-pulse-duration) * 1.5) linear infinite",
+    "overflow": "visible"
   },
   "@keyframes lf-neon-flicker": [
     {
@@ -352,7 +351,7 @@ export const GLOBAL_STYLES = {
       }
     }
   ],
-  "[data-lf-neon-glow] > *": {
+  "[data-lf-neon-glow-host] > *": {
     "text-shadow": "0 0 5px var(--lf-ui-neon-color), 0 0 10px var(--lf-ui-neon-color), 0 0 20px var(--lf-ui-neon-color)"
   },
   "[data-lf-effect-layer=neon-glow-border]": {
@@ -531,9 +530,6 @@ export const GLOBAL_STYLES = {
     "backdrop-filter": "blur(4px)"
   },
   "[data-lf-effect-layer=neon-glow-reflection]": {
-    "--lf-ui-neon-reflection-blur": "12px",
-    "--lf-ui-neon-reflection-offset": "5%",
-    "--lf-ui-neon-reflection-opacity": "0.7",
     "inset": "unset",
     "top": "100%",
     "left": "0",
@@ -576,6 +572,61 @@ export const GLOBAL_STYLES = {
       "to": {
         "opacity": "0",
         "transform": "scale(4)"
+      }
+    }
+  ],
+  "[data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "0",
+    "transition": "opacity var(--lf-ui-spotlight-fade-in, 300ms) ease-out",
+    "background": "conic-gradient(from 180deg at var(--lf-ui-spotlight-origin-x, 50%) 0%, transparent 0deg, transparent calc(90deg - var(--lf-ui-spotlight-angle, 45deg) / 2), color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 30%, transparent) calc(90deg - var(--lf-ui-spotlight-angle, 45deg) / 4), var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 90deg, color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 30%, transparent) calc(90deg + var(--lf-ui-spotlight-angle, 45deg) / 4), transparent calc(90deg + var(--lf-ui-spotlight-angle, 45deg) / 2), transparent 360deg)",
+    "mask-image": "linear-gradient(to bottom, black 0%, black 30%, transparent 100%)",
+    "-webkit-mask-image": "linear-gradient(to bottom, black 0%, black 30%, transparent 100%)"
+  },
+  "[data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "0",
+    "transition": "opacity var(--lf-ui-spotlight-fade-in, 300ms) ease-out",
+    "background": "radial-gradient(ellipse 60% 25% at var(--lf-ui-spotlight-origin-x, 50%) 100%, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 0%, color-mix(in srgb, var(--lf-ui-spotlight-color, rgba(255, 255, 255, 0.85)) 50%, transparent) 30%, transparent 70%)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=fading] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "var(--lf-ui-spotlight-intensity, 0.8)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=on] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "var(--lf-ui-spotlight-intensity, 0.8)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=fading] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "var(--lf-ui-spotlight-surface-glow, 0.4)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=on] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "var(--lf-ui-spotlight-surface-glow, 0.4)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=dimming] [data-lf-effect-layer=spotlight-beam]": {
+    "opacity": "0",
+    "transition-duration": "var(--lf-ui-spotlight-fade-out, 200ms)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight=dimming] [data-lf-effect-layer=spotlight-glow]": {
+    "opacity": "0",
+    "transition-duration": "var(--lf-ui-spotlight-fade-out, 200ms)"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight-sway] [data-lf-effect-layer=spotlight-beam]": {
+    "animation": "lf-spotlight-sway var(--lf-ui-spotlight-sway-duration, 3s) ease-in-out infinite"
+  },
+  "[data-lf-spotlight-host][data-lf-spotlight-sway] [data-lf-effect-layer=spotlight-glow]": {
+    "animation": "lf-spotlight-sway var(--lf-ui-spotlight-sway-duration, 3s) ease-in-out infinite"
+  },
+  "@keyframes lf-spotlight-sway": [
+    {
+      "0%": {
+        "transform": "translateX(calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1))"
+      }
+    },
+    {
+      "50%": {
+        "transform": "translateX(var(--lf-ui-spotlight-sway-amplitude, 5deg))"
+      }
+    },
+    {
+      "100%": {
+        "transform": "translateX(calc(var(--lf-ui-spotlight-sway-amplitude, 5deg) * -1))"
       }
     }
   ],
@@ -663,5 +714,108 @@ export const GLOBAL_STYLES = {
       "max-height": "80dvh",
       "max-width": "90dvw"
     }
+  },
+  ".lf-tooltip": {
+    "--lf-tooltip-arrow-size": "6px",
+    "--lf-tooltip-bg": "rgba(\n    var(--lf-color-surface),\n    var(--lf-ui-alpha-glass-heavy, 0.75)\n  )",
+    "--lf-tooltip-border": "rgba(var(--lf-color-border), 0.5)",
+    "--lf-tooltip-color": "rgb(var(--lf-color-on-surface))",
+    "--lf-tooltip-font-family": "var(--lf-font-family-primary, inherit)",
+    "--lf-tooltip-font-size": "0.875em",
+    "--lf-tooltip-max-width": "300px",
+    "--lf-tooltip-padding": "0.5em 0.75em",
+    "--lf-tooltip-radius": "var(--lf-ui-border-radius, 4px)",
+    "--lf-tooltip-shadow": "0 4px 12px rgba(0, 0, 0, 0.15)",
+    "--lf-tooltip-transition": "opacity 150ms ease-out, transform 150ms ease-out",
+    "background": "var(--lf-tooltip-bg)",
+    "backdrop-filter": "blur(8px)",
+    "border": "1px solid var(--lf-tooltip-border)",
+    "border-radius": "var(--lf-tooltip-radius)",
+    "box-shadow": "var(--lf-tooltip-shadow)",
+    "box-sizing": "border-box",
+    "color": "var(--lf-tooltip-color)",
+    "font-family": "var(--lf-tooltip-font-family)",
+    "font-size": "var(--lf-tooltip-font-size)",
+    "line-height": "1.4",
+    "max-width": "var(--lf-tooltip-max-width)",
+    "opacity": "0",
+    "padding": "var(--lf-tooltip-padding)",
+    "pointer-events": "none",
+    "position": "fixed",
+    "transform": "scale(0.95)",
+    "transition": "var(--lf-tooltip-transition)",
+    "white-space": "normal",
+    "word-wrap": "break-word",
+    "z-index": "var(--lf-ui-zindex-tooltip, 1000)"
+  },
+  ".lf-tooltip--visible": {
+    "opacity": "1",
+    "pointer-events": "auto",
+    "transform": "scale(1)"
+  },
+  ".lf-tooltip__arrow": {
+    "border": "var(--lf-tooltip-arrow-size) solid transparent",
+    "height": "0",
+    "position": "absolute",
+    "width": "0"
+  },
+  ".lf-tooltip[data-placement^=top] .lf-tooltip__arrow": {
+    "border-top-color": "var(--lf-tooltip-bg)",
+    "bottom": "calc(var(--lf-tooltip-arrow-size) * -2)",
+    "left": "50%",
+    "transform": "translateX(-50%)"
+  },
+  ".lf-tooltip[data-placement^=bottom] .lf-tooltip__arrow": {
+    "border-bottom-color": "var(--lf-tooltip-bg)",
+    "left": "50%",
+    "top": "calc(var(--lf-tooltip-arrow-size) * -2)",
+    "transform": "translateX(-50%)"
+  },
+  ".lf-tooltip[data-placement^=left] .lf-tooltip__arrow": {
+    "border-left-color": "var(--lf-tooltip-bg)",
+    "right": "calc(var(--lf-tooltip-arrow-size) * -2)",
+    "top": "50%",
+    "transform": "translateY(-50%)"
+  },
+  ".lf-tooltip[data-placement^=right] .lf-tooltip__arrow": {
+    "border-right-color": "var(--lf-tooltip-bg)",
+    "left": "calc(var(--lf-tooltip-arrow-size) * -2)",
+    "top": "50%",
+    "transform": "translateY(-50%)"
+  },
+  ".lf-tooltip[data-placement$=-start] .lf-tooltip__arrow": {
+    "left": "12px",
+    "transform": "none"
+  },
+  ".lf-tooltip[data-placement$=-end] .lf-tooltip__arrow": {
+    "left": "auto",
+    "right": "12px",
+    "transform": "none"
+  },
+  ".lf-tooltip[data-placement=left-start] .lf-tooltip__arrow": {
+    "left": "auto",
+    "right": "auto",
+    "top": "12px",
+    "transform": "none"
+  },
+  ".lf-tooltip[data-placement=right-start] .lf-tooltip__arrow": {
+    "left": "auto",
+    "right": "auto",
+    "top": "12px",
+    "transform": "none"
+  },
+  ".lf-tooltip[data-placement=left-end] .lf-tooltip__arrow": {
+    "bottom": "12px",
+    "left": "auto",
+    "right": "auto",
+    "top": "auto",
+    "transform": "none"
+  },
+  ".lf-tooltip[data-placement=right-end] .lf-tooltip__arrow": {
+    "bottom": "12px",
+    "left": "auto",
+    "right": "auto",
+    "top": "auto",
+    "transform": "none"
   }
 } as const;

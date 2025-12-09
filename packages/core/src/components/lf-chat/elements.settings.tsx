@@ -442,7 +442,6 @@ export const prepSettings = (
 
       const { definitions, enabled, categories } = effectiveConfig.tools;
 
-      // If no tools, don't render the section
       if (!definitions || definitions.length === 0) {
         return (
           <span class={bemClass(blocks.settings._, blocks.settings.tools)}>
