@@ -69,6 +69,15 @@ $comp: "chat";
     align-content: flex-start;
   }
 
+  &--full {
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: var(--lf-ui-z-index-fullscreen, 9999);
+  }
+
   &__attachments {
     backdrop-filter: unset;
     box-sizing: border-box;

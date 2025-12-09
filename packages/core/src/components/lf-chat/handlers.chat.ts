@@ -98,6 +98,12 @@ export const prepChatHandlers = (
               break;
             }
 
+            // Full Screen
+            case LF_CHAT_IDS.chat.fullScreen: {
+              set.toggleFullScreen();
+              break;
+            }
+
             // Retry
             case LF_CHAT_IDS.chat.retry: {
               await comp.retryConnection();

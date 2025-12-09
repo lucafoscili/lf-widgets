@@ -219,6 +219,30 @@ export const prepChat = (
     },
     //#endregion
 
+    //region Full Screen
+    fullScreen: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { chat } = elements.refs;
+      const { button } = handlers.chat;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      return (
+        <lf-button
+          class={bemClass(blocks.chat._, blocks.chat.fullScreen)}
+          data-cy={cyAttributes.button}
+          id={LF_CHAT_IDS.chat.fullScreen}
+          lfIcon={"maximize"}
+          lfLabel="Full Screen"
+          lfStyling="outlined"
+          onLf-button-event={button}
+          part={parts.fullScreen}
+          ref={assignRef(chat, "fullScreen")}
+        ></lf-button>
+      );
+    },
+
     //#region Message
     messageBlock: (text) => {
       const { controller } = getAdapter();

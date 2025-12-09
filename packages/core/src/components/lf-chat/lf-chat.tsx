@@ -102,6 +102,7 @@ export class LfChat implements LfChatInterface {
   @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
   @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
   @State() debugInfo: LfDebugLifecycleInfo;
+  @State() fullScreen: boolean = false;
   @State() history: LfChatHistory = [];
   @State() status: LfChatStatus = "connecting";
   @State() view: LfChatView = "main";
@@ -471,6 +472,7 @@ export class LfChat implements LfChatInterface {
           this.onLfEvent(new CustomEvent("update"), "update");
         },
         status: (status) => (this.status = status),
+        toggleFullScreen: () => (this.fullScreen = !this.fullScreen),
         view: (view) => (this.view = view),
       },
       () => this.#adapter,
@@ -866,6 +868,7 @@ export class LfChat implements LfChatInterface {
               [view]: true,
               [layout]: true,
               [status]: true,
+              full: this.fullScreen,
             })}
             part={this.#p.chat}
           >

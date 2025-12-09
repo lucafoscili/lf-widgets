@@ -102,6 +102,7 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     clear: () => VNode;
     configuration: () => VNode;
     editableMessage: (m: LfLLMChoiceMessage) => VNode;
+    fullScreen: () => VNode;
     messageBlock: (text: string, role: LfLLMRole) => VNode;
     progressbar: () => VNode;
     retry: () => VNode;
@@ -172,6 +173,7 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     editConfirm: LfButtonElement | null;
     editTextarea: LfTextfieldElement | null;
     fileInput: HTMLInputElement | null;
+    fullScreen: LfButtonElement | null;
     imageInput: HTMLInputElement | null;
     progressbar: LfProgressbarElement | null;
     retry: LfButtonElement | null;
@@ -271,6 +273,7 @@ export type LfChatAdapterInitializerSetters = Pick<
   | "currentToolExecution"
   | "history"
   | "status"
+  | "toggleFullScreen"
   | "view"
 >;
 /**
@@ -311,6 +314,7 @@ export interface LfChatAdapterControllerSetters
   currentToolExecution: (value: LfDataDataset | null) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
+  toggleFullScreen: () => void;
   view: (view: LfChatView) => void;
 }
 //#endregion
