@@ -3,8 +3,8 @@ import { getAccordionFixtures } from "../assets/data/accordion";
 import { getArticleFixtures } from "../assets/data/article";
 import { getAutocompleteFixtures } from "../assets/data/autocomplete";
 import { getBadgeFixtures } from "../assets/data/badge";
-import { getButtonFixtures } from "../assets/data/button";
 import { getBreadcrumbsFixtures } from "../assets/data/breadcrumbs";
+import { getButtonFixtures } from "../assets/data/button";
 import { getCanvasFixtures } from "../assets/data/canvas";
 import { getCardFixtures } from "../assets/data/card";
 import { getCarouselFixtures } from "../assets/data/carousel";
@@ -23,18 +23,18 @@ import { getEffectsFixtures } from "../assets/data/effects";
 import { getFrameworkFixtures } from "../assets/data/framework";
 import { getHeaderFixtures } from "../assets/data/header";
 import { getImageFixtures } from "../assets/data/image";
-import { getShapeeditorFixtures } from "../assets/data/shapeeditor";
 import { getListFixtures } from "../assets/data/list";
 import { getLlmFixtures } from "../assets/data/llm";
 import { getMasonryFixtures } from "../assets/data/masonry";
 import { getMessengerFixtures } from "../assets/data/messenger";
+import { getMultiInputFixtures } from "../assets/data/multiinput";
 import { getPhotoframeFixtures } from "../assets/data/photoframe";
 import { getPlaceholderFixtures } from "../assets/data/placeholder";
 import { getPortalFixtures } from "../assets/data/portal";
 import { getProgressbarFixtures } from "../assets/data/progressbar";
 import { getRadioFixtures } from "../assets/data/radio";
 import { getSelectFixtures } from "../assets/data/select";
-import { getMultiInputFixtures } from "../assets/data/multiinput";
+import { getShapeeditorFixtures } from "../assets/data/shapeeditor";
 import { getSliderFixtures } from "../assets/data/slider";
 import { getSnackbarFixtures } from "../assets/data/snackbar";
 import { getSpinnerFixtures } from "../assets/data/spinner";
@@ -45,6 +45,7 @@ import { getTextfieldFixtures } from "../assets/data/textfield";
 import { getThemeFixtures } from "../assets/data/theme";
 import { getToastFixtures } from "../assets/data/toast";
 import { getToggleFixtures } from "../assets/data/toggle";
+import { getTooltipFixtures } from "../assets/data/tooltip";
 import { getTreeFixtures } from "../assets/data/tree";
 import { getTypewriterFixtures } from "../assets/data/typewriter";
 import { getUploadFixtures } from "../assets/data/upload";
@@ -137,7 +138,10 @@ export const getAllComponentFixtures = <C extends LfComponentTag>(
   }
 };
 
-export const getAllFrameworkFixtures = (framework: string) => {
+export const getAllFrameworkFixtures = (
+  framework: string,
+  manager?: LfFrameworkInterface,
+) => {
   switch (framework.toLowerCase()) {
     case "color":
       return getColorFixtures();
@@ -148,7 +152,7 @@ export const getAllFrameworkFixtures = (framework: string) => {
     case "drag":
       return getDragFixtures();
     case "effects":
-      return getEffectsFixtures();
+      return getEffectsFixtures(manager);
     case "framework":
       return getFrameworkFixtures();
     case "llm":
@@ -159,6 +163,8 @@ export const getAllFrameworkFixtures = (framework: string) => {
       return getSyntaxFixtures();
     case "theme":
       return getThemeFixtures();
+    case "tooltip":
+      return getTooltipFixtures();
     default:
       return null;
   }
