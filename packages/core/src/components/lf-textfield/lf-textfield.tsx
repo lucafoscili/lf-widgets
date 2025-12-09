@@ -73,6 +73,21 @@ export class LfTextfield implements LfTextfieldInterface {
 
   //#region Props
   /**
+   * When enabled, prevents propagation of common keyboard shortcuts
+   * (e.g. Ctrl/Cmd + C, V, X, Z, Y, A) from the internal input or textarea
+   * to parent components.
+   *
+   * @type {boolean}
+   * @default true
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-textfield lfCaptureShortcuts={false} />
+   * ```
+   */
+  @Prop({ mutable: true }) lfCaptureShortcuts: boolean = true;
+  /**
    * Automatically formats textarea content to prettier JSON structure.
    *
    * @type {LfTextfieldFormatJSON | null}
@@ -439,6 +454,34 @@ export class LfTextfield implements LfTextfieldInterface {
       this.onLfEvent(e, "change");
     }
   };
+  #shouldCaptureShortcut = (e: KeyboardEvent) => {
+    if (!this.lfCaptureShortcuts) {
+      return false;
+    }
+
+    const isModifierPressed = e.ctrlKey || e.metaKey;
+    if (!isModifierPressed) {
+      return false;
+    }
+
+    const key = (e.key || "").toLowerCase();
+
+    if (e.shiftKey && key === "z") {
+      return true;
+    }
+
+    switch (key) {
+      case "c":
+      case "v":
+      case "x":
+      case "z":
+      case "y":
+      case "a":
+        return true;
+      default:
+        return false;
+    }
+  };
   #prepCounter = (): VNode => {
     if (!this.#maxLength) {
       return null;
@@ -559,6 +602,9 @@ export class LfTextfield implements LfTextfieldInterface {
           this.onLfEvent(e, "input");
         }}
         onKeyDown={(e) => {
+          if (this.#shouldCaptureShortcut(e)) {
+            e.stopPropagation();
+          }
           this.onLfEvent(e, "keydown");
         }}
         part={this.#p.input}
@@ -650,6 +696,9 @@ export class LfTextfield implements LfTextfieldInterface {
             }
           }}
           onKeyDown={(e) => {
+            if (this.#shouldCaptureShortcut(e as KeyboardEvent)) {
+              e.stopPropagation();
+            }
             this.onLfEvent(e, "keydown");
           }}
           part={this.#p.input}

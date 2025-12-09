@@ -349,5 +349,58 @@ describe("lf-textfield component", () => {
         }),
       );
     });
+
+    it("stops propagation of common shortcuts by default", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const hostSpy = jest.fn();
+      const lfEventSpy = jest.fn();
+
+      page.root.addEventListener("keydown", hostSpy);
+      page.root.addEventListener("lf-textfield-event", lfEventSpy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const keydownEvent = new KeyboardEvent("keydown", {
+        key: "v",
+        code: "KeyV",
+        keyCode: 86,
+        ctrlKey: true,
+        bubbles: true,
+        composed: true,
+      });
+
+      input.dispatchEvent(keydownEvent);
+      await page.waitForChanges();
+
+      expect(lfEventSpy).toHaveBeenCalled();
+      expect(
+        lfEventSpy.mock.calls[0][0].detail.originalEvent.key,
+      ).toBe("v");
+      expect(hostSpy).not.toHaveBeenCalled();
+    });
+
+    it("allows propagation when lfCaptureShortcuts is false", async () => {
+      const page = await createPage(`<lf-textfield></lf-textfield>`);
+      const hostSpy = jest.fn();
+
+      page.root.lfCaptureShortcuts = false;
+      await page.waitForChanges();
+
+      page.root.addEventListener("keydown", hostSpy);
+
+      const input = page.root.shadowRoot.querySelector("input");
+      const keydownEvent = new KeyboardEvent("keydown", {
+        key: "v",
+        code: "KeyV",
+        keyCode: 86,
+        ctrlKey: true,
+        bubbles: true,
+        composed: true,
+      });
+
+      input.dispatchEvent(keydownEvent);
+      await page.waitForChanges();
+
+      expect(hostSpy).toHaveBeenCalled();
+    });
   });
 });
