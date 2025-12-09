@@ -626,7 +626,21 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     info.update(this, "will-render");
   }
   componentDidRender() {
-    const { info } = this.#framework.debug;
+    const { debug, tooltip } = this.#framework;
+    const { info } = debug;
+    const { refs } = this.#adapter.elements;
+
+    refs.details.infoIcons?.forEach((icon) => {
+      const content = icon.getAttribute("aria-label");
+      if (!content || tooltip.isRegistered(icon)) {
+        return;
+      }
+
+      tooltip.register(icon, {
+        content,
+        placement: "bottom",
+      });
+    });
 
     info.update(this, "did-render");
   }
@@ -649,6 +663,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     );
   }
   disconnectedCallback() {
+    const { tooltip } = this.#framework;
+    this.#adapter.elements.refs.details.infoIcons?.forEach((icon) => {
+      tooltip.unregister(icon);
+    });
+
     this.#framework?.theme.unregister(this);
   }
   //#endregion
