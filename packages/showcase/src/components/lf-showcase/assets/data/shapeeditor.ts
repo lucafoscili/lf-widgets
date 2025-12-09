@@ -6,14 +6,16 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
-  LfShapeeditorConfigDsl,
   LfShapeeditorLoadCallback,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { LfShowcaseComponentFixture } from "../../lf-showcase-declarations";
-import { SPOTLIGHT_EFFECT } from "./effects";
+import {
+  IMAGE_EDITOR_CANVAS_DATASET,
+  IMAGE_EDITOR_SETTINGS_DATASET,
+} from "./imageEditor.fixtures";
 
 const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
 const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
@@ -26,117 +28,11 @@ export const getShapeeditorFixtures = (
 ): LfShowcaseComponentFixture<"lf-shapeeditor"> => {
   const { get } = framework.assets;
 
-  const spotlightDsl: LfShapeeditorConfigDsl = {
-    controls: SPOTLIGHT_EFFECT.controls,
-    layout: [
-      {
-        id: "beam",
-        label: "Beam",
-        controlIds: ["beam", "color", "angle", "intensity", "originX"],
-      },
-      {
-        id: "surface",
-        label: "Surface",
-        controlIds: ["surfaceGlow", "surfaceGlowIntensity"],
-      },
-      {
-        id: "behaviour",
-        label: "Behaviour",
-        controlIds: ["followPointer", "sway", "swayAmplitude", "swayDuration"],
-      },
-      {
-        id: "trigger",
-        label: "Trigger & Timing",
-        controlIds: ["trigger", "fadeInDuration", "fadeOutDuration"],
-      },
-    ],
-    defaultSettings: SPOTLIGHT_EFFECT.defaultSettings,
-  };
-
   //#region mock data
   //#region Canvas data
-  const canvasDataset: LfDataDataset = {
-    nodes: [
-      {
-        cells: {
-          lfCanvas: {
-            lfImageProps: {
-              lfValue: get(`./assets/showcase/avatar_thor_2.png`).path,
-            },
-            shape: "canvas",
-            value: get(`./assets/showcase/avatar_thor_2.png`).path,
-          },
-        },
-        id: "canvas_0",
-        value: "Thor Avatar",
-      },
-      {
-        cells: {
-          lfCanvas: {
-            lfImageProps: {
-              lfValue: get(`./assets/showcase/location_forest.png`).path,
-            },
-            shape: "canvas",
-            value: get(`./assets/showcase/location_forest.png`).path,
-          },
-        },
-        id: "canvas_1",
-        value: "Forest Scene",
-      },
-      {
-        cells: {
-          lfCanvas: {
-            lfImageProps: {
-              lfValue: get(`./assets/showcase/avatar_freya.png`).path,
-            },
-            shape: "canvas",
-            value: get(`./assets/showcase/avatar_freya.png`).path,
-          },
-        },
-        id: "canvas_2",
-        value: "Freya Avatar",
-      },
-    ],
-  };
+  const canvasDataset: LfDataDataset = IMAGE_EDITOR_CANVAS_DATASET(get);
 
-  const canvasSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "basic_adjustments",
-        value: "Basic Adjustments",
-        icon: "settings",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: JSON.stringify(spotlightDsl),
-              },
-            },
-            id: "clarity",
-            value: "Clarity",
-          },
-        ],
-      },
-      {
-        id: "creative_effects",
-        value: "Creative Effects",
-        icon: "palette",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value: "{}",
-              },
-            },
-            id: "vignette",
-            value: "Vignette",
-          },
-        ],
-      },
-    ],
-  };
+  const canvasSettingsDataset: LfDataDataset = IMAGE_EDITOR_SETTINGS_DATASET;
   //#endregion
 
   //#region Code data

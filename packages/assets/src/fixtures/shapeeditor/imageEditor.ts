@@ -1,0 +1,275 @@
+import type {
+  LfDataDataset,
+  LfShapeeditorConfigDsl,
+} from "@lf-widgets/foundations";
+
+//#region Declarations
+export type ImageEditorShapeeditorConfig = LfShapeeditorConfigDsl;
+//#endregion
+
+//#region Brush
+export const IMAGE_EDITOR_BRUSH_DSL: ImageEditorShapeeditorConfig = {
+  controls: [
+    {
+      id: "brush_size",
+      type: "slider",
+      label: "Brush Size",
+      description: "Sets the size of the brush in pixels.",
+      min: 1,
+      max: 500,
+      step: 1,
+      defaultValue: 150,
+    },
+    {
+      id: "brush_opacity",
+      type: "slider",
+      label: "Brush Opacity",
+      description: "Controls brush opacity from transparent to fully opaque.",
+      min: 0.05,
+      max: 1,
+      step: 0.05,
+      defaultValue: 0.2,
+    },
+    {
+      id: "brush_color",
+      type: "colorpicker",
+      label: "Brush Color",
+      description: "Color used for brush strokes.",
+      defaultValue: "#ff0000",
+      swatches: ["#ff0000", "#ffffff", "#000000", "#00bcd4"],
+    },
+  ],
+  layout: [
+    {
+      id: "brush_general",
+      label: "Brush",
+      controlIds: ["brush_size", "brush_opacity", "brush_color"],
+    },
+  ],
+  defaultSettings: {
+    brush_size: 150,
+    brush_opacity: 0.2,
+    brush_color: "#ff0000",
+  },
+};
+//#endregion
+
+//#region Brightness
+export const IMAGE_EDITOR_BRIGHTNESS_DSL: ImageEditorShapeeditorConfig = {
+  controls: [
+    {
+      id: "brightness_strength",
+      type: "slider",
+      label: "Strength",
+      description:
+        "Negative values darken, positive values brighten the image.",
+      min: -1,
+      max: 1,
+      step: 0.05,
+      defaultValue: 0,
+    },
+    {
+      id: "brightness_gamma",
+      type: "slider",
+      label: "Gamma",
+      description:
+        "Gamma correction. Values < 1 brighten shadows, > 1 darken highlights.",
+      min: 0.1,
+      max: 3,
+      step: 0.1,
+      defaultValue: 1,
+    },
+    {
+      id: "brightness_midpoint",
+      type: "slider",
+      label: "Midpoint",
+      description: "Defines the tonal midpoint for brightness scaling.",
+      min: 0,
+      max: 1,
+      step: 0.05,
+      defaultValue: 0.5,
+    },
+    {
+      id: "brightness_localized",
+      type: "toggle",
+      label: "Localized",
+      description: "Enhance brightness locally in darker regions.",
+      defaultValue: false,
+    },
+  ],
+  layout: [
+    {
+      id: "brightness_general",
+      label: "Brightness",
+      controlIds: [
+        "brightness_strength",
+        "brightness_gamma",
+        "brightness_midpoint",
+        "brightness_localized",
+      ],
+    },
+  ],
+  defaultSettings: {
+    brightness_strength: 0,
+    brightness_gamma: 1,
+    brightness_midpoint: 0.5,
+    brightness_localized: false,
+  },
+};
+//#endregion
+
+//#region Resize Edge
+export const IMAGE_EDITOR_RESIZE_EDGE_DSL: ImageEditorShapeeditorConfig = {
+  controls: [
+    {
+      id: "resize_target",
+      type: "number",
+      label: "Target Edge (px)",
+      description: "Target size for the longest image edge.",
+      min: 64,
+      max: 4096,
+      step: 16,
+      defaultValue: 1024,
+    },
+    {
+      id: "resize_keep_aspect",
+      type: "toggle",
+      label: "Keep Aspect Ratio",
+      description: "Preserve aspect ratio when resizing.",
+      defaultValue: true,
+    },
+    {
+      id: "resize_method",
+      type: "select",
+      label: "Resample Method",
+      description: "Interpolation method used when resizing.",
+      options: [
+        { value: "bicubic", label: "Bicubic" },
+        { value: "bilinear", label: "Bilinear" },
+        { value: "nearest", label: "Nearest" },
+      ],
+      defaultValue: "bicubic",
+    },
+  ],
+  layout: [
+    {
+      id: "resize_general",
+      label: "Resize (by edge)",
+      controlIds: ["resize_target", "resize_keep_aspect", "resize_method"],
+    },
+  ],
+  defaultSettings: {
+    resize_target: 1024,
+    resize_keep_aspect: true,
+    resize_method: "bicubic",
+  },
+};
+//#endregion
+
+//#region Datasets
+export const IMAGE_EDITOR_CANVAS_DATASET = (
+  getAsset: (path: string) => { path: string },
+): LfDataDataset => ({
+  nodes: [
+    {
+      id: "canvas_0",
+      value: "Thor Avatar",
+      cells: {
+        lfCanvas: {
+          shape: "canvas",
+          value: getAsset("./assets/showcase/avatar_thor_2.png").path,
+          lfImageProps: {
+            lfValue: getAsset("./assets/showcase/avatar_thor_2.png").path,
+          },
+        },
+      },
+    },
+    {
+      id: "canvas_1",
+      value: "Forest Scene",
+      cells: {
+        lfCanvas: {
+          shape: "canvas",
+          value: getAsset("./assets/showcase/location_forest.png").path,
+          lfImageProps: {
+            lfValue: getAsset("./assets/showcase/location_forest.png").path,
+          },
+        },
+      },
+    },
+    {
+      id: "canvas_2",
+      value: "Freya Avatar",
+      cells: {
+        lfCanvas: {
+          shape: "canvas",
+          value: getAsset("./assets/showcase/avatar_freya.png").path,
+          lfImageProps: {
+            lfValue: getAsset("./assets/showcase/avatar_freya.png").path,
+          },
+        },
+      },
+    },
+  ],
+});
+
+export const IMAGE_EDITOR_SETTINGS_DATASET: LfDataDataset = {
+  nodes: [
+    {
+      id: "drawing_tools",
+      value: "Drawing",
+      icon: "brush",
+      children: [
+        {
+          id: "brush",
+          value: "Brush",
+          description: "Brush tool configuration.",
+          cells: {
+            lfCode: {
+              shape: "code",
+              value: JSON.stringify(IMAGE_EDITOR_BRUSH_DSL),
+            },
+          },
+        },
+      ],
+    },
+    {
+      id: "basic_adjustments",
+      value: "Basic Adjustments",
+      icon: "settings",
+      children: [
+        {
+          id: "brightness",
+          value: "Brightness",
+          description: "Brightness and tonal adjustments.",
+          cells: {
+            lfCode: {
+              shape: "code",
+              value: JSON.stringify(IMAGE_EDITOR_BRIGHTNESS_DSL),
+            },
+          },
+        },
+      ],
+    },
+    {
+      id: "resize_tools",
+      value: "Resize",
+      icon: "arrow-autofit-content",
+      children: [
+        {
+          id: "resize_edge",
+          value: "Resize (by edge)",
+          description:
+            "Resize the image by fitting the longest edge to a target size.",
+          cells: {
+            lfCode: {
+              shape: "code",
+              value: JSON.stringify(IMAGE_EDITOR_RESIZE_EDGE_DSL),
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+//#endregion

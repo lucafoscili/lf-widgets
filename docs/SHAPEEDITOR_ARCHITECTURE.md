@@ -579,6 +579,66 @@ packages/foundations/src/components/
 
 ---
 
+## Fixtures via @lf-widgets/assets
+
+To keep the shapeeditor generic but easy to consume, fixtures are authored in TypeScript and compiled to JSON inside the optional `@lf-widgets/assets` package.
+
+### Source of Truth (TypeScript)
+
+Shapeeditor fixtures live under the assets package:
+
+```plaintext
+packages/assets/src/fixtures/shapeeditor/
+├─ effects.ts       # LfEffects playground (Spotlight, Neon Glow, Tilt, Ripple)
+└─ imageEditor.ts   # Image editor tools (brush, brightness, resize-by-edge)
+```
+
+These modules:
+
+- Use `LfShapeeditorConfigDsl` and related types for full type safety.
+- Contain only type imports from `@lf-widgets/foundations`, so there is no runtime dependency from assets back into the main bundles.
+
+### Generated JSON Fixtures
+
+A small build script converts the TS fixtures to JSON:
+
+- Script: `packages/assets/scripts/generateFixtures.js`
+- Outputs (published as part of `@lf-widgets/assets`):
+  - `assets/fixtures/shapeeditor/effects.json`
+  - `assets/fixtures/shapeeditor/image-editor.json`
+
+The root build runs this step before building foundations/framework/core:
+
+```bash
+yarn build:assets:fixtures
+```
+
+### Consuming Fixtures (Showcase & External Apps)
+
+The showcase consumes the generated JSON via the workspace alias:
+
+```typescript
+import effectsJson from "@lf-widgets/assets/assets/fixtures/shapeeditor/effects.json";
+
+const effects = effectsJson.effects;
+```
+
+For the image editor playground, the JSON contains:
+
+- `dsl` – brush/brightness/resize configurations (`LfShapeeditorConfigDsl`-compatible)
+- `canvasDataset` – sample `LfDataDataset` for the canvas
+- `settingsDataset` – tree dataset with `lfCode` cells containing the DSL
+
+External consumers can follow the same pattern:
+
+1. Install `@lf-widgets/assets`.
+2. Serve the package `assets/` folder (e.g. at `/assets`) and configure `framework.assets.set("/assets")`.
+3. Import the desired JSON fixture(s) and wire them into `lf-shapeeditor` via `lfDataset` / `lfValue` and `LfShapeeditorConfigDsl`.
+
+This keeps fixtures **centralized and opt‑in**: applications only pay for the assets and JSON files they actually import.
+
+---
+
 ## Debugging Tips
 
 ### 1. Inspect Component References
@@ -662,7 +722,9 @@ element.addEventListener('lf-shapeeditor-event', handler);
 
 ## References
 
-- `packages/showcase/src/components/lf-showcase/assets/data/effects.ts` - Effect DSL definitions
+- `packages/assets/src/fixtures/shapeeditor/*` - TypeScript fixture sources (effects, image editor)
+- `packages/assets/assets/fixtures/shapeeditor/*.json` - Generated JSON fixtures for runtime consumption
+- `packages/showcase/src/components/lf-showcase/assets/data/effects.ts` - Effects showcase wiring
 - `packages/core/src/components/lf-shapeeditor/` - Component implementation
 - `packages/foundations/src/components/shapeeditor.*` - Type definitions
 - `docs/web/src/helpers/imageEditor/` - ComfyUI PoC reference (deprecated)
