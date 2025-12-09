@@ -55,77 +55,71 @@ function loadTsModule(relativePath) {
   return module.exports;
 }
 
-function buildEffects() {
-  const { EFFECTS_DEFINITIONS, createEffectDsl } =
-    loadTsModule("effects.ts") || {};
+function buildFixture(sourceFile, relativeOutFile, transform) {
+  const mod = loadTsModule(sourceFile);
+  const json = transform(mod);
 
-  if (!Array.isArray(EFFECTS_DEFINITIONS)) {
-    throw new Error("EFFECTS_DEFINITIONS export not found or invalid.");
-  }
-
-  const effects = EFFECTS_DEFINITIONS.map((effect) => ({
-    id: effect.id,
-    name: effect.name,
-    description: effect.description,
-    icon: effect.icon,
-    defaultSettings: effect.defaultSettings,
-    presets: effect.presets,
-    controls: effect.controls,
-    configDsl:
-      typeof createEffectDsl === "function"
-        ? createEffectDsl(effect)
-        : undefined,
-  }));
-
-  ensureDir(OUT_DIR);
-  const outFile = path.join(OUT_DIR, "effects.json");
-  fs.writeFileSync(outFile, JSON.stringify({ effects }, null, 2), "utf8");
-  console.log(`Generated effects fixtures at ${outFile}`);
-}
-
-function buildImageEditor() {
-  const {
-    IMAGE_EDITOR_BRUSH_DSL,
-    IMAGE_EDITOR_BRIGHTNESS_DSL,
-    IMAGE_EDITOR_RESIZE_EDGE_DSL,
-    IMAGE_EDITOR_CANVAS_DATASET,
-    IMAGE_EDITOR_SETTINGS_DATASET,
-  } = loadTsModule("imageEditor.ts");
-
-  const dsl = {
-    brush: IMAGE_EDITOR_BRUSH_DSL,
-    brightness: IMAGE_EDITOR_BRIGHTNESS_DSL,
-    resizeEdge: IMAGE_EDITOR_RESIZE_EDGE_DSL,
-  };
-
-  const canvasDataset =
-    typeof IMAGE_EDITOR_CANVAS_DATASET === "function"
-      ? IMAGE_EDITOR_CANVAS_DATASET((assetPath) => ({ path: assetPath }))
-      : undefined;
-
-  const settingsDataset = IMAGE_EDITOR_SETTINGS_DATASET;
-
-  ensureDir(OUT_DIR);
-  const outFile = path.join(OUT_DIR, "image-editor.json");
-  fs.writeFileSync(
-    outFile,
-    JSON.stringify(
-      {
-        dsl,
-        canvasDataset,
-        settingsDataset,
-      },
-      null,
-      2,
-    ),
-    "utf8",
-  );
-  console.log(`Generated image editor fixtures at ${outFile}`);
+  const outPath = path.join(OUT_DIR, relativeOutFile);
+  ensureDir(path.dirname(outPath));
+  fs.writeFileSync(outPath, JSON.stringify(json, null, 2), "utf8");
+  console.log(`Generated fixtures at ${outPath}`);
 }
 
 function main() {
-  buildEffects();
-  buildImageEditor();
+  // Effects family
+  buildFixture("effects.ts", "effects.json", (mod) => {
+    const { EFFECTS_DEFINITIONS, createEffectDsl } = mod || {};
+
+    if (!Array.isArray(EFFECTS_DEFINITIONS)) {
+      throw new Error("EFFECTS_DEFINITIONS export not found or invalid.");
+    }
+
+    const effects = EFFECTS_DEFINITIONS.map((effect) => ({
+      id: effect.id,
+      name: effect.name,
+      description: effect.description,
+      icon: effect.icon,
+      defaultSettings: effect.defaultSettings,
+      presets: effect.presets,
+      controls: effect.controls,
+      configDsl:
+        typeof createEffectDsl === "function"
+          ? createEffectDsl(effect)
+          : undefined,
+    }));
+
+    return { effects };
+  });
+
+  // Image editor family
+  buildFixture("imageEditor.ts", "image-editor.json", (mod) => {
+    const {
+      IMAGE_EDITOR_BRUSH_DSL,
+      IMAGE_EDITOR_BRIGHTNESS_DSL,
+      IMAGE_EDITOR_RESIZE_EDGE_DSL,
+      IMAGE_EDITOR_CANVAS_DATASET,
+      IMAGE_EDITOR_SETTINGS_DATASET,
+    } = mod;
+
+    const dsl = {
+      brush: IMAGE_EDITOR_BRUSH_DSL,
+      brightness: IMAGE_EDITOR_BRIGHTNESS_DSL,
+      resizeEdge: IMAGE_EDITOR_RESIZE_EDGE_DSL,
+    };
+
+    const canvasDataset =
+      typeof IMAGE_EDITOR_CANVAS_DATASET === "function"
+        ? IMAGE_EDITOR_CANVAS_DATASET((assetPath) => ({ path: assetPath }))
+        : undefined;
+
+    const settingsDataset = IMAGE_EDITOR_SETTINGS_DATASET;
+
+    return {
+      dsl,
+      canvasDataset,
+      settingsDataset,
+    };
+  });
 }
 
 main();

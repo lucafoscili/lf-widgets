@@ -481,7 +481,10 @@ const createControl = (
 
     case "number":
       return (
-        <div key={config.id} class="control-item">
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-textfield
             lfHtmlAttributes={{
               max: config.max,
@@ -503,7 +506,10 @@ const createControl = (
 
     case "select":
       return (
-        <div key={config.id} class="control-item">
+        <div
+          key={config.id}
+          class={bemClass(detailsGrid._, detailsGrid.controlItem)}
+        >
           <lf-select
             lfDataset={{
               nodes: config.options.map((opt) => ({

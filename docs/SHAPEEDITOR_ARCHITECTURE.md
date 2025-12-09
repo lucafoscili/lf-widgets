@@ -637,6 +637,20 @@ External consumers can follow the same pattern:
 
 This keeps fixtures **centralized and opt‑in**: applications only pay for the assets and JSON files they actually import.
 
+### Config vs Example Data
+
+When using `lf-shapeeditor` fixtures, it helps to distinguish between:
+
+- **Settings fixtures (`lfValue`)** – the *canonical* part of the fixture.  
+  - These are JSON DSL configs (`LfShapeeditorConfigDsl`) that describe controls, layout, and default settings.
+  - They are meant to be reused across applications (e.g. ComfyUI, LFN, other apps).
+
+- **Example datasets (`lfDataset`)** – optional, demo‑only data.  
+  - These power the showcase masonry / preview (e.g. sample images or example nodes).
+  - Real consumers are expected to provide their own `lfDataset` that reflects their domain (a Comfy pipeline, API responses, etc.).
+
+In other words, `@lf-widgets/assets` is the source of truth for **settings fixtures**, and also ships **example datasets** that you can use for playgrounds and documentation, but you’re not expected to depend on those datasets in production.
+
 ---
 
 ## Debugging Tips
