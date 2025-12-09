@@ -6,6 +6,7 @@ import {
   LfShapeeditorConfigDsl,
   LfShapeeditorElement,
   LfShapeeditorEventPayload,
+  LfShapeeditorLayout,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { PARAGRAPH_FACTORY } from "../../helpers/doc.paragraph";
@@ -593,7 +594,7 @@ export const EFFECTS_DEFINITIONS: EffectDefinition[] = [
 ];
 
 export const getEffectsFixtures = (
-  framework?: LfFrameworkInterface,
+  framework: LfFrameworkInterface,
 ): LfShowcaseFixture => {
   //#region example map
   const CODE = new Map<string, { code: string; description: string }>([
@@ -784,28 +785,33 @@ export const getEffectsFixtures = (
     })),
   };
 
-  // "Enabled" toggle control added to each effect
-  const ENABLED_CONTROL: LfShapeeditorConfigDsl["controls"][number] = {
-    id: "enabled",
+  // Helper to create an "enabled" toggle control unique to each effect
+  const createEnabledControl = (
+    effectId: string,
+  ): LfShapeeditorConfigDsl["controls"][number] => ({
+    id: `${effectId}_enabled`,
     type: "toggle",
     label: "Enabled",
     description: "Toggle this effect on/off",
     defaultValue: false,
-  };
+  });
 
   // Helper to create DSL for each effect with logical groupings
   const createEffectDsl = (
     effect: EffectDefinition,
   ): LfShapeeditorConfigDsl => {
+    const enabledControlId = `${effect.id}_enabled`;
+
     // Group controls logically based on effect type
-    const getLayout = () => {
+    const getLayout = (): LfShapeeditorLayout => {
       switch (effect.id) {
         case "spotlight":
           return [
             {
+              icon: "square-toggle",
               id: "general",
               label: "General",
-              controlIds: ["enabled"],
+              controlIds: [enabledControlId],
             },
             {
               id: "beam",
@@ -836,9 +842,10 @@ export const getEffectsFixtures = (
         case "neon-glow":
           return [
             {
+              icon: "square-toggle",
               id: "general",
               label: "General",
-              controlIds: ["enabled"],
+              controlIds: [enabledControlId],
             },
             {
               id: "glow",
@@ -859,9 +866,10 @@ export const getEffectsFixtures = (
         case "tilt":
           return [
             {
+              icon: "square-toggle",
               id: "general",
               label: "General",
-              controlIds: ["enabled"],
+              controlIds: [enabledControlId],
             },
             {
               id: "settings",
@@ -872,9 +880,10 @@ export const getEffectsFixtures = (
         case "ripple":
           return [
             {
+              icon: "square-toggle",
               id: "general",
               label: "General",
-              controlIds: ["enabled"],
+              controlIds: [enabledControlId],
             },
             {
               id: "animation",
@@ -890,19 +899,20 @@ export const getEffectsFixtures = (
         default:
           return [
             {
+              icon: "square-toggle",
               id: "general",
               label: "General",
-              controlIds: ["enabled"],
+              controlIds: [enabledControlId],
             },
           ];
       }
     };
 
     return {
-      controls: [ENABLED_CONTROL, ...effect.controls],
+      controls: [createEnabledControl(effect.id), ...effect.controls],
       layout: getLayout(),
       defaultSettings: {
-        enabled: false,
+        [enabledControlId]: false,
         ...effect.defaultSettings,
       },
     };
@@ -927,143 +937,141 @@ export const getEffectsFixtures = (
   // Track which effects are currently registered
   const registeredEffects = new Set<string>();
 
-  const playgroundEventHandler = framework
-    ? async (e: CustomEvent<LfShapeeditorEventPayload>) => {
-        const { comp, eventType } = e.detail;
-        if (eventType !== "lf-event") {
-          return;
-        }
+  const playgroundEventHandler = async (
+    e: CustomEvent<LfShapeeditorEventPayload>,
+  ) => {
+    const { comp, eventType } = e.detail;
+    if (eventType !== "lf-event") {
+      return;
+    }
 
-        const shapeeditor = comp as unknown as LfShapeeditorElement;
-        const components = await shapeeditor.getComponents();
-        const settings = await shapeeditor.getSettings();
-        const surfaceEl = components.details.shape as HTMLElement | null;
+    const shapeeditor = comp as unknown as LfShapeeditorElement;
+    const components = await shapeeditor.getComponents();
+    const settings = await shapeeditor.getSettings();
+    const surfaceEl = components.details.shape as HTMLElement | null;
 
-        if (!surfaceEl) {
-          return;
-        }
+    if (!surfaceEl) {
+      return;
+    }
 
-        const { effects } = framework;
-        const isEnabled = settings.enabled as boolean;
+    const { effects } = framework;
 
-        // Determine which effect is currently being configured from the tree selection
-        const snapshot = await shapeeditor.getCurrentSnapshot();
-        const shapeIndex = snapshot?.shape?.index;
+    // Determine which effect is currently being configured from the tree selection
+    const snapshot = await shapeeditor.getCurrentSnapshot();
+    const shapeIndex = snapshot?.shape?.index;
 
-        if (shapeIndex === undefined) {
-          return;
-        }
+    if (shapeIndex === undefined) {
+      return;
+    }
 
-        // Get the effect ID from the dataset using the index
-        const currentEffectId = effectsDataset.nodes?.[shapeIndex]?.id;
+    // Get the effect ID from the dataset using the index
+    const currentEffectId = effectsDataset.nodes?.[shapeIndex]?.id;
 
-        if (!currentEffectId) {
-          return;
-        }
+    if (!currentEffectId) {
+      return;
+    }
 
-        // Handle enable/disable for the current effect
-        const wasRegistered = registeredEffects.has(currentEffectId);
+    // Each effect has its own unique enabled control ID
+    const enabledControlId = `${currentEffectId}_enabled`;
+    const isEnabled = settings[enabledControlId] as boolean;
 
-        if (isEnabled && !wasRegistered) {
-          // First time enabling - register the effect
-          registeredEffects.add(currentEffectId);
-        } else if (!isEnabled && wasRegistered) {
-          // Disabling - unregister the effect
-          registeredEffects.delete(currentEffectId);
-          switch (currentEffectId) {
-            case "spotlight":
-              effects.unregister.spotlight(surfaceEl);
-              break;
-            case "neon-glow":
-              effects.unregister.neonGlow(surfaceEl);
-              break;
-            case "tilt":
-              effects.unregister.tilt(surfaceEl);
-              break;
-            case "ripple":
-              effects.unregister.ripple(surfaceEl);
-              break;
-          }
-          return;
-        }
+    // Handle enable/disable for the current effect
+    const wasRegistered = registeredEffects.has(currentEffectId);
 
-        // Only apply settings if the effect is enabled
-        if (!isEnabled) {
-          return;
-        }
-
-        // Apply effect settings (re-register to update)
-        switch (currentEffectId) {
-          case "spotlight":
-            effects.unregister.spotlight(surfaceEl);
-            effects.register.spotlight(surfaceEl, {
-              beam: settings.beam as "cone" | "narrow" | "diffuse" | "soft",
-              color: settings.color as string,
-              angle: settings.angle as number,
-              intensity: settings.intensity as number,
-              originX: settings.originX as number,
-              surfaceGlow: settings.surfaceGlow as boolean,
-              surfaceGlowIntensity: settings.surfaceGlowIntensity as number,
-              followPointer: settings.followPointer as boolean,
-              sway: settings.sway as boolean,
-              swayDuration: settings.swayDuration as number,
-              swayAmplitude: settings.swayAmplitude as number,
-              trigger: settings.trigger as "hover" | "always" | "manual",
-              fadeInDuration: settings.fadeInDuration as number,
-              fadeOutDuration: settings.fadeOutDuration as number,
-            });
-            break;
-
-          case "neon-glow":
-            effects.unregister.neonGlow(surfaceEl);
-            effects.register.neonGlow(surfaceEl, {
-              mode: settings.mode as "outline" | "filled",
-              intensity: settings.intensity as number,
-              pulseSpeed: settings.pulseSpeed as
-                | "burst"
-                | "slow"
-                | "normal"
-                | "fast",
-              desync: settings.desync as boolean,
-              reflection: settings.reflection as boolean,
-              reflectionOpacity: settings.reflectionOpacity as number,
-              reflectionBlur: settings.reflectionBlur as number,
-              reflectionOffset: settings.reflectionOffset as number,
-            });
-            break;
-
-          case "tilt":
-            effects.unregister.tilt(surfaceEl);
-            effects.register.tilt(surfaceEl, settings.intensity as number);
-            break;
-
-          case "ripple":
-            effects.unregister.ripple(surfaceEl);
-            effects.register.ripple(surfaceEl, {
-              duration: settings.duration as number,
-              scale: settings.scale as number,
-              autoSurfaceRadius: settings.autoSurfaceRadius as boolean,
-              borderRadius: settings.borderRadius as string,
-            });
-            break;
-        }
+    if (isEnabled && !wasRegistered) {
+      // First time enabling - register the effect
+      registeredEffects.add(currentEffectId);
+    } else if (!isEnabled && wasRegistered) {
+      // Disabling - unregister the effect
+      registeredEffects.delete(currentEffectId);
+      switch (currentEffectId) {
+        case "spotlight":
+          effects.unregister.spotlight(surfaceEl);
+          break;
+        case "neon-glow":
+          effects.unregister.neonGlow(surfaceEl);
+          break;
+        case "tilt":
+          effects.unregister.tilt(surfaceEl);
+          break;
+        case "ripple":
+          effects.unregister.ripple(surfaceEl);
+          break;
       }
-    : undefined;
+      return;
+    }
 
-  const playground = framework
-    ? {
-        description:
-          "Interactive effects playground - configure and preview all visual effects",
-        props: {
-          lfDataset: effectsDataset,
-          lfShape: "image" as const,
-          lfValue: effectsSettingsDataset,
-        },
-        events: playgroundEventHandler
-          ? { "lf-shapeeditor-event": playgroundEventHandler }
-          : undefined,
-      }
-    : undefined;
+    // Only apply settings if the effect is enabled
+    if (!isEnabled) {
+      return;
+    }
+
+    // Apply effect settings (re-register to update)
+    switch (currentEffectId) {
+      case "spotlight":
+        effects.unregister.spotlight(surfaceEl);
+        effects.register.spotlight(surfaceEl, {
+          beam: settings.beam as "cone" | "narrow" | "diffuse" | "soft",
+          color: settings.color as string,
+          angle: settings.angle as number,
+          intensity: settings.intensity as number,
+          originX: settings.originX as number,
+          surfaceGlow: settings.surfaceGlow as boolean,
+          surfaceGlowIntensity: settings.surfaceGlowIntensity as number,
+          followPointer: settings.followPointer as boolean,
+          sway: settings.sway as boolean,
+          swayDuration: settings.swayDuration as number,
+          swayAmplitude: settings.swayAmplitude as number,
+          trigger: settings.trigger as "hover" | "always" | "manual",
+          fadeInDuration: settings.fadeInDuration as number,
+          fadeOutDuration: settings.fadeOutDuration as number,
+        });
+        break;
+
+      case "neon-glow":
+        effects.unregister.neonGlow(surfaceEl);
+        effects.register.neonGlow(surfaceEl, {
+          mode: settings.mode as "outline" | "filled",
+          intensity: settings.intensity as number,
+          pulseSpeed: settings.pulseSpeed as
+            | "burst"
+            | "slow"
+            | "normal"
+            | "fast",
+          desync: settings.desync as boolean,
+          reflection: settings.reflection as boolean,
+          reflectionOpacity: settings.reflectionOpacity as number,
+          reflectionBlur: settings.reflectionBlur as number,
+          reflectionOffset: settings.reflectionOffset as number,
+        });
+        break;
+
+      case "tilt":
+        effects.unregister.tilt(surfaceEl);
+        effects.register.tilt(surfaceEl, settings.intensity as number);
+        break;
+
+      case "ripple":
+        effects.unregister.ripple(surfaceEl);
+        effects.register.ripple(surfaceEl, {
+          duration: settings.duration as number,
+          scale: settings.scale as number,
+          autoSurfaceRadius: settings.autoSurfaceRadius as boolean,
+          borderRadius: settings.borderRadius as string,
+        });
+        break;
+    }
+  };
+  const playground = {
+    description:
+      "Interactive effects playground - configure and preview all visual effects",
+    props: {
+      lfDataset: effectsDataset,
+      lfShape: "image" as const,
+      lfValue: effectsSettingsDataset,
+    },
+    events: { "lf-shapeeditor-event": playgroundEventHandler },
+  };
   //#endregion
 
   return {

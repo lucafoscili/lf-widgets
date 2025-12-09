@@ -26,25 +26,31 @@ The component itself remains **simple and generic** - the power comes from:
 ```plaintext
 ┌──────────────────┬─────────────────────────────────────────┐
 │                  │                                         │
-│    NAVIGATION    │              PREVIEW                    │
-│    (Masonry)     │           (Any LfShape)                 │
+│                  │              PREVIEW                    │
+│                  │           (Any LfShape)                 │
 │                  │                                         │
-│  Browse items    │   Visual result of current state        │
-│  Select shapes   │   - image, chart, card, code, etc.      │
-│  Filter content  │   - consumer controls updates           │
-│                  │                                         │
-├──────────────────┤                                         │
-│                  ├─────────────────────────────────────────┤
-│    TREE          │                                         │
-│    (optional)    │          CONFIGURATION                  │
-│                  │          (DSL-driven)                   │
-│  Folder browser  │                                         │
-│  Categories      │   Dynamic controls from DSL             │
-│  Presets         │   - sliders, toggles, selects           │
-│                  │   - grouped in accordion                │
-│                  │                                         │
-└──────────────────┴─────────────────────────────────────────┘
+│    NAVIGATION    │   Visual result of current state        │
+│    (Masonry)     │   - image, chart, card, code, etc.      │
+│                  │   - consumer controls updates           │
+│  Browse items    │                                         │
+│  Select shapes   ├────────────────────┬────────────────────┤
+│  Filter content  │                    │                    │
+│                  │       TREE         │   CONFIGURATION    │
+│                  │    (optional)      │   (DSL-driven)     │
+│                  │                    │                    │
+│                  │  Settings/Presets  │  Dynamic controls  │
+│                  │  Categories        │  - sliders, etc.   │
+│                  │  Folder browser    │  - accordion groups│
+│                  │                    │                    │
+└──────────────────┴────────────────────┴────────────────────┘
 ```
+
+The layout consists of:
+
+- **Left panel (full height)**: Navigation with masonry grid and search
+- **Right top**: Preview area showing the selected shape
+- **Right bottom left**: Tree for settings/presets selection
+- **Right bottom right**: Configuration controls driven by DSL
 
 ### Panel Components
 
@@ -352,6 +358,50 @@ const SPOTLIGHT_DSL: LfShapeeditorConfigDsl = {
   ],
 };
 ```
+
+### Settings State: Shared vs Unique Control IDs
+
+The DSL settings system uses control IDs as keys in a shared settings map. This creates an important architectural feature:
+
+**Shared IDs** - When multiple tree nodes define controls with the same ID, they share state:
+
+```typescript
+// Both "inpaint" and "outpaint" nodes use the same "strength" control
+// Switching between them preserves the value
+const inpaintDsl = {
+  controls: [{ id: "strength", type: "slider", defaultValue: 0.8 }],
+};
+const outpaintDsl = {
+  controls: [{ id: "strength", type: "slider", defaultValue: 0.8 }],
+};
+// User sets strength to 0.5 in inpaint, switches to outpaint → still 0.5
+```
+
+**Unique IDs** - When controls need independent state, prefix with a unique identifier:
+
+```typescript
+// Each effect has its own enabled state
+const spotlightDsl = {
+  controls: [{ id: "spotlight_enabled", type: "toggle", defaultValue: false }],
+  defaultSettings: { spotlight_enabled: false },
+};
+const neonGlowDsl = {
+  controls: [{ id: "neon-glow_enabled", type: "toggle", defaultValue: false }],
+  defaultSettings: { "neon-glow_enabled": false },
+};
+// Enabling spotlight doesn't affect neon-glow's enabled state
+```
+
+**When to use each approach:**
+
+| Scenario | ID Strategy | Example |
+|----------|-------------|---------|
+| Shared parameters across modes | Same ID | `strength`, `quality`, `seed` |
+| Independent per-item state | Prefixed ID | `spotlight_enabled`, `blur_radius` |
+| Global settings | Same ID | `theme`, `language` |
+| Effect-specific toggles | Prefixed ID | `effect1_active`, `effect2_active` |
+
+This pattern is similar to how image editors like ComfyUI handle shared fields between related operations (e.g., inpaint vs outpaint sharing mask parameters).
 
 ---
 
