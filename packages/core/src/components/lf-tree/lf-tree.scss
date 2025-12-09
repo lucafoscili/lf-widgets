@@ -12,11 +12,11 @@ $comp: "tree";
   .node[data-depth="0"] {
     & {
       @include lf-comp-border($comp, "radius");
-      @include lf-comp-color(
+      @include lf-comp-glassmorphize(
         $comp,
         "surface",
         "all",
-        var(--lf-ui-alpha-glass, 0.375)
+        var(--lf-ui-alpha-glass-solid, 0.8)
       );
       font-size: 1em;
       /**
@@ -24,6 +24,14 @@ $comp: "tree";
       *                                            Defaults to => 4em
       */
       height: var(--lf-#{$comp}-accordion-node-height, 4em);
+      position: sticky;
+      top: 0;
+      transition: filter 0.2s ease-in-out;
+      z-index: 1;
+    }
+
+    &:hover {
+      filter: brightness(1.05);
     }
 
     .node__value {
