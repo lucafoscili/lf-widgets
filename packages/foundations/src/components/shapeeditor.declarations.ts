@@ -400,10 +400,54 @@ export interface LfShapeeditorLayoutGroup {
   icon?: LfIconType;
   controlIds: string[];
 }
+
+/**
+ * Standalone control reference - renders a single control without accordion wrapper.
+ * Use this for controls that should appear outside of grouped sections.
+ */
+export interface LfShapeeditorLayoutControl {
+  /** The ID of the control to render standalone */
+  controlId: string;
+}
+
+/**
+ * Layout item - either a group (accordion section) or a standalone control.
+ * Items are rendered in array order, allowing flexible mixing of groups and standalone controls.
+ */
+export type LfShapeeditorLayoutItem =
+  | LfShapeeditorLayoutGroup
+  | LfShapeeditorLayoutControl;
+
+/**
+ * Type guard to check if a layout item is a group (accordion section).
+ */
+export const isLayoutGroup = (
+  item: LfShapeeditorLayoutItem,
+): item is LfShapeeditorLayoutGroup => "controlIds" in item;
+
+/**
+ * Type guard to check if a layout item is a standalone control.
+ */
+export const isLayoutControl = (
+  item: LfShapeeditorLayoutItem,
+): item is LfShapeeditorLayoutControl =>
+  "controlId" in item && !("controlIds" in item);
+
 /**
  * Linear layout definition for the configuration panel.
+ * Supports mixed groups (accordion sections) and standalone controls.
+ *
+ * @example
+ * ```typescript
+ * const layout: LfShapeeditorLayout = [
+ *   { controlId: "effect_enabled" },  // standalone toggle at top
+ *   { id: "appearance", label: "Appearance", controlIds: ["color", "opacity"] },
+ *   { controlId: "advanced_mode" },   // standalone toggle between groups
+ *   { id: "animation", label: "Animation", controlIds: ["duration", "easing"] },
+ * ];
+ * ```
  */
-export type LfShapeeditorLayout = LfShapeeditorLayoutGroup[];
+export type LfShapeeditorLayout = LfShapeeditorLayoutItem[];
 
 /**
  * Shapeeditor-agnostic configuration DSL.

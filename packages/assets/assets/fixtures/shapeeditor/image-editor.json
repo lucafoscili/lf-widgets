@@ -5,17 +5,18 @@
         {
           "id": "brush_size",
           "type": "slider",
-          "label": "Brush Size",
+          "label": "Size",
           "description": "Sets the size of the brush in pixels.",
           "min": 1,
           "max": 500,
           "step": 1,
-          "defaultValue": 150
+          "defaultValue": 150,
+          "unit": "px"
         },
         {
           "id": "brush_opacity",
           "type": "slider",
-          "label": "Brush Opacity",
+          "label": "Opacity",
           "description": "Controls brush opacity from transparent to fully opaque.",
           "min": 0.05,
           "max": 1,
@@ -53,13 +54,76 @@
         "brush_color": "#ff0000"
       }
     },
+    "line": {
+      "controls": [
+        {
+          "id": "line_size",
+          "type": "slider",
+          "label": "Size",
+          "description": "Sets the thickness of the line.",
+          "min": 1,
+          "max": 500,
+          "step": 1,
+          "defaultValue": 10,
+          "unit": "px"
+        },
+        {
+          "id": "line_opacity",
+          "type": "slider",
+          "label": "Opacity",
+          "description": "Controls line opacity.",
+          "min": 0.05,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 1
+        },
+        {
+          "id": "line_color",
+          "type": "colorpicker",
+          "label": "Line Color",
+          "description": "Color used for line strokes.",
+          "defaultValue": "#ff0000",
+          "swatches": [
+            "#ff0000",
+            "#ffffff",
+            "#000000",
+            "#00bcd4"
+          ]
+        },
+        {
+          "id": "line_smooth",
+          "type": "toggle",
+          "label": "Smooth",
+          "description": "Draws a smooth curved line instead of straight segments.",
+          "defaultValue": false
+        }
+      ],
+      "layout": [
+        {
+          "id": "line_general",
+          "label": "Line",
+          "controlIds": [
+            "line_size",
+            "line_opacity",
+            "line_color",
+            "line_smooth"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "line_size": 10,
+        "line_opacity": 1,
+        "line_color": "#ff0000",
+        "line_smooth": false
+      }
+    },
     "brightness": {
       "controls": [
         {
           "id": "brightness_strength",
           "type": "slider",
           "label": "Strength",
-          "description": "Negative values darken, positive values brighten the image.",
+          "description": "Adjust the brightness of the image. Negative values darken, positive values brighten.",
           "min": -1,
           "max": 1,
           "step": 0.05,
@@ -79,7 +143,7 @@
           "id": "brightness_midpoint",
           "type": "slider",
           "label": "Midpoint",
-          "description": "Defines the tonal midpoint for brightness scaling.",
+          "description": "Defines the tonal midpoint for scaling.",
           "min": 0,
           "max": 1,
           "step": 0.05,
@@ -112,27 +176,251 @@
         "brightness_localized": false
       }
     },
-    "resizeEdge": {
+    "clarity": {
       "controls": [
         {
-          "id": "resize_target",
+          "id": "clarity_amount",
+          "type": "slider",
+          "label": "Clarity Amount",
+          "description": "Lightroom-style clarity. Negative values soften details, positive values boost local contrast.",
+          "min": -1,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0
+        }
+      ],
+      "layout": [
+        {
+          "id": "clarity_general",
+          "label": "Clarity",
+          "controlIds": [
+            "clarity_amount"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "clarity_amount": 0
+      }
+    },
+    "contrast": {
+      "controls": [
+        {
+          "id": "contrast_strength",
+          "type": "slider",
+          "label": "Strength",
+          "description": "Controls the intensity of the contrast adjustment. Below 0 reduces contrast, above 0 increases contrast.",
+          "min": -1,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0
+        },
+        {
+          "id": "contrast_midpoint",
+          "type": "slider",
+          "label": "Midpoint",
+          "description": "Defines the tonal midpoint for scaling.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0.5
+        },
+        {
+          "id": "contrast_localized",
+          "type": "toggle",
+          "label": "Localized",
+          "description": "Apply contrast enhancement locally to edges and textures.",
+          "defaultValue": false
+        }
+      ],
+      "layout": [
+        {
+          "id": "contrast_general",
+          "label": "Contrast",
+          "controlIds": [
+            "contrast_strength",
+            "contrast_midpoint",
+            "contrast_localized"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "contrast_strength": 0,
+        "contrast_midpoint": 0.5,
+        "contrast_localized": false
+      }
+    },
+    "desaturate": {
+      "controls": [
+        {
+          "id": "desaturate_strength",
+          "type": "slider",
+          "label": "Strength",
+          "description": "Controls the intensity of the desaturation. 0 is no effect, 1 is fully desaturated.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0
+        },
+        {
+          "id": "desaturate_r_channel",
+          "type": "slider",
+          "label": "Red Channel",
+          "description": "Controls the intensity of the {channel} channel desaturation relative to the total strength.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 1
+        },
+        {
+          "id": "desaturate_g_channel",
+          "type": "slider",
+          "label": "Green Channel",
+          "description": "Controls the intensity of the {channel} channel desaturation relative to the total strength.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 1
+        },
+        {
+          "id": "desaturate_b_channel",
+          "type": "slider",
+          "label": "Blue Channel",
+          "description": "Controls the intensity of the {channel} channel desaturation relative to the total strength.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 1
+        }
+      ],
+      "layout": [
+        {
+          "id": "desaturate_general",
+          "label": "Desaturate",
+          "controlIds": [
+            "desaturate_strength",
+            "desaturate_r_channel",
+            "desaturate_g_channel",
+            "desaturate_b_channel"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "desaturate_strength": 0,
+        "desaturate_r_channel": 1,
+        "desaturate_g_channel": 1,
+        "desaturate_b_channel": 1
+      }
+    },
+    "saturation": {
+      "controls": [
+        {
+          "id": "saturation_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Controls the intensity of the saturation. 1.0 is no change, below 1 reduces, above 1 increases saturation.",
+          "min": 0,
+          "max": 5,
+          "step": 0.1,
+          "defaultValue": 1
+        }
+      ],
+      "layout": [
+        {
+          "id": "saturation_general",
+          "label": "Saturation",
+          "controlIds": [
+            "saturation_intensity"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "saturation_intensity": 1
+      }
+    },
+    "unsharp_mask": {
+      "controls": [
+        {
+          "id": "unsharp_amount",
+          "type": "slider",
+          "label": "Amount",
+          "description": "Overall strength applied to the high-frequency detail mask.",
+          "min": 0,
+          "max": 5,
+          "step": 0.05,
+          "defaultValue": 0.5
+        },
+        {
+          "id": "unsharp_radius",
+          "type": "slider",
+          "label": "Radius",
+          "description": "Gaussian blur kernel size (odd numbers give the best results).",
+          "min": 1,
+          "max": 31,
+          "step": 2,
+          "defaultValue": 5,
+          "unit": "px"
+        },
+        {
+          "id": "unsharp_sigma",
+          "type": "slider",
+          "label": "Sigma",
+          "description": "Gaussian blur sigma controlling feather softness around edges.",
+          "min": 0.1,
+          "max": 5,
+          "step": 0.1,
+          "defaultValue": 1
+        },
+        {
+          "id": "unsharp_threshold",
+          "type": "slider",
+          "label": "Threshold",
+          "description": "Skip sharpening for pixels below this normalized contrast level.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0
+        }
+      ],
+      "layout": [
+        {
+          "id": "unsharp_general",
+          "label": "Unsharp Mask",
+          "controlIds": [
+            "unsharp_amount",
+            "unsharp_radius",
+            "unsharp_sigma",
+            "unsharp_threshold"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "unsharp_amount": 0.5,
+        "unsharp_radius": 5,
+        "unsharp_sigma": 1,
+        "unsharp_threshold": 0
+      }
+    },
+    "resize_edge": {
+      "controls": [
+        {
+          "id": "resize_edge_target",
           "type": "number",
           "label": "Target Edge (px)",
-          "description": "Target size for the longest image edge.",
+          "description": "Target size for the selected image edge.",
           "min": 64,
           "max": 4096,
           "step": 16,
           "defaultValue": 1024
         },
         {
-          "id": "resize_keep_aspect",
+          "id": "resize_edge_longest",
           "type": "toggle",
-          "label": "Keep Aspect Ratio",
-          "description": "Preserve aspect ratio when resizing.",
+          "label": "Fit Longest Edge",
+          "description": "When enabled, the longest image edge is resized to the target size; otherwise the shortest edge is used.",
           "defaultValue": true
         },
         {
-          "id": "resize_method",
+          "id": "resize_edge_method",
           "type": "select",
           "label": "Resample Method",
           "description": "Interpolation method used when resizing.",
@@ -146,8 +434,16 @@
               "label": "Bilinear"
             },
             {
+              "value": "linear",
+              "label": "Linear"
+            },
+            {
               "value": "nearest",
               "label": "Nearest"
+            },
+            {
+              "value": "nearest exact",
+              "label": "Nearest (exact)"
             }
           ],
           "defaultValue": "bicubic"
@@ -155,19 +451,1067 @@
       ],
       "layout": [
         {
-          "id": "resize_general",
+          "id": "resize_edge_general",
           "label": "Resize (by edge)",
           "controlIds": [
-            "resize_target",
-            "resize_keep_aspect",
-            "resize_method"
+            "resize_edge_target",
+            "resize_edge_longest",
+            "resize_edge_method"
           ]
         }
       ],
       "defaultSettings": {
-        "resize_target": 1024,
-        "resize_keep_aspect": true,
-        "resize_method": "bicubic"
+        "resize_edge_target": 1024,
+        "resize_edge_longest": true,
+        "resize_edge_method": "bicubic"
+      }
+    },
+    "resize_free": {
+      "controls": [
+        {
+          "id": "resize_free_width",
+          "type": "number",
+          "label": "Width (px)",
+          "description": "Target image width in pixels.",
+          "min": 1,
+          "max": 8192,
+          "step": 8,
+          "defaultValue": 832
+        },
+        {
+          "id": "resize_free_height",
+          "type": "number",
+          "label": "Height (px)",
+          "description": "Target image height in pixels.",
+          "min": 1,
+          "max": 8192,
+          "step": 8,
+          "defaultValue": 1216
+        },
+        {
+          "id": "resize_free_method",
+          "type": "select",
+          "label": "Resample Method",
+          "description": "Interpolation method used when resizing.",
+          "options": [
+            {
+              "value": "bicubic",
+              "label": "Bicubic"
+            },
+            {
+              "value": "bilinear",
+              "label": "Bilinear"
+            },
+            {
+              "value": "linear",
+              "label": "Linear"
+            },
+            {
+              "value": "nearest",
+              "label": "Nearest"
+            },
+            {
+              "value": "nearest exact",
+              "label": "Nearest (exact)"
+            }
+          ],
+          "defaultValue": "bicubic"
+        },
+        {
+          "id": "resize_free_mode",
+          "type": "select",
+          "label": "Resize Mode",
+          "description": "Choose whether to crop or pad when matching the target dimensions.",
+          "options": [
+            {
+              "value": "crop",
+              "label": "Crop"
+            },
+            {
+              "value": "pad",
+              "label": "Pad"
+            }
+          ],
+          "defaultValue": "crop"
+        },
+        {
+          "id": "resize_free_pad_color",
+          "type": "colorpicker",
+          "label": "Padding Color",
+          "description": "Hex color used when padding (only when mode is set to pad).",
+          "defaultValue": "#000000"
+        }
+      ],
+      "layout": [
+        {
+          "id": "resize_free_general",
+          "label": "Resize (free)",
+          "controlIds": [
+            "resize_free_width",
+            "resize_free_height",
+            "resize_free_method",
+            "resize_free_mode",
+            "resize_free_pad_color"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "resize_free_width": 832,
+        "resize_free_height": 1216,
+        "resize_free_method": "bicubic",
+        "resize_free_mode": "crop",
+        "resize_free_pad_color": "#000000"
+      }
+    },
+    "background_remover": {
+      "controls": [
+        {
+          "id": "bgRemover_transparent",
+          "type": "toggle",
+          "label": "Transparent Background",
+          "description": "Keep an alpha channel instead of filling the background with the selected color.",
+          "defaultValue": true
+        },
+        {
+          "id": "bgRemover_color",
+          "type": "colorpicker",
+          "label": "Background Color",
+          "description": "Used to fill the removed background when transparency is disabled.",
+          "defaultValue": "#000000",
+          "swatches": [
+            "#ffffff",
+            "#000000",
+            "#ff0000",
+            "#00ff00",
+            "#0000ff"
+          ]
+        }
+      ],
+      "layout": [
+        {
+          "id": "bgRemover_general",
+          "label": "Background Remover",
+          "controlIds": [
+            "bgRemover_transparent",
+            "bgRemover_color"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "bgRemover_transparent": true,
+        "bgRemover_color": "#000000"
+      }
+    },
+    "blend": {
+      "controls": [
+        {
+          "id": "blend_opacity",
+          "type": "slider",
+          "label": "Opacity",
+          "description": "Adjust the opacity of the blended layer.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0
+        },
+        {
+          "id": "blend_color",
+          "type": "colorpicker",
+          "label": "Color",
+          "description": "Sets the solid color that will be blended onto the image.",
+          "defaultValue": "#ff0000",
+          "swatches": [
+            "#ffffff",
+            "#000000",
+            "#ff0000",
+            "#00ff00",
+            "#0000ff"
+          ]
+        }
+      ],
+      "layout": [
+        {
+          "id": "blend_general",
+          "label": "Blend",
+          "controlIds": [
+            "blend_opacity",
+            "blend_color"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "blend_opacity": 0,
+        "blend_color": "#ff0000"
+      }
+    },
+    "bloom": {
+      "controls": [
+        {
+          "id": "bloom_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "How strong the bloom reads after compositing. 1.0 = add the blurred highlights at full strength.",
+          "min": 0,
+          "max": 2,
+          "step": 0.05,
+          "defaultValue": 0.6
+        },
+        {
+          "id": "bloom_radius",
+          "type": "slider",
+          "label": "Radius",
+          "description": "Blur radius in pixels (odd numbers only). Bigger radius → softer, more cinematic glow.",
+          "min": 3,
+          "max": 127,
+          "step": 2,
+          "defaultValue": 15,
+          "unit": "px"
+        },
+        {
+          "id": "bloom_threshold",
+          "type": "slider",
+          "label": "Threshold",
+          "description": "Bright-pass cutoff. 0 = everything glows, 1 = nothing glows. For dim scenes start around 0.15-0.35.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.8
+        },
+        {
+          "id": "bloom_tint",
+          "type": "colorpicker",
+          "label": "Tint Color",
+          "description": "Hex color for the glow. Pure white #FFFFFF keeps original hue.",
+          "defaultValue": "#ffffff"
+        }
+      ],
+      "layout": [
+        {
+          "id": "bloom_general",
+          "label": "Bloom",
+          "controlIds": [
+            "bloom_intensity",
+            "bloom_radius",
+            "bloom_threshold",
+            "bloom_tint"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "bloom_intensity": 0.6,
+        "bloom_radius": 15,
+        "bloom_threshold": 0.8,
+        "bloom_tint": "#ffffff"
+      }
+    },
+    "film_grain": {
+      "controls": [
+        {
+          "id": "filmGrain_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Sets the strength of the film grain effect.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0
+        },
+        {
+          "id": "filmGrain_size",
+          "type": "slider",
+          "label": "Size",
+          "description": "Sets the size of the noise granularity.",
+          "min": 0.5,
+          "max": 5,
+          "step": 0.1,
+          "defaultValue": 1,
+          "unit": "px"
+        },
+        {
+          "id": "filmGrain_tint",
+          "type": "colorpicker",
+          "label": "Tint",
+          "description": "Hexadecimal color (default is #FFFFFF for no tint).",
+          "defaultValue": "#ffffff"
+        },
+        {
+          "id": "filmGrain_softBlend",
+          "type": "toggle",
+          "label": "Soft Blend",
+          "description": "If true, uses a soft blending mode for the grain.",
+          "defaultValue": false
+        }
+      ],
+      "layout": [
+        {
+          "id": "filmGrain_general",
+          "label": "Film Grain",
+          "controlIds": [
+            "filmGrain_intensity",
+            "filmGrain_size",
+            "filmGrain_tint",
+            "filmGrain_softBlend"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "filmGrain_intensity": 0,
+        "filmGrain_size": 1,
+        "filmGrain_tint": "#ffffff",
+        "filmGrain_softBlend": false
+      }
+    },
+    "gaussian_blur": {
+      "controls": [
+        {
+          "id": "gaussianBlur_sigma",
+          "type": "slider",
+          "label": "Blur Sigma",
+          "description": "Standard deviation for the Gaussian kernel. Controls blur intensity.",
+          "min": 0.1,
+          "max": 10,
+          "step": 0.1,
+          "defaultValue": 0
+        },
+        {
+          "id": "gaussianBlur_kernelSize",
+          "type": "slider",
+          "label": "Kernel Size",
+          "description": "Controls the size of the Gaussian blur kernel. Higher values mean more smoothing.",
+          "min": 1,
+          "max": 51,
+          "step": 2,
+          "defaultValue": 7
+        }
+      ],
+      "layout": [
+        {
+          "id": "gaussianBlur_general",
+          "label": "Gaussian Blur",
+          "controlIds": [
+            "gaussianBlur_sigma",
+            "gaussianBlur_kernelSize"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "gaussianBlur_sigma": 0,
+        "gaussianBlur_kernelSize": 7
+      }
+    },
+    "sepia": {
+      "controls": [
+        {
+          "id": "sepia_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Controls the intensity of the sepia effect.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0
+        }
+      ],
+      "layout": [
+        {
+          "id": "sepia_general",
+          "label": "Sepia",
+          "controlIds": [
+            "sepia_intensity"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "sepia_intensity": 0
+      }
+    },
+    "split_tone": {
+      "controls": [
+        {
+          "id": "splitTone_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Strength of the tint applied.",
+          "min": 0,
+          "max": 2,
+          "step": 0.05,
+          "defaultValue": 0.6
+        },
+        {
+          "id": "splitTone_balance",
+          "type": "slider",
+          "label": "Balance",
+          "description": "Luminance pivot. 0 = lift even deep blacks; 1 = tint only the brightest pixels.",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.5
+        },
+        {
+          "id": "splitTone_softness",
+          "type": "slider",
+          "label": "Softness",
+          "description": "Width of the transition band around the balance value.",
+          "min": 0.01,
+          "max": 0.5,
+          "step": 0.01,
+          "defaultValue": 0.25
+        },
+        {
+          "id": "splitTone_highlights",
+          "type": "colorpicker",
+          "label": "Highlights",
+          "description": "Hex colour applied to highlights.",
+          "defaultValue": "#ffaa55"
+        },
+        {
+          "id": "splitTone_shadows",
+          "type": "colorpicker",
+          "label": "Shadows",
+          "description": "Hex colour applied to shadows.",
+          "defaultValue": "#0066ff"
+        }
+      ],
+      "layout": [
+        {
+          "id": "splitTone_general",
+          "label": "Split Tone",
+          "controlIds": [
+            "splitTone_intensity",
+            "splitTone_balance",
+            "splitTone_softness",
+            "splitTone_highlights",
+            "splitTone_shadows"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "splitTone_intensity": 0.6,
+        "splitTone_balance": 0.5,
+        "splitTone_softness": 0.25,
+        "splitTone_highlights": "#ffaa55",
+        "splitTone_shadows": "#0066ff"
+      }
+    },
+    "tilt_shift": {
+      "controls": [
+        {
+          "id": "tiltShift_focusPosition",
+          "type": "slider",
+          "label": "Focus Position",
+          "description": "Vertical center of the sharp band (0 = top, 1 = bottom).",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "defaultValue": 0.5
+        },
+        {
+          "id": "tiltShift_focusSize",
+          "type": "slider",
+          "label": "Focus Size",
+          "description": "Height of the sharp zone as a fraction of the image.",
+          "min": 0.05,
+          "max": 0.9,
+          "step": 0.01,
+          "defaultValue": 0.25
+        },
+        {
+          "id": "tiltShift_radius",
+          "type": "slider",
+          "label": "Blur Radius",
+          "description": "Gaussian radius for out-of-focus areas. Higher values mean more blur.",
+          "min": 3,
+          "max": 151,
+          "step": 2,
+          "defaultValue": 25,
+          "unit": "px"
+        },
+        {
+          "id": "tiltShift_smooth",
+          "type": "toggle",
+          "label": "Smooth Fall-off",
+          "description": "Linear means constant fall-off, smooth means gradual transition.",
+          "defaultValue": false
+        },
+        {
+          "id": "tiltShift_vertical",
+          "type": "toggle",
+          "label": "Vertical Orientation",
+          "description": "Horizontal means the focus band is horizontal, vertical means it is vertical.",
+          "defaultValue": false
+        }
+      ],
+      "layout": [
+        {
+          "id": "tiltShift_general",
+          "label": "Tilt-Shift",
+          "controlIds": [
+            "tiltShift_focusPosition",
+            "tiltShift_focusSize",
+            "tiltShift_radius",
+            "tiltShift_smooth",
+            "tiltShift_vertical"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "tiltShift_focusPosition": 0.5,
+        "tiltShift_focusSize": 0.25,
+        "tiltShift_radius": 25,
+        "tiltShift_smooth": false,
+        "tiltShift_vertical": false
+      }
+    },
+    "vibrance": {
+      "controls": [
+        {
+          "id": "vibrance_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Controls vibrance. Negative values reduce, positive values increase vibrance.",
+          "min": -1,
+          "max": 2,
+          "step": 0.05,
+          "defaultValue": 0
+        },
+        {
+          "id": "vibrance_protectSkin",
+          "type": "toggle",
+          "label": "Protect Skin Tones",
+          "description": "If true, skin tones are less affected by the vibrance adjustment.",
+          "defaultValue": true
+        },
+        {
+          "id": "vibrance_clipSoft",
+          "type": "toggle",
+          "label": "Clip Softly",
+          "description": "If true, saturation is rolled off near maximum to avoid clipping.",
+          "defaultValue": true
+        }
+      ],
+      "layout": [
+        {
+          "id": "vibrance_general",
+          "label": "Vibrance",
+          "controlIds": [
+            "vibrance_intensity",
+            "vibrance_protectSkin",
+            "vibrance_clipSoft"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "vibrance_intensity": 0,
+        "vibrance_protectSkin": true,
+        "vibrance_clipSoft": true
+      }
+    },
+    "vignette": {
+      "controls": [
+        {
+          "id": "vignette_intensity",
+          "type": "slider",
+          "label": "Intensity",
+          "description": "Controls the darkness of the vignette effect. Higher values mean darker edges.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0
+        },
+        {
+          "id": "vignette_radius",
+          "type": "slider",
+          "label": "Radius",
+          "description": "Controls the size of the vignette effect. Lower values mean a smaller vignette.",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "defaultValue": 0,
+          "unit": "px"
+        },
+        {
+          "id": "vignette_color",
+          "type": "colorpicker",
+          "label": "Color",
+          "description": "Sets the color of the vignette.",
+          "defaultValue": "#000000",
+          "swatches": [
+            "#ffffff",
+            "#000000",
+            "#ff0000",
+            "#00ff00",
+            "#0000ff"
+          ]
+        },
+        {
+          "id": "vignette_circular",
+          "type": "toggle",
+          "label": "Circular",
+          "description": "Selects the shape of the vignette effect, defaults to elliptical.",
+          "defaultValue": false
+        }
+      ],
+      "layout": [
+        {
+          "id": "vignette_general",
+          "label": "Vignette",
+          "controlIds": [
+            "vignette_intensity",
+            "vignette_radius",
+            "vignette_color",
+            "vignette_circular"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "vignette_intensity": 0,
+        "vignette_radius": 0,
+        "vignette_color": "#000000",
+        "vignette_circular": false
+      }
+    },
+    "inpaint": {
+      "controls": [
+        {
+          "id": "inpaint_positivePrompt",
+          "type": "multiinput",
+          "label": "Positive Prompt",
+          "description": "Prompt applied to the target region.",
+          "defaultValue": "",
+          "placeholder": "Enter tags or prompt..."
+        },
+        {
+          "id": "inpaint_negativePrompt",
+          "type": "multiinput",
+          "label": "Negative Prompt",
+          "description": "Negative prompt applied to the target region.",
+          "defaultValue": "",
+          "placeholder": "Enter negative tags..."
+        },
+        {
+          "id": "inpaint_conditioningMix",
+          "type": "slider",
+          "label": "Conditioning Mix",
+          "description": "-1=input only, 0=concat, 1=prompts only. Intermediate values blend between input and prompts.",
+          "min": -1,
+          "max": 1,
+          "step": 0.1,
+          "defaultValue": 0
+        },
+        {
+          "id": "inpaint_wd14Tagging",
+          "type": "toggle",
+          "label": "WD14 Tagging",
+          "description": "Automatically tag the inpaint patch with WD14 and add tags to conditioning.",
+          "defaultValue": false
+        },
+        {
+          "id": "inpaint_denoisePercentage",
+          "type": "slider",
+          "label": "Denoise Percentage",
+          "description": "Noise applied during inpaint. 0 keeps original pixels, 100 fully regenerates.",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 40,
+          "unit": "%"
+        },
+        {
+          "id": "inpaint_sampler",
+          "type": "select",
+          "label": "Sampler",
+          "description": "Sampler used for inpaint diffusion steps.",
+          "options": [
+            {
+              "value": "dpmpp_2m",
+              "label": "DPM++ 2M"
+            },
+            {
+              "value": "dpmpp_2m_karras",
+              "label": "DPM++ 2M Karras"
+            },
+            {
+              "value": "euler",
+              "label": "Euler"
+            },
+            {
+              "value": "euler_ancestral",
+              "label": "Euler a"
+            }
+          ],
+          "defaultValue": "dpmpp_2m"
+        },
+        {
+          "id": "inpaint_scheduler",
+          "type": "select",
+          "label": "Scheduler",
+          "description": "Scheduler used for inpaint diffusion steps.",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "karras",
+              "label": "Karras"
+            },
+            {
+              "value": "exponential",
+              "label": "Exponential"
+            }
+          ],
+          "defaultValue": "karras"
+        },
+        {
+          "id": "inpaint_cfg",
+          "type": "slider",
+          "label": "CFG Scale",
+          "description": "Classifier-free guidance applied during the inpaint pass.",
+          "min": 1,
+          "max": 30,
+          "step": 0.5,
+          "defaultValue": 7
+        },
+        {
+          "id": "inpaint_steps",
+          "type": "slider",
+          "label": "Steps",
+          "description": "Diffusion steps used for the inpaint sampler.",
+          "min": 1,
+          "max": 30,
+          "step": 1,
+          "defaultValue": 16
+        },
+        {
+          "id": "inpaint_seed",
+          "type": "textfield",
+          "label": "Seed",
+          "description": "Optional seed override. Leave at -1 for a random seed.",
+          "defaultValue": "-1",
+          "placeholder": "-1 for random"
+        },
+        {
+          "id": "inpaint_upsampleTarget",
+          "type": "slider",
+          "label": "Upsample Target (px)",
+          "description": "Detailer path: upscale ROI longer side to this size before inpaint (0 disables).",
+          "min": 0,
+          "max": 2048,
+          "step": 16,
+          "defaultValue": 2048
+        },
+        {
+          "id": "inpaint_applyUnsharpMask",
+          "type": "toggle",
+          "label": "Apply Unsharp Mask",
+          "description": "Apply a gentle unsharp mask after downscaling the inpainted region.",
+          "defaultValue": true
+        },
+        {
+          "id": "inpaint_dilate",
+          "type": "slider",
+          "label": "Dilate Mask",
+          "description": "Expand mask edges before inpaint to avoid seams.",
+          "min": 0,
+          "max": 64,
+          "step": 1,
+          "defaultValue": 0,
+          "unit": "px"
+        },
+        {
+          "id": "inpaint_feather",
+          "type": "slider",
+          "label": "Feather Mask",
+          "description": "Soften mask edges to blend the inpainted region.",
+          "min": 0,
+          "max": 64,
+          "step": 1,
+          "defaultValue": 0,
+          "unit": "px"
+        },
+        {
+          "id": "inpaint_roiPadding",
+          "type": "slider",
+          "label": "ROI Padding",
+          "description": "Pixels of padding around the mask bounding box when cropping the ROI.",
+          "min": 0,
+          "max": 256,
+          "step": 1,
+          "defaultValue": 32,
+          "unit": "px"
+        },
+        {
+          "id": "inpaint_roiAlign",
+          "type": "slider",
+          "label": "ROI Align Multiple",
+          "description": "Align ROI size/position to this multiple. Keeps latent-friendly dims.",
+          "min": 1,
+          "max": 64,
+          "step": 1,
+          "defaultValue": 8
+        },
+        {
+          "id": "inpaint_roiAlignAuto",
+          "type": "toggle",
+          "label": "Auto-align ROI",
+          "description": "Infer alignment multiple from VAE/model. Disable to set a manual multiple.",
+          "defaultValue": false
+        },
+        {
+          "id": "inpaint_roiMinSize",
+          "type": "slider",
+          "label": "ROI Min Size",
+          "description": "Enforce a minimum width/height for the cropped ROI.",
+          "min": 1,
+          "max": 1024,
+          "step": 1,
+          "defaultValue": 64,
+          "unit": "px"
+        }
+      ],
+      "layout": [
+        {
+          "id": "inpaint_conditioning",
+          "label": "Conditioning",
+          "icon": "robot",
+          "controlIds": [
+            "inpaint_positivePrompt",
+            "inpaint_negativePrompt",
+            "inpaint_conditioningMix",
+            "inpaint_wd14Tagging"
+          ]
+        },
+        {
+          "id": "inpaint_sampling",
+          "label": "Sampling",
+          "icon": "wand",
+          "controlIds": [
+            "inpaint_denoisePercentage",
+            "inpaint_sampler",
+            "inpaint_scheduler",
+            "inpaint_cfg",
+            "inpaint_steps",
+            "inpaint_seed"
+          ]
+        },
+        {
+          "id": "inpaint_roi",
+          "label": "Region of Interest",
+          "icon": "image-in-picture",
+          "controlIds": [
+            "inpaint_upsampleTarget",
+            "inpaint_applyUnsharpMask",
+            "inpaint_dilate",
+            "inpaint_feather",
+            "inpaint_roiPadding",
+            "inpaint_roiAlign",
+            "inpaint_roiAlignAuto",
+            "inpaint_roiMinSize"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "inpaint_positivePrompt": "",
+        "inpaint_negativePrompt": "",
+        "inpaint_conditioningMix": 0,
+        "inpaint_wd14Tagging": false,
+        "inpaint_denoisePercentage": 40,
+        "inpaint_sampler": "dpmpp_2m",
+        "inpaint_scheduler": "karras",
+        "inpaint_cfg": 7,
+        "inpaint_steps": 16,
+        "inpaint_seed": "-1",
+        "inpaint_upsampleTarget": 2048,
+        "inpaint_applyUnsharpMask": true,
+        "inpaint_dilate": 0,
+        "inpaint_feather": 0,
+        "inpaint_roiPadding": 32,
+        "inpaint_roiAlign": 8,
+        "inpaint_roiAlignAuto": false,
+        "inpaint_roiMinSize": 64
+      }
+    },
+    "outpaint": {
+      "controls": [
+        {
+          "id": "outpaint_positivePrompt",
+          "type": "multiinput",
+          "label": "Positive Prompt",
+          "description": "Prompt applied to the target region.",
+          "defaultValue": "",
+          "placeholder": "Enter tags or prompt..."
+        },
+        {
+          "id": "outpaint_negativePrompt",
+          "type": "multiinput",
+          "label": "Negative Prompt",
+          "description": "Negative prompt applied to the target region.",
+          "defaultValue": "",
+          "placeholder": "Enter negative tags..."
+        },
+        {
+          "id": "outpaint_conditioningMix",
+          "type": "slider",
+          "label": "Conditioning Mix",
+          "description": "-1=input only, 0=concat, 1=prompts only. Intermediate values blend.",
+          "min": -1,
+          "max": 1,
+          "step": 0.1,
+          "defaultValue": 0
+        },
+        {
+          "id": "outpaint_wd14Tagging",
+          "type": "toggle",
+          "label": "WD14 Tagging",
+          "description": "Automatically tag the outpaint patch with WD14 and add tags to conditioning.",
+          "defaultValue": false
+        },
+        {
+          "id": "outpaint_denoisePercentage",
+          "type": "slider",
+          "label": "Denoise Percentage",
+          "description": "Noise applied during outpaint. 0 keeps original pixels, 100 fully regenerates.",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 60,
+          "unit": "%"
+        },
+        {
+          "id": "outpaint_sampler",
+          "type": "select",
+          "label": "Sampler",
+          "description": "Sampler used for outpaint diffusion steps.",
+          "options": [
+            {
+              "value": "dpmpp_2m",
+              "label": "DPM++ 2M"
+            },
+            {
+              "value": "dpmpp_2m_karras",
+              "label": "DPM++ 2M Karras"
+            },
+            {
+              "value": "euler",
+              "label": "Euler"
+            },
+            {
+              "value": "euler_ancestral",
+              "label": "Euler a"
+            }
+          ],
+          "defaultValue": "dpmpp_2m"
+        },
+        {
+          "id": "outpaint_scheduler",
+          "type": "select",
+          "label": "Scheduler",
+          "description": "Scheduler used for outpaint diffusion steps.",
+          "options": [
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "karras",
+              "label": "Karras"
+            },
+            {
+              "value": "exponential",
+              "label": "Exponential"
+            }
+          ],
+          "defaultValue": "normal"
+        },
+        {
+          "id": "outpaint_cfg",
+          "type": "slider",
+          "label": "CFG Scale",
+          "description": "Classifier-free guidance applied during the outpaint pass.",
+          "min": 1,
+          "max": 30,
+          "step": 0.5,
+          "defaultValue": 7
+        },
+        {
+          "id": "outpaint_steps",
+          "type": "slider",
+          "label": "Steps",
+          "description": "Diffusion steps used when outpainting.",
+          "min": 1,
+          "max": 50,
+          "step": 1,
+          "defaultValue": 24
+        },
+        {
+          "id": "outpaint_amount",
+          "type": "slider",
+          "label": "Outpaint Amount",
+          "description": "Expand canvas by this many pixels on edges touched by brush.",
+          "min": 8,
+          "max": 1024,
+          "step": 8,
+          "defaultValue": 256,
+          "unit": "px"
+        },
+        {
+          "id": "outpaint_feather",
+          "type": "slider",
+          "label": "Feather Mask",
+          "description": "Soften mask edges to blend the outpainted region.",
+          "min": 0,
+          "max": 64,
+          "step": 1,
+          "defaultValue": 12,
+          "unit": "px"
+        }
+      ],
+      "layout": [
+        {
+          "id": "outpaint_conditioning",
+          "label": "Conditioning",
+          "icon": "robot",
+          "controlIds": [
+            "outpaint_positivePrompt",
+            "outpaint_negativePrompt",
+            "outpaint_conditioningMix",
+            "outpaint_wd14Tagging"
+          ]
+        },
+        {
+          "id": "outpaint_sampling",
+          "label": "Sampling",
+          "icon": "wand",
+          "controlIds": [
+            "outpaint_denoisePercentage",
+            "outpaint_sampler",
+            "outpaint_scheduler",
+            "outpaint_cfg",
+            "outpaint_steps"
+          ]
+        },
+        {
+          "id": "outpaint_region",
+          "label": "Region",
+          "icon": "arrow-autofit-content",
+          "controlIds": [
+            "outpaint_amount",
+            "outpaint_feather"
+          ]
+        }
+      ],
+      "defaultSettings": {
+        "outpaint_positivePrompt": "",
+        "outpaint_negativePrompt": "",
+        "outpaint_conditioningMix": 0,
+        "outpaint_wd14Tagging": false,
+        "outpaint_denoisePercentage": 60,
+        "outpaint_sampler": "dpmpp_2m",
+        "outpaint_scheduler": "normal",
+        "outpaint_cfg": 7,
+        "outpaint_steps": 24,
+        "outpaint_amount": 256,
+        "outpaint_feather": 12
       }
     }
   },
@@ -175,7 +1519,7 @@
     "nodes": [
       {
         "id": "canvas_0",
-        "value": "Thor Avatar",
+        "value": "Avatar 1",
         "cells": {
           "lfCanvas": {
             "shape": "canvas",
@@ -201,7 +1545,7 @@
       },
       {
         "id": "canvas_2",
-        "value": "Freya Avatar",
+        "value": "Avatar 2",
         "cells": {
           "lfCanvas": {
             "shape": "canvas",
@@ -217,18 +1561,79 @@
   "settingsDataset": {
     "nodes": [
       {
-        "id": "drawing_tools",
-        "value": "Drawing",
+        "id": "settings",
+        "value": "Settings",
+        "description": "Tool configuration.",
         "icon": "brush",
         "children": [
           {
             "id": "brush",
             "value": "Brush",
-            "description": "Brush tool configuration.",
+            "description": "Brush configuration for masking and painting.",
             "cells": {
               "lfCode": {
                 "shape": "code",
-                "value": "{\"controls\":[{\"id\":\"brush_size\",\"type\":\"slider\",\"label\":\"Brush Size\",\"description\":\"Sets the size of the brush in pixels.\",\"min\":1,\"max\":500,\"step\":1,\"defaultValue\":150},{\"id\":\"brush_opacity\",\"type\":\"slider\",\"label\":\"Brush Opacity\",\"description\":\"Controls brush opacity from transparent to fully opaque.\",\"min\":0.05,\"max\":1,\"step\":0.05,\"defaultValue\":0.2},{\"id\":\"brush_color\",\"type\":\"colorpicker\",\"label\":\"Brush Color\",\"description\":\"Color used for brush strokes.\",\"defaultValue\":\"#ff0000\",\"swatches\":[\"#ff0000\",\"#ffffff\",\"#000000\",\"#00bcd4\"]}],\"layout\":[{\"id\":\"brush_general\",\"label\":\"Brush\",\"controlIds\":[\"brush_size\",\"brush_opacity\",\"brush_color\"]}],\"defaultSettings\":{\"brush_size\":150,\"brush_opacity\":0.2,\"brush_color\":\"#ff0000\"}}"
+                "value": "{\"controls\":[{\"id\":\"brush_size\",\"type\":\"slider\",\"label\":\"Size\",\"description\":\"Sets the size of the brush in pixels.\",\"min\":1,\"max\":500,\"step\":1,\"defaultValue\":150,\"unit\":\"px\"},{\"id\":\"brush_opacity\",\"type\":\"slider\",\"label\":\"Opacity\",\"description\":\"Controls brush opacity from transparent to fully opaque.\",\"min\":0.05,\"max\":1,\"step\":0.05,\"defaultValue\":0.2},{\"id\":\"brush_color\",\"type\":\"colorpicker\",\"label\":\"Brush Color\",\"description\":\"Color used for brush strokes.\",\"defaultValue\":\"#ff0000\",\"swatches\":[\"#ff0000\",\"#ffffff\",\"#000000\",\"#00bcd4\"]}],\"layout\":[{\"id\":\"brush_general\",\"label\":\"Brush\",\"controlIds\":[\"brush_size\",\"brush_opacity\",\"brush_color\"]}],\"defaultSettings\":{\"brush_size\":150,\"brush_opacity\":0.2,\"brush_color\":\"#ff0000\"}}"
+              }
+            }
+          },
+          {
+            "id": "line",
+            "value": "Line",
+            "description": "Draw straight or smooth lines.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"line_size\",\"type\":\"slider\",\"label\":\"Size\",\"description\":\"Sets the thickness of the line.\",\"min\":1,\"max\":500,\"step\":1,\"defaultValue\":10,\"unit\":\"px\"},{\"id\":\"line_opacity\",\"type\":\"slider\",\"label\":\"Opacity\",\"description\":\"Controls line opacity.\",\"min\":0.05,\"max\":1,\"step\":0.05,\"defaultValue\":1},{\"id\":\"line_color\",\"type\":\"colorpicker\",\"label\":\"Line Color\",\"description\":\"Color used for line strokes.\",\"defaultValue\":\"#ff0000\",\"swatches\":[\"#ff0000\",\"#ffffff\",\"#000000\",\"#00bcd4\"]},{\"id\":\"line_smooth\",\"type\":\"toggle\",\"label\":\"Smooth\",\"description\":\"Draws a smooth curved line instead of straight segments.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"line_general\",\"label\":\"Line\",\"controlIds\":[\"line_size\",\"line_opacity\",\"line_color\",\"line_smooth\"]}],\"defaultSettings\":{\"line_size\":10,\"line_opacity\":1,\"line_color\":\"#ff0000\",\"line_smooth\":false}}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "diffusion_tools",
+        "value": "Diffusion Tools",
+        "description": "AI-powered retouching using diffusion models.",
+        "icon": "wand",
+        "children": [
+          {
+            "id": "inpaint",
+            "value": "Inpaint",
+            "description": "Inpaint masked areas using the connected diffusion model. Advanced controls are available inside the inpaint panel.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"inpaint_positivePrompt\",\"type\":\"multiinput\",\"label\":\"Positive Prompt\",\"description\":\"Prompt applied to the target region.\",\"defaultValue\":\"\",\"placeholder\":\"Enter tags or prompt...\"},{\"id\":\"inpaint_negativePrompt\",\"type\":\"multiinput\",\"label\":\"Negative Prompt\",\"description\":\"Negative prompt applied to the target region.\",\"defaultValue\":\"\",\"placeholder\":\"Enter negative tags...\"},{\"id\":\"inpaint_conditioningMix\",\"type\":\"slider\",\"label\":\"Conditioning Mix\",\"description\":\"-1=input only, 0=concat, 1=prompts only. Intermediate values blend between input and prompts.\",\"min\":-1,\"max\":1,\"step\":0.1,\"defaultValue\":0},{\"id\":\"inpaint_wd14Tagging\",\"type\":\"toggle\",\"label\":\"WD14 Tagging\",\"description\":\"Automatically tag the inpaint patch with WD14 and add tags to conditioning.\",\"defaultValue\":false},{\"id\":\"inpaint_denoisePercentage\",\"type\":\"slider\",\"label\":\"Denoise Percentage\",\"description\":\"Noise applied during inpaint. 0 keeps original pixels, 100 fully regenerates.\",\"min\":0,\"max\":100,\"step\":1,\"defaultValue\":40,\"unit\":\"%\"},{\"id\":\"inpaint_sampler\",\"type\":\"select\",\"label\":\"Sampler\",\"description\":\"Sampler used for inpaint diffusion steps.\",\"options\":[{\"value\":\"dpmpp_2m\",\"label\":\"DPM++ 2M\"},{\"value\":\"dpmpp_2m_karras\",\"label\":\"DPM++ 2M Karras\"},{\"value\":\"euler\",\"label\":\"Euler\"},{\"value\":\"euler_ancestral\",\"label\":\"Euler a\"}],\"defaultValue\":\"dpmpp_2m\"},{\"id\":\"inpaint_scheduler\",\"type\":\"select\",\"label\":\"Scheduler\",\"description\":\"Scheduler used for inpaint diffusion steps.\",\"options\":[{\"value\":\"normal\",\"label\":\"Normal\"},{\"value\":\"karras\",\"label\":\"Karras\"},{\"value\":\"exponential\",\"label\":\"Exponential\"}],\"defaultValue\":\"karras\"},{\"id\":\"inpaint_cfg\",\"type\":\"slider\",\"label\":\"CFG Scale\",\"description\":\"Classifier-free guidance applied during the inpaint pass.\",\"min\":1,\"max\":30,\"step\":0.5,\"defaultValue\":7},{\"id\":\"inpaint_steps\",\"type\":\"slider\",\"label\":\"Steps\",\"description\":\"Diffusion steps used for the inpaint sampler.\",\"min\":1,\"max\":30,\"step\":1,\"defaultValue\":16},{\"id\":\"inpaint_seed\",\"type\":\"textfield\",\"label\":\"Seed\",\"description\":\"Optional seed override. Leave at -1 for a random seed.\",\"defaultValue\":\"-1\",\"placeholder\":\"-1 for random\"},{\"id\":\"inpaint_upsampleTarget\",\"type\":\"slider\",\"label\":\"Upsample Target (px)\",\"description\":\"Detailer path: upscale ROI longer side to this size before inpaint (0 disables).\",\"min\":0,\"max\":2048,\"step\":16,\"defaultValue\":2048},{\"id\":\"inpaint_applyUnsharpMask\",\"type\":\"toggle\",\"label\":\"Apply Unsharp Mask\",\"description\":\"Apply a gentle unsharp mask after downscaling the inpainted region.\",\"defaultValue\":true},{\"id\":\"inpaint_dilate\",\"type\":\"slider\",\"label\":\"Dilate Mask\",\"description\":\"Expand mask edges before inpaint to avoid seams.\",\"min\":0,\"max\":64,\"step\":1,\"defaultValue\":0,\"unit\":\"px\"},{\"id\":\"inpaint_feather\",\"type\":\"slider\",\"label\":\"Feather Mask\",\"description\":\"Soften mask edges to blend the inpainted region.\",\"min\":0,\"max\":64,\"step\":1,\"defaultValue\":0,\"unit\":\"px\"},{\"id\":\"inpaint_roiPadding\",\"type\":\"slider\",\"label\":\"ROI Padding\",\"description\":\"Pixels of padding around the mask bounding box when cropping the ROI.\",\"min\":0,\"max\":256,\"step\":1,\"defaultValue\":32,\"unit\":\"px\"},{\"id\":\"inpaint_roiAlign\",\"type\":\"slider\",\"label\":\"ROI Align Multiple\",\"description\":\"Align ROI size/position to this multiple. Keeps latent-friendly dims.\",\"min\":1,\"max\":64,\"step\":1,\"defaultValue\":8},{\"id\":\"inpaint_roiAlignAuto\",\"type\":\"toggle\",\"label\":\"Auto-align ROI\",\"description\":\"Infer alignment multiple from VAE/model. Disable to set a manual multiple.\",\"defaultValue\":false},{\"id\":\"inpaint_roiMinSize\",\"type\":\"slider\",\"label\":\"ROI Min Size\",\"description\":\"Enforce a minimum width/height for the cropped ROI.\",\"min\":1,\"max\":1024,\"step\":1,\"defaultValue\":64,\"unit\":\"px\"}],\"layout\":[{\"id\":\"inpaint_conditioning\",\"label\":\"Conditioning\",\"icon\":\"robot\",\"controlIds\":[\"inpaint_positivePrompt\",\"inpaint_negativePrompt\",\"inpaint_conditioningMix\",\"inpaint_wd14Tagging\"]},{\"id\":\"inpaint_sampling\",\"label\":\"Sampling\",\"icon\":\"wand\",\"controlIds\":[\"inpaint_denoisePercentage\",\"inpaint_sampler\",\"inpaint_scheduler\",\"inpaint_cfg\",\"inpaint_steps\",\"inpaint_seed\"]},{\"id\":\"inpaint_roi\",\"label\":\"Region of Interest\",\"icon\":\"image-in-picture\",\"controlIds\":[\"inpaint_upsampleTarget\",\"inpaint_applyUnsharpMask\",\"inpaint_dilate\",\"inpaint_feather\",\"inpaint_roiPadding\",\"inpaint_roiAlign\",\"inpaint_roiAlignAuto\",\"inpaint_roiMinSize\"]}],\"defaultSettings\":{\"inpaint_positivePrompt\":\"\",\"inpaint_negativePrompt\":\"\",\"inpaint_conditioningMix\":0,\"inpaint_wd14Tagging\":false,\"inpaint_denoisePercentage\":40,\"inpaint_sampler\":\"dpmpp_2m\",\"inpaint_scheduler\":\"karras\",\"inpaint_cfg\":7,\"inpaint_steps\":16,\"inpaint_seed\":\"-1\",\"inpaint_upsampleTarget\":2048,\"inpaint_applyUnsharpMask\":true,\"inpaint_dilate\":0,\"inpaint_feather\":0,\"inpaint_roiPadding\":32,\"inpaint_roiAlign\":8,\"inpaint_roiAlignAuto\":false,\"inpaint_roiMinSize\":64}}"
+              }
+            }
+          },
+          {
+            "id": "outpaint",
+            "value": "Outpaint",
+            "description": "Outpaint beyond the current canvas. Brush along edges to choose which sides expand.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"outpaint_positivePrompt\",\"type\":\"multiinput\",\"label\":\"Positive Prompt\",\"description\":\"Prompt applied to the target region.\",\"defaultValue\":\"\",\"placeholder\":\"Enter tags or prompt...\"},{\"id\":\"outpaint_negativePrompt\",\"type\":\"multiinput\",\"label\":\"Negative Prompt\",\"description\":\"Negative prompt applied to the target region.\",\"defaultValue\":\"\",\"placeholder\":\"Enter negative tags...\"},{\"id\":\"outpaint_conditioningMix\",\"type\":\"slider\",\"label\":\"Conditioning Mix\",\"description\":\"-1=input only, 0=concat, 1=prompts only. Intermediate values blend.\",\"min\":-1,\"max\":1,\"step\":0.1,\"defaultValue\":0},{\"id\":\"outpaint_wd14Tagging\",\"type\":\"toggle\",\"label\":\"WD14 Tagging\",\"description\":\"Automatically tag the outpaint patch with WD14 and add tags to conditioning.\",\"defaultValue\":false},{\"id\":\"outpaint_denoisePercentage\",\"type\":\"slider\",\"label\":\"Denoise Percentage\",\"description\":\"Noise applied during outpaint. 0 keeps original pixels, 100 fully regenerates.\",\"min\":0,\"max\":100,\"step\":1,\"defaultValue\":60,\"unit\":\"%\"},{\"id\":\"outpaint_sampler\",\"type\":\"select\",\"label\":\"Sampler\",\"description\":\"Sampler used for outpaint diffusion steps.\",\"options\":[{\"value\":\"dpmpp_2m\",\"label\":\"DPM++ 2M\"},{\"value\":\"dpmpp_2m_karras\",\"label\":\"DPM++ 2M Karras\"},{\"value\":\"euler\",\"label\":\"Euler\"},{\"value\":\"euler_ancestral\",\"label\":\"Euler a\"}],\"defaultValue\":\"dpmpp_2m\"},{\"id\":\"outpaint_scheduler\",\"type\":\"select\",\"label\":\"Scheduler\",\"description\":\"Scheduler used for outpaint diffusion steps.\",\"options\":[{\"value\":\"normal\",\"label\":\"Normal\"},{\"value\":\"karras\",\"label\":\"Karras\"},{\"value\":\"exponential\",\"label\":\"Exponential\"}],\"defaultValue\":\"normal\"},{\"id\":\"outpaint_cfg\",\"type\":\"slider\",\"label\":\"CFG Scale\",\"description\":\"Classifier-free guidance applied during the outpaint pass.\",\"min\":1,\"max\":30,\"step\":0.5,\"defaultValue\":7},{\"id\":\"outpaint_steps\",\"type\":\"slider\",\"label\":\"Steps\",\"description\":\"Diffusion steps used when outpainting.\",\"min\":1,\"max\":50,\"step\":1,\"defaultValue\":24},{\"id\":\"outpaint_amount\",\"type\":\"slider\",\"label\":\"Outpaint Amount\",\"description\":\"Expand canvas by this many pixels on edges touched by brush.\",\"min\":8,\"max\":1024,\"step\":8,\"defaultValue\":256,\"unit\":\"px\"},{\"id\":\"outpaint_feather\",\"type\":\"slider\",\"label\":\"Feather Mask\",\"description\":\"Soften mask edges to blend the outpainted region.\",\"min\":0,\"max\":64,\"step\":1,\"defaultValue\":12,\"unit\":\"px\"}],\"layout\":[{\"id\":\"outpaint_conditioning\",\"label\":\"Conditioning\",\"icon\":\"robot\",\"controlIds\":[\"outpaint_positivePrompt\",\"outpaint_negativePrompt\",\"outpaint_conditioningMix\",\"outpaint_wd14Tagging\"]},{\"id\":\"outpaint_sampling\",\"label\":\"Sampling\",\"icon\":\"wand\",\"controlIds\":[\"outpaint_denoisePercentage\",\"outpaint_sampler\",\"outpaint_scheduler\",\"outpaint_cfg\",\"outpaint_steps\"]},{\"id\":\"outpaint_region\",\"label\":\"Region\",\"icon\":\"arrow-autofit-content\",\"controlIds\":[\"outpaint_amount\",\"outpaint_feather\"]}],\"defaultSettings\":{\"outpaint_positivePrompt\":\"\",\"outpaint_negativePrompt\":\"\",\"outpaint_conditioningMix\":0,\"outpaint_wd14Tagging\":false,\"outpaint_denoisePercentage\":60,\"outpaint_sampler\":\"dpmpp_2m\",\"outpaint_scheduler\":\"normal\",\"outpaint_cfg\":7,\"outpaint_steps\":24,\"outpaint_amount\":256,\"outpaint_feather\":12}}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "cutouts",
+        "value": "Cutouts",
+        "description": "Background removal and matting tools.",
+        "icon": "replace",
+        "children": [
+          {
+            "id": "background_remover",
+            "value": "Background Remover",
+            "description": "Remove the background using rembg with optional solid fill.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"bgRemover_transparent\",\"type\":\"toggle\",\"label\":\"Transparent Background\",\"description\":\"Keep an alpha channel instead of filling the background with the selected color.\",\"defaultValue\":true},{\"id\":\"bgRemover_color\",\"type\":\"colorpicker\",\"label\":\"Background Color\",\"description\":\"Used to fill the removed background when transparency is disabled.\",\"defaultValue\":\"#000000\",\"swatches\":[\"#ffffff\",\"#000000\",\"#ff0000\",\"#00ff00\",\"#0000ff\"]}],\"layout\":[{\"id\":\"bgRemover_general\",\"label\":\"Background Remover\",\"controlIds\":[\"bgRemover_transparent\",\"bgRemover_color\"]}],\"defaultSettings\":{\"bgRemover_transparent\":true,\"bgRemover_color\":\"#000000\"}}"
               }
             }
           }
@@ -237,39 +1642,371 @@
       {
         "id": "basic_adjustments",
         "value": "Basic Adjustments",
+        "description": "Basic adjustments such as sharpening and color tuning.",
         "icon": "settings",
         "children": [
           {
             "id": "brightness",
             "value": "Brightness",
-            "description": "Brightness and tonal adjustments.",
+            "description": "Adjusts the brightness of the image.",
             "cells": {
               "lfCode": {
                 "shape": "code",
-                "value": "{\"controls\":[{\"id\":\"brightness_strength\",\"type\":\"slider\",\"label\":\"Strength\",\"description\":\"Negative values darken, positive values brighten the image.\",\"min\":-1,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"brightness_gamma\",\"type\":\"slider\",\"label\":\"Gamma\",\"description\":\"Gamma correction. Values < 1 brighten shadows, > 1 darken highlights.\",\"min\":0.1,\"max\":3,\"step\":0.1,\"defaultValue\":1},{\"id\":\"brightness_midpoint\",\"type\":\"slider\",\"label\":\"Midpoint\",\"description\":\"Defines the tonal midpoint for brightness scaling.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0.5},{\"id\":\"brightness_localized\",\"type\":\"toggle\",\"label\":\"Localized\",\"description\":\"Enhance brightness locally in darker regions.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"brightness_general\",\"label\":\"Brightness\",\"controlIds\":[\"brightness_strength\",\"brightness_gamma\",\"brightness_midpoint\",\"brightness_localized\"]}],\"defaultSettings\":{\"brightness_strength\":0,\"brightness_gamma\":1,\"brightness_midpoint\":0.5,\"brightness_localized\":false}}"
+                "value": "{\"controls\":[{\"id\":\"brightness_strength\",\"type\":\"slider\",\"label\":\"Strength\",\"description\":\"Adjust the brightness of the image. Negative values darken, positive values brighten.\",\"min\":-1,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"brightness_gamma\",\"type\":\"slider\",\"label\":\"Gamma\",\"description\":\"Gamma correction. Values < 1 brighten shadows, > 1 darken highlights.\",\"min\":0.1,\"max\":3,\"step\":0.1,\"defaultValue\":1},{\"id\":\"brightness_midpoint\",\"type\":\"slider\",\"label\":\"Midpoint\",\"description\":\"Defines the tonal midpoint for scaling.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0.5},{\"id\":\"brightness_localized\",\"type\":\"toggle\",\"label\":\"Localized\",\"description\":\"Enhance brightness locally in darker regions.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"brightness_general\",\"label\":\"Brightness\",\"controlIds\":[\"brightness_strength\",\"brightness_gamma\",\"brightness_midpoint\",\"brightness_localized\"]}],\"defaultSettings\":{\"brightness_strength\":0,\"brightness_gamma\":1,\"brightness_midpoint\":0.5,\"brightness_localized\":false}}"
+              }
+            }
+          },
+          {
+            "id": "clarity",
+            "value": "Clarity",
+            "description": "Simulates the Lightroom clarity effect.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"clarity_amount\",\"type\":\"slider\",\"label\":\"Clarity Amount\",\"description\":\"Lightroom-style clarity. Negative values soften details, positive values boost local contrast.\",\"min\":-1,\"max\":1,\"step\":0.05,\"defaultValue\":0}],\"layout\":[{\"id\":\"clarity_general\",\"label\":\"Clarity\",\"controlIds\":[\"clarity_amount\"]}],\"defaultSettings\":{\"clarity_amount\":0}}"
+              }
+            }
+          },
+          {
+            "id": "contrast",
+            "value": "Contrast",
+            "description": "Adjusts the contrast of the image.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"contrast_strength\",\"type\":\"slider\",\"label\":\"Strength\",\"description\":\"Controls the intensity of the contrast adjustment. Below 0 reduces contrast, above 0 increases contrast.\",\"min\":-1,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"contrast_midpoint\",\"type\":\"slider\",\"label\":\"Midpoint\",\"description\":\"Defines the tonal midpoint for scaling.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0.5},{\"id\":\"contrast_localized\",\"type\":\"toggle\",\"label\":\"Localized\",\"description\":\"Apply contrast enhancement locally to edges and textures.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"contrast_general\",\"label\":\"Contrast\",\"controlIds\":[\"contrast_strength\",\"contrast_midpoint\",\"contrast_localized\"]}],\"defaultSettings\":{\"contrast_strength\":0,\"contrast_midpoint\":0.5,\"contrast_localized\":false}}"
+              }
+            }
+          },
+          {
+            "id": "desaturate",
+            "value": "Desaturate",
+            "description": "Reduces the saturation with per-channel control.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"desaturate_strength\",\"type\":\"slider\",\"label\":\"Strength\",\"description\":\"Controls the intensity of the desaturation. 0 is no effect, 1 is fully desaturated.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"desaturate_r_channel\",\"type\":\"slider\",\"label\":\"Red Channel\",\"description\":\"Controls the intensity of the {channel} channel desaturation relative to the total strength.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":1},{\"id\":\"desaturate_g_channel\",\"type\":\"slider\",\"label\":\"Green Channel\",\"description\":\"Controls the intensity of the {channel} channel desaturation relative to the total strength.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":1},{\"id\":\"desaturate_b_channel\",\"type\":\"slider\",\"label\":\"Blue Channel\",\"description\":\"Controls the intensity of the {channel} channel desaturation relative to the total strength.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":1}],\"layout\":[{\"id\":\"desaturate_general\",\"label\":\"Desaturate\",\"controlIds\":[\"desaturate_strength\",\"desaturate_r_channel\",\"desaturate_g_channel\",\"desaturate_b_channel\"]}],\"defaultSettings\":{\"desaturate_strength\":0,\"desaturate_r_channel\":1,\"desaturate_g_channel\":1,\"desaturate_b_channel\":1}}"
+              }
+            }
+          },
+          {
+            "id": "saturation",
+            "value": "Saturation",
+            "description": "Adjusts the saturation of the image.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"saturation_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Controls the intensity of the saturation. 1.0 is no change, below 1 reduces, above 1 increases saturation.\",\"min\":0,\"max\":5,\"step\":0.1,\"defaultValue\":1}],\"layout\":[{\"id\":\"saturation_general\",\"label\":\"Saturation\",\"controlIds\":[\"saturation_intensity\"]}],\"defaultSettings\":{\"saturation_intensity\":1}}"
+              }
+            }
+          },
+          {
+            "id": "unsharp_mask",
+            "value": "Unsharp Mask",
+            "description": "Sharpens edges using a classic unsharp mask pipeline.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"unsharp_amount\",\"type\":\"slider\",\"label\":\"Amount\",\"description\":\"Overall strength applied to the high-frequency detail mask.\",\"min\":0,\"max\":5,\"step\":0.05,\"defaultValue\":0.5},{\"id\":\"unsharp_radius\",\"type\":\"slider\",\"label\":\"Radius\",\"description\":\"Gaussian blur kernel size (odd numbers give the best results).\",\"min\":1,\"max\":31,\"step\":2,\"defaultValue\":5,\"unit\":\"px\"},{\"id\":\"unsharp_sigma\",\"type\":\"slider\",\"label\":\"Sigma\",\"description\":\"Gaussian blur sigma controlling feather softness around edges.\",\"min\":0.1,\"max\":5,\"step\":0.1,\"defaultValue\":1},{\"id\":\"unsharp_threshold\",\"type\":\"slider\",\"label\":\"Threshold\",\"description\":\"Skip sharpening for pixels below this normalized contrast level.\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0}],\"layout\":[{\"id\":\"unsharp_general\",\"label\":\"Unsharp Mask\",\"controlIds\":[\"unsharp_amount\",\"unsharp_radius\",\"unsharp_sigma\",\"unsharp_threshold\"]}],\"defaultSettings\":{\"unsharp_amount\":0.5,\"unsharp_radius\":5,\"unsharp_sigma\":1,\"unsharp_threshold\":0}}"
+              }
+            }
+          },
+          {
+            "id": "resize_edge",
+            "value": "Resize (by edge)",
+            "description": "Resize the image by fitting one edge to a target size while preserving aspect ratio.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"resize_edge_target\",\"type\":\"number\",\"label\":\"Target Edge (px)\",\"description\":\"Target size for the selected image edge.\",\"min\":64,\"max\":4096,\"step\":16,\"defaultValue\":1024},{\"id\":\"resize_edge_longest\",\"type\":\"toggle\",\"label\":\"Fit Longest Edge\",\"description\":\"When enabled, the longest image edge is resized to the target size; otherwise the shortest edge is used.\",\"defaultValue\":true},{\"id\":\"resize_edge_method\",\"type\":\"select\",\"label\":\"Resample Method\",\"description\":\"Interpolation method used when resizing.\",\"options\":[{\"value\":\"bicubic\",\"label\":\"Bicubic\"},{\"value\":\"bilinear\",\"label\":\"Bilinear\"},{\"value\":\"linear\",\"label\":\"Linear\"},{\"value\":\"nearest\",\"label\":\"Nearest\"},{\"value\":\"nearest exact\",\"label\":\"Nearest (exact)\"}],\"defaultValue\":\"bicubic\"}],\"layout\":[{\"id\":\"resize_edge_general\",\"label\":\"Resize (by edge)\",\"controlIds\":[\"resize_edge_target\",\"resize_edge_longest\",\"resize_edge_method\"]}],\"defaultSettings\":{\"resize_edge_target\":1024,\"resize_edge_longest\":true,\"resize_edge_method\":\"bicubic\"}}"
+              }
+            }
+          },
+          {
+            "id": "resize_free",
+            "value": "Resize (free)",
+            "description": "Resize the image to explicit width/height with optional crop or padding.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"resize_free_width\",\"type\":\"number\",\"label\":\"Width (px)\",\"description\":\"Target image width in pixels.\",\"min\":1,\"max\":8192,\"step\":8,\"defaultValue\":832},{\"id\":\"resize_free_height\",\"type\":\"number\",\"label\":\"Height (px)\",\"description\":\"Target image height in pixels.\",\"min\":1,\"max\":8192,\"step\":8,\"defaultValue\":1216},{\"id\":\"resize_free_method\",\"type\":\"select\",\"label\":\"Resample Method\",\"description\":\"Interpolation method used when resizing.\",\"options\":[{\"value\":\"bicubic\",\"label\":\"Bicubic\"},{\"value\":\"bilinear\",\"label\":\"Bilinear\"},{\"value\":\"linear\",\"label\":\"Linear\"},{\"value\":\"nearest\",\"label\":\"Nearest\"},{\"value\":\"nearest exact\",\"label\":\"Nearest (exact)\"}],\"defaultValue\":\"bicubic\"},{\"id\":\"resize_free_mode\",\"type\":\"select\",\"label\":\"Resize Mode\",\"description\":\"Choose whether to crop or pad when matching the target dimensions.\",\"options\":[{\"value\":\"crop\",\"label\":\"Crop\"},{\"value\":\"pad\",\"label\":\"Pad\"}],\"defaultValue\":\"crop\"},{\"id\":\"resize_free_pad_color\",\"type\":\"colorpicker\",\"label\":\"Padding Color\",\"description\":\"Hex color used when padding (only when mode is set to pad).\",\"defaultValue\":\"#000000\"}],\"layout\":[{\"id\":\"resize_free_general\",\"label\":\"Resize (free)\",\"controlIds\":[\"resize_free_width\",\"resize_free_height\",\"resize_free_method\",\"resize_free_mode\",\"resize_free_pad_color\"]}],\"defaultSettings\":{\"resize_free_width\":832,\"resize_free_height\":1216,\"resize_free_method\":\"bicubic\",\"resize_free_mode\":\"crop\",\"resize_free_pad_color\":\"#000000\"}}"
               }
             }
           }
         ]
       },
       {
-        "id": "resize_tools",
-        "value": "Resize",
-        "icon": "arrow-autofit-content",
+        "id": "creative_effects",
+        "value": "Creative Effects",
+        "description": "Artistic filters such as vignette effect and gaussian blur.",
+        "icon": "palette",
         "children": [
           {
-            "id": "resize_edge",
-            "value": "Resize (by edge)",
-            "description": "Resize the image by fitting the longest edge to a target size.",
+            "id": "blend",
+            "value": "Blend",
+            "description": "Blends a color layer onto the image.",
             "cells": {
               "lfCode": {
                 "shape": "code",
-                "value": "{\"controls\":[{\"id\":\"resize_target\",\"type\":\"number\",\"label\":\"Target Edge (px)\",\"description\":\"Target size for the longest image edge.\",\"min\":64,\"max\":4096,\"step\":16,\"defaultValue\":1024},{\"id\":\"resize_keep_aspect\",\"type\":\"toggle\",\"label\":\"Keep Aspect Ratio\",\"description\":\"Preserve aspect ratio when resizing.\",\"defaultValue\":true},{\"id\":\"resize_method\",\"type\":\"select\",\"label\":\"Resample Method\",\"description\":\"Interpolation method used when resizing.\",\"options\":[{\"value\":\"bicubic\",\"label\":\"Bicubic\"},{\"value\":\"bilinear\",\"label\":\"Bilinear\"},{\"value\":\"nearest\",\"label\":\"Nearest\"}],\"defaultValue\":\"bicubic\"}],\"layout\":[{\"id\":\"resize_general\",\"label\":\"Resize (by edge)\",\"controlIds\":[\"resize_target\",\"resize_keep_aspect\",\"resize_method\"]}],\"defaultSettings\":{\"resize_target\":1024,\"resize_keep_aspect\":true,\"resize_method\":\"bicubic\"}}"
+                "value": "{\"controls\":[{\"id\":\"blend_opacity\",\"type\":\"slider\",\"label\":\"Opacity\",\"description\":\"Adjust the opacity of the blended layer.\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0},{\"id\":\"blend_color\",\"type\":\"colorpicker\",\"label\":\"Color\",\"description\":\"Sets the solid color that will be blended onto the image.\",\"defaultValue\":\"#ff0000\",\"swatches\":[\"#ffffff\",\"#000000\",\"#ff0000\",\"#00ff00\",\"#0000ff\"]}],\"layout\":[{\"id\":\"blend_general\",\"label\":\"Blend\",\"controlIds\":[\"blend_opacity\",\"blend_color\"]}],\"defaultSettings\":{\"blend_opacity\":0,\"blend_color\":\"#ff0000\"}}"
+              }
+            }
+          },
+          {
+            "id": "bloom",
+            "value": "Bloom",
+            "description": "Applies a cinematic bloom effect to highlights.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"bloom_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"How strong the bloom reads after compositing. 1.0 = add the blurred highlights at full strength.\",\"min\":0,\"max\":2,\"step\":0.05,\"defaultValue\":0.6},{\"id\":\"bloom_radius\",\"type\":\"slider\",\"label\":\"Radius\",\"description\":\"Blur radius in pixels (odd numbers only). Bigger radius → softer, more cinematic glow.\",\"min\":3,\"max\":127,\"step\":2,\"defaultValue\":15,\"unit\":\"px\"},{\"id\":\"bloom_threshold\",\"type\":\"slider\",\"label\":\"Threshold\",\"description\":\"Bright-pass cutoff. 0 = everything glows, 1 = nothing glows. For dim scenes start around 0.15-0.35.\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0.8},{\"id\":\"bloom_tint\",\"type\":\"colorpicker\",\"label\":\"Tint Color\",\"description\":\"Hex color for the glow. Pure white #FFFFFF keeps original hue.\",\"defaultValue\":\"#ffffff\"}],\"layout\":[{\"id\":\"bloom_general\",\"label\":\"Bloom\",\"controlIds\":[\"bloom_intensity\",\"bloom_radius\",\"bloom_threshold\",\"bloom_tint\"]}],\"defaultSettings\":{\"bloom_intensity\":0.6,\"bloom_radius\":15,\"bloom_threshold\":0.8,\"bloom_tint\":\"#ffffff\"}}"
+              }
+            }
+          },
+          {
+            "id": "film_grain",
+            "value": "Film Grain",
+            "description": "Applies a film grain effect for a vintage look.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"filmGrain_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Sets the strength of the film grain effect.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"filmGrain_size\",\"type\":\"slider\",\"label\":\"Size\",\"description\":\"Sets the size of the noise granularity.\",\"min\":0.5,\"max\":5,\"step\":0.1,\"defaultValue\":1,\"unit\":\"px\"},{\"id\":\"filmGrain_tint\",\"type\":\"colorpicker\",\"label\":\"Tint\",\"description\":\"Hexadecimal color (default is #FFFFFF for no tint).\",\"defaultValue\":\"#ffffff\"},{\"id\":\"filmGrain_softBlend\",\"type\":\"toggle\",\"label\":\"Soft Blend\",\"description\":\"If true, uses a soft blending mode for the grain.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"filmGrain_general\",\"label\":\"Film Grain\",\"controlIds\":[\"filmGrain_intensity\",\"filmGrain_size\",\"filmGrain_tint\",\"filmGrain_softBlend\"]}],\"defaultSettings\":{\"filmGrain_intensity\":0,\"filmGrain_size\":1,\"filmGrain_tint\":\"#ffffff\",\"filmGrain_softBlend\":false}}"
+              }
+            }
+          },
+          {
+            "id": "gaussian_blur",
+            "value": "Gaussian Blur",
+            "description": "Blurs the image using a Gaussian kernel.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"gaussianBlur_sigma\",\"type\":\"slider\",\"label\":\"Blur Sigma\",\"description\":\"Standard deviation for the Gaussian kernel. Controls blur intensity.\",\"min\":0.1,\"max\":10,\"step\":0.1,\"defaultValue\":0},{\"id\":\"gaussianBlur_kernelSize\",\"type\":\"slider\",\"label\":\"Kernel Size\",\"description\":\"Controls the size of the Gaussian blur kernel. Higher values mean more smoothing.\",\"min\":1,\"max\":51,\"step\":2,\"defaultValue\":7}],\"layout\":[{\"id\":\"gaussianBlur_general\",\"label\":\"Gaussian Blur\",\"controlIds\":[\"gaussianBlur_sigma\",\"gaussianBlur_kernelSize\"]}],\"defaultSettings\":{\"gaussianBlur_sigma\":0,\"gaussianBlur_kernelSize\":7}}"
+              }
+            }
+          },
+          {
+            "id": "sepia",
+            "value": "Sepia",
+            "description": "Applies a sepia tone effect to the image.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"sepia_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Controls the intensity of the sepia effect.\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0}],\"layout\":[{\"id\":\"sepia_general\",\"label\":\"Sepia\",\"controlIds\":[\"sepia_intensity\"]}],\"defaultSettings\":{\"sepia_intensity\":0}}"
+              }
+            }
+          },
+          {
+            "id": "split_tone",
+            "value": "Split Tone",
+            "description": "Applies different tones to highlights and shadows.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"splitTone_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Strength of the tint applied.\",\"min\":0,\"max\":2,\"step\":0.05,\"defaultValue\":0.6},{\"id\":\"splitTone_balance\",\"type\":\"slider\",\"label\":\"Balance\",\"description\":\"Luminance pivot. 0 = lift even deep blacks; 1 = tint only the brightest pixels.\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0.5},{\"id\":\"splitTone_softness\",\"type\":\"slider\",\"label\":\"Softness\",\"description\":\"Width of the transition band around the balance value.\",\"min\":0.01,\"max\":0.5,\"step\":0.01,\"defaultValue\":0.25},{\"id\":\"splitTone_highlights\",\"type\":\"colorpicker\",\"label\":\"Highlights\",\"description\":\"Hex colour applied to highlights.\",\"defaultValue\":\"#ffaa55\"},{\"id\":\"splitTone_shadows\",\"type\":\"colorpicker\",\"label\":\"Shadows\",\"description\":\"Hex colour applied to shadows.\",\"defaultValue\":\"#0066ff\"}],\"layout\":[{\"id\":\"splitTone_general\",\"label\":\"Split Tone\",\"controlIds\":[\"splitTone_intensity\",\"splitTone_balance\",\"splitTone_softness\",\"splitTone_highlights\",\"splitTone_shadows\"]}],\"defaultSettings\":{\"splitTone_intensity\":0.6,\"splitTone_balance\":0.5,\"splitTone_softness\":0.25,\"splitTone_highlights\":\"#ffaa55\",\"splitTone_shadows\":\"#0066ff\"}}"
+              }
+            }
+          },
+          {
+            "id": "tilt_shift",
+            "value": "Tilt-Shift",
+            "description": "Simulates a miniature/tilt-shift lens effect.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"tiltShift_focusPosition\",\"type\":\"slider\",\"label\":\"Focus Position\",\"description\":\"Vertical center of the sharp band (0 = top, 1 = bottom).\",\"min\":0,\"max\":1,\"step\":0.01,\"defaultValue\":0.5},{\"id\":\"tiltShift_focusSize\",\"type\":\"slider\",\"label\":\"Focus Size\",\"description\":\"Height of the sharp zone as a fraction of the image.\",\"min\":0.05,\"max\":0.9,\"step\":0.01,\"defaultValue\":0.25},{\"id\":\"tiltShift_radius\",\"type\":\"slider\",\"label\":\"Blur Radius\",\"description\":\"Gaussian radius for out-of-focus areas. Higher values mean more blur.\",\"min\":3,\"max\":151,\"step\":2,\"defaultValue\":25,\"unit\":\"px\"},{\"id\":\"tiltShift_smooth\",\"type\":\"toggle\",\"label\":\"Smooth Fall-off\",\"description\":\"Linear means constant fall-off, smooth means gradual transition.\",\"defaultValue\":false},{\"id\":\"tiltShift_vertical\",\"type\":\"toggle\",\"label\":\"Vertical Orientation\",\"description\":\"Horizontal means the focus band is horizontal, vertical means it is vertical.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"tiltShift_general\",\"label\":\"Tilt-Shift\",\"controlIds\":[\"tiltShift_focusPosition\",\"tiltShift_focusSize\",\"tiltShift_radius\",\"tiltShift_smooth\",\"tiltShift_vertical\"]}],\"defaultSettings\":{\"tiltShift_focusPosition\":0.5,\"tiltShift_focusSize\":0.25,\"tiltShift_radius\":25,\"tiltShift_smooth\":false,\"tiltShift_vertical\":false}}"
+              }
+            }
+          },
+          {
+            "id": "vibrance",
+            "value": "Vibrance",
+            "description": "Applies a vibrance effect that protects skin tones.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"vibrance_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Controls vibrance. Negative values reduce, positive values increase vibrance.\",\"min\":-1,\"max\":2,\"step\":0.05,\"defaultValue\":0},{\"id\":\"vibrance_protectSkin\",\"type\":\"toggle\",\"label\":\"Protect Skin Tones\",\"description\":\"If true, skin tones are less affected by the vibrance adjustment.\",\"defaultValue\":true},{\"id\":\"vibrance_clipSoft\",\"type\":\"toggle\",\"label\":\"Clip Softly\",\"description\":\"If true, saturation is rolled off near maximum to avoid clipping.\",\"defaultValue\":true}],\"layout\":[{\"id\":\"vibrance_general\",\"label\":\"Vibrance\",\"controlIds\":[\"vibrance_intensity\",\"vibrance_protectSkin\",\"vibrance_clipSoft\"]}],\"defaultSettings\":{\"vibrance_intensity\":0,\"vibrance_protectSkin\":true,\"vibrance_clipSoft\":true}}"
+              }
+            }
+          },
+          {
+            "id": "vignette",
+            "value": "Vignette",
+            "description": "Applies a vignetting effect to the edges.",
+            "cells": {
+              "lfCode": {
+                "shape": "code",
+                "value": "{\"controls\":[{\"id\":\"vignette_intensity\",\"type\":\"slider\",\"label\":\"Intensity\",\"description\":\"Controls the darkness of the vignette effect. Higher values mean darker edges.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0},{\"id\":\"vignette_radius\",\"type\":\"slider\",\"label\":\"Radius\",\"description\":\"Controls the size of the vignette effect. Lower values mean a smaller vignette.\",\"min\":0,\"max\":1,\"step\":0.05,\"defaultValue\":0,\"unit\":\"px\"},{\"id\":\"vignette_color\",\"type\":\"colorpicker\",\"label\":\"Color\",\"description\":\"Sets the color of the vignette.\",\"defaultValue\":\"#000000\",\"swatches\":[\"#ffffff\",\"#000000\",\"#ff0000\",\"#00ff00\",\"#0000ff\"]},{\"id\":\"vignette_circular\",\"type\":\"toggle\",\"label\":\"Circular\",\"description\":\"Selects the shape of the vignette effect, defaults to elliptical.\",\"defaultValue\":false}],\"layout\":[{\"id\":\"vignette_general\",\"label\":\"Vignette\",\"controlIds\":[\"vignette_intensity\",\"vignette_radius\",\"vignette_color\",\"vignette_circular\"]}],\"defaultSettings\":{\"vignette_intensity\":0,\"vignette_radius\":0,\"vignette_color\":\"#000000\",\"vignette_circular\":false}}"
               }
             }
           }
         ]
       }
     ]
-  }
+  },
+  "filterMetadata": [
+    {
+      "id": "brush",
+      "name": "Brush",
+      "description": "Paint masks for inpaint/outpaint",
+      "category": "drawing",
+      "icon": "brush",
+      "hasCanvasAction": true
+    },
+    {
+      "id": "line",
+      "name": "Line",
+      "description": "Draw straight or curved lines",
+      "category": "drawing",
+      "icon": "line",
+      "hasCanvasAction": true
+    },
+    {
+      "id": "inpaint",
+      "name": "Inpaint",
+      "description": "AI-powered fill for masked areas",
+      "category": "diffusion",
+      "icon": "wand",
+      "hasCanvasAction": true,
+      "manualApply": true
+    },
+    {
+      "id": "outpaint",
+      "name": "Outpaint",
+      "description": "Expand canvas with AI generation",
+      "category": "diffusion",
+      "icon": "arrow-autofit-content",
+      "hasCanvasAction": true,
+      "manualApply": true
+    },
+    {
+      "id": "background_remover",
+      "name": "Background Remover",
+      "description": "Remove background using AI",
+      "category": "cutout",
+      "icon": "replace",
+      "manualApply": true
+    },
+    {
+      "id": "brightness",
+      "name": "Brightness",
+      "description": "Adjust image brightness",
+      "category": "adjustment",
+      "icon": "brightness-2"
+    },
+    {
+      "id": "clarity",
+      "name": "Clarity",
+      "description": "Enhance local contrast",
+      "category": "adjustment",
+      "icon": "focus-2"
+    },
+    {
+      "id": "contrast",
+      "name": "Contrast",
+      "description": "Adjust image contrast",
+      "category": "adjustment",
+      "icon": "contrast-2"
+    },
+    {
+      "id": "desaturate",
+      "name": "Desaturate",
+      "description": "Remove color per-channel",
+      "category": "adjustment",
+      "icon": "palette-off"
+    },
+    {
+      "id": "saturation",
+      "name": "Saturation",
+      "description": "Adjust color saturation",
+      "category": "adjustment",
+      "icon": "palette"
+    },
+    {
+      "id": "unsharp_mask",
+      "name": "Unsharp Mask",
+      "description": "Sharpen image details",
+      "category": "adjustment",
+      "icon": "focus"
+    },
+    {
+      "id": "resize_edge",
+      "name": "Resize (by edge)",
+      "description": "Resize by longest/shortest edge",
+      "category": "adjustment",
+      "icon": "resize",
+      "manualApply": true
+    },
+    {
+      "id": "resize_free",
+      "name": "Resize (free)",
+      "description": "Resize to specific dimensions",
+      "category": "adjustment",
+      "icon": "aspect-ratio",
+      "manualApply": true
+    },
+    {
+      "id": "blend",
+      "name": "Blend",
+      "description": "Blend a solid color overlay",
+      "category": "effect",
+      "icon": "layers-intersect"
+    },
+    {
+      "id": "bloom",
+      "name": "Bloom",
+      "description": "Add cinematic glow",
+      "category": "effect",
+      "icon": "sun"
+    },
+    {
+      "id": "film_grain",
+      "name": "Film Grain",
+      "description": "Add vintage film texture",
+      "category": "effect",
+      "icon": "grain"
+    },
+    {
+      "id": "gaussian_blur",
+      "name": "Gaussian Blur",
+      "description": "Blur the entire image",
+      "category": "effect",
+      "icon": "blur"
+    },
+    {
+      "id": "sepia",
+      "name": "Sepia",
+      "description": "Apply sepia tone",
+      "category": "effect",
+      "icon": "photo-filled"
+    },
+    {
+      "id": "split_tone",
+      "name": "Split Tone",
+      "description": "Color highlights and shadows",
+      "category": "effect",
+      "icon": "color-swatch"
+    },
+    {
+      "id": "tilt_shift",
+      "name": "Tilt-Shift",
+      "description": "Miniature lens effect",
+      "category": "effect",
+      "icon": "camera"
+    },
+    {
+      "id": "vibrance",
+      "name": "Vibrance",
+      "description": "Smart saturation boost",
+      "category": "effect",
+      "icon": "sparkles"
+    },
+    {
+      "id": "vignette",
+      "name": "Vignette",
+      "description": "Darken image edges",
+      "category": "effect",
+      "icon": "circle"
+    }
+  ]
 }

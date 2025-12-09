@@ -1,13 +1,13 @@
 import {
-  LF_TOOLTIP_ATTRIBUTES,
-  LF_TOOLTIP_CLASSES,
-  LF_TOOLTIP_DEFAULTS,
-  LfFrameworkInterface,
-  LfTooltipElementData,
-  LfTooltipInterface,
-  LfTooltipOptions,
-  LfTooltipPlacement,
-  LfTooltipResolvedOptions,
+    LF_TOOLTIP_ATTRIBUTES,
+    LF_TOOLTIP_CLASSES,
+    LF_TOOLTIP_DEFAULTS,
+    LfFrameworkInterface,
+    LfTooltipElementData,
+    LfTooltipInterface,
+    LfTooltipOptions,
+    LfTooltipPlacement,
+    LfTooltipResolvedOptions,
 } from "@lf-widgets/foundations";
 
 /**
@@ -18,53 +18,26 @@ import {
  */
 export class LfTooltip implements LfTooltipInterface {
   #MANAGER: LfFrameworkInterface;
-
+  /**
+   * The currently active anchor element (if tooltip is visible).
+   */
+  #ACTIVE_ANCHOR: HTMLElement | null = null;
   /**
    * Tracks registered tooltips and their data.
    * WeakMap ensures automatic cleanup when elements are garbage collected.
    */
   #ELEMENTS = new WeakMap<HTMLElement, LfTooltipElementData>();
-
   /**
    * The single shared tooltip element used across all registrations.
    * Created lazily on first use.
    */
   #TOOLTIP: HTMLElement | null = null;
 
-  /**
-   * The currently active anchor element (if tooltip is visible).
-   */
-  #ACTIVE_ANCHOR: HTMLElement | null = null;
-
   constructor(lfFramework: LfFrameworkInterface) {
     this.#MANAGER = lfFramework;
   }
 
   //#region Private Helpers
-  /**
-   * Ensures the tooltip DOM element exists.
-   * Creates it lazily and appends to document.body.
-   */
-  #ensureTooltip = (): HTMLElement => {
-    if (this.#TOOLTIP) {
-      return this.#TOOLTIP;
-    }
-
-    const tooltip = document.createElement("div");
-    tooltip.className = LF_TOOLTIP_CLASSES.tooltip;
-    tooltip.setAttribute("role", "tooltip");
-    tooltip.setAttribute("aria-hidden", "true");
-
-    const arrow = document.createElement("div");
-    arrow.className = LF_TOOLTIP_CLASSES.arrow;
-    tooltip.appendChild(arrow);
-
-    document.body.appendChild(tooltip);
-    this.#TOOLTIP = tooltip;
-
-    return tooltip;
-  };
-
   /**
    * Calculates the position for the tooltip based on anchor and placement.
    */
@@ -117,7 +90,85 @@ export class LfTooltip implements LfTooltipInterface {
 
     return { top, left, actualPlacement };
   };
+  /**
+   * Ensures the tooltip DOM element exists.
+   * Creates it lazily and appends to document.body.
+   */
+  #ensureTooltip = (): HTMLElement => {
+    if (this.#TOOLTIP) {
+      return this.#TOOLTIP;
+    }
 
+    const tooltip = document.createElement("div");
+    tooltip.className = LF_TOOLTIP_CLASSES.tooltip;
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.setAttribute("aria-hidden", "true");
+
+    const arrow = document.createElement("div");
+    arrow.className = LF_TOOLTIP_CLASSES.arrow;
+    tooltip.appendChild(arrow);
+
+    document.body.appendChild(tooltip);
+    this.#TOOLTIP = tooltip;
+
+    return tooltip;
+  };
+  /**
+   * Checks if tooltip would overflow viewport and flips placement if needed.
+   */
+  #flipIfNeeded = (
+    top: number,
+    left: number,
+    tooltip: DOMRect,
+    anchor: DOMRect,
+    offset: number,
+    placement: LfTooltipPlacement,
+    viewportWidth: number,
+    viewportHeight: number,
+  ): { top: number; left: number; placement: LfTooltipPlacement } | null => {
+    const overflowTop = top < 0;
+    const overflowBottom = top + tooltip.height > viewportHeight;
+    const overflowLeft = left < 0;
+    const overflowRight = left + tooltip.width > viewportWidth;
+
+    // Determine flip direction based on primary axis
+    const primaryAxis = placement.split("-")[0] as
+      | "top"
+      | "bottom"
+      | "left"
+      | "right";
+    const alignment = placement.includes("-")
+      ? (placement.split("-")[1] as "start" | "end")
+      : undefined;
+
+    let flippedPlacement: LfTooltipPlacement | null = null;
+
+    if (primaryAxis === "top" && overflowTop) {
+      flippedPlacement = alignment ? `bottom-${alignment}` : "bottom";
+    } else if (primaryAxis === "bottom" && overflowBottom) {
+      flippedPlacement = alignment ? `top-${alignment}` : "top";
+    } else if (primaryAxis === "left" && overflowLeft) {
+      flippedPlacement = alignment ? `right-${alignment}` : "right";
+    } else if (primaryAxis === "right" && overflowRight) {
+      flippedPlacement = alignment ? `left-${alignment}` : "left";
+    }
+
+    if (flippedPlacement) {
+      const newPos = this.#getPositions(
+        anchor,
+        tooltip,
+        offset,
+        flippedPlacement as LfTooltipPlacement,
+      );
+      return {
+        top: newPos.top,
+        left: newPos.left,
+        placement: flippedPlacement as LfTooltipPlacement,
+      };
+    }
+
+    return null;
+  };
   /**
    * Gets base positions for each placement.
    */
@@ -183,83 +234,53 @@ export class LfTooltip implements LfTooltipInterface {
 
     return placements[placement];
   };
-
   /**
-   * Checks if tooltip would overflow viewport and flips placement if needed.
+   * Hides the tooltip for a specific anchor element.
    */
-  #flipIfNeeded = (
-    top: number,
-    left: number,
-    tooltip: DOMRect,
-    anchor: DOMRect,
-    offset: number,
-    placement: LfTooltipPlacement,
-    viewportWidth: number,
-    viewportHeight: number,
-  ): { top: number; left: number; placement: LfTooltipPlacement } | null => {
-    const overflowTop = top < 0;
-    const overflowBottom = top + tooltip.height > viewportHeight;
-    const overflowLeft = left < 0;
-    const overflowRight = left + tooltip.width > viewportWidth;
-
-    // Determine flip direction based on primary axis
-    const primaryAxis = placement.split("-")[0] as
-      | "top"
-      | "bottom"
-      | "left"
-      | "right";
-    const alignment = placement.includes("-")
-      ? (placement.split("-")[1] as "start" | "end")
-      : undefined;
-
-    let flippedPlacement: LfTooltipPlacement | null = null;
-
-    if (primaryAxis === "top" && overflowTop) {
-      flippedPlacement = alignment ? `bottom-${alignment}` : "bottom";
-    } else if (primaryAxis === "bottom" && overflowBottom) {
-      flippedPlacement = alignment ? `top-${alignment}` : "top";
-    } else if (primaryAxis === "left" && overflowLeft) {
-      flippedPlacement = alignment ? `right-${alignment}` : "right";
-    } else if (primaryAxis === "right" && overflowRight) {
-      flippedPlacement = alignment ? `left-${alignment}` : "left";
+  #hideTooltip = (anchor: HTMLElement): void => {
+    const data = this.#ELEMENTS.get(anchor);
+    if (!data) {
+      return;
     }
 
-    if (flippedPlacement) {
-      const newPos = this.#getPositions(
-        anchor,
-        tooltip,
-        offset,
-        flippedPlacement as LfTooltipPlacement,
-      );
-      return {
-        top: newPos.top,
-        left: newPos.left,
-        placement: flippedPlacement as LfTooltipPlacement,
-      };
+    if (data.showTimeoutId) {
+      clearTimeout(data.showTimeoutId);
+      data.showTimeoutId = undefined;
     }
 
-    return null;
+    data.hideTimeoutId = setTimeout(() => {
+      if (this.#ACTIVE_ANCHOR !== anchor) {
+        return;
+      }
+
+      const tooltip = this.#TOOLTIP;
+      if (!tooltip) {
+        return;
+      }
+
+      tooltip.classList.remove(LF_TOOLTIP_CLASSES.visible.split(" ")[0]);
+      tooltip.setAttribute("aria-hidden", "true");
+      this.#ACTIVE_ANCHOR = null;
+    }, data.options.hideDelay);
   };
-
   /**
    * Shows the tooltip for a specific anchor element.
    */
   #showTooltip = (anchor: HTMLElement): void => {
     const data = this.#ELEMENTS.get(anchor);
-    if (!data) return;
+    if (!data) {
+      return;
+    }
 
-    // Clear any pending hide timeout
     if (data.hideTimeoutId) {
       clearTimeout(data.hideTimeoutId);
       data.hideTimeoutId = undefined;
     }
 
-    // Set show timeout
     data.showTimeoutId = setTimeout(() => {
       const tooltip = this.#ensureTooltip();
       const textNode = tooltip.firstChild;
 
-      // Update content (preserve arrow element)
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         textNode.textContent = data.options.content;
       } else {
@@ -269,14 +290,11 @@ export class LfTooltip implements LfTooltipInterface {
         );
       }
 
-      // First, make tooltip visible but with no transition to measure
       tooltip.style.visibility = "hidden";
       tooltip.classList.add(LF_TOOLTIP_CLASSES.visible.split(" ")[0]);
 
-      // Force layout calculation by reading a layout property
       void tooltip.getBoundingClientRect();
 
-      // Calculate position
       const { top, left, actualPlacement } = this.#calculatePosition(
         anchor,
         tooltip,
@@ -284,47 +302,25 @@ export class LfTooltip implements LfTooltipInterface {
         data.options.offset,
       );
 
-      // Apply position and placement
       tooltip.style.top = `${top}px`;
       tooltip.style.left = `${left}px`;
       tooltip.dataset.placement = actualPlacement;
 
-      // Now make visible with transition
       tooltip.style.visibility = "";
       tooltip.setAttribute("aria-hidden", "false");
 
       this.#ACTIVE_ANCHOR = anchor;
     }, data.options.showDelay);
   };
-
-  /**
-   * Hides the tooltip for a specific anchor element.
-   */
-  #hideTooltip = (anchor: HTMLElement): void => {
-    const data = this.#ELEMENTS.get(anchor);
-    if (!data) return;
-
-    // Clear any pending show timeout
-    if (data.showTimeoutId) {
-      clearTimeout(data.showTimeoutId);
-      data.showTimeoutId = undefined;
-    }
-
-    // Set hide timeout
-    data.hideTimeoutId = setTimeout(() => {
-      if (this.#ACTIVE_ANCHOR !== anchor) return;
-
-      const tooltip = this.#TOOLTIP;
-      if (!tooltip) return;
-
-      tooltip.classList.remove(LF_TOOLTIP_CLASSES.visible.split(" ")[0]);
-      tooltip.setAttribute("aria-hidden", "true");
-      this.#ACTIVE_ANCHOR = null;
-    }, data.options.hideDelay);
-  };
   //#endregion
 
   //#region Public API
+  /**
+   * Checks if an element has a tooltip registered.
+   */
+  isRegistered = (element: HTMLElement): boolean => {
+    return this.#ELEMENTS.has(element);
+  };
   /**
    * Registers a tooltip on an anchor element.
    */
@@ -361,24 +357,22 @@ export class LfTooltip implements LfTooltipInterface {
 
     this.#ELEMENTS.set(element, data);
 
-    // Mark element as tooltip anchor
     element.setAttribute(LF_TOOLTIP_ATTRIBUTES.anchor, "");
 
-    // Add event listeners
     element.addEventListener("mouseenter", enterHandler);
     element.addEventListener("mouseleave", leaveHandler);
     element.addEventListener("focus", focusHandler);
     element.addEventListener("blur", blurHandler);
   };
-
   /**
    * Unregisters a tooltip from an anchor element.
    */
   unregister = (element: HTMLElement): void => {
     const data = this.#ELEMENTS.get(element);
-    if (!data) return;
+    if (!data) {
+      return;
+    }
 
-    // Clear any pending timeouts
     if (data.showTimeoutId) {
       clearTimeout(data.showTimeoutId);
     }
@@ -386,30 +380,19 @@ export class LfTooltip implements LfTooltipInterface {
       clearTimeout(data.hideTimeoutId);
     }
 
-    // Remove event listeners
     element.removeEventListener("mouseenter", data.enterHandler);
     element.removeEventListener("mouseleave", data.leaveHandler);
     element.removeEventListener("focus", data.focusHandler);
     element.removeEventListener("blur", data.blurHandler);
 
-    // Remove anchor attribute
     element.removeAttribute(LF_TOOLTIP_ATTRIBUTES.anchor);
 
-    // Hide if this is the active anchor
     if (this.#ACTIVE_ANCHOR === element) {
       this.hideAll();
     }
 
     this.#ELEMENTS.delete(element);
   };
-
-  /**
-   * Checks if an element has a tooltip registered.
-   */
-  isRegistered = (element: HTMLElement): boolean => {
-    return this.#ELEMENTS.has(element);
-  };
-
   /**
    * Updates the content of an existing tooltip.
    */
@@ -426,7 +409,6 @@ export class LfTooltip implements LfTooltipInterface {
 
     data.options.content = content;
 
-    // If this tooltip is currently visible, update the displayed content
     if (this.#ACTIVE_ANCHOR === element && this.#TOOLTIP) {
       const textNode = this.#TOOLTIP.firstChild;
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
@@ -434,7 +416,6 @@ export class LfTooltip implements LfTooltipInterface {
       }
     }
   };
-
   /**
    * Programmatically shows the tooltip for an element.
    */
@@ -450,7 +431,6 @@ export class LfTooltip implements LfTooltipInterface {
 
     this.#showTooltip(element);
   };
-
   /**
    * Programmatically hides the tooltip for an element.
    */
@@ -458,7 +438,6 @@ export class LfTooltip implements LfTooltipInterface {
     if (!this.#ELEMENTS.has(element)) return;
     this.#hideTooltip(element);
   };
-
   /**
    * Hides all visible tooltips.
    */

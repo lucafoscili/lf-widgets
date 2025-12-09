@@ -1,3 +1,4 @@
+import imageEditorJson from "@lf-widgets/assets/assets/fixtures/shapeeditor/image-editor.json";
 import {
   LfArticleDataset,
   LfComponentName,
@@ -12,10 +13,70 @@ import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { LfShowcaseComponentFixture } from "../../lf-showcase-declarations";
-import {
-  IMAGE_EDITOR_CANVAS_DATASET,
-  IMAGE_EDITOR_SETTINGS_DATASET,
-} from "./imageEditor.fixtures";
+
+//#region Image Editor Fixture Types
+/**
+ * JSON structure from generated image-editor fixture.
+ */
+interface ImageEditorFixtureJson {
+  canvasDataset?: LfDataDataset;
+  settingsDataset?: LfDataDataset;
+}
+
+const { canvasDataset: rawCanvasDataset, settingsDataset: rawSettingsDataset } =
+  imageEditorJson as ImageEditorFixtureJson;
+
+/**
+ * Resolves asset paths in the canvas dataset nodes.
+ */
+const resolveCanvasDataset = (
+  getAsset: (path: string) => { path: string },
+): LfDataDataset => {
+  const dataset = rawCanvasDataset ?? { nodes: [] };
+
+  return {
+    ...dataset,
+    nodes: (dataset.nodes ?? []).map((node) => {
+      const cells = node.cells ?? {};
+      const canvasCell = cells.lfCanvas;
+
+      if (!canvasCell) {
+        return node;
+      }
+
+      const valuePath = String(canvasCell.value ?? "");
+      const lfImageValuePath = String(canvasCell.lfImageProps?.lfValue ?? "");
+
+      const resolvedValue = valuePath
+        ? getAsset(valuePath).path
+        : canvasCell.value;
+
+      const resolvedLfImageValue = lfImageValuePath
+        ? getAsset(lfImageValuePath).path
+        : canvasCell.lfImageProps?.lfValue;
+
+      return {
+        ...node,
+        cells: {
+          ...cells,
+          lfCanvas: {
+            ...canvasCell,
+            value: resolvedValue,
+            lfImageProps: {
+              ...(canvasCell.lfImageProps ?? {}),
+              lfValue: resolvedLfImageValue,
+            },
+          },
+        },
+      };
+    }),
+  };
+};
+
+const IMAGE_EDITOR_SETTINGS_DATASET: LfDataDataset = rawSettingsDataset ?? {
+  nodes: [],
+};
+//#endregion
 
 const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
 const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
@@ -30,7 +91,7 @@ export const getShapeeditorFixtures = (
 
   //#region mock data
   //#region Canvas data
-  const canvasDataset: LfDataDataset = IMAGE_EDITOR_CANVAS_DATASET(get);
+  const canvasDataset: LfDataDataset = resolveCanvasDataset(get);
 
   const canvasSettingsDataset: LfDataDataset = IMAGE_EDITOR_SETTINGS_DATASET;
   //#endregion

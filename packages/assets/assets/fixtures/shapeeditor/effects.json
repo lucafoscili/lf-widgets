@@ -7,19 +7,19 @@
       "icon": "lightbulb",
       "defaultSettings": {
         "beam": "cone",
-        "color": "rgba(255, 255, 255, 0.85)",
-        "angle": 45,
         "intensity": 0.8,
+        "angle": 45,
         "originX": 50,
+        "color": "rgba(255, 255, 255, 0.85)",
         "surfaceGlow": true,
         "surfaceGlowIntensity": 0.4,
         "followPointer": false,
         "sway": false,
-        "swayDuration": 3000,
         "swayAmplitude": 5,
+        "sway_duration": 3000,
         "trigger": "hover",
-        "fadeInDuration": 300,
-        "fadeOutDuration": 200
+        "fadeIn_duration": 300,
+        "fadeOut_duration": 200
       },
       "presets": [
         {
@@ -149,12 +149,7 @@
           "label": "Beam Color",
           "description": "Color of the spotlight beam",
           "defaultValue": "#ffffff",
-          "swatches": [
-            "#ffffff",
-            "#fff5e6",
-            "#e6f3ff",
-            "#fff0f5"
-          ]
+          "swatches": ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"]
         },
         {
           "id": "surfaceGlow",
@@ -199,9 +194,9 @@
           "unit": "°"
         },
         {
-          "id": "swayDuration",
+          "id": "sway_duration",
           "type": "slider",
-          "label": "Sway Duration",
+          "label": "Duration",
           "description": "Time for one complete sway cycle",
           "min": 1000,
           "max": 8000,
@@ -231,7 +226,7 @@
           "defaultValue": "hover"
         },
         {
-          "id": "fadeInDuration",
+          "id": "fadeIn_duration",
           "type": "slider",
           "label": "Fade In Duration",
           "description": "Time to fade in the spotlight",
@@ -242,7 +237,7 @@
           "unit": "ms"
         },
         {
-          "id": "fadeOutDuration",
+          "id": "fadeOut_duration",
           "type": "slider",
           "label": "Fade Out Duration",
           "description": "Time to fade out the spotlight",
@@ -259,7 +254,7 @@
             "id": "spotlight_enabled",
             "type": "toggle",
             "label": "Enabled",
-            "description": "Toggle this effect on/off",
+            "description": "Toggle spotlight on/off",
             "defaultValue": false
           },
           {
@@ -325,12 +320,7 @@
             "label": "Beam Color",
             "description": "Color of the spotlight beam",
             "defaultValue": "#ffffff",
-            "swatches": [
-              "#ffffff",
-              "#fff5e6",
-              "#e6f3ff",
-              "#fff0f5"
-            ]
+            "swatches": ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"]
           },
           {
             "id": "surfaceGlow",
@@ -375,9 +365,9 @@
             "unit": "°"
           },
           {
-            "id": "swayDuration",
+            "id": "sway_duration",
             "type": "slider",
-            "label": "Sway Duration",
+            "label": "Duration",
             "description": "Time for one complete sway cycle",
             "min": 1000,
             "max": 8000,
@@ -407,7 +397,7 @@
             "defaultValue": "hover"
           },
           {
-            "id": "fadeInDuration",
+            "id": "fadeIn_duration",
             "type": "slider",
             "label": "Fade In Duration",
             "description": "Time to fade in the spotlight",
@@ -418,7 +408,7 @@
             "unit": "ms"
           },
           {
-            "id": "fadeOutDuration",
+            "id": "fadeOut_duration",
             "type": "slider",
             "label": "Fade Out Duration",
             "description": "Time to fade out the spotlight",
@@ -431,31 +421,17 @@
         ],
         "layout": [
           {
-            "icon": "square-toggle",
-            "id": "general",
-            "label": "General",
-            "controlIds": [
-              "spotlight_enabled"
-            ]
+            "controlId": "spotlight_enabled"
           },
           {
             "id": "beam",
             "label": "Beam",
-            "controlIds": [
-              "beam",
-              "color",
-              "angle",
-              "intensity",
-              "originX"
-            ]
+            "controlIds": ["beam", "color", "angle", "intensity", "originX"]
           },
           {
             "id": "surface",
             "label": "Surface",
-            "controlIds": [
-              "surfaceGlow",
-              "surfaceGlowIntensity"
-            ]
+            "controlIds": ["surfaceGlow", "surfaceGlowIntensity"]
           },
           {
             "id": "behaviour",
@@ -464,35 +440,31 @@
               "followPointer",
               "sway",
               "swayAmplitude",
-              "swayDuration"
+              "sway_duration"
             ]
           },
           {
             "id": "trigger",
             "label": "Trigger & Timing",
-            "controlIds": [
-              "trigger",
-              "fadeInDuration",
-              "fadeOutDuration"
-            ]
+            "controlIds": ["trigger", "fadeIn_duration", "fadeOut_duration"]
           }
         ],
         "defaultSettings": {
           "spotlight_enabled": false,
           "beam": "cone",
-          "color": "rgba(255, 255, 255, 0.85)",
-          "angle": 45,
           "intensity": 0.8,
+          "angle": 45,
           "originX": 50,
+          "color": "rgba(255, 255, 255, 0.85)",
           "surfaceGlow": true,
           "surfaceGlowIntensity": 0.4,
           "followPointer": false,
           "sway": false,
-          "swayDuration": 3000,
           "swayAmplitude": 5,
+          "sway_duration": 3000,
           "trigger": "hover",
-          "fadeInDuration": 300,
-          "fadeOutDuration": 200
+          "fadeIn_duration": 300,
+          "fadeOut_duration": 200
         }
       }
     },
@@ -507,9 +479,9 @@
         "pulseSpeed": "burst",
         "desync": false,
         "reflection": false,
-        "reflectionBlur": 12,
-        "reflectionOffset": 2.5,
-        "reflectionOpacity": 0.5
+        "reflection_opacity": 0.5,
+        "reflection_blur": 12,
+        "reflectionOffset": 2.5
       },
       "presets": [
         {
@@ -639,9 +611,9 @@
           "defaultValue": false
         },
         {
-          "id": "reflectionOpacity",
+          "id": "reflection_opacity",
           "type": "slider",
-          "label": "Reflection Opacity",
+          "label": "Opacity",
           "description": "Transparency of the reflection",
           "min": 0,
           "max": 1,
@@ -649,9 +621,9 @@
           "defaultValue": 0.5
         },
         {
-          "id": "reflectionBlur",
+          "id": "reflection_blur",
           "type": "slider",
-          "label": "Reflection Blur",
+          "label": "Blur",
           "description": "Blur amount for the reflection",
           "min": 0,
           "max": 30,
@@ -677,7 +649,7 @@
             "id": "neon-glow_enabled",
             "type": "toggle",
             "label": "Enabled",
-            "description": "Toggle this effect on/off",
+            "description": "Toggle neon glow on/off",
             "defaultValue": false
           },
           {
@@ -747,9 +719,9 @@
             "defaultValue": false
           },
           {
-            "id": "reflectionOpacity",
+            "id": "reflection_opacity",
             "type": "slider",
-            "label": "Reflection Opacity",
+            "label": "Opacity",
             "description": "Transparency of the reflection",
             "min": 0,
             "max": 1,
@@ -757,9 +729,9 @@
             "defaultValue": 0.5
           },
           {
-            "id": "reflectionBlur",
+            "id": "reflection_blur",
             "type": "slider",
-            "label": "Reflection Blur",
+            "label": "Blur",
             "description": "Blur amount for the reflection",
             "min": 0,
             "max": 30,
@@ -781,30 +753,20 @@
         ],
         "layout": [
           {
-            "icon": "square-toggle",
-            "id": "general",
-            "label": "General",
-            "controlIds": [
-              "neon-glow_enabled"
-            ]
+            "controlId": "neon-glow_enabled"
           },
           {
             "id": "glow",
             "label": "Glow",
-            "controlIds": [
-              "mode",
-              "intensity",
-              "pulseSpeed",
-              "desync"
-            ]
+            "controlIds": ["mode", "intensity", "pulseSpeed", "desync"]
           },
           {
             "id": "reflection",
             "label": "Reflection",
             "controlIds": [
               "reflection",
-              "reflectionOpacity",
-              "reflectionBlur",
+              "reflection_opacity",
+              "reflection_blur",
               "reflectionOffset"
             ]
           }
@@ -816,9 +778,9 @@
           "pulseSpeed": "burst",
           "desync": false,
           "reflection": false,
-          "reflectionBlur": 12,
-          "reflectionOffset": 2.5,
-          "reflectionOpacity": 0.5
+          "reflection_opacity": 0.5,
+          "reflection_blur": 12,
+          "reflectionOffset": 2.5
         }
       }
     },
@@ -878,7 +840,7 @@
             "id": "tilt_enabled",
             "type": "toggle",
             "label": "Enabled",
-            "description": "Toggle this effect on/off",
+            "description": "Toggle tilt on/off",
             "defaultValue": false
           },
           {
@@ -895,19 +857,12 @@
         ],
         "layout": [
           {
-            "icon": "square-toggle",
-            "id": "general",
-            "label": "General",
-            "controlIds": [
-              "tilt_enabled"
-            ]
+            "controlId": "tilt_enabled"
           },
           {
             "id": "settings",
             "label": "Settings",
-            "controlIds": [
-              "intensity"
-            ]
+            "controlIds": ["intensity"]
           }
         ],
         "defaultSettings": {
@@ -1014,7 +969,7 @@
             "id": "ripple_enabled",
             "type": "toggle",
             "label": "Enabled",
-            "description": "Toggle this effect on/off",
+            "description": "Toggle ripple on/off",
             "defaultValue": false
           },
           {
@@ -1056,28 +1011,17 @@
         ],
         "layout": [
           {
-            "icon": "square-toggle",
-            "id": "general",
-            "label": "General",
-            "controlIds": [
-              "ripple_enabled"
-            ]
+            "controlId": "ripple_enabled"
           },
           {
             "id": "animation",
             "label": "Animation",
-            "controlIds": [
-              "duration",
-              "scale"
-            ]
+            "controlIds": ["duration", "scale"]
           },
           {
             "id": "shape",
             "label": "Shape",
-            "controlIds": [
-              "autoSurfaceRadius",
-              "borderRadius"
-            ]
+            "controlIds": ["autoSurfaceRadius", "borderRadius"]
           }
         ],
         "defaultSettings": {

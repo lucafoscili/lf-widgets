@@ -1,11 +1,14 @@
 import {
   IDS,
+  isLayoutControl,
+  isLayoutGroup,
   LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterJsx,
   LfShapeeditorControlConfig,
+  LfShapeeditorLayoutGroup,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
@@ -302,21 +305,6 @@ export const prepDetails = (
         );
       }
 
-      const groupedControls =
-        layout && layout.length
-          ? layout.map((group) => ({
-              id: group.id,
-              label: group.label,
-              controls: controls.filter((c) => group.controlIds.includes(c.id)),
-            }))
-          : [
-              {
-                id: "default",
-                label: "Settings",
-                controls,
-              },
-            ];
-
       const renderControl = (config: LfShapeeditorControlConfig): VNode =>
         createControl(
           config,
@@ -325,35 +313,117 @@ export const prepDetails = (
           adapter,
         );
 
-      const accordionDataset: LfDataDataset = {
-        nodes: groupedControls.map((group) => ({
-          id: group.id,
-          value: group.label,
-          cells: {
-            lfSlot: {
-              shape: "slot",
-              value: group.id,
-            },
-          },
-        })),
-      };
+      // Helper to find a control by ID
+      const findControl = (id: string) => controls.find((c) => c.id === id);
+
+      // Process layout into renderable items (mixed groups and standalone controls)
+      type LayoutRenderItem =
+        | { type: "group"; group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }
+        | { type: "control"; control: LfShapeeditorControlConfig };
+
+      const layoutItems: LayoutRenderItem[] =
+        layout && layout.length
+          ? layout
+              .map((item): LayoutRenderItem | null => {
+                if (isLayoutGroup(item)) {
+                  // Group: collect all controls for this accordion section
+                  const groupControls = item.controlIds
+                    .map(findControl)
+                    .filter((c): c is LfShapeeditorControlConfig => !!c);
+                  return { type: "group", group: item, controls: groupControls };
+                } else if (isLayoutControl(item)) {
+                  // Standalone control
+                  const ctrl = findControl(item.controlId);
+                  return ctrl ? { type: "control", control: ctrl } : null;
+                }
+                return null;
+              })
+              .filter((item): item is LayoutRenderItem => item !== null)
+          : [
+              // Fallback: wrap all controls in a default group
+              {
+                type: "group" as const,
+                group: { id: "default", label: "Settings", controlIds: controls.map((c) => c.id) },
+                controls,
+              },
+            ];
+
+      // Group consecutive groups together for accordion rendering
+      // This preserves layout order while keeping accordion functionality
+      type RenderSegment =
+        | { type: "standalone"; control: LfShapeeditorControlConfig }
+        | { type: "accordion"; groups: Array<{ group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }> };
+
+      const segments: RenderSegment[] = [];
+      let currentAccordionGroups: Array<{ group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }> = [];
+
+      for (const item of layoutItems) {
+        if (item.type === "control") {
+          // Flush any accumulated groups into an accordion segment
+          if (currentAccordionGroups.length > 0) {
+            segments.push({ type: "accordion", groups: currentAccordionGroups });
+            currentAccordionGroups = [];
+          }
+          segments.push({ type: "standalone", control: item.control });
+        } else {
+          // Accumulate groups for accordion
+          currentAccordionGroups.push({ group: item.group, controls: item.controls });
+        }
+      }
+      // Flush remaining groups
+      if (currentAccordionGroups.length > 0) {
+        segments.push({ type: "accordion", groups: currentAccordionGroups });
+      }
 
       return (
         <div
           class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.settings)}
           ref={assignRef(details, "settings")}
         >
-          <lf-accordion
-            lfDataset={accordionDataset}
-            lfExpanded={expandedGroups}
-            onLf-accordion-event={accordionToggle}
-          >
-            {groupedControls.map((group) => (
-              <div key={group.id} slot={group.id}>
-                {group.controls.map(renderControl)}
-              </div>
-            ))}
-          </lf-accordion>
+          {segments.map((segment, segmentIdx) => {
+            if (segment.type === "standalone") {
+              return (
+                <div
+                  key={segment.control.id}
+                  class={bemClass(
+                    blocks.detailsGrid._,
+                    blocks.detailsGrid.standaloneControl,
+                  )}
+                >
+                  {renderControl(segment.control)}
+                </div>
+              );
+            }
+
+            // Accordion segment with one or more groups
+            const accordionDataset: LfDataDataset = {
+              nodes: segment.groups.map(({ group }) => ({
+                id: group.id,
+                value: group.label,
+                cells: {
+                  lfSlot: {
+                    shape: "slot",
+                    value: group.id,
+                  },
+                },
+              })),
+            };
+
+            return (
+              <lf-accordion
+                key={`accordion-${segmentIdx}`}
+                lfDataset={accordionDataset}
+                lfExpanded={expandedGroups}
+                onLf-accordion-event={accordionToggle}
+              >
+                {segment.groups.map(({ group, controls: groupControls }) => (
+                  <div key={group.id} slot={group.id}>
+                    {groupControls.map(renderControl)}
+                  </div>
+                ))}
+              </lf-accordion>
+            );
+          })}
         </div>
       );
     },

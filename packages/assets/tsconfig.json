@@ -8,8 +8,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "lib": ["es2020"]
+    "lib": ["es2020", "dom"]
   },
   "include": ["src/**/*.ts"]
 }
-

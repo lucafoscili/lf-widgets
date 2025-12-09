@@ -15,6 +15,7 @@ export const LF_SHAPEEDITOR_BLOCKS = {
     shape: "shape",
     settings: "settings",
     spinner: "spinner",
+    standaloneControl: "standalone-control",
     tree: "tree",
     undo: "undo",
   },

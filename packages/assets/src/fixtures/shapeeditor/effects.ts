@@ -3,6 +3,13 @@ import type {
   LfShapeeditorLayout,
 } from "@lf-widgets/foundations";
 
+import {
+  common,
+  control,
+  extractDefaults,
+  selectOptionsFromMap,
+} from "../controls";
+
 //#region Declarations
 type EffectSettings = NonNullable<LfShapeeditorConfigDsl["defaultSettings"]>;
 export type EffectDefinition = {
@@ -23,6 +30,108 @@ export type EffectDefinition = {
 //#endregion
 
 //#region Spotlight
+const spotlightControls = [
+  control.select("beam", {
+    options: selectOptionsFromMap({
+      cone: "Cone",
+      narrow: "Narrow",
+      diffuse: "Diffuse",
+      soft: "Soft",
+    }),
+    defaultValue: "cone",
+    label: "Beam Shape",
+    description: "The shape and spread pattern of the light beam",
+  }),
+  common.intensity({ description: "Overall brightness of the spotlight beam" }),
+  common.angle({
+    min: 10,
+    max: 90,
+    step: 5,
+    defaultValue: 45,
+    label: "Beam Angle",
+    description: "Spread angle of the spotlight in degrees",
+  }),
+  control.slider("originX", {
+    min: 0,
+    max: 100,
+    step: 5,
+    defaultValue: 50,
+    unit: "%",
+    label: "Origin X",
+    description: "Horizontal position of the beam origin",
+  }),
+  common.color({
+    defaultValue: "#ffffff",
+    swatches: ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"],
+    label: "Beam Color",
+    description: "Color of the spotlight beam",
+  }),
+  control.toggle("surfaceGlow", {
+    defaultValue: true,
+    description: "Show illumination where the beam hits the surface",
+  }),
+  control.slider("surfaceGlowIntensity", {
+    min: 0,
+    max: 1,
+    step: 0.05,
+    defaultValue: 0.4,
+    description: "Brightness of the surface glow effect",
+  }),
+  control.toggle("followPointer", {
+    defaultValue: false,
+    description: "Beam follows cursor movement",
+  }),
+  control.toggle("sway", {
+    defaultValue: false,
+    label: "Sway Animation",
+    description: "Enable subtle beam movement",
+  }),
+  control.slider("swayAmplitude", {
+    min: 1,
+    max: 15,
+    step: 1,
+    defaultValue: 5,
+    unit: "°",
+    description: "How far the beam sways",
+  }),
+  common.duration({
+    prefix: "sway",
+    min: 1000,
+    max: 8000,
+    step: 500,
+    defaultValue: 3000,
+    description: "Time for one complete sway cycle",
+  }),
+  control.select("trigger", {
+    options: selectOptionsFromMap({
+      hover: "On Hover",
+      always: "Always Visible",
+      manual: "Manual",
+    }),
+    defaultValue: "hover",
+    label: "Trigger Mode",
+    description: "When the spotlight appears",
+  }),
+  common.duration({
+    prefix: "fadeIn",
+    min: 0,
+    max: 1000,
+    step: 50,
+    defaultValue: 300,
+    label: "Fade In Duration",
+    description: "Time to fade in the spotlight",
+  }),
+  common.duration({
+    prefix: "fadeOut",
+    min: 0,
+    max: 1000,
+    step: 50,
+    defaultValue: 200,
+    label: "Fade Out Duration",
+    description: "Time to fade out the spotlight",
+  }),
+];
+
 export const SPOTLIGHT_EFFECT: EffectDefinition = {
   id: "spotlight",
   name: "Spotlight",
@@ -30,20 +139,9 @@ export const SPOTLIGHT_EFFECT: EffectDefinition = {
     "A theatrical spotlight effect that creates a dramatic light beam from above with configurable beam shape, intensity, and tracking options.",
   icon: "lightbulb",
   defaultSettings: {
-    beam: "cone",
+    ...extractDefaults(spotlightControls),
+    // Override with RGBA for runtime (colorpicker uses hex)
     color: "rgba(255, 255, 255, 0.85)",
-    angle: 45,
-    intensity: 0.8,
-    originX: 50,
-    surfaceGlow: true,
-    surfaceGlowIntensity: 0.4,
-    followPointer: false,
-    sway: false,
-    swayDuration: 3000,
-    swayAmplitude: 5,
-    trigger: "hover",
-    fadeInDuration: 300,
-    fadeOutDuration: 200,
   },
   presets: [
     {
@@ -109,168 +207,73 @@ export const SPOTLIGHT_EFFECT: EffectDefinition = {
       },
     },
   ],
-  controls: [
-    {
-      id: "beam",
-      type: "select",
-      label: "Beam Shape",
-      description: "The shape and spread pattern of the light beam",
-      options: [
-        { value: "cone", label: "Cone" },
-        { value: "narrow", label: "Narrow" },
-        { value: "diffuse", label: "Diffuse" },
-        { value: "soft", label: "Soft" },
-      ],
-      defaultValue: "cone",
-    },
-    {
-      id: "intensity",
-      type: "slider",
-      label: "Intensity",
-      description: "Overall brightness of the spotlight beam",
-      min: 0,
-      max: 1,
-      step: 0.05,
-      defaultValue: 0.8,
-    },
-    {
-      id: "angle",
-      type: "slider",
-      label: "Beam Angle",
-      description: "Spread angle of the spotlight in degrees",
-      min: 10,
-      max: 90,
-      step: 5,
-      defaultValue: 45,
-      unit: "°",
-    },
-    {
-      id: "originX",
-      type: "slider",
-      label: "Origin X",
-      description: "Horizontal position of the beam origin",
-      min: 0,
-      max: 100,
-      step: 5,
-      defaultValue: 50,
-      unit: "%",
-    },
-    {
-      id: "color",
-      type: "colorpicker",
-      label: "Beam Color",
-      description: "Color of the spotlight beam",
-      defaultValue: "#ffffff",
-      swatches: ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"],
-    },
-    {
-      id: "surfaceGlow",
-      type: "toggle",
-      label: "Surface Glow",
-      description: "Show illumination where the beam hits the surface",
-      defaultValue: true,
-    },
-    {
-      id: "surfaceGlowIntensity",
-      type: "slider",
-      label: "Surface Glow Intensity",
-      description: "Brightness of the surface glow effect",
-      min: 0,
-      max: 1,
-      step: 0.05,
-      defaultValue: 0.4,
-    },
-    {
-      id: "followPointer",
-      type: "toggle",
-      label: "Follow Pointer",
-      description: "Beam follows cursor movement",
-      defaultValue: false,
-    },
-    {
-      id: "sway",
-      type: "toggle",
-      label: "Sway Animation",
-      description: "Enable subtle beam movement",
-      defaultValue: false,
-    },
-    {
-      id: "swayAmplitude",
-      type: "slider",
-      label: "Sway Amplitude",
-      description: "How far the beam sways",
-      min: 1,
-      max: 15,
-      step: 1,
-      defaultValue: 5,
-      unit: "°",
-    },
-    {
-      id: "swayDuration",
-      type: "slider",
-      label: "Sway Duration",
-      description: "Time for one complete sway cycle",
-      min: 1000,
-      max: 8000,
-      step: 500,
-      defaultValue: 3000,
-      unit: "ms",
-    },
-    {
-      id: "trigger",
-      type: "select",
-      label: "Trigger Mode",
-      description: "When the spotlight appears",
-      options: [
-        { value: "hover", label: "On Hover" },
-        { value: "always", label: "Always Visible" },
-        { value: "manual", label: "Manual" },
-      ],
-      defaultValue: "hover",
-    },
-    {
-      id: "fadeInDuration",
-      type: "slider",
-      label: "Fade In Duration",
-      description: "Time to fade in the spotlight",
-      min: 0,
-      max: 1000,
-      step: 50,
-      defaultValue: 300,
-      unit: "ms",
-    },
-    {
-      id: "fadeOutDuration",
-      type: "slider",
-      label: "Fade Out Duration",
-      description: "Time to fade out the spotlight",
-      min: 0,
-      max: 1000,
-      step: 50,
-      defaultValue: 200,
-      unit: "ms",
-    },
-  ],
+  controls: spotlightControls,
 };
 //#endregion
 
 //#region Neon Glow
+const neonGlowControls = [
+  control.select("mode", {
+    options: selectOptionsFromMap({
+      outline: "Outline",
+      filled: "Filled",
+    }),
+    defaultValue: "outline",
+    label: "Display Mode",
+    description: "Outline shows border only; filled adds interior glow",
+  }),
+  common.intensity({
+    defaultValue: 0.7,
+    description: "Overall brightness of the glow effect",
+  }),
+  control.select("pulseSpeed", {
+    options: selectOptionsFromMap({
+      burst: "Burst (Cyberpunk)",
+      slow: "Slow",
+      normal: "Normal",
+      fast: "Fast",
+    }),
+    defaultValue: "burst",
+    description: "Animation timing for the pulsing effect",
+  }),
+  control.toggle("desync", {
+    defaultValue: false,
+    description: "Randomize timing for independent flickering across elements",
+  }),
+  control.toggle("reflection", {
+    defaultValue: false,
+    label: "Show Reflection",
+    description: "Display a reflection below the element",
+  }),
+  common.opacity("reflection", {
+    defaultValue: 0.5,
+    description: "Transparency of the reflection",
+  }),
+  common.blur({
+    prefix: "reflection",
+    min: 0,
+    max: 30,
+    step: 2,
+    defaultValue: 12,
+    description: "Blur amount for the reflection",
+  }),
+  control.slider("reflectionOffset", {
+    min: 0,
+    max: 10,
+    step: 0.5,
+    defaultValue: 2.5,
+    unit: "em",
+    description: "Vertical offset of the reflection",
+  }),
+];
+
 export const NEON_GLOW_EFFECT: EffectDefinition = {
   id: "neon-glow",
   name: "Neon Glow",
   description:
     "A cyberpunk-inspired neon glow effect with pulsating border and optional reflection. Adapts to theme colors automatically.",
   icon: "flare",
-  defaultSettings: {
-    mode: "outline",
-    intensity: 0.7,
-    pulseSpeed: "burst",
-    desync: false,
-    reflection: false,
-    reflectionBlur: 12,
-    reflectionOffset: 2.5,
-    reflectionOpacity: 0.5,
-  },
+  defaultSettings: extractDefaults(neonGlowControls),
   presets: [
     {
       id: "neon-cyberpunk",
@@ -331,148 +334,86 @@ export const NEON_GLOW_EFFECT: EffectDefinition = {
       },
     },
   ],
-  controls: [
-    {
-      id: "mode",
-      type: "select",
-      label: "Display Mode",
-      description: "Outline shows border only; filled adds interior glow",
-      options: [
-        { value: "outline", label: "Outline" },
-        { value: "filled", label: "Filled" },
-      ],
-      defaultValue: "outline",
-    },
-    {
-      id: "intensity",
-      type: "slider",
-      label: "Intensity",
-      description: "Overall brightness of the glow effect",
-      min: 0,
-      max: 1,
-      step: 0.05,
-      defaultValue: 0.7,
-    },
-    {
-      id: "pulseSpeed",
-      type: "select",
-      label: "Pulse Speed",
-      description: "Animation timing for the pulsing effect",
-      options: [
-        { value: "burst", label: "Burst (Cyberpunk)" },
-        { value: "slow", label: "Slow" },
-        { value: "normal", label: "Normal" },
-        { value: "fast", label: "Fast" },
-      ],
-      defaultValue: "burst",
-    },
-    {
-      id: "desync",
-      type: "toggle",
-      label: "Desync",
-      description:
-        "Randomize timing for independent flickering across elements",
-      defaultValue: false,
-    },
-    {
-      id: "reflection",
-      type: "toggle",
-      label: "Show Reflection",
-      description: "Display a reflection below the element",
-      defaultValue: false,
-    },
-    {
-      id: "reflectionOpacity",
-      type: "slider",
-      label: "Reflection Opacity",
-      description: "Transparency of the reflection",
-      min: 0,
-      max: 1,
-      step: 0.05,
-      defaultValue: 0.5,
-    },
-    {
-      id: "reflectionBlur",
-      type: "slider",
-      label: "Reflection Blur",
-      description: "Blur amount for the reflection",
-      min: 0,
-      max: 30,
-      step: 2,
-      defaultValue: 12,
-      unit: "px",
-    },
-    {
-      id: "reflectionOffset",
-      type: "slider",
-      label: "Reflection Offset",
-      description: "Vertical offset of the reflection",
-      min: 0,
-      max: 10,
-      step: 0.5,
-      defaultValue: 2.5,
-      unit: "em",
-    },
-  ],
+  controls: neonGlowControls,
 };
 //#endregion
 
 //#region Tilt
+const tiltControls = [
+  control.slider("intensity", {
+    min: 1,
+    max: 45,
+    step: 1,
+    defaultValue: 15,
+    unit: "°",
+    label: "Tilt Intensity",
+    description: "Maximum rotation angle in degrees",
+  }),
+];
+
 export const TILT_EFFECT: EffectDefinition = {
   id: "tilt",
   name: "Tilt",
   description:
     "A 3D perspective tilt effect that responds to pointer movement, creating an interactive parallax-like experience.",
   icon: "view_in_ar",
-  defaultSettings: {
-    intensity: 15,
-  },
+  defaultSettings: extractDefaults(tiltControls),
   presets: [
     {
       id: "tilt-subtle",
       name: "Subtle",
       description: "Gentle tilt for understated interaction",
       icon: "touch_app",
-      settings: {
-        intensity: 8,
-      },
+      settings: { intensity: 8 },
     },
     {
       id: "tilt-moderate",
       name: "Moderate",
       description: "Balanced tilt effect",
       icon: "3d_rotation",
-      settings: {
-        intensity: 15,
-      },
+      settings: { intensity: 15 },
     },
     {
       id: "tilt-dramatic",
       name: "Dramatic",
       description: "Pronounced 3D effect",
       icon: "flip_camera_android",
-      settings: {
-        intensity: 25,
-      },
+      settings: { intensity: 25 },
     },
   ],
-  controls: [
-    {
-      id: "intensity",
-      type: "slider",
-      label: "Tilt Intensity",
-      description: "Maximum rotation angle in degrees",
-      min: 1,
-      max: 45,
-      step: 1,
-      defaultValue: 15,
-      unit: "°",
-    },
-  ],
+  controls: tiltControls,
 };
 //#endregion
 
 //#region Ripple
+const rippleControls = [
+  common.duration({
+    min: 100,
+    max: 1500,
+    step: 50,
+    defaultValue: 500,
+    description: "Animation duration in milliseconds",
+  }),
+  common.scale({
+    min: 0.5,
+    max: 2,
+    step: 0.1,
+    defaultValue: 1,
+    description: "Size multiplier for the ripple",
+  }),
+  control.toggle("autoSurfaceRadius", {
+    defaultValue: true,
+    label: "Auto Border Radius",
+    description: "Inherit border-radius from parent element",
+  }),
+  control.textfield("borderRadius", {
+    defaultValue: "",
+    placeholder: "8px",
+    label: "Custom Border Radius",
+    description: "Override border-radius (e.g., '8px' or '50%')",
+  }),
+];
+
 export const RIPPLE_EFFECT: EffectDefinition = {
   id: "ripple",
   name: "Ripple",
@@ -480,10 +421,8 @@ export const RIPPLE_EFFECT: EffectDefinition = {
     "A material design-inspired ripple effect that emanates from the point of interaction.",
   icon: "water_drop",
   defaultSettings: {
-    duration: 500,
-    scale: 1,
-    autoSurfaceRadius: true,
-    borderRadius: "",
+    ...extractDefaults(rippleControls),
+    // Additional runtime setting not exposed in UI
     easing: "cubic-bezier(0.4, 0, 0.2, 1)",
   },
   presets: [
@@ -492,80 +431,31 @@ export const RIPPLE_EFFECT: EffectDefinition = {
       name: "Standard",
       description: "Default material design ripple",
       icon: "radio_button_checked",
-      settings: {
-        duration: 500,
-        scale: 1,
-      },
+      settings: { duration: 500, scale: 1 },
     },
     {
       id: "ripple-slow",
       name: "Slow",
       description: "Slower, more pronounced ripple",
       icon: "slow_motion_video",
-      settings: {
-        duration: 800,
-        scale: 1.2,
-      },
+      settings: { duration: 800, scale: 1.2 },
     },
     {
       id: "ripple-fast",
       name: "Fast",
       description: "Quick ripple for snappy interactions",
       icon: "bolt",
-      settings: {
-        duration: 300,
-        scale: 0.9,
-      },
+      settings: { duration: 300, scale: 0.9 },
     },
     {
       id: "ripple-large",
       name: "Large",
       description: "Large ripple that expands beyond the element",
       icon: "circle",
-      settings: {
-        duration: 700,
-        scale: 1.5,
-      },
+      settings: { duration: 700, scale: 1.5 },
     },
   ],
-  controls: [
-    {
-      id: "duration",
-      type: "slider",
-      label: "Duration",
-      description: "Animation duration in milliseconds",
-      min: 100,
-      max: 1500,
-      step: 50,
-      defaultValue: 500,
-      unit: "ms",
-    },
-    {
-      id: "scale",
-      type: "slider",
-      label: "Scale",
-      description: "Size multiplier for the ripple",
-      min: 0.5,
-      max: 2,
-      step: 0.1,
-      defaultValue: 1,
-    },
-    {
-      id: "autoSurfaceRadius",
-      type: "toggle",
-      label: "Auto Border Radius",
-      description: "Inherit border-radius from parent element",
-      defaultValue: true,
-    },
-    {
-      id: "borderRadius",
-      type: "textfield",
-      label: "Custom Border Radius",
-      description: "Override border-radius (e.g., '8px' or '50%')",
-      defaultValue: "",
-      placeholder: "8px",
-    },
-  ],
+  controls: rippleControls,
 };
 //#endregion
 
@@ -582,26 +472,12 @@ export const createEffectDsl = (
 ): LfShapeeditorConfigDsl => {
   const enabledControlId = `${effect.id}_enabled`;
 
-  const createEnabledControl = (
-    effectId: string,
-  ): LfShapeeditorConfigDsl["controls"][number] => ({
-    id: `${effectId}_enabled`,
-    type: "toggle",
-    label: "Enabled",
-    description: "Toggle this effect on/off",
-    defaultValue: false,
-  });
-
   const layout: LfShapeeditorLayout = (() => {
     switch (effect.id) {
       case "spotlight":
         return [
-          {
-            icon: "square-toggle",
-            id: "general",
-            label: "General",
-            controlIds: [enabledControlId],
-          },
+          // Standalone control: enabled toggle at the top, outside accordion
+          { controlId: enabledControlId },
           {
             id: "beam",
             label: "Beam",
@@ -619,23 +495,19 @@ export const createEffectDsl = (
               "followPointer",
               "sway",
               "swayAmplitude",
-              "swayDuration",
+              "sway_duration",
             ],
           },
           {
             id: "trigger",
             label: "Trigger & Timing",
-            controlIds: ["trigger", "fadeInDuration", "fadeOutDuration"],
+            controlIds: ["trigger", "fadeIn_duration", "fadeOut_duration"],
           },
         ];
       case "neon-glow":
         return [
-          {
-            icon: "square-toggle",
-            id: "general",
-            label: "General",
-            controlIds: [enabledControlId],
-          },
+          // Standalone enabled toggle
+          { controlId: enabledControlId },
           {
             id: "glow",
             label: "Glow",
@@ -646,20 +518,16 @@ export const createEffectDsl = (
             label: "Reflection",
             controlIds: [
               "reflection",
-              "reflectionOpacity",
-              "reflectionBlur",
+              "reflection_opacity",
+              "reflection_blur",
               "reflectionOffset",
             ],
           },
         ];
       case "tilt":
         return [
-          {
-            icon: "square-toggle",
-            id: "general",
-            label: "General",
-            controlIds: [enabledControlId],
-          },
+          // Standalone enabled toggle
+          { controlId: enabledControlId },
           {
             id: "settings",
             label: "Settings",
@@ -668,12 +536,8 @@ export const createEffectDsl = (
         ];
       case "ripple":
         return [
-          {
-            icon: "square-toggle",
-            id: "general",
-            label: "General",
-            controlIds: [enabledControlId],
-          },
+          // Standalone enabled toggle
+          { controlId: enabledControlId },
           {
             id: "animation",
             label: "Animation",
@@ -686,19 +550,13 @@ export const createEffectDsl = (
           },
         ];
       default:
-        return [
-          {
-            icon: "square-toggle",
-            id: "general",
-            label: "General",
-            controlIds: [enabledControlId],
-          },
-        ];
+        // Default: just the standalone enabled toggle
+        return [{ controlId: enabledControlId }];
     }
   })();
 
   return {
-    controls: [createEnabledControl(effect.id), ...effect.controls],
+    controls: [common.enabled(effect.id), ...effect.controls],
     layout,
     defaultSettings: {
       [enabledControlId]: false,
