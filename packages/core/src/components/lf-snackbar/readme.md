@@ -102,6 +102,19 @@ Type: `Promise<void>`
 | `--lf-snackbar-padding`            | Sets the padding for the snackbar. Defaults to => 0.875em 1em                                         |
 
 
+## Dependencies
+
+### Used by
+
+ - [lf-shapeeditor](../lf-shapeeditor)
+
+### Graph
+```mermaid
+graph TD;
+  lf-shapeeditor --> lf-snackbar
+  style lf-snackbar fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

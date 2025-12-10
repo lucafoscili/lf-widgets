@@ -4301,6 +4301,34 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<void>",
       },
       {
+        name: "resetControls",
+        docs: "Resets all controls to their default values as defined in the control configurations.\r\nOnly resets controls that have a defaultValue defined.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "() => Promise<void>",
+      },
+      {
+        name: "setPreviewValue",
+        docs: "Sets a temporary preview value that overrides the current snapshot.\r\nPass null to clear the preview and show the actual snapshot value.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature: "(value: string | null) => Promise<void>",
+      },
+      {
+        name: "setProgressbar",
+        docs: "Updates the progress bar state.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(state: Partial<LfShapeeditorProgressbarState>) => Promise<void>",
+      },
+      {
         name: "setSettings",
         docs: "Updates the configuration settings programmatically.",
         returns: {
@@ -4309,6 +4337,16 @@ export const LF_DOC: LfShowcaseDoc = {
         },
         signature:
           "(settings: LfShapeeditorConfigSettings, replace?: boolean) => Promise<void>",
+      },
+      {
+        name: "setSnackbar",
+        docs: "Updates the snackbar state.",
+        returns: {
+          type: "Promise<void>",
+          docs: "",
+        },
+        signature:
+          "(state: Partial<LfShapeeditorSnackbarState>) => Promise<void>",
       },
       {
         name: "setSpinnerStatus",

@@ -151,6 +151,50 @@ Type: `Promise<void>`
 
 
 
+### `resetControls() => Promise<void>`
+
+Resets all controls to their default values as defined in the control configurations.
+Only resets controls that have a defaultValue defined.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setPreviewValue(value: string | null) => Promise<void>`
+
+Sets a temporary preview value that overrides the current snapshot.
+Pass null to clear the preview and show the actual snapshot value.
+
+#### Parameters
+
+| Name    | Type     | Description                                       |
+| ------- | -------- | ------------------------------------------------- |
+| `value` | `string` | - The preview value to display, or null to clear. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setProgressbar(state: Partial<LfShapeeditorProgressbarState>) => Promise<void>`
+
+Updates the progress bar state.
+
+#### Parameters
+
+| Name    | Type                                                                                                                                       | Description                        |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| `state` | `{ uiState?: "danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"; value?: number; visible?: boolean; }` | - The progress bar state to merge. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `setSettings(settings: LfShapeeditorConfigSettings, replace?: boolean) => Promise<void>`
 
 Updates the configuration settings programmatically.
@@ -161,6 +205,22 @@ Updates the configuration settings programmatically.
 | ---------- | --------------------------------------------- | ----------------------------------------------------------------- |
 | `settings` | `{ [x: string]: LfShapeeditorControlValue; }` | - The settings to merge or replace.                               |
 | `replace`  | `boolean`                                     | - If true, replaces all settings; if false, merges with existing. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setSnackbar(state: Partial<LfShapeeditorSnackbarState>) => Promise<void>`
+
+Updates the snackbar state.
+
+#### Parameters
+
+| Name    | Type                                                                                                                                         | Description                    |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `state` | `{ message?: string; uiState?: "danger" \| "disabled" \| "info" \| "primary" \| "secondary" \| "success" \| "warning"; visible?: boolean; }` | - The snackbar state to merge. |
 
 #### Returns
 
@@ -219,7 +279,9 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-button](../lf-button)
+- [lf-progressbar](../lf-progressbar)
 - [lf-spinner](../lf-spinner)
+- [lf-snackbar](../lf-snackbar)
 - [lf-tree](../lf-tree)
 - [lf-accordion](../lf-accordion)
 - [lf-checkbox](../lf-checkbox)
@@ -237,7 +299,6 @@ Type: `Promise<void>`
 - [lf-code](../lf-code)
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
-- [lf-progressbar](../lf-progressbar)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
 - [lf-masonry](../lf-masonry)
@@ -246,7 +307,9 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-shapeeditor --> lf-button
+  lf-shapeeditor --> lf-progressbar
   lf-shapeeditor --> lf-spinner
+  lf-shapeeditor --> lf-snackbar
   lf-shapeeditor --> lf-tree
   lf-shapeeditor --> lf-accordion
   lf-shapeeditor --> lf-checkbox
@@ -264,7 +327,6 @@ graph TD;
   lf-shapeeditor --> lf-code
   lf-shapeeditor --> lf-image
   lf-shapeeditor --> lf-photoframe
-  lf-shapeeditor --> lf-progressbar
   lf-shapeeditor --> lf-typewriter
   lf-shapeeditor --> lf-upload
   lf-shapeeditor --> lf-masonry
