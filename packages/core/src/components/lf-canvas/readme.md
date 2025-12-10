@@ -52,6 +52,80 @@ Type: `Promise<void>`
 
 A promise that resolves when the canvas has been cleared.
 
+### `drawLine(from: LfCanvasPoint, to: LfCanvasPoint, options?: LfCanvasDrawOptions) => Promise<void>`
+
+Programmatically draws a line between two points on the canvas.
+Coordinates are normalized (0-1 range).
+
+#### Parameters
+
+| Name      | Type                  | Description                                                    |
+| --------- | --------------------- | -------------------------------------------------------------- |
+| `from`    | `LfCanvasPoint`       | - Starting point with x,y in 0-1 range                         |
+| `to`      | `LfCanvasPoint`       | - Ending point with x,y in 0-1 range                           |
+| `options` | `LfCanvasDrawOptions` | - Optional drawing options (color, size, opacity, brush, fill) |
+
+#### Returns
+
+Type: `Promise<void>`
+
+Promise that resolves when the line is drawn
+
+### `drawPath(points: LfCanvasPoint[], options?: LfCanvasDrawOptions) => Promise<void>`
+
+Programmatically draws a path connecting multiple points on the canvas.
+Coordinates are normalized (0-1 range).
+
+#### Parameters
+
+| Name      | Type                  | Description                                                    |
+| --------- | --------------------- | -------------------------------------------------------------- |
+| `points`  | `LfCanvasPoint[]`     | - Array of points with x,y in 0-1 range                        |
+| `options` | `LfCanvasDrawOptions` | - Optional drawing options (color, size, opacity, brush, fill) |
+
+#### Returns
+
+Type: `Promise<void>`
+
+Promise that resolves when the path is drawn
+
+### `drawShape(point: LfCanvasPoint, options?: LfCanvasDrawOptions) => Promise<void>`
+
+Programmatically draws a shape (circle or square) at a specific point.
+Coordinates are normalized (0-1 range).
+
+#### Parameters
+
+| Name      | Type                  | Description                                                    |
+| --------- | --------------------- | -------------------------------------------------------------- |
+| `point`   | `LfCanvasPoint`       | - Center point with x,y in 0-1 range                           |
+| `options` | `LfCanvasDrawOptions` | - Optional drawing options (color, size, opacity, brush, fill) |
+
+#### Returns
+
+Type: `Promise<void>`
+
+Promise that resolves when the shape is drawn
+
+### `drawText(text: string, point: LfCanvasPoint, options?: LfCanvasTextOptions) => Promise<void>`
+
+Programmatically draws text at a specific point on the canvas.
+Coordinates are normalized (0-1 range).
+
+#### Parameters
+
+| Name      | Type                  | Description                                                 |
+| --------- | --------------------- | ----------------------------------------------------------- |
+| `text`    | `string`              | - The text string to draw                                   |
+| `point`   | `LfCanvasPoint`       | - Center point with x,y in 0-1 range                        |
+| `options` | `LfCanvasTextOptions` | - Optional text options (color, fontSize, fontFamily, etc.) |
+
+#### Returns
+
+Type: `Promise<void>`
+
+Promise that resolves when the text is drawn
+
 ### `getCanvas(type?: LfCanvasType) => Promise<HTMLCanvasElement>`
 
 Retrieves the canvas element based on the specified type.

@@ -9,13 +9,16 @@ import {
   LfCanvasBoxing,
   LfCanvasBrush,
   LfCanvasCursor,
+  LfCanvasDrawOptions,
   LfCanvasElement,
   LfCanvasEvent,
   LfCanvasEventPayload,
   LfCanvasInterface,
   LfCanvasOrientation,
+  LfCanvasPoint,
   LfCanvasPoints,
   LfCanvasPropsInterface,
+  LfCanvasTextOptions,
   LfCanvasType,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
@@ -261,6 +264,158 @@ export class LfCanvas implements LfCanvasInterface {
     clear(type);
   }
   /**
+   * Programmatically draws a line between two points on the canvas.
+   * Coordinates are normalized (0-1 range).
+   *
+   * @param from - Starting point with x,y in 0-1 range
+   * @param to - Ending point with x,y in 0-1 range
+   * @param options - Optional drawing options (color, size, opacity, brush, fill)
+   * @returns Promise that resolves when the line is drawn
+   *
+   * @example
+   * // Draw a red line from top-left to bottom-right
+   * canvas.drawLine({ x: 0, y: 0 }, { x: 1, y: 1 }, { color: '#ff0000', size: 5 });
+   */
+  @Method()
+  async drawLine(
+    from: LfCanvasPoint,
+    to: LfCanvasPoint,
+    options?: LfCanvasDrawOptions,
+  ): Promise<void> {
+    this.#drawWithOptions(options, (ctx, width, height) => {
+      ctx.beginPath();
+      ctx.moveTo(from.x * width, from.y * height);
+      ctx.lineTo(to.x * width, to.y * height);
+      ctx.stroke();
+    });
+  }
+  /**
+   * Programmatically draws a path connecting multiple points on the canvas.
+   * Coordinates are normalized (0-1 range).
+   *
+   * @param points - Array of points with x,y in 0-1 range
+   * @param options - Optional drawing options (color, size, opacity, brush, fill)
+   * @returns Promise that resolves when the path is drawn
+   *
+   * @example
+   * // Draw a triangle
+   * canvas.drawPath([
+   *   { x: 0.5, y: 0.1 },
+   *   { x: 0.1, y: 0.9 },
+   *   { x: 0.9, y: 0.9 },
+   *   { x: 0.5, y: 0.1 }
+   * ], { color: '#00ff00', size: 3 });
+   */
+  @Method()
+  async drawPath(
+    points: LfCanvasPoint[],
+    options?: LfCanvasDrawOptions,
+  ): Promise<void> {
+    if (!points || points.length === 0) return;
+
+    this.#drawWithOptions(options, (ctx, width, height) => {
+      ctx.beginPath();
+
+      const first = points[0];
+      ctx.moveTo(first.x * width, first.y * height);
+
+      for (let i = 1; i < points.length; i++) {
+        const p = points[i];
+        ctx.lineTo(p.x * width, p.y * height);
+      }
+
+      ctx.stroke();
+    });
+  }
+  /**
+   * Programmatically draws a shape (circle or square) at a specific point.
+   * Coordinates are normalized (0-1 range).
+   *
+   * @param point - Center point with x,y in 0-1 range
+   * @param options - Optional drawing options (color, size, opacity, brush, fill)
+   * @returns Promise that resolves when the shape is drawn
+   *
+   * @example
+   * // Draw a blue circle at the center
+   * canvas.drawShape({ x: 0.5, y: 0.5 }, { color: '#0000ff', size: 20, brush: 'round' });
+   */
+  @Method()
+  async drawShape(
+    point: LfCanvasPoint,
+    options?: LfCanvasDrawOptions,
+  ): Promise<void> {
+    const brush = options?.brush ?? this.lfBrush;
+    const size = options?.size ?? this.lfSize;
+    const fill = options?.fill ?? true;
+
+    this.#drawWithOptions(options, (ctx, width, height) => {
+      const x = point.x * width;
+      const y = point.y * height;
+
+      ctx.beginPath();
+      if (brush === "round") {
+        ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+      } else {
+        const halfSize = size / 2;
+        ctx.rect(
+          Math.round(x) - halfSize,
+          Math.round(y) - halfSize,
+          size,
+          size,
+        );
+      }
+
+      if (fill) {
+        ctx.fill();
+      } else {
+        ctx.stroke();
+      }
+    });
+  }
+  /**
+   * Programmatically draws text at a specific point on the canvas.
+   * Coordinates are normalized (0-1 range).
+   *
+   * @param text - The text string to draw
+   * @param point - Center point with x,y in 0-1 range
+   * @param options - Optional text options (color, fontSize, fontFamily, etc.)
+   * @returns Promise that resolves when the text is drawn
+   *
+   * @example
+   * // Draw a history index number at center
+   * canvas.drawText('1', { x: 0.5, y: 0.5 }, { fontSize: 24, color: '#ffffff' });
+   */
+  @Method()
+  async drawText(
+    text: string,
+    point: LfCanvasPoint,
+    options?: LfCanvasTextOptions,
+  ): Promise<void> {
+    const { board } = this.#adapter.elements.refs;
+    const ctx = board.getContext("2d");
+    if (!ctx) return;
+
+    const { height, width } = board;
+    const color = options?.color ?? this.lfColor;
+    const opacity = options?.opacity ?? this.lfOpacity;
+    const fontSize = options?.fontSize ?? 16;
+    const fontFamily = options?.fontFamily ?? "Arial";
+    const textAlign = options?.textAlign ?? "center";
+    const textBaseline = options?.textBaseline ?? "middle";
+
+    const x = point.x * width;
+    const y = point.y * height;
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = textBaseline;
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+  /**
    * Retrieves the canvas element based on the specified type.
    * @param type - The type of canvas to retrieve. Defaults to "board".
    * @returns Promise that resolves to the requested HTMLCanvasElement.
@@ -443,6 +598,56 @@ export class LfCanvas implements LfCanvasInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Helper method for programmatic drawing operations.
+   * Sets up the canvas context with the provided options (or defaults),
+   * executes the draw callback, and restores the context.
+   *
+   * @param options - Optional drawing options (color, size, opacity, brush, fill)
+   * @param drawFn - Callback function that performs the actual drawing
+   */
+  #drawWithOptions = (
+    options: LfCanvasDrawOptions | undefined,
+    drawFn: (
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number,
+    ) => void,
+  ) => {
+    const { board } = this.#adapter.elements.refs;
+    const ctx = board.getContext("2d");
+    if (!ctx) return;
+
+    const { height, width } = board;
+    const color = options?.color ?? this.lfColor;
+    const opacity = options?.opacity ?? this.lfOpacity;
+    const size = options?.size ?? this.lfSize;
+    const brush = options?.brush ?? this.lfBrush;
+    const fill = options?.fill ?? true;
+
+    // Save current context state
+    ctx.save();
+
+    // Apply options
+    ctx.globalAlpha = opacity;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.lineCap = brush === "round" ? "round" : "butt";
+    ctx.lineJoin = brush === "round" ? "round" : "miter";
+    ctx.lineWidth = size;
+
+    if (fill) {
+      ctx.fillStyle = color;
+    } else {
+      ctx.strokeStyle = color;
+    }
+    ctx.strokeStyle = color;
+
+    // Execute draw function
+    drawFn(ctx, width, height);
+
+    // Restore context state
+    ctx.restore();
+  };
   /**
    * Initializes the canvas adapter with getters, setters, and toolkit references.
    * Creates the adapter that manages component state and provides helper methods

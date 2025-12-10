@@ -31,12 +31,71 @@ import {
 
 //#region Class
 /**
+ * Options for programmatic drawing operations on the canvas.
+ */
+export interface LfCanvasDrawOptions {
+  /** Brush shape to use. Defaults to component's current lfBrush. */
+  brush?: LfCanvasBrush;
+  /** Color to use. Defaults to component's current lfColor. */
+  color?: string;
+  /** Whether to fill the shape (true) or stroke (false). Defaults to true. */
+  fill?: boolean;
+  /** Opacity (0-1). Defaults to component's current lfOpacity. */
+  opacity?: number;
+  /** Size of the brush/line. Defaults to component's current lfSize. */
+  size?: number;
+}
+/**
+ * Options for programmatic text drawing on the canvas.
+ */
+export interface LfCanvasTextOptions {
+  /** Text color. Defaults to component's current lfColor. */
+  color?: string;
+  /** Font family. Defaults to "Arial". */
+  fontFamily?: string;
+  /** Font size in pixels. Defaults to 16. */
+  fontSize?: number;
+  /** Opacity (0-1). Defaults to component's current lfOpacity. */
+  opacity?: number;
+  /** Text alignment. Defaults to "center". */
+  textAlign?: CanvasTextAlign;
+  /** Text baseline. Defaults to "middle". */
+  textBaseline?: CanvasTextBaseline;
+}
+/**
+ * A point on the canvas with normalized coordinates (0-1 range).
+ */
+export interface LfCanvasPoint {
+  /** X coordinate (0-1, where 0 is left edge, 1 is right edge) */
+  x: number;
+  /** Y coordinate (0-1, where 0 is top edge, 1 is bottom edge) */
+  y: number;
+}
+/**
  * Primary interface implemented by the `lf-canvas` component. It merges the shared component contract with the component-specific props.
  */
 export interface LfCanvasInterface
   extends LfComponent<"LfCanvas">,
     LfCanvasPropsInterface {
   clearCanvas: (type?: LfCanvasType) => Promise<void>;
+  drawLine: (
+    from: LfCanvasPoint,
+    to: LfCanvasPoint,
+    options?: LfCanvasDrawOptions,
+  ) => Promise<void>;
+  drawPath: (
+    points: LfCanvasPoint[],
+    options?: LfCanvasDrawOptions,
+  ) => Promise<void>;
+  drawShape: (
+    point: LfCanvasPoint,
+    options?: LfCanvasDrawOptions,
+  ) => Promise<void>;
+  drawText: (
+    text: string,
+    point: LfCanvasPoint,
+    options?: LfCanvasTextOptions,
+  ) => Promise<void>;
   getCanvas: () => Promise<HTMLCanvasElement>;
   getImage: () => Promise<LfImageElement>;
   resizeCanvas: () => Promise<void>;

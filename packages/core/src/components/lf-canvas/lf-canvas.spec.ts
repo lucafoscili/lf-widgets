@@ -171,4 +171,146 @@ describe("lf-canvas", () => {
       expect(page.root).toBeTruthy();
     });
   });
+
+  describe("Programmatic drawing methods", () => {
+    /**
+     * These tests verify the programmatic drawing API exists.
+     * Full visual testing requires E2E tests with a real browser canvas.
+     * The methods use normalized coordinates (0-1 range) so drawings
+     * are resolution-independent.
+     */
+
+    it("should have drawLine method", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      expect(typeof component.drawLine).toBe("function");
+    });
+
+    it("should have drawPath method", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      expect(typeof component.drawPath).toBe("function");
+    });
+
+    it("should have drawShape method", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      expect(typeof component.drawShape).toBe("function");
+    });
+
+    it("should call drawShape without error", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      // Just verify it doesn't throw - Stencil mock doesn't fully support canvas
+      await expect(
+        component.drawShape({ x: 0.5, y: 0.5 }, { color: "#ff0000", size: 10 }),
+      ).resolves.not.toThrow();
+    });
+
+    it("should call drawLine without error", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      await expect(
+        component.drawLine(
+          { x: 0, y: 0.5 },
+          { x: 1, y: 0.5 },
+          { color: "#00ff00", size: 5 },
+        ),
+      ).resolves.not.toThrow();
+    });
+
+    it("should call drawPath without error", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      await expect(
+        component.drawPath(
+          [
+            { x: 0.5, y: 0.1 },
+            { x: 0.1, y: 0.9 },
+            { x: 0.9, y: 0.9 },
+          ],
+          { color: "#0000ff", size: 3 },
+        ),
+      ).resolves.not.toThrow();
+    });
+
+    it("should handle empty path gracefully", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      await expect(component.drawPath([])).resolves.not.toThrow();
+    });
+
+    it("should use component defaults when no options provided", async () => {
+      const page = await createPage(
+        `<lf-canvas lf-color="#ffff00" lf-size="15"></lf-canvas>`,
+      );
+      const component = page.rootInstance as LfCanvas;
+
+      // Verify props are set correctly
+      expect(component.lfColor).toBe("#ffff00");
+      expect(component.lfSize).toBe(15);
+
+      // Draw without options - should use defaults
+      await expect(
+        component.drawShape({ x: 0.5, y: 0.5 }),
+      ).resolves.not.toThrow();
+    });
+
+    it("should have drawText method", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      expect(typeof component.drawText).toBe("function");
+    });
+
+    it("should call drawText without error", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      await expect(
+        component.drawText(
+          "1",
+          { x: 0.5, y: 0.5 },
+          { fontSize: 24, color: "#ffffff" },
+        ),
+      ).resolves.not.toThrow();
+    });
+
+    it("should call drawText with defaults", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      // Draw text without options - should use defaults
+      await expect(
+        component.drawText("Test", { x: 0.5, y: 0.5 }),
+      ).resolves.not.toThrow();
+    });
+
+    it("should call drawText with all options", async () => {
+      const page = await createPage(`<lf-canvas></lf-canvas>`);
+      const component = page.rootInstance as LfCanvas;
+
+      await expect(
+        component.drawText(
+          "42",
+          { x: 0.25, y: 0.75 },
+          {
+            color: "#00ff00",
+            fontSize: 32,
+            fontFamily: "Verdana",
+            opacity: 0.8,
+            textAlign: "left",
+            textBaseline: "top",
+          },
+        ),
+      ).resolves.not.toThrow();
+    });
+  });
 });
