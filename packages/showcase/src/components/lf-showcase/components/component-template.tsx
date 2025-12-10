@@ -16,7 +16,9 @@ import {
   LfShowcaseData,
   LfShowcaseExample,
   LfShowcaseIds,
+  LfShowcasePlayground,
 } from "../lf-showcase-declarations";
+import { PlaygroundTemplate } from "./playground-template";
 
 type LfTemplateArgs<C extends LfComponentTag> = {
   actions?: LfShowcaseActions;
@@ -26,6 +28,7 @@ type LfTemplateArgs<C extends LfComponentTag> = {
   examples?: LfShowcaseData<C>;
   ids: LfShowcaseIds;
   manager: LfFrameworkInterface;
+  playground?: LfShowcasePlayground;
 };
 
 const fixtureCache = new WeakMap<
@@ -40,11 +43,8 @@ export const ComponentTemplate: FunctionalComponent<{
 }> = ({ showcase, component, manager }) => {
   const { bemClass } = manager.theme;
 
-  const { actions, configuration, documentation, examples } = getCachedFixtures(
-    showcase,
-    component,
-    manager,
-  );
+  const { actions, configuration, documentation, examples, playground } =
+    getCachedFixtures(showcase, component, manager);
 
   const args: LfTemplateArgs<typeof component> = {
     actions,
@@ -54,10 +54,18 @@ export const ComponentTemplate: FunctionalComponent<{
     examples,
     ids: [],
     manager,
+    playground,
   };
 
   return (
     <div class={bemClass("component-template")}>
+      {playground && (
+        <PlaygroundTemplate
+          playground={playground}
+          manager={manager}
+          id={`${component}-playground`}
+        />
+      )}
       <lf-article
         class={bemClass("component-template", "documentation")}
         lfDataset={documentation}

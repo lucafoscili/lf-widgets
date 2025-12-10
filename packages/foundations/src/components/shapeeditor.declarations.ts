@@ -20,6 +20,7 @@ import {
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
+import { LfThemeUIState } from "../framework/theme.declarations";
 import { LfAccordionEventPayload } from "./accordion.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
@@ -27,11 +28,13 @@ import {
   LfMasonryEventPayload,
   LfMasonrySelectedShape,
 } from "./masonry.declarations";
+import { LfProgressbarElement } from "./progressbar.declarations";
 import {
   LF_SHAPEEDITOR_BLOCKS,
   LF_SHAPEEDITOR_EVENTS,
   LF_SHAPEEDITOR_PARTS,
 } from "./shapeeditor.constants";
+import { LfSnackbarElement } from "./snackbar.declarations";
 import { LfSpinnerElement } from "./spinner.declarations";
 import {
   LfTextfieldElement,
@@ -62,10 +65,16 @@ export interface LfShapeeditorInterface
   }>;
   getSettings: () => Promise<LfShapeeditorConfigSettings>;
   reset: () => Promise<void>;
+  resetControls: () => Promise<void>;
+  setPreviewValue: (value: string | null) => Promise<void>;
+  setProgressbar: (
+    state: Partial<LfShapeeditorProgressbarState>,
+  ) => Promise<void>;
   setSettings: (
     settings: LfShapeeditorConfigSettings,
     replace?: boolean,
   ) => Promise<void>;
+  setSnackbar: (state: Partial<LfShapeeditorSnackbarState>) => Promise<void>;
   setSpinnerStatus: (status: boolean) => Promise<void>;
 }
 /**
@@ -97,12 +106,16 @@ export interface LfShapeeditorAdapter
  */
 export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
   details: {
+    apply: () => VNode;
     clearHistory: () => VNode;
     deleteShape: () => VNode;
+    progressbar: () => VNode;
     redo: () => VNode;
+    reset: () => VNode;
     save: () => VNode;
     settings: () => VNode;
     shape: () => VNode;
+    snackbar: () => VNode;
     spinner: () => VNode;
     tree: () => VNode;
     undo: () => VNode;
@@ -120,13 +133,17 @@ export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
   details: {
+    apply: LfButtonElement;
     clearHistory: LfButtonElement;
     deleteShape: LfButtonElement;
     infoIcons: Map<string, HTMLElement>;
+    progressbar: LfProgressbarElement;
     redo: LfButtonElement;
+    reset: LfButtonElement;
     save: LfButtonElement;
     settings: HTMLElement;
     shape: HTMLElement;
+    snackbar: LfSnackbarElement;
     spinner: LfSpinnerElement;
     tree: LfTreeElement;
     undo: LfButtonElement;
@@ -151,6 +168,7 @@ export interface LfShapeeditorAdapterHandlers
       e: CustomEvent | Event,
       controlId: string,
       value: unknown,
+      eventType: LfShapeeditorControlEventType,
     ) => void;
     shape: (e: CustomEvent) => void;
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
@@ -178,6 +196,9 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
   | "manager"
   | "navigation"
   | "parts"
+  | "previewValue"
+  | "progressbar"
+  | "snackbar"
   | "spinnerStatus"
 >;
 /**
@@ -185,7 +206,13 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
  */
 export type LfShapeeditorAdapterInitializerSetters = Pick<
   LfShapeeditorAdapterControllerSetters,
-  "config" | "currentShape" | "history" | "navigation"
+  | "config"
+  | "currentShape"
+  | "history"
+  | "navigation"
+  | "previewValue"
+  | "progressbar"
+  | "snackbar"
 >;
 /**
  * Read-only controller surface exposed by the adapter for integration code.
@@ -215,6 +242,9 @@ export interface LfShapeeditorAdapterControllerGetters
   manager: LfFrameworkInterface;
   navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
   parts: typeof LF_SHAPEEDITOR_PARTS;
+  previewValue: () => string | null;
+  progressbar: () => LfShapeeditorProgressbarState;
+  snackbar: () => LfShapeeditorSnackbarState;
   spinnerStatus: () => boolean;
 }
 /**
@@ -235,6 +265,9 @@ export interface LfShapeeditorAdapterControllerSetters
     pop: (index?: number) => void;
   };
   navigation: { isTreeOpen: (open: boolean) => void; toggleTree: () => void };
+  previewValue: (value: string | null) => void;
+  progressbar: (state: Partial<LfShapeeditorProgressbarState>) => void;
+  snackbar: (state: Partial<LfShapeeditorSnackbarState>) => void;
   spinnerStatus: (active: boolean) => void;
 }
 //#endregion
@@ -258,6 +291,31 @@ export interface LfShapeeditorEventPayload
 export type LfShapeeditorHistory = {
   [index: number]: Array<LfMasonrySelectedShape>;
 };
+
+/**
+ * Event type discriminator for control interactions.
+ * - `input`: Real-time changes during interaction (e.g., sliding a slider)
+ * - `change`: Value commit on interaction end (e.g., mouse release after slider drag)
+ */
+export type LfShapeeditorControlEventType = "input" | "change";
+
+/**
+ * State for the inline snackbar notification.
+ */
+export interface LfShapeeditorSnackbarState {
+  message: string;
+  uiState: LfThemeUIState;
+  visible: boolean;
+}
+
+/**
+ * State for the absolute-positioned progress bar.
+ */
+export interface LfShapeeditorProgressbarState {
+  uiState: LfThemeUIState;
+  value: number;
+  visible: boolean;
+}
 
 /**
  * Primitive value supported by shapeeditor configuration controls.
@@ -450,13 +508,167 @@ export const isLayoutControl = (
 export type LfShapeeditorLayout = LfShapeeditorLayoutItem[];
 
 /**
+ * Internal render item used by the settings panel to process layout configuration.
+ * Either a group (accordion section) or a standalone control.
+ */
+export type LfShapeeditorLayoutRenderItem =
+  | {
+      type: "group";
+      group: LfShapeeditorLayoutGroup;
+      controls: LfShapeeditorControlConfig[];
+    }
+  | { type: "control"; control: LfShapeeditorControlConfig };
+
+/**
+ * Internal render segment used by the settings panel for grouping consecutive accordion sections.
+ * Standalone controls break accordion continuity and are rendered separately.
+ */
+export type LfShapeeditorRenderSegment =
+  | { type: "standalone"; control: LfShapeeditorControlConfig }
+  | {
+      type: "accordion";
+      groups: Array<{
+        group: LfShapeeditorLayoutGroup;
+        controls: LfShapeeditorControlConfig[];
+      }>;
+    };
+
+//#region Behavioral Semantics
+/**
+ * Declares the default preview/commit semantics for a DSL configuration.
+ * This is CONSUMER-FACING metadata - shapeeditor emits events but does not interpret behaviors.
+ *
+ * - `live`: Control events drive preview/commit. Preview on input, commit on change.
+ *   Example: brightness slider, vignette intensity.
+ *
+ * - `configure`: Controls are configuration-only; another trigger commits.
+ *   The `commitTrigger` field specifies what event triggers the commit.
+ *   Example: brush (stroke ends → commit), inpaint (stroke ends → API → commit).
+ *
+ * - `manual`: No auto-preview/commit; requires explicit Apply button click.
+ *   Example: resize, background remover.
+ */
+export type LfShapeeditorBehavior = "live" | "configure" | "manual";
+
+/**
+ * Declares what event triggers a commit for "configure" behaviors.
+ * References events that bubble through the `lf-event` event type.
+ */
+export interface LfShapeeditorCommitTrigger {
+  /**
+   * The source component type that emits the trigger.
+   * - `shape`: The preview shape component (canvas, image, chart, etc.)
+   * - `control`: A specific control in the config panel
+   * - `button`: A button element (typically Apply)
+   */
+  source: "shape" | "control" | "button";
+
+  /**
+   * The event type from the source component that triggers a commit.
+   * For canvas: "stroke" (brush up), "clear", etc.
+   * For controls: "change"
+   * For button: "click"
+   */
+  eventType: string;
+
+  /**
+   * Optional: specific event property to match for disambiguation.
+   * Example: { key: "id", value: "apply-btn" }
+   */
+  match?: { key: string; value: string };
+}
+
+/**
+ * Type guard to check if a DSL has a commit trigger defined.
+ */
+export const hasCommitTrigger = (
+  dsl: LfShapeeditorConfigDsl,
+): dsl is LfShapeeditorConfigDsl & {
+  commitTrigger: LfShapeeditorCommitTrigger;
+} => dsl.commitTrigger !== undefined;
+//#endregion
+
+//#region Configuration DSL
+/**
  * Shapeeditor-agnostic configuration DSL.
- * Consumers provide control definitions and optional layout + defaults.
+ * Consumers provide control definitions, optional layout, defaults, and behavioral metadata.
+ *
+ * The behavioral metadata (`behavior`, `commitTrigger`, `showApplyButton`, `enablePreview`)
+ * is CONSUMER-FACING - the shapeeditor component does NOT interpret these values.
+ * Instead, consumers use them to decide how to handle shapeeditor events.
+ *
+ * @example
+ * ```typescript
+ * // Live behavior: preview on input, commit on change
+ * const brightnessDsl: LfShapeeditorConfigDsl = {
+ *   controls: [...],
+ *   behavior: "live",
+ *   enablePreview: true,
+ * };
+ *
+ * // Configure behavior: controls are config, stroke triggers commit
+ * const brushDsl: LfShapeeditorConfigDsl = {
+ *   controls: [...],
+ *   behavior: "configure",
+ *   commitTrigger: { source: "shape", eventType: "stroke" },
+ * };
+ *
+ * // Manual behavior: no auto-preview, requires Apply button
+ * const resizeDsl: LfShapeeditorConfigDsl = {
+ *   controls: [...],
+ *   behavior: "manual",
+ *   showApplyButton: true,
+ *   enablePreview: false,
+ * };
+ * ```
  */
 export interface LfShapeeditorConfigDsl {
+  /** Control definitions for the configuration panel. */
   controls: LfShapeeditorControlConfig[];
+
+  /** Initial/default values for controls, keyed by control id. */
   defaultSettings?: LfShapeeditorConfigSettings;
+
+  /** Optional layout grouping for controls. */
   layout?: LfShapeeditorLayout;
+
+  // ─── Behavioral Metadata (Consumer-Facing) ────────────────────────────────
+
+  /**
+   * Default behavior for this DSL. Guides consumer on how to handle events.
+   * - `live`: Preview on input, commit on change (default)
+   * - `configure`: Controls are config-only, commitTrigger specifies commit event
+   * - `manual`: No auto-preview/commit, requires Apply button
+   * @default "live"
+   */
+  behavior?: LfShapeeditorBehavior;
+
+  /**
+   * What triggers a commit for "configure" behaviors.
+   * Ignored if behavior is "live" or "manual".
+   */
+  commitTrigger?: LfShapeeditorCommitTrigger;
+
+  /**
+   * If true, shapeeditor should display the Apply button.
+   * Typically used with behavior: "manual".
+   * @default false
+   */
+  showApplyButton?: boolean;
+
+  /**
+   * If true, shapeeditor should display the Reset button.
+   * Allows resetting controls to their default values.
+   * @default true
+   */
+  showResetButton?: boolean;
+
+  /**
+   * If true, consumer should enable live preview during control interaction.
+   * Typically used with behavior: "live".
+   * @default true for "live", false otherwise
+   */
+  enablePreview?: boolean;
 }
 //#endregion
 

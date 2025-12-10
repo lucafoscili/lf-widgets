@@ -71,13 +71,17 @@ export const createHandlers = (
 export const createRefs = (): LfShapeeditorAdapterRefs => {
   return {
     details: {
+      apply: null,
       clearHistory: null,
       deleteShape: null,
       infoIcons: new Map<string, HTMLElement>(),
+      progressbar: null,
       redo: null,
+      reset: null,
       save: null,
       settings: null,
       shape: null,
+      snackbar: null,
       spinner: null,
       tree: null,
       undo: null,

@@ -43,6 +43,9 @@ export const IMAGE_EDITOR_BRIGHTNESS_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(brightnessControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -74,6 +77,9 @@ export const IMAGE_EDITOR_CONTRAST_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(contrastControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -101,6 +107,9 @@ export const IMAGE_EDITOR_SATURATION_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(saturationControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -135,6 +144,9 @@ export const IMAGE_EDITOR_DESATURATE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(desaturateControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -161,6 +173,9 @@ export const IMAGE_EDITOR_CLARITY_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(clarityControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -215,6 +230,9 @@ export const IMAGE_EDITOR_UNSHARP_MASK_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(unsharpMaskControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -256,6 +274,10 @@ export const IMAGE_EDITOR_RESIZE_EDGE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(resizeEdgeControls),
+  // Behavioral metadata
+  behavior: "manual",
+  showApplyButton: true,
+  enablePreview: false,
 };
 //#endregion
 
@@ -316,5 +338,9 @@ export const IMAGE_EDITOR_RESIZE_FREE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(resizeFreeControls),
+  // Behavioral metadata
+  behavior: "manual",
+  showApplyButton: true,
+  enablePreview: false,
 };
 //#endregion

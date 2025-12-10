@@ -170,6 +170,10 @@ export const IMAGE_EDITOR_INPAINT_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(inpaintControls),
+  // Behavioral metadata: controls are config, stroke triggers API call → commit
+  behavior: "configure",
+  commitTrigger: { source: "shape", eventType: "stroke" },
+  enablePreview: false,
 };
 //#endregion
 
@@ -273,5 +277,9 @@ export const IMAGE_EDITOR_OUTPAINT_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(outpaintControls),
+  // Behavioral metadata: controls are config, stroke triggers API call → commit
+  behavior: "configure",
+  commitTrigger: { source: "shape", eventType: "stroke" },
+  enablePreview: false,
 };
 //#endregion

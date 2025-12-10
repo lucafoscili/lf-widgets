@@ -327,6 +327,15 @@ export const IMAGE_EDITOR_CANVAS_DATASET = (
 /**
  * Metadata about each filter type for UI purposes.
  * Useful for building filter selection UIs outside the tree.
+ *
+ * @remarks
+ * The `hasCanvasAction` and `manualApply` fields are now **deprecated**.
+ * Behavioral semantics should be derived from the DSL's `behavior` and `commitTrigger` fields:
+ *
+ * - `hasCanvasAction` → DSL has `behavior: "configure"` with `commitTrigger.source: "shape"`
+ * - `manualApply` → DSL has `behavior: "manual"` with `showApplyButton: true`
+ *
+ * These fields are kept for backwards compatibility but will be removed in a future version.
  */
 export interface ImageEditorFilterMeta {
   id: string;
@@ -334,9 +343,13 @@ export interface ImageEditorFilterMeta {
   description: string;
   category: "drawing" | "diffusion" | "cutout" | "adjustment" | "effect";
   icon: string;
-  /** If true, this filter requires a canvas action (brush stroke) */
+  /**
+   * @deprecated Derive from DSL: `behavior: "configure"` + `commitTrigger.source: "shape"`
+   */
   hasCanvasAction?: boolean;
-  /** If true, changes require manual "Apply" (not auto-preview) */
+  /**
+   * @deprecated Derive from DSL: `behavior: "manual"` + `showApplyButton: true`
+   */
   manualApply?: boolean;
 }
 
@@ -367,7 +380,7 @@ export const IMAGE_EDITOR_FILTER_METADATA: ImageEditorFilterMeta[] = [
     category: "diffusion",
     icon: "wand",
     hasCanvasAction: true,
-    manualApply: true,
+    // Note: manualApply removed - stroke triggers commit (via commitTrigger in DSL)
   },
   {
     id: "outpaint",
@@ -376,7 +389,7 @@ export const IMAGE_EDITOR_FILTER_METADATA: ImageEditorFilterMeta[] = [
     category: "diffusion",
     icon: "arrow-autofit-content",
     hasCanvasAction: true,
-    manualApply: true,
+    // Note: manualApply removed - stroke triggers commit (via commitTrigger in DSL)
   },
 
   // Cutout

@@ -158,10 +158,34 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     position: relative;
   }
 
+  &__progressbar {
+    & {
+      @include lf-el-transition("slow-start");
+      height: 1em;
+      left: 0;
+      opacity: 1;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      z-index: 30;
+    }
+
+    &--hidden {
+      opacity: 0;
+    }
+  }
+
   &__shape {
     max-height: 100%;
     max-width: 100%;
     overflow: hidden;
+  }
+
+  &__snackbar {
+    border-bottom: 1px solid var(--lf-color-border);
+    max-width: 100%;
+    width: 100%;
+    z-index: 20;
   }
 
   &__spinner {
@@ -182,5 +206,6 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   &__settings {
     grid-area: settings;
     overflow: auto;
+    position: relative;
   }
 }

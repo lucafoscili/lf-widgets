@@ -129,6 +129,37 @@ export const load = async (adapter: LfShapeeditorAdapter) => {
 };
 //#endregion
 
+//#region Reset controls
+/**
+ * Resets the configuration controls to their default values.
+ * Builds default settings from control definitions and merges with current settings,
+ * preserving any settings not defined in the current control set.
+ *
+ * @param adapter - The shape editor adapter instance containing controller and config state
+ * @returns A promise that resolves when the reset operation is complete
+ */
+export const resetControls = async (adapter: LfShapeeditorAdapter) => {
+  const currentSettings = adapter.controller.get.config.settings();
+  const controls = adapter.controller.get.config.controls();
+
+  // Build default settings from control definitions
+  const defaultSettings: Record<string, string | number | boolean> = {};
+  for (const ctrl of controls) {
+    if ("defaultValue" in ctrl) {
+      defaultSettings[ctrl.id] = ctrl.defaultValue;
+    }
+  }
+
+  // Reset to defaults, preserving only settings not in current controls
+  const resetSettings = { ...currentSettings };
+  for (const key of Object.keys(defaultSettings)) {
+    resetSettings[key] = defaultSettings[key];
+  }
+
+  adapter.controller.set.config.settings(resetSettings);
+};
+//#endregion
+
 //#region Redo
 /**
  * Performs a redo operation on the shape editor.

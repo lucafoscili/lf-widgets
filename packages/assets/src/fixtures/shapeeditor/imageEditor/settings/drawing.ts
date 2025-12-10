@@ -43,6 +43,10 @@ export const IMAGE_EDITOR_BRUSH_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(brushControls),
+  // Behavioral metadata: controls are config, stroke end triggers commit
+  behavior: "configure",
+  commitTrigger: { source: "shape", eventType: "stroke" },
+  enablePreview: false,
 };
 //#endregion
 
@@ -86,5 +90,9 @@ export const IMAGE_EDITOR_LINE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(lineControls),
+  // Behavioral metadata: controls are config, stroke end triggers commit
+  behavior: "configure",
+  commitTrigger: { source: "shape", eventType: "stroke" },
+  enablePreview: false,
 };
 //#endregion

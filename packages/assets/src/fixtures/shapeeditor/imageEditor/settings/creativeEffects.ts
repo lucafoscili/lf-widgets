@@ -37,6 +37,9 @@ export const IMAGE_EDITOR_BLEND_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(blendControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -90,6 +93,9 @@ export const IMAGE_EDITOR_BLOOM_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(bloomControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -139,6 +145,9 @@ export const IMAGE_EDITOR_FILM_GRAIN_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(filmGrainControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -174,6 +183,9 @@ export const IMAGE_EDITOR_GAUSSIAN_BLUR_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(gaussianBlurControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -200,6 +212,9 @@ export const IMAGE_EDITOR_SEPIA_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(sepiaControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -259,6 +274,9 @@ export const IMAGE_EDITOR_SPLIT_TONE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(splitToneControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -319,6 +337,9 @@ export const IMAGE_EDITOR_TILT_SHIFT_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(tiltShiftControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -362,6 +383,9 @@ export const IMAGE_EDITOR_VIBRANCE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(vibranceControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion
 
@@ -416,5 +440,8 @@ export const IMAGE_EDITOR_VIGNETTE_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(vignetteControls),
+  // Behavioral metadata
+  behavior: "live",
+  enablePreview: true,
 };
 //#endregion

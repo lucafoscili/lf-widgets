@@ -35,5 +35,9 @@ export const IMAGE_EDITOR_BACKGROUND_REMOVER_DSL: LfShapeeditorConfigDsl = {
     },
   ],
   defaultSettings: extractDefaults(backgroundRemoverControls),
+  // Behavioral metadata: requires explicit apply (AI processing)
+  behavior: "manual",
+  showApplyButton: true,
+  enablePreview: false,
 };
 //#endregion

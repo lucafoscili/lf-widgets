@@ -8,7 +8,10 @@ import {
   LfShapeeditorAdapter,
   LfShapeeditorAdapterJsx,
   LfShapeeditorControlConfig,
+  LfShapeeditorControlEventType,
   LfShapeeditorLayoutGroup,
+  LfShapeeditorLayoutRenderItem,
+  LfShapeeditorRenderSegment,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
@@ -19,51 +22,28 @@ export const prepDetails = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterJsx["details"] => {
   return {
-    // #region Shape
-    shape: () => {
+    // #region Apply
+    apply: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, history, lfAttribute, manager } =
-        controller.get;
+      const { blocks, cyAttributes, manager } = controller.get;
       const { details } = elements.refs;
-      const { shape } = handlers.details;
-      const { currentSnapshot } = history;
-      const { lfShape } = compInstance;
+      const { button } = handlers.details;
       const { assignRef, theme } = manager;
       const { bemClass } = theme;
 
-      const snapshot = currentSnapshot();
-      if (!snapshot) {
-        return;
-      }
-
-      // Use the original cell from the snapshot (contains full props like lfDataset, lfSeries, etc.)
-      // Fall back to a minimal cell with just value for backwards compatibility
-      const originalCell = snapshot.shape?.shape;
-      const cell = (
-        originalCell
-          ? { ...originalCell, shape: lfShape }
-          : {
-              shape: lfShape,
-              value: snapshot.value,
-              lfValue: snapshot.value,
-            }
-      ) as LfDataCell<LfDataShapes>;
-
       return (
-        <div
-          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.shape)}
-          data-lf={lfAttribute.fadeIn}
-          id={IDS.details.shape}
-          ref={assignRef(details, "shape")}
-        >
-          <LfShape
-            cell={cell}
-            eventDispatcher={async (e) => shape(e)}
-            framework={manager}
-            index={snapshot.shape?.index ?? 0}
-            shape={lfShape}
-          />
-        </div>
+        <lf-button
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.apply)}
+          data-cy={cyAttributes.button}
+          id={IDS.details.apply}
+          lfIcon={"--lf-icon-success"}
+          lfLabel="Apply"
+          lfStretchX={true}
+          lfStyling="flat"
+          lfUiState="success"
+          onLf-button-event={button}
+          ref={assignRef(details, "apply")}
+        ></lf-button>
       );
     },
     // #endregion
@@ -129,6 +109,37 @@ export const prepDetails = (
     },
     // #endregion
 
+    // #region Progressbar
+    progressbar: () => {
+      const { controller, elements } = getAdapter();
+      const { blocks, lfAttribute, manager, progressbar } = controller.get;
+      const { details } = elements.refs;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const state = progressbar();
+
+      return (
+        <lf-progressbar
+          class={bemClass(
+            blocks.detailsGrid._,
+            blocks.detailsGrid.progressbar,
+            { hidden: !state.visible },
+          )}
+          data-lf={lfAttribute.fadeIn}
+          id={IDS.details.progressbar}
+          lfAnimated={true}
+          lfCenteredLabel={true}
+          lfLabel={` `}
+          lfUiSize="xsmall"
+          lfUiState="info"
+          lfValue={state.value}
+          ref={assignRef(details, "progressbar")}
+        ></lf-progressbar>
+      );
+    },
+    // #endregion
+
     // #region Redo
     redo: () => {
       const { controller, elements, handlers } = getAdapter();
@@ -157,6 +168,32 @@ export const prepDetails = (
           lfUiState={isDisabled ? "disabled" : "primary"}
           onLf-button-event={button}
           ref={assignRef(details, "redo")}
+        ></lf-button>
+      );
+    },
+    // #endregion
+
+    // #region Reset
+    reset: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, manager } = controller.get;
+      const { details } = elements.refs;
+      const { button } = handlers.details;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      return (
+        <lf-button
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.reset)}
+          data-cy={cyAttributes.button}
+          id={IDS.details.reset}
+          lfIcon={"--lf-icon-refresh"}
+          lfLabel="Reset"
+          lfStretchX={true}
+          lfStyling="flat"
+          lfUiState="warning"
+          onLf-button-event={button}
+          ref={assignRef(details, "reset")}
         ></lf-button>
       );
     },
@@ -196,6 +233,69 @@ export const prepDetails = (
     },
     // #endregion
 
+    // #region Shape
+    shape: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const {
+        blocks,
+        compInstance,
+        history,
+        lfAttribute,
+        manager,
+        previewValue,
+      } = controller.get;
+      const { details } = elements.refs;
+      const { shape } = handlers.details;
+      const { currentSnapshot } = history;
+      const { lfShape } = compInstance;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const snapshot = currentSnapshot();
+      if (!snapshot) {
+        return;
+      }
+
+      // Use previewValue when set (live preview), otherwise use snapshot value
+      const displayValue = previewValue() ?? snapshot.value;
+
+      // Use the original cell from the snapshot (contains full props like lfDataset, lfSeries, etc.)
+      // Fall back to a minimal cell with just value for backwards compatibility
+      const originalCell = snapshot.shape?.shape;
+      const cell = (
+        originalCell
+          ? {
+              ...originalCell,
+              shape: lfShape,
+              value: displayValue,
+              lfValue: displayValue,
+            }
+          : {
+              shape: lfShape,
+              value: displayValue,
+              lfValue: displayValue,
+            }
+      ) as LfDataCell<LfDataShapes>;
+
+      return (
+        <div
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.shape)}
+          data-lf={lfAttribute.fadeIn}
+          id={IDS.details.shape}
+          ref={assignRef(details, "shape")}
+        >
+          <LfShape
+            cell={cell}
+            eventDispatcher={async (e) => shape(e)}
+            framework={manager}
+            index={snapshot.shape?.index ?? 0}
+            shape={lfShape}
+          />
+        </div>
+      );
+    },
+    // #endregion
+
     // #region Spinner
     spinner: () => {
       const { controller, elements } = getAdapter();
@@ -215,6 +315,34 @@ export const prepDetails = (
           lfLayout={14}
           ref={assignRef(details, "save")}
         ></lf-spinner>
+      );
+    },
+    // #endregion
+
+    // #region Snackbar
+    snackbar: () => {
+      const { controller, elements } = getAdapter();
+      const { blocks, lfAttribute, manager, snackbar } = controller.get;
+      const { details } = elements.refs;
+      const { assignRef, theme } = manager;
+      const { bemClass } = theme;
+
+      const state = snackbar();
+      if (!state.visible) {
+        return null;
+      }
+
+      return (
+        <lf-snackbar
+          class={bemClass(blocks.detailsGrid._, blocks.detailsGrid.snackbar)}
+          data-lf={lfAttribute.fadeIn}
+          id={IDS.details.snackbar}
+          lfIcon={"--lf-icon-info"}
+          lfMessage={state.message}
+          lfPosition="inline"
+          lfUiState={state.uiState}
+          ref={assignRef(details, "snackbar")}
+        ></lf-snackbar>
       );
     },
     // #endregion
@@ -309,7 +437,7 @@ export const prepDetails = (
         createControl(
           config,
           settings[config.id],
-          (e, id, value) => controlChange(e, id, value),
+          (e, id, value, eventType) => controlChange(e, id, value, eventType),
           adapter,
         );
 
@@ -317,20 +445,20 @@ export const prepDetails = (
       const findControl = (id: string) => controls.find((c) => c.id === id);
 
       // Process layout into renderable items (mixed groups and standalone controls)
-      type LayoutRenderItem =
-        | { type: "group"; group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }
-        | { type: "control"; control: LfShapeeditorControlConfig };
-
-      const layoutItems: LayoutRenderItem[] =
+      const layoutItems: LfShapeeditorLayoutRenderItem[] =
         layout && layout.length
           ? layout
-              .map((item): LayoutRenderItem | null => {
+              .map((item): LfShapeeditorLayoutRenderItem | null => {
                 if (isLayoutGroup(item)) {
                   // Group: collect all controls for this accordion section
                   const groupControls = item.controlIds
                     .map(findControl)
                     .filter((c): c is LfShapeeditorControlConfig => !!c);
-                  return { type: "group", group: item, controls: groupControls };
+                  return {
+                    type: "group",
+                    group: item,
+                    controls: groupControls,
+                  };
                 } else if (isLayoutControl(item)) {
                   // Standalone control
                   const ctrl = findControl(item.controlId);
@@ -338,36 +466,47 @@ export const prepDetails = (
                 }
                 return null;
               })
-              .filter((item): item is LayoutRenderItem => item !== null)
+              .filter(
+                (item): item is LfShapeeditorLayoutRenderItem => item !== null,
+              )
           : [
               // Fallback: wrap all controls in a default group
               {
                 type: "group" as const,
-                group: { id: "default", label: "Settings", controlIds: controls.map((c) => c.id) },
+                group: {
+                  id: "default",
+                  label: "Settings",
+                  controlIds: controls.map((c) => c.id),
+                },
                 controls,
               },
             ];
 
       // Group consecutive groups together for accordion rendering
       // This preserves layout order while keeping accordion functionality
-      type RenderSegment =
-        | { type: "standalone"; control: LfShapeeditorControlConfig }
-        | { type: "accordion"; groups: Array<{ group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }> };
-
-      const segments: RenderSegment[] = [];
-      let currentAccordionGroups: Array<{ group: LfShapeeditorLayoutGroup; controls: LfShapeeditorControlConfig[] }> = [];
+      const segments: LfShapeeditorRenderSegment[] = [];
+      let currentAccordionGroups: Array<{
+        group: LfShapeeditorLayoutGroup;
+        controls: LfShapeeditorControlConfig[];
+      }> = [];
 
       for (const item of layoutItems) {
         if (item.type === "control") {
           // Flush any accumulated groups into an accordion segment
           if (currentAccordionGroups.length > 0) {
-            segments.push({ type: "accordion", groups: currentAccordionGroups });
+            segments.push({
+              type: "accordion",
+              groups: currentAccordionGroups,
+            });
             currentAccordionGroups = [];
           }
           segments.push({ type: "standalone", control: item.control });
         } else {
           // Accumulate groups for accordion
-          currentAccordionGroups.push({ group: item.group, controls: item.controls });
+          currentAccordionGroups.push({
+            group: item.group,
+            controls: item.controls,
+          });
         }
       }
       // Flush remaining groups
@@ -468,6 +607,7 @@ const createControl = (
     e: CustomEvent | Event,
     controlId: string,
     value: string | number | boolean,
+    eventType: LfShapeeditorControlEventType,
   ) => void,
   adapter: LfShapeeditorAdapter,
 ): VNode => {
@@ -495,7 +635,7 @@ const createControl = (
             lfValue={value as boolean}
             onLf-checkbox-event={(e) => {
               if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+                onChange(e, config.id, e.detail.comp.lfValue, "change");
               }
             }}
           ></lf-checkbox>
@@ -516,8 +656,9 @@ const createControl = (
             lfLabel={config.label}
             lfValue={String(value)}
             onLf-textfield-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
+              const { eventType } = e.detail;
+              if (eventType === "input" || eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue, eventType);
               }
             }}
           ></lf-textfield>
@@ -541,7 +682,7 @@ const createControl = (
             lfValue={value as string}
             onLf-multiinput-event={(e) => {
               if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+                onChange(e, config.id, e.detail.comp.lfValue, "change");
               }
             }}
           ></lf-multiinput>
@@ -565,8 +706,14 @@ const createControl = (
             lfLabel={config.label}
             lfValue={String(value)}
             onLf-textfield-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, parseFloat(e.detail.comp.lfValue) || 0);
+              const { eventType } = e.detail;
+              if (eventType === "input" || eventType === "change") {
+                onChange(
+                  e,
+                  config.id,
+                  parseFloat(e.detail.comp.lfValue) || 0,
+                  eventType,
+                );
               }
             }}
           ></lf-textfield>
@@ -591,7 +738,7 @@ const createControl = (
             lfValue={value as string}
             onLf-select-event={(e) => {
               if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+                onChange(e, config.id, e.detail.comp.lfValue, "change");
               }
             }}
           ></lf-select>
@@ -613,8 +760,9 @@ const createControl = (
             lfStep={config.step}
             lfValue={value as number}
             onLf-slider-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+              const { eventType } = e.detail;
+              if (eventType === "input" || eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue, eventType);
               }
             }}
           ></lf-slider>
@@ -632,8 +780,9 @@ const createControl = (
             lfLabel={config.label}
             lfValue={value as string}
             onLf-textfield-event={(e) => {
-              if (e.detail.eventType === "input") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+              const { eventType } = e.detail;
+              if (eventType === "input" || eventType === "change") {
+                onChange(e, config.id, e.detail.comp.lfValue, eventType);
               }
             }}
           ></lf-textfield>
@@ -654,7 +803,7 @@ const createControl = (
             lfValue={value as boolean}
             onLf-toggle-event={(e) => {
               if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue);
+                onChange(e, config.id, e.detail.comp.lfValue, "change");
               }
             }}
           ></lf-toggle>

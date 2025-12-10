@@ -24,7 +24,9 @@ import {
   LfShapeeditorLayout,
   LfShapeeditorLoadCallback,
   LfShapeeditorNavigation,
+  LfShapeeditorProgressbarState,
   LfShapeeditorPropsInterface,
+  LfShapeeditorSnackbarState,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -46,6 +48,7 @@ import {
   clearSelection,
   newShape,
   parseConfigDslFromNode,
+  resetControls,
   updateValue,
 } from "./helpers.utils";
 import { createAdapter } from "./lf-shapeeditor-adapter";
@@ -138,6 +141,27 @@ export class LfShapeeditor implements LfShapeeditorInterface {
    * IDs of expanded accordion groups in the settings panel.
    */
   @State() expandedSettingsGroups: string[] = [];
+  /**
+   * Temporary preview value that overrides the current snapshot when set.
+   * Used for live preview during control interactions without creating history entries.
+   */
+  @State() previewValue: string | null = null;
+  /**
+   * State for the absolute-positioned progress bar.
+   */
+  @State() progressbarState: LfShapeeditorProgressbarState = {
+    uiState: "info",
+    value: 0,
+    visible: false,
+  };
+  /**
+   * State for the inline snackbar notification.
+   */
+  @State() snackbarState: LfShapeeditorSnackbarState = {
+    message: "",
+    uiState: "info",
+    visible: false,
+  };
   //#endregion
 
   //#region Props
@@ -358,6 +382,14 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     await clearSelection(this.#adapter);
   }
   /**
+   * Resets all controls to their default values as defined in the control configurations.
+   * Only resets controls that have a defaultValue defined.
+   */
+  @Method()
+  async resetControls(): Promise<void> {
+    await resetControls(this.#adapter);
+  }
+  /**
    * Updates the configuration settings programmatically.
    * @param {LfShapeeditorConfigSettings} settings - The settings to merge or replace.
    * @param {boolean} replace - If true, replaces all settings; if false, merges with existing.
@@ -379,6 +411,33 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   @Method()
   async setSpinnerStatus(status: boolean): Promise<void> {
     this.isSpinnerActive = status;
+  }
+  /**
+   * Updates the progress bar state.
+   * @param {Partial<LfShapeeditorProgressbarState>} state - The progress bar state to merge.
+   */
+  @Method()
+  async setProgressbar(
+    state: Partial<LfShapeeditorProgressbarState>,
+  ): Promise<void> {
+    this.progressbarState = { ...this.progressbarState, ...state };
+  }
+  /**
+   * Sets a temporary preview value that overrides the current snapshot.
+   * Pass null to clear the preview and show the actual snapshot value.
+   * @param {string | null} value - The preview value to display, or null to clear.
+   */
+  @Method()
+  async setPreviewValue(value: string | null): Promise<void> {
+    this.previewValue = value;
+  }
+  /**
+   * Updates the snackbar state.
+   * @param {Partial<LfShapeeditorSnackbarState>} state - The snackbar state to merge.
+   */
+  @Method()
+  async setSnackbar(state: Partial<LfShapeeditorSnackbarState>): Promise<void> {
+    this.snackbarState = { ...this.snackbarState, ...state };
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -429,6 +488,9 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           isTreeOpen: () => this.isNavigationTreeOpen,
         },
         parts: this.#p,
+        previewValue: () => this.previewValue,
+        progressbar: () => this.progressbarState,
+        snackbar: () => this.snackbarState,
         spinnerStatus: () => this.isSpinnerActive,
       },
       {
@@ -487,6 +549,15 @@ export class LfShapeeditor implements LfShapeeditorInterface {
             this.isNavigationTreeOpen = !this.isNavigationTreeOpen;
           },
         },
+        previewValue: (value) => {
+          this.previewValue = value;
+        },
+        progressbar: (state) => {
+          this.progressbarState = { ...this.progressbarState, ...state };
+        },
+        snackbar: (state) => {
+          this.snackbarState = { ...this.snackbarState, ...state };
+        },
       },
       () => this.#adapter,
     );
@@ -513,12 +584,16 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
     const { detailsGrid } = this.#b;
     const {
+      apply,
       clearHistory,
       deleteShape,
+      progressbar,
       redo,
+      reset,
       save,
       settings,
       shape,
+      snackbar,
       spinner,
       tree,
       undo,
@@ -529,8 +604,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         <div class={bemClass(detailsGrid._, detailsGrid.preview)}>
           {shape()}
           {spinner()}
+          {progressbar()}
         </div>
         <div class={bemClass(detailsGrid._, detailsGrid.actions)}>
+          {reset()}
+          {apply()}
           {deleteShape()}
           {clearHistory()}
           {undo()}
@@ -539,6 +617,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         </div>
         {tree()}
         <div class={bemClass(detailsGrid._, detailsGrid.settings)}>
+          {snackbar()}
           {settings()}
         </div>
       </div>

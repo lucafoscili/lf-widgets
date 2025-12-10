@@ -9,6 +9,7 @@ import {
   deleteShape,
   parseConfigDslFromNode,
   redo,
+  resetControls,
   save,
   toggleButtonSpinner,
   undo,
@@ -49,6 +50,11 @@ export const prepDetailsHandlers = (
       switch (eventType) {
         case "click":
           switch (id) {
+            case IDS.details.apply:
+              toggleButtonSpinner(comp, async () => {
+                c.onLfEvent(e, "apply");
+              });
+              break;
             case IDS.details.clearHistory:
               const index = currentShape().shape.index;
               const cb = async () => clearHistory(adapter, index);
@@ -60,7 +66,12 @@ export const prepDetailsHandlers = (
             case IDS.details.redo:
               toggleButtonSpinner(comp, () => redo(adapter));
               break;
-
+            case IDS.details.reset:
+              toggleButtonSpinner(comp, async () => {
+                await resetControls(adapter);
+                c.onLfEvent(e, "reset");
+              });
+              break;
             case IDS.details.save:
               toggleButtonSpinner(comp, () => save(adapter));
               break;
@@ -110,7 +121,7 @@ export const prepDetailsHandlers = (
     //#endregion
 
     //#region Control
-    controlChange: (e, controlId, value) => {
+    controlChange: (e, controlId, value, eventType) => {
       const adapter = getAdapter();
       const { compInstance, config } = adapter.controller.get;
 
@@ -123,7 +134,11 @@ export const prepDetailsHandlers = (
 
       adapter.controller.set.config.settings(currentSettings);
 
-      comp.onLfEvent(e, "lf-event");
+      // Emit different event types based on control interaction:
+      // - "input" → "preview" (real-time preview without snapshot)
+      // - "change" → "change" (commit value, may capture snapshot)
+      const shapeeditorEventType = eventType === "input" ? "preview" : "change";
+      comp.onLfEvent(e, shapeeditorEventType);
     },
     //#endregion
   };

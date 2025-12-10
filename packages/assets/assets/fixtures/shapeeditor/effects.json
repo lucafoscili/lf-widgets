@@ -149,7 +149,12 @@
           "label": "Beam Color",
           "description": "Color of the spotlight beam",
           "defaultValue": "#ffffff",
-          "swatches": ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"]
+          "swatches": [
+            "#ffffff",
+            "#fff5e6",
+            "#e6f3ff",
+            "#fff0f5"
+          ]
         },
         {
           "id": "surfaceGlow",
@@ -320,7 +325,12 @@
             "label": "Beam Color",
             "description": "Color of the spotlight beam",
             "defaultValue": "#ffffff",
-            "swatches": ["#ffffff", "#fff5e6", "#e6f3ff", "#fff0f5"]
+            "swatches": [
+              "#ffffff",
+              "#fff5e6",
+              "#e6f3ff",
+              "#fff0f5"
+            ]
           },
           {
             "id": "surfaceGlow",
@@ -426,12 +436,21 @@
           {
             "id": "beam",
             "label": "Beam",
-            "controlIds": ["beam", "color", "angle", "intensity", "originX"]
+            "controlIds": [
+              "beam",
+              "color",
+              "angle",
+              "intensity",
+              "originX"
+            ]
           },
           {
             "id": "surface",
             "label": "Surface",
-            "controlIds": ["surfaceGlow", "surfaceGlowIntensity"]
+            "controlIds": [
+              "surfaceGlow",
+              "surfaceGlowIntensity"
+            ]
           },
           {
             "id": "behaviour",
@@ -446,7 +465,11 @@
           {
             "id": "trigger",
             "label": "Trigger & Timing",
-            "controlIds": ["trigger", "fadeIn_duration", "fadeOut_duration"]
+            "controlIds": [
+              "trigger",
+              "fadeIn_duration",
+              "fadeOut_duration"
+            ]
           }
         ],
         "defaultSettings": {
@@ -758,7 +781,12 @@
           {
             "id": "glow",
             "label": "Glow",
-            "controlIds": ["mode", "intensity", "pulseSpeed", "desync"]
+            "controlIds": [
+              "mode",
+              "intensity",
+              "pulseSpeed",
+              "desync"
+            ]
           },
           {
             "id": "reflection",
@@ -862,7 +890,9 @@
           {
             "id": "settings",
             "label": "Settings",
-            "controlIds": ["intensity"]
+            "controlIds": [
+              "intensity"
+            ]
           }
         ],
         "defaultSettings": {
@@ -1016,12 +1046,18 @@
           {
             "id": "animation",
             "label": "Animation",
-            "controlIds": ["duration", "scale"]
+            "controlIds": [
+              "duration",
+              "scale"
+            ]
           },
           {
             "id": "shape",
             "label": "Shape",
-            "controlIds": ["autoSurfaceRadius", "borderRadius"]
+            "controlIds": [
+              "autoSurfaceRadius",
+              "borderRadius"
+            ]
           }
         ],
         "defaultSettings": {

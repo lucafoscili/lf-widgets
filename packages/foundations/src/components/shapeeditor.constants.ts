@@ -5,15 +5,20 @@ export const LF_SHAPEEDITOR_BLOCKS = {
   detailsGrid: {
     _: "details-grid",
     actions: "actions",
+    apply: "apply",
     preview: "preview",
     clearHistory: "clear-history",
+    controlActions: "control-actions",
     controlItem: "control-item",
     delete: "delete",
     infoIcon: "info-icon",
+    progressbar: "progressbar",
     redo: "details-redo",
+    reset: "reset",
     commitChanges: "commit-changes",
     shape: "shape",
     settings: "settings",
+    snackbar: "snackbar",
     spinner: "spinner",
     standaloneControl: "standalone-control",
     tree: "tree",
@@ -33,17 +38,29 @@ export const LF_SHAPEEDITOR_BLOCKS = {
 //#endregion
 
 //#region Events
-export const LF_SHAPEEDITOR_EVENTS = ["lf-event", "ready", "unmount"] as const;
+export const LF_SHAPEEDITOR_EVENTS = [
+  "apply",
+  "change",
+  "lf-event",
+  "preview",
+  "ready",
+  "reset",
+  "unmount",
+] as const;
 //#endregion
 
 //#region Ids
 export const LF_SHAPEEDITOR_IDS = {
   details: {
+    apply: "details-apply",
     clearHistory: "details-clear-history",
     deleteShape: "details-delete-shape",
+    progressbar: "details-progressbar",
     redo: "details-redo",
+    reset: "details-reset",
     save: "details-save",
     shape: "details-shape",
+    snackbar: "details-snackbar",
     spinner: "details-spinner",
     tree: "details-tree",
     undo: "details-undo",

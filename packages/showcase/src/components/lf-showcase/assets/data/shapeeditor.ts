@@ -7,17 +7,188 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
-  LfShapeeditorLoadCallback,
+  LfShapeeditorConfigSettings,
+  LfShapeeditorElement,
+  LfShapeeditorEventPayload,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { LfShowcaseComponentFixture } from "../../lf-showcase-declarations";
 
-//#region Image Editor Fixture Types
+//#region Constants
+const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
+const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
+const PAYLOAD_NAME: LfEventPayloadName<"LfShapeeditor"> =
+  "LfShapeeditorEventPayload";
+const TAG_NAME: LfComponentTag<"LfShapeeditor"> = "lf-shapeeditor";
+//#endregion
+
+//#region Simulation Utilities
 /**
- * JSON structure from generated image-editor fixture.
+ * Filter types supported by the simulated image editor.
  */
+type SimulatedFilterType =
+  | "brightness"
+  | "contrast"
+  | "saturation"
+  | "gaussian_blur"
+  | "sepia"
+  | "vignette";
+
+/**
+ * Creates a human-readable description for a filter operation.
+ */
+const describeFilterOperation = (
+  filterType: string,
+  settings: LfShapeeditorConfigSettings,
+): string => {
+  const descriptions: Record<
+    string,
+    (s: LfShapeeditorConfigSettings) => string
+  > = {
+    brightness: (s) => {
+      const val = (s["brightness_strength"] as number) ?? 0;
+      return `Brightness: ${val > 0 ? "+" : ""}${Math.round(val * 100)}%`;
+    },
+    contrast: (s) => {
+      const val = (s["contrast_strength"] as number) ?? 0;
+      return `Contrast: ${val > 0 ? "+" : ""}${Math.round(val * 100)}%`;
+    },
+    saturation: (s) =>
+      `Saturation: ${Math.round(((s["saturation_intensity"] as number) ?? 1) * 100)}%`,
+    gaussian_blur: (s) => `Blur: ${(s["gaussianBlur_sigma"] as number) ?? 0}px`,
+    sepia: (s) =>
+      `Sepia: ${Math.round(((s["sepia_intensity"] as number) ?? 0) * 100)}%`,
+    vignette: (s) =>
+      `Vignette: ${Math.round(((s["vignette_intensity"] as number) ?? 0) * 100)}%`,
+  };
+
+  const describe = descriptions[filterType];
+  return describe
+    ? describe(settings)
+    : filterType.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
+/**
+ * Simulated API response structure.
+ */
+interface SimulatedApiResponse {
+  status: "success" | "error";
+  message?: string;
+  data: string;
+}
+
+/**
+ * Creates a simulated API client for image processing.
+ * Applies CSS filters to preview effects client-side.
+ */
+const createSimulatedApi = (delayMs = 500) => {
+  const filterToCss: Record<
+    string,
+    (settings: LfShapeeditorConfigSettings) => string
+  > = {
+    brightness: (s) =>
+      `brightness(${1 + ((s["brightness_strength"] as number) ?? 0)})`,
+    contrast: (s) =>
+      `contrast(${1 + ((s["contrast_strength"] as number) ?? 0)})`,
+    saturation: (s) =>
+      `saturate(${(s["saturation_intensity"] as number) ?? 1})`,
+    gaussian_blur: (s) => `blur(${(s["gaussianBlur_sigma"] as number) ?? 0}px)`,
+    sepia: (s) => `sepia(${(s["sepia_intensity"] as number) ?? 0})`,
+  };
+
+  const applyFilterToCanvas = (
+    imageData: string,
+    filterType: string,
+    settings: LfShapeeditorConfigSettings,
+  ): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Failed to get canvas context"));
+          return;
+        }
+
+        // Apply CSS filter if available
+        const cssFilter = filterToCss[filterType];
+        if (cssFilter) {
+          ctx.filter = cssFilter(settings) || "none";
+        }
+
+        ctx.drawImage(img, 0, 0);
+        ctx.filter = "none";
+
+        // Apply vignette manually (not a CSS filter)
+        if (filterType === "vignette") {
+          const intensity = (settings["vignette_intensity"] as number) ?? 0;
+          const radius = (settings["vignette_radius"] as number) ?? 0;
+
+          if (intensity > 0) {
+            const gradient = ctx.createRadialGradient(
+              canvas.width / 2,
+              canvas.height / 2,
+              canvas.width * (0.3 + radius * 0.4),
+              canvas.width / 2,
+              canvas.height / 2,
+              canvas.width * 0.8,
+            );
+
+            const color = (settings["vignette_color"] as string) ?? "#000000";
+            const alpha = Math.round(intensity * 255)
+              .toString(16)
+              .padStart(2, "0");
+            gradient.addColorStop(0, "transparent");
+            gradient.addColorStop(1, color + alpha);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+
+        resolve(canvas.toDataURL("image/png"));
+      };
+
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = imageData;
+    });
+
+  return {
+    process: async (
+      imageData: string,
+      filterType: string,
+      settings: LfShapeeditorConfigSettings,
+    ): Promise<SimulatedApiResponse> => {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+
+      try {
+        const processedData = await applyFilterToCanvas(
+          imageData,
+          filterType,
+          settings,
+        );
+        return { status: "success", data: processedData };
+      } catch (error) {
+        return {
+          status: "error",
+          message: error instanceof Error ? error.message : "Unknown error",
+          data: imageData,
+        };
+      }
+    },
+  };
+};
+//#endregion
+
+//#region Image Editor Fixture
 interface ImageEditorFixtureJson {
   canvasDataset?: LfDataDataset;
   settingsDataset?: LfDataDataset;
@@ -40,20 +211,10 @@ const resolveCanvasDataset = (
       const cells = node.cells ?? {};
       const canvasCell = cells.lfCanvas;
 
-      if (!canvasCell) {
-        return node;
-      }
+      if (!canvasCell) return node;
 
       const valuePath = String(canvasCell.value ?? "");
       const lfImageValuePath = String(canvasCell.lfImageProps?.lfValue ?? "");
-
-      const resolvedValue = valuePath
-        ? getAsset(valuePath).path
-        : canvasCell.value;
-
-      const resolvedLfImageValue = lfImageValuePath
-        ? getAsset(lfImageValuePath).path
-        : canvasCell.lfImageProps?.lfValue;
 
       return {
         ...node,
@@ -61,10 +222,12 @@ const resolveCanvasDataset = (
           ...cells,
           lfCanvas: {
             ...canvasCell,
-            value: resolvedValue,
+            value: valuePath ? getAsset(valuePath).path : canvasCell.value,
             lfImageProps: {
               ...(canvasCell.lfImageProps ?? {}),
-              lfValue: resolvedLfImageValue,
+              lfValue: lfImageValuePath
+                ? getAsset(lfImageValuePath).path
+                : canvasCell.lfImageProps?.lfValue,
             },
           },
         },
@@ -73,440 +236,178 @@ const resolveCanvasDataset = (
   };
 };
 
-const IMAGE_EDITOR_SETTINGS_DATASET: LfDataDataset = rawSettingsDataset ?? {
-  nodes: [],
-};
+const settingsDataset: LfDataDataset = rawSettingsDataset ?? { nodes: [] };
 //#endregion
 
-const COMPONENT_NAME: LfComponentName = "LfShapeeditor";
-const EVENT_NAME: LfEventName<"LfShapeeditor"> = "lf-shapeeditor-event";
-const PAYLOAD_NAME: LfEventPayloadName<"LfShapeeditor"> =
-  "LfShapeeditorEventPayload";
-const TAG_NAME: LfComponentTag<"LfShapeeditor"> = "lf-shapeeditor";
-
+//#region Exports
 export const getShapeeditorFixtures = (
   framework: LfFrameworkInterface,
 ): LfShowcaseComponentFixture<"lf-shapeeditor"> => {
   const { get } = framework.assets;
 
-  //#region mock data
-  //#region Canvas data
-  const canvasDataset: LfDataDataset = resolveCanvasDataset(get);
-
-  const canvasSettingsDataset: LfDataDataset = IMAGE_EDITOR_SETTINGS_DATASET;
+  //#region Data
+  const canvasDataset = resolveCanvasDataset(get);
   //#endregion
 
-  //#region Code data
-  const codeDataset: LfDataDataset = {
-    nodes: [
-      {
-        cells: {
-          lfCode: {
-            lfLanguage: "typescript",
-            lfPreserveSpaces: true,
-            shape: "code",
-            value: `interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user' | 'guest';
-}
+  const simulatedApi = createSimulatedApi(800);
+  let currentFilterType: SimulatedFilterType | string | null = null;
 
-function greetUser(user: User): string {
-  return \`Hello, \${user.name}!\`;
-}`,
-          },
-        },
-        id: "code_0",
-        value: "TypeScript Interface",
-      },
-      {
-        cells: {
-          lfCode: {
-            lfLanguage: "python",
-            lfPreserveSpaces: true,
-            shape: "code",
-            value: `import numpy as np
-from typing import List
+  const playgroundEventHandler = async (
+    e: CustomEvent<LfShapeeditorEventPayload>,
+  ): Promise<void> => {
+    const { comp, eventType } = e.detail;
+    const shapeeditor = comp as unknown as LfShapeeditorElement;
 
-def calculate_statistics(data: List[float]) -> dict:
-    """Calculate basic statistics for a dataset."""
-    arr = np.array(data)
-    return {
-        "mean": np.mean(arr),
-        "std": np.std(arr),
-        "min": np.min(arr),
-        "max": np.max(arr)
-    }`,
-          },
-        },
-        id: "code_1",
-        value: "Python Statistics",
-      },
-      {
-        cells: {
-          lfCode: {
-            lfLanguage: "css",
-            lfPreserveSpaces: true,
-            shape: "code",
-            value: `.container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  padding: 2rem;
-}
+    switch (eventType) {
+      //#region apply
+      // Explicit apply button press with full feedback
+      case "apply": {
+        const settings = await shapeeditor.getSettings();
+        const snapshot = await shapeeditor.getCurrentSnapshot();
 
-.card {
-  background: var(--surface-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
+        if (!currentFilterType || !snapshot?.value) {
+          await shapeeditor.setSnackbar({
+            message: "Please select an image and filter first",
+            uiState: "warning",
+            visible: true,
+          });
+          setTimeout(() => shapeeditor.setSnackbar({ visible: false }), 3000);
+          return;
+        }
 
-.card:hover {
-  transform: translateY(-4px);
-}`,
-          },
-        },
-        id: "code_2",
-        value: "CSS Grid Layout",
-      },
-    ],
-  };
+        // Show progress bar
+        await shapeeditor.setProgressbar({
+          visible: true,
+          value: 0,
+          uiState: "info",
+        });
 
-  const codeSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "formatting",
-        value: "Formatting",
-        icon: "code",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value:
-                  '{"toggle":[{"id":"preserve_spaces","title":"Preserve Spaces","defaultValue":true},{"id":"show_line_numbers","title":"Show Line Numbers","defaultValue":true}],"textfield":[{"id":"tab_size","title":"Tab Size","defaultValue":"2"}]}',
-              },
-            },
-            id: "code_style",
-            value: "Code Style",
-          },
-        ],
-      },
-      {
-        id: "syntax",
-        value: "Syntax Highlighting",
-        icon: "palette",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value:
-                  '{"select":[{"id":"theme","title":"Theme","options":["dark","light","monokai","github"],"defaultValue":"dark"}]}',
-              },
-            },
-            id: "theme_settings",
-            value: "Theme",
-          },
-        ],
-      },
-    ],
-  };
-  //#endregion
+        // Simulate progress updates
+        for (const progress of [10, 30, 50, 70, 90, 100]) {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          await shapeeditor.setProgressbar({ value: progress });
+        }
 
-  //#region Chart data
-  const chartDataset: LfDataDataset = {
-    nodes: [
-      {
-        cells: {
-          lfChart: {
-            lfAxis: "x",
-            lfDataset: {
-              columns: [
-                { id: "month", title: "Month" },
-                { id: "sales", title: "Sales" },
-              ],
-              nodes: [
-                {
-                  id: "jan",
-                  cells: {
-                    month: { value: "Jan" },
-                    sales: { shape: "number", value: 120 },
-                  },
-                },
-                {
-                  id: "feb",
-                  cells: {
-                    month: { value: "Feb" },
-                    sales: { shape: "number", value: 190 },
-                  },
-                },
-                {
-                  id: "mar",
-                  cells: {
-                    month: { value: "Mar" },
-                    sales: { shape: "number", value: 150 },
-                  },
-                },
-                {
-                  id: "apr",
-                  cells: {
-                    month: { value: "Apr" },
-                    sales: { shape: "number", value: 220 },
-                  },
-                },
-                {
-                  id: "may",
-                  cells: {
-                    month: { value: "May" },
-                    sales: { shape: "number", value: 280 },
-                  },
-                },
-              ],
-            },
-            lfSeries: ["sales"],
-            lfTypes: ["bar"],
-            shape: "chart",
-            value: "Monthly Sales",
-          },
-        },
-        id: "chart_0",
-        value: "Bar Chart - Sales",
-      },
-      {
-        cells: {
-          lfChart: {
-            lfAxis: "x",
-            lfDataset: {
-              columns: [
-                { id: "quarter", title: "Quarter" },
-                { id: "revenue", title: "Revenue" },
-                { id: "expenses", title: "Expenses" },
-              ],
-              nodes: [
-                {
-                  id: "q1",
-                  cells: {
-                    quarter: { value: "Q1" },
-                    revenue: { shape: "number", value: 45000 },
-                    expenses: { shape: "number", value: 32000 },
-                  },
-                },
-                {
-                  id: "q2",
-                  cells: {
-                    quarter: { value: "Q2" },
-                    revenue: { shape: "number", value: 52000 },
-                    expenses: { shape: "number", value: 35000 },
-                  },
-                },
-                {
-                  id: "q3",
-                  cells: {
-                    quarter: { value: "Q3" },
-                    revenue: { shape: "number", value: 48000 },
-                    expenses: { shape: "number", value: 38000 },
-                  },
-                },
-                {
-                  id: "q4",
-                  cells: {
-                    quarter: { value: "Q4" },
-                    revenue: { shape: "number", value: 61000 },
-                    expenses: { shape: "number", value: 41000 },
-                  },
-                },
-              ],
-            },
-            lfSeries: ["revenue", "expenses"],
-            lfTypes: ["line", "line"],
-            shape: "chart",
-            value: "Quarterly Financials",
-          },
-        },
-        id: "chart_1",
-        value: "Line Chart - Financials",
-      },
-      {
-        cells: {
-          lfChart: {
-            lfAxis: "x",
-            lfDataset: {
-              columns: [
-                { id: "category", title: "Category" },
-                { id: "amount", title: "Amount" },
-              ],
-              nodes: [
-                {
-                  id: "cat1",
-                  cells: {
-                    category: { value: "Product A" },
-                    amount: { shape: "number", value: 35 },
-                  },
-                },
-                {
-                  id: "cat2",
-                  cells: {
-                    category: { value: "Product B" },
-                    amount: { shape: "number", value: 25 },
-                  },
-                },
-                {
-                  id: "cat3",
-                  cells: {
-                    category: { value: "Product C" },
-                    amount: { shape: "number", value: 20 },
-                  },
-                },
-                {
-                  id: "cat4",
-                  cells: {
-                    category: { value: "Product D" },
-                    amount: { shape: "number", value: 20 },
-                  },
-                },
-              ],
-            },
-            lfSeries: ["amount"],
-            lfTypes: ["pie"],
-            shape: "chart",
-            value: "Product Distribution",
-          },
-        },
-        id: "chart_2",
-        value: "Pie Chart - Distribution",
-      },
-    ],
-  };
+        try {
+          const result = await simulatedApi.process(
+            snapshot.value,
+            currentFilterType,
+            settings,
+          );
 
-  const chartSettingsDataset: LfDataDataset = {
-    nodes: [
-      {
-        id: "appearance",
-        value: "Appearance",
-        icon: "palette",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value:
-                  '{"toggle":[{"id":"show_legend","title":"Show Legend","defaultValue":true},{"id":"show_grid","title":"Show Grid","defaultValue":true}],"slider":[{"id":"opacity","title":"Opacity","min":"0","max":"1","step":"0.1","defaultValue":"0.8"}]}',
-              },
-            },
-            id: "chart_style",
-            value: "Chart Style",
-          },
-        ],
-      },
-      {
-        id: "data",
-        value: "Data Options",
-        icon: "chart-column",
-        children: [
-          {
-            cells: {
-              lfCode: {
-                shape: "code",
-                value:
-                  '{"toggle":[{"id":"animate","title":"Animate Transitions","defaultValue":true},{"id":"sort_data","title":"Sort Data","defaultValue":false}]}',
-              },
-            },
-            id: "data_handling",
-            value: "Data Handling",
-          },
-        ],
-      },
-    ],
-  };
+          await shapeeditor.setProgressbar({ visible: false });
 
-  const data: { [index: string]: LfDataDataset } = {
-    canvasDataset,
-    canvasSettingsDataset,
-    chartDataset,
-    chartSettingsDataset,
-    codeDataset,
-    codeSettingsDataset,
+          if (result.status === "success") {
+            await shapeeditor.addSnapshot(result.data);
+            await shapeeditor.setSnackbar({
+              message: `Applied: ${describeFilterOperation(currentFilterType, settings)}`,
+              uiState: "success",
+              visible: true,
+            });
+          } else {
+            await shapeeditor.setSnackbar({
+              message: result.message || "Processing failed",
+              uiState: "danger",
+              visible: true,
+            });
+          }
+        } catch (error) {
+          await shapeeditor.setProgressbar({ visible: false });
+          await shapeeditor.setSnackbar({
+            message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+            uiState: "danger",
+            visible: true,
+          });
+        }
+
+        setTimeout(() => shapeeditor.setSnackbar({ visible: false }), 3000);
+        return;
+      }
+      //#endregion
+      //#region change
+      // Control value committed (e.g., slider released) - capture snapshot
+      case "change": {
+        const settings = await shapeeditor.getSettings();
+        const snapshot = await shapeeditor.getCurrentSnapshot();
+
+        if (!currentFilterType || !snapshot?.value) return;
+
+        try {
+          const result = await simulatedApi.process(
+            snapshot.value,
+            currentFilterType,
+            settings,
+          );
+          if (result.status === "success") {
+            // Clear preview since we're committing to history
+            await shapeeditor.setPreviewValue(null);
+            await shapeeditor.addSnapshot(result.data);
+            console.log(
+              "Snapshot:",
+              describeFilterOperation(currentFilterType, settings),
+            );
+          }
+        } catch (error) {
+          console.error("Change processing failed:", error);
+        }
+        return;
+      }
+      //#endregion
+      //#region lf-event
+      // Track current filter from tree selection
+      case "lf-event": {
+        const snapshot = await shapeeditor.getCurrentSnapshot();
+        const shapeIndex = snapshot?.shape?.index;
+        if (shapeIndex !== undefined) {
+          const nodeId = canvasDataset.nodes?.[shapeIndex]?.id;
+          if (nodeId) currentFilterType = nodeId;
+        }
+        return;
+      }
+      //#endregion
+      //#region preview
+      // Real-time preview during control interaction (e.g., slider drag)
+      case "preview": {
+        const settings = await shapeeditor.getSettings();
+        const snapshot = await shapeeditor.getCurrentSnapshot();
+
+        if (!currentFilterType || !snapshot?.value) return;
+
+        try {
+          const result = await simulatedApi.process(
+            snapshot.value,
+            currentFilterType,
+            settings,
+          );
+          if (result.status === "success") {
+            // Update the preview image without creating a snapshot
+            await shapeeditor.setPreviewValue(result.data);
+          }
+        } catch (error) {
+          console.error("Preview failed:", error);
+        }
+        return;
+      }
+      //#endregion
+      //#region reset
+      // Reset controls to defaults
+      case "reset": {
+        // Clear any active preview
+        await shapeeditor.setPreviewValue(null);
+        await shapeeditor.setSnackbar({
+          message: "Controls reset to defaults",
+          uiState: "info",
+          visible: true,
+        });
+        setTimeout(() => shapeeditor.setSnackbar({ visible: false }), 2000);
+        return;
+      }
+      //#endregion
+    }
   };
   //#endregion
 
-  //#region Navigation tree grid
-  const navigationTreeGridDataset: LfDataDataset = {
-    columns: [
-      { id: "name", title: "Name" },
-      { id: "items", title: "Items" },
-      { id: "updated", title: "Updated" },
-    ],
-    nodes: [
-      {
-        id: "projects",
-        value: "Projects",
-        cells: {
-          name: { shape: "text", value: "Projects" },
-          items: { shape: "number", value: 12 },
-          updated: { shape: "text", value: "2 days ago" },
-        },
-        children: [
-          {
-            id: "projects/alpha",
-            value: "Project Alpha",
-            cells: {
-              name: { shape: "text", value: "Project Alpha" },
-              items: { shape: "number", value: 5 },
-              updated: { shape: "text", value: "Yesterday" },
-            },
-          },
-          {
-            id: "projects/beta",
-            value: "Project Beta",
-            cells: {
-              name: { shape: "text", value: "Project Beta" },
-              items: { shape: "number", value: 7 },
-              updated: { shape: "text", value: "3 days ago" },
-            },
-          },
-        ],
-      },
-      {
-        id: "reviews",
-        value: "Reviews",
-        cells: {
-          name: { shape: "text", value: "Reviews" },
-          items: { shape: "number", value: 8 },
-          updated: { shape: "text", value: "Today" },
-        },
-        children: [
-          {
-            id: "reviews/internal",
-            value: "Internal",
-            cells: {
-              name: { shape: "text", value: "Internal" },
-              items: { shape: "number", value: 3 },
-              updated: { shape: "text", value: "4 hours ago" },
-            },
-          },
-          {
-            id: "reviews/client",
-            value: "Client",
-            cells: {
-              name: { shape: "text", value: "Client" },
-              items: { shape: "number", value: 5 },
-              updated: { shape: "text", value: "Last week" },
-            },
-          },
-        ],
-      },
-    ],
-  };
-
-  const loadCanvasDataset: LfShapeeditorLoadCallback = async (shapeeditor) => {
-    shapeeditor.lfDataset = data.canvasDataset;
-  };
-  //#endregion
-
-  //#region documentation
+  //#region Documentation
   const documentation: LfArticleDataset = {
     nodes: [
       {
@@ -521,18 +422,14 @@ def calculate_statistics(data: List[float]) -> dict:
             data: JSON.stringify({
               nodes: [
                 {
-                  value: "Node 1",
+                  value: "Image 1",
                   id: "0",
-                  cells: {
-                    lfImage: { lfValue: "url_of_image1" },
-                  },
+                  cells: { lfCanvas: { lfValue: "url_of_image1" } },
                 },
                 {
-                  value: "Node 2",
+                  value: "Image 2",
                   id: "1",
-                  cells: {
-                    lfImage: { lfValue: "url_of_image2" },
-                  },
+                  cells: { lfCanvas: { lfValue: "url_of_image2" } },
                 },
               ],
             }),
@@ -544,9 +441,34 @@ def calculate_statistics(data: List[float]) -> dict:
             PAYLOAD_NAME,
             [
               {
+                type: "apply",
+                description:
+                  "emitted when the Apply button is clicked, allowing consumers to process the current settings",
+              },
+              {
+                type: "change",
+                description:
+                  "emitted when a control value is committed (e.g., slider released), suitable for capturing snapshots",
+              },
+              {
+                type: "lf-event",
+                description:
+                  "emitted for all child component interactions (tree selections, etc.)",
+              },
+              {
+                type: "preview",
+                description:
+                  "emitted during real-time control interaction (e.g., slider drag), suitable for live preview without snapshot",
+              },
+              {
                 type: "ready",
                 description:
                   "emitted when the component completes its first complete lifecycle",
+              },
+              {
+                type: "reset",
+                description:
+                  "emitted when the Reset button is clicked, after controls are reset to their defaults",
               },
               {
                 type: "unmount",
@@ -567,97 +489,40 @@ def calculate_statistics(data: List[float]) -> dict:
   return {
     documentation,
 
+    playground: {
+      description:
+        "Simulated Image Editor - Select an image from the masonry, choose a filter from the tree, " +
+        "adjust settings with real-time preview, then click Apply to process. " +
+        "Demonstrates preview/change/apply event flow with snackbar and progressbar feedback.",
+      props: {
+        lfDataset: canvasDataset,
+        lfShape: "canvas" as const,
+        lfValue: settingsDataset,
+      },
+      events: { "lf-shapeeditor-event": playgroundEventHandler },
+    },
+
     examples: {
-      //#region Uncategorized
       uncategorized: {
-        canvasSimple: {
-          description: "Canvas editor for image drawing and manipulation",
+        simpleEditor: {
+          description: "Basic image editor with default settings",
           props: {
-            lfDataset: data.canvasDataset,
+            lfDataset: canvasDataset,
             lfShape: "canvas",
-            lfValue: data.canvasSettingsDataset,
+            lfValue: settingsDataset,
           },
         },
-        canvasWithNavigation: {
-          description: "Canvas editor with navigation tree",
+        styledEditor: {
+          description: "Image editor with custom styling",
           props: {
-            lfDataset: data.canvasDataset,
-            lfNavigation: {
-              treeProps: {
-                lfDataset: navigationTreeGridDataset,
-                lfFilter: true,
-                lfGrid: true,
-              },
-            },
-            lfShape: "canvas",
-            lfValue: data.canvasSettingsDataset,
-          },
-        },
-        codeSimple: {
-          description: "Code editor for syntax-highlighted snippets",
-          props: {
-            lfDataset: data.codeDataset,
-            lfShape: "code",
-            lfValue: data.codeSettingsDataset,
-          },
-        },
-        codeWithNavigation: {
-          description: "Code editor with navigation tree",
-          props: {
-            lfDataset: data.codeDataset,
-            lfNavigation: {
-              treeProps: {
-                lfDataset: navigationTreeGridDataset,
-                lfFilter: true,
-                lfGrid: true,
-              },
-            },
-            lfShape: "code",
-            lfValue: data.codeSettingsDataset,
-          },
-        },
-        chartSimple: {
-          description: "Chart editor for data visualization",
-          props: {
-            lfDataset: data.chartDataset,
-            lfShape: "chart",
-            lfValue: data.chartSettingsDataset,
-          },
-        },
-        chartWithNavigation: {
-          description: "Chart editor with navigation tree",
-          props: {
-            lfDataset: data.chartDataset,
-            lfNavigation: {
-              treeProps: {
-                lfDataset: navigationTreeGridDataset,
-                lfFilter: true,
-                lfGrid: true,
-              },
-            },
-            lfShape: "chart",
-            lfValue: data.chartSettingsDataset,
-          },
-        },
-        canvasStyled: {
-          description: "Canvas editor with custom styling",
-          props: {
-            lfDataset: data.canvasDataset,
+            lfDataset: canvasDataset,
             lfShape: "canvas",
             lfStyle: randomStyle(),
-            lfValue: data.canvasSettingsDataset,
-          },
-        },
-        canvasWithLoadCallback: {
-          description: "Canvas editor with load callback (click Load to fetch)",
-          props: {
-            lfLoadCallback: loadCanvasDataset,
-            lfShape: "canvas",
-            lfValue: data.canvasSettingsDataset,
+            lfValue: settingsDataset,
           },
         },
       },
-      //#endregion
     },
   };
 };
+//#endregion
