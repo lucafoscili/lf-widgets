@@ -88,6 +88,19 @@ export class LfCanvas implements LfCanvasInterface {
 
   //#region Props
   /**
+   * Enables automatic resizing of the canvas when the parent container resizes.
+   * When disabled, the canvas will not respond to container size changes.
+   *
+   * @type {boolean}
+   * @default true
+   *
+   * @example
+   * ```tsx
+   * <lf-canvas lfAutoResize={false} />
+   * ```
+   */
+  @Prop({ mutable: false }) lfAutoResize: boolean = true;
+  /**
    * The shape of the brush.
    *
    * @type {LfCanvasBrush}
@@ -735,7 +748,10 @@ export class LfCanvas implements LfCanvasInterface {
     if (this.lfImageProps) {
       this.resizeCanvas();
     }
-    this.#initResizeObserver();
+
+    if (this.lfAutoResize) {
+      this.#initResizeObserver();
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");

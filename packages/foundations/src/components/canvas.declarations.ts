@@ -291,6 +291,7 @@ export type LfCanvasPoints = Array<{ x: number; y: number }>;
  * Public props accepted by the `lf-canvas` component.
  */
 export interface LfCanvasPropsInterface {
+  lfAutoResize?: boolean;
   lfBrush?: LfCanvasBrush;
   lfColor?: string;
   lfCursor?: LfCanvasCursor;

@@ -39,6 +39,7 @@ export const LF_CANVAS_PARTS = {
 
 //#region Props
 export const LF_CANVAS_PROPS = [
+  "lfAutoResize",
   "lfBrush",
   "lfColor",
   "lfCursor",

@@ -16,6 +16,7 @@ loading an image into the canvas for reference or tracing purposes.
 
 | Property            | Attribute             | Description                                                                                                                                        | Type                     | Default     |
 | ------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ----------- |
+| `lfAutoResize`      | `lf-auto-resize`      | Enables automatic resizing of the canvas when the parent container resizes. When disabled, the canvas will not respond to container size changes.  | `boolean`                | `true`      |
 | `lfBrush`           | `lf-brush`            | The shape of the brush.                                                                                                                            | `"round" \| "square"`    | `"round"`   |
 | `lfColor`           | `lf-color`            | The color of the brush.                                                                                                                            | `string`                 | `"#ff0000"` |
 | `lfCursor`          | `lf-cursor`           | Sets the style of the cursor.                                                                                                                      | `"default" \| "preview"` | `"preview"` |
