@@ -189,6 +189,14 @@ $comp: "masonry";
     z-index: var(--lf-#{$comp}-actions-z-index, 2);
   }
 
+  &__remove-column,
+  &__change-view,
+  &__add-column {
+    & {
+      backdrop-filter: unset;
+    }
+  }
+
   &__sub {
     display: grid;
     /**
