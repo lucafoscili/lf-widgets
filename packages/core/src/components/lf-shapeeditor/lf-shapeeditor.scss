@@ -12,29 +12,46 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     "all",
     var(--lf-ui-alpha-glass-hint, 0.125)
   );
-  @include lf-el-stretch;
+  display: block;
+  height: 100%;
+  max-height: inherit;
+  min-height: 0;
+  width: 100%;
 }
 
 // #region Root container
 .shapeeditor {
-  @include lf-el-stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: inherit;
+  min-height: 0;
+  width: 100%;
 
   &__grid {
     & {
       @include lf-comp-border($comp);
-      @include lf-el-stretch;
       box-sizing: border-box;
       display: grid;
+      flex: 1;
       grid-template-areas:
         "navigation preview"
         "navigation settings";
       grid-template-columns: 100% 0;
-      overflow: auto;
+      grid-template-rows: 1fr 1fr;
+      min-height: 0;
+      overflow: hidden;
     }
 
     &--selected {
       & {
-        grid-template-columns: 30% 70%;
+        /**
+        * @prop --lf-#{$comp}-nav-ratio: Sets the navigation column width ratio.
+        *                                Defaults to => 0.3 (30%)
+        */
+        grid-template-columns:
+          minmax(200px, var(--lf-#{$comp}-nav-ratio, 0.3fr))
+          1fr;
       }
     }
   }
@@ -44,21 +61,20 @@ $borderC: 1px solid rgba(var(--lf-color-border));
 // #region Navigation panel
 .navigation {
   & {
-    @include lf-el-stretch;
     box-sizing: border-box;
     display: grid;
     grid-area: navigation;
     grid-template-areas: "masonry";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
+    min-height: 0;
+    min-width: 0;
     overflow: hidden;
   }
 
   &--has-nav {
     & {
-      grid-template-areas:
-        "explorer jump"
-        "explorer masonry";
+      grid-template-areas: "explorer masonry";
       grid-template-columns: auto 1fr;
     }
 
@@ -70,18 +86,10 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   &--has-drawer {
     & {
       /**
-      * @prop --lf-#{$comp}-nav-width: Sets the width for the navigation panel.
-      *                              Defaults to => auto
+      * @prop --lf-#{$comp}-nav-width: Sets the width for the navigation tree panel.
+      *                              Defaults to => 200px
       */
-      grid-template-columns: var(--lf-#{$comp}-nav-width, auto) 1fr;
-    }
-
-    .explorer--has-drawer {
-      grid-template-columns: 1fr auto;
-    }
-
-    .explorer__tree {
-      display: grid;
+      grid-template-columns: var(--lf-#{$comp}-nav-width, 200px) 1fr;
     }
   }
 
@@ -92,10 +100,19 @@ $borderC: 1px solid rgba(var(--lf-color-border));
         "masonry";
       grid-template-rows: auto 1fr;
     }
+
+    &.navigation--has-nav {
+      & {
+        grid-template-areas:
+          "explorer jump"
+          "explorer masonry";
+      }
+    }
   }
 
   &__masonry {
     grid-area: masonry;
+    min-height: 0;
     overflow: auto;
     position: relative;
   }
@@ -107,9 +124,9 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   & {
     border-right: $borderC;
     box-sizing: border-box;
-    display: none;
     grid-area: explorer;
     grid-template-columns: auto;
+    min-height: 0;
     overflow: hidden;
   }
 
@@ -118,7 +135,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   }
 
   &__tree {
-    display: none;
+    min-height: 0;
     overflow: auto;
   }
 
@@ -164,6 +181,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     grid-area: preview;
     grid-template-areas: "shape";
     grid-template-columns: 1fr;
+    min-height: 0;
     overflow: hidden;
     position: relative;
   }
@@ -175,8 +193,6 @@ $borderC: 1px solid rgba(var(--lf-color-border));
 
   &__shape {
     align-content: center;
-    display: grid;
-    grid-area: shape;
     max-height: 100%;
     max-width: 100%;
     overflow: hidden;
@@ -200,6 +216,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     display: grid;
     grid-area: history;
     max-width: 200px;
+    min-height: 0;
     min-width: 120px;
     overflow: auto;
     padding: 0.5em;
@@ -214,8 +231,8 @@ $borderC: 1px solid rgba(var(--lf-color-border));
 // #region Settings panel
 .settings {
   & {
-    @include lf-el-stretch;
     @include lf-el-transition("elastic-snap");
+    box-sizing: border-box;
     display: grid;
     grid-area: settings;
     grid-template-areas:
@@ -224,7 +241,8 @@ $borderC: 1px solid rgba(var(--lf-color-border));
       "tree controls";
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto 1fr;
-    overflow: auto;
+    min-height: 0;
+    overflow: hidden;
     position: relative;
   }
 
@@ -250,6 +268,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     border-right: $borderC;
     box-sizing: border-box;
     grid-area: tree;
+    min-height: 0;
     overflow: auto;
   }
 }
@@ -279,7 +298,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
 // #region Controls sub-block
 .controls {
   & {
-    @include lf-el-stretch;
+    box-sizing: border-box;
     display: grid;
     grid-area: controls;
     grid-template-areas:
@@ -287,7 +306,8 @@ $borderC: 1px solid rgba(var(--lf-color-border));
       "items"
       "control-actions";
     grid-template-rows: auto 1fr auto;
-    overflow: auto;
+    min-height: 0;
+    overflow: hidden;
   }
 
   &__snackbar {
@@ -303,8 +323,8 @@ $borderC: 1px solid rgba(var(--lf-color-border));
 // #region Items sub-block
 .items {
   & {
-    @include lf-el-stretch;
     grid-area: items;
+    min-height: 0;
     overflow: auto;
   }
 
@@ -330,7 +350,11 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     gap: 0.5em;
     grid-area: control-actions;
     justify-content: flex-end;
-    padding: 0.75em 1em;
+    /**
+    * @prop --lf-#{$comp}-control-actions-padding: Sets the padding for the control actions area.
+    *                                            Defaults to => 0
+    */
+    padding: var(--lf-#{$comp}-control-actions-padding, 0);
   }
 }
 // #endregion

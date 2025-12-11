@@ -11,6 +11,8 @@ import {
   LfShapeeditorConfigSettings,
   LfShapeeditorElement,
   LfShapeeditorEventPayload,
+  LfShapeeditorInterface,
+  LfTreeEventPayload,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -242,6 +244,195 @@ const resolveCanvasDataset = (
 };
 
 const settingsDataset: LfDataDataset = rawSettingsDataset ?? { nodes: [] };
+
+//#region Code Explorer Fixture
+/**
+ * Sample code snippets for the navigation example.
+ * Each snippet demonstrates a different language or concept.
+ */
+const codeSnippetsDataset: LfDataDataset = {
+  nodes: [
+    {
+      id: "typescript-hello",
+      value: "Hello World",
+      cells: {
+        lfCode: {
+          shape: "code",
+          value: `// TypeScript Hello World
+function greet(name: string): string {
+  return \`Hello, \${name}!\`;
+}
+
+console.log(greet("World"));`,
+          lfLanguage: "typescript",
+        },
+      },
+    },
+    {
+      id: "typescript-interface",
+      value: "Interface Example",
+      cells: {
+        lfCode: {
+          shape: "code",
+          value: `// TypeScript Interface
+interface User {
+  id: number;
+  name: string;
+  email?: string;
+}
+
+const user: User = {
+  id: 1,
+  name: "John Doe",
+};`,
+          lfLanguage: "typescript",
+        },
+      },
+    },
+    {
+      id: "javascript-async",
+      value: "Async/Await",
+      cells: {
+        lfCode: {
+          shape: "code",
+          value: `// JavaScript Async/Await
+async function fetchData(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Fetch failed:', error);
+    throw error;
+  }
+}`,
+          lfLanguage: "javascript",
+        },
+      },
+    },
+    {
+      id: "css-flexbox",
+      value: "Flexbox Layout",
+      cells: {
+        lfCode: {
+          shape: "code",
+          value: `/* CSS Flexbox Layout */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.item {
+  flex: 1;
+  padding: 1rem;
+  background: var(--primary-color);
+}`,
+          lfLanguage: "css",
+        },
+      },
+    },
+    {
+      id: "html-template",
+      value: "HTML Template",
+      cells: {
+        lfCode: {
+          shape: "code",
+          value: `<!-- HTML Template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sample Page</title>
+</head>
+<body>
+  <header>
+    <h1>Welcome</h1>
+  </header>
+  <main>
+    <p>Content goes here.</p>
+  </main>
+</body>
+</html>`,
+          lfLanguage: "html",
+        },
+      },
+    },
+  ],
+};
+
+/**
+ * Navigation tree dataset for the code explorer.
+ * Organized by language/category folders.
+ */
+const codeNavigationTree: LfDataDataset = {
+  columns: [
+    { id: "name", title: "Name" },
+    { id: "items", title: "Items" },
+    { id: "updated", title: "Updated" },
+  ],
+  nodes: [
+    {
+      id: "projects",
+      value: "Projects",
+      cells: {
+        name: { shape: "text", value: "Projects" },
+        items: { shape: "number", value: 12 },
+        updated: { shape: "text", value: "2 days ago" },
+      },
+      children: [
+        {
+          id: "projects/alpha",
+          value: "Project Alpha",
+          cells: {
+            name: { shape: "text", value: "Project Alpha" },
+            items: { shape: "number", value: 5 },
+            updated: { shape: "text", value: "Yesterday" },
+          },
+        },
+        {
+          id: "projects/beta",
+          value: "Project Beta",
+          cells: {
+            name: { shape: "text", value: "Project Beta" },
+            items: { shape: "number", value: 7 },
+            updated: { shape: "text", value: "3 days ago" },
+          },
+        },
+      ],
+    },
+    {
+      id: "reviews",
+      value: "Reviews",
+      cells: {
+        name: { shape: "text", value: "Reviews" },
+        items: { shape: "number", value: 8 },
+        updated: { shape: "text", value: "Today" },
+      },
+      children: [
+        {
+          id: "reviews/internal",
+          value: "Internal",
+          cells: {
+            name: { shape: "text", value: "Internal" },
+            items: { shape: "number", value: 3 },
+            updated: { shape: "text", value: "4 hours ago" },
+          },
+        },
+        {
+          id: "reviews/client",
+          value: "Client",
+          cells: {
+            name: { shape: "text", value: "Client" },
+            items: { shape: "number", value: 5 },
+            updated: { shape: "text", value: "Last week" },
+          },
+        },
+      ],
+    },
+  ],
+};
 //#endregion
 
 //#region Exports
@@ -514,6 +705,71 @@ export const getShapeeditorFixtures = (
   };
   //#endregion
 
+  //#region Navigation Example Handler
+  /**
+   * Event handler for the navigation example.
+   * Updates the jump textfield when clicking on tree nodes (files).
+   */
+  const navigationEventHandler = async (
+    e: CustomEvent<LfShapeeditorEventPayload>,
+  ): Promise<void> => {
+    const { comp, eventType, originalEvent } = e.detail;
+    const shapeeditor = comp as unknown as LfShapeeditorElement;
+
+    // Only handle lf-event from tree clicks
+    if (eventType !== "lf-event") return;
+
+    // Check if this is a tree event
+    const treeEvent = originalEvent as CustomEvent<LfTreeEventPayload>;
+    if (!treeEvent?.detail?.node) return;
+
+    const { node, eventType: treeEventType } = treeEvent.detail;
+
+    // Only process click events on file nodes (not folders)
+    if (treeEventType !== "click" || node.children?.length) return;
+
+    // Update the jump textfield with the node's path (id)
+    const components = await shapeeditor.getComponents();
+    const textfield = components?.navigation?.jump?.textfield;
+    if (textfield) {
+      textfield.setValue(node.id);
+    }
+
+    // Show feedback
+    await shapeeditor.setSnackbar({
+      message: `Selected: ${node.id}`,
+      uiState: "info",
+      visible: true,
+    });
+    setTimeout(() => shapeeditor.setSnackbar({ visible: false }), 2000);
+  };
+
+  /**
+   * Load callback for the navigation example.
+   * Simulates loading data from a path.
+   */
+  const navigationLoadCallback = async (
+    shapeeditor: LfShapeeditorInterface,
+    dir: string,
+  ): Promise<void> => {
+    await shapeeditor.setSnackbar({
+      message: `Loading from: ${dir}`,
+      uiState: "info",
+      visible: true,
+    });
+
+    // Simulate async load
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    await shapeeditor.setSnackbar({
+      message: `Loaded: ${dir}`,
+      uiState: "success",
+      visible: true,
+    });
+    setTimeout(() => shapeeditor.setSnackbar({ visible: false }), 2000);
+  };
+  //#endregion
+
   return {
     documentation,
 
@@ -532,13 +788,24 @@ export const getShapeeditorFixtures = (
 
     examples: {
       uncategorized: {
-        simpleEditor: {
-          description: "Basic image editor with default settings",
+        withNavigation: {
+          description:
+            "Code snippet explorer with navigation tree, jump textfield, and load callback. " +
+            "Click on a file in the tree to update the textfield path. " +
+            "Demonstrates full navigation panel integration.",
           props: {
-            lfDataset: canvasDataset,
-            lfShape: "canvas",
-            lfValue: settingsDataset,
+            lfDataset: codeSnippetsDataset,
+            lfShape: "code",
+            lfLoadCallback: navigationLoadCallback,
+            lfNavigation: {
+              isTreeOpen: true,
+              treeProps: {
+                lfDataset: codeNavigationTree,
+                lfGrid: true,
+              },
+            },
           },
+          events: { "lf-shapeeditor-event": navigationEventHandler },
         },
         styledEditor: {
           description: "Image editor with custom styling",

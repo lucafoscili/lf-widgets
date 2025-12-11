@@ -27,15 +27,22 @@ export const prepExplorer = (
     const explorerParts = parts.navigation;
 
     return (
-      <div class={bemClass(explorerBlock._)} part={explorerParts.explorer}>
+      <div
+        class={bemClass(explorerBlock._, undefined, {
+          "has-drawer": isOpen,
+        })}
+        part={explorerParts.explorer}
+      >
         {/* Navigation Tree */}
-        <lf-tree
-          class={bemClass(explorerBlock._, explorerBlock.tree)}
-          id={IDS.navigation.explorer.tree}
-          onLf-tree-event={tree}
-          ref={assignRef(navigation.explorer, "tree")}
-          {...sanitizeProps(nav.treeProps, "LfTree")}
-        ></lf-tree>
+        {isOpen && (
+          <lf-tree
+            class={bemClass(explorerBlock._, explorerBlock.tree)}
+            id={IDS.navigation.explorer.tree}
+            onLf-tree-event={tree}
+            ref={assignRef(navigation.explorer, "tree")}
+            {...sanitizeProps(nav.treeProps, "LfTree")}
+          ></lf-tree>
+        )}
 
         {/* Expander Button */}
         <lf-button
