@@ -2,6 +2,7 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_SHAPEEDITOR_BLOCKS,
+  LF_SHAPEEDITOR_IDS,
   LF_SHAPEEDITOR_PARTS,
   LF_SHAPEEDITOR_PROPS,
   LF_STYLE_ID,
@@ -54,14 +55,13 @@ import {
 import { createAdapter } from "./lf-shapeeditor-adapter";
 
 /**
- * A universal 4-panel interactive explorer that transforms any LfShape type
+ * A universal 3-panel interactive explorer that transforms any LfShape type
  * into an explorable, configurable, and previewable experience.
  *
  * The shapeeditor provides:
- * - Categories panel (masonry) for high-level grouping
- * - Items panel (tree) for detailed selection and history
- * - Preview panel (any LfShape) for visual output
- * - Configuration panel (slot) for parameter editing
+ * - Navigation panel (left): file tree, masonry gallery for shape selection
+ * - Preview panel (right-top): shape preview with spinner
+ * - Settings panel (right-bottom): actions, configuration controls, progressbar, snackbar
  *
  * @component
  * @tag lf-shapeeditor
@@ -228,10 +228,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
-  #b = LF_SHAPEEDITOR_BLOCKS;
+  #b = LF_SHAPEEDITOR_BLOCKS.shapeeditor;
   #cy = CY_ATTRIBUTES;
+  #ids = LF_SHAPEEDITOR_IDS.shapeeditor;
   #lf = LF_ATTRIBUTES;
-  #p = LF_SHAPEEDITOR_PARTS;
+  #p = LF_SHAPEEDITOR_PARTS.shapeeditor;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #adapter: LfShapeeditorAdapter;
@@ -350,7 +351,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
    */
   @Method()
   async getShapeElement(): Promise<Element | null> {
-    const { shape } = this.#adapter.elements.refs.details;
+    const { shape } = this.#adapter.elements.refs.preview;
     if (!shape) return null;
 
     // The shape component will be the first child element
@@ -504,6 +505,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           index: () => this.historyIndex,
           isPopupOpen: () => this.isHistoryPopupOpen,
         },
+        ids: this.#ids,
         lfAttribute: this.#lf,
         manager: this.#framework,
         navigation: {
@@ -609,89 +611,61 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
     return null;
   }
-  #prepViewer(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { detailsGrid } = this.#b;
-    const {
-      clearHistory,
-      controlActions,
-      deleteShape,
-      historyBadge,
-      progressbar,
-      redo,
-      save,
-      settings,
-      shape,
-      snackbar,
-      spinner,
-      tree,
-      undo,
-    } = this.#adapter.elements.jsx.details;
-
-    return (
-      <div class={bemClass(detailsGrid._)} part={this.#p.details}>
-        <div class={bemClass(detailsGrid._, detailsGrid.preview)}>
-          {shape()}
-          {spinner()}
-        </div>
-        <div class={bemClass(detailsGrid._, detailsGrid.actions)}>
-          {historyBadge()}
-          {deleteShape()}
-          {clearHistory()}
-          {undo()}
-          {redo()}
-          {save()}
-        </div>
-        {progressbar()}
-        {tree()}
-        <div class={bemClass(detailsGrid._, detailsGrid.settings)}>
-          {snackbar()}
-          {settings()}
-          {controlActions()}
-        </div>
-      </div>
-    );
-  }
   #prepShapeeditor(): VNode {
     const { bemClass } = this.#framework.theme;
 
-    const { currentShape } = this.#adapter.controller.get;
+    const { navigation, preview, settings } = this.#b;
+    const { explorer, jump, masonry } = this.#adapter.elements.jsx.navigation;
+    const { history, shape, spinner } = this.#adapter.elements.jsx.preview;
+    const { actions, controls, progressbar, tree } =
+      this.#adapter.elements.jsx.settings;
+    const { currentShape, history: historyState } =
+      this.#adapter.controller.get;
+
+    const hasNav = Boolean(this.lfNavigation?.treeProps?.lfDataset);
+    const shouldShowLoad = Boolean(this.lfLoadCallback);
+    const shouldShowExpander =
+      hasNav && Boolean(this.lfNavigation?.treeProps?.lfDataset);
+    const shouldShowTree = shouldShowExpander && this.isNavigationTreeOpen;
+    const shouldShowHistory = historyState.isPopupOpen();
 
     return (
       <div
-        class={bemClass(this.#b.mainGrid._, null, {
+        class={bemClass(this.#b._, this.#b.grid, {
           selected: !!currentShape(),
         })}
       >
-        {this.#prepExplorer()}
-        {this.#prepViewer()}
-      </div>
-    );
-  }
-  #prepExplorer(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { load, masonry, navToggle, textfield, tree } =
-      this.#adapter.elements.jsx.navigation;
-    const navBlock = this.#b.navigationGrid;
-    const hasNav = Boolean(this.lfNavigation?.treeProps?.lfDataset);
-
-    const shouldShowLoad = Boolean(this.lfLoadCallback);
-    const shouldShowNavToggle =
-      hasNav && Boolean(this.lfNavigation?.treeProps?.lfDataset);
-    const shouldShowTree = shouldShowNavToggle && this.isNavigationTreeOpen;
-    const wrapperClass = bemClass(navBlock._, undefined, {
-      "has-drawer": shouldShowTree,
-      "has-nav": shouldShowNavToggle,
-    });
-
-    return (
-      <div class={wrapperClass} part={this.#p.navigation}>
-        {tree()}
-        {navToggle()}
-        {shouldShowLoad && [textfield(), load()]}
-        {masonry()}
+        {/* Navigation Panel */}
+        <div
+          class={bemClass(navigation._, undefined, {
+            "has-drawer": shouldShowTree,
+            "has-header": shouldShowLoad,
+            "has-nav": shouldShowExpander,
+          })}
+          part={this.#p.navigation._}
+        >
+          {shouldShowExpander && explorer()}
+          {shouldShowLoad && jump()}
+          {masonry()}
+        </div>
+        {/* Preview Panel */}
+        <div
+          class={bemClass(preview._, undefined, {
+            "has-history": shouldShowHistory,
+          })}
+          part={this.#p.preview._}
+        >
+          {shouldShowHistory && history()}
+          {shape()}
+          {spinner()}
+        </div>
+        {/* Settings Panel */}
+        <div class={bemClass(settings._)} part={this.#p.settings._}>
+          {actions()}
+          {progressbar()}
+          {tree()}
+          {controls()}
+        </div>
       </div>
     );
   }
@@ -739,7 +713,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     const { info } = debug;
     const { refs } = this.#adapter.elements;
 
-    refs.details.infoIcons?.forEach((icon) => {
+    refs.settings.controls.items.infoIcons?.forEach((icon) => {
       const content = icon.getAttribute("aria-label");
       if (!content || tooltip.isRegistered(icon)) {
         return;
@@ -761,10 +735,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(this.#b.shapeeditor._)}
-            part={this.#p.shapeeditor}
-          >
+          <div class={bemClass(this.#b._)} part={this.#p._}>
             {this.#prepShapeeditor()}
           </div>
         </div>
@@ -773,9 +744,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   }
   disconnectedCallback() {
     const { tooltip } = this.#framework;
-    this.#adapter.elements.refs.details.infoIcons?.forEach((icon) => {
-      tooltip.unregister(icon);
-    });
+    this.#adapter.elements.refs.settings.controls.items.infoIcons?.forEach(
+      (icon) => {
+        tooltip.unregister(icon);
+      },
+    );
 
     this.#framework?.theme.unregister(this);
   }

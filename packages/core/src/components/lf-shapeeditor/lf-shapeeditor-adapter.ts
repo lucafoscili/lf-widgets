@@ -7,10 +7,12 @@ import {
   LfShapeeditorAdapterJsx,
   LfShapeeditorAdapterRefs,
 } from "@lf-widgets/foundations";
-import { prepDetails } from "./elements.details";
 import { prepNavigation } from "./elements.navigation";
-import { prepDetailsHandlers } from "./handlers.details";
+import { prepPreview } from "./elements.preview";
+import { prepSettings } from "./elements.settings";
 import { prepNavigationHandlers } from "./handlers.navigation";
+import { prepPreviewHandlers } from "./handlers.preview";
+import { prepSettingsHandlers } from "./handlers.settings";
 
 //#region Adapter
 export const createAdapter = (
@@ -40,7 +42,7 @@ export const createSetters = (
   return {
     ...setters,
     spinnerStatus: (active) =>
-      (getAdapter().elements.refs.details.spinner.lfActive = active),
+      (getAdapter().elements.refs.preview.spinner.lfActive = active),
   };
 };
 //#endregion
@@ -50,8 +52,9 @@ export const createJsx = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterJsx => {
   return {
-    details: prepDetails(getAdapter),
     navigation: prepNavigation(getAdapter),
+    preview: prepPreview(getAdapter),
+    settings: prepSettings(getAdapter),
   };
 };
 //#endregion
@@ -61,8 +64,9 @@ export const createHandlers = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterHandlers => {
   return {
-    details: prepDetailsHandlers(getAdapter),
     navigation: prepNavigationHandlers(getAdapter),
+    preview: prepPreviewHandlers(getAdapter),
+    settings: prepSettingsHandlers(getAdapter),
   };
 };
 //#endregion
@@ -70,31 +74,46 @@ export const createHandlers = (
 //#region Refs
 export const createRefs = (): LfShapeeditorAdapterRefs => {
   return {
-    details: {
-      apply: null,
-      clearHistory: null,
-      deleteShape: null,
-      historyBadge: null,
-      historyList: null,
-      historyPopup: null,
-      infoIcons: new Map<string, HTMLElement>(),
-      progressbar: null,
-      redo: null,
-      reset: null,
-      save: null,
-      settings: null,
-      shape: null,
-      snackbar: null,
-      spinner: null,
-      tree: null,
-      undo: null,
-    },
     navigation: {
-      load: null,
+      explorer: {
+        tree: null,
+        expander: null,
+      },
+      jump: {
+        textfield: null,
+        load: null,
+      },
       masonry: null,
-      navToggle: null,
-      textfield: null,
+    },
+    preview: {
+      history: {
+        list: null,
+      },
+      shape: null,
+      spinner: null,
+    },
+    settings: {
+      actions: {
+        delete: null,
+        badge: null,
+        clear: null,
+        redo: null,
+        undo: null,
+        commit: null,
+      },
+      progressbar: null,
       tree: null,
+      controls: {
+        snackbar: null,
+        items: {
+          accordion: null,
+          infoIcons: new Map<string, HTMLElement>(),
+        },
+        controlActions: {
+          apply: null,
+          reset: null,
+        },
+      },
     },
   };
 };

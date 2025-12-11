@@ -5,12 +5,36 @@ import {
 import { clearSelection, load, toggleButtonSpinner } from "./helpers.utils";
 import { LfShapeeditor } from "./lf-shapeeditor";
 
+/**
+ * Prepares the navigation panel event handlers.
+ */
 export const prepNavigationHandlers = (
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterHandlers["navigation"] => {
   return {
-    //#region Button handler
-    button: async (e) => {
+    //#region Expander handler (toggle navigation tree)
+    expander: async (e) => {
+      const { eventType } = e.detail;
+
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const { get, set } = controller;
+      const { compInstance } = get;
+
+      const c = compInstance as LfShapeeditor;
+
+      c.onLfEvent(e, "lf-event");
+
+      switch (eventType) {
+        case "click":
+          set.navigation.toggleTree();
+          break;
+      }
+    },
+    //#endregion
+
+    //#region Load handler (load directory)
+    load: async (e) => {
       const { comp, eventType } = e.detail;
 
       const adapter = getAdapter();
@@ -54,27 +78,6 @@ export const prepNavigationHandlers = (
             set.history.index(h ? h.length - 1 : 0);
             set.history.new(selectedShape);
           }
-          break;
-      }
-    },
-    //#endregion
-
-    //#region navToggle handler
-    navToggle: (e) => {
-      const { eventType } = e.detail;
-
-      const adapter = getAdapter();
-      const { controller } = adapter;
-      const { get, set } = controller;
-      const { compInstance } = get;
-
-      const comp = compInstance as LfShapeeditor;
-
-      comp.onLfEvent(e, "lf-event");
-
-      switch (eventType) {
-        case "click":
-          set.navigation.toggleTree();
           break;
       }
     },

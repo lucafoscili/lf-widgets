@@ -116,7 +116,7 @@ export const findImage = (adapter: LfShapeeditorAdapter) => {
  */
 export const load = async (adapter: LfShapeeditorAdapter) => {
   const { controller, elements } = adapter;
-  const { textfield } = elements.refs.navigation;
+  const { textfield } = elements.refs.navigation.jump;
   const { compInstance } = controller.get;
   const { lfLoadCallback } = compInstance;
 

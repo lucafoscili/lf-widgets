@@ -297,7 +297,7 @@ export const getEffectsFixtures = (
     const shapeeditor = comp as unknown as LfShapeeditorElement;
     const components = await shapeeditor.getComponents();
     const settings = await shapeeditor.getSettings();
-    const surfaceEl = components.details.shape as HTMLElement | null;
+    const surfaceEl = components.preview.shape as HTMLElement | null;
 
     if (!surfaceEl) {
       return;

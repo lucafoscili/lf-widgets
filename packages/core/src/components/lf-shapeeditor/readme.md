@@ -7,14 +7,13 @@
 
 ## Overview
 
-A universal 4-panel interactive explorer that transforms any LfShape type
+A universal 3-panel interactive explorer that transforms any LfShape type
 into an explorable, configurable, and previewable experience.
 
 The shapeeditor provides:
-- Categories panel (masonry) for high-level grouping
-- Items panel (tree) for detailed selection and history
-- Preview panel (any LfShape) for visual output
-- Configuration panel (slot) for parameter editing
+- Navigation panel (left): file tree, masonry gallery for shape selection
+- Preview panel (right-top): shape preview with spinner
+- Settings panel (right-bottom): actions, configuration controls, progressbar, snackbar
 
 ## Properties
 
@@ -274,34 +273,29 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                             | Description                                                                                              |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `--lf-shapeeditor-border-color`  | Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)               |
-| `--lf-shapeeditor-border-radius` | Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-shapeeditor-color-bg`      | Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-shapeeditor-color-on-bg`   | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-shapeeditor-font-family`   | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-shapeeditor-font-size`     | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
-| `--lf-shapeeditor-nav-width`     | Sets the width for the navigation panel. Defaults to => auto                                             |
+| Name                               | Description                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-shapeeditor-actions-gap`     | Sets the gap between action items. Defaults to => 0                                                      |
+| `--lf-shapeeditor-actions-padding` | Sets the padding for the actions area. Defaults to => 0                                                  |
+| `--lf-shapeeditor-border-color`    | Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)               |
+| `--lf-shapeeditor-border-radius`   | Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-shapeeditor-color-bg`        | Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-shapeeditor-color-on-bg`     | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-shapeeditor-font-family`     | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-shapeeditor-font-size`       | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
+| `--lf-shapeeditor-nav-width`       | Sets the width for the navigation panel. Defaults to => auto                                             |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [lf-button](../lf-button)
-- [lf-list](../lf-list)
-- [lf-progressbar](../lf-progressbar)
-- [lf-spinner](../lf-spinner)
-- [lf-snackbar](../lf-snackbar)
+- [lf-masonry](../lf-masonry)
 - [lf-tree](../lf-tree)
-- [lf-accordion](../lf-accordion)
-- [lf-checkbox](../lf-checkbox)
+- [lf-button](../lf-button)
 - [lf-textfield](../lf-textfield)
-- [lf-multiinput](../lf-multiinput)
-- [lf-select](../lf-select)
-- [lf-slider](../lf-slider)
-- [lf-toggle](../lf-toggle)
+- [lf-spinner](../lf-spinner)
+- [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
@@ -311,26 +305,26 @@ Type: `Promise<void>`
 - [lf-code](../lf-code)
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
+- [lf-progressbar](../lf-progressbar)
+- [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
-- [lf-masonry](../lf-masonry)
+- [lf-list](../lf-list)
+- [lf-snackbar](../lf-snackbar)
+- [lf-checkbox](../lf-checkbox)
+- [lf-multiinput](../lf-multiinput)
+- [lf-select](../lf-select)
+- [lf-slider](../lf-slider)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-shapeeditor --> lf-button
-  lf-shapeeditor --> lf-list
-  lf-shapeeditor --> lf-progressbar
-  lf-shapeeditor --> lf-spinner
-  lf-shapeeditor --> lf-snackbar
+  lf-shapeeditor --> lf-masonry
   lf-shapeeditor --> lf-tree
-  lf-shapeeditor --> lf-accordion
-  lf-shapeeditor --> lf-checkbox
+  lf-shapeeditor --> lf-button
   lf-shapeeditor --> lf-textfield
-  lf-shapeeditor --> lf-multiinput
-  lf-shapeeditor --> lf-select
-  lf-shapeeditor --> lf-slider
-  lf-shapeeditor --> lf-toggle
+  lf-shapeeditor --> lf-spinner
+  lf-shapeeditor --> lf-accordion
   lf-shapeeditor --> lf-badge
   lf-shapeeditor --> lf-canvas
   lf-shapeeditor --> lf-card
@@ -340,28 +334,32 @@ graph TD;
   lf-shapeeditor --> lf-code
   lf-shapeeditor --> lf-image
   lf-shapeeditor --> lf-photoframe
+  lf-shapeeditor --> lf-progressbar
+  lf-shapeeditor --> lf-toggle
   lf-shapeeditor --> lf-typewriter
   lf-shapeeditor --> lf-upload
-  lf-shapeeditor --> lf-masonry
-  lf-button --> lf-list
-  lf-button --> lf-spinner
-  lf-list --> lf-textfield
-  lf-tree --> lf-textfield
-  lf-tree --> lf-accordion
-  lf-tree --> lf-badge
-  lf-tree --> lf-button
-  lf-tree --> lf-canvas
-  lf-tree --> lf-card
-  lf-tree --> lf-chart
-  lf-tree --> lf-chat
-  lf-tree --> lf-chip
-  lf-tree --> lf-code
-  lf-tree --> lf-image
-  lf-tree --> lf-photoframe
-  lf-tree --> lf-progressbar
-  lf-tree --> lf-toggle
-  lf-tree --> lf-typewriter
-  lf-tree --> lf-upload
+  lf-shapeeditor --> lf-list
+  lf-shapeeditor --> lf-snackbar
+  lf-shapeeditor --> lf-checkbox
+  lf-shapeeditor --> lf-multiinput
+  lf-shapeeditor --> lf-select
+  lf-shapeeditor --> lf-slider
+  lf-masonry --> lf-accordion
+  lf-masonry --> lf-badge
+  lf-masonry --> lf-button
+  lf-masonry --> lf-canvas
+  lf-masonry --> lf-card
+  lf-masonry --> lf-chart
+  lf-masonry --> lf-chat
+  lf-masonry --> lf-chip
+  lf-masonry --> lf-code
+  lf-masonry --> lf-image
+  lf-masonry --> lf-photoframe
+  lf-masonry --> lf-progressbar
+  lf-masonry --> lf-textfield
+  lf-masonry --> lf-toggle
+  lf-masonry --> lf-typewriter
+  lf-masonry --> lf-upload
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -379,6 +377,9 @@ graph TD;
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
   lf-badge --> lf-image
+  lf-button --> lf-list
+  lf-button --> lf-spinner
+  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge
@@ -423,26 +424,26 @@ graph TD;
   lf-article --> lf-upload
   lf-code --> lf-button
   lf-photoframe --> lf-image
+  lf-tree --> lf-textfield
+  lf-tree --> lf-accordion
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-progressbar
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
   lf-multiinput --> lf-chip
   lf-multiinput --> lf-textfield
   lf-select --> lf-list
   lf-select --> lf-textfield
-  lf-masonry --> lf-accordion
-  lf-masonry --> lf-badge
-  lf-masonry --> lf-button
-  lf-masonry --> lf-canvas
-  lf-masonry --> lf-card
-  lf-masonry --> lf-chart
-  lf-masonry --> lf-chat
-  lf-masonry --> lf-chip
-  lf-masonry --> lf-code
-  lf-masonry --> lf-image
-  lf-masonry --> lf-photoframe
-  lf-masonry --> lf-progressbar
-  lf-masonry --> lf-textfield
-  lf-masonry --> lf-toggle
-  lf-masonry --> lf-typewriter
-  lf-masonry --> lf-upload
   style lf-shapeeditor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

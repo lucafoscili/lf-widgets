@@ -32,6 +32,7 @@ import { LfProgressbarElement } from "./progressbar.declarations";
 import {
   LF_SHAPEEDITOR_BLOCKS,
   LF_SHAPEEDITOR_EVENTS,
+  LF_SHAPEEDITOR_IDS,
   LF_SHAPEEDITOR_PARTS,
 } from "./shapeeditor.constants";
 import { LfSnackbarElement } from "./snackbar.declarations";
@@ -50,7 +51,7 @@ import { LfListElement, LfListEventPayload } from "./list.declarations";
 //#region Class
 /**
  * Primary interface implemented by the `lf-shapeeditor` component.
- * A universal 4-panel interactive explorer that transforms any LfShape type
+ * A universal 3-panel interactive explorer that transforms any LfShape type
  * into an explorable, configurable, and previewable experience.
  */
 export interface LfShapeeditorInterface
@@ -105,89 +106,162 @@ export interface LfShapeeditorAdapter
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ * Organized by DOM block hierarchy.
  */
 export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
-  details: {
-    apply: () => VNode;
-    clearHistory: () => VNode;
-    controlActions: () => VNode;
-    deleteShape: () => VNode;
-    historyBadge: () => VNode;
-    historyList: () => VNode;
-    progressbar: () => VNode;
-    redo: () => VNode;
-    reset: () => VNode;
-    save: () => VNode;
-    settings: () => VNode;
-    shape: () => VNode;
-    snackbar: () => VNode;
-    spinner: () => VNode;
-    tree: () => VNode;
-    undo: () => VNode;
-  };
+  /** Navigation panel JSX */
   navigation: {
-    load: () => VNode;
+    /** Explorer sub-block containing tree and expander */
+    explorer: () => VNode;
+    /** Jump sub-block containing textfield and load button */
+    jump: () => VNode;
+    /** Masonry gallery */
     masonry: () => VNode;
-    navToggle: () => VNode;
-    textfield: () => VNode;
+  };
+  /** Preview panel JSX */
+  preview: {
+    /** History sidebar with snapshot list */
+    history: () => VNode;
+    /** Shape display area */
+    shape: () => VNode;
+    /** Loading spinner overlay */
+    spinner: () => VNode;
+  };
+  /** Settings panel JSX */
+  settings: {
+    /** Actions bar with history controls */
+    actions: () => VNode;
+    /** Controls container with snackbar, items, and control actions */
+    controls: () => VNode;
+    /** Progress bar overlay */
+    progressbar: () => VNode;
+    /** Settings tree (DSL selector) */
     tree: () => VNode;
   };
 }
 /**
  * Strongly typed DOM references captured by the component adapter.
+ * Mirrors the DOM hierarchy for lower cognitive load.
  */
 export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
-  details: {
-    apply: LfButtonElement;
-    clearHistory: LfButtonElement;
-    deleteShape: LfButtonElement;
-    historyBadge: LfButtonElement;
-    historyList: LfListElement;
-    historyPopup: HTMLElement;
-    infoIcons: Map<string, HTMLElement>;
-    progressbar: LfProgressbarElement;
-    redo: LfButtonElement;
-    reset: LfButtonElement;
-    save: LfButtonElement;
-    settings: HTMLElement;
-    shape: HTMLElement;
-    snackbar: LfSnackbarElement;
-    spinner: LfSpinnerElement;
-    tree: LfTreeElement;
-    undo: LfButtonElement;
-  };
+  /** Navigation panel refs */
   navigation: {
-    load: LfButtonElement;
+    /** Explorer sub-block refs */
+    explorer: {
+      /** Navigation tree component */
+      tree: LfTreeElement;
+      /** Tree toggle button */
+      expander: LfButtonElement;
+    };
+    /** Jump sub-block refs */
+    jump: {
+      /** Directory path input */
+      textfield: LfTextfieldElement;
+      /** Load button */
+      load: LfButtonElement;
+    };
+    /** Masonry gallery component */
     masonry: LfMasonryElement;
-    navToggle: LfButtonElement;
+  };
+  /** Preview panel refs */
+  preview: {
+    /** History sub-block refs */
+    history: {
+      /** History list component */
+      list: LfListElement;
+    };
+    /** Shape container element */
+    shape: HTMLElement;
+    /** Spinner component */
+    spinner: LfSpinnerElement;
+  };
+  /** Settings panel refs */
+  settings: {
+    /** Actions sub-block refs */
+    actions: {
+      /** Delete shape button */
+      delete: LfButtonElement;
+      /** History toggle button */
+      badge: LfButtonElement;
+      /** Clear history button */
+      clear: LfButtonElement;
+      /** Redo button */
+      redo: LfButtonElement;
+      /** Undo button */
+      undo: LfButtonElement;
+      /** Commit/save button */
+      commit: LfButtonElement;
+    };
+    /** Progress bar component */
+    progressbar: LfProgressbarElement;
+    /** Settings tree component */
     tree: LfTreeElement;
-    textfield: LfTextfieldElement;
+    /** Controls sub-block refs */
+    controls: {
+      /** Snackbar notification component */
+      snackbar: LfSnackbarElement;
+      /** Items sub-block refs */
+      items: {
+        /** Accordion component for grouped controls */
+        accordion: HTMLElement;
+        /** Info icons map for tooltips */
+        infoIcons: Map<string, HTMLElement>;
+      };
+      /** Control actions sub-block refs */
+      controlActions: {
+        /** Apply button */
+        apply: LfButtonElement;
+        /** Reset button */
+        reset: LfButtonElement;
+      };
+    };
   };
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
+ * Organized by panel/block.
  */
 export interface LfShapeeditorAdapterHandlers
   extends LfComponentAdapterHandlers {
-  details: {
+  /** Navigation panel handlers */
+  navigation: {
+    /** Explorer button handler (expander) */
+    expander: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Jump button handler (load) */
+    load: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Masonry selection handler */
+    masonry: (e: CustomEvent<LfMasonryEventPayload>) => void;
+    /** Textfield input handler */
+    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** Tree navigation handler */
+    tree: (e: CustomEvent<LfTreeEventPayload>) => void;
+  };
+  /** Preview panel handlers */
+  preview: {
+    /** History list handler */
+    historyList: (e: CustomEvent<LfListEventPayload>) => Promise<void>;
+    /** Shape event handler */
+    shape: (e: CustomEvent) => void;
+  };
+  /** Settings panel handlers */
+  settings: {
+    /** Actions button handler */
+    actionsButton: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Settings tree handler */
+    tree: (e: CustomEvent<LfTreeEventPayload>) => void;
+    /** Accordion toggle handler */
     accordionToggle: (e: CustomEvent<LfAccordionEventPayload>) => Promise<void>;
-    button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Control change handler */
     controlChange: (
       e: CustomEvent | Event,
       controlId: string,
       value: unknown,
       eventType: LfShapeeditorControlEventType,
     ) => void;
-    historyList: (e: CustomEvent<LfListEventPayload>) => Promise<void>;
-    shape: (e: CustomEvent) => void;
-    tree: (e: CustomEvent<LfTreeEventPayload>) => void;
-  };
-  navigation: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
-    masonry: (e: CustomEvent<LfMasonryEventPayload>) => void;
-    navToggle: (e: CustomEvent<LfButtonEventPayload>) => void;
-    tree: (e: CustomEvent<LfTreeEventPayload>) => void;
-    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** Control actions button handler */
+    controlActionsButton: (
+      e: CustomEvent<LfButtonEventPayload>,
+    ) => Promise<void>;
   };
 }
 /**
@@ -201,6 +275,7 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
   | "currentShape"
   | "cyAttributes"
   | "history"
+  | "ids"
   | "lfAttribute"
   | "manager"
   | "navigation"
@@ -230,7 +305,7 @@ export type LfShapeeditorAdapterInitializerSetters = Pick<
  */
 export interface LfShapeeditorAdapterControllerGetters
   extends LfComponentAdapterGetters<LfShapeeditorInterface> {
-  blocks: typeof LF_SHAPEEDITOR_BLOCKS;
+  blocks: (typeof LF_SHAPEEDITOR_BLOCKS)["shapeeditor"];
   compInstance: LfShapeeditorInterface;
   config: {
     controls: () => LfShapeeditorControlConfig[];
@@ -250,10 +325,11 @@ export interface LfShapeeditorAdapterControllerGetters
     index: () => number;
     isPopupOpen: () => boolean;
   };
+  ids: (typeof LF_SHAPEEDITOR_IDS)["shapeeditor"];
   lfAttribute: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
   navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
-  parts: typeof LF_SHAPEEDITOR_PARTS;
+  parts: (typeof LF_SHAPEEDITOR_PARTS)["shapeeditor"];
   previewValue: () => string | null;
   progressbar: () => LfShapeeditorProgressbarState;
   resetKey: () => number;

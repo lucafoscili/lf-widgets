@@ -221,6 +221,7 @@ export const LF_THEME_MODIFIERS = [
   "has-description",
   "has-drawer",
   "has-header",
+  "has-history",
   "has-icon",
   "has-label",
   "has-nav",
