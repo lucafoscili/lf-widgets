@@ -523,19 +523,16 @@ export class LfChat implements LfChatInterface {
     const emptyMessage = effectiveConfig.ui.emptyMessage;
 
     const { chat, commands, input, messages, request } = this.#b;
+    const { attachments, clear, editableMessage, send, spinner, stt } =
+      this.#adapter.elements.jsx.chat;
     const {
       attachFile,
       attachImage,
-      attachments,
-      clear,
-      editableMessage,
+      configuration: inputConfiguration,
+      fullScreen,
       progressbar,
-      send,
-      settings,
-      spinner,
-      stt,
       textarea,
-    } = this.#adapter.elements.jsx.chat;
+    } = this.#adapter.elements.jsx.input;
     const { history } = this;
 
     return (
@@ -545,7 +542,8 @@ export class LfChat implements LfChatInterface {
           <div class={bemClass(input._)}>
             {attachImage()}
             {attachFile()}
-            {settings()}
+            {inputConfiguration()}
+            {fullScreen()}
             {textarea()}
             {progressbar()}
           </div>

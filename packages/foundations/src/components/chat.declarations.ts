@@ -96,22 +96,15 @@ export interface LfChatAdapter extends LfComponentAdapter<LfChatInterface> {
  */
 export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
   chat: {
-    attachFile: () => VNode;
-    attachImage: () => VNode;
     attachments: () => VNode;
     clear: () => VNode;
     configuration: () => VNode;
     editableMessage: (m: LfLLMChoiceMessage) => VNode;
-    fullScreen: () => VNode;
     messageBlock: (text: string, role: LfLLMRole) => VNode;
-    progressbar: () => VNode;
     retry: () => VNode;
     send: () => VNode;
-    settings: () => VNode;
     spinner: () => VNode;
     stt: () => VNode;
-    textarea: () => VNode;
-    toolExecutionChip: () => VNode | null;
   };
   content: {
     bold: (children: (VNode | string)[]) => VNode;
@@ -129,6 +122,14 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
     listItem: (children: (VNode | string)[]) => VNode;
     orderedList: (children: VNode[]) => VNode;
     paragraph: (children: (VNode | string)[]) => VNode;
+  };
+  input: {
+    attachFile: () => VNode;
+    attachImage: () => VNode;
+    fullScreen: () => VNode;
+    progressbar: () => VNode;
+    configuration: () => VNode;
+    textarea: () => VNode;
   };
   settings: {
     agentSettings: () => VNode;
@@ -164,8 +165,6 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
   chat: {
-    attachFile: LfButtonElement | null;
-    attachImage: LfButtonElement | null;
     attachments: LfChipElement | null;
     clear: LfButtonElement | null;
     configuration: LfButtonElement | null;
@@ -173,16 +172,19 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
     editConfirm: LfButtonElement | null;
     editTextarea: LfTextfieldElement | null;
     fileInput: HTMLInputElement | null;
-    fullScreen: LfButtonElement | null;
     imageInput: HTMLInputElement | null;
-    progressbar: LfProgressbarElement | null;
     retry: LfButtonElement | null;
     send: LfButtonElement | null;
-    settings: LfButtonElement | null;
     spinner: LfSpinnerElement | null;
     stt: LfButtonElement | null;
+  };
+  input: {
+    attachFile: LfButtonElement | null;
+    attachImage: LfButtonElement | null;
+    configuration: LfButtonElement | null;
+    fullScreen: LfButtonElement | null;
+    progressbar: LfProgressbarElement | null;
     textarea: LfTextfieldElement | null;
-    toolExecutionChip: LfChipElement | null;
   };
   settings: {
     agentEnabled: LfCheckboxElement | null;

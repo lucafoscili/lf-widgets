@@ -10,6 +10,7 @@ import {
 } from "@lf-widgets/foundations";
 import { prepChat } from "./elements.chat";
 import { prepContentElements } from "./elements.content";
+import { prepInput } from "./elements.input";
 import { prepSettings } from "./elements.settings";
 import { prepToolbar } from "./elements.toolbar";
 import { prepChatHandlers } from "./handlers.chat";
@@ -44,7 +45,7 @@ export const createGetters = (
   return {
     ...getters,
     newPrompt: async () => {
-      const { textarea } = getAdapter().elements.refs.chat;
+      const { textarea } = getAdapter().elements.refs.input;
 
       await textarea.setBlur();
       const message = await textarea.getValue();
@@ -74,6 +75,7 @@ export const createElementsJsx = (
   return {
     chat: prepChat(getAdapter),
     content: prepContentElements(getAdapter),
+    input: prepInput(getAdapter),
     settings: prepSettings(getAdapter),
     toolbar: prepToolbar(getAdapter),
   };
@@ -96,8 +98,6 @@ export const createHandlers = (
 export const createRefs = (): LfChatAdapterRefs => {
   return {
     chat: {
-      attachFile: null,
-      attachImage: null,
       attachments: null,
       clear: null,
       configuration: null,
@@ -105,16 +105,19 @@ export const createRefs = (): LfChatAdapterRefs => {
       editConfirm: null,
       editTextarea: null,
       fileInput: null,
-      fullScreen: null,
       imageInput: null,
-      progressbar: null,
       retry: null,
       send: null,
-      settings: null,
       spinner: null,
       stt: null,
+    },
+    input: {
+      attachFile: null,
+      attachImage: null,
+      configuration: null,
+      fullScreen: null,
+      progressbar: null,
       textarea: null,
-      toolExecutionChip: null,
     },
     settings: {
       agentEnabled: null,

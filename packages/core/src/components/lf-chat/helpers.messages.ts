@@ -56,7 +56,7 @@ export const calcTokens = async (
  * @returns A Promise that resolves when the textarea is cleared and focused
  */
 export const clearTextarea = async (adapter: LfChatAdapter) => {
-  const { textarea } = adapter.elements.refs.chat;
+  const { textarea } = adapter.elements.refs.input;
 
   requestAnimationFrame(async () => {
     await textarea.setValue("");

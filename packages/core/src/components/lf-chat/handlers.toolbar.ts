@@ -4,14 +4,14 @@ import {
   LfChatAdapterHandlers,
 } from "@lf-widgets/foundations";
 import {
+  handleAttachmentClick,
+  handleAttachmentDelete,
+} from "./helpers.attachments";
+import {
   deleteMessage,
   editMessage,
   regenerateMessage,
 } from "./helpers.messages";
-import {
-  handleAttachmentClick,
-  handleAttachmentDelete,
-} from "./helpers.attachments";
 
 export const prepToolbarHandlers = (
   getAdapter: () => LfChatAdapter,

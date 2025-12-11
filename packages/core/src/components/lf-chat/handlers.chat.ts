@@ -22,7 +22,7 @@ export const prepChatHandlers = (
       const { controller, elements } = adapter;
       const { get, set } = controller;
       const { refs } = elements;
-      const { stt, textarea } = refs.chat;
+      const { chat, input } = refs;
       const { llm } = get.manager;
       const comp = get.compInstance as LfChat;
 
@@ -30,13 +30,13 @@ export const prepChatHandlers = (
         case "click":
           switch (id) {
             // Attach File
-            case LF_CHAT_IDS.chat.attachFile: {
+            case LF_CHAT_IDS.input.attachFile: {
               await get.compInstance.handleFileAttachment();
               break;
             }
 
             // Attach Image
-            case LF_CHAT_IDS.chat.attachImage: {
+            case LF_CHAT_IDS.input.attachImage: {
               await get.compInstance.handleImageAttachment();
               break;
             }
@@ -50,7 +50,7 @@ export const prepChatHandlers = (
 
             // Configuration
             case LF_CHAT_IDS.chat.configuration:
-            case LF_CHAT_IDS.chat.settings: {
+            case LF_CHAT_IDS.input.configuration: {
               set.view("settings");
               break;
             }
@@ -99,7 +99,7 @@ export const prepChatHandlers = (
             }
 
             // Full Screen
-            case LF_CHAT_IDS.chat.fullScreen: {
+            case LF_CHAT_IDS.input.fullScreen: {
               set.toggleFullScreen();
               break;
             }
@@ -122,7 +122,7 @@ export const prepChatHandlers = (
 
             // STT
             case LF_CHAT_IDS.chat.stt: {
-              llm.speechToText(textarea, stt);
+              llm.speechToText(input.textarea, chat.stt);
               break;
             }
           }

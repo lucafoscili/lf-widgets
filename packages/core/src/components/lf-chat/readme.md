@@ -274,11 +274,11 @@ Type: `Promise<void>`
 - [lf-spinner](../lf-spinner)
 - [lf-article](../lf-article)
 - [lf-accordion](../lf-accordion)
-- [lf-button](../lf-button)
 - [lf-chip](../lf-chip)
+- [lf-button](../lf-button)
 - [lf-textfield](../lf-textfield)
-- [lf-progressbar](../lf-progressbar)
 - [lf-code](../lf-code)
+- [lf-progressbar](../lf-progressbar)
 - [lf-checkbox](../lf-checkbox)
 
 ### Graph
@@ -287,11 +287,11 @@ graph TD;
   lf-chat --> lf-spinner
   lf-chat --> lf-article
   lf-chat --> lf-accordion
-  lf-chat --> lf-button
   lf-chat --> lf-chip
+  lf-chat --> lf-button
   lf-chat --> lf-textfield
-  lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-article --> lf-chat
   lf-accordion --> lf-chat
