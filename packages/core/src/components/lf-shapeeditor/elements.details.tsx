@@ -13,7 +13,7 @@ import {
   LfShapeeditorLayoutRenderItem,
   LfShapeeditorRenderSegment,
 } from "@lf-widgets/foundations";
-import { h, VNode } from "@stencil/core";
+import { Fragment, h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { LfShape } from "../../utils/shapes";
 import { LfShapeeditor } from "./lf-shapeeditor";
@@ -106,6 +106,118 @@ export const prepDetails = (
           ref={assignRef(details, "deleteShape")}
         ></lf-button>
       );
+    },
+    // #endregion
+
+    // #region Control actions (Reset/Apply at bottom of settings)
+    controlActions: () => {
+      const adapter = getAdapter();
+      const { controller } = adapter;
+      const { blocks, config, manager } = controller.get;
+      const { theme } = manager;
+      const { bemClass } = theme;
+
+      // Get DSL behavior metadata to determine if Apply button should show
+      const controls = config?.controls?.() || [];
+      const showApply = controls.length > 0;
+
+      return (
+        <div
+          class={bemClass(
+            blocks.detailsGrid._,
+            blocks.detailsGrid.controlActions,
+          )}
+        >
+          {adapter.elements.jsx.details.reset()}
+          {showApply && adapter.elements.jsx.details.apply()}
+        </div>
+      );
+    },
+    // #endregion
+
+    // #region History badge
+    historyBadge: () => {
+      const { controller, elements, handlers } = getAdapter();
+      const { blocks, cyAttributes, history, lfAttribute, manager } =
+        controller.get;
+      const { current, index, isPopupOpen } = history;
+      const { details } = elements.refs;
+      const { historyList } = handlers.details;
+      const { assignRef, theme } = manager;
+      const { bemClass, get } = theme;
+
+      const currentHistory = current();
+      const hasHistory = currentHistory && currentHistory.length > 0;
+      if (!hasHistory) {
+        return null;
+      }
+
+      const currentIndex = index();
+      const total = currentHistory.length;
+
+      // Build dataset from history for lf-list
+      const historyDataset: LfDataDataset = {
+        nodes: currentHistory.map((_, i) => ({
+          id: String(i),
+          value: `#${i}`,
+          icon: i === currentIndex ? "--lf-icon-success" : undefined,
+        })),
+      };
+
+      const historyIcon = get.icon("stackPop");
+
+      return (
+        <Fragment>
+          <lf-button
+            class={bemClass(
+              blocks.detailsGrid._,
+              blocks.detailsGrid.historyBadge,
+            )}
+            data-cy={cyAttributes.button}
+            lfIcon={historyIcon}
+            lfLabel={`History: ${currentIndex + 1}/${total}`}
+            lfStyling="flat"
+            lfUiSize="small"
+            onLf-button-event={(e) => {
+              if (e.detail.eventType === "click") {
+                controller.set.history.togglePopup();
+              }
+            }}
+            ref={assignRef(details, "historyBadge")}
+          ></lf-button>
+          {isPopupOpen() && (
+            <div
+              class={bemClass(
+                blocks.detailsGrid._,
+                blocks.detailsGrid.historyPopup,
+                { expanded: true },
+              )}
+              data-lf={lfAttribute.fadeIn}
+              ref={assignRef(details, "historyPopup")}
+            >
+              <lf-list
+                class={bemClass(
+                  blocks.detailsGrid._,
+                  blocks.detailsGrid.historyList,
+                )}
+                id={IDS.details.historyList}
+                lfDataset={historyDataset}
+                lfEnableDeletions={total > 1}
+                lfValue={currentIndex}
+                onLf-list-event={historyList}
+                ref={assignRef(details, "historyList")}
+              ></lf-list>
+            </div>
+          )}
+        </Fragment>
+      );
+    },
+    // #endregion
+
+    // #region History list
+    historyList: () => {
+      // This is handled inline within historyBadge for proper positioning
+      return null;
     },
     // #endregion
 
@@ -612,7 +724,7 @@ const createControl = (
   adapter: LfShapeeditorAdapter,
 ): VNode => {
   const { controller } = adapter;
-  const { blocks, compInstance, manager } = controller.get;
+  const { blocks, compInstance, manager, resetKey } = controller.get;
   const { detailsGrid } = blocks;
   const { logs } = manager.debug;
   const { bemClass } = manager.theme;
@@ -623,11 +735,14 @@ const createControl = (
     ? renderInfoIcon(adapter, config.description)
     : null;
 
+  // Use resetKey in the key to force re-creation when controls are reset
+  const controlKey = `${config.id}-${resetKey()}`;
+
   switch (config.type) {
     case "checkbox":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-checkbox
@@ -646,7 +761,7 @@ const createControl = (
     case "colorpicker":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-textfield
@@ -669,7 +784,7 @@ const createControl = (
     case "multiinput":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-multiinput
@@ -693,7 +808,7 @@ const createControl = (
     case "number":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-textfield
@@ -724,7 +839,7 @@ const createControl = (
     case "select":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-select
@@ -749,7 +864,7 @@ const createControl = (
     case "slider":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-slider
@@ -773,7 +888,7 @@ const createControl = (
     case "textfield":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-textfield
@@ -793,7 +908,7 @@ const createControl = (
     case "toggle":
       return (
         <div
-          key={config.id}
+          key={controlKey}
           class={bemClass(detailsGrid._, detailsGrid.controlItem)}
         >
           <lf-toggle

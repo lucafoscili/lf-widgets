@@ -134,6 +134,7 @@ export const load = async (adapter: LfShapeeditorAdapter) => {
  * Resets the configuration controls to their default values.
  * Builds default settings from control definitions and merges with current settings,
  * preserving any settings not defined in the current control set.
+ * Also increments the resetKey to force control re-creation.
  *
  * @param adapter - The shape editor adapter instance containing controller and config state
  * @returns A promise that resolves when the reset operation is complete
@@ -157,6 +158,9 @@ export const resetControls = async (adapter: LfShapeeditorAdapter) => {
   }
 
   adapter.controller.set.config.settings(resetSettings);
+
+  // Increment resetKey to force control re-creation
+  adapter.controller.set.resetKey();
 };
 //#endregion
 

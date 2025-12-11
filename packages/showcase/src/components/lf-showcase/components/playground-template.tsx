@@ -29,7 +29,7 @@ export const PlaygroundTemplate: FunctionalComponent<{
       <div class={bemClass("playground-template", "description")}>
         {description}
       </div>
-      <lf-shapeeditor id={id} {...(props as any)} {...eventProps}>
+      <lf-shapeeditor id={id} {...props} {...eventProps}>
         {prepSlot(manager, slots)}
       </lf-shapeeditor>
     </div>

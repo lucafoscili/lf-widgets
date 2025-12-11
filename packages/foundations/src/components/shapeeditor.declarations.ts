@@ -45,6 +45,7 @@ import {
   LfTreeEventPayload,
   LfTreePropsInterface,
 } from "./tree.declarations";
+import { LfListElement, LfListEventPayload } from "./list.declarations";
 
 //#region Class
 /**
@@ -64,6 +65,7 @@ export interface LfShapeeditorInterface
     value: string;
   }>;
   getSettings: () => Promise<LfShapeeditorConfigSettings>;
+  getShapeElement: () => Promise<Element | null>;
   reset: () => Promise<void>;
   resetControls: () => Promise<void>;
   setPreviewValue: (value: string | null) => Promise<void>;
@@ -108,7 +110,10 @@ export interface LfShapeeditorAdapterJsx extends LfComponentAdapterJsx {
   details: {
     apply: () => VNode;
     clearHistory: () => VNode;
+    controlActions: () => VNode;
     deleteShape: () => VNode;
+    historyBadge: () => VNode;
+    historyList: () => VNode;
     progressbar: () => VNode;
     redo: () => VNode;
     reset: () => VNode;
@@ -136,6 +141,9 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
     apply: LfButtonElement;
     clearHistory: LfButtonElement;
     deleteShape: LfButtonElement;
+    historyBadge: LfButtonElement;
+    historyList: LfListElement;
+    historyPopup: HTMLElement;
     infoIcons: Map<string, HTMLElement>;
     progressbar: LfProgressbarElement;
     redo: LfButtonElement;
@@ -170,6 +178,7 @@ export interface LfShapeeditorAdapterHandlers
       value: unknown,
       eventType: LfShapeeditorControlEventType,
     ) => void;
+    historyList: (e: CustomEvent<LfListEventPayload>) => Promise<void>;
     shape: (e: CustomEvent) => void;
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
   };
@@ -198,6 +207,7 @@ export type LfShapeeditorAdapterInitializerGetters = Pick<
   | "parts"
   | "previewValue"
   | "progressbar"
+  | "resetKey"
   | "snackbar"
   | "spinnerStatus"
 >;
@@ -212,6 +222,7 @@ export type LfShapeeditorAdapterInitializerSetters = Pick<
   | "navigation"
   | "previewValue"
   | "progressbar"
+  | "resetKey"
   | "snackbar"
 >;
 /**
@@ -237,6 +248,7 @@ export interface LfShapeeditorAdapterControllerGetters
     };
     full: () => LfShapeeditorHistory;
     index: () => number;
+    isPopupOpen: () => boolean;
   };
   lfAttribute: typeof LF_ATTRIBUTES;
   manager: LfFrameworkInterface;
@@ -244,6 +256,7 @@ export interface LfShapeeditorAdapterControllerGetters
   parts: typeof LF_SHAPEEDITOR_PARTS;
   previewValue: () => string | null;
   progressbar: () => LfShapeeditorProgressbarState;
+  resetKey: () => number;
   snackbar: () => LfShapeeditorSnackbarState;
   spinnerStatus: () => boolean;
 }
@@ -263,10 +276,12 @@ export interface LfShapeeditorAdapterControllerSetters
     index: (index: number) => void;
     new: (shape: LfMasonrySelectedShape, isSnapshot?: boolean) => void;
     pop: (index?: number) => void;
+    togglePopup: () => void;
   };
   navigation: { isTreeOpen: (open: boolean) => void; toggleTree: () => void };
   previewValue: (value: string | null) => void;
   progressbar: (state: Partial<LfShapeeditorProgressbarState>) => void;
+  resetKey: () => void;
   snackbar: (state: Partial<LfShapeeditorSnackbarState>) => void;
   spinnerStatus: (active: boolean) => void;
 }

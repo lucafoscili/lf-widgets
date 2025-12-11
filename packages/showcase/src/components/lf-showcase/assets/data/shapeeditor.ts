@@ -7,6 +7,7 @@ import {
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
+  LfShapeeditorConfigDsl,
   LfShapeeditorConfigSettings,
   LfShapeeditorElement,
   LfShapeeditorEventPayload,
@@ -191,11 +192,15 @@ const createSimulatedApi = (delayMs = 500) => {
 //#region Image Editor Fixture
 interface ImageEditorFixtureJson {
   canvasDataset?: LfDataDataset;
+  dsl?: Record<string, LfShapeeditorConfigDsl>;
   settingsDataset?: LfDataDataset;
 }
 
-const { canvasDataset: rawCanvasDataset, settingsDataset: rawSettingsDataset } =
-  imageEditorJson as ImageEditorFixtureJson;
+const {
+  canvasDataset: rawCanvasDataset,
+  dsl: filterDsl,
+  settingsDataset: rawSettingsDataset,
+} = imageEditorJson as ImageEditorFixtureJson;
 
 /**
  * Resolves asset paths in the canvas dataset nodes.
@@ -325,12 +330,26 @@ export const getShapeeditorFixtures = (
       }
       //#endregion
       //#region change
-      // Control value committed (e.g., slider released) - capture snapshot
+      // Control value committed (e.g., slider released) - capture snapshot only for "live" behavior
       case "change": {
         const settings = await shapeeditor.getSettings();
         const snapshot = await shapeeditor.getCurrentSnapshot();
 
         if (!currentFilterType || !snapshot?.value) return;
+
+        // Check the DSL behavior for this filter
+        const dsl = filterDsl?.[currentFilterType];
+        const behavior = dsl?.behavior ?? "live";
+
+        // For "configure" or "manual" behaviors, don't create snapshot on change
+        // - "configure": snapshot is created by commitTrigger (e.g., stroke event)
+        // - "manual": snapshot is created by explicit Apply button click
+        if (behavior !== "live") {
+          console.log(
+            `Change event for "${currentFilterType}" (${behavior} behavior) - no snapshot created`,
+          );
+          return;
+        }
 
         try {
           const result = await simulatedApi.process(
@@ -372,6 +391,15 @@ export const getShapeeditorFixtures = (
         const snapshot = await shapeeditor.getCurrentSnapshot();
 
         if (!currentFilterType || !snapshot?.value) return;
+
+        // Check if preview is enabled for this filter
+        const dsl = filterDsl?.[currentFilterType];
+        const enablePreview = dsl?.enablePreview ?? dsl?.behavior === "live";
+
+        if (!enablePreview) {
+          console.log(`Preview disabled for "${currentFilterType}" - skipping`);
+          return;
+        }
 
         try {
           const result = await simulatedApi.process(

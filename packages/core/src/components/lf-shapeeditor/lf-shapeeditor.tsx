@@ -155,6 +155,10 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     visible: false,
   };
   /**
+   * Tracks whether the history popup is open.
+   */
+  @State() isHistoryPopupOpen = false;
+  /**
    * State for the inline snackbar notification.
    */
   @State() snackbarState: LfShapeeditorSnackbarState = {
@@ -162,6 +166,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     uiState: "info",
     visible: false,
   };
+  /**
+   * Counter incremented on reset to force control re-creation.
+   * Used as part of control keys to ensure they re-render with new values.
+   */
+  @State() resetKey = 0;
   //#endregion
 
   //#region Props
@@ -335,6 +344,19 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     return this.#adapter.controller.get.history.currentSnapshot();
   }
   /**
+   * Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.
+   * Useful for programmatic access to shape-specific methods like brush settings on canvas.
+   * @returns {Promise<Element | null>} The shape element, or null if not found.
+   */
+  @Method()
+  async getShapeElement(): Promise<Element | null> {
+    const { shape } = this.#adapter.elements.refs.details;
+    if (!shape) return null;
+
+    // The shape component will be the first child element
+    return shape.firstElementChild;
+  }
+  /**
    * Fetches debug information of the component's current state.
    * @returns {Promise<LfDebugLifecycleInfo>} A promise that resolves with the debug information object.
    */
@@ -480,6 +502,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           },
           full: () => this.history,
           index: () => this.historyIndex,
+          isPopupOpen: () => this.isHistoryPopupOpen,
         },
         lfAttribute: this.#lf,
         manager: this.#framework,
@@ -490,6 +513,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         parts: this.#p,
         previewValue: () => this.previewValue,
         progressbar: () => this.progressbarState,
+        resetKey: () => this.resetKey,
         snackbar: () => this.snackbarState,
         spinnerStatus: () => this.isSpinnerActive,
       },
@@ -540,6 +564,9 @@ export class LfShapeeditor implements LfShapeeditorInterface {
               this.historyIndex = null;
             }
           },
+          togglePopup: () => {
+            this.isHistoryPopupOpen = !this.isHistoryPopupOpen;
+          },
         },
         navigation: {
           isTreeOpen: (open: boolean) => {
@@ -554,6 +581,9 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         },
         progressbar: (state) => {
           this.progressbarState = { ...this.progressbarState, ...state };
+        },
+        resetKey: () => {
+          this.resetKey++;
         },
         snackbar: (state) => {
           this.snackbarState = { ...this.snackbarState, ...state };
@@ -584,12 +614,12 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
     const { detailsGrid } = this.#b;
     const {
-      apply,
       clearHistory,
+      controlActions,
       deleteShape,
+      historyBadge,
       progressbar,
       redo,
-      reset,
       save,
       settings,
       shape,
@@ -604,21 +634,21 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         <div class={bemClass(detailsGrid._, detailsGrid.preview)}>
           {shape()}
           {spinner()}
-          {progressbar()}
         </div>
         <div class={bemClass(detailsGrid._, detailsGrid.actions)}>
-          {reset()}
-          {apply()}
+          {historyBadge()}
           {deleteShape()}
           {clearHistory()}
           {undo()}
           {redo()}
           {save()}
         </div>
+        {progressbar()}
         {tree()}
         <div class={bemClass(detailsGrid._, detailsGrid.settings)}>
           {snackbar()}
           {settings()}
+          {controlActions()}
         </div>
       </div>
     );

@@ -122,23 +122,63 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     border-left: $borderC;
     box-sizing: border-box;
     display: none;
-    grid-template-areas: "image image" "actions actions" "tree settings";
+    grid-template-areas:
+      "image image"
+      "actions actions"
+      "progressbar progressbar"
+      "tree settings";
     grid-template-columns: 40% 1fr;
     grid-template-rows: 60% auto 1fr;
     overflow: auto;
   }
 
   &__actions {
-    border-left: $borderC;
+    border-bottom: $borderC;
     box-sizing: border-box;
     display: flex;
+    gap: 0.25em;
     grid-area: actions;
+    padding: 0.25em;
+  }
+
+  &__control-actions {
+    border-top: $borderC;
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.5em;
+    justify-content: flex-end;
+    padding: 0.75em 1em;
   }
 
   &__control-item {
     align-items: center;
     display: flex;
     padding: 0.5em 1em;
+  }
+
+  &__history-badge {
+    margin-right: auto;
+  }
+
+  &__history-list {
+    max-height: 200px;
+    overflow: auto;
+    width: 100%;
+  }
+
+  &__history-popup {
+    @include lf-el-transition(default);
+    background: rgba(var(--lf-color-bg), 0.95);
+    border: $borderC;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: block;
+    left: 0;
+    min-width: 180px;
+    padding: 0.5em;
+    position: absolute;
+    top: 100%;
+    z-index: 20;
   }
 
   &__info-icon {
@@ -161,6 +201,7 @@ $borderC: 1px solid rgba(var(--lf-color-border));
   &__progressbar {
     & {
       @include lf-el-transition("slow-start");
+      grid-area: progressbar;
       height: 1em;
       left: 0;
       opacity: 1;
