@@ -13,11 +13,12 @@ Focused rules only; everything else is normal Stencil / TypeScript best practice
 - Single outward event (`lf-<name>-event`) via `onLfEvent`.
 - Data: `LfDataDataset`; non‑primitives through `<LfShape/>`, primitives via `stringify`; add `lfValue` if missing.
 - Adapter: `{ controller.get/set, elements.jsx/refs, handlers }`; getters are functions; types only from foundations.
+- **DOM-Driven**: `LF_<COMP>_BLOCKS` defines DOM hierarchy; refs/IDS/SCSS/files all mirror this structure (see 5.4).
 - Foundations: no runtime logic. Framework: generic utilities only. Core: component state + rendering.
-- Styling: only `theme.bemClass` with `LF_<COMP>_BLOCKS`.
+- Styling: only `theme.bemClass` with `LF_<COMP>_BLOCKS`; each block gets its own SCSS block.
 - State mutation: clone Sets/Maps before reassign; debounce filters (300ms).
 - Avoid: extra events, ad‑hoc traversal duplicated from framework, local shape maps, timers in refs, monolithic >300 line adapters.
-- Pre-PR: build foundations/core, docs sync, run unit tests (`yarn test:unit`), verify adapter + SoC + TDD checklists.
+- Pre-PR: build foundations/core, docs sync, run unit tests (`yarn test:unit`), verify adapter + SoC + TDD + DOM-driven checklists.
 
 ## 1. Packages (monorepo)
 
@@ -476,6 +477,195 @@ export const prepBreadcrumbsJsx = (
   },
 });
 ```
+
+## 5.4 DOM-Driven Architecture (Canonical Pattern)
+
+**The DOM structure MUST mirror `LF_<COMP>_BLOCKS`**. This ensures consistency between BEM classes, refs, IDs, parts, and file organization.
+
+### A. Blocks Define DOM Hierarchy
+
+Each entry in `LF_<COMP>_BLOCKS` represents a BEM block that:
+
+1. Gets its own SCSS block (not just an element of parent)
+2. Gets a dedicated `elements.<block>.tsx` file (for medium/complex components)
+3. Maps to a nested structure in `refs`
+4. Has corresponding entries in `IDS` and `PARTS`
+
+Example (`lf-shapeeditor`):
+
+```ts
+// In foundations: shapeeditor.constants.ts
+export const LF_SHAPEEDITOR_BLOCKS = {
+  shapeeditor: { _: "shapeeditor", grid: "grid", viewer: "viewer", navigation: "navigation", ... },
+  navigation: { _: "navigation", explorer: "explorer", jump: "jump", masonry: "masonry" },
+  explorer: { _: "explorer", tree: "tree", expander: "expander" },
+  jump: { _: "jump", textfield: "textfield", load: "load" },
+  // ... more blocks
+};
+```
+
+### B. Refs Mirror DOM Nesting
+
+Refs structure MUST nest to match the DOM hierarchy:
+
+```ts
+// ✅ Correct: nested refs mirror DOM
+refs: {
+  navigation: {
+    explorer: { tree: null, expander: null },
+    jump: { textfield: null, load: null },
+    masonry: null,
+  },
+  settings: {
+    actions: { badge: null, list: null, delete: null, ... },
+    controls: {
+      snackbar: null,
+      items: { accordion: null, infoIcons: [] },
+      controlActions: { apply: null, reset: null },
+    },
+  },
+}
+
+// ❌ Wrong: flat refs don't reflect DOM structure
+refs: {
+  tree: null,
+  expander: null,
+  textfield: null,
+  // ...
+}
+```
+
+### C. IDS Mirror Blocks
+
+IDs follow the same nested pattern for consistency:
+
+```ts
+export const LF_SHAPEEDITOR_IDS = {
+  navigation: {
+    explorer: { tree: "tree", expander: "expander" },
+    jump: { textfield: "textfield", load: "load" },
+  },
+  settings: {
+    actions: { badge: "history-badge", list: "history-list", ... },
+    controls: { snackbar: "snackbar", ... },
+  },
+};
+```
+
+### D. File Organization by Block
+
+For medium/complex components, split element files by block scope:
+
+```text
+lf-shapeeditor/
+├── elements.navigation.tsx      # Parent: delegates to explorer, jump, masonry
+├── elements.explorer.tsx        # Sub-block: tree + expander
+├── elements.jump.tsx            # Sub-block: textfield + load
+├── elements.settings.tsx        # Parent: delegates to actions, controls, tree, progressbar
+├── elements.actions.tsx         # Sub-block: badge, list, delete, clear, redo, undo, commit
+├── elements.controls.tsx        # Sub-block: snackbar, items, controlActions
+├── elements.items.tsx           # Sub-block: accordion, control items
+├── elements.controlActions.tsx  # Sub-block: apply, reset buttons
+└── elements.preview.tsx         # Standalone: shape + spinner
+```
+
+### E. SCSS Block Structure
+
+Each block in `LF_<COMP>_BLOCKS` gets its own SCSS block:
+
+```scss
+// ✅ Correct: each block is independent
+.navigation {
+  &__explorer { ... }
+  &__jump { ... }
+  &__masonry { ... }
+}
+
+.explorer {
+  &__tree { ... }
+  &__expander { ... }
+}
+
+.jump {
+  &__textfield { ... }
+  &__load { ... }
+}
+
+// ❌ Wrong: deeply nested elements in parent block
+.navigation {
+  &__tree { ... }        // Should be in .explorer block
+  &__textfield { ... }   // Should be in .jump block
+}
+```
+
+### F. Parts for CSS Customization
+
+Every block element should expose a `::part()` for external styling:
+
+```ts
+export const LF_SHAPEEDITOR_PARTS = {
+  shapeeditor: "shapeeditor",
+  navigation: "navigation",
+  explorer: "explorer",
+  explorerTree: "explorer-tree",
+  explorerExpander: "explorer-expander",
+  jump: "jump",
+  jumpTextfield: "jump-textfield",
+  jumpLoad: "jump-load",
+  // ... all blocks and their elements
+};
+```
+
+### G. Handler Splitting by Domain
+
+Split handlers when they serve logically distinct interactions:
+
+```ts
+// ✅ Correct: split by interaction domain
+handlers: {
+  navigation: {
+    expander: async (e) => { /* toggle drawer */ },
+    load: async (e) => { /* load from path */ },
+    tree: async (e) => { /* navigate tree */ },
+  },
+  settings: {
+    actionsButton: async (e) => { /* history/delete/commit actions */ },
+    controlActionsButton: async (e) => { /* apply/reset */ },
+    tree: async (e) => { /* settings tree navigation */ },
+  },
+}
+
+// ❌ Wrong: monolithic button handler
+handlers: {
+  button: async (e) => {
+    // Giant switch handling ALL buttons from ALL panels
+  },
+}
+```
+
+### H. Quick Reference Table
+
+| Artifact | Naming Pattern | Location |
+| --- | --- | --- |
+| Block constant | `LF_<COMP>_BLOCKS.<block>` | `foundations/shapeeditor.constants.ts` |
+| ID constant | `LF_<COMP>_IDS.<panel>.<block>.<element>` | `foundations/shapeeditor.constants.ts` |
+| Part constant | `LF_<COMP>_PARTS.<block><Element>` | `foundations/shapeeditor.constants.ts` |
+| Refs interface | `refs.<panel>.<block>.<element>` | `foundations/shapeeditor.declarations.ts` |
+| JSX function | `jsx.<block>()` | `core/elements.<block>.tsx` |
+| SCSS block | `.<block> { &__<element> }` | `core/lf-<comp>.scss` |
+| Handler | `handlers.<panel>.<domain>` | `core/handlers.<panel>.ts` |
+
+### I. DOM-Driven Checklist
+
+Before finalizing a component structure:
+
+- [ ] Each `LF_<COMP>_BLOCKS` entry has a corresponding SCSS block
+- [ ] Refs nest to exactly match DOM hierarchy
+- [ ] IDS structure mirrors blocks structure
+- [ ] Parts exist for all block elements needing external styling
+- [ ] Element files split by block (for medium/complex)
+- [ ] Handlers grouped by interaction domain, not by element type
+- [ ] Main TSX `#prep*()` methods delegate to JSX functions from element files
 
 ## 6. Styling & Theming
 
