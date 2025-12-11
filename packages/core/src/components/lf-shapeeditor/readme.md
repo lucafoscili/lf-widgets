@@ -110,6 +110,18 @@ Type: `Promise<LfDebugLifecycleInfo>`
 
 A promise that resolves with the debug information object.
 
+### `getDsl() => Promise<LfShapeeditorConfigDsl | null>`
+
+Returns the full DSL configuration including behavioral metadata.
+Consumers can use this to read the current filter's behavior type,
+commit trigger, and button visibility flags.
+
+#### Returns
+
+Type: `Promise<LfShapeeditorConfigDsl>`
+
+The current DSL or null if not set.
+
 ### `getProps() => Promise<LfShapeeditorPropsInterface>`
 
 Used to retrieve component's properties and descriptions.
@@ -273,18 +285,21 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                               | Description                                                                                              |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `--lf-shapeeditor-actions-gap`     | Sets the gap between action items. Defaults to => 0                                                      |
-| `--lf-shapeeditor-actions-padding` | Sets the padding for the actions area. Defaults to => 0                                                  |
-| `--lf-shapeeditor-border-color`    | Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)               |
-| `--lf-shapeeditor-border-radius`   | Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-shapeeditor-color-bg`        | Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-shapeeditor-color-on-bg`     | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-shapeeditor-font-family`     | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-shapeeditor-font-size`       | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
-| `--lf-shapeeditor-nav-ratio`       | Sets the navigation column width ratio. Defaults to => 0.3 (30%)                                         |
-| `--lf-shapeeditor-nav-width`       | Sets the width for the navigation tree panel. Defaults to => 200px                                       |
+| Name                                       | Description                                                                                              |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `--lf-shapeeditor-actions-gap`             | Sets the gap between action items. Defaults to => 0                                                      |
+| `--lf-shapeeditor-actions-padding`         | Sets the padding for the actions area. Defaults to => 0                                                  |
+| `--lf-shapeeditor-border-color`            | Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)               |
+| `--lf-shapeeditor-border-radius`           | Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-shapeeditor-color-bg`                | Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-shapeeditor-color-on-bg`             | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-shapeeditor-control-actions-padding` | Sets the padding for the control actions area. Defaults to => 0                                          |
+| `--lf-shapeeditor-font-family`             | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-shapeeditor-font-size`               | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
+| `--lf-shapeeditor-history-padding`         | Sets the padding for the history panel. Defaults to => 0                                                 |
+| `--lf-shapeeditor-history-width`           | Sets the width for the history panel. Defaults to => 180px                                               |
+| `--lf-shapeeditor-nav-ratio`               | Sets the navigation column width ratio. Defaults to => 0.3 (30%)                                         |
+| `--lf-shapeeditor-nav-width`               | Sets the width for the navigation tree panel. Defaults to => 200px                                       |
 
 
 ## Dependencies

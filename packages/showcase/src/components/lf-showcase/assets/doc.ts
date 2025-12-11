@@ -4310,6 +4310,15 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "() => Promise<LfDebugLifecycleInfo>",
       },
       {
+        name: "getDsl",
+        docs: "Returns the full DSL configuration including behavioral metadata.\r\nConsumers can use this to read the current filter's behavior type,\r\ncommit trigger, and button visibility flags.",
+        returns: {
+          type: "Promise<LfShapeeditorConfigDsl>",
+          docs: "The current DSL or null if not set.",
+        },
+        signature: "() => Promise<LfShapeeditorConfigDsl | null>",
+      },
+      {
         name: "getProps",
         docs: "Used to retrieve component's properties and descriptions.",
         returns: {
@@ -4479,12 +4488,24 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)",
       },
       {
+        name: "--lf-shapeeditor-control-actions-padding",
+        docs: "Sets the padding for the control actions area. Defaults to => 0",
+      },
+      {
         name: "--lf-shapeeditor-font-family",
         docs: "Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-shapeeditor-font-size",
         docs: "Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-shapeeditor-history-padding",
+        docs: "Sets the padding for the history panel. Defaults to => 0",
+      },
+      {
+        name: "--lf-shapeeditor-history-width",
+        docs: "Sets the width for the history panel. Defaults to => 180px",
       },
       {
         name: "--lf-shapeeditor-nav-ratio",

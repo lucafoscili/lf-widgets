@@ -215,11 +215,18 @@ $borderC: 1px solid rgba(var(--lf-color-border));
     box-sizing: border-box;
     display: grid;
     grid-area: history;
-    max-width: 200px;
     min-height: 0;
-    min-width: 120px;
     overflow: auto;
-    padding: 0.5em;
+    /**
+    * @prop --lf-#{$comp}-history-padding: Sets the padding for the history panel.
+    *                                      Defaults to => 0
+    */
+    padding: var(--lf-#{$comp}-history-padding, 0);
+    /**
+    * @prop --lf-#{$comp}-history-width: Sets the width for the history panel.
+    *                                    Defaults to => 180px
+    */
+    width: var(--lf-#{$comp}-history-width, 180px);
   }
 
   &__list {

@@ -323,6 +323,12 @@ export const parseConfigDslFromNode = (
       controls: parsed.controls,
       layout: parsed.layout,
       defaultSettings: parsed.defaultSettings || {},
+      // Behavioral metadata
+      behavior: parsed.behavior,
+      commitTrigger: parsed.commitTrigger,
+      showApplyButton: parsed.showApplyButton,
+      showResetButton: parsed.showResetButton,
+      enablePreview: parsed.enablePreview,
     };
   } catch {
     return null;

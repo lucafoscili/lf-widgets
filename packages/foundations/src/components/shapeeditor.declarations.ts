@@ -65,6 +65,7 @@ export interface LfShapeeditorInterface
     shape: LfMasonrySelectedShape;
     value: string;
   }>;
+  getDsl: () => Promise<LfShapeeditorConfigDsl | null>;
   getSettings: () => Promise<LfShapeeditorConfigSettings>;
   getShapeElement: () => Promise<Element | null>;
   reset: () => Promise<void>;
@@ -308,10 +309,15 @@ export interface LfShapeeditorAdapterControllerGetters
   blocks: (typeof LF_SHAPEEDITOR_BLOCKS)["shapeeditor"];
   compInstance: LfShapeeditorInterface;
   config: {
+    behavior: () => LfShapeeditorBehavior | undefined;
+    commitTrigger: () => LfShapeeditorCommitTrigger | undefined;
     controls: () => LfShapeeditorControlConfig[];
+    enablePreview: () => boolean | undefined;
     expandedGroups: () => string[];
     layout: () => LfShapeeditorLayout | undefined;
     settings: () => LfShapeeditorConfigSettings;
+    showApplyButton: () => boolean | undefined;
+    showResetButton: () => boolean | undefined;
   };
   currentShape: () => { shape: LfMasonrySelectedShape; value: string };
   cyAttributes: typeof CY_ATTRIBUTES;
@@ -342,10 +348,15 @@ export interface LfShapeeditorAdapterControllerGetters
 export interface LfShapeeditorAdapterControllerSetters
   extends LfComponentAdapterSetters {
   config: {
+    behavior: (behavior?: LfShapeeditorBehavior) => void;
+    commitTrigger: (trigger?: LfShapeeditorCommitTrigger) => void;
     controls: (controls: LfShapeeditorControlConfig[]) => void;
+    enablePreview: (enable?: boolean) => void;
     expandedGroups: (groups: string[]) => void;
     layout: (layout?: LfShapeeditorLayout) => void;
     settings: (settings: LfShapeeditorConfigSettings) => void;
+    showApplyButton: (show?: boolean) => void;
+    showResetButton: (show?: boolean) => void;
   };
   currentShape: (node: LfMasonrySelectedShape) => void;
   history: {

@@ -29,17 +29,6 @@ const TAG_NAME: LfComponentTag<"LfShapeeditor"> = "lf-shapeeditor";
 
 //#region Simulation Utilities
 /**
- * Filter types supported by the simulated image editor.
- */
-type SimulatedFilterType =
-  | "brightness"
-  | "contrast"
-  | "saturation"
-  | "gaussian_blur"
-  | "sepia"
-  | "vignette";
-
-/**
  * Creates a human-readable description for a filter operation.
  */
 const describeFilterOperation = (
@@ -446,22 +435,62 @@ export const getShapeeditorFixtures = (
   //#endregion
 
   const simulatedApi = createSimulatedApi(800);
-  let currentFilterType: SimulatedFilterType | string | null = null;
 
+  /**
+   * State tracking for the image editor playground.
+   * Tracks the current filter type and its behavioral metadata.
+   */
+  interface PlaygroundState {
+    /** Current filter type ID (e.g., "brightness", "brush") */
+    filterType: string | null;
+    /** DSL configuration for the current filter */
+    dsl: LfShapeeditorConfigDsl | null;
+  }
+
+  const state: PlaygroundState = {
+    filterType: null,
+    dsl: null,
+  };
+
+  /**
+   * Updates the playground state when a new filter is selected.
+   */
+  const setCurrentFilter = (filterType: string | null): void => {
+    state.filterType = filterType;
+    state.dsl =
+      filterType && filterDsl ? (filterDsl[filterType] ?? null) : null;
+    console.log(
+      `Filter selected: ${filterType ?? "none"}`,
+      state.dsl ? `(behavior: ${state.dsl.behavior ?? "live"})` : "",
+    );
+  };
+
+  /**
+   * Event handler for the simulated image editor playground.
+   *
+   * Implements the three behavioral patterns:
+   * - **live**: Preview on slider drag (preview event), commit on release (change event)
+   * - **configure**: Settings are config only, commit on shape stroke (lf-event from canvas)
+   * - **manual**: No preview, commit only on explicit Apply button click (apply event)
+   */
   const playgroundEventHandler = async (
     e: CustomEvent<LfShapeeditorEventPayload>,
   ): Promise<void> => {
-    const { comp, eventType } = e.detail;
+    const { comp, eventType, originalEvent } = e.detail;
     const shapeeditor = comp as unknown as LfShapeeditorElement;
 
     switch (eventType) {
       //#region apply
-      // Explicit apply button press with full feedback
+      /**
+       * APPLY EVENT
+       * Explicit apply button press - used for "manual" behavior filters.
+       * Shows full feedback with progressbar and snackbar.
+       */
       case "apply": {
         const settings = await shapeeditor.getSettings();
         const snapshot = await shapeeditor.getCurrentSnapshot();
 
-        if (!currentFilterType || !snapshot?.value) {
+        if (!state.filterType || !snapshot?.value) {
           await shapeeditor.setSnackbar({
             message: "Please select an image and filter first",
             uiState: "warning",
@@ -487,7 +516,7 @@ export const getShapeeditorFixtures = (
         try {
           const result = await simulatedApi.process(
             snapshot.value,
-            currentFilterType,
+            state.filterType,
             settings,
           );
 
@@ -496,7 +525,7 @@ export const getShapeeditorFixtures = (
           if (result.status === "success") {
             await shapeeditor.addSnapshot(result.data);
             await shapeeditor.setSnackbar({
-              message: `Applied: ${describeFilterOperation(currentFilterType, settings)}`,
+              message: `Applied: ${describeFilterOperation(state.filterType, settings)}`,
               uiState: "success",
               visible: true,
             });
@@ -520,32 +549,35 @@ export const getShapeeditorFixtures = (
         return;
       }
       //#endregion
+
       //#region change
-      // Control value committed (e.g., slider released) - capture snapshot only for "live" behavior
+      /**
+       * CHANGE EVENT
+       * Control value committed (e.g., slider released).
+       * Only creates snapshot for "live" behavior filters.
+       */
       case "change": {
-        const settings = await shapeeditor.getSettings();
-        const snapshot = await shapeeditor.getCurrentSnapshot();
+        const behavior = state.dsl?.behavior ?? "live";
 
-        if (!currentFilterType || !snapshot?.value) return;
-
-        // Check the DSL behavior for this filter
-        const dsl = filterDsl?.[currentFilterType];
-        const behavior = dsl?.behavior ?? "live";
-
-        // For "configure" or "manual" behaviors, don't create snapshot on change
-        // - "configure": snapshot is created by commitTrigger (e.g., stroke event)
-        // - "manual": snapshot is created by explicit Apply button click
+        // Only "live" behavior creates snapshots on change
+        // - "configure": snapshot created by stroke event (handled in lf-event)
+        // - "manual": snapshot created by explicit Apply button
         if (behavior !== "live") {
           console.log(
-            `Change event for "${currentFilterType}" (${behavior} behavior) - no snapshot created`,
+            `[change] Filter "${state.filterType}" has "${behavior}" behavior - no snapshot`,
           );
           return;
         }
 
+        const settings = await shapeeditor.getSettings();
+        const snapshot = await shapeeditor.getCurrentSnapshot();
+
+        if (!state.filterType || !snapshot?.value) return;
+
         try {
           const result = await simulatedApi.process(
             snapshot.value,
-            currentFilterType,
+            state.filterType,
             settings,
           );
           if (result.status === "success") {
@@ -553,65 +585,130 @@ export const getShapeeditorFixtures = (
             await shapeeditor.setPreviewValue(null);
             await shapeeditor.addSnapshot(result.data);
             console.log(
-              "Snapshot:",
-              describeFilterOperation(currentFilterType, settings),
+              `[change] Snapshot created: ${describeFilterOperation(state.filterType, settings)}`,
             );
           }
         } catch (error) {
-          console.error("Change processing failed:", error);
+          console.error("[change] Processing failed:", error);
         }
         return;
       }
       //#endregion
+
       //#region lf-event
-      // Track current filter from tree selection
+      /**
+       * LF-EVENT (bubbled child events)
+       * Handles two important cases:
+       * 1. Tree selection -> update current filter type
+       * 2. Canvas stroke (for "configure" behavior) -> create snapshot
+       */
       case "lf-event": {
-        const snapshot = await shapeeditor.getCurrentSnapshot();
-        const shapeIndex = snapshot?.shape?.index;
-        if (shapeIndex !== undefined) {
-          const nodeId = canvasDataset.nodes?.[shapeIndex]?.id;
-          if (nodeId) currentFilterType = nodeId;
+        // Try to identify the source of the event
+        const childEvent = originalEvent as CustomEvent<unknown>;
+        const detail = childEvent?.detail as
+          | Record<string, unknown>
+          | undefined;
+
+        // Case 1: Tree selection - update current filter
+        if (detail?.node) {
+          const treeDetail = detail as unknown as LfTreeEventPayload;
+          const { node, eventType: treeEventType } = treeDetail;
+
+          // Only handle click events on leaf nodes (filters, not categories)
+          if (treeEventType === "click" && !node.children?.length) {
+            setCurrentFilter(node.id);
+          }
+          return;
+        }
+
+        // Case 2: Canvas stroke event - for "configure" behavior filters
+        // When behavior is "configure", the stroke completion triggers snapshot
+        if (detail?.eventType === "stroke" || detail?.eventType === "change") {
+          const behavior = state.dsl?.behavior;
+          const commitTrigger = state.dsl?.commitTrigger;
+
+          // Check if this filter uses shape stroke as commit trigger
+          if (
+            behavior === "configure" &&
+            commitTrigger?.source === "shape" &&
+            (commitTrigger?.eventType === "stroke" ||
+              commitTrigger?.eventType === detail?.eventType)
+          ) {
+            const snapshot = await shapeeditor.getCurrentSnapshot();
+
+            if (state.filterType && snapshot?.value) {
+              try {
+                // For brush/line strokes, we commit the canvas state directly
+                // The canvas already has the stroke applied
+                await shapeeditor.addSnapshot(snapshot.value);
+                console.log(
+                  `[stroke] Snapshot created for "${state.filterType}" stroke`,
+                );
+
+                await shapeeditor.setSnackbar({
+                  message: `Stroke applied`,
+                  uiState: "success",
+                  visible: true,
+                });
+                setTimeout(
+                  () => shapeeditor.setSnackbar({ visible: false }),
+                  1500,
+                );
+              } catch (error) {
+                console.error("[stroke] Failed to create snapshot:", error);
+              }
+            }
+          }
         }
         return;
       }
       //#endregion
+
       //#region preview
-      // Real-time preview during control interaction (e.g., slider drag)
+      /**
+       * PREVIEW EVENT
+       * Real-time preview during control interaction (e.g., slider drag).
+       * Only applies to "live" behavior filters with enablePreview=true.
+       */
       case "preview": {
+        const behavior = state.dsl?.behavior ?? "live";
+        const enablePreview = state.dsl?.enablePreview ?? behavior === "live";
+
+        if (!enablePreview) {
+          console.log(
+            `[preview] Filter "${state.filterType}" has preview disabled - skipping`,
+          );
+          return;
+        }
+
         const settings = await shapeeditor.getSettings();
         const snapshot = await shapeeditor.getCurrentSnapshot();
 
-        if (!currentFilterType || !snapshot?.value) return;
-
-        // Check if preview is enabled for this filter
-        const dsl = filterDsl?.[currentFilterType];
-        const enablePreview = dsl?.enablePreview ?? dsl?.behavior === "live";
-
-        if (!enablePreview) {
-          console.log(`Preview disabled for "${currentFilterType}" - skipping`);
-          return;
-        }
+        if (!state.filterType || !snapshot?.value) return;
 
         try {
           const result = await simulatedApi.process(
             snapshot.value,
-            currentFilterType,
+            state.filterType,
             settings,
           );
           if (result.status === "success") {
-            // Update the preview image without creating a snapshot
+            // Update preview without creating snapshot
             await shapeeditor.setPreviewValue(result.data);
           }
         } catch (error) {
-          console.error("Preview failed:", error);
+          console.error("[preview] Failed:", error);
         }
         return;
       }
       //#endregion
+
       //#region reset
-      // Reset controls to defaults
+      /**
+       * RESET EVENT
+       * Reset controls to defaults. Clear any active preview.
+       */
       case "reset": {
-        // Clear any active preview
         await shapeeditor.setPreviewValue(null);
         await shapeeditor.setSnackbar({
           message: "Controls reset to defaults",

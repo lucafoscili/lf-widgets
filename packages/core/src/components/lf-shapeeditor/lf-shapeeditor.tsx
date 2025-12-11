@@ -15,6 +15,9 @@ import {
   LfMasonrySelectedShape,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterRefs,
+  LfShapeeditorBehavior,
+  LfShapeeditorCommitTrigger,
+  LfShapeeditorConfigDsl,
   LfShapeeditorConfigSettings,
   LfShapeeditorControlConfig,
   LfShapeeditorElement,
@@ -171,6 +174,31 @@ export class LfShapeeditor implements LfShapeeditorInterface {
    * Used as part of control keys to ensure they re-render with new values.
    */
   @State() resetKey = 0;
+  /**
+   * Behavioral classification for the current DSL configuration.
+   * @internal
+   */
+  @State() configBehavior: LfShapeeditorBehavior;
+  /**
+   * Commit trigger specification for "configure" behaviors.
+   * @internal
+   */
+  @State() configCommitTrigger: LfShapeeditorCommitTrigger;
+  /**
+   * Whether to display the Apply button based on DSL configuration.
+   * @internal
+   */
+  @State() configShowApplyButton: boolean;
+  /**
+   * Whether to display the Reset button based on DSL configuration.
+   * @internal
+   */
+  @State() configShowResetButton: boolean = true;
+  /**
+   * Whether live preview is enabled for the current DSL configuration.
+   * @internal
+   */
+  @State() configEnablePreview: boolean;
   //#endregion
 
   //#region Props
@@ -390,6 +418,28 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     return { ...this.configSettings };
   }
   /**
+   * Returns the full DSL configuration including behavioral metadata.
+   * Consumers can use this to read the current filter's behavior type,
+   * commit trigger, and button visibility flags.
+   * @returns {Promise<LfShapeeditorConfigDsl | null>} The current DSL or null if not set.
+   */
+  @Method()
+  async getDsl(): Promise<LfShapeeditorConfigDsl | null> {
+    if (!this.configControls?.length) {
+      return null;
+    }
+    return {
+      controls: this.configControls,
+      layout: this.configLayout,
+      defaultSettings: this.configSettings,
+      behavior: this.configBehavior,
+      commitTrigger: this.configCommitTrigger,
+      showApplyButton: this.configShowApplyButton,
+      showResetButton: this.configShowResetButton,
+      enablePreview: this.configEnablePreview,
+    };
+  }
+  /**
    * This method is used to trigger a new render of the component.
    */
   @Method()
@@ -482,10 +532,15 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         blocks: this.#b,
         compInstance: this,
         config: {
+          behavior: () => this.configBehavior,
+          commitTrigger: () => this.configCommitTrigger,
           controls: () => this.configControls,
+          enablePreview: () => this.configEnablePreview,
           expandedGroups: () => this.expandedSettingsGroups,
           layout: () => this.configLayout,
           settings: () => this.configSettings,
+          showApplyButton: () => this.configShowApplyButton,
+          showResetButton: () => this.configShowResetButton,
         },
         currentShape: () => this.#getSelectedShapeValue(this.currentShape),
         cyAttributes: this.#cy,
@@ -521,8 +576,17 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       },
       {
         config: {
+          behavior: (behavior) => {
+            this.configBehavior = behavior;
+          },
+          commitTrigger: (trigger) => {
+            this.configCommitTrigger = trigger;
+          },
           controls: (controls) => {
             this.configControls = controls || [];
+          },
+          enablePreview: (enable) => {
+            this.configEnablePreview = enable;
           },
           expandedGroups: (groups) => {
             this.expandedSettingsGroups = groups || [];
@@ -532,6 +596,12 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           },
           settings: (settings) => {
             this.configSettings = { ...(settings || {}) };
+          },
+          showApplyButton: (show) => {
+            this.configShowApplyButton = show;
+          },
+          showResetButton: (show) => {
+            this.configShowResetButton = show;
           },
         },
         currentShape: (node) => (this.currentShape = node),
@@ -695,6 +765,12 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       this.configControls = dsl.controls || [];
       this.configLayout = dsl.layout;
       this.configSettings = dsl.defaultSettings || {};
+      // Behavioral metadata
+      this.configBehavior = dsl.behavior;
+      this.configCommitTrigger = dsl.commitTrigger;
+      this.configShowApplyButton = dsl.showApplyButton;
+      this.configShowResetButton = dsl.showResetButton ?? true;
+      this.configEnablePreview = dsl.enablePreview;
     }
   }
   componentDidLoad() {

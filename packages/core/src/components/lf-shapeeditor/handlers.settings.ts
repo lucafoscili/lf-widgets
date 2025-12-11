@@ -80,6 +80,12 @@ export const prepSettingsHandlers = (
             set.config.controls(dsl.controls || []);
             set.config.layout(dsl.layout);
             set.config.settings(dsl.defaultSettings || {});
+            // Behavioral metadata
+            set.config.behavior(dsl.behavior);
+            set.config.commitTrigger(dsl.commitTrigger);
+            set.config.showApplyButton(dsl.showApplyButton);
+            set.config.showResetButton(dsl.showResetButton ?? true);
+            set.config.enablePreview(dsl.enablePreview);
           }
           break;
       }
