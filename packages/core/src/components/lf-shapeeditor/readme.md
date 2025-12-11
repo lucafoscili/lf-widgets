@@ -131,6 +131,17 @@ Type: `Promise<LfShapeeditorConfigSettings>`
 
 The current settings object.
 
+### `getShapeElement() => Promise<Element | null>`
+
+Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.
+Useful for programmatic access to shape-specific methods like brush settings on canvas.
+
+#### Returns
+
+Type: `Promise<Element>`
+
+The shape element, or null if not found.
+
 ### `refresh() => Promise<void>`
 
 This method is used to trigger a new render of the component.
@@ -279,6 +290,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-button](../lf-button)
+- [lf-list](../lf-list)
 - [lf-progressbar](../lf-progressbar)
 - [lf-spinner](../lf-spinner)
 - [lf-snackbar](../lf-snackbar)
@@ -307,6 +319,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-shapeeditor --> lf-button
+  lf-shapeeditor --> lf-list
   lf-shapeeditor --> lf-progressbar
   lf-shapeeditor --> lf-spinner
   lf-shapeeditor --> lf-snackbar
@@ -386,11 +399,11 @@ graph TD;
   lf-chat --> lf-spinner
   lf-chat --> lf-article
   lf-chat --> lf-accordion
-  lf-chat --> lf-button
   lf-chat --> lf-chip
+  lf-chat --> lf-button
   lf-chat --> lf-textfield
-  lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-article --> lf-accordion
   lf-article --> lf-badge

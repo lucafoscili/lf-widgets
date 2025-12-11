@@ -210,6 +210,7 @@ Type: `Promise<void>`
  - [lf-autocomplete](../lf-autocomplete)
  - [lf-button](../lf-button)
  - [lf-select](../lf-select)
+ - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Depends on
 
@@ -222,6 +223,7 @@ graph TD;
   lf-autocomplete --> lf-list
   lf-button --> lf-list
   lf-select --> lf-list
+  lf-shapeeditor --> lf-list
   style lf-list fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

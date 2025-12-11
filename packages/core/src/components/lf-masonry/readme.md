@@ -230,11 +230,11 @@ graph TD;
   lf-chat --> lf-spinner
   lf-chat --> lf-article
   lf-chat --> lf-accordion
-  lf-chat --> lf-button
   lf-chat --> lf-chip
+  lf-chat --> lf-button
   lf-chat --> lf-textfield
-  lf-chat --> lf-progressbar
   lf-chat --> lf-code
+  lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-article --> lf-accordion
   lf-article --> lf-badge

@@ -1027,6 +1027,46 @@ export const LF_DOC: LfShowcaseDoc = {
         signature: "(type?: LfCanvasType) => Promise<void>",
       },
       {
+        name: "drawLine",
+        docs: "Programmatically draws a line between two points on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        returns: {
+          type: "Promise<void>",
+          docs: "Promise that resolves when the line is drawn",
+        },
+        signature:
+          "(from: LfCanvasPoint, to: LfCanvasPoint, options?: LfCanvasDrawOptions) => Promise<void>",
+      },
+      {
+        name: "drawPath",
+        docs: "Programmatically draws a path connecting multiple points on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        returns: {
+          type: "Promise<void>",
+          docs: "Promise that resolves when the path is drawn",
+        },
+        signature:
+          "(points: LfCanvasPoint[], options?: LfCanvasDrawOptions) => Promise<void>",
+      },
+      {
+        name: "drawShape",
+        docs: "Programmatically draws a shape (circle or square) at a specific point.\r\nCoordinates are normalized (0-1 range).",
+        returns: {
+          type: "Promise<void>",
+          docs: "Promise that resolves when the shape is drawn",
+        },
+        signature:
+          "(point: LfCanvasPoint, options?: LfCanvasDrawOptions) => Promise<void>",
+      },
+      {
+        name: "drawText",
+        docs: "Programmatically draws text at a specific point on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        returns: {
+          type: "Promise<void>",
+          docs: "Promise that resolves when the text is drawn",
+        },
+        signature:
+          "(text: string, point: LfCanvasPoint, options?: LfCanvasTextOptions) => Promise<void>",
+      },
+      {
         name: "getCanvas",
         docs: "Retrieves the canvas element based on the specified type.",
         returns: {
@@ -4281,6 +4321,15 @@ export const LF_DOC: LfShowcaseDoc = {
           docs: "The current settings object.",
         },
         signature: "() => Promise<LfShapeeditorConfigSettings>",
+      },
+      {
+        name: "getShapeElement",
+        docs: "Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.\r\nUseful for programmatic access to shape-specific methods like brush settings on canvas.",
+        returns: {
+          type: "Promise<Element>",
+          docs: "The shape element, or null if not found.",
+        },
+        signature: "() => Promise<Element | null>",
       },
       {
         name: "refresh",
