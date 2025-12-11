@@ -283,7 +283,8 @@ Type: `Promise<void>`
 | `--lf-shapeeditor-color-on-bg`     | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-shapeeditor-font-family`     | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-shapeeditor-font-size`       | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
-| `--lf-shapeeditor-nav-width`       | Sets the width for the navigation panel. Defaults to => auto                                             |
+| `--lf-shapeeditor-nav-ratio`       | Sets the navigation column width ratio. Defaults to => 0.3 (30%)                                         |
+| `--lf-shapeeditor-nav-width`       | Sets the width for the navigation tree panel. Defaults to => 200px                                       |
 
 
 ## Dependencies
