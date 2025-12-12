@@ -4256,12 +4256,12 @@ export const LF_DOC: LfShowcaseDoc = {
     methods: [
       {
         name: "addSnapshot",
-        docs: "Appends a new snapshot to the current shape's history by duplicating it with an updated value.\r\nIt has no effect when the current shape is not set.",
+        docs: "Appends a new snapshot to the current shape's history with updated cell properties.\r\nThis is shape-agnostic and works with any cell type.\r\nIt has no effect when the current shape is not set.",
         returns: {
           type: "Promise<void>",
           docs: "",
         },
-        signature: "(value: string) => Promise<void>",
+        signature: "(props: Record<string, unknown>) => Promise<void>",
       },
       {
         name: "clearHistory",

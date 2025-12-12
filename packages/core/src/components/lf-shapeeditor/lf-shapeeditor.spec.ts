@@ -116,7 +116,7 @@ describe("lf-shapeeditor", () => {
     const page = await createPage(`<lf-shapeeditor></lf-shapeeditor>`);
     const component = page.rootInstance as LfShapeeditor;
 
-    await component.addSnapshot("test");
+    await component.addSnapshot({ value: "test", lfValue: "test" });
     expect(page.root).toBeTruthy();
   });
 

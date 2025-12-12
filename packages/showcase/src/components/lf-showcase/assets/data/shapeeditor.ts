@@ -599,7 +599,10 @@ export const getShapeeditorFixtures = (
           await shapeeditor.setProgressbar({ visible: false });
 
           if (result.status === "success") {
-            await shapeeditor.addSnapshot(result.data);
+            await shapeeditor.addSnapshot({
+              value: result.data,
+              lfValue: result.data,
+            });
             await shapeeditor.setSnackbar({
               message: `Applied: ${describeFilterOperation(state.filterType, settings)}`,
               uiState: "success",
@@ -659,7 +662,10 @@ export const getShapeeditorFixtures = (
           if (result.status === "success") {
             // Clear preview since we're committing to history
             await shapeeditor.setPreviewValue(null);
-            await shapeeditor.addSnapshot(result.data);
+            await shapeeditor.addSnapshot({
+              value: result.data,
+              lfValue: result.data,
+            });
             console.log(
               `[change] Snapshot created: ${describeFilterOperation(state.filterType, settings)}`,
             );
@@ -716,7 +722,10 @@ export const getShapeeditorFixtures = (
               try {
                 // For brush/line strokes, we commit the canvas state directly
                 // The canvas already has the stroke applied
-                await shapeeditor.addSnapshot(snapshot.value);
+                await shapeeditor.addSnapshot({
+                  value: snapshot.value,
+                  lfValue: snapshot.value,
+                });
                 console.log(
                   `[stroke] Snapshot created for "${state.filterType}" stroke`,
                 );

@@ -1,7 +1,13 @@
 import {
   LfAccordionEventPayload,
+  LfCheckboxEventPayload,
+  LfMultiInputEventPayload,
+  LfSelectEventPayload,
   LfShapeeditorAdapter,
   LfShapeeditorAdapterHandlers,
+  LfSliderEventPayload,
+  LfTextfieldEventPayload,
+  LfToggleEventPayload,
 } from "@lf-widgets/foundations";
 import {
   clearHistory,
@@ -159,6 +165,106 @@ export const prepSettingsHandlers = (
               break;
           }
       }
+    },
+    //#endregion
+
+    //#region Control-specific handlers
+    controls: {
+      checkbox: (e, controlId) => {
+        const { eventType, valueAsBoolean } =
+          e.detail as LfCheckboxEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        if (eventType === "change") {
+          controlChange(e, controlId, valueAsBoolean, "change");
+        }
+      },
+
+      colorpicker: (e, controlId) => {
+        const { eventType, inputValue, value } =
+          e.detail as LfTextfieldEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        switch (eventType) {
+          case "change":
+            controlChange(e, controlId, value, "change");
+            break;
+          case "input":
+            controlChange(e, controlId, inputValue, "input");
+            break;
+        }
+      },
+
+      multiinput: (e, controlId) => {
+        const { eventType, value } = e.detail as LfMultiInputEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        if (eventType === "change") {
+          controlChange(e, controlId, value, "change");
+        }
+      },
+
+      number: (e, controlId) => {
+        const { eventType, inputValue, value } =
+          e.detail as LfTextfieldEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        switch (eventType) {
+          case "change":
+            controlChange(e, controlId, parseFloat(value) || 0, "change");
+            break;
+          case "input":
+            controlChange(e, controlId, parseFloat(inputValue) || 0, "input");
+            break;
+        }
+      },
+
+      select: (e, controlId) => {
+        const { eventType, value } = e.detail as LfSelectEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        if (eventType === "change") {
+          controlChange(e, controlId, value, "change");
+        }
+      },
+
+      slider: (e, controlId) => {
+        const { eventType, value } = e.detail as LfSliderEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        switch (eventType) {
+          case "change":
+            controlChange(e, controlId, value.real, "change");
+            break;
+          case "input":
+            controlChange(e, controlId, value.display, "input");
+            break;
+        }
+      },
+
+      textfield: (e, controlId) => {
+        const { eventType, inputValue, value } =
+          e.detail as LfTextfieldEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        switch (eventType) {
+          case "change":
+            controlChange(e, controlId, value, "change");
+            break;
+          case "input":
+            controlChange(e, controlId, inputValue, "input");
+            break;
+        }
+      },
+
+      toggle: (e, controlId) => {
+        const { eventType, valueAsBoolean } = e.detail as LfToggleEventPayload;
+        const { controlChange } = getAdapter().handlers.settings;
+
+        if (eventType === "change") {
+          controlChange(e, controlId, valueAsBoolean, "change");
+        }
+      },
     },
     //#endregion
   };

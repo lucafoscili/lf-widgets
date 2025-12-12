@@ -53,7 +53,7 @@ import {
   newShape,
   parseConfigDslFromNode,
   resetControls,
-  updateValue,
+  updateCellProps,
 } from "./helpers.utils";
 import { createAdapter } from "./lf-shapeeditor-adapter";
 
@@ -322,11 +322,16 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
   //#region Public methods
   /**
-   * Appends a new snapshot to the current shape's history by duplicating it with an updated value.
+   * Appends a new snapshot to the current shape's history with updated cell properties.
+   * This is shape-agnostic and works with any cell type.
    * It has no effect when the current shape is not set.
+   *
+   * @param props - An object containing the property key-value pairs to update on the cell.
+   *                For image editing, pass `{ value: "base64..." }` or `{ lfValue: "base64..." }`.
+   *                For component playgrounds, pass any prop like `{ lfLabel: "New Label", lfDisabled: true }`.
    */
   @Method()
-  async addSnapshot(value: string): Promise<void> {
+  async addSnapshot(props: Record<string, unknown>): Promise<void> {
     const { currentShape } = this;
 
     if (!currentShape || !Object.keys(currentShape)?.length) {
@@ -336,7 +341,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     const { history } = this.#adapter.controller.set;
 
     const s = newShape(currentShape);
-    updateValue(s.shape, value);
+    updateCellProps(s.shape, props);
     history.new(s, true);
   }
   /**

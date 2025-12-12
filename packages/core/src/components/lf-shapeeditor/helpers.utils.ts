@@ -65,43 +65,62 @@ export const clearSelection = async (adapter: LfShapeeditorAdapter) => {
  * @returns A Promise that resolves when the shape deletion is complete
  */
 export const deleteShape = async (adapter: LfShapeeditorAdapter) => {
-  const { compInstance, currentShape, manager } = adapter.controller.get;
+  const { compInstance, currentShape } = adapter.controller.get;
   const { lfDataset } = compInstance;
-  const { findNodeByCell, pop } = manager.data.node;
 
-  await clearHistory(adapter, currentShape().shape.index);
+  const s = currentShape();
+  if (!s?.shape) {
+    return;
+  }
 
-  const cell = findImage(adapter);
-  const node = findNodeByCell(lfDataset, cell);
-  pop(lfDataset.nodes, node);
-  compInstance.lfDataset = { ...lfDataset };
+  const index = s.shape.index;
+  await clearHistory(adapter, index);
+
+  // Remove the node at the index from the dataset
+  const nodes = [...lfDataset.nodes];
+  if (index >= 0 && index < nodes.length) {
+    nodes.splice(index, 1);
+    compInstance.lfDataset = { ...lfDataset, nodes };
+  }
 
   await clearSelection(adapter);
 };
 //#endregion
 
-//#region Find image
+//#region Find cell by index
 /**
- * Finds a specific image cell within the data structure based on the current shape.
+ * Finds the cell at a specific index in the dataset.
+ * This is shape-agnostic and works with any cell type.
  *
- * @param adapter - The shape editor adapter instance containing controller and component data
- * @returns The matching image cell if found, undefined otherwise
- *
- * @remarks
- * The function compares the value or lfValue of image cells with the current shape's value
- * to find a matching cell.
+ * @param adapter - The shape editor adapter instance
+ * @param index - The index of the node in the dataset
+ * @param cellKey - Optional cell key to look up (defaults to lfShape-based key)
+ * @returns The cell at the specified index, or undefined if not found
  */
-export const findImage = (adapter: LfShapeeditorAdapter) => {
-  const { compInstance, currentShape, manager } = adapter.controller.get;
-  const { lfDataset } = compInstance;
+export const findCellByIndex = (
+  adapter: LfShapeeditorAdapter,
+  index: number,
+  cellKey?: string,
+): Partial<LfDataCell<LfDataShapes>> | undefined => {
+  const { compInstance, manager } = adapter.controller.get;
+  const { lfDataset, lfShape } = compInstance;
   const { getAll } = manager.data.cell.shapes;
 
-  const s = currentShape();
-  const cells = getAll(lfDataset, false);
+  if (!lfDataset?.nodes?.[index]) {
+    return undefined;
+  }
 
-  return cells["image"].find(
-    (c) => c.value === s.value || c.lfValue === s.value,
-  );
+  const node = lfDataset.nodes[index];
+
+  // If cellKey provided, use it directly
+  if (cellKey && node.cells?.[cellKey]) {
+    return node.cells[cellKey] as Partial<LfDataCell<LfDataShapes>>;
+  }
+
+  // Otherwise, find the cell matching the current shape type
+  const allCells = getAll({ nodes: [node] }, false);
+  const shapeCells = allCells[lfShape];
+  return shapeCells?.[0];
 };
 //#endregion
 
@@ -188,8 +207,11 @@ export const redo = async (adapter: LfShapeeditorAdapter) => {
 //#region Save
 /**
  * Saves the current state of the shape editor.
- * This function updates both the internal state and the data model with the current shape's value,
+ * This function updates the dataset with the current snapshot's cell props,
  * and clears the editing history afterwards.
+ *
+ * This is now shape-agnostic: it copies all cell properties from the snapshot
+ * to the dataset node, not just value/lfValue.
  *
  * @param adapter - The LfShapeeditor adapter instance containing component and controller information
  * @returns A promise that resolves when the save operation and history clearing are complete
@@ -197,27 +219,53 @@ export const redo = async (adapter: LfShapeeditorAdapter) => {
  * @throws Will return early if no current shape is selected
  */
 export const save = async (adapter: LfShapeeditorAdapter) => {
-  const { compInstance, currentShape, history } = adapter.controller.get;
-  const { lfDataset } = compInstance;
+  const { compInstance, currentShape, history, manager } =
+    adapter.controller.get;
+  const { lfDataset, lfShape } = compInstance;
+  const { getAll } = manager.data.cell.shapes;
 
   const s = currentShape();
-  if (!s) {
+  if (!s?.shape) {
     return;
   }
+
   const index = s.shape.index;
-  const shape = s.shape.shape;
-
   const currentSnapshot = history.currentSnapshot();
-  const value = currentSnapshot.value;
+  const snapshotCell = currentSnapshot.shape?.shape;
 
-  const cell = findImage(adapter);
-  cell.value = value;
-  cell.lfValue = value;
+  if (!snapshotCell || index < 0 || index >= lfDataset.nodes.length) {
+    return;
+  }
 
-  updateValue(shape, value);
+  const node = lfDataset.nodes[index];
+  const allCells = getAll({ nodes: [node] }, false);
+  const shapeCells = allCells[lfShape];
+
+  if (!shapeCells?.length) {
+    return;
+  }
+
+  const cellKey = Object.keys(node.cells || {}).find((key) => {
+    const cell = node.cells?.[key];
+    return cell && shapeCells.some((sc) => sc === cell);
+  });
+
+  if (!cellKey) {
+    return;
+  }
+
+  const nodes = [...lfDataset.nodes];
+  nodes[index] = {
+    ...node,
+    cells: {
+      ...node.cells,
+      [cellKey]: { ...snapshotCell } as LfDataCell<LfDataShapes>,
+    },
+  };
+
   await clearHistory(adapter, index);
 
-  compInstance.lfDataset = { ...lfDataset };
+  compInstance.lfDataset = { ...lfDataset, nodes };
 };
 //#endregion
 
@@ -283,20 +331,27 @@ export const undo = async (adapter: LfShapeeditorAdapter) => {
 };
 //#endregion
 
-//#region updateValue
+//#region updateCellProps
 /**
- * Updates the value property of a data cell shape and optionally its lfValue property if present.
+ * Updates multiple properties on a data cell shape.
+ * This is the primary method for modifying cell properties in an agnostic way.
+ *
  * @param shape - The data cell shape object to update
- * @param value - The new value to set
+ * @param props - An object containing the property key-value pairs to set
+ *
+ * @example
+ * // For image editing (legacy pattern):
+ * updateCellProps(shape, { value: base64Data, lfValue: base64Data });
+ *
+ * // For component playgrounds:
+ * updateCellProps(shape, { lfLabel: "New Label", lfDisabled: true });
  */
-export const updateValue = (
+export const updateCellProps = (
   shape: Partial<LfDataCell<LfDataShapes>>,
-  value: string,
+  props: Record<string, unknown>,
 ) => {
-  const s = shape as Partial<LfDataCell<"image">>;
-  shape.value = value;
-  if (s.lfValue) {
-    s.lfValue = value;
+  for (const [key, value] of Object.entries(props)) {
+    (shape as Record<string, unknown>)[key] = value;
   }
 };
 //#endregion

@@ -57,7 +57,7 @@ import { LfListElement, LfListEventPayload } from "./list.declarations";
 export interface LfShapeeditorInterface
   extends LfComponent<"LfShapeeditor">,
     LfShapeeditorPropsInterface {
-  addSnapshot: (value: string) => Promise<void>;
+  addSnapshot: (props: Record<string, unknown>) => Promise<void>;
   clearHistory: (index?: number) => Promise<void>;
   clearSelection: () => Promise<void>;
   getComponents: () => Promise<LfShapeeditorAdapterRefs>;
@@ -252,7 +252,7 @@ export interface LfShapeeditorAdapterHandlers
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
     /** Accordion toggle handler */
     accordionToggle: (e: CustomEvent<LfAccordionEventPayload>) => Promise<void>;
-    /** Control change handler */
+    /** Control change handler (internal - called by type-specific handlers) */
     controlChange: (
       e: CustomEvent | Event,
       controlId: string,
@@ -263,6 +263,17 @@ export interface LfShapeeditorAdapterHandlers
     controlActionsButton: (
       e: CustomEvent<LfButtonEventPayload>,
     ) => Promise<void>;
+    /** Control-specific handlers by type */
+    controls: {
+      checkbox: (e: CustomEvent, controlId: string) => void;
+      colorpicker: (e: CustomEvent, controlId: string) => void;
+      multiinput: (e: CustomEvent, controlId: string) => void;
+      number: (e: CustomEvent, controlId: string) => void;
+      select: (e: CustomEvent, controlId: string) => void;
+      slider: (e: CustomEvent, controlId: string) => void;
+      textfield: (e: CustomEvent, controlId: string) => void;
+      toggle: (e: CustomEvent, controlId: string) => void;
+    };
   };
 }
 /**

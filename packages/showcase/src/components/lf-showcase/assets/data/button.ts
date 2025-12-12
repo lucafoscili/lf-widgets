@@ -6,10 +6,13 @@ import {
   LfButtonPropsInterface,
   LfComponentName,
   LfComponentTag,
+  LfDataCell,
   LfDataDataset,
+  LfDataShapes,
   LfEventName,
   LfEventPayloadName,
   LfFrameworkInterface,
+  LfMasonryEventPayload,
   LfShapeeditorElement,
   LfShapeeditorEventPayload,
   LfThemeUISize,
@@ -19,7 +22,14 @@ import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { stateFactory } from "../../helpers/fixtures.state";
-import { createComponentPlayground } from "../../helpers/playground.generator";
+import {
+  createComponentPlayground,
+  createPropMapping,
+  getCellKeyFromComponent,
+  syncControlsFromShape,
+  updatePreviewFromSettings,
+} from "../../helpers/playground.generator";
+import { LF_DOC } from "../doc";
 import {
   LfShowcaseComponentFixture,
   LfShowcaseExample,
@@ -115,28 +125,117 @@ export const getButtonFixtures = (
   };
   //#endregion
 
+  //#region Playground State & Utilities
+  // Create prop mapping for bidirectional sync
+  const docEntry = LF_DOC[TAG_NAME] as {
+    methods: { name: string; docs: string }[];
+    props: { name: string; type: string; docs: string }[];
+    styles: { name: string; docs: string }[];
+  };
+  const propMapping = createPropMapping(docEntry.props);
+  const cellKey = getCellKeyFromComponent(COMPONENT_NAME);
+
+  // Track current selected shape index for sync operations
+  let currentShapeIndex: number | undefined;
+  //#endregion
+
   //#region Playground Event Handler
   /**
    * Handles shapeeditor events for the button playground.
-   * Applies prop changes from the settings tree to the preview component.
+   * Implements bidirectional sync between controls and preview shapes.
+   *
+   * Flow:
+   * 1. User clicks shape in masonry → `syncControlsFromShape()` updates controls
+   * 2. User changes control → `syncShapeFromControls()` updates shape in dataset
    */
   const playgroundEventHandler = async (
     e: CustomEvent<LfShapeeditorEventPayload>,
   ) => {
-    const { comp, eventType } = e.detail;
+    const { comp, eventType, originalEvent } = e.detail;
     const shapeeditor = comp as unknown as LfShapeeditorElement;
 
     switch (eventType) {
+      //#region change
+      /**
+       * CHANGE EVENT
+       * Control value committed (e.g., slider released, toggle clicked).
+       * Creates a new snapshot with the updated cell props (preview updates).
+       * The dataset is only updated when "Save Snapshot" is clicked.
+       */
       case "change": {
-        // A control value changed - get the current settings
+        if (currentShapeIndex === undefined) {
+          console.log(
+            "[Button Playground] No shape selected - ignoring change",
+          );
+          return;
+        }
+
         const settings = await shapeeditor.getSettings();
-        console.log("[Button Playground] Settings changed:", settings);
+
+        // Create a new snapshot with updated cell props
+        await updatePreviewFromSettings(shapeeditor, settings, propMapping);
+
+        console.log("[Button Playground] Snapshot updated:", {
+          index: currentShapeIndex,
+          settings,
+        });
         break;
       }
+      //#endregion
 
+      //#region lf-event
+      /**
+       * LF-EVENT (bubbled child events)
+       * Handles masonry click → sync controls from selected shape's cell.
+       */
+      case "lf-event": {
+        const childEvent = originalEvent as CustomEvent<unknown>;
+        const detail = childEvent?.detail as
+          | Record<string, unknown>
+          | undefined;
+
+        // Check if this is a masonry click event
+        if (detail?.selectedShape !== undefined) {
+          const masonryDetail = detail as unknown as LfMasonryEventPayload;
+          const { selectedShape, eventType: masonryEventType } = masonryDetail;
+
+          // Only handle click events
+          if (masonryEventType === "click" && selectedShape?.shape) {
+            currentShapeIndex = selectedShape.index;
+
+            // Sync controls from the selected shape's cell
+            await syncControlsFromShape(
+              shapeeditor,
+              selectedShape.shape as LfDataCell<LfDataShapes>,
+              propMapping,
+            );
+
+            console.log("[Button Playground] Shape selected:", {
+              index: currentShapeIndex,
+              cell: selectedShape.shape,
+            });
+          }
+        }
+        break;
+      }
+      //#endregion
+
+      //#region ready
       case "ready":
         console.log("[Button Playground] Shapeeditor ready");
+        // Auto-select first shape on ready
+        const dataset = shapeeditor.lfDataset;
+        if (dataset?.nodes?.[0]?.cells?.[cellKey]) {
+          currentShapeIndex = 0;
+          await syncControlsFromShape(
+            shapeeditor,
+            dataset.nodes[0].cells[cellKey] as LfDataCell<LfDataShapes>,
+            propMapping,
+          );
+          console.log("[Button Playground] Auto-selected first shape");
+        }
         break;
+      //#endregion
     }
   };
   //#endregion
@@ -146,15 +245,47 @@ export const getButtonFixtures = (
     componentName: COMPONENT_NAME,
     tag: TAG_NAME,
     eventTypes: LF_BUTTON_EVENTS,
-    initialProps: {
-      lfLabel: "Interactive Button",
-      lfStyling: "raised",
-      lfRipple: true,
-    },
+    variants: [
+      {
+        id: "raised",
+        label: "Raised Button",
+        props: { lfLabel: "Raised", lfStyling: "raised", lfRipple: true },
+      },
+      {
+        id: "flat",
+        label: "Flat Button",
+        props: { lfLabel: "Flat", lfStyling: "flat", lfRipple: true },
+      },
+      {
+        id: "outlined",
+        label: "Outlined Button",
+        props: { lfLabel: "Outlined", lfStyling: "outlined", lfRipple: true },
+      },
+      {
+        id: "floating",
+        label: "Floating Action",
+        props: {
+          lfLabel: "",
+          lfIcon: "plus",
+          lfStyling: "floating",
+          lfRipple: true,
+        },
+      },
+      {
+        id: "icon",
+        label: "Icon Button",
+        props: {
+          lfLabel: "",
+          lfIcon: "settings",
+          lfStyling: "icon",
+          lfRipple: true,
+        },
+      },
+    ],
     description:
       "Experiment with button props in real-time. " +
-      "Toggle switches, select styling options, and see changes instantly. " +
-      "Demonstrates the universal component playground pattern.",
+      "Click any button variant, then use the Props tree to modify it. " +
+      "Each button can be edited independently - try changing styles, labels, and icons!",
   });
   if (playground) {
     playground.events = { "lf-shapeeditor-event": playgroundEventHandler };

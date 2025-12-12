@@ -36,16 +36,17 @@ The shapeeditor provides:
 
 ## Methods
 
-### `addSnapshot(value: string) => Promise<void>`
+### `addSnapshot(props: Record<string, unknown>) => Promise<void>`
 
-Appends a new snapshot to the current shape's history by duplicating it with an updated value.
+Appends a new snapshot to the current shape's history with updated cell properties.
+This is shape-agnostic and works with any cell type.
 It has no effect when the current shape is not set.
 
 #### Parameters
 
-| Name    | Type     | Description |
-| ------- | -------- | ----------- |
-| `value` | `string` |             |
+| Name    | Type                        | Description                                                                                                                                                                                                                                                |
+| ------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `props` | `{ [x: string]: unknown; }` | - An object containing the property key-value pairs to update on the cell.   For image editing, pass `{ value: "base64..." }` or `{ lfValue: "base64..." }`.   For component playgrounds, pass any prop like `{ lfLabel: "New Label", lfDisabled: true }`. |
 
 #### Returns
 

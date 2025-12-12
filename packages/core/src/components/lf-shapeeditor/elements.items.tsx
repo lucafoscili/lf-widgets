@@ -1,13 +1,12 @@
 import {
+  isLayoutControl,
+  isLayoutGroup,
   LfDataDataset,
   LfShapeeditorAdapter,
   LfShapeeditorControlConfig,
-  LfShapeeditorControlEventType,
   LfShapeeditorLayoutGroup,
   LfShapeeditorLayoutRenderItem,
   LfShapeeditorRenderSegment,
-  isLayoutControl,
-  isLayoutGroup,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
@@ -23,7 +22,7 @@ export const prepItems = (
     const adapter = getAdapter();
     const { controller, handlers } = adapter;
     const { blocks, config, manager, parts } = controller.get;
-    const { accordionToggle, controlChange } = handlers.settings;
+    const { accordionToggle } = handlers.settings;
     const { theme } = manager;
     const { bemClass } = theme;
 
@@ -46,12 +45,7 @@ export const prepItems = (
     }
 
     const renderControl = (controlConfig: LfShapeeditorControlConfig): VNode =>
-      createControl(
-        controlConfig,
-        settings[controlConfig.id],
-        (e, id, value, eventType) => controlChange(e, id, value, eventType),
-        adapter,
-      );
+      createControl(controlConfig, settings[controlConfig.id], adapter);
 
     // Helper to find a control by ID
     const findControl = (id: string) => controls.find((c) => c.id === id);
@@ -220,16 +214,11 @@ const renderInfoIcon = (
 const createControl = (
   config: LfShapeeditorControlConfig,
   currentValue: unknown,
-  onChange: (
-    e: CustomEvent | Event,
-    controlId: string,
-    value: string | number | boolean,
-    eventType: LfShapeeditorControlEventType,
-  ) => void,
   adapter: LfShapeeditorAdapter,
 ): VNode => {
-  const { controller } = adapter;
+  const { controller, handlers } = adapter;
   const { blocks, manager, resetKey } = controller.get;
+  const { controls } = handlers.settings;
   const { items } = blocks.settings.controls;
   const { logs } = manager.debug;
   const { bemClass } = manager.theme;
@@ -249,11 +238,7 @@ const createControl = (
           <lf-checkbox
             lfLabel={config.label}
             lfValue={value as boolean}
-            onLf-checkbox-event={(e) => {
-              if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, "change");
-              }
-            }}
+            onLf-checkbox-event={(e) => controls.checkbox(e, config.id)}
           ></lf-checkbox>
           {infoIcon}
         </div>
@@ -268,12 +253,7 @@ const createControl = (
             }}
             lfLabel={config.label}
             lfValue={String(value)}
-            onLf-textfield-event={(e) => {
-              const { eventType } = e.detail;
-              if (eventType === "input" || eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, eventType);
-              }
-            }}
+            onLf-textfield-event={(e) => controls.colorpicker(e, config.id)}
           ></lf-textfield>
           {infoIcon}
         </div>
@@ -290,11 +270,7 @@ const createControl = (
                 : undefined,
             }}
             lfValue={value as string}
-            onLf-multiinput-event={(e) => {
-              if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, "change");
-              }
-            }}
+            onLf-multiinput-event={(e) => controls.multiinput(e, config.id)}
           ></lf-multiinput>
           {infoIcon}
         </div>
@@ -312,17 +288,7 @@ const createControl = (
             }}
             lfLabel={config.label}
             lfValue={String(value)}
-            onLf-textfield-event={(e) => {
-              const { eventType } = e.detail;
-              if (eventType === "input" || eventType === "change") {
-                onChange(
-                  e,
-                  config.id,
-                  parseFloat(e.detail.comp.lfValue) || 0,
-                  eventType,
-                );
-              }
-            }}
+            onLf-textfield-event={(e) => controls.number(e, config.id)}
           ></lf-textfield>
           {infoIcon}
         </div>
@@ -340,11 +306,7 @@ const createControl = (
             }}
             lfTextfieldProps={{ lfLabel: config.label }}
             lfValue={value as string}
-            onLf-select-event={(e) => {
-              if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, "change");
-              }
-            }}
+            onLf-select-event={(e) => controls.select(e, config.id)}
           ></lf-select>
           {infoIcon}
         </div>
@@ -360,14 +322,10 @@ const createControl = (
             lfMax={config.max}
             lfStep={config.step}
             lfValue={value as number}
-            onLf-slider-event={(e) => {
-              const { eventType } = e.detail;
-              if (eventType === "input" || eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, eventType);
-              }
-            }}
+            onLf-slider-event={(e) => controls.slider(e, config.id)}
           ></lf-slider>
           {config.unit && <span class="unit">{config.unit}</span>}
+          {infoIcon}
         </div>
       );
 
@@ -377,12 +335,7 @@ const createControl = (
           <lf-textfield
             lfLabel={config.label}
             lfValue={value as string}
-            onLf-textfield-event={(e) => {
-              const { eventType } = e.detail;
-              if (eventType === "input" || eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, eventType);
-              }
-            }}
+            onLf-textfield-event={(e) => controls.textfield(e, config.id)}
           ></lf-textfield>
           {infoIcon}
         </div>
@@ -396,11 +349,7 @@ const createControl = (
             lfLabel={config.label}
             lfLeadingLabel={true}
             lfValue={value as boolean}
-            onLf-toggle-event={(e) => {
-              if (e.detail.eventType === "change") {
-                onChange(e, config.id, e.detail.comp.lfValue, "change");
-              }
-            }}
+            onLf-toggle-event={(e) => controls.toggle(e, config.id)}
           ></lf-toggle>
           {infoIcon}
         </div>
