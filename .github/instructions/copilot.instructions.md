@@ -6,6 +6,8 @@ applyTo: "**"
 
 Focused rules only; everything else is normal Stencil / TypeScript best practice.
 
+> **Canonical Reference:** See `docs/architecture.md` for the complete architectural specification ("Holy Bible"). This document provides quick-reference rules that derive from that specification.
+
 ## TL;DR (Quick Compliance Snapshot)
 
 - **TDD First**: Write tests before implementation. Unit tests (Jest) for framework/adapters, E2E (Cypress) for user flows.
@@ -675,7 +677,49 @@ Before finalizing a component structure:
 - Glassmorphism: Use `@include lf-comp-glassmorphize($comp, "surface", "all", 0.75);`
 - Borders: Use `@include lf-comp-border($comp, "all");`
 
-## 7. Events & Effects
+### Tiered Glass Alpha Variables
+
+Use CSS custom properties for consistent transparency across the library:
+
+| Variable | Default | Use Case |
+| --- | --- | --- |
+| `--lf-ui-alpha-glass-hint` | 0.125 | Subtle backgrounds, hover hints |
+| `--lf-ui-alpha-glass` | 0.375 | Default glass panels, containers |
+| `--lf-ui-alpha-glass-heavy` | 0.75 | Interactive items (chips, breadcrumbs) |
+| `--lf-ui-alpha-glass-solid` | 0.875 | Buttons, badges, active states |
+
+Map hardcoded alphas to these tiers: 0.075-0.175 → hint, 0.225-0.475 → default, 0.5-0.775 → heavy, 0.8-0.875 → solid.
+
+## 7. Event System
+
+### Single Event Pattern
+
+Each component emits exactly ONE custom event: `lf-<component>-event`. All interactions route through `onLfEvent()`:
+
+```typescript
+onLfEvent(
+  event: CustomEvent | PointerEvent,
+  eventType: LfButtonEventTypes,
+  args?: { node?: LfDataNode }
+) {
+  const payload = { comp: this, id: this.lfId, eventType, originalEvent: event, ...args };
+  this.lfEvent.emit(payload);
+}
+```
+
+### Event Payload Structure
+
+Every payload includes: `comp` (instance), `id` (lfId), `eventType` (discriminator), `originalEvent`, plus component-specific args.
+
+### Composition Handlers
+
+When containing child LF components:
+
+1. Handle internal logic first (state updates)
+2. Always forward to `onLfEvent` for external consumers
+3. Include relevant context in args
+
+## 8. Effects & Ripple
 
 - Ripple only if `lfRipple` true; store refs in a local map (see `#r` in tree) for the effect system.
 - Distinguish expansion vs selection via `args` object in `onLfEvent` (tree/list pattern).
@@ -702,9 +746,9 @@ if (ripple) {
 }
 ```
 
-## 8. Testing / Docs
+## 9. Testing / Docs
 
-### 8.1 Test-Driven Development (TDD) Workflow
+### 9.1 Test-Driven Development (TDD) Workflow
 
 **ALWAYS write tests before implementation**. Follow this sequence:
 
@@ -725,7 +769,7 @@ if (ripple) {
    - Use `cy.checkComponentExamples`, `cy.checkEvent`, etc.
    - Run with `yarn test` or `yarn test:open`.
 
-### 8.2 Testing Strategy
+### 9.2 Testing Strategy
 
 - **Unit/Integration (Jest)**: Fast, isolated, test framework services and component logic.
   - Framework utilities (data, theme, etc.) → `packages/core/tests/lf-<service>.spec.ts`.
@@ -736,7 +780,7 @@ if (ripple) {
   - No Jest in showcase; Cypress only.
   - Deterministic examples in `packages/showcase/src/components/lf-showcase/assets/data/`.
 
-### 8.3 TDD Checklist (enforce before implementation)
+### 9.3 TDD Checklist (enforce before implementation)
 
 - [ ] Tests written first describing expected behavior.
 - [ ] Tests fail initially (red).
@@ -745,22 +789,22 @@ if (ripple) {
 - [ ] `yarn test:unit` passes locally.
 - [ ] Coverage includes happy path + edge cases.
 
-### 8.4 Docs Regeneration
+### 9.4 Docs Regeneration
 
 - Regenerate docs when component APIs change: `yarn sync:showcase` (or `yarn build`).
 
-## 9. Common Pitfalls
+## 10. Common Pitfalls
 
 - Missing foundations declaration for new prop → TS errors downstream → build foundations only when adding new props with `yarn build:foundations`.
 - Mutating a Set without cloning → no re-render.
 - Runtime code sneaking into foundations.
 - Accessing framework services before `awaitFramework` resolves.
 
-## 10. Quick Commands
+## 11. Quick Commands
 
 `yarn build` · `yarn dev:setup` · `yarn dev` · `yarn sync:showcase` · `yarn clean` · `yarn test:unit` · `yarn test:unit:watch` · `yarn test` · `yarn test:open`.
 
-## 11. Absolute Don'ts
+## 12. Absolute Don'ts
 
 - Use `any` casually (if a new prop is introduced remember to build the foundations to spread it downstream).
 - Duplicate shape rendering logic (use `LfShape`).

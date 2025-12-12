@@ -2,6 +2,8 @@
 
 This document provides a comprehensive overview of the architecture of the LF Widgets library. It describes the monorepo structure, the roles of each package, and how the various parts interact. Visual diagrams (using Mermaid) are provided to help you quickly grasp the repository layout and inter-package relationships.
 
+> **Note**: This document is the canonical reference ("Holy Bible") for all architectural decisions. All component implementations MUST follow the patterns described here.
+
 ---
 
 ## Table of Contents
@@ -19,15 +21,71 @@ This document provides a comprehensive overview of the architecture of the LF Wi
     - [React-core](#react-core)
     - [React-showcase](#react-showcase)
   - [Inter-Package Relationships](#inter-package-relationships)
-  - [Framework Initialization Flow](#framework-initialization-flow)
-  - [Advanced component architecture](#advanced-component-architecture)
+  - [Framework Services](#framework-services)
+    - [Framework Initialization Flow](#framework-initialization-flow)
+    - [Available Services](#available-services)
+  - [Data Layer](#data-layer)
+    - [LfDataDataset \& LfDataNode](#lfdatadataset--lfdatanode)
+    - [LfDataCell \& Shapes](#lfdatacell--shapes)
+    - [Cell Container](#cell-container)
+    - [Data Service Utilities](#data-service-utilities)
+  - [Shape Rendering](#shape-rendering)
+    - [LfShape Component](#lfshape-component)
+    - [Shape-to-Component Mapping](#shape-to-component-mapping)
+    - [Event Dispatcher Pattern](#event-dispatcher-pattern)
+  - [Component Architecture](#component-architecture)
+    - [Component Complexity Tiers](#component-complexity-tiers)
+    - [Adapter Pattern Overview](#adapter-pattern-overview)
+    - [Simple Component Pattern (Tier 1)](#simple-component-pattern-tier-1)
+    - [Medium Component Pattern (Tier 2)](#medium-component-pattern-tier-2)
+    - [Complex Component Pattern (Tier 3)](#complex-component-pattern-tier-3)
+    - [Handler Patterns](#handler-patterns)
+    - [Helper Files](#helper-files)
     - [Adapter's Role](#adapters-role)
     - [Controller Submodules](#controller-submodules)
     - [Elements \& Handlers](#elements--handlers)
+  - [DOM-Driven Architecture](#dom-driven-architecture)
+    - [Blocks Define DOM Hierarchy](#blocks-define-dom-hierarchy)
+    - [Refs Mirror DOM Nesting](#refs-mirror-dom-nesting)
+    - [IDS Mirror Blocks](#ids-mirror-blocks)
+    - [File Organization by Block](#file-organization-by-block)
+    - [SCSS Block Structure](#scss-block-structure)
+    - [Parts for CSS Customization](#parts-for-css-customization)
+    - [Handler Splitting by Domain](#handler-splitting-by-domain)
+    - [Quick Reference Table](#quick-reference-table)
+    - [DOM-Driven Checklist](#dom-driven-checklist)
+  - [Event System](#event-system)
+    - [Single Event Pattern](#single-event-pattern)
+    - [Event Payload Structure](#event-payload-structure)
+    - [Composition Handlers](#composition-handlers)
+  - [Functional Components (Future)](#functional-components-future)
+  - [Styling Patterns](#styling-patterns)
+    - [BEM Convention](#bem-convention)
     - [Ripple Effect Pattern](#ripple-effect-pattern)
     - [Glassmorphism Styling](#glassmorphism-styling)
+      - [Tiered Glass Alpha Variables](#tiered-glass-alpha-variables)
     - [Backdrop-Filter and Shadow DOM Considerations](#backdrop-filter-and-shadow-dom-considerations)
-  - [Build \& Testing Scripts](#build--testing-scripts)
+      - [The Core Problem](#the-core-problem)
+      - [When Backdrop-Filter Works](#when-backdrop-filter-works)
+      - [Real-World Examples](#real-world-examples)
+      - [The Transform Trap](#the-transform-trap)
+      - [Solution Guidelines](#solution-guidelines)
+      - [Quick Reference](#quick-reference)
+  - [Testing Strategy](#testing-strategy)
+    - [Test-Driven Development (TDD)](#test-driven-development-tdd)
+    - [Unit Tests (Jest)](#unit-tests-jest)
+    - [E2E Tests (Cypress)](#e2e-tests-cypress)
+    - [Testing Checklist](#testing-checklist)
+  - [Build \& Scripts](#build--scripts)
+    - [Build Commands](#build-commands)
+    - [Development Commands](#development-commands)
+    - [Test Commands](#test-commands)
+    - [Build Order](#build-order)
+  - [Best Practices Checklist](#best-practices-checklist)
+    - [Pre-Implementation](#pre-implementation)
+    - [During Implementation](#during-implementation)
+    - [Pre-PR](#pre-pr)
+    - [Documentation](#documentation)
   - [Conclusion](#conclusion)
 
 ---
@@ -217,7 +275,11 @@ graph TD
 
 ---
 
-## Framework Initialization Flow
+## Framework Services
+
+The framework provides singleton services that components consume via `awaitFramework()`.
+
+### Framework Initialization Flow
 
 The LF Widgets framework is designed to be initialized on demand. The following flowchart summarizes the steps taken when the `getLfFramework()` function is invoked:
 
@@ -241,9 +303,194 @@ flowchart TD
 - **Global Exposure:** The instance is attached to the `window` object for global accessibility.
 - **Event Dispatching:** A custom event notifies any listeners that the framework is ready, enabling dependent components to safely execute initialization code.
 
+### Available Services
+
+| Service | Purpose | Common Methods |
+|---------|---------|----------------|
+| `theme` | BEM classes, CSS variables, theme registration | `bemClass()`, `register()`, `unregister()` |
+| `data` | Dataset traversal, cell operations, shape extraction | `node.traverse()`, `cell.stringify()`, `cell.shapes.get()` |
+| `effects` | Visual effects (ripple, transitions) | `ripple()` |
+| `portal` | Floating elements management | `open()`, `close()`, `isInPortal()` |
+| `color` | Color manipulation utilities | `parse()`, `blend()` |
+| `debug` | Lifecycle logging, performance tracking | `log()`, `info.update()` |
+| `drag` | Drag-and-drop functionality | `start()`, `end()` |
+| `llm` | LLM integration utilities | Various AI-related helpers |
+| `utilities` | General utility functions | `clickCallbacks`, `objectMerge()` |
+
+**Usage in Components:**
+
+```typescript
+async connectedCallback() {
+  this.#framework = await awaitFramework();
+  this.#framework.theme.register(this);
+}
+
+disconnectedCallback() {
+  this.#framework?.theme.unregister(this);
+}
+```
+
 ---
 
-## Advanced component architecture
+## Data Layer
+
+The data layer defines how information flows through components using a consistent dataset structure.
+
+### LfDataDataset & LfDataNode
+
+The core data structure is a hierarchical dataset:
+
+```typescript
+interface LfDataDataset {
+  nodes: LfDataNode[];      // Tree of data nodes
+  columns?: LfDataColumn[]; // Optional column definitions
+}
+
+interface LfDataNode {
+  id: string;               // Unique identifier
+  value: string;            // Display value
+  description?: string;     // Optional description
+  icon?: string;            // Optional icon identifier
+  children?: LfDataNode[];  // Nested children (tree structure)
+  cells?: LfDataCellContainer; // Cell data for shapes
+  // ... additional optional properties
+}
+```
+
+```mermaid
+graph TD
+    DS[LfDataDataset] --> N1[LfDataNode]
+    DS --> N2[LfDataNode]
+    N1 --> C1[cells: LfDataCellContainer]
+    N1 --> CH[children: LfDataNode[]]
+    C1 --> CELL1[lfBadge: LfDataCell]
+    C1 --> CELL2[lfButton: LfDataCell]
+    CH --> N3[LfDataNode]
+```
+
+### LfDataCell & Shapes
+
+Cells define how data is rendered as components:
+
+```typescript
+interface LfDataCell<S extends LfDataShapeMap = "text"> {
+  shape: S;                 // Component type discriminator
+  value: CellValue;         // Storage/canonical value
+  lfValue?: CellValue;      // Rendering value (auto-derived if not set)
+  // ... shape-specific props (e.g., lfIcon for buttons)
+}
+```
+
+**Available Shapes:**
+
+| Shape | Component | Usage |
+|-------|-----------|-------|
+| `text` | Inline text | Default, primitive |
+| `number` | Inline number | Primitive |
+| `slot` | `<slot>` | Primitive |
+| `badge` | `<lf-badge>` | Status indicators |
+| `button` | `<lf-button>` | Actions |
+| `chip` | `<lf-chip>` | Tags, filters |
+| `image` | `<lf-image>` | Media |
+| `toggle` | `<lf-toggle>` | Boolean switches |
+| `code` | `<lf-code>` | Code blocks |
+| `chart` | `<lf-chart>` | Data visualization |
+| ... | ... | ... |
+
+### Cell Container
+
+Cells are stored in a container with `lf<Shape>` keys:
+
+```typescript
+interface LfDataCellContainer {
+  lfBadge?: LfDataCell<"badge">;
+  lfButton?: LfDataCell<"button">;
+  lfImage?: LfDataCell<"image">;
+  // ... one optional entry per shape type
+}
+```
+
+**Note:** Currently limited to one cell per shape type. See `4_0_0_REFACTORING.md` for planned flexible container improvements.
+
+### Data Service Utilities
+
+Access data utilities via `framework.data`:
+
+```typescript
+// Node operations
+framework.data.node.traverse(nodes, callback);  // Depth-first traversal
+framework.data.node.filter(nodes, predicate);   // Filter nodes
+framework.data.node.find(nodes, id);            // Find by ID
+
+// Cell operations
+framework.data.cell.stringify(cell);            // Get display text
+framework.data.cell.shapes.get(cell);           // Extract shape props
+framework.data.cell.shapes.getAll(dataset);     // Bulk extraction
+```
+
+---
+
+## Shape Rendering
+
+The `LfShape` functional component is the central abstraction for rendering dataset cells as UI elements.
+
+### LfShape Component
+
+**Location:** `packages/core/src/utils/shapes.tsx`
+
+```tsx
+<LfShape
+  framework={this.#framework}
+  shape={shape}           // Shape type from cell
+  index={i}               // Index for key generation
+  cell={cellProps}        // Cell properties
+  eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", { node })}
+/>
+```
+
+**When to use LfShape:**
+
+| Scenario | Use LfShape? |
+|----------|--------------|
+| Non-primitive shapes (badge, button, image, etc.) | ✅ Yes |
+| Need prop sanitization | ✅ Yes |
+| Need unified event plumbing | ✅ Yes |
+| Primitives (text, number, slot) | ❌ No - inline directly |
+
+### Shape-to-Component Mapping
+
+LfShape internally maps shape types to component tags:
+
+```typescript
+// Simplified internal logic
+switch (shape) {
+  case "badge": return <lf-badge {...sanitizedProps} />;
+  case "button": return <lf-button {...sanitizedProps} />;
+  case "image": return <lf-image {...sanitizedProps} />;
+  // ... all non-primitive shapes
+}
+```
+
+**Key behaviors:**
+
+1. **Prop Sanitization:** `sanitizeProps()` filters props to only those accepted by the target component
+2. **lfValue Fallback:** If `lfValue` is missing, automatically derived from `value`
+3. **Event Unification:** All shape events route through `eventDispatcher`
+
+### Event Dispatcher Pattern
+
+Shape events bubble up through the dispatcher to the parent's event funnel:
+
+```tsx
+// In parent component
+eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", { node })}
+```
+
+**Important:** The dispatcher MUST be async to satisfy functional component typings.
+
+---
+
+## Component Architecture
 
 The most complex components in the library are built using a combination of Stencil.js and the LF Widgets framework. This architecture allows for a clear separation of concerns and ensures that components are modular, reusable, and easy to maintain.
 
@@ -253,11 +500,13 @@ Components fall into three complexity tiers, each with specific file organizatio
 
 | Tier | Complexity | File Pattern | Examples |
 |------|------------|--------------|----------|
-| **Simple** | Single JSX section, few handlers | `lf-<name>-adapter.ts`, `elements.<name>.tsx`, `handlers.<name>.ts` | `lf-breadcrumbs`, `lf-radio`, `lf-chip` |
+| **Simple** | Single JSX section, few handlers | `lf-<name>-adapter.ts`, `elements.<name>.tsx`, `handlers.<name>.ts` | `lf-breadcrumbs`, `lf-radio` |
 | **Medium** | Multiple JSX sections, enhanced setters, portal | Same as Simple + enhanced setters in adapter | `lf-autocomplete`, `lf-select` |
 | **Complex** | Domain segmentation, DOM-driven block splitting | `lf-<name>-adapter.ts`, `elements.<block>.tsx` per block, `handlers.<panel>.ts`, `helpers.<function>.ts` | `lf-messenger`, `lf-chat`, `lf-shapeeditor` |
 
 **Key Principle:** For complex components, the file structure follows the **DOM-Driven Architecture** pattern where `LF_<COMP>_BLOCKS` defines the DOM hierarchy, and element files, refs, IDs, parts, and SCSS blocks all mirror this structure.
+
+> **Note:** Adapters are recommended for all components with more than minimal complexity. Components without adapters should be considered for retrofit.
 
 ### Adapter Pattern Overview
 
@@ -604,11 +853,13 @@ The controller is the heart of the component, managing the interaction between t
 
 The elements represent the visual structure of the component, while the handlers manage the component's behavior and interactions. By separating these concerns, the component's codebase remains organized and easy to extend.
 
-### DOM-Driven Architecture
+---
+
+## DOM-Driven Architecture
 
 **The DOM structure MUST mirror `LF_<COMP>_BLOCKS`**. This canonical pattern ensures consistency between BEM classes, refs, IDs, parts, and file organization across all components.
 
-#### Blocks Define DOM Hierarchy
+### Blocks Define DOM Hierarchy
 
 Each entry in `LF_<COMP>_BLOCKS` represents a BEM block that:
 
@@ -628,7 +879,7 @@ export const LF_SHAPEEDITOR_BLOCKS = {
 };
 ```
 
-#### Refs Mirror DOM Nesting
+### Refs Mirror DOM Nesting
 
 Refs structure MUST nest to match the DOM hierarchy:
 
@@ -658,7 +909,7 @@ refs: {
 }
 ```
 
-#### IDS Mirror Blocks
+### IDS Mirror Blocks
 
 IDs follow the same nested pattern for consistency:
 
@@ -675,7 +926,7 @@ export const LF_SHAPEEDITOR_IDS = {
 };
 ```
 
-#### File Organization by Block
+### File Organization by Block
 
 For medium/complex components, split element files by block scope:
 
@@ -692,7 +943,7 @@ lf-shapeeditor/
 └── elements.preview.tsx         # Standalone: shape + spinner
 ```
 
-#### SCSS Block Structure
+### SCSS Block Structure
 
 Each block in `LF_<COMP>_BLOCKS` gets its own SCSS block:
 
@@ -721,7 +972,7 @@ Each block in `LF_<COMP>_BLOCKS` gets its own SCSS block:
 }
 ```
 
-#### Parts for CSS Customization
+### Parts for CSS Customization
 
 Every block element should expose a `::part()` for external styling:
 
@@ -739,7 +990,7 @@ export const LF_SHAPEEDITOR_PARTS = {
 };
 ```
 
-#### Handler Splitting by Domain
+### Handler Splitting by Domain
 
 Split handlers when they serve logically distinct interactions:
 
@@ -766,7 +1017,7 @@ handlers: {
 }
 ```
 
-#### Quick Reference Table
+### Quick Reference Table
 
 | Artifact | Naming Pattern | Location |
 |----------|----------------|----------|
@@ -778,7 +1029,7 @@ handlers: {
 | SCSS block | `.<block> { &__<element> }` | `core/lf-<comp>.scss` |
 | Handler | `handlers.<panel>.<domain>` | `core/handlers.<panel>.ts` |
 
-#### DOM-Driven Checklist
+### DOM-Driven Checklist
 
 Before finalizing a component structure:
 
@@ -789,6 +1040,132 @@ Before finalizing a component structure:
 - [ ] Element files split by block (for medium/complex)
 - [ ] Handlers grouped by interaction domain, not by element type
 - [ ] Main TSX `#prep*()` methods delegate to JSX functions from element files
+
+---
+
+## Event System
+
+All components follow a unified event pattern for consistency and predictability.
+
+### Single Event Pattern
+
+Each component emits exactly ONE custom event: `lf-<component>-event`.
+
+```typescript
+@Event({ eventName: "lf-button-event", composed: true, cancelable: false, bubbles: true })
+lfEvent: EventEmitter<LfButtonEventPayload>;
+```
+
+All interactions route through the component's `onLfEvent()` method:
+
+```typescript
+onLfEvent(
+  event: CustomEvent | PointerEvent,
+  eventType: LfButtonEventTypes,
+  args?: { node?: LfDataNode }
+) {
+  const payload: LfButtonEventPayload = {
+    comp: this,
+    id: this.lfId,
+    eventType,
+    originalEvent: event,
+    ...args,
+  };
+  this.lfEvent.emit(payload);
+}
+```
+
+### Event Payload Structure
+
+Every event payload includes:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `comp` | Component instance | Reference to the emitting component |
+| `id` | string | Component's `lfId` prop |
+| `eventType` | string literal | Discriminator (e.g., "click", "ready", "unmount") |
+| `originalEvent` | Event | The original DOM event |
+| `...args` | varies | Component-specific data (node, value, etc.) |
+
+### Composition Handlers
+
+When a component contains child LF components, create composition handlers to forward events:
+
+```typescript
+// In handlers
+list: async (event: CustomEvent<LfListEventPayload>) => {
+  const { eventType, node } = event.detail;
+  
+  switch (eventType) {
+    case "click":
+      controller.set.value(node.id);
+      controller.set.list("close");
+      break;
+  }
+  
+  // Always forward to parent event funnel
+  comp.onLfEvent(event, "lf-event", node);
+},
+```
+
+**Key principles:**
+
+1. Handle internal logic first (state updates)
+2. Always forward to `onLfEvent` for external consumers
+3. Include relevant context in args
+
+---
+
+## Functional Components (Future)
+
+> **Status**: Planned for v4.0.0. See `4_0_0_REFACTORING.md` for details.
+
+The library is evolving toward a dual-mode architecture where:
+
+1. **Web Components** serve as thin wrappers for standalone usage
+2. **Functional Components** handle all rendering, used internally for composition
+3. **Shapes** render via FCs, not WC tags
+
+This will significantly reduce Shadow DOM overhead when components are composed (e.g., shapeeditor with many controls).
+
+**Target pattern:**
+
+```tsx
+// Web Component (standalone usage)
+<lf-textfield lfLabel="Name" lfValue={value} />
+
+// Functional Component (composed usage, state in parent)
+<LfTextfieldFC
+  framework={framework}
+  label="Name"
+  value={parentState.value}
+  onInput={(v) => parentSetState(v)}
+/>
+```
+
+---
+
+## Styling Patterns
+
+### BEM Convention
+
+All classes use BEM methodology via `theme.bemClass()`:
+
+```typescript
+const { bemClass } = theme;
+
+// Block
+<div class={bemClass(blocks.button._)}>
+
+// Block + Element
+<span class={bemClass(blocks.button._, blocks.button.label)}>
+
+// Block + Modifier
+<div class={bemClass(blocks.button._, null, "disabled")}>
+
+// Block + Element + Modifier
+<span class={bemClass(blocks.button._, blocks.button.icon, "left")}>
+```
 
 ### Ripple Effect Pattern
 
@@ -971,19 +1348,226 @@ Light DOM (page content)
             └── .inner (just colors)
 ```
 
-## Build & Testing Scripts
+---
 
-The root `package.json` defines several scripts that coordinate the build, test, and development processes across packages:
+## Testing Strategy
 
-- **Build Scripts:**
-  - `build:core`, `build:foundations`, `build:framework`, etc., which use Lerna to run package-specific builds.
-  - The `build` script orchestrates the entire build process across all packages.
-- **Development & Testing:**
-  - `dev` and `dev:setup` scripts for running the showcase in development mode.
-  - Cypress is used for running e2e tests against the showcase to ensure all components work as expected.
-  - The `doc` script generates documentation from the core package.
+The library employs a comprehensive testing strategy with two complementary approaches.
 
-These scripts help maintain consistency and ensure that changes in one package are correctly integrated and tested across the entire library.
+### Test-Driven Development (TDD)
+
+**Always write tests before implementation.** This ensures:
+
+1. Clear requirements definition before coding
+2. Faster feedback during development
+3. Better code coverage
+4. Confidence in refactoring
+
+**TDD Workflow:**
+
+```text
+1. Write failing test (Red)
+2. Implement minimal code to pass (Green)
+3. Refactor while keeping tests green
+4. Repeat
+```
+
+### Unit Tests (Jest)
+
+**Location:** `packages/core/src/components/<component>/<component>.spec.ts`
+
+**Purpose:** Fast, isolated tests for component logic, adapters, and framework services.
+
+**Running:**
+
+- `yarn test:unit` - Run all unit tests
+- `yarn test:unit:watch` - Watch mode during development
+
+**Example:**
+
+```typescript
+import { newSpecPage } from "@stencil/core/testing";
+import { LfButton } from "../lf-button";
+
+describe("lf-button", () => {
+  it("renders with default props", async () => {
+    const page = await newSpecPage({
+      components: [LfButton],
+      html: `<lf-button></lf-button>`,
+    });
+    expect(page.root).toEqualHtml(`
+      <lf-button>
+        <mock:shadow-root>
+          <button class="button">
+            <slot></slot>
+          </button>
+        </mock:shadow-root>
+      </lf-button>
+    `);
+  });
+
+  it("emits click event", async () => {
+    const page = await newSpecPage({
+      components: [LfButton],
+      html: `<lf-button></lf-button>`,
+    });
+    const spy = jest.fn();
+    page.root.addEventListener("lf-button-event", spy);
+    
+    page.root.shadowRoot.querySelector("button").click();
+    await page.waitForChanges();
+    
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: expect.objectContaining({ eventType: "click" }),
+      })
+    );
+  });
+});
+```
+
+**Test Categories:**
+
+| Category | What to Test | Location |
+|----------|--------------|----------|
+| Component Props | Default values, reactivity | `<component>.spec.ts` |
+| Component Methods | Public API via `@Method()` | `<component>.spec.ts` |
+| Event Emission | Correct payload, event type | `<component>.spec.ts` |
+| Adapter Logic | Getters, setters, handlers | `<component>-adapter.spec.ts` |
+| Framework Services | Data utilities, theme, effects | `packages/core/tests/` |
+
+### E2E Tests (Cypress)
+
+**Location:** `packages/showcase/cypress/e2e/components/<component>.cy.ts`
+
+**Purpose:** User flow testing through the showcase, verifying complete interactions.
+
+**Running:**
+
+- `yarn test` - Run Cypress tests
+- `yarn test:open` - Interactive Cypress mode
+
+**Example:**
+
+```typescript
+describe("lf-button", () => {
+  beforeEach(() => {
+    cy.visit("/button");
+  });
+
+  it("should trigger click event", () => {
+    cy.checkComponentExamples("lf-button");
+    cy.checkEvent("lf-button", "click");
+  });
+
+  it("should show ripple effect", () => {
+    cy.get("lf-button[lf-ripple]")
+      .first()
+      .click()
+      .find(".button__ripple")
+      .should("exist");
+  });
+});
+```
+
+**Custom Commands:**
+
+| Command | Purpose |
+|---------|---------|
+| `cy.checkComponentExamples(tag)` | Verify all examples render |
+| `cy.checkEvent(tag, eventType)` | Verify event emission |
+| `cy.getComponent(tag)` | Get component with retry |
+
+### Testing Checklist
+
+Before submitting a PR:
+
+- [ ] Unit tests written for new functionality
+- [ ] Unit tests pass locally (`yarn test:unit`)
+- [ ] E2E tests added for user-facing features (optional)
+- [ ] No test regressions
+- [ ] Coverage includes happy path + edge cases
+
+---
+
+## Build & Scripts
+
+The root `package.json` defines scripts that coordinate the build, test, and development processes.
+
+### Build Commands
+
+| Command | Purpose |
+|---------|---------|
+| `yarn build` | Full build: foundations → framework → core → showcase → react |
+| `yarn build:foundations` | Build foundations only (types/constants) |
+| `yarn build:framework` | Build framework only (services) |
+| `yarn build:core` | Build core only (web components) |
+| `yarn clean` | Remove all build artifacts |
+| `yarn sync:showcase` | Regenerate docs/mixins |
+
+### Development Commands
+
+| Command | Purpose |
+|---------|---------|
+| `yarn dev:setup` | First-time dev environment setup |
+| `yarn dev` | Start showcase in dev mode |
+
+### Test Commands
+
+| Command | Purpose |
+|---------|---------|
+| `yarn test:unit` | Run Jest unit tests |
+| `yarn test:unit:watch` | Jest in watch mode |
+| `yarn test` | Run Cypress E2E tests |
+| `yarn test:open` | Cypress interactive mode |
+
+### Build Order
+
+The build follows a strict dependency order:
+
+```text
+foundations (types) → framework (services) → core (components) → showcase → react wrappers
+```
+
+Always rebuild downstream packages when changing upstream packages.
+
+---
+
+## Best Practices Checklist
+
+### Pre-Implementation
+
+- [ ] Read relevant adapter patterns in existing components
+- [ ] Identify component complexity tier (Simple/Medium/Complex)
+- [ ] Plan DOM hierarchy via BLOCKS constant
+- [ ] Write failing unit tests first (TDD)
+
+### During Implementation
+
+- [ ] Single event (`lf-<name>-event`) via `onLfEvent`
+- [ ] Adapter with proper getter/setter/handlers/jsx/refs
+- [ ] Use `<LfShape/>` for non-primitive shapes
+- [ ] Clone Sets/Maps before reassign
+- [ ] `theme.bemClass` only for classes
+- [ ] Refs mirror DOM hierarchy
+- [ ] No `any` types
+- [ ] No runtime code in foundations
+
+### Pre-PR
+
+- [ ] `yarn build:foundations` if types changed
+- [ ] `yarn build:core` passes
+- [ ] `yarn test:unit` passes
+- [ ] `yarn sync:showcase` if API changed
+- [ ] No lint/TypeScript errors
+- [ ] Adapter interface imported from foundations (not re-exported locally)
+
+### Documentation
+
+- [ ] JSDoc on public props/methods
+- [ ] CSS custom props documented with `@prop`
+- [ ] Example added to showcase if new component
+- [ ] README updated if significant change
 
 ---
 
@@ -991,9 +1575,13 @@ These scripts help maintain consistency and ensure that changes in one package a
 
 The LF Widgets library is a modern, modular system for building web components with Stencil.js. Its architecture is characterized by:
 
-- **Clear Separation of Concerns:** Each package has a distinct responsibility—from foundational types and constants to runtime orchestration and component rendering.
-- **Dynamic Framework Initialization:** The framework is initialized on demand, providing flexibility in how and when global state and event listeners are set up.
-- **Seamless React Integration:** React-core and React-showcase bridge the gap between Stencil web components and React applications.
-- **Robust Development & Testing Tools:** A comprehensive set of build and test scripts ensure high quality and maintainability.
+- **Clear Separation of Concerns:** Each package has a distinct responsibility—foundations for types, framework for services, core for components.
+- **DOM-Driven Design:** The `LF_<COMP>_BLOCKS` constant defines the entire DOM structure, driving refs, IDs, SCSS, and file organization.
+- **Adapter Pattern:** A canonical structure (controller.get/set, elements.jsx/refs, handlers) ensures consistency across all components.
+- **Single Event Funnel:** One custom event per component with `eventType` discriminator simplifies consumer code.
+- **Shape Abstraction:** `<LfShape/>` provides unified rendering for all non-primitive cell types.
+- **Test-Driven Development:** Unit tests (Jest) and E2E tests (Cypress) ensure reliability.
+- **Dynamic Framework:** Services initialized on-demand via `awaitFramework()`.
+- **React Integration:** Generated wrappers bridge web components to React applications.
 
-By following this architecture, the LF Widgets library achieves a scalable, maintainable, and developer-friendly codebase that is both efficient in development and robust in production.
+By following this architecture, developers can build scalable, maintainable components that integrate seamlessly with the rest of the library.
