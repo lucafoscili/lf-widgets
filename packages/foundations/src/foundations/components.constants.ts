@@ -71,6 +71,7 @@ export const CY_ATTRIBUTES = {
   showcaseExample: "showcase-example",
   showcaseGridWrapper: "showcase-grid-wrapper",
   spinner: "spinner",
+  toggle: "toggle",
 } as const;
 /**
  * Composable effect attributes that use hierarchical dataset naming.

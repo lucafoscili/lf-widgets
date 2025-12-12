@@ -32,6 +32,9 @@
   "devDependencies": {
     "vite": "^6"
   },
+  "dependencies": {
+    "@lf-widgets/assets": "workspace:*"
+  },
   "peerDependencies": {
     "@lf-widgets/core": "workspace:*",
     "@lf-widgets/foundations": "workspace:*",

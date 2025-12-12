@@ -67,7 +67,7 @@ export const prepActions = (
         {hasHistory && (
           <lf-button
             class={bemClass(actionsBlock._, actionsBlock.badge)}
-            data-cy={cyAttributes.button}
+            data-cy={cyAttributes.toggle}
             id={ids.settings.actions.badge}
             lfIcon={historyIcon}
             lfLabel={`History: ${currentIndex + 1}/${total}`}

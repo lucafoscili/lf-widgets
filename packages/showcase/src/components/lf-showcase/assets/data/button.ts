@@ -1,14 +1,17 @@
 import {
+  LF_BUTTON_EVENTS,
   LF_BUTTON_STYLINGS,
   LF_THEME_UI_SIZES,
   LfArticleDataset,
   LfButtonPropsInterface,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfDataDataset,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
+  LfShapeeditorElement,
+  LfShapeeditorEventPayload,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -16,6 +19,7 @@ import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
 import { randomStyle } from "../../helpers/fixtures.helpers";
 import { stateFactory } from "../../helpers/fixtures.state";
+import { createComponentPlayground } from "../../helpers/playground.generator";
 import {
   LfShowcaseComponentFixture,
   LfShowcaseExample,
@@ -111,6 +115,52 @@ export const getButtonFixtures = (
   };
   //#endregion
 
+  //#region Playground Event Handler
+  /**
+   * Handles shapeeditor events for the button playground.
+   * Applies prop changes from the settings tree to the preview component.
+   */
+  const playgroundEventHandler = async (
+    e: CustomEvent<LfShapeeditorEventPayload>,
+  ) => {
+    const { comp, eventType } = e.detail;
+    const shapeeditor = comp as unknown as LfShapeeditorElement;
+
+    switch (eventType) {
+      case "change": {
+        // A control value changed - get the current settings
+        const settings = await shapeeditor.getSettings();
+        console.log("[Button Playground] Settings changed:", settings);
+        break;
+      }
+
+      case "ready":
+        console.log("[Button Playground] Shapeeditor ready");
+        break;
+    }
+  };
+  //#endregion
+
+  //#region Playground Configuration
+  const playground = createComponentPlayground({
+    componentName: COMPONENT_NAME,
+    tag: TAG_NAME,
+    eventTypes: LF_BUTTON_EVENTS,
+    initialProps: {
+      lfLabel: "Interactive Button",
+      lfStyling: "raised",
+      lfRipple: true,
+    },
+    description:
+      "Experiment with button props in real-time. " +
+      "Toggle switches, select styling options, and see changes instantly. " +
+      "Demonstrates the universal component playground pattern.",
+  });
+  if (playground) {
+    playground.events = { "lf-shapeeditor-event": playgroundEventHandler };
+  }
+  //#endregion
+
   return {
     //#region configuration
     configuration: {
@@ -127,6 +177,7 @@ export const getButtonFixtures = (
     //#endregion
 
     documentation,
+    ...(playground && { playground }),
     examples: {
       //#region Styling
       ...LF_BUTTON_STYLINGS.reduce(

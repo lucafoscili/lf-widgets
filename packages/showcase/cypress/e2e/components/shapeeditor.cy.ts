@@ -87,369 +87,314 @@ describe(CY_CATEGORIES.props, () => {
 });
 //#endregion
 
-//#region Canvas Overflow Prevention
-describe("Canvas Overflow Prevention", () => {
-  const { shape } = CY_ATTRIBUTES;
+//#region e2e
+describe(CY_CATEGORIES.e2e, () => {
+  const { shape, toggle } = CY_ATTRIBUTES;
 
-  // The canvas shapeeditor example ID
-  const canvasShapeeditorId = "#uncategorized-canvasSimple";
-
-  beforeEach(() => {
-    cy.navigate(shapeeditor);
-    cy.waitForWebComponents([shapeeditorTag, "lf-image", "lf-canvas"]);
-  });
-
-  it("should contain canvas within preview bounds after selecting a shape", () => {
-    // Find the canvas shapeeditor example by ID
-    cy.get(canvasShapeeditorId).as("shapeeditor");
-
-    // Click on a shape to load it into preview (use force for pointer-events:none)
-    cy.get("@shapeeditor")
-      .findCyElement(shape)
-      .first()
-      .scrollIntoView()
-      .click({ force: true });
-
-    // Wait for canvas to be rendered in the preview
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .should("exist")
-      .then(($canvas) => {
-        // Get the preview container
-        const previewContainer = $canvas.closest(".details-grid__preview");
-
-        if (previewContainer.length) {
-          const previewRect = previewContainer[0].getBoundingClientRect();
-          const canvasRect = $canvas[0].getBoundingClientRect();
-
-          // Canvas should not exceed preview container bounds
-          expect(canvasRect.right).to.be.at.most(
-            previewRect.right + 1,
-            "Canvas should not overflow horizontally",
-          );
-          expect(canvasRect.bottom).to.be.at.most(
-            previewRect.bottom + 1,
-            "Canvas should not overflow vertically",
-          );
-        }
-      });
-  });
-
-  it("should properly apply boxing (letterbox/pillarbox) without overflow", () => {
-    // Find the canvas shapeeditor example by ID
-    cy.get(canvasShapeeditorId).as("shapeeditor");
-
-    // Click on a shape to load it into preview
-    cy.get("@shapeeditor")
-      .findCyElement(shape)
-      .first()
-      .scrollIntoView()
-      .click({ force: true });
-
-    // Wait for canvas and check boxing attribute
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .should("exist")
-      .should("have.attr", "data-boxing")
-      .and("match", /^(letterbox|pillarbox)$/);
-  });
-
-  it("should maintain canvas containment on window resize", () => {
-    // Find the canvas shapeeditor example by ID
-    cy.get(canvasShapeeditorId).as("shapeeditor");
-
-    // Click on a shape to load it into preview
-    cy.get("@shapeeditor")
-      .findCyElement(shape)
-      .first()
-      .scrollIntoView()
-      .click({ force: true });
-
-    // Wait for canvas
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .should("exist");
-
-    // Resize viewport
-    cy.viewport(800, 600);
-
-    // Wait for resize to settle
-    cy.wait(500);
-
-    // Verify canvas is still contained
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .then(($canvas) => {
-        const previewContainer = $canvas.closest(".details-grid__preview");
-
-        if (previewContainer.length) {
-          const previewRect = previewContainer[0].getBoundingClientRect();
-          const canvasRect = $canvas[0].getBoundingClientRect();
-
-          expect(canvasRect.right).to.be.at.most(
-            previewRect.right + 1,
-            "Canvas should remain contained after resize",
-          );
-          expect(canvasRect.bottom).to.be.at.most(
-            previewRect.bottom + 1,
-            "Canvas should remain contained after resize",
-          );
-        }
-      });
-
-    // Reset viewport
-    cy.viewport(1280, 720);
-  });
-
-  it("should not cause infinite resize loop (no performance degradation)", () => {
-    // Find the canvas shapeeditor example by ID
-    cy.get(canvasShapeeditorId).as("shapeeditor");
-
-    // Click on a shape to load it into preview
-    cy.get("@shapeeditor")
-      .findCyElement(shape)
-      .first()
-      .scrollIntoView()
-      .click({ force: true });
-
-    // Wait for canvas
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .should("exist");
-
-    // Record initial time
-    const startTime = Date.now();
-
-    // Wait a reasonable amount of time - if there's an infinite loop,
-    // the browser would become unresponsive or slow
-    cy.wait(1000);
-
-    // Verify we can still interact with the page (no infinite loop blocking)
-    cy.get("@shapeeditor")
-      .find(".details-grid__preview lf-canvas")
-      .should("be.visible")
-      .then(() => {
-        const elapsed = Date.now() - startTime;
-        // If it takes much longer than expected, there might be a loop
-        expect(elapsed).to.be.lessThan(
-          3000,
-          "Page should remain responsive (no resize loop)",
-        );
-      });
-  });
-});
-//#endregion
-
-//#region Behavioral Event Handling
-describe("Behavioral Event Handling (Image Editor)", () => {
-  /**
-   * Tests for the three behavioral patterns:
-   * - live: Preview on drag, commit on release
-   * - configure: Settings are config, stroke triggers commit
-   * - manual: No preview, explicit Apply button required
-   */
-
-  const playgroundId = "#playground";
+  const playgroundId = `#${shapeeditorTag}-playground`;
 
   beforeEach(() => {
     cy.navigate(shapeeditor);
     cy.waitForWebComponents([
       shapeeditorTag,
+      "lf-image",
       "lf-tree",
       "lf-canvas",
       "lf-slider",
       "lf-accordion",
     ]);
+    cy.get(playgroundId).as("shapeeditor");
   });
 
-  it("should show Apply button for manual behavior filters (resize, background_remover)", () => {
-    // Find the playground shapeeditor
-    cy.get(playgroundId).as("shapeeditor");
+  describe("Canvas Overflow Prevention", () => {
+    it("should contain canvas within preview bounds after selecting a shape", () => {
+      // Click on a shape to load it into preview (use force for pointer-events:none)
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    // First select an image from the masonry to enable controls
-    cy.get("@shapeeditor")
-      .find("lf-masonry lf-image")
-      .first()
-      .click({ force: true });
+      // Wait for canvas to be rendered in the preview
+      cy.get("@shapeeditor")
+        .find(".preview lf-canvas")
+        .should("exist")
+        .then(($canvas) => {
+          // Get the preview container
+          const previewContainer = $canvas.closest(".preview");
 
-    // Expand Basic Adjustments in the tree and click on "Resize (by edge)" which has manual behavior
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Basic Adjustments")
-      .click({ force: true });
+          if (previewContainer.length) {
+            const previewRect = previewContainer[0].getBoundingClientRect();
+            const canvasRect = $canvas[0].getBoundingClientRect();
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Resize (by edge)")
-      .click({ force: true });
+            // Canvas should not exceed preview container bounds
+            expect(canvasRect.right).to.be.at.most(
+              previewRect.right + 1,
+              "Canvas should not overflow horizontally",
+            );
+            expect(canvasRect.bottom).to.be.at.most(
+              previewRect.bottom + 1,
+              "Canvas should not overflow vertically",
+            );
+          }
+        });
+    });
 
-    // Wait for controls to render and check Apply button is visible
-    cy.get("@shapeeditor")
-      .find(".controlActions__apply")
-      .should("exist")
-      .and("be.visible");
+    it("should properly apply boxing (letterbox/pillarbox) without overflow", () => {
+      // Click on a shape to load it into preview
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
+
+      // Wait for canvas and check boxing attribute
+      cy.get("@shapeeditor")
+        .find(".preview lf-canvas")
+        .should("exist")
+        .should("have.attr", "data-boxing")
+        .and("match", /^(letterbox|pillarbox)$/);
+    });
+
+    it("should maintain canvas containment on window resize", () => {
+      // Click on a shape to load it into preview
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
+
+      // Wait for canvas
+      cy.get("@shapeeditor").find(".preview lf-canvas").should("exist");
+
+      // Resize viewport
+      cy.viewport(800, 600);
+
+      // Wait for resize to settle
+      cy.wait(500);
+
+      // Verify canvas is still contained
+      cy.get("@shapeeditor")
+        .find(".preview lf-canvas")
+        .then(($canvas) => {
+          const previewContainer = $canvas.closest(".preview");
+
+          if (previewContainer.length) {
+            const previewRect = previewContainer[0].getBoundingClientRect();
+            const canvasRect = $canvas[0].getBoundingClientRect();
+
+            expect(canvasRect.right).to.be.at.most(
+              previewRect.right + 1,
+              "Canvas should remain contained after resize",
+            );
+            expect(canvasRect.bottom).to.be.at.most(
+              previewRect.bottom + 1,
+              "Canvas should remain contained after resize",
+            );
+          }
+        });
+
+      // Reset viewport
+      cy.viewport(1280, 720);
+    });
+
+    it("should not cause infinite resize loop (no performance degradation)", () => {
+      // Click on a shape to load it into preview
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
+
+      // Wait for canvas
+      cy.get("@shapeeditor").find(".preview lf-canvas").should("exist");
+
+      // Record initial time
+      const startTime = Date.now();
+
+      // Wait a reasonable amount of time - if there's an infinite loop,
+      // the browser would become unresponsive or slow
+      cy.wait(1000);
+
+      // Verify we can still interact with the page (no infinite loop blocking)
+      cy.get("@shapeeditor")
+        .find(".preview lf-canvas")
+        .should("be.visible")
+        .then(() => {
+          const elapsed = Date.now() - startTime;
+          // If it takes much longer than expected, there might be a loop
+          expect(elapsed).to.be.lessThan(
+            3000,
+            "Page should remain responsive (no resize loop)",
+          );
+        });
+    });
   });
 
-  it("should hide Apply button for live behavior filters (brightness, contrast)", () => {
-    cy.get(playgroundId).as("shapeeditor");
+  describe("Behavioral Event Handling (Image Editor)", () => {
+    /**
+     * Tests for the three behavioral patterns:
+     * - live: Preview on drag, commit on release
+     * - configure: Settings are config, stroke triggers commit
+     * - manual: No preview, explicit Apply button required
+     */
 
-    // Select an image first
-    cy.get("@shapeeditor")
-      .find("lf-masonry lf-image")
-      .first()
-      .click({ force: true });
+    it("should show Apply button for manual behavior filters (resize, background_remover)", () => {
+      // First select an image from the masonry to enable controls
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    // Expand Basic Adjustments and select Brightness (live behavior)
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Basic Adjustments")
-      .click({ force: true });
+      cy.get("@shapeeditor")
+        .find("lf-tree")
+        .contains("Resize (by edge)")
+        .click({ force: true });
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Brightness")
-      .click({ force: true });
+      // Wait for controls to render and check Apply button is visible
+      cy.get("@shapeeditor")
+        .find("#control-actions-apply")
+        .should("exist")
+        .and("be.visible");
+    });
 
-    // Apply button should not exist for live filters (showApplyButton defaults to false)
-    cy.get("@shapeeditor").find(".controlActions__apply").should("not.exist");
+    it("should hide Apply button for live behavior filters (brightness, contrast)", () => {
+      // Select an image first
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    // Reset button should still be visible
-    cy.get("@shapeeditor").find(".controlActions__reset").should("exist");
-  });
+      cy.get("@shapeeditor")
+        .find("lf-tree")
+        .contains("Brightness")
+        .click({ force: true });
 
-  it("should emit change event and create snapshot for live filter on slider release", () => {
-    cy.get(playgroundId).as("shapeeditor");
+      // Apply button should not exist for live filters (showApplyButton defaults to false)
+      cy.get("@shapeeditor").find("#control-actions-apply").should("not.exist");
 
-    // Select an image
-    cy.get("@shapeeditor")
-      .find("lf-masonry lf-image")
-      .first()
-      .click({ force: true });
+      // Reset button should still be visible
+      cy.get("@shapeeditor").find("#control-actions-reset").should("exist");
+    });
 
-    // Select Brightness filter
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Basic Adjustments")
-      .click({ force: true });
+    it("should emit change event and create snapshot for live filter on slider release", () => {
+      // Select an image
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Brightness")
-      .click({ force: true });
+      cy.get("@shapeeditor")
+        .find("lf-tree")
+        .contains("Brightness")
+        .click({ force: true });
 
-    // Wait for controls to render
-    cy.get("@shapeeditor").find("lf-accordion").should("exist");
+      // Wait for controls to render
+      cy.get("@shapeeditor").find("lf-accordion").should("exist");
 
-    // Get initial history count
-    cy.get("@shapeeditor")
-      .find("[data-cy='history-badge']")
-      .invoke("text")
-      .then((initialHistory) => {
-        const initialCount = parseInt(initialHistory.split("/")[0]);
+      // Get initial history count
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .findCyElement(toggle)
+        .invoke("text")
+        .then((initialHistory) => {
+          const initialCount = parseInt(initialHistory.split("/")[0], 10);
 
-        // Find and interact with the brightness slider
-        cy.get("@shapeeditor")
-          .find("lf-slider")
-          .first()
-          .find("input[type='range']")
-          .then(($slider) => {
-            // Trigger input (drag) and change (release) events
-            $slider.val(0.5);
-            $slider[0].dispatchEvent(new Event("input", { bubbles: true }));
-            $slider[0].dispatchEvent(new Event("change", { bubbles: true }));
-          });
+          // Find and interact with the brightness slider
+          cy.get("@shapeeditor")
+            .find("lf-slider")
+            .first()
+            .find("input[type='range']")
+            .then(($slider) => {
+              // Trigger input (drag) and change (release) events
+              $slider.val(0.5);
+              $slider[0].dispatchEvent(new Event("input", { bubbles: true }));
+              $slider[0].dispatchEvent(new Event("change", { bubbles: true }));
+            });
 
-        // Wait for snapshot to be created
-        cy.wait(1500);
+          // Wait for snapshot to be created
+          cy.wait(1500);
 
-        // Verify history count increased
-        cy.get("@shapeeditor")
-          .find("[data-cy='history-badge']")
-          .invoke("text")
-          .then((newHistory) => {
-            const newCount = parseInt(newHistory.split("/")[0]);
-            expect(newCount).to.be.greaterThan(initialCount);
-          });
-      });
-  });
+          // Verify history count increased
+          cy.get("@shapeeditor")
+            .findCyElement(toggle)
+            .invoke("text")
+            .then((newHistory) => {
+              const newCount = parseInt(newHistory.split("/")[0], 10);
+              expect(newCount).to.be.greaterThan(initialCount);
+            });
+        });
+    });
 
-  it("should show Reset button and reset controls when clicked", () => {
-    cy.get(playgroundId).as("shapeeditor");
+    it("should show Reset button and reset controls when clicked", () => {
+      // Select a canvas and filter
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    // Select an image and filter
-    cy.get("@shapeeditor")
-      .find("lf-masonry lf-image")
-      .first()
-      .click({ force: true });
+      cy.get("@shapeeditor")
+        .find("lf-tree")
+        .contains("Contrast")
+        .click({ force: true });
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Basic Adjustments")
-      .click({ force: true });
+      // Wait for controls
+      cy.get("@shapeeditor").find("lf-accordion").should("exist");
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Contrast")
-      .click({ force: true });
+      // Change slider value
+      cy.get("@shapeeditor")
+        .find("lf-slider")
+        .first()
+        .find("input[type='range']")
+        .then(($slider) => {
+          $slider.val(0.8);
+          $slider[0].dispatchEvent(new Event("input", { bubbles: true }));
+        });
 
-    // Wait for controls
-    cy.get("@shapeeditor").find("lf-accordion").should("exist");
+      // Click Reset button
+      cy.get("@shapeeditor")
+        .find("#control-actions-reset")
+        .click({ force: true });
 
-    // Change slider value
-    cy.get("@shapeeditor")
-      .find("lf-slider")
-      .first()
-      .find("input[type='range']")
-      .then(($slider) => {
-        $slider.val(0.8);
-        $slider[0].dispatchEvent(new Event("input", { bubbles: true }));
-      });
+      // Should see snackbar with reset message
+      cy.get("@shapeeditor")
+        .find("lf-snackbar")
+        .should("contain.text", "reset");
+    });
 
-    // Click Reset button
-    cy.get("@shapeeditor")
-      .find(".controlActions__reset")
-      .click({ force: true });
+    it("should show progressbar during Apply operation for manual filters", () => {
+      // Select a canvas
+      cy.get("@shapeeditor")
+        .findCyElement(shape)
+        .first()
+        .scrollIntoView()
+        .click({ force: true });
 
-    // Should see snackbar with reset message
-    cy.get("@shapeeditor").find("lf-snackbar").should("contain.text", "reset");
-  });
+      cy.get("@shapeeditor")
+        .find("lf-tree")
+        .contains("Resize (by edge)")
+        .click({ force: true });
 
-  it("should show progressbar during Apply operation for manual filters", () => {
-    cy.get(playgroundId).as("shapeeditor");
+      // Wait for controls
+      cy.get("@shapeeditor").find("lf-accordion").should("exist");
 
-    // Select an image
-    cy.get("@shapeeditor")
-      .find("lf-masonry lf-image")
-      .first()
-      .click({ force: true });
+      // Click Apply button
+      cy.get("@shapeeditor")
+        .find("#control-actions-apply")
+        .click({ force: true });
 
-    // Select a manual behavior filter (Resize by edge)
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Basic Adjustments")
-      .click({ force: true });
+      // Progressbar should become visible
+      cy.get("@shapeeditor").find("lf-progressbar").should("be.visible");
 
-    cy.get("@shapeeditor")
-      .find("lf-tree")
-      .contains("Resize (by edge)")
-      .click({ force: true });
-
-    // Wait for controls
-    cy.get("@shapeeditor").find("lf-accordion").should("exist");
-
-    // Click Apply button
-    cy.get("@shapeeditor")
-      .find(".controlActions__apply")
-      .click({ force: true });
-
-    // Progressbar should become visible
-    cy.get("@shapeeditor").find("lf-progressbar").should("be.visible");
-
-    // Wait for operation to complete and snackbar to show
-    cy.get("@shapeeditor")
-      .find("lf-snackbar")
-      .should("contain.text", "Applied")
-      .or("contain.text", "error");
+      // Wait for operation to complete and snackbar to show
+      cy.get("@shapeeditor")
+        .find("lf-snackbar")
+        .should("contain.text", "Applied");
+    });
   });
 });
 //#endregion

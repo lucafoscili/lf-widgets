@@ -74,8 +74,29 @@ interface SimulatedApiResponse {
 /**
  * Creates a simulated API client for image processing.
  * Applies CSS filters to preview effects client-side.
+ *
+ * IMPORTANT: Reuses canvas/image elements to prevent memory leaks.
  */
 const createSimulatedApi = (delayMs = 500) => {
+  // Reuse canvas and image to prevent memory leaks
+  let reusableCanvas: HTMLCanvasElement | null = null;
+  let reusableImg: HTMLImageElement | null = null;
+
+  const getCanvas = (): HTMLCanvasElement => {
+    if (!reusableCanvas) {
+      reusableCanvas = document.createElement("canvas");
+    }
+    return reusableCanvas;
+  };
+
+  const getImage = (): HTMLImageElement => {
+    if (!reusableImg) {
+      reusableImg = new Image();
+      reusableImg.crossOrigin = "anonymous";
+    }
+    return reusableImg;
+  };
+
   const filterToCss: Record<
     string,
     (settings: LfShapeeditorConfigSettings) => string
@@ -96,11 +117,10 @@ const createSimulatedApi = (delayMs = 500) => {
     settings: LfShapeeditorConfigSettings,
   ): Promise<string> =>
     new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
+      const img = getImage();
 
       img.onload = () => {
-        const canvas = document.createElement("canvas");
+        const canvas = getCanvas();
         canvas.width = img.width;
         canvas.height = img.height;
 
@@ -445,11 +465,67 @@ export const getShapeeditorFixtures = (
     filterType: string | null;
     /** DSL configuration for the current filter */
     dsl: LfShapeeditorConfigDsl | null;
+    /** Pending preview request (for cancellation) */
+    pendingPreview: AbortController | null;
   }
 
   const state: PlaygroundState = {
     filterType: null,
     dsl: null,
+    pendingPreview: null,
+  };
+
+  /**
+   * Debounced preview processor to prevent memory leaks from excessive preview calls.
+   * Cancels any pending preview when a new one is requested.
+   */
+  const processPreview = async (
+    shapeeditor: LfShapeeditorElement,
+    filterType: string,
+    settings: LfShapeeditorConfigSettings,
+    snapshotValue: string,
+  ): Promise<void> => {
+    // Cancel any pending preview
+    if (state.pendingPreview) {
+      state.pendingPreview.abort();
+    }
+    state.pendingPreview = new AbortController();
+
+    try {
+      const result = await simulatedApi.process(
+        snapshotValue,
+        filterType,
+        settings,
+      );
+      // Check if this preview was cancelled
+      if (state.pendingPreview?.signal.aborted) return;
+
+      if (result.status === "success") {
+        await shapeeditor.setPreviewValue(result.data);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      console.error("[preview] Failed:", error);
+    } finally {
+      state.pendingPreview = null;
+    }
+  };
+
+  // Debounce preview to 100ms to reduce processing during rapid slider movement
+  let previewTimeout: ReturnType<typeof setTimeout> | null = null;
+  const debouncedPreview = (
+    shapeeditor: LfShapeeditorElement,
+    filterType: string,
+    settings: LfShapeeditorConfigSettings,
+    snapshotValue: string,
+  ): void => {
+    if (previewTimeout) {
+      clearTimeout(previewTimeout);
+    }
+    previewTimeout = setTimeout(() => {
+      processPreview(shapeeditor, filterType, settings, snapshotValue);
+      previewTimeout = null;
+    }, 100);
   };
 
   /**
@@ -669,15 +745,15 @@ export const getShapeeditorFixtures = (
        * PREVIEW EVENT
        * Real-time preview during control interaction (e.g., slider drag).
        * Only applies to "live" behavior filters with enablePreview=true.
+       *
+       * NOTE: Uses debouncing (100ms) to prevent memory leaks from
+       * excessive preview processing during rapid slider movement.
        */
       case "preview": {
         const behavior = state.dsl?.behavior ?? "live";
         const enablePreview = state.dsl?.enablePreview ?? behavior === "live";
 
         if (!enablePreview) {
-          console.log(
-            `[preview] Filter "${state.filterType}" has preview disabled - skipping`,
-          );
           return;
         }
 
@@ -686,19 +762,13 @@ export const getShapeeditorFixtures = (
 
         if (!state.filterType || !snapshot?.value) return;
 
-        try {
-          const result = await simulatedApi.process(
-            snapshot.value,
-            state.filterType,
-            settings,
-          );
-          if (result.status === "success") {
-            // Update preview without creating snapshot
-            await shapeeditor.setPreviewValue(result.data);
-          }
-        } catch (error) {
-          console.error("[preview] Failed:", error);
-        }
+        // Use debounced preview to prevent memory leaks
+        debouncedPreview(
+          shapeeditor,
+          state.filterType,
+          settings,
+          snapshot.value,
+        );
         return;
       }
       //#endregion
