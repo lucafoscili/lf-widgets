@@ -17,6 +17,19 @@ export const LF_TOGGLE_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the toggle component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_TOGGLE_IDS = {
+  input: "input",
+  label: "label",
+  thumb: "thumb",
+  track: "track",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_TOGGLE_EVENTS = [
   "blur",

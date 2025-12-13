@@ -1,8 +1,7 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TOGGLE_BLOCKS,
+  LF_TOGGLE_IDS,
   LF_TOGGLE_PARTS,
   LF_TOGGLE_PROPS,
   LF_WRAPPER_ID,
@@ -10,6 +9,7 @@ import {
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
+  LfToggleAdapter,
   LfToggleElement,
   LfToggleEvent,
   LfToggleEventPayload,
@@ -29,7 +29,11 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepToggleActions } from "./actions.toggle";
+import { prepToggleComputed } from "./computed.toggle";
+import { createAdapter } from "./lf-toggle-adapter";
 
 /**
  * The toggle component is a switch that can be toggled on or off.
@@ -171,14 +175,13 @@ export class LfToggle implements LfToggleInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfToggleAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TOGGLE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_TOGGLE_IDS;
   #p = LF_TOGGLE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #thumb: HTMLDivElement;
   //#endregion
 
   //#region Events
@@ -194,18 +197,6 @@ export class LfToggle implements LfToggleInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfToggleEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfToggleEvent) {
-    const { value } = this;
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      value: value,
-      valueAsBoolean: value === "on" ? true : false,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -255,6 +246,9 @@ export class LfToggle implements LfToggleInterface {
    */
   @Method()
   async setValue(value: LfToggleState | boolean): Promise<void> {
+    if (typeof value === "boolean") {
+      value = value ? "on" : "off";
+    }
     this.#updateState(value);
   }
   /**
@@ -264,34 +258,93 @@ export class LfToggle implements LfToggleInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        value: this.value,
+        valueAsBoolean: this.value === "on",
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #isDisabled = () => {
-    return this.lfUiState === "disabled";
-  };
-  #isOn = () => {
-    return this.value === "on" ? true : false;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfToggleEvent,
+      detail?: Partial<LfToggleEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        value: this.value,
+        valueAsBoolean: this.value === "on",
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: Simple setters
+   * - controller.computed: Derived predicates (isDisabled, isOn)
+   * - controller.actions: Complex operations (toggle)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Setters - none for toggle component
+      {},
+      // Computed - derived predicates (from dedicated file)
+      prepToggleComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepToggleActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   #isValidValue = (value: LfToggleState) => {
     return value === "off" || value === "on";
   };
-  #updateState = (
-    value: LfToggleState | boolean,
-    e: CustomEvent<unknown> | Event = new CustomEvent("change"),
-  ) => {
-    if (typeof value === "boolean") {
-      value = value ? "on" : "off";
-    }
-
-    const shouldUpdate = !this.#isDisabled() && this.#isValidValue(value);
+  #updateState = (value: LfToggleState) => {
+    const isDisabled = this.lfUiState === "disabled";
+    const shouldUpdate = !isDisabled && this.#isValidValue(value);
     if (shouldUpdate) {
       this.value = value;
-      this.onLfEvent(e, "change");
     }
   };
   //#endregion
@@ -304,19 +357,26 @@ export class LfToggle implements LfToggleInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
+
     if (this.lfValue) {
       this.value = "on";
     }
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
+    const { thumb } = this.#adapter.elements.refs;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfRipple && hasThemeRipple && this.#thumb) {
-      effects.register.ripple(this.#thumb);
+    if (this.lfRipple && hasThemeRipple && thumb) {
+      effects.register.ripple(thumb);
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      value: this.value,
+      valueAsBoolean: this.value === "on",
+    });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -330,91 +390,25 @@ export class LfToggle implements LfToggleInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { theme } = this.#framework;
 
-    const { formField, toggle } = this.#b;
-    const { lfAriaLabel, lfLabel, lfLeadingLabel, lfStyle, value } = this;
-    const accessibleLabel = (
-      lfAriaLabel ||
-      lfLabel ||
-      this.rootElement.id ||
-      "toggle"
-    ).trim();
+    const { lfStyle } = this;
+    const { toggle } = this.#adapter.elements.jsx;
 
     return (
       <Host>
-        {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div
-            class={bemClass(formField._, null, {
-              leading: lfLeadingLabel,
-            })}
-          >
-            <div
-              class={bemClass(toggle._, null, {
-                active: this.#isOn(),
-              })}
-              data-lf={this.#lf[this.lfUiState]}
-              part={this.#p.toggle}
-            >
-              <div
-                class={bemClass(toggle._, toggle.track)}
-                part={this.#p.track}
-              ></div>
-              <div class={bemClass(toggle._, toggle.thumbUnderlay)}>
-                <div
-                  class={bemClass(toggle._, toggle.thumb)}
-                  ref={(el) => {
-                    if (el) {
-                      this.#thumb = el;
-                    }
-                  }}
-                ></div>
-                <input
-                  class={bemClass(toggle._, toggle.nativeControl)}
-                  checked={this.#isOn()}
-                  data-cy={this.#cy.input}
-                  disabled={this.#isDisabled()}
-                  aria-label={accessibleLabel}
-                  onBlur={(e) => {
-                    this.onLfEvent(e, "blur");
-                  }}
-                  onChange={(e) => {
-                    this.#updateState(this.#isOn() ? "off" : "on", e);
-                  }}
-                  onFocus={(e) => {
-                    this.onLfEvent(e, "focus");
-                  }}
-                  onPointerDown={(e) => {
-                    this.onLfEvent(e, "pointerdown");
-                  }}
-                  part={this.#p.nativeControl}
-                  role="toggle"
-                  type="checkbox"
-                  value={value ? "on" : "off"}
-                ></input>
-              </div>
-            </div>
-            <label
-              class={bemClass(formField._, formField.label)}
-              onClick={(e) => {
-                this.onLfEvent(e, "change");
-              }}
-              part={this.#p.label}
-            >
-              {lfLabel}
-            </label>
-          </div>
-        </div>
+        {lfStyle && <style id={this.#s}>{theme.setLfStyle(this)}</style>}
+        <div id={this.#w}>{toggle()}</div>
       </Host>
     );
   }
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
+    const { thumb } = this.#adapter?.elements.refs ?? {};
 
     const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple && this.#thumb) {
-      effects.unregister.ripple(this.#thumb);
+    if (effects && this.lfRipple && hasThemeRipple && thumb) {
+      effects.unregister.ripple(thumb);
     }
 
     theme?.unregister(this);
