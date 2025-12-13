@@ -594,12 +594,9 @@ export interface LfDataCellContainer {
   lfText?: LfDataCellFromName<"lfText">;
   lfTextfield?: LfDataCellFromName<"lfTextfield">;
   lfToggle?: LfDataCellFromName<"lfToggle">;
+  lfTypewriter?: LfDataCellFromName<"lfTypewriter">;
   lfUpload?: LfDataCellFromName<"lfUpload">;
-}
-/**
- * Container holding typed cell values consumed by the data framework.
- */
-export interface LfDataCellContainer {
+  /** Index signature for flexible cell keys. @see Section 1.2 of 4_0_0_REFACTORING.md */
   [index: string]: LfDataCell<LfDataShapes>;
 }
 /**
