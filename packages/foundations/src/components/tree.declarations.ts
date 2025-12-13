@@ -1,15 +1,16 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
+import { LF_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -24,6 +25,7 @@ import { LfTextfieldEventPayload } from "./textfield.declarations";
 import {
   LF_TREE_BLOCKS,
   LF_TREE_EVENTS,
+  LF_TREE_IDS,
   LF_TREE_PARTS,
 } from "./tree.constants";
 
@@ -124,46 +126,85 @@ export interface LfTreeElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-tree` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + tree state
+ * - controller.set: Simple assignments (filter, expansion, selection state)
+ * - controller.computed: Derived predicates (isExpanded, isSelected, isHidden, isGrid, etc.)
+ * - controller.actions: Complex operations (expandAll, collapseAll, toggleExpansion, setSelection)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfTreeAdapter extends LfComponentAdapter<LfTreeInterface> {
+export interface LfTreeAdapter
+  extends LfComponentAdapter<
+    LfTreeInterface,
+    LfTreeEventPayload,
+    LfTreeAdapterHandlers,
+    LfTreeAdapterJsx,
+    LfTreeAdapterRefs,
+    LfTreeAdapterControllerGetters,
+    LfTreeAdapterControllerSetters,
+    LfTreeAdapterControllerComputed,
+    LfTreeAdapterControllerActions
+  > {
   controller: {
     get: LfTreeAdapterControllerGetters;
     set: LfTreeAdapterControllerSetters;
+    computed: LfTreeAdapterControllerComputed;
+    actions: LfTreeAdapterControllerActions;
   };
-  elements: { jsx: LfTreeAdapterJsx; refs: LfTreeAdapterRefs };
+  elements: {
+    jsx: LfTreeAdapterJsx;
+    refs: LfTreeAdapterRefs;
+  };
   handlers: LfTreeAdapterHandlers;
+  dispatcher: LfTreeAdapterDispatcher;
 }
 /**
- * Subset of adapter getters required during initialisation.
+ * Strongly typed DOM references captured by the component adapter.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
+ */
+export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
+  nodeElements: Record<string, HTMLElement | null>;
+  filterField: HTMLElement | null;
+}
+/**
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfTreeAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfTreeInterface> {
-  allowsMultiSelect: () => boolean;
-  blocks: typeof LF_TREE_BLOCKS;
-  canSelectNode: (node: LfDataNode | null | undefined) => boolean;
+  extends LfComponentAdapterBaseGetters<
+    LfTreeInterface,
+    typeof LF_TREE_BLOCKS,
+    typeof LF_TREE_IDS,
+    typeof LF_TREE_PARTS
+  > {
+  /** Access the dataset columns */
   columns: () => NonNullable<LfDataDataset["columns"]>;
-  compInstance: LfTreeInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
+  /** Access the dataset */
   dataset: () => LfDataDataset;
+  /** Access the lfExpandedNodeIds prop */
   expandedProp: () => string[] | undefined;
+  /** Access the filter value */
   filterValue: () => string;
+  /** Access the lfInitialExpansionDepth prop */
   initialExpansionDepth: () => number | undefined;
-  isExpanded: (node: LfDataNode) => boolean;
-  isGrid: () => boolean;
-  isHidden: (node: LfDataNode) => boolean;
-  isSelected: (node: LfDataNode) => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_TREE_PARTS;
-  selectable: () => boolean;
+  /** Access the lfSelectedNodeIds prop */
   selectedProp: () => string[] | undefined;
+  /** Access expansion/selection state containers */
   state: {
     expansion: { ids: () => string[]; nodes: () => Set<string> };
     selection: { ids: () => string[]; node: () => LfDataNode };
   };
 }
 /**
- * Subset of adapter setters required during initialisation.
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
  */
 export interface LfTreeAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -184,31 +225,89 @@ export interface LfTreeAdapterControllerSetters
     };
   };
 }
-
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfTreeAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether multi-select is allowed */
+  allowsMultiSelect: () => boolean;
+  /** Whether a node can be selected */
+  canSelectNode: (node: LfDataNode | null | undefined) => boolean;
+  /** Whether a node is expanded */
+  isExpanded: (node: LfDataNode) => boolean;
+  /** Whether grid mode is active */
+  isGrid: () => boolean;
+  /** Whether a node is hidden (filtered out) */
+  isHidden: (node: LfDataNode) => boolean;
+  /** Whether a node is selected */
+  isSelected: (node: LfDataNode) => boolean;
+  /** Whether selection is enabled */
+  selectable: () => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfTreeAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Toggle expansion state of a node */
+  toggleExpansion: (node: LfDataNode) => void;
+  /** Set selection to a node */
+  setSelection: (node: LfDataNode) => void;
+  /** Clear current selection */
+  clearSelection: () => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfTreeAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfTreeEventPayload>;
+export type LfTreeAdapterDispatcherDetailOverrides = {
+  [E in LfTreeEvent]: E extends "click" | "pointerdown"
+    ? LfTreeAdapterDispatchDetailBase & {
+        originalEvent: Event | CustomEvent;
+        node?: LfDataNode;
+      }
+    : E extends "lf-event"
+      ? LfTreeAdapterDispatchDetailBase & {
+          originalEvent: Event | CustomEvent;
+          node?: LfDataNode;
+        }
+      : E extends "ready" | "unmount"
+        ? Omit<LfTreeAdapterDispatchDetailBase, "originalEvent"> & {
+            originalEvent?: never;
+          }
+        : LfTreeAdapterDispatchDetailBase;
+};
+export type LfTreeAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfTreeEventPayload,
+  LfTreeAdapterDispatcherDetailOverrides
+>;
 /**
  * Subset of adapter getters required during initialisation.
  */
 export type LfTreeAdapterInitializerGetters = Pick<
   LfTreeAdapterControllerGetters,
-  | "allowsMultiSelect"
   | "blocks"
-  | "canSelectNode"
-  | "columns"
   | "compInstance"
   | "cyAttributes"
+  | "framework"
+  | "ids"
+  | "lfAttributes"
+  | "parts"
+  | "columns"
   | "dataset"
   | "expandedProp"
   | "filterValue"
   | "initialExpansionDepth"
-  | "isExpanded"
-  | "isGrid"
-  | "isHidden"
-  | "isSelected"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
   | "selectedProp"
-  | "selectable"
   | "state"
 >;
 /**
@@ -226,13 +325,6 @@ export interface LfTreeAdapterJsx extends LfComponentAdapterJsx {
   header: () => VNode;
   nodes: () => VNode;
   empty: () => VNode;
-}
-/**
- * Strongly typed DOM references captured by the component adapter.
- */
-export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
-  nodeElements: Record<string, HTMLElement>;
-  filterField: HTMLElement | null;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
@@ -284,8 +376,8 @@ export interface LfTreeNodeProps {
     onPointerDown: (event: MouseEvent) => void;
   };
   expanded: boolean;
+  framework: LfFrameworkInterface;
   lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
   node: LfDataNode;
   nodeRef: (el: HTMLElement | null) => void;
   selected: boolean;

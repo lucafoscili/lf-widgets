@@ -41,6 +41,10 @@ export const LF_TREE_EVENTS = [
 ] as const;
 //#endregion
 
+//#region IDs
+export const LF_TREE_IDS = {} as const;
+//#endregion
+
 //#region Parts
 export const LF_TREE_PARTS = {
   emptyData: "empty-data",

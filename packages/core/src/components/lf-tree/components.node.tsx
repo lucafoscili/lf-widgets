@@ -11,8 +11,8 @@ import { TreeNodeContent } from "./components.node-content";
 export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
   props: LfTreeNodeProps,
 ) => {
-  const { manager } = props;
-  const { bemClass } = manager.theme;
+  const { framework } = props;
+  const { bemClass } = framework.theme;
 
   const {
     accordionLayout,
@@ -27,12 +27,12 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
 
   const icon = node.icon ? (
     <TreeNodeContent
-      manager={manager}
+      framework={framework}
       node={node}
       type="icon"
     ></TreeNodeContent>
   ) : (
-    <TreeNodeContent manager={manager} type="placeholder"></TreeNodeContent>
+    <TreeNodeContent framework={framework} type="placeholder"></TreeNodeContent>
   );
 
   if (accordionLayout) {
@@ -59,13 +59,13 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
           {node.children?.length ? (
             <TreeNodeContent
               expanded={expanded}
-              manager={manager}
+              framework={framework}
               node={node}
               type="dropdown"
             ></TreeNodeContent>
           ) : (
             <TreeNodeContent
-              manager={manager}
+              framework={framework}
               type="placeholder"
             ></TreeNodeContent>
           )}
@@ -90,20 +90,20 @@ export const TreeNode: FunctionalComponent<LfTreeNodeProps> = (
         <div class="node__content">
           <TreeNodeContent
             depth={depth}
-            manager={manager}
+            framework={framework}
             type="padding"
           ></TreeNodeContent>
           {node.children?.length ? (
             <TreeNodeContent
               expanded={expanded}
-              manager={manager}
+              framework={framework}
               node={node}
               onClickExpand={events.onClickExpand}
               type="expand"
             ></TreeNodeContent>
           ) : (
             <TreeNodeContent
-              manager={manager}
+              framework={framework}
               type="placeholder"
             ></TreeNodeContent>
           )}

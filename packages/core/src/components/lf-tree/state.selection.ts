@@ -15,7 +15,7 @@ export const createSelectionState = (
     getProp: () => controller.get.selectedProp(),
     setProp: (ids) => controller.set.state.selection.setProp(ids),
     getDataset: () => controller.get.dataset(),
-    getManager: () => controller.get.manager,
+    getFramework: () => controller.get.framework(),
   });
 
   let selectionIds: string[] = [];
@@ -26,7 +26,8 @@ export const createSelectionState = (
     nodes: LfDataNode[],
     options: LfTreeStateCommitOptions = {},
   ): string[] => {
-    const nextIds = controller.get.allowsMultiSelect() ? ids : ids.slice(0, 1);
+    const { computed } = controller;
+    const nextIds = computed.allowsMultiSelect() ? ids : ids.slice(0, 1);
     selectionIds = [...nextIds];
     const nextNode = selectionIds.length ? (nodes[0] ?? null) : null;
     controller.set.state.selection.setNode(nextNode);
@@ -54,24 +55,25 @@ export const createSelectionState = (
     ids: string[],
     options: LfTreeStateCommitOptions = {},
   ): string[] => {
-    if (!controller.get.selectable()) {
+    const { computed } = controller;
+    if (!computed.selectable()) {
       return clearSelection(options);
     }
 
     let finalIds: string[] = [];
 
     sync.applyIdsWithSanitization(ids, options, (sanitized, opts) => {
-      const framework = controller.get.manager;
+      const framework = controller.get.framework();
       const dataset = controller.get.dataset();
 
       if (framework && dataset) {
         const result = framework.data.node.sanitizeIds(dataset, sanitized, {
-          predicate: (node: LfDataNode) => controller.get.canSelectNode(node),
-          limit: controller.get.allowsMultiSelect() ? undefined : 1,
+          predicate: (node: LfDataNode) => computed.canSelectNode(node),
+          limit: computed.allowsMultiSelect() ? undefined : 1,
         });
         finalIds = commit(result.ids, result.nodes, opts);
       } else {
-        const pendingIds = controller.get.allowsMultiSelect()
+        const pendingIds = computed.allowsMultiSelect()
           ? sanitized
           : sanitized.slice(0, 1);
         finalIds = commit(pendingIds, [], opts);

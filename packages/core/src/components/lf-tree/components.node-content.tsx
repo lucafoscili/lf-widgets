@@ -12,12 +12,12 @@ import { FIcon } from "../../utils/icon";
 export const TreeNodeContent: FunctionalComponent<{
   depth?: number;
   expanded?: boolean;
-  manager: LfFrameworkInterface;
+  framework: LfFrameworkInterface;
   node?: LfDataNode;
   type: "dropdown" | "expand" | "icon" | "padding" | "placeholder";
   onClickExpand?: (e: MouseEvent) => void;
-}> = ({ depth, expanded = false, manager, node, onClickExpand, type }) => {
-  const { bemClass } = manager.theme;
+}> = ({ depth, expanded = false, framework, node, onClickExpand, type }) => {
+  const { bemClass } = framework.theme;
 
   switch (type) {
     case "dropdown":
@@ -27,7 +27,7 @@ export const TreeNodeContent: FunctionalComponent<{
             expanded,
           })}
         >
-          <FIcon framework={manager} icon={LF_THEME_ICONS.dropdown} />
+          <FIcon framework={framework} icon={LF_THEME_ICONS.dropdown} />
         </div>
       );
     case "expand":
@@ -39,7 +39,7 @@ export const TreeNodeContent: FunctionalComponent<{
           onClick={onClickExpand}
         >
           <FIcon
-            framework={manager}
+            framework={framework}
             icon={expanded ? LF_THEME_ICONS.expanded : LF_THEME_ICONS.collapsed}
           />
         </div>
@@ -47,7 +47,7 @@ export const TreeNodeContent: FunctionalComponent<{
     case "icon":
       return (
         <div class={bemClass(LF_TREE_BLOCKS.node._, LF_TREE_BLOCKS.node.icon)}>
-          <FIcon framework={manager} icon={node.icon} />
+          <FIcon framework={framework} icon={node.icon} />
         </div>
       );
     case "padding":

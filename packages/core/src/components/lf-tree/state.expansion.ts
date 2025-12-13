@@ -15,7 +15,7 @@ export const createExpansionState = (
     getProp: () => controller.get.expandedProp(),
     setProp: (ids) => controller.set.state.expansion.setProp(ids),
     getDataset: () => controller.get.dataset(),
-    getManager: () => controller.get.manager,
+    getFramework: () => controller.get.framework(),
   });
 
   //#region getCurrentIds

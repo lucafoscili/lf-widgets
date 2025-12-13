@@ -4,10 +4,9 @@ import type {
   LfTreeSelectionState,
 } from "@lf-widgets/foundations";
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TREE_BLOCKS,
+  LF_TREE_IDS,
   LF_TREE_PARTS,
   LF_TREE_PROPS,
   LF_WRAPPER_ID,
@@ -18,7 +17,6 @@ import {
   LfThemeUISize,
   LfTreeElement,
   LfTreeEvent,
-  LfTreeEventArguments,
   LfTreeEventPayload,
   LfTreeInterface,
   LfTreePropsInterface,
@@ -36,7 +34,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepTreeActions } from "./actions.tree";
+import { prepTreeComputed } from "./computed.tree";
 import { createAdapter } from "./lf-tree-adapter";
 import { createExpansionState } from "./state.expansion";
 import { createSelectionState } from "./state.selection";
@@ -247,16 +248,15 @@ export class LfTree implements LfTreeInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfTreeAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TREE_BLOCKS;
+  #ids = LF_TREE_IDS;
   #p = LF_TREE_PARTS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   _filterValue = "";
   _filterTimeout: ReturnType<typeof setTimeout> | null;
-  #adapter: LfTreeAdapter;
   #expansionState: LfTreeExpansionState;
   #selectionState: LfTreeSelectionState;
   //#endregion
@@ -334,25 +334,22 @@ export class LfTree implements LfTreeInterface {
   onLfEvent(
     e: Event | CustomEvent,
     eventType: LfTreeEvent,
-    args: LfTreeEventArguments = {},
+    args: {
+      node?: LfDataNode;
+      expandedNodeIds?: string[];
+      selectedNodeIds?: string[];
+    } = {},
   ): void {
-    const node = args.node ?? null;
-
-    const payload: LfTreeEventPayload = {
-      comp: this,
-      eventType,
-      id: this.rootElement?.id,
+    this.#adapter.dispatcher.emit(eventType, {
       originalEvent: e,
-      node: node ?? undefined,
+      node: args.node,
       expandedNodeIds:
         args.expandedNodeIds ??
         (this.#expansionState ? this.#expansionState.getIds() : []),
       selectedNodeIds:
         args.selectedNodeIds ??
         (this.#selectionState ? this.#selectionState.getIds() : []),
-    };
-
-    this.lfEvent.emit(payload);
+    });
   }
   //#endregion
 
@@ -464,56 +461,78 @@ export class LfTree implements LfTreeInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        expandedNodeIds: this.#expansionState?.getIds() ?? [],
+        selectedNodeIds: this.#selectionState?.getIds() ?? [],
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #allowsMultiSelect(): boolean {
-    return false;
-  }
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfTreeEvent, detail?: Partial<LfTreeEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-  #canSelectNode(node: LfDataNode | null | undefined): boolean {
-    if (!node) {
-      return false;
-    }
-    if (!this.lfSelectable) {
-      return false;
-    }
-    return node.isDisabled !== true;
-  }
-  //#endregion
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node,
+        expandedNodeIds:
+          detail?.expandedNodeIds ??
+          (this.#expansionState ? this.#expansionState.getIds() : []),
+        selectedNodeIds:
+          detail?.selectedNodeIds ??
+          (this.#selectionState ? this.#selectionState.getIds() : []),
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + tree state
+   * - controller.set: Simple setters (filter, expansion, selection)
+   * - controller.computed: Derived predicates (isExpanded, isSelected, isHidden, isGrid, etc.)
+   * - controller.actions: Complex operations (toggleExpansion, setSelection, clearSelection)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-  //#region Lifecycle
-  connectedCallback(): void {
-    if (this.#framework) {
-      this.#framework.theme.register(this);
-    }
-  }
-
-  async componentWillLoad(): Promise<void> {
-    this.#framework = await awaitFramework(this);
-
-    this.#adapter = createAdapter(
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
         columns: () => this.lfDataset?.columns || [],
-        compInstance: this,
-        cyAttributes: this.#cy,
         dataset: () => this.lfDataset,
+        expandedProp: () => this.lfExpandedNodeIds,
         filterValue: () => this._filterValue,
-        isExpanded: (node) => {
-          const nodeId = getNodeId(node);
-          return nodeId ? this.expandedNodes.has(nodeId) : false;
-        },
-        isGrid: () => !!(this.lfGrid && this.lfDataset?.columns?.length),
-        isHidden: (node) => this.hiddenNodes.has(node),
-        isSelected: (node) => this.selectedNode === node,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        initialExpansionDepth: () => this.lfInitialExpansionDepth,
+        selectedProp: () => this.lfSelectedNodeIds,
         state: {
           expansion: {
             ids: () =>
@@ -531,14 +550,8 @@ export class LfTree implements LfTreeInterface {
             node: () => this.selectedNode,
           },
         },
-        expandedProp: () => this.lfExpandedNodeIds,
-        selectedProp: () => this.lfSelectedNodeIds,
-        initialExpansionDepth: () => this.lfInitialExpansionDepth,
-        selectable: () => this.lfSelectable,
-        allowsMultiSelect: () => this.#allowsMultiSelect(),
-        canSelectNode: (node: LfDataNode | null | undefined) =>
-          this.#canSelectNode(node),
       },
+      // Setters - simple single-value assignments
       {
         filter: {
           apply: (value: string) => {
@@ -616,8 +629,32 @@ export class LfTree implements LfTreeInterface {
           },
         },
       },
-      () => this.#adapter,
+      // Computed - derived predicates (from dedicated file)
+      prepTreeComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepTreeActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
+  //#endregion
+
+  //#region Lifecycle
+  connectedCallback(): void {
+    if (this.#framework) {
+      this.#framework.theme.register(this);
+    }
+  }
+
+  async componentWillLoad(): Promise<void> {
+    this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     this.#expansionState = createExpansionState(() => this.#adapter);
     this.#selectionState = createSelectionState(() => this.#adapter);
@@ -629,10 +666,14 @@ export class LfTree implements LfTreeInterface {
     this.handleDatasetChange();
   }
   componentDidLoad() {
-    const { info } = this.#framework.debug;
+    const { debug } = this.#framework;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
-    info.update(this, "did-load");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      expandedNodeIds: this.#expansionState?.getIds() ?? [],
+      selectedNodeIds: this.#selectionState?.getIds() ?? [],
+    });
+    debug.info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;

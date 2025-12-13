@@ -21,13 +21,13 @@ export const createJsx = (
   //#region filter
   filter: () => {
     const { controller, handlers } = getAdapter();
-    const { compInstance, manager } = controller.get;
-    const { theme } = manager;
+    const { compInstance, framework } = controller.get;
+    const { theme } = framework();
     const { bemClass, get } = theme;
-    const blocks = controller.get.blocks;
+    const blocks = controller.get.blocks();
     const tree = blocks.tree;
 
-    if (!compInstance.lfFilter) {
+    if (!compInstance().lfFilter) {
       return null;
     }
 
@@ -50,24 +50,25 @@ export const createJsx = (
   //#region header
   header: () => {
     const { controller } = getAdapter();
-    const columns = controller.get.columns();
-    const { blocks, isGrid, manager, parts } = controller.get;
-    const renderGrid = isGrid() && columns.length > 0;
+    const { computed, get } = controller;
+    const columns = get.columns();
+    const { blocks, framework, parts } = get;
+    const renderGrid = computed.isGrid() && columns.length > 0;
 
     if (!renderGrid) {
       return null;
     }
 
-    const { bemClass } = manager.theme;
-    const header = blocks.header;
+    const { bemClass } = framework().theme;
+    const header = blocks().header;
 
     return (
-      <div class={bemClass(header._)} part={parts.header}>
+      <div class={bemClass(header._)} part={parts().header}>
         <div class={bemClass(header._, header.row)}>
           {columns.map((c, i) => (
             <div
               class={bemClass(header._, header.cell)}
-              part={i === 0 ? parts.headerRow : undefined}
+              part={i === 0 ? parts().headerRow : undefined}
               data-column={c.id as string}
               data-index={i.toString()}
               key={c.id as string}
@@ -85,22 +86,23 @@ export const createJsx = (
   nodes: () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
-    const { get } = controller;
-    const { blocks, manager, parts } = get;
-    const { bemClass } = manager.theme;
-    const { tree } = blocks;
-    const stringify = manager.data.cell.stringify;
+    const { computed, get } = controller;
+    const { blocks, framework, parts } = get;
+    const fw = framework();
+    const { bemClass } = fw.theme;
+    const { tree } = blocks();
+    const stringify = fw.data.cell.stringify;
 
     const filterValue = get.filterValue() || "";
     const columns = get.columns();
-    const isGrid = get.isGrid();
+    const isGrid = computed.isGrid();
     const dataset = get.dataset();
-    const visible = get.manager.data.node.traverseVisible(dataset?.nodes, {
-      isExpanded: get.isExpanded,
-      isHidden: get.isHidden,
-      isSelected: get.isSelected,
+    const visible = fw.data.node.traverseVisible(dataset?.nodes, {
+      isExpanded: computed.isExpanded,
+      isHidden: computed.isHidden,
+      isSelected: computed.isSelected,
       forceExpand: !!filterValue,
-    }) as ReturnType<typeof get.manager.data.node.traverseVisible>;
+    }) as ReturnType<typeof fw.data.node.traverseVisible>;
     const hasNodes = visible.length > 0;
 
     const renderCellShape = (
@@ -108,7 +110,7 @@ export const createJsx = (
       col: LfDataColumn,
       isFirst: boolean,
     ) => {
-      const nodeBlock = blocks.node;
+      const nodeBlock = blocks().node;
       const cell = node.cells?.[col.id as string] as LfDataCell | undefined;
       if (!cell) {
         const base = bemClass(nodeBlock._, nodeBlock.gridCell);
@@ -124,7 +126,7 @@ export const createJsx = (
       const shape = cell.shape || "text";
       const simple = shape === "text" || shape === "number" || shape === "slot";
       const shapeProps: LfDataCell<LfDataShapes> & { lfValue?: unknown } =
-        manager.data.cell.shapes.get(
+        fw.data.cell.shapes.get(
           cell as LfDataCell<LfDataShapes>,
         ) as LfDataCell<LfDataShapes> & { lfValue?: unknown };
 
@@ -144,12 +146,12 @@ export const createJsx = (
             stringify(displayValue)
           ) : (
             <LfShape
-              framework={manager}
+              framework={fw}
               shape={shape}
               index={0}
               cell={shapeProps}
               eventDispatcher={async (e: Event) =>
-                get.compInstance.onLfEvent(e, "lf-event", { node })
+                get.compInstance().onLfEvent(e, "lf-event", { node })
               }
             ></LfShape>
           )}
@@ -162,11 +164,11 @@ export const createJsx = (
         return null;
       }
 
-      const nodeBlock = blocks.node;
+      const nodeBlock = blocks().node;
       return (
         <div
           class={bemClass(nodeBlock._, nodeBlock.grid)}
-          part={parts.node + "-grid"}
+          part={parts().node + "-grid"}
         >
           {columns.map((c, i) => renderCellShape(node, c, i === 0))}
         </div>
@@ -174,10 +176,11 @@ export const createJsx = (
     };
 
     const nodeVNodes = visible.map(({ node, depth, expanded, selected }) => {
-      const nodeBlock = blocks.node;
+      const nodeBlock = blocks().node;
       const gridValue = renderGridCells(node);
+      const comp = get.compInstance();
       const valueVNode =
-        get.compInstance.lfGrid && gridValue ? (
+        comp.lfGrid && gridValue ? (
           <div class={bemClass(nodeBlock._, nodeBlock.value, { grid: true })}>
             {gridValue}
           </div>
@@ -189,7 +192,7 @@ export const createJsx = (
 
       return (
         <TreeNode
-          accordionLayout={get.compInstance.lfAccordionLayout && depth === 0}
+          accordionLayout={comp.lfAccordionLayout && depth === 0}
           depth={depth}
           elements={{
             value: valueVNode,
@@ -200,8 +203,8 @@ export const createJsx = (
             onPointerDown: (e) => handlers.node.pointerDown(e, node),
           }}
           expanded={expanded}
-          lfAttributes={get.lfAttributes}
-          manager={manager}
+          lfAttributes={get.lfAttributes()}
+          framework={fw}
           node={node}
           nodeRef={(el) => {
             if (el) {
@@ -220,11 +223,11 @@ export const createJsx = (
     }
 
     if (filterValue) {
-      const { noMatches } = blocks;
+      const { noMatches } = blocks();
       return (
         <div class={bemClass(noMatches._)}>
           <div class={bemClass(noMatches._, noMatches.icon)}>
-            <FIcon framework={manager} icon={LF_THEME_ICONS.warning} />
+            <FIcon framework={fw} icon={LF_THEME_ICONS.warning} />
           </div>
           <div class={bemClass(noMatches._, noMatches.text)}>
             No matches found for "
@@ -244,17 +247,17 @@ export const createJsx = (
   //#region empty
   empty: () => {
     const { controller } = getAdapter();
-    const { compInstance, manager } = controller.get;
-    const { theme } = manager;
+    const { compInstance, framework } = controller.get;
+    const { theme } = framework();
     const { bemClass } = theme;
-    const blocks = controller.get.blocks;
+    const blocks = controller.get.blocks();
     const { emptyData } = blocks;
-    const parts = controller.get.parts;
+    const parts = controller.get.parts();
 
     return (
       <div class={bemClass(emptyData._)} part={parts.emptyData}>
         <div class={bemClass(emptyData._, emptyData.text)}>
-          {compInstance.lfEmpty}
+          {compInstance().lfEmpty}
         </div>
       </div>
     );

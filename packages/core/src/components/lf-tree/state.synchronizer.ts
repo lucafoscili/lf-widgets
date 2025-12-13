@@ -28,10 +28,10 @@ export interface StateSyncPaths {
   getDataset: () => any;
 
   /**
-   * Gets the framework manager for utilities.
-   * @returns The framework manager instance
+   * Gets the framework instance for utilities.
+   * @returns The framework instance
    */
-  getManager: () => any;
+  getFramework: () => any;
 }
 
 /**
@@ -87,7 +87,7 @@ export const createStateSynchronizer = (
     commitFn: (sanitized: string[], options: LfTreeStateCommitOptions) => void,
   ): string[] => {
     const candidates = normalizeIdInput(ids);
-    const framework = paths.getManager();
+    const framework = paths.getFramework();
 
     if (!framework) {
       pendingIds = [...candidates];

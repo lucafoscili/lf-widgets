@@ -12,8 +12,8 @@ export const createHandlers = (
   filter: {
     input: (e: CustomEvent<LfTextfieldEventPayload>) => {
       const adapter = getAdapter();
-      const { controller } = adapter;
-      const comp = controller.get.compInstance;
+      const { controller, dispatcher } = adapter;
+      const comp = controller.get.compInstance();
       const value = e.detail.inputValue?.toLowerCase() || "";
 
       clearTimeout(comp._filterTimeout);
@@ -23,7 +23,7 @@ export const createHandlers = (
         controller.set.filter.apply(value);
       }, 300);
 
-      comp.onLfEvent?.(e, "lf-event");
+      dispatcher.emit("lf-event", { originalEvent: e });
     },
   },
   //#endregion
@@ -32,30 +32,28 @@ export const createHandlers = (
   node: {
     click: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { controller } = adapter;
-      const comp = controller.get.compInstance;
+      const { controller, dispatcher } = adapter;
 
       controller.set.state.selection.set(node);
 
-      comp.onLfEvent?.(e, "click", {
+      dispatcher.emit("click", {
+        originalEvent: e,
         node,
       });
     },
     expand: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { controller } = adapter;
-      const comp = controller.get.compInstance;
+      const { controller, dispatcher } = adapter;
 
       controller.set.state.expansion.toggle(node);
 
-      comp.onLfEvent?.(e, "click", { node });
+      dispatcher.emit("click", { originalEvent: e, node });
     },
     pointerDown: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { controller } = adapter;
-      const comp = controller.get.compInstance;
+      const { dispatcher } = adapter;
 
-      comp.onLfEvent?.(e, "pointerdown", { node });
+      dispatcher.emit("pointerdown", { originalEvent: e, node });
     },
   },
   //#endregion
