@@ -1,22 +1,19 @@
 import {
-  CY_ATTRIBUTES,
   LF_ACCORDION_BLOCKS,
+  LF_ACCORDION_IDS,
   LF_ACCORDION_PARTS,
   LF_ACCORDION_PROPS,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
-  LF_THEME_ICONS,
   LF_WRAPPER_ID,
+  LfAccordionAdapter,
   LfAccordionElement,
   LfAccordionEvent,
   LfAccordionEventPayload,
   LfAccordionInterface,
   LfAccordionPropsInterface,
   LfDataDataset,
-  LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfIconType,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
@@ -31,11 +28,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
+import { prepAccordionActions } from "./actions.accordion";
+import { prepAccordionComputed } from "./computed.accordion";
+import { createAdapter } from "./lf-accordion-adapter";
 
 /**
  * Represents an accordion-style component that displays a list of data items,
@@ -176,14 +174,13 @@ export class LfAccordion implements LfAccordionInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfAccordionAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_ACCORDION_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_ACCORDION_IDS;
   #p = LF_ACCORDION_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #headers: { [id: string]: HTMLDivElement } = {};
   //#endregion
 
   //#region Events
@@ -199,14 +196,6 @@ export class LfAccordion implements LfAccordionInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfAccordionEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfAccordionEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -269,24 +258,7 @@ export class LfAccordion implements LfAccordionInterface {
       return;
     }
 
-    if (this.#isExpandible(node)) {
-      if (this.#isExpanded(node)) {
-        this.expandedNodeIds.delete(id);
-      } else {
-        this.expandedNodeIds.add(id);
-      }
-      this.onLfEvent(e || new CustomEvent("expand"), "expand");
-    } else if (this.#isSelected(node)) {
-      this.selectedNodeIds.delete(id);
-    } else {
-      this.selectedNodeIds.add(id);
-    }
-
-    if (!this.#isExpandible(node)) {
-      this.onLfEvent(e || new CustomEvent("click"), "click");
-    }
-
-    this.refresh();
+    this.#adapter.controller.actions.toggle(node, e);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -295,127 +267,86 @@ export class LfAccordion implements LfAccordionInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #isExpanded(node: LfDataNode) {
-    return this.expandedNodeIds.has(node.id);
-  }
-  #isExpandible(node: LfDataNode) {
-    return node.cells && Object.keys(node.cells).length > 0;
-  }
-  #isSelected(node: LfDataNode) {
-    return this.selectedNodeIds.has(node.id);
-  }
-  #prepIcon(icon: LfIconType): VNode {
-    const { theme } = this.#framework;
-
-    const { node } = this.#b;
-
-    return (
-      <div class={theme.bemClass(node._, node.icon)} part={this.#p.icon}>
-        <FIcon framework={this.#framework} icon={icon} />
-      </div>
-    );
-  }
-  #prepAccordion(): VNode[] {
-    const { bemClass } = this.#framework.theme;
-
-    const { lfDataset } = this;
-
-    if (!lfDataset || !lfDataset.nodes) {
-      return [];
-    }
-
-    const nodes: VNode[] = [];
-
-    for (let i = 0; i < lfDataset.nodes.length; i++) {
-      const node = lfDataset.nodes[i];
-      const isExpanded = this.#isExpanded(node);
-      const isExpandible = this.#isExpandible(node);
-      const isSelected = this.#isSelected(node);
-
-      nodes.push(
-        <div
-          class={bemClass(this.#b.node._)}
-          data-cy={this.#cy.node}
-          data-lf={this.#lf[this.lfUiState]}
-        >
-          <div
-            class={bemClass(this.#b.node._, this.#b.node.header, {
-              expanded: isExpandible && isExpanded,
-              selected: !isExpandible && isSelected,
-            })}
-            data-cy={!isExpandible && this.#cy.button}
-            onClick={(e) => this.toggleNode(node.id, e)}
-            onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
-            part={this.#p.header}
-            tabindex="1"
-            title={node.description}
-            ref={(el) => {
-              if (el) {
-                this.#headers[node.id] = el;
-              }
-            }}
-          >
-            {node.icon ? this.#prepIcon(node.icon) : null}
-            <span
-              class={bemClass(this.#b.node._, this.#b.node.text)}
-              part={this.#p.text}
-            >
-              {node.value}
-            </span>
-            {isExpandible && (
-              <div
-                class={bemClass(this.#b.node._, this.#b.node.expand, {
-                  expanded: isExpanded,
-                })}
-                data-cy={this.#cy.dropdownButton}
-                data-lf={this.#lf.icon}
-                part={this.#p.icon}
-              >
-                <FIcon
-                  framework={this.#framework}
-                  icon={LF_THEME_ICONS.dropdown}
-                />
-              </div>
-            )}
-          </div>
-          {isExpanded && (
-            <div
-              class={bemClass(this.#b.node._, this.#b.node.content, {
-                selected: isSelected,
-              })}
-              data-lf={this.#lf.fadeIn}
-              part={this.#p.content}
-            >
-              {this.#prepCell(node)}
-            </div>
-          )}
-        </div>,
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfAccordionEvent,
+      detail?: Partial<LfAccordionEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
       );
-    }
-    return nodes;
-  }
-  #prepCell = (node: LfDataNode): VNode => {
-    const { cells } = node;
-    const key = cells && Object.keys(cells)[0];
-    const cell = cells?.[key];
 
-    return (
-      <LfShape
-        cell={cell}
-        index={0}
-        shape={cell.shape}
-        eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
-        framework={this.#framework}
-      ></LfShape>
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: N/A for accordion
+   * - controller.computed: Derived predicates (isExpanded, isExpandible, isSelected)
+   * - controller.actions: Complex operations (toggle)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Setters - N/A for accordion
+      {},
+      // Computed - derived predicates (from dedicated file)
+      prepAccordionComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepAccordionActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
+  #syncExpandedFromProp() {
+    if (this.lfExpanded?.length) {
+      this.expandedNodeIds = new Set(this.lfExpanded);
+    }
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -426,29 +357,27 @@ export class LfAccordion implements LfAccordionInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
     this.#syncExpandedFromProp();
   }
   componentWillUpdate() {
     this.#syncExpandedFromProp();
   }
-  #syncExpandedFromProp() {
-    if (this.lfExpanded?.length) {
-      this.expandedNodeIds = new Set(this.lfExpanded);
-    }
-  }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
+    const { headers } = this.#adapter.elements.refs;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
     if (this.lfRipple && hasThemeRipple) {
-      Object.values(this.#headers).forEach((header) => {
+      headers.forEach((header) => {
         if (header) {
           effects.register.ripple(header);
         }
       });
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -465,16 +394,18 @@ export class LfAccordion implements LfAccordionInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
 
-    this.#headers = {};
+    // Clear refs before render
+    this.#adapter.elements.refs.headers.clear();
 
     const { accordion } = this.#b;
+    const { accordion: accordionJsx } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div class={bemClass(accordion._)} part={this.#p.accordion}>
-            {this.#prepAccordion()}
+            {accordionJsx()}
           </div>
         </div>
       </Host>
@@ -483,13 +414,17 @@ export class LfAccordion implements LfAccordionInterface {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple) {
-      Object.values(this.#headers).forEach((header) => {
-        if (header) {
-          effects.unregister.ripple(header);
-        }
-      });
+    if (this.#adapter) {
+      const { headers } = this.#adapter.elements.refs;
+
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple) {
+        headers.forEach((header) => {
+          if (header) {
+            effects.unregister.ripple(header);
+          }
+        });
+      }
     }
 
     theme?.unregister(this);
