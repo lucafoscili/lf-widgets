@@ -174,7 +174,120 @@ Performance: precompute with `getAll` for large collections; skip `<LfShape/>` f
 
 Three pillars ensure cross-component consistency: Data, Adapter Structure, Unified Event Management.
 
-### A. Component Complexity Tiers
+> **⚠️ v4.0.0 ARCHITECTURE**: This section reflects the canonical adapter pattern. See `docs/4_0_0_REFACTORING.md` Section 5 for the complete specification.
+
+### A. Base Adapter Interface (v4.0.0)
+
+ALL adapters extend the base interface with mandatory domains:
+
+```ts
+interface LfComponentAdapter<
+  C,
+  Payload,
+  H,
+  J,
+  R,
+  CGet,
+  CSet,
+  CComputed,
+  CActions,
+> {
+  controller: {
+    get: CGet; // Required: state reads
+    set?: CSet; // Optional: simple assignments
+    computed?: CComputed; // Optional: predicates, builders
+    actions?: CActions; // Optional: complex operations
+  };
+  dispatcher: LfComponentAdapterDispatcher<Payload>; // REQUIRED
+  elements: { jsx: J; refs: R };
+  handlers?: H;
+}
+```
+
+### B. Base Getters (Enforced by Type)
+
+ALL adapters get these getters automatically via `LfComponentAdapterGetters`:
+
+```ts
+interface LfComponentAdapterGetters<C, Blocks, Ids, Parts> {
+  blocks: () => Blocks; // BEM block structure
+  compInstance: () => C; // Live component instance
+  cyAttributes: () => typeof CY_ATTRIBUTES; // Cypress attrs
+  framework: () => LfFrameworkInterface; // Framework services (renamed from manager!)
+  ids: () => Ids; // Element IDs
+  lfAttributes: () => typeof LF_ATTRIBUTES; // LF attrs
+  parts: () => Parts; // CSS ::part() names
+}
+```
+
+**Key Rule**: ALL getters are functions `() => T`. No direct values!
+
+### C. Controller Domains
+
+| Domain | Purpose | Returns | Side Effects |
+| --- | --- | --- | --- |
+| `get` | Read current state | Value | None |
+| `set` | Write single value | void | Single assignment |
+| `computed` | Derive from state (predicates, builders) | Value | None |
+| `actions` | Complex operations (multi-step, async) | void or result | Multiple changes |
+
+Example for complex component:
+
+```ts
+controller: {
+  get: {
+    // Base getters (type-enforced)
+    blocks: () => LF_TREE_BLOCKS,
+    compInstance: () => this,
+    framework: () => this.#framework,
+    // ... other base getters
+    // Simple state reads
+    filterValue: () => this.#filterValue,
+  },
+  set: {
+    filterValue: (v) => { this.#filterValue = v; },
+  },
+  computed: {
+    isExpanded: (node) => this.#expandedNodes.has(node.id),
+    isHidden: (node) => this.#hiddenNodes.has(node.id),
+  },
+  actions: {
+    expansion: {
+      toggle: (node) => { /* multi-step logic */ },
+      expandAll: () => { /* batch operation */ },
+    },
+  },
+},
+```
+
+### D. Dispatcher (REQUIRED)
+
+Every adapter MUST have a dispatcher for centralized event emission:
+
+```ts
+dispatcher: {
+  emit: (eventType, detail) => {
+    this.#framework.debug?.logs.new(this, `Event: ${eventType}`, "informational");
+    this.lfEvent.emit({
+      comp: this,
+      eventType,
+      id: this.rootElement.id,
+      ...detail,
+    });
+  },
+},
+```
+
+Usage in elements/handlers:
+
+```tsx
+<button
+  onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
+  onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
+/>
+```
+
+### E. Component Complexity Tiers
 
 Components fall into three complexity tiers:
 
@@ -184,104 +297,40 @@ Components fall into three complexity tiers:
 | **Medium** | Multiple JSX sections, enhanced setters, portal | Same as Simple + enhanced setters in adapter | `lf-autocomplete`, `lf-select` |
 | **Complex** | Domain segmentation, multiple files per domain | `controller.<domain>.ts`, `elements.<domain>.tsx`, `handlers.<domain>.ts`, `helpers.<function>.ts` | `lf-messenger`, `lf-chat` |
 
-### B. Adapter Structure
-
-Canonical factory signature:
+### F. Standard Adapter Factory (Simple/Medium)
 
 ```ts
-export const createAdapter = (getters, setters, getAdapter) => ({
-  controller: { get: createGetters(getters), set: createSetters(setters) },
-  elements: { jsx: createJsx(getAdapter), refs: createRefs() },
-  handlers: createHandlers(getAdapter),
-});
+// In component's #initAdapter() - inline definition
+this.#adapter = {
+  controller: {
+    get: {
+      // Base getters (type-enforced)
+      blocks: () => LF_BUTTON_BLOCKS,
+      compInstance: () => this,
+      cyAttributes: () => CY_ATTRIBUTES,
+      framework: () => this.#framework,
+      ids: () => LF_BUTTON_IDS,
+      lfAttributes: () => LF_ATTRIBUTES,
+      parts: () => LF_BUTTON_PARTS,
+      // Component-specific
+      isDisabled: () => this.lfUiState === "disabled",
+    },
+    set: prepButtonSetters(() => this.#adapter),
+  },
+  dispatcher: this.#createDispatcher(),
+  elements: {
+    jsx: prepButtonJsx(() => this.#adapter),
+    refs: createButtonRefs(),
+  },
+  handlers: prepButtonHandlers(() => this.#adapter),
+};
 ```
 
 Type sourcing:
 
 - Adapter interfaces (e.g. `LfTreeAdapter`, `LfMessengerAdapter`) are defined ONLY in foundations; components must import them from `@lf-widgets/foundations` instead of re-exporting locally. This keeps a single source of truth and prevents divergent type surfaces.
 
-Partitions:
-
-- `controller.get` (pure dynamic accessors)
-- `controller.set` (mutators; clone collections)
-- `elements.jsx` (pure VNode producers)
-- `elements.refs` (element handles only)
-- `handlers` (UI callbacks → setters → event funnel)
-
-### C. Simple Component Pattern (Tier 1)
-
-Standard file structure:
-
-```text
-lf-<name>/
-├── lf-<name>.tsx           # Main component
-├── lf-<name>.scss          # Styles
-├── lf-<name>-adapter.ts    # Adapter factory
-├── elements.<name>.tsx     # JSX functions
-└── handlers.<name>.ts      # Event handlers
-```
-
-Adapter factory:
-
-```ts
-export const createAdapter = (
-  getters: LfBreadcrumbsAdapterInitializerGetters,
-  setters: LfBreadcrumbsAdapterInitializerSetters,
-  getAdapter: () => LfBreadcrumbsAdapter,
-): LfBreadcrumbsAdapter => ({
-  controller: { get: getters, set: setters },
-  elements: {
-    jsx: prepBreadcrumbsJsx(getAdapter),
-    refs: prepRefs(),
-  },
-  handlers: prepBreadcrumbsHandlers(getAdapter),
-});
-```
-
-Refs with Maps for multi-item components:
-
-```ts
-const prepRefs = (): LfBreadcrumbsAdapterRefs => ({
-  items: new Map(), // Map<nodeId, HTMLElement>
-  ripples: new Map(), // Map<nodeId, HTMLElement> for ripple effects
-});
-```
-
-### D. Medium Component Pattern (Tier 2)
-
-Enhanced setters wrap initializer setters with complex logic:
-
-```ts
-const enhancedSetters = {
-  ...setters,
-  list: (state = "toggle") => {
-    const { manager } = getAdapter().controller.get;
-    const { dropdown, textfield } = getAdapter().elements.refs;
-    const { close, isInPortal, open } = manager.portal;
-
-    switch (state) {
-      case "close":
-        close(dropdown);
-        break;
-      case "open":
-        open(dropdown, autocomplete, textfield);
-        break;
-      default:
-        isInPortal(dropdown)
-          ? close(dropdown)
-          : open(dropdown, autocomplete, textfield);
-    }
-  },
-};
-```
-
-Portal pattern for dropdowns:
-
-- `manager.portal.open(floatingEl, hostEl, anchorEl)` - Position and show
-- `manager.portal.close(floatingEl)` - Hide and reset
-- `manager.portal.isInPortal(floatingEl)` - Check visibility
-
-### E. Complex Component Pattern (Tier 3)
+### G. Complex Component Pattern (Tier 3)
 
 Domain-segmented file structure:
 
@@ -308,23 +357,23 @@ Domain controller pattern:
 export const prepCharacterGetters = (
   getAdapter: () => LfMessengerAdapter,
 ): LfMessengerAdapterGettersCharacter => ({
-  all: () => getAdapter().controller.get.compInstance.lfDataset?.nodes || [],
+  all: () => getAdapter().controller.get.compInstance().lfDataset?.nodes || [],
   byId: (id) => {
     /* ... */
   },
-  current: () => getAdapter().controller.get.compInstance.currentCharacter,
+  current: () => getAdapter().controller.get.compInstance().currentCharacter,
 });
 
 export const prepCharacterSetters = (
   getAdapter: () => LfMessengerAdapter,
 ): LfMessengerAdapterSettersCharacter => ({
   current: (character) => {
-    getAdapter().controller.get.compInstance.currentCharacter = character;
+    getAdapter().controller.get.compInstance().currentCharacter = character;
   },
 });
 ```
 
-### F. Handler Patterns
+### H. Handler Patterns
 
 Switch on eventType, then id with constants:
 
@@ -358,14 +407,14 @@ list: async (event) => {
   switch (eventType) {
     case "click":
       controller.set.value(node.id);
-      controller.set.list("close");
+      controller.actions.list.close();  // Use actions for complex operations
       break;
   }
-  comp.onLfEvent(event, "lf-event", node); // Always forward to event funnel
+  adapter.dispatcher.emit("lf-event", { originalEvent: event, node });
 },
 ```
 
-### G. Helper Files
+### I. Helper Files
 
 Complex components extract business logic:
 
@@ -381,12 +430,12 @@ Helpers receive adapter for state access:
 ```ts
 export const submitPrompt = async (adapter: LfChatAdapter) => {
   const { controller, elements } = adapter;
-  const { get, set } = controller;
+  const { get, set, actions } = controller;
   // Implementation
 };
 ```
 
-### H. Ripple Effect Pattern
+### J. Ripple Effect Pattern
 
 For interactive elements:
 
@@ -407,21 +456,21 @@ For interactive elements:
 
 // In handler
 const ripple = refs.ripples.get(node.id);
-if (ripple) manager.effects.ripple(ripple, e);
+if (ripple) framework().effects.ripple(ripple, e);
 ```
 
-### I. Unified Event Management
+### K. Unified Event Management
 
-Single outward event (`lf-<comp>-event`); all interactions route through `onLfEvent(event, eventType, args?)`. Shape events use `<LfShape eventDispatcher>` → `lf-event`. Ripple & side-effects centralized there.
+Single outward event (`lf-<comp>-event`); all interactions route through `dispatcher.emit(eventType, detail)`. Shape events use `<LfShape eventDispatcher>` → `lf-event`. Ripple & side-effects centralized there.
 
 Quick checklist (TDD approach):
 
 1. **Write tests first**: Create spec file with failing tests for expected behavior.
-2. Add / update foundations declarations (getters, setters, handlers, refs, jsx entries).
+2. Add / update foundations declarations (getters, setters, computed, actions, handlers, refs, jsx entries).
 3. Build foundations (`yarn build:foundations`).
-4. Implement adapter with pure pass-through getters (no invocation) for dynamic values.
-5. Use `<LfShape/>` for every non-primitive shape; inline primitives.
-6. Funnel all interactions via `onLfEvent` to emit the single outward event.
+4. Implement adapter with ALL getters as functions `() => T`.
+5. Use dispatcher for ALL event emissions.
+6. Use `<LfShape/>` for every non-primitive shape; inline primitives.
 7. **Verify tests pass**: Run `yarn test:unit` to ensure implementation satisfies tests.
 8. Rebuild core and verify docs regenerated.
 9. Add/adjust showcase examples + (optional) Cypress E2E tests.
@@ -434,15 +483,15 @@ Guidelines (summary – see SoC section for details): no duplicated traversal, n
 When complexity grows (see `lf-messenger` for full example):
 
 - Segment domains (`controller.*`, `elements.*`, `handlers.*`).
-- Mirror namespaces between getters & setters.
+- Use `computed` for predicates/builders, `actions` for complex operations.
 - Keep refs as element handles only.
 - JSX pure + `sanitizeProps` + keyed resets.
 - Handlers domain-grouped; async-capable.
 - Centralize dataset updates via one setter.
-- Single event funnel remains.
+- Single dispatcher for all events.
 - Avoid monolithic >300 line adapter files, snapshot getters, timers in refs, multiple outward events.
 
-Advanced checklist (condensed): domains present · dynamic getters · mirrored setters · pure JSX · grouped handlers · single event · centralized data · theme lookups inside JSX · no cross-domain mutation.
+Advanced checklist (condensed): domains present · ALL getters are functions · dispatcher used everywhere · computed/actions separated · pure JSX · grouped handlers · single event · centralized data · theme lookups inside JSX · no cross-domain mutation.
 
 ## 5.3 JSX Function Guidelines
 

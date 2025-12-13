@@ -1,15 +1,33 @@
 # LF Widgets v4.0.0 Architectural Refactoring Proposal
 
-> **Status**: Proposal  
+> **Status**: IN PROGRESS  
 > **Branch**: Already has 200+ files edited  
 > **Timeline**: Must be addressed before v4.0.0 release  
 > **Philosophy**: "This might be the last chance for an architectural overhaul"
+>
+> **⚠️ IMMEDIATE PRIORITY**: Section 5 (Adapter Pattern) is the **HOLY BIBLE** for component architecture.
+> Phase 0 must be completed atomically before any other work proceeds.
 
 ---
 
 ## Executive Summary
 
 This document catalogs architectural improvements for the v4.0.0 major release. Items are prioritized by impact and complexity. The goal is to reduce technical debt, improve developer experience, and ensure long-term maintainability before the API surface grows too large.
+
+### Critical Path (Phase 0)
+
+The **Adapter Pattern Standardization** (Section 5) has been elevated to immediate priority. This involves:
+
+1. **Base Interface Overhaul** - Promote common getters (blocks, cyAttributes, framework, ids, lfAttributes, parts) to base type with generics
+2. **Standardize All Getters as Functions** - Every getter returns `() => T`, no exceptions
+3. **Rename `manager` → `framework`** - Clearer semantics throughout codebase
+4. **Remove Initializer Types** - Eliminate redundant `*AdapterInitializerGetters/Setters` boilerplate
+5. **Add `computed` and `actions` Controller Domains** - Separate predicates/builders from state reads, actions from simple setters
+6. **Make Dispatcher Mandatory** - Centralized event emission for all components
+7. **All Adapters Extend Base** - Type safety enforcement
+8. **Adapter-Everywhere** - All 39 components get adapters
+
+**This will break builds until complete. Estimated: 2-3 days focused work.**
 
 ---
 
@@ -23,14 +41,20 @@ This document catalogs architectural improvements for the v4.0.0 major release. 
 2. [Functional Components Architecture](#2-functional-components-architecture)
 3. [Component Boilerplate Reduction](#3-component-boilerplate-reduction)
 4. [Type System Consolidation](#4-type-system-consolidation)
-5. [Adapter Pattern Standardization](#5-adapter-pattern-standardization)
-   - 5.1 Inconsistent Factory Signatures
-   - 5.2 Getter Invocation Inconsistency
-   - 5.3 Dispatcher Pattern for Event Emission
-   - 5.4 Adapter-Everywhere Philosophy
+5. [Adapter Pattern Standardization](#5-adapter-pattern-standardization) ⭐ **HOLY BIBLE**
+   - 5.1 Base Interface Overhaul (common getters + generics)
+   - 5.2 Standardize All Getters as Functions
+   - 5.3 Eliminate Initializer Types (REMOVED)
+   - 5.4 Controller Domain Separation (get/set/computed/actions)
+   - 5.5 Dispatcher as Mandatory Domain
+   - 5.6 All Adapters Must Extend Base Interface
+   - 5.7 Explicit Null in Refs
+   - 5.8 Adapter-Everywhere Philosophy
 6. [Architecture Enforcement](#6-architecture-enforcement)
 7. [Testing Coverage](#7-testing-coverage)
 8. [Implementation Priority Matrix](#8-implementation-priority-matrix)
+   - Phase 0: Adapter Architecture Overhaul (IMMEDIATE)
+   - Phase 1-4: Standard rollout
 
 ---
 
@@ -268,7 +292,7 @@ export interface LfDataCellContainer {
 4. All shapes render via FCs, not Web Components
 5. State always lives in the parent, FCs are purely presentational
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────────────────┐
 │                        ARCHITECTURE                             │
 ├─────────────────────────────────────────────────────────────────┤
@@ -436,7 +460,7 @@ const renderShape = (cell: LfDataCell, framework: LfFramework, handlers: ShapeHa
 
 #### File Structure (per component)
 
-```
+```plaintext
 lf-textfield/
 ├── lf-textfield.tsx           # Web Component (thin wrapper)
 ├── lf-textfield-fc.tsx        # Functional Component (core logic)
@@ -755,203 +779,612 @@ interface LfButtonPropsInterface extends LfBasePropsInterface {
 
 ## 5. Adapter Pattern Standardization
 
-### 5.1 Inconsistent Factory Signatures
+> **Status**: HOLY BIBLE - This section defines the canonical adapter architecture for v4.0.0+
+>
+> **Breaking Changes**: Yes - All existing adapters must be migrated
+>
+> **Philosophy**: "Consistency beats pragmatism in an AI-assisted codebase"
 
-**Problem**: Different components use different adapter factory patterns.
+---
+
+### 5.1 Base Interface Overhaul
+
+**Problem**: The base `LfComponentAdapterGetters` only requires `compInstance`, but EVERY component needs:
+
+- `blocks` - BEM class structure
+- `cyAttributes` - Cypress testing attributes  
+- `framework` (renamed from `manager`) - Framework services
+- `ids` - Element IDs
+- `lfAttributes` - Library attributes
+- `parts` - CSS ::part() names
+
+**Current State (Inconsistent)**:
 
 ```typescript
-// Pattern A (newer)
-createAdapter(getters, setters, getAdapter)
+// Current base - only compInstance required
+export type LfComponentAdapterGetters<C extends LfComponent, I = C> = {
+  [key: string]: unknown;
+  compInstance: I;  // Only this is enforced!
+};
 
-// Pattern B (older)
-createAdapter(component)
-
-// Pattern C (messenger-style)
-createAdapter(getters, setters, getAdapter) with domain segmentation
+// Every component manually redeclares the same 6 getters:
+interface LfButtonAdapterControllerGetters extends LfComponentAdapterGetters<...> {
+  blocks: () => typeof LF_BUTTON_BLOCKS;      // Manual
+  compInstance: () => LfButtonInterface;      // Manual
+  cyAttributes: () => typeof CY_ATTRIBUTES;   // Manual
+  ids: () => typeof LF_BUTTON_IDS;            // Manual
+  lfAttributes: () => typeof LF_ATTRIBUTES;   // Manual
+  manager: () => LfFrameworkInterface;        // Manual (wrong name!)
+  parts: () => typeof LF_BUTTON_PARTS;        // Manual
+  // ... component-specific getters
+}
 ```
 
-**Proposed Standard**: All components should follow the canonical pattern.
+**Proposed Solution**: Promote common getters to base type with generics.
 
 ```typescript
-// Standard factory signature
+/**
+ * Base adapter getters - ALL adapters get these automatically.
+ * 
+ * @template C - Component interface
+ * @template Blocks - typeof LF_<COMP>_BLOCKS 
+ * @template Ids - typeof LF_<COMP>_IDS
+ * @template Parts - typeof LF_<COMP>_PARTS
+ */
+export interface LfComponentAdapterGetters<
+  C extends LfComponent,
+  Blocks extends Record<string, unknown> = Record<string, unknown>,
+  Ids extends Record<string, unknown> = Record<string, unknown>,
+  Parts extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /** BEM block structure for this component */
+  blocks: () => Blocks;
+  /** Live component instance accessor */
+  compInstance: () => C;
+  /** Cypress testing attributes */
+  cyAttributes: () => typeof CY_ATTRIBUTES;
+  /** Framework services (theme, data, effects, etc.) - RENAMED from manager */
+  framework: () => LfFrameworkInterface;
+  /** Component element IDs */
+  ids: () => Ids;
+  /** LF library attributes */
+  lfAttributes: () => typeof LF_ATTRIBUTES;
+  /** CSS ::part() names for external styling */
+  parts: () => Parts;
+}
+
+// Component-specific getters ONLY need extras:
+interface LfButtonAdapterControllerGetters extends LfComponentAdapterGetters<
+  LfButtonInterface,
+  typeof LF_BUTTON_BLOCKS,
+  typeof LF_BUTTON_IDS,
+  typeof LF_BUTTON_PARTS
+> {
+  // ONLY component-specific getters here!
+  isDisabled: () => boolean;
+  isDropdown: () => boolean;
+  isOn: () => boolean;
+  styling: () => LfButtonStyling;
+}
+```
+
+**Key Change**: Rename `manager` → `framework` throughout. Clearer semantics.
+
+**Files Affected**:
+
+- `packages/foundations/src/foundations/adapter.declarations.ts`
+- All 38 component declaration files
+- All adapter implementation files
+
+**Complexity**: High (many files)
+**Priority**: P0 (Foundational)
+
+---
+
+### 5.2 Standardize All Getters as Functions
+
+**Problem**: Massive inconsistency across components.
+
+| Component | `blocks` | `framework` | `compInstance` |
+|-----------|----------|-------------|----------------|
+| button | `() => typeof` ✅ | `() => LfFrameworkInterface` ✅ | `() => LfButtonInterface` ✅ |
+| badge | `typeof` ❌ | `LfFrameworkInterface` ❌ | `LfBadgeInterface` ❌ |
+| tree | `typeof` ❌ | `LfFrameworkInterface` ❌ | `LfTreeInterface` ❌ |
+| chat | `typeof` ❌ | `LfFrameworkInterface` ❌ | `LfChatInterface` ❌ |
+| breadcrumbs | `typeof` ❌ | `() => LfFrameworkInterface` ✅ | via base |
+
+**Canonical Rule**: ALL getters are functions `() => T`.
+
+**Rationale**:
+
+1. **Consistency** - Same API everywhere
+2. **Dynamic capture** - Functions capture current state at call time
+3. **Testability** - Easy to mock functions
+4. **Future-proof** - "Static" values may become dynamic later
+
+```typescript
+// ✅ CORRECT: All getters are functions
+controller: {
+  get: {
+    blocks: () => LF_BUTTON_BLOCKS,
+    compInstance: () => this,
+    cyAttributes: () => CY_ATTRIBUTES,
+    framework: () => this.#framework,
+    ids: () => LF_BUTTON_IDS,
+    lfAttributes: () => LF_ATTRIBUTES,
+    parts: () => LF_BUTTON_PARTS,
+    // Component-specific:
+    isDisabled: () => this.lfUiState === "disabled",
+  },
+}
+
+// ❌ WRONG: Mixed direct values and functions
+controller: {
+  get: {
+    blocks: LF_BUTTON_BLOCKS,           // Direct - NO!
+    compInstance: this,                  // Direct - NO!
+    framework: () => this.#framework,    // Function - yes
+  },
+}
+```
+
+**Files Affected**: All component declarations + implementations
+**Complexity**: Medium
+**Priority**: P0 (Consistency)
+
+---
+
+### 5.3 Eliminate Initializer Types (REMOVED)
+
+**Problem**: `*AdapterInitializerGetters` and `*AdapterInitializerSetters` types are redundant boilerplate.
+
+```typescript
+// Current: 20+ lines of Pick<> per component
+export type LfButtonAdapterInitializerGetters = Pick<
+  LfButtonAdapterControllerGetters,
+  | "blocks"
+  | "compInstance"
+  | "cyAttributes"
+  | "ids"
+  | "isDisabled"
+  | "isDropdown"
+  | "isOn"
+  | "lfAttributes"
+  | "manager"
+  | "parts"
+  | "styling"
+>;
+
+export type LfButtonAdapterInitializerSetters = Pick<
+  LfButtonAdapterControllerSetters,
+  "list"
+>;
+```
+
+**Reality Check**:
+
+- Components pass ALL getters anyway
+- No component uses "partial initialization"
+- The distinction adds cognitive overhead
+- 40+ lines of boilerplate per component
+
+**Decision**: **REMOVE** all `*AdapterInitializerGetters` and `*AdapterInitializerSetters` types.
+
+**New Pattern**: Pass full interfaces directly.
+
+```typescript
+// BEFORE: Redundant initializer types
 export const createAdapter = (
-  getters: LfComponentAdapterInitializerGetters,
-  setters: LfComponentAdapterInitializerSetters,
-  getAdapter: () => LfComponentAdapter,
-): LfComponentAdapter => ({
-  controller: { 
-    get: createGetters(getters), 
-    set: createSetters(setters) 
+  getters: LfButtonAdapterInitializerGetters,  // Pick<...>
+  setters: LfButtonAdapterInitializerSetters,  // Pick<...>
+  getAdapter: () => LfButtonAdapter,
+): LfButtonAdapter => { ... };
+
+// AFTER: Direct interfaces, inline definition
+this.#adapter = {
+  controller: {
+    get: {
+      // Base getters (type-enforced by base interface)
+      blocks: () => this.#b,
+      compInstance: () => this,
+      cyAttributes: () => CY_ATTRIBUTES,
+      framework: () => this.#framework,
+      ids: () => this.#ids,
+      lfAttributes: () => LF_ATTRIBUTES,
+      parts: () => this.#p,
+      // Component-specific
+      isDisabled: () => this.lfUiState === "disabled",
+      isDropdown: () => Boolean(this.lfDataset?.nodes?.[0]?.children?.length),
+    },
+    set: prepButtonSetters(() => this.#adapter),
   },
-  elements: { 
-    jsx: createJsx(getAdapter), 
-    refs: createRefs() 
+  dispatcher: this.#createDispatcher(),
+  elements: {
+    jsx: prepButtonJsx(() => this.#adapter),
+    refs: createButtonRefs(),
   },
-  handlers: createHandlers(getAdapter),
-});
+  handlers: prepButtonHandlers(() => this.#adapter),
+};
 ```
 
-**Files Affected**: ~20 adapter files in `packages/core/src/components/*/`  
-**Complexity**: Medium  
-**Priority**: P2 (Consistency)
+**Benefits**:
+
+- Removes ~40 lines per component declaration
+- No more syncing Pick<> lists with interface changes
+- Code delocalization still achieved via `prep*()` imports
+- Type safety from base interface, not manual picks
+
+**Files Affected**: All `*.declarations.ts` files in foundations
+**Complexity**: Low (deletion!)
+**Priority**: P0 (Cleanup)
 
 ---
 
-### 5.2 Getter Invocation Inconsistency
+### 5.4 Controller Domain Separation (NEW)
 
-**Problem**: Some getters return values directly, others return functions.
+**Problem**: Getters and setters have been used for more than just getting and setting.
+
+**Audit of Complex Components**:
+
+| Pattern | Example | Should Be |
+|---------|---------|-----------|
+| Simple state read | `filterValue: () => string` | **get** ✅ |
+| Simple state write | `setFilterValue: (v) => void` | **set** ✅ |
+| Computed predicate | `isExpanded: (node) => boolean` | **computed** |
+| Object builder | `options.basic: () => EChartsOption` | **computed** |
+| Multi-step action | `history.new: (shape) => void` | **actions** |
+| UI state machine | `ui.panel: (p, v?) => boolean` | **actions** |
+| Navigation logic | `character.next: () => Character` | **actions** |
+
+**Current Mess (tree.declarations.ts)**:
 
 ```typescript
-// Inconsistent: direct value
-get: {
-  framework: this.#framework,  // Direct
-  compInstance: this,  // Direct
+// Getters mixing state reads + predicates
+interface LfTreeAdapterControllerGetters {
+  filterValue: () => string;           // State read ✅
+  isExpanded: (node) => boolean;       // Predicate - wrong place!
+  isHidden: (node) => boolean;         // Predicate - wrong place!
+  canSelectNode: (node) => boolean;    // Predicate - wrong place!
 }
 
-// Canonical: always functions for dynamic values
-get: {
-  framework: () => this.#framework,  // Function
-  compInstance: () => this,  // Function
+// Setters mixing assignments + actions
+interface LfTreeAdapterControllerSetters {
+  filter: {
+    setValue: (value) => void;         // Setter ✅
+    apply: (value) => void;            // Action - wrong place!
+  };
+  state: {
+    expansion: {
+      toggle: (node) => void;          // Action - wrong place!
+      setNodes: (nodes) => void;       // Setter ✅
+    };
+  };
 }
 ```
 
-**Reasoning**: Dynamic values must be functions to capture current state. Static values can be direct.
+**Proposed Solution**: Four controller domains.
 
-**Proposed Rule**:
+```typescript
+export interface LfComponentAdapter<...> {
+  controller: {
+    /** Pure state accessors - read current values */
+    get: CGet;
+    /** Simple state mutations - single value assignments */
+    set?: CSet;
+    /** Derived/computed values - predicates, builders, factories */
+    computed?: CComputed;
+    /** Complex operations - multi-step logic, async, side effects */
+    actions?: CActions;
+  };
+  dispatcher: LfComponentAdapterDispatcher<Payload>;
+  elements: { jsx: J; refs: R; };
+  handlers?: H;
+}
+```
 
-- Always use functions for values that can change
-- Direct access only for truly constant values
+**Domain Definitions**:
 
-**Files Affected**: All adapter getters
-**Complexity**: Low
-**Priority**: P3 (Consistency)
+| Domain | Purpose | Returns | Side Effects | Example |
+|--------|---------|---------|--------------|---------|
+| `get` | Read current state | Value | None | `filterValue()`, `dataset()` |
+| `set` | Write single value | void | Single assignment | `setFilterValue(v)` |
+| `computed` | Derive from state | Value | None | `isExpanded(node)`, `canSelect(node)` |
+| `actions` | Complex operations | void or result | Multiple changes | `toggleExpand(node)`, `applyFilter()` |
+
+**Applied to Tree (Clean)**:
+
+```typescript
+interface LfTreeAdapterController {
+  get: {
+    dataset: () => LfDataDataset;
+    expandedIds: () => string[];
+    selectedIds: () => string[];
+    filterValue: () => string;
+  };
+  
+  set: {
+    expandedIds: (ids: string[]) => void;
+    selectedIds: (ids: string[]) => void;
+    filterValue: (value: string) => void;
+  };
+  
+  computed: {
+    isExpanded: (node: LfDataNode) => boolean;
+    isHidden: (node: LfDataNode) => boolean;
+    canSelectNode: (node: LfDataNode) => boolean;
+    visibleNodes: () => LfDataNode[];
+  };
+  
+  actions: {
+    expansion: {
+      toggle: (node: LfDataNode) => void;
+      expandAll: () => void;
+      collapseAll: () => void;
+    };
+    selection: {
+      select: (node: LfDataNode) => void;
+      clear: () => void;
+    };
+    filter: {
+      apply: (value: string) => void;
+    };
+  };
+}
+```
+
+**Applied to Chart (Clean)**:
+
+```typescript
+interface LfChartAdapterController {
+  get: {
+    compInstance: () => LfChartInterface;
+    framework: () => LfFrameworkInterface;
+    // Simple state reads only
+  };
+  
+  set: {
+    // Simple assignments only
+  };
+  
+  computed: {
+    // Predicates and derived values
+    mappedType: (type: LfChartType) => SeriesOption["type"];
+    seriesData: () => LfChartSeriesData[];
+    columnById: (id: string) => LfDataColumn;
+    
+    // Builders/factories - they compute complex objects
+    options: {
+      basic: () => EChartsOption;
+      bubble: () => EChartsOption;
+      calendar: () => EChartsOption;
+      // ...
+    };
+    style: {
+      axis: (type: LfChartAxesTypes) => AxisOption;
+      theme: () => LfChartAdapterThemeStyle;
+      // ...
+    };
+  };
+  
+  actions: {
+    // Complex operations (if any)
+  };
+}
+```
+
+**Progressive Adoption**:
+
+- `computed` and `actions` are **optional**
+- Simple components use only `get`/`set`
+- Complex components add `computed`/`actions` as needed
+
+**Files Affected**: Complex component declarations (chart, messenger, chat, shapeeditor, tree, list)
+**Complexity**: Medium
+**Priority**: P1 (Architecture clarity)
 
 ---
 
-### 5.3 Dispatcher Pattern for Event Emission
+### 5.5 Dispatcher as Mandatory Domain
 
-**Problem**: Event emission is scattered throughout components with direct `this.lfEvent.emit()` calls.
+**Problem**: Event emission is scattered with direct `this.lfEvent.emit()` calls.
 
 ```typescript
 // Current: Direct emit scattered throughout component
 onButtonClick() {
-  this.lfEvent.emit({ eventType: "click", id: this.rootId, comp: "LfButton" });
-}
-
-onButtonFocus() {
-  this.lfEvent.emit({ eventType: "focus", id: this.rootId, comp: "LfButton" });
+  this.lfEvent.emit({ 
+    eventType: "click", 
+    id: this.rootElement.id, 
+    comp: this,
+    value: this.value,
+    valueAsBoolean: this.value === "on",
+  });
 }
 
 // Problems:
-// 1. Repeated id/comp boilerplate
-// 2. No central place for logging/debugging
+// 1. Repeated boilerplate per event
+// 2. No central debug logging
 // 3. Easy to miss required fields
-// 4. Inconsistent payload structure across components
+// 4. Inconsistent payload structure
 ```
 
-**Proposed Solution**: Add `dispatcher` as fourth adapter domain.
+**Solution**: `dispatcher` becomes a **required** adapter domain.
 
 ```typescript
-// Adapter structure becomes:
-export interface LfComponentAdapter {
-  controller: { get: Getters; set: Setters };
-  elements: { jsx: JsxFactories; refs: Refs };
-  handlers: Handlers;
-  dispatcher: Dispatcher;  // NEW
+// Canonical adapter structure
+export interface LfComponentAdapter<
+  C extends LfComponent,
+  Payload extends LfEventPayload = LfEventPayload,
+  // ...other generics
+> {
+  controller: { get: CGet; set?: CSet; computed?: CComputed; actions?: CActions; };
+  dispatcher: LfComponentAdapterDispatcher<Payload>;  // REQUIRED!
+  elements: { jsx: J; refs: R; };
+  handlers?: H;
 }
 
-// Dispatcher implementation
-export const createDispatcher = (
-  getAdapter: () => LfButtonAdapter,
-): LfButtonAdapterDispatcher => {
-  return {
-    emit: (eventType: LfButtonEventType, detail?: Partial<LfButtonEventPayload>) => {
-      const { compInstance, framework, rootId } = getAdapter().controller.get;
-
-      // Optional: Debug logging
-      framework().debug?.log("event", { comp: "LfButton", eventType, id: rootId() });
-
-      // Emit with guaranteed structure
-      compInstance().lfEvent.emit({
-        eventType,
-        id: rootId(),
-        comp: "LfButton",
-        ...detail,
-      });
-    },
-  };
-};
+// Dispatcher interface
+export interface LfComponentAdapterDispatcher<P extends LfEventPayload> {
+  emit: <E extends P["eventType"]>(
+    eventType: E,
+    detail?: Partial<Omit<P, "comp" | "eventType" | "id">>,
+  ) => void;
+}
 ```
 
-**Usage in Handlers**:
+**Implementation Pattern**:
 
 ```typescript
-// Before: scattered, verbose
-onButtonClick() {
-  this.lfEvent.emit({ eventType: "click", id: this.rootId, comp: "LfButton", value: this.lfValue });
-}
+// In component's #initAdapter()
+dispatcher: {
+  emit: (eventType, detail) => {
+    // Optional: Debug logging
+    this.#framework.debug?.logs.new(
+      this,
+      `Event: ${eventType}`,
+      "informational",
+    );
+    
+    // Emit with guaranteed structure
+    this.lfEvent.emit({
+      comp: this,
+      eventType,
+      id: this.rootElement.id,
+      ...detail,
+    });
+  },
+},
+```
 
-// After: centralized, clean
-onButtonClick() {
-  this.#adapter.dispatcher.emit("click", { value: this.lfValue });
-}
+**Usage in Elements/Handlers**:
+
+```typescript
+// Clean, consistent event emission
+<button
+  onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
+  onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
+  onFocus={(e) => dispatcher.emit("focus", { originalEvent: e })}
+  onPointerDown={(e) => dispatcher.emit("pointerdown", { originalEvent: e })}
+>
 ```
 
 **Benefits**:
 
 | Aspect | Before | After |
 |--------|--------|-------|
-| Boilerplate per emit | ~50 chars | ~20 chars |
+| Boilerplate per emit | ~80 chars | ~40 chars |
 | Debug logging | Manual, inconsistent | Automatic, centralized |
-| Payload validation | None | Can add runtime checks |
+| Payload validation | None | Type-enforced |
 | Cross-cutting concerns | Impossible | Easy (analytics, etc.) |
-| Agent replication | Must understand emit pattern | Copy dispatcher.emit() |
 
-**Standard Adapter Interface (Updated)**:
-
-```typescript
-// Canonical adapter with all 4 domains
-export interface LfComponentAdapter<C extends LfComponentName> {
-  controller: {
-    get: LfComponentAdapterGetters<C>;
-    set: LfComponentAdapterSetters<C>;
-  };
-  elements: {
-    jsx: LfComponentAdapterJsx<C>;
-    refs: LfComponentAdapterRefs<C>;
-  };
-  handlers: LfComponentAdapterHandlers<C>;
-  dispatcher: LfComponentAdapterDispatcher<C>;
-}
-
-// Dispatcher interface per component
-export interface LfComponentAdapterDispatcher<C extends LfComponentName> {
-  emit: (
-    eventType: LfEventType<C>,
-    detail?: Partial<Omit<LfEventPayload<C>, "eventType" | "id" | "comp">>,
-  ) => void;
-}
-```
-
-**Files Affected**: All 18 existing adapter files + 21 new adapters
-**Complexity**: Low (per adapter), Medium (total effort)
-**Priority**: P1 (Consistency, Agent-Friendliness)
+**Files Affected**: All components
+**Complexity**: Medium
+**Priority**: P0 (Required for consistency)
 
 ---
 
-### 5.4 Adapter-Everywhere Philosophy
+### 5.6 All Adapters Must Extend Base Interface
+
+**Problem**: Some adapters extend `LfComponentAdapter`, others don't.
+
+```typescript
+// ✅ CORRECT: Extends base
+export interface LfButtonAdapter extends LfComponentAdapter<
+  LfButtonInterface,
+  LfButtonAdapterHandlers,
+  LfButtonAdapterJsx,
+  LfButtonAdapterRefs,
+  LfButtonAdapterControllerGetters,
+  LfButtonAdapterControllerSetters
+> { ... }
+
+// ❌ WRONG: Raw interface, no base
+export interface LfListAdapter {
+  controller: { ... };
+  elements: { ... };
+  handlers: { ... };
+}
+```
+
+**Decision**: ALL adapters MUST extend `LfComponentAdapter`.
+
+```typescript
+// Canonical adapter declaration
+export interface Lf<Comp>Adapter extends LfComponentAdapter<
+  Lf<Comp>Interface,
+  Lf<Comp>EventPayload,
+  Lf<Comp>AdapterHandlers,
+  Lf<Comp>AdapterJsx,
+  Lf<Comp>AdapterRefs,
+  Lf<Comp>AdapterControllerGetters,
+  Lf<Comp>AdapterControllerSetters,
+  Lf<Comp>AdapterControllerComputed,  // Optional
+  Lf<Comp>AdapterControllerActions,    // Optional
+> {
+  // Only override if needed, base provides structure
+}
+```
+
+**Files Affected**: autocomplete, list, multiinput, radio, select declarations
+**Complexity**: Low
+**Priority**: P1 (Type safety)
+
+---
+
+### 5.7 Explicit Null in Refs
+
+**Problem**: `LfComponentAdapterRefs` allows `null` via recursion but doesn't make it explicit.
+
+```typescript
+// Current: null sneaks in via recursion
+export type LfComponentAdapterRefs = {
+  [key: string]:
+    | Map<string, HTMLElement>
+    | HTMLElement
+    | LfComponentAdapterRefs;  // Recursive, but null?
+};
+
+// Actual usage: refs start as null
+refs: {
+  button: null,  // Assigned later via ref callback
+  list: null,
+}
+```
+
+**Solution**: Explicit `null` in union.
+
+```typescript
+export type LfComponentAdapterRefs = {
+  [key: string]:
+    | Map<string, HTMLElement>
+    | HTMLElement
+    | null  // EXPLICIT!
+    | LfComponentAdapterRefs;
+};
+```
+
+**Files Affected**: `adapter.declarations.ts`
+**Complexity**: Trivial
+**Priority**: P2 (Type clarity)
+
+---
+
+### 5.8 Adapter-Everywhere Philosophy
 
 **Decision**: Every component MUST have an adapter, regardless of complexity.
 
-**Rationale**:
+**Current State**: 18 of 39 components have adapters.
 
-| Argument | Counter-Argument | Resolution |
-|----------|------------------|------------|
-| "Badge is too simple" | Simple today, may grow tomorrow | Adapter provides structure for growth |
-| "Adds unnecessary indirection" | ~50 lines per simple component | Small cost for architectural consistency |
-| "Overkill for display-only" | Agents pattern-match on structure | Consistency enables mechanical replication |
+| Has Adapter (18) | Missing Adapter (21) |
+|------------------|---------------------|
+| autocomplete, badge, breadcrumbs, button | accordion, article, checkbox |
+| canvas, card, carousel, chart | chip, code, drawer |
+| chat, compare, list, masonry | header, image, photoframe |
+| messenger, multiinput, radio | placeholder, progressbar, slider |
+| select, shapeeditor, tree | snackbar, spinner, splash |
+| | tabbar, textfield, toast |
+| | toggle, typewriter, upload |
 
-**Key Insight**: In an AI-assisted codebase, **consistency beats pragmatism**.
+**Rationale**: In an AI-assisted codebase, **consistency beats pragmatism**.
 
 When agents scaffold new components, they:
 
@@ -959,38 +1392,43 @@ When agents scaffold new components, they:
 2. Copy the structure
 3. Adapt to new requirements
 
-If some components have adapters and some don't, agents will:
+If some components have adapters and some don't, agents produce inconsistent output.
 
-- Sometimes copy adapter-based components
-- Sometimes copy non-adapter components
-- Produce inconsistent output
+**Rule**: All 39 components will have adapters following the canonical structure.
 
-**Rule**: All 39 components will have adapters following the canonical 4-domain structure.
-
-**Simple Component Adapter Example (Badge)**:
+**Simple Component Adapter Example**:
 
 ```typescript
-// Even simple components get full adapter structure
+// Even simple components get the full structure
+// lf-badge-adapter.ts
 export const createAdapter = (
-  getters: LfBadgeAdapterInitializerGetters,
-  setters: LfBadgeAdapterInitializerSetters,
   getAdapter: () => LfBadgeAdapter,
 ): LfBadgeAdapter => ({
   controller: {
-    get: createGetters(getters),
-    set: {},  // Empty but present
+    get: {
+      // Base getters (type-enforced)
+      blocks: () => LF_BADGE_BLOCKS,
+      compInstance: () => getAdapter().controller.get.compInstance(),
+      cyAttributes: () => CY_ATTRIBUTES,
+      framework: () => getAdapter().controller.get.framework(),
+      ids: () => LF_BADGE_IDS,
+      lfAttributes: () => LF_ATTRIBUTES,
+      parts: () => LF_BADGE_PARTS,
+    },
+    // set: empty for display-only components
   },
-  elements: {
-    jsx: createJsx(getAdapter),
-    refs: createRefs(),
-  },
-  handlers: {},  // Empty but present
   dispatcher: createDispatcher(getAdapter),
+  elements: {
+    jsx: prepBadgeJsx(getAdapter),
+    refs: { badge: null, image: null, label: null },
+  },
+  // handlers: empty for non-interactive components
 });
 ```
 
-**Complexity**: N/A (Philosophy)
-**Priority**: P0 (Foundational Decision)
+**Files Affected**: 21 components need new adapters
+**Complexity**: Medium (total effort)
+**Priority**: P0 (Foundational decision)
 
 ---
 
@@ -1207,6 +1645,33 @@ Components without dedicated unit tests:
 
 ## 8. Implementation Priority Matrix
 
+### Phase 0: Adapter Architecture Overhaul (IMMEDIATE - Breaks Builds)
+
+> **Warning**: This phase will break ALL builds until completion. Must be done atomically.
+
+| Item | Section | Complexity | Impact | Dependencies |
+|------|---------|------------|--------|--------------|
+| 5.1 Base interface overhaul | 5.1 | High | Critical | None |
+| 5.2 Standardize getters as functions | 5.2 | Medium | Critical | 5.1 |
+| 5.3 Remove Initializer types | 5.3 | Low | High | 5.1, 5.2 |
+| 5.4 Add computed/actions domains | 5.4 | Medium | High | 5.1 |
+| 5.5 Make dispatcher mandatory | 5.5 | Medium | High | 5.1 |
+| 5.6 All adapters extend base | 5.6 | Low | High | 5.1 |
+| 5.7 Explicit null in refs | 5.7 | Trivial | Low | None |
+| Rename manager → framework | 5.1 | Medium | High | None |
+
+**Estimated Duration**: 2-3 days of focused work
+
+**Order of Operations**:
+
+1. Update `adapter.declarations.ts` with new base types
+2. Update all component `*.declarations.ts` in foundations
+3. Build foundations (`yarn build:foundations`)
+4. Update all adapter implementations in core
+5. Update all component TSX files
+6. Build core (`yarn build:core`)
+7. Verify showcase builds
+
 ### Phase 1: Foundation (Before v4.0.0-alpha)
 
 | Item | Complexity | Impact | Dependencies |
@@ -1215,8 +1680,7 @@ Components without dedicated unit tests:
 | 1.4 LfDataCellContainer fix | Low | High | None |
 | 4.1 Type map consolidation | Medium | High | None |
 | 3.1 Lifecycle boilerplate | Medium | High | None |
-| 5.3 Dispatcher pattern | Medium | High | None |
-| 5.4 Adapter-everywhere | Medium | High | 5.3 |
+| 5.8 Adapter-everywhere (21 new adapters) | Medium | High | Phase 0 |
 | 2.10 FC POC (slider, toggle) | Medium | High | None |
 | 6.x Architecture enforcement tooling | Medium | High | None |
 
@@ -1226,9 +1690,7 @@ Components without dedicated unit tests:
 |------|------------|--------|--------------|
 | 1.2 Flexible cells container | High | High | 1.1 |
 | 2.x FC for all input controls | High | High | 2.10 POC |
-| 7.x Retrofit adapters (P1 components) | Medium | High | 7.x tooling |
 | 4.2 Props inheritance | Low | Medium | None |
-| 5.1 Adapter standardization | Medium | Medium | None |
 
 ### Phase 3: Enhancement (v4.0.0-rc)
 
@@ -1236,7 +1698,6 @@ Components without dedicated unit tests:
 |------|------------|--------|--------------|
 | 2.x FC for display components | High | Medium | 2.x input |
 | 2.x LfShape uses FCs | High | High | 2.x all FCs |
-| 7.x Retrofit adapters (P2/P3 components) | Medium | Medium | 7.x P1 |
 | 1.3 Value/lfValue docs | Low | Low | None |
 | 8.x Test coverage | Medium | Medium | None |
 
@@ -1246,7 +1707,6 @@ Components without dedicated unit tests:
 |------|------------|--------|--------------|
 | 3.2 Event boilerplate | Low | Low | None |
 | 3.3 Props array generation | Medium | Low | Build tooling |
-| 5.2 Getter consistency | Low | Low | 5.1 |
 | 2.x Export FCs in public API | Low | Medium | All FC work |
 
 ---
@@ -1255,12 +1715,12 @@ Components without dedicated unit tests:
 
 | Change | Breaking Level | Migration Path |
 |--------|----------------|----------------|
+| Adapter architecture overhaul | **Internal Breaking** | Phase 0 atomic migration |
+| `manager` → `framework` rename | **Internal Breaking** | Find/replace across codebase |
 | Flexible cells container | Major | Codemod + deprecation warnings |
 | WC → FC internally | None | Internal refactor, public API unchanged |
 | LfShape uses FCs | None | Internal, shapes API unchanged |
 | FC public export | Minor (additive) | New exports, no removals |
-| Adapter standardization | None | Internal only |
-| Props inheritance | None | Additive |
 
 ---
 
@@ -1268,13 +1728,21 @@ Components without dedicated unit tests:
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2024-12-13 | Promote common getters to base type | All adapters need blocks/cyAttributes/framework/ids/lfAttributes/parts - enforce at type level |
+| 2024-12-13 | Standardize all getters as functions `() => T` | Consistency, dynamic capture, testability, future-proof |
+| 2024-12-13 | Rename `manager` → `framework` | Clearer semantics; `manager` was vague |
+| 2024-12-13 | Remove Initializer types | Redundant boilerplate; components pass full interfaces anyway |
+| 2024-12-13 | Add `computed` controller domain | Separate predicates/builders from simple state reads |
+| 2024-12-13 | Add `actions` controller domain | Separate complex multi-step operations from simple setters |
+| 2024-12-13 | Make dispatcher mandatory | Centralized event emission, debug logging, type safety |
+| 2024-12-13 | All adapters extend base interface | Type safety, consistency |
+| 2024-12-13 | Explicit null in refs type | Type clarity for ref initialization pattern |
+| 2024-12-13 | Adapter-everywhere philosophy | Consistency > pragmatism; AI-assisted codebase pattern matching |
 | TBD | LfDataCell mapped types | Maintainability over raw conditional |
 | TBD | Flexible cells with shape discriminator | Real-world need for multiple same-type cells |
 | TBD | Dual-mode components (WC + FC) | WC for standalone, FC for composition |
 | TBD | All shapes render via FC | Major performance win for composed usage |
 | TBD | State always in parent | Unidirectional data flow, simpler mental model |
-| TBD | Adapter-everywhere | Consistency > pragmatism; enables mechanical agent replication |
-| TBD | Dispatcher as 4th adapter domain | Centralized event emission, debug logging, cross-cutting concerns |
 | TBD | value→lfValue is mapping, not duplication | Clarifies data layer vs UI layer separation |
 
 ---
@@ -1289,7 +1757,7 @@ Components without dedicated unit tests:
 
 ## Appendix A: Current Component State Count
 
-```
+```plaintext
 Component                @State fields
 -----------------------------------------
 lf-shapeeditor           19  ← Most stateful
