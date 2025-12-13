@@ -1,8 +1,7 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TEXTFIELD_BLOCKS,
+  LF_TEXTFIELD_IDS,
   LF_TEXTFIELD_PARTS,
   LF_TEXTFIELD_PROPS,
   LF_WRAPPER_ID,
@@ -10,6 +9,7 @@ import {
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
   LfIconType,
+  LfTextfieldAdapter,
   LfTextfieldElement,
   LfTextfieldEvent,
   LfTextfieldEventPayload,
@@ -34,10 +34,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepTextfieldActions } from "./actions.textfield";
+import { prepTextfieldComputed } from "./computed.textfield";
+import { createAdapter } from "./lf-textfield-adapter";
 /**
  * The text field may include an icon, label, helper text, and a character counter.
  *
@@ -276,19 +278,17 @@ export class LfTextfield implements LfTextfieldInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfTextfieldAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TEXTFIELD_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_TEXTFIELD_IDS;
   #p = LF_TEXTFIELD_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #debounceTimeout: NodeJS.Timeout;
-  #formattingError: string;
-  #hasOutline: boolean;
-  #icon: HTMLDivElement;
-  #input: HTMLInputElement | HTMLTextAreaElement;
-  #maxLength: number;
+  #formattingError = "";
+  #hasOutline = false;
+  #maxLength: number | undefined;
   //#endregion
 
   //#region Events
@@ -304,37 +304,6 @@ export class LfTextfield implements LfTextfieldInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfTextfieldEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfTextfieldEvent,
-    isIcon = false,
-    iconType?: "regular" | "action",
-  ) {
-    const target = e.target as HTMLInputElement;
-    const inputValue = target?.value;
-
-    switch (eventType) {
-      case "blur":
-        this.status.delete("focused");
-        this.status = new Set(this.status);
-        break;
-      case "focus":
-        this.status.add("focused");
-        this.status = new Set(this.status);
-        break;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      iconType,
-      inputValue,
-      target: isIcon ? this.#icon : this.#input,
-      value: this.value,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -343,18 +312,7 @@ export class LfTextfield implements LfTextfieldInterface {
    */
   @Method()
   async formatJSON(): Promise<void> {
-    try {
-      const indentSpaces = this.lfFormatJSON?.indentSpaces || 2;
-      const trimmed = (this.value ?? "").trim();
-      const parsed = JSON.parse(trimmed);
-      this.value = JSON.stringify(parsed, null, indentSpaces);
-      this.#formattingError = "";
-      forceUpdate(this);
-    } catch (err) {
-      this.#formattingError = err?.message || "Invalid JSON format";
-      forceUpdate(this);
-      return;
-    }
+    await this.#adapter.controller.actions.formatJSON();
   }
   /**
    * Fetches debug information of the component's current state.
@@ -370,7 +328,7 @@ export class LfTextfield implements LfTextfieldInterface {
    */
   @Method()
   async getElement(): Promise<HTMLTextAreaElement | HTMLInputElement> {
-    return this.#input;
+    return this.#adapter.elements.refs.input;
   }
   /**
    * Used to retrieve component's properties and descriptions.
@@ -408,14 +366,14 @@ export class LfTextfield implements LfTextfieldInterface {
    */
   @Method()
   async setBlur(): Promise<void> {
-    this.#input.blur();
+    this.#adapter.controller.actions.blur();
   }
   /**
    * Focuses the input element.
    */
   @Method()
   async setFocus(): Promise<void> {
-    this.#input.focus();
+    this.#adapter.controller.actions.focus();
   }
   /**
    * Sets the component's state.
@@ -424,7 +382,7 @@ export class LfTextfield implements LfTextfieldInterface {
    */
   @Method()
   async setValue(value: string): Promise<void> {
-    this.#updateState(value);
+    this.#adapter.controller.actions.updateState(value);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -433,298 +391,120 @@ export class LfTextfield implements LfTextfieldInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        value: this.value,
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #isDisabled = () => this.lfUiState === "disabled";
-  #isOutlined = () => {
-    return this.lfStyling === "outlined" || this.lfStyling === "textarea";
-  };
-  #isTextarea = () => this.lfStyling === "textarea";
-  #updateState = (
-    value: string,
-    e: CustomEvent<unknown> | Event = new CustomEvent("change"),
-  ) => {
-    if (!this.#isDisabled()) {
-      this.value = value;
-      this.onLfEvent(e, "change");
-    }
-  };
-  #shouldCaptureShortcut = (e: KeyboardEvent) => {
-    if (!this.lfCaptureShortcuts) {
-      return false;
-    }
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfTextfieldEvent,
+      detail?: Partial<LfTextfieldEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const isModifierPressed = e.ctrlKey || e.metaKey;
-    if (!isModifierPressed) {
-      return false;
-    }
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        iconType: detail?.iconType,
+        inputValue: detail?.inputValue,
+        target: detail?.target ?? this.#adapter.elements.refs.input,
+        value: this.value,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + styling
+   * - controller.set: Simple setters (value, formattingError, status)
+   * - controller.computed: Derived predicates (isDisabled, isOutlined, isTextarea)
+   * - controller.actions: Complex operations (focus, blur, updateState, formatJSON)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    const key = (e.key || "").toLowerCase();
-
-    if (e.shiftKey && key === "z") {
-      return true;
-    }
-
-    switch (key) {
-      case "c":
-      case "v":
-      case "x":
-      case "z":
-      case "y":
-      case "a":
-        return true;
-      default:
-        return false;
-    }
-  };
-  #prepCounter = (): VNode => {
-    if (!this.#maxLength) {
-      return null;
-    }
-
-    const { bemClass } = this.#framework.theme;
-
-    const { textfield } = this.#b;
-
-    return (
-      <div
-        class={bemClass(textfield._, textfield.counter)}
-        part={this.#p.counter}
-      >
-        '0 / ' + {this.#maxLength.toString()}
-      </div>
-    );
-  };
-  #prepHelper = (): VNode => {
-    if (!this.lfHelper?.value) {
-      return null;
-    }
-
-    const { bemClass } = this.#framework.theme;
-
-    const { textfield } = this.#b;
-    const shouldShow =
-      (this.lfHelper.showWhenFocused && this.status.has("focused")) ||
-      !this.lfHelper.showWhenFocused;
-
-    return (
-      <div class={bemClass(textfield._, textfield.helperLine)}>
-        <div
-          class={bemClass(textfield._, textfield.helperText, {
-            active: shouldShow,
-          })}
-        >
-          {this.lfHelper.value}
-        </div>
-        {!this.#isTextarea() && this.#prepCounter()}
-      </div>
-    );
-  };
-  #prepIcon = (): VNode => {
-    if (!this.lfIcon) {
-      return null;
-    }
-
-    const { bemClass } = this.#framework.theme;
-
-    const { textfield } = this.#b;
-
-    return (
-      <FIcon
-        framework={this.#framework}
-        icon={this.lfIcon}
-        wrapperClass={bemClass(textfield._, textfield.icon, {
-          trailing: this.lfTrailingIcon,
-        })}
-        onClick={(e: MouseEvent) => {
-          this.onLfEvent(e, "click", true, "regular");
-        }}
-        style={{ tabIndex: 0, cursor: "pointer" }}
-      />
-    );
-  };
-  #prepTrailingIconAction = (): VNode => {
-    if (!this.lfTrailingIconAction) {
-      return null;
-    }
-
-    const { bemClass, get } = this.#framework.theme;
-    const { textfield } = this.#b;
-    const { variables } = get.current();
-
-    // Resolve the CSS variable to the actual icon name
-    const iconName = variables[this.lfTrailingIconAction] as string;
-
-    return (
-      <FIcon
-        framework={this.#framework}
-        icon={iconName as LfIconType}
-        wrapperClass={bemClass(textfield._, textfield.iconAction, {
-          trailing: true,
-        })}
-        onClick={(e: MouseEvent) => {
-          this.onLfEvent(e, "click", true, "action");
-        }}
-        style={{ tabIndex: 0, cursor: "pointer" }}
-      />
-    );
-  };
-  #prepInput = (): VNode => {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass } = theme;
-
-    const { textfield } = this.#b;
-
-    return (
-      <input
-        {...sanitizeProps(this.lfHtmlAttributes)}
-        class={bemClass(textfield._, textfield.input)}
-        data-cy={this.#cy.input}
-        disabled={this.#isDisabled()}
-        onBlur={(e) => {
-          this.onLfEvent(e, "blur");
-        }}
-        onChange={(e) => {
-          this.#updateState((e.currentTarget as HTMLInputElement).value);
-        }}
-        onClick={(e) => {
-          this.onLfEvent(e, "click");
-        }}
-        onFocus={(e) => {
-          this.onLfEvent(e, "focus");
-        }}
-        onInput={(e) => {
-          this.onLfEvent(e, "input");
-        }}
-        onKeyDown={(e) => {
-          if (this.#shouldCaptureShortcut(e)) {
-            e.stopPropagation();
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+        styling: () => this.#normalizedStyling(),
+        maxLength: () => this.#maxLength,
+        formattingError: () => this.#formattingError,
+        hasOutline: () => this.#hasOutline,
+      },
+      // Setters - simple single-value assignments
+      {
+        value: (val: string) => {
+          this.value = val;
+        },
+        formattingError: (error: string) => {
+          this.#formattingError = error;
+        },
+        status: (modifier: LfTextfieldModifiers, add: boolean) => {
+          if (add) {
+            this.status.add(modifier);
+          } else {
+            this.status.delete(modifier);
           }
-          this.onLfEvent(e, "keydown");
-        }}
-        part={this.#p.input}
-        placeholder={(this.#isOutlined() && this.lfLabel) || ""}
-        ref={(el) => {
-          if (el) {
-            this.#input = el;
-          }
-        }}
-        value={this.value}
-      ></input>
+          this.status = new Set(this.status);
+        },
+      },
+      // Computed - derived predicates (from dedicated file)
+      prepTextfieldComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepTextfieldActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
-  #prepLabel = (): VNode => {
-    if (this.#isOutlined() || !this.lfLabel) {
-      return null;
-    }
-
-    const { bemClass } = this.#framework.theme;
-
-    const { textfield } = this.#b;
-
-    return (
-      <label
-        class={bemClass(textfield._, textfield.label)}
-        htmlFor="input"
-        part={this.#p.label}
-      >
-        {this.lfLabel}
-      </label>
-    );
-  };
-  #prepUnderline = (): VNode => {
-    const { bemClass } = this.#framework.theme;
-
-    const { textfield } = this.#b;
-
-    return (
-      !this.#hasOutline && (
-        <span class={bemClass(textfield._, textfield.underline)}></span>
-      )
-    );
-  };
-  #prepTextArea = (): VNode => {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass } = theme;
-
-    const { textfield } = this.#b;
-
-    const { displayBorderOnError, displayErrorAsTitle, onBlur, onInput } =
-      this.lfFormatJSON || {};
-
-    const hasError = Boolean(this.#formattingError);
-    const shouldFormat = this.lfFormatJSON !== null;
-
-    return (
-      <span class={bemClass(textfield._, textfield.resizer)}>
-        <textarea
-          {...sanitizeProps(this.lfHtmlAttributes)}
-          class={bemClass(textfield._, textfield.input, {
-            error: shouldFormat && hasError && displayBorderOnError,
-          })}
-          data-cy={this.#cy.input}
-          id="input"
-          onBlur={(e) => {
-            this.onLfEvent(e, "blur");
-          }}
-          onChange={(e) => {
-            this.#updateState((e.currentTarget as HTMLInputElement).value);
-            if (shouldFormat && onBlur) {
-              this.formatJSON();
-            }
-          }}
-          onClick={(e) => {
-            this.onLfEvent(e, "click");
-          }}
-          onFocus={(e) => {
-            this.onLfEvent(e, "focus");
-          }}
-          onInput={(e) => {
-            this.onLfEvent(e, "input");
-            if (shouldFormat && typeof onInput === "number") {
-              clearTimeout(this.#debounceTimeout);
-              const ms = Math.max(0, Math.floor(onInput));
-              this.#debounceTimeout = setTimeout(() => {
-                this.value = (e.currentTarget as HTMLTextAreaElement).value;
-                this.formatJSON();
-              }, ms);
-            }
-          }}
-          onKeyDown={(e) => {
-            if (this.#shouldCaptureShortcut(e as KeyboardEvent)) {
-              e.stopPropagation();
-            }
-            this.onLfEvent(e, "keydown");
-          }}
-          part={this.#p.input}
-          placeholder={(this.#isOutlined() && this.lfLabel) || ""}
-          ref={(el) => {
-            if (el) {
-              this.#input = el;
-            }
-          }}
-          title={
-            shouldFormat && hasError && displayErrorAsTitle
-              ? this.#formattingError
-              : ""
-          }
-          value={this.value}
-        ></textarea>
-      </span>
-    );
-  };
+  #normalizedStyling(): LfTextfieldStyling {
+    return this.lfStyling
+      ? (this.lfStyling.toLowerCase() as LfTextfieldStyling)
+      : "raised";
+  }
   #updateStatus = () => {
+    const { isDisabled } = this.#adapter.controller.computed;
     const propertiesToUpdateStatus: {
       condition: () => boolean;
       status: LfTextfieldModifiers;
     }[] = [
       { condition: () => Boolean(this.value), status: "filled" },
-      { condition: () => this.#isDisabled(), status: "disabled" },
+      { condition: () => isDisabled(), status: "disabled" },
       { condition: () => Boolean(this.lfStretchX), status: "full-width" },
       { condition: () => Boolean(this.lfIcon), status: "has-icon" },
       { condition: () => Boolean(this.lfLabel), status: "has-label" },
@@ -748,6 +528,8 @@ export class LfTextfield implements LfTextfieldInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
+
     if (this.lfValue) {
       this.status.add("filled");
       this.value = this.lfValue;
@@ -759,14 +541,17 @@ export class LfTextfield implements LfTextfieldInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      value: this.value,
+    });
     info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
 
     info.update(this, "will-render");
-    this.#hasOutline = this.#isOutlined();
+    this.#hasOutline = this.#adapter.controller.computed.isOutlined();
     this.#maxLength = this.lfHtmlAttributes?.maxLength;
     this.#updateStatus();
   }
@@ -776,12 +561,25 @@ export class LfTextfield implements LfTextfieldInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { theme } = this.#framework;
+    const { bemClass, setLfStyle } = theme;
 
     const { lfStyle, lfStyling, status } = this;
+    const {
+      counter,
+      helper,
+      icon,
+      iconAction,
+      input,
+      label,
+      textarea,
+      underline,
+    } = this.#adapter.elements.jsx;
+    const { isTextarea } = this.#adapter.controller.computed;
+    const { lfAttributes } = this.#adapter.controller.get;
 
-    const isTextarea = lfStyling === "textarea";
-    const modifiers = { [lfStyling]: true };
+    const lf = lfAttributes();
+    const modifiers: Record<string, boolean> = { [lfStyling]: true };
     status.forEach((status) => {
       modifiers[status] = true;
     });
@@ -795,25 +593,14 @@ export class LfTextfield implements LfTextfieldInterface {
         <div id={this.#w}>
           <div
             class={bemClass(this.#b.textfield._, null, modifiers)}
-            data-lf={this.#lf[this.lfUiState]}
+            data-lf={lf[this.lfUiState]}
             part={this.#p.textfield}
           >
-            {isTextarea
-              ? [
-                  this.#prepCounter(),
-                  this.#prepIcon(),
-                  this.#prepTextArea(),
-                  this.#prepTrailingIconAction(),
-                ]
-              : [
-                  this.#prepIcon(),
-                  this.#prepInput(),
-                  this.#prepTrailingIconAction(),
-                  this.#prepLabel(),
-                  this.#prepUnderline(),
-                ]}
+            {isTextarea()
+              ? [counter(), icon(), textarea(), iconAction()]
+              : [icon(), input(), iconAction(), label(), underline()]}
           </div>
-          {this.#prepHelper()}
+          {helper()}
         </div>
       </Host>
     );

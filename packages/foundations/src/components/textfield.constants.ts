@@ -37,6 +37,10 @@ export const LF_TEXTFIELD_EVENTS = [
 ] as const;
 //#endregion
 
+//#region Ids
+export const LF_TEXTFIELD_IDS = {} as const;
+//#endregion
+
 //#region Parts
 export const LF_TEXTFIELD_PARTS = {
   counter: "counter",
