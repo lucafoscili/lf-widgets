@@ -1,14 +1,15 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -22,11 +23,11 @@ import {
   LfDataShapeDefaults,
   LfDataShapesMap,
 } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CARD_BLOCKS,
   LF_CARD_EVENTS,
+  LF_CARD_IDS,
   LF_CARD_LAYOUTS,
   LF_CARD_PARTS,
 } from "./card.constants";
@@ -41,7 +42,19 @@ import { LfToggleElement, LfToggleEventPayload } from "./toggle.declarations";
  */
 export interface LfCardInterface
   extends LfComponent<"LfCard">,
-    LfCardPropsInterface {}
+    LfCardPropsInterface {
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfCardEventPayload) => void;
+  };
+  /**
+   * Internal runtime state mirrored by the component implementation.
+   */
+  shapes: LfDataShapesMap;
+}
 /**
  * DOM element type for the custom element registered as `lf-card`.
  */
@@ -53,16 +66,42 @@ export interface LfCardElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-card` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple assignments (currently none)
+ * - controller.computed: Derived predicates (hasDataset, hasSlotChildren, shouldRender)
+ * - controller.actions: Complex operations (updateShapes, registerRipple, unregisterRipple)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfCardAdapter extends LfComponentAdapter<LfCardInterface> {
+export interface LfCardAdapter
+  extends LfComponentAdapter<
+    LfCardInterface,
+    LfCardEventPayload,
+    LfCardAdapterHandlers,
+    LfCardAdapterJsx,
+    LfCardAdapterRefs,
+    LfCardAdapterControllerGetters,
+    LfCardAdapterControllerSetters,
+    LfCardAdapterControllerComputed,
+    LfCardAdapterControllerActions
+  > {
   controller: {
     get: LfCardAdapterControllerGetters;
+    set: LfCardAdapterControllerSetters;
+    computed: LfCardAdapterControllerComputed;
+    actions: LfCardAdapterControllerActions;
   };
   elements: {
     jsx: LfCardAdapterJsx;
     refs: LfCardAdapterRefs;
   };
   handlers: LfCardAdapterHandlers;
+  dispatcher: LfCardAdapterDispatcher;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -72,20 +111,22 @@ export interface LfCardAdapterJsx extends LfComponentAdapterJsx {
 }
 /**
  * Strongly typed DOM references captured by the component adapter.
+ * Structure mirrors LF_CARD_BLOCKS for DOM-driven alignment.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
  */
 export interface LfCardAdapterRefs extends LfComponentAdapterRefs {
   layouts: {
     debug: {
-      button: LfButtonElement;
-      code: LfCodeElement;
-      toggle: LfToggleElement;
+      button: LfButtonElement | null;
+      code: LfCodeElement | null;
+      toggle: LfToggleElement | null;
     };
     keywords: {
-      button: LfButtonElement;
-      chip: LfChipElement;
+      button: LfButtonElement | null;
+      chip: LfChipElement | null;
     };
     /** Reference to the material layout element for ripple registration */
-    material: HTMLDivElement;
+    material: HTMLDivElement | null;
   };
 }
 /**
@@ -105,32 +146,82 @@ export interface LfCardAdapterHandlers extends LfComponentAdapterHandlers {
   };
 }
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfCardAdapterInitializerGetters = Pick<
-  LfCardAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "shapes"
->;
-/**
- * Read-only controller surface exposed by the adapter for integration code.
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfCardAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfCardInterface> {
-  blocks: typeof LF_CARD_BLOCKS;
-  compInstance: LfCardInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  defaults: LfCardAdapterDefaults;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_CARD_PARTS;
+  extends LfComponentAdapterBaseGetters<
+    LfCardInterface,
+    typeof LF_CARD_BLOCKS,
+    typeof LF_CARD_IDS,
+    typeof LF_CARD_PARTS
+  > {
+  /** Component defaults used when instantiating adapter-managed layouts */
+  defaults: () => LfCardAdapterDefaults;
+  /** Current shapes derived from dataset */
   shapes: () => LfDataShapesMap;
 }
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfCardAdapterControllerSetters
+  extends LfComponentAdapterSetters {}
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfCardAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the card has a valid dataset */
+  hasDataset: () => boolean;
+  /** Whether the card has slot children */
+  hasSlotChildren: () => boolean;
+  /** Whether the card should render (has content) */
+  shouldRender: () => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfCardAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Update shapes from current dataset */
+  updateShapes: () => void;
+  /** Register ripple effect on material layout */
+  registerRipple: () => void;
+  /** Unregister ripple effect from material layout */
+  unregisterRipple: () => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfCardAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfCardEventPayload>;
+export type LfCardAdapterDispatcherDetailOverrides = {
+  [E in LfCardEvent]: E extends "click" | "contextmenu" | "pointerdown"
+    ? LfCardAdapterDispatchDetailBase & { originalEvent: Event }
+    : E extends "lf-event"
+      ? LfCardAdapterDispatchDetailBase & {
+          originalEvent: Event | CustomEvent;
+        }
+      : E extends "ready" | "unmount"
+        ? Omit<LfCardAdapterDispatchDetailBase, "originalEvent"> & {
+            originalEvent?: never;
+          }
+        : LfCardAdapterDispatchDetailBase;
+};
+export type LfCardAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfCardEventPayload,
+  LfCardAdapterDispatcherDetailOverrides
+>;
 /**
  * Component-specific defaults used when instantiating adapter-managed layouts.
  */

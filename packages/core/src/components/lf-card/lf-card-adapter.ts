@@ -1,9 +1,11 @@
 import {
   LF_CARD_DEFAULTS,
   LfCardAdapter,
+  LfCardAdapterControllerActions,
+  LfCardAdapterControllerComputed,
   LfCardAdapterControllerGetters,
+  LfCardAdapterControllerSetters,
   LfCardAdapterHandlers,
-  LfCardAdapterInitializerGetters,
   LfCardAdapterJsx,
   LfCardAdapterRefs,
 } from "@lf-widgets/foundations";
@@ -15,13 +17,34 @@ import { prepWeather } from "./elements.weather";
 import { prepDebugHandlers } from "./handlers.debug";
 import { prepKeywordsHandlers } from "./handlers.keywords";
 
+/**
+ * Creates the canonical adapter for lf-card.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + defaults, shapes
+ * - controller.set: Simple setters (currently none)
+ * - controller.computed: Derived predicates (hasDataset, hasSlotChildren, shouldRender)
+ * - controller.actions: Complex operations (updateShapes, registerRipple, unregisterRipple)
+ * - elements: JSX factories + refs
+ * - dispatcher: Centralized event emission (passed from component)
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+//#region Adapter
 export const createAdapter = (
-  getters: LfCardAdapterInitializerGetters,
+  getters: LfCardAdapterControllerGetters,
+  setters: LfCardAdapterControllerSetters,
+  computed: LfCardAdapterControllerComputed,
+  actions: LfCardAdapterControllerActions,
   getAdapter: () => LfCardAdapter,
-): LfCardAdapter => {
+): Omit<LfCardAdapter, "dispatcher"> => {
   return {
     controller: {
       get: createGetters(getters, getAdapter),
+      set: setters,
+      computed,
+      actions,
     },
     elements: {
       jsx: { layouts: createJsx(getAdapter) },
@@ -34,12 +57,12 @@ export const createAdapter = (
 
 //#region Controller
 export const createGetters = (
-  getters: LfCardAdapterInitializerGetters,
+  getters: LfCardAdapterControllerGetters,
   getAdapter: () => LfCardAdapter,
 ): LfCardAdapterControllerGetters => {
   return {
     ...getters,
-    defaults: LF_CARD_DEFAULTS(getAdapter),
+    defaults: () => LF_CARD_DEFAULTS(getAdapter),
   };
 };
 //#endregion
@@ -70,6 +93,10 @@ export const createHandlers = (
 //#endregion
 
 //#region Refs
+/**
+ * Creates refs structure matching LF_CARD_BLOCKS.
+ * All values explicitly nullable per v4.0.0 Section 5.7.
+ */
 export const createRefs = (): LfCardAdapterRefs => {
   return {
     layouts: {

@@ -14,9 +14,10 @@ export const prepDebugHandlers = (
       const { eventType, id, originalEvent } = e.detail;
 
       const { controller, handlers } = getAdapter();
-      const { manager } = controller.get;
+      const { framework } = controller.get;
       const { layouts } = handlers;
-      const { debug, theme } = manager;
+      const mgr = framework();
+      const { debug, theme } = mgr;
 
       switch (eventType) {
         case "click":
@@ -47,8 +48,9 @@ export const prepDebugHandlers = (
       const { comp, eventType } = e.detail;
 
       const { controller } = getAdapter();
-      const { manager } = controller.get;
-      const { debug } = manager;
+      const { framework } = controller.get;
+      const mgr = framework();
+      const { debug } = mgr;
 
       switch (eventType) {
         case "ready":
@@ -66,8 +68,9 @@ export const prepDebugHandlers = (
       const { eventType, node } = e.detail;
 
       const { controller } = getAdapter();
-      const { manager } = controller.get;
-      const { theme } = manager;
+      const { framework } = controller.get;
+      const mgr = framework();
+      const { theme } = mgr;
 
       switch (eventType) {
         case "click":
@@ -84,8 +87,9 @@ export const prepDebugHandlers = (
       const boolValue = value === "on" ? true : false;
 
       const { controller } = getAdapter();
-      const { manager } = controller.get;
-      const { debug } = manager;
+      const { framework } = controller.get;
+      const mgr = framework();
+      const { debug } = mgr;
 
       switch (eventType) {
         case "change":

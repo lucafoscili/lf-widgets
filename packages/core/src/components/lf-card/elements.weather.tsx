@@ -1,6 +1,5 @@
 import { LfCardAdapter } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
-import { LfCard } from "./lf-card";
 
 //#region Weather layout
 /**
@@ -25,14 +24,19 @@ import { LfCard } from "./lf-card";
  * @returns {VNode} The virtual node representing the weather layout.
  */
 export const prepWeather = (getAdapter: () => LfCardAdapter): VNode => {
-  const { blocks, compInstance, lfAttributes, manager, shapes } =
-    getAdapter().controller.get;
-  const { theme } = manager;
+  const { controller } = getAdapter();
+  const { blocks, compInstance, framework, lfAttributes, shapes } =
+    controller.get;
+
+  const mgr = framework();
+  const { theme } = mgr;
   const { bemClass } = theme;
-  const { weatherLayout, textContent } = blocks;
+  const b = blocks();
+  const lf = lfAttributes();
+  const { weatherLayout, textContent } = b;
 
   const { image, text } = shapes();
-  const comp = compInstance as LfCard;
+  const comp = compInstance();
 
   //#region Extract weather data from text cells
   const location = text[0]?.value || "Unknown Location";
@@ -172,7 +176,7 @@ export const prepWeather = (getAdapter: () => LfCardAdapter): VNode => {
   return (
     <div
       class={bemClass(weatherLayout._)}
-      data-lf={lfAttributes[comp.lfUiState]}
+      data-lf={lf[comp.lfUiState]}
       data-weather-condition={weatherCondition}
       data-has-background={backgroundImage ? "true" : "false"}
       style={

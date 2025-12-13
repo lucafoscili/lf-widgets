@@ -7,21 +7,23 @@ import {
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
-import { LfCard } from "./lf-card";
 
 export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
-  const { controller, elements, handlers } = getAdapter();
+  const { controller, dispatcher, elements, handlers } = getAdapter();
   const { refs } = elements;
   const { layouts } = handlers;
-  const { blocks, compInstance, defaults, manager, parts, shapes } =
-    controller.get;
-  const { debug } = defaults;
-  const { theme } = manager;
+  const { blocks, defaults, framework, parts, shapes } = controller.get;
+
+  const defs = defaults();
+  const { debug } = defs;
+  const mgr = framework();
+  const { theme } = mgr;
   const { bemClass } = theme;
-  const { debugLayout } = blocks;
+  const b = blocks();
+  const p = parts();
+  const { debugLayout } = b;
 
   const { button, code, toggle } = shapes();
-  const comp = compInstance as LfCard;
 
   //#region Button
   const buttons: LfDataCell<"button">[] = [];
@@ -36,8 +38,10 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
             : button[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
         defaultCb={layouts.debug.button}
         refCallback={(r: LfButtonElement) => (refs.layouts.debug.button = r)}
       ></LfShape>,
@@ -60,8 +64,10 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
             : code[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
         defaultCb={layouts.debug.code}
         refCallback={(r: LfCodeElement) => (refs.layouts.debug.code = r)}
       ></LfShape>,
@@ -83,8 +89,10 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
             : toggle[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
         defaultCb={layouts.debug.toggle}
         refCallback={(r: LfToggleElement) => (refs.layouts.debug.toggle = r)}
       ></LfShape>,
@@ -94,7 +102,7 @@ export const prepDebug = (getAdapter: () => LfCardAdapter): VNode => {
   //#endregion
 
   return (
-    <div class={bemClass(debugLayout._)} part={parts.debugLayout}>
+    <div class={bemClass(debugLayout._)} part={p.debugLayout}>
       {hasToggle && (
         <div class={bemClass(debugLayout._, debugLayout.section1)}>
           {toggles[0]}

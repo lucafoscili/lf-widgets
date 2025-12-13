@@ -1,22 +1,25 @@
 import { LfCardAdapter, LfDataCell } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
-import { LfCard } from "./lf-card";
 
 //#region Upload layout
 export const prepUpload = (getAdapter: () => LfCardAdapter): VNode => {
-  const { blocks, compInstance, defaults, manager, parts, shapes } =
-    getAdapter().controller.get;
-  const { theme } = manager;
+  const { controller, dispatcher } = getAdapter();
+  const { blocks, defaults, framework, parts, shapes } = controller.get;
+
+  const defs = defaults();
+  const mgr = framework();
+  const { theme } = mgr;
   const { bemClass } = theme;
-  const { uploadLayout } = blocks;
+  const b = blocks();
+  const p = parts();
+  const { uploadLayout } = b;
 
   const { button, upload } = shapes();
-  const comp = compInstance as LfCard;
 
   //#region Button
   const buttons: LfDataCell<"button">[] = [];
-  const buttonsDef = defaults.upload.button();
+  const buttonsDef = defs.upload.button();
   for (let index = 0; index < button.length; index++) {
     buttons.push(
       <LfShape
@@ -27,8 +30,10 @@ export const prepUpload = (getAdapter: () => LfCardAdapter): VNode => {
             : button[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -43,8 +48,10 @@ export const prepUpload = (getAdapter: () => LfCardAdapter): VNode => {
         shape={"upload"}
         cell={upload[index]}
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -52,7 +59,7 @@ export const prepUpload = (getAdapter: () => LfCardAdapter): VNode => {
   //#endregion
 
   return (
-    <div class={bemClass(uploadLayout._)} part={parts.uploadLayout}>
+    <div class={bemClass(uploadLayout._)} part={p.uploadLayout}>
       {hasUpload && (
         <div class={bemClass(uploadLayout._, uploadLayout.section1)}>
           {uploads[0]}

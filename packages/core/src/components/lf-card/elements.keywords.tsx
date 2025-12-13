@@ -6,21 +6,23 @@ import {
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
-import { LfCard } from "./lf-card";
 
 export const prepKeywords = (getAdapter: () => LfCardAdapter): VNode => {
-  const { controller, elements, handlers } = getAdapter();
+  const { controller, dispatcher, elements, handlers } = getAdapter();
   const { refs } = elements;
   const { layouts } = handlers;
-  const { blocks, compInstance, defaults, manager, parts, shapes } =
-    controller.get;
-  const { keywords } = defaults;
-  const { theme } = manager;
+  const { blocks, defaults, framework, parts, shapes } = controller.get;
+
+  const defs = defaults();
+  const { keywords } = defs;
+  const mgr = framework();
+  const { theme } = mgr;
   const { bemClass } = theme;
-  const { keywordsLayout } = blocks;
+  const b = blocks();
+  const p = parts();
+  const { keywordsLayout } = b;
 
   const { button, chart, chip } = shapes();
-  const comp = compInstance as LfCard;
 
   //#region Button
   const buttons: LfDataCell<"button">[] = [];
@@ -35,8 +37,10 @@ export const prepKeywords = (getAdapter: () => LfCardAdapter): VNode => {
             : button[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
         defaultCb={layouts.keywords.button}
         refCallback={(r: LfButtonElement) => (refs.layouts.keywords.button = r)}
       ></LfShape>,
@@ -58,8 +62,10 @@ export const prepKeywords = (getAdapter: () => LfCardAdapter): VNode => {
             : chart[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -79,8 +85,10 @@ export const prepKeywords = (getAdapter: () => LfCardAdapter): VNode => {
             : chip[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
         refCallback={(r: LfChipElement) => (refs.layouts.keywords.chip = r)}
       ></LfShape>,
     );
@@ -89,7 +97,7 @@ export const prepKeywords = (getAdapter: () => LfCardAdapter): VNode => {
   //#endregion
 
   return (
-    <div class={bemClass(keywordsLayout._)} part={parts.keywordsLayout}>
+    <div class={bemClass(keywordsLayout._)} part={p.keywordsLayout}>
       {hasChart && (
         <div class={bemClass(keywordsLayout._, keywordsLayout.section1)}>
           {charts[0]}

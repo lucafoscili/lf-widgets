@@ -1,7 +1,6 @@
 import { LfCardAdapter, LfDataCell } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
-import { LfCard } from "./lf-card";
 
 //#region Material layout
 /**
@@ -11,22 +10,29 @@ import { LfCard } from "./lf-card";
  * @returns {VNode} The virtual node representing the material layout.
  */
 export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
+  const { controller, dispatcher, elements } = getAdapter();
   const {
     blocks,
     compInstance,
     defaults,
+    framework,
     lfAttributes,
-    manager,
     parts,
     shapes,
-  } = getAdapter().controller.get;
-  const { material } = defaults;
-  const { theme } = manager;
+  } = controller.get;
+
+  const defs = defaults();
+  const { material } = defs;
+  const mgr = framework();
+  const { theme } = mgr;
   const { bemClass } = theme;
-  const { materialLayout, textContent } = blocks;
+  const b = blocks();
+  const p = parts();
+  const lf = lfAttributes();
+  const { materialLayout, textContent } = b;
 
   const { button, image, text } = shapes();
-  const comp = compInstance as LfCard;
+  const comp = compInstance();
 
   //#region Button
   const buttons: LfDataCell<"button">[] = [];
@@ -36,8 +42,10 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
         shape={"button"}
         cell={button[index]}
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -57,8 +65,10 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
             : image[index]
         }
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -73,8 +83,10 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
         shape={"text"}
         cell={text[index]}
         index={index}
-        eventDispatcher={async (e) => comp.onLfEvent(e, "lf-event")}
-        framework={manager}
+        eventDispatcher={async (e) =>
+          dispatcher.emit("lf-event", { originalEvent: e })
+        }
+        framework={mgr}
       ></LfShape>,
     );
   }
@@ -84,15 +96,15 @@ export const prepMaterial = (getAdapter: () => LfCardAdapter): VNode => {
   const description = (hasText && text?.[2]?.value) || null;
   //#endregion
 
-  const { refs } = getAdapter().elements;
+  const { refs } = elements;
 
   return (
     <div
       class={bemClass(materialLayout._, null, {
         "has-actions": hasButton,
       })}
-      data-lf={lfAttributes[comp.lfUiState]}
-      part={parts.materialLayout}
+      data-lf={lf[comp.lfUiState]}
+      part={p.materialLayout}
       ref={(el: HTMLDivElement) => {
         if (el) {
           refs.layouts.material = el;

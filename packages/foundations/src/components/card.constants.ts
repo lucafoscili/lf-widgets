@@ -72,7 +72,7 @@ export const LF_CARD_DEFAULTS: (getAdapter: () => LfCardAdapter) => {
     debug: {
       button: (): LfDataCell<"button">[] => {
         const { current, themes } =
-          getAdapter().controller.get.manager.theme.get;
+          getAdapter().controller.get.framework().theme.get;
         const { "--lf-icon-clear": clear } = current().variables;
 
         return [
@@ -102,7 +102,7 @@ export const LF_CARD_DEFAULTS: (getAdapter: () => LfCardAdapter) => {
         { lfLanguage: "markdown", shape: "code", value: "" },
       ],
       toggle: (): LfDataCell<"toggle">[] => {
-        const { debug } = getAdapter().controller.get.manager;
+        const { debug } = getAdapter().controller.get.framework();
 
         return [
           {
@@ -117,8 +117,9 @@ export const LF_CARD_DEFAULTS: (getAdapter: () => LfCardAdapter) => {
     },
     keywords: {
       button: (): LfDataCell<"button">[] => {
-        const { "--lf-icon-copy": copy } =
-          getAdapter().controller.get.manager.theme.get.current().variables;
+        const { "--lf-icon-copy": copy } = getAdapter()
+          .controller.get.framework()
+          .theme.get.current().variables;
 
         return [
           {

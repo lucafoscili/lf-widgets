@@ -1,13 +1,13 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_CARD_BLOCKS,
   LF_CARD_CSS_VARS,
+  LF_CARD_IDS,
   LF_CARD_PARTS,
   LF_CARD_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfCardAdapter,
+  LfCardAdapterDefaults,
   LfCardAdapterJsx,
   LfCardElement,
   LfCardEvent,
@@ -35,7 +35,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepCardActions } from "./actions.card";
+import { prepCardComputed } from "./computed.card";
 import { createAdapter } from "./lf-card-adapter";
 
 /**
@@ -177,15 +180,14 @@ export class LfCard implements LfCardInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfCardAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_CARD_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_CARD_IDS;
   #p = LF_CARD_PARTS;
   #s = LF_STYLE_ID;
   #v = LF_CARD_CSS_VARS;
   #w = LF_WRAPPER_ID;
-  #adapter: LfCardAdapter;
   //#endregion
 
   //#region Events
@@ -201,30 +203,16 @@ export class LfCard implements LfCardInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfCardEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfCardEvent): void {
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      eventType,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Watchers
   @Watch("lfDataset")
-  async updateShapes() {
+  async onDatasetChanged() {
     if (!this.#framework) {
       return;
     }
 
-    const { data, debug } = this.#framework;
-
-    try {
-      this.shapes = data.cell.shapes.getAll(this.lfDataset);
-    } catch (error) {
-      debug.logs.new(this, "Error updating shapes: " + error, "error");
-    }
+    this.#adapter.controller.actions.updateShapes();
   }
   //#endregion
 
@@ -275,26 +263,80 @@ export class LfCard implements LfCardInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfCardEvent, detail?: Partial<LfCardEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + defaults, shapes
+   * - controller.set: Simple setters (currently none)
+   * - controller.computed: Derived predicates (hasDataset, hasSlotChildren, shouldRender)
+   * - controller.actions: Complex operations (updateShapes, registerRipple, unregisterRipple)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+        defaults: () => ({}) as LfCardAdapterDefaults, // Enhanced in adapter factory
         shapes: () => this.shapes,
       },
-      () => this.#adapter,
+      // Setters - simple single-value assignments (currently none)
+      {},
+      // Computed - derived predicates (from dedicated file)
+      prepCardComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepCardActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -307,22 +349,19 @@ export class LfCard implements LfCardInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-    this.updateShapes();
+    this.#adapter.controller.actions.updateShapes();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
-    const { effects } = this.#framework;
 
     // Register ripple on material layout
-    const materialLayout = this.#adapter?.elements.refs.layouts.material;
-    if (materialLayout) {
-      effects.register.ripple(materialLayout);
-    }
+    this.#adapter.controller.actions.registerRipple();
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
-  componentWillUpdate() {
+  componentWillRender() {
     const { info } = this.#framework.debug;
 
     info.update(this, "will-render");
@@ -333,18 +372,22 @@ export class LfCard implements LfCardInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { setLfStyle } = this.#framework.theme;
+    const { theme } = this.#framework;
+    const { setLfStyle } = theme;
+    const { lfAttributes } = this.#adapter.controller.get;
+    const { shouldRender } = this.#adapter.controller.computed;
 
-    const { lfDataset, lfLayout, lfSizeX, lfSizeY, lfStyle, rootElement } =
-      this;
+    const { lfLayout, lfSizeX, lfSizeY, lfStyle } = this;
 
-    if (!lfDataset && rootElement.children.length < 1) {
+    if (!shouldRender()) {
       return;
     }
 
     const { layouts } = this.#adapter.elements.jsx;
     const layout =
       layouts[lfLayout.toLowerCase() as keyof LfCardAdapterJsx["layouts"]];
+
+    const lf = lfAttributes();
 
     return (
       <Host>
@@ -358,10 +401,16 @@ export class LfCard implements LfCardInterface {
         </style>
         <div
           id={this.#w}
-          data-lf={this.#lf.fadeIn}
-          onClick={(e) => this.onLfEvent(e, "click")}
-          onContextMenu={(e) => this.onLfEvent(e, "contextmenu")}
-          onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
+          data-lf={lf.fadeIn}
+          onClick={(e) =>
+            this.#adapter.dispatcher.emit("click", { originalEvent: e })
+          }
+          onContextMenu={(e) =>
+            this.#adapter.dispatcher.emit("contextmenu", { originalEvent: e })
+          }
+          onPointerDown={(e) =>
+            this.#adapter.dispatcher.emit("pointerdown", { originalEvent: e })
+          }
           part={this.#p.card}
         >
           {layout()}
@@ -371,10 +420,7 @@ export class LfCard implements LfCardInterface {
   }
   disconnectedCallback() {
     // Unregister ripple from material layout
-    const materialLayout = this.#adapter?.elements.refs.layouts.material;
-    if (materialLayout) {
-      this.#framework?.effects.unregister.ripple(materialLayout);
-    }
+    this.#adapter?.controller.actions.unregisterRipple();
 
     this.#framework?.theme.unregister(this);
   }
