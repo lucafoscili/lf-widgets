@@ -40,9 +40,9 @@ Key features include:
 
 ## Events
 
-| Event                  | Description | Type                                                                                                                                                     |
-| ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lf-breadcrumbs-event` |             | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "expand" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount"> & LfBreadcrumbsEventArguments>` |
+| Event                  | Description                                                                                                                                                                                    | Type                                                                                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lf-breadcrumbs-event` | Fires when the component triggers an internal action or user interaction. The event contains an `eventType` string, which identifies the action, and optionally `data` for additional details. | `CustomEvent<LfEventPayload<"LfBreadcrumbs", "click" \| "expand" \| "lf-event" \| "pointerdown" \| "ready" \| "unmount"> & LfBreadcrumbsEventArguments>` |
 
 
 ## Methods

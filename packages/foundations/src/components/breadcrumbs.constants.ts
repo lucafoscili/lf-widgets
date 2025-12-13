@@ -17,6 +17,10 @@ export const LF_BREADCRUMBS_BLOCKS = {
 } as const;
 //#endregion
 
+//#region Ids
+export const LF_BREADCRUMBS_IDS = {} as const;
+//#endregion
+
 //#region Events
 export const LF_BREADCRUMBS_EVENTS = [
   "click",

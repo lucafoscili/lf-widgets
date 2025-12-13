@@ -1,7 +1,6 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_BREADCRUMBS_BLOCKS,
+  LF_BREADCRUMBS_IDS,
   LF_BREADCRUMBS_PARTS,
   LF_BREADCRUMBS_PROPS,
   LF_STYLE_ID,
@@ -9,7 +8,6 @@ import {
   LfBreadcrumbsAdapter,
   LfBreadcrumbsElement,
   LfBreadcrumbsEvent,
-  LfBreadcrumbsEventArguments,
   LfBreadcrumbsEventPayload,
   LfBreadcrumbsInterface,
   LfBreadcrumbsPropsInterface,
@@ -31,7 +29,10 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepBreadcrumbsActions } from "./actions.breadcrumbs";
+import { prepBreadcrumbsComputed } from "./computed.breadcrumbs";
 import { buildBreadcrumbPath } from "./helpers.path";
 import { createAdapter } from "./lf-breadcrumbs-adapter";
 
@@ -236,37 +237,25 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   #adapter: LfBreadcrumbsAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_BREADCRUMBS_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_BREADCRUMBS_IDS;
   #p = LF_BREADCRUMBS_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   //#endregion
 
   //#region Events
+  /**
+   * Fires when the component triggers an internal action or user interaction.
+   * The event contains an `eventType` string, which identifies the action,
+   * and optionally `data` for additional details.
+   */
   @Event({
     eventName: "lf-breadcrumbs-event",
     composed: true,
     cancelable: false,
     bubbles: true,
   })
-  lfBreadcrumbsEvent: EventEmitter<LfBreadcrumbsEventPayload>;
-
-  onLfEvent = (
-    e: Event | CustomEvent,
-    eventType: LfBreadcrumbsEvent,
-    args?: LfBreadcrumbsEventArguments,
-  ) => {
-    const payload: LfBreadcrumbsEventPayload = {
-      comp: this,
-      eventType,
-      id: this.rootElement?.id,
-      originalEvent: e,
-      ...(args || {}),
-    };
-
-    this.lfBreadcrumbsEvent.emit(payload);
-  };
+  lfEvent: EventEmitter<LfBreadcrumbsEventPayload>;
   //#endregion
 
   //#region Public methods
@@ -317,25 +306,68 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfBreadcrumbsEvent,
+      detail?: Partial<LfBreadcrumbsEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node,
+        index: detail?.index,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+   * - controller.set: Simple setters (currentNode, expanded)
+   * - controller.computed: Derived predicates (isInteractive, isExpanded, isEmpty)
+   * - controller.actions: Complex operations (toggleExpand, setCurrentNode)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
         dataset: () => this.lfDataset,
-        expanded: () => this.expanded,
-        isInteractive: () => this.#isEnabled(this.lfInteractive),
-        lfAttributes: this.#lf,
-        manager: () => this.#framework,
-        parts: this.#p,
         path: () =>
           buildBreadcrumbPath(
             this.#framework,
@@ -346,6 +378,7 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
         separator: () => `${this.lfSeparator ?? ">"}`,
         uiSize: () => this.lfUiSize,
       },
+      // Setters - simple single-value assignments
       {
         currentNode: async (nodeId: string) => {
           this.currentNodeId = nodeId;
@@ -356,9 +389,23 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
           await this.refresh();
         },
       },
-      () => this.#adapter,
+      // Computed - derived predicates (from dedicated file)
+      prepBreadcrumbsComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepBreadcrumbsActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
+  #isEnabled(value?: boolean | string) {
+    return value !== false && value !== "false";
+  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -384,7 +431,8 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
       });
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -399,16 +447,16 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
+    const { lfAttributes, parts } = this.#adapter.controller.get;
     const { jsx } = this.#adapter.elements;
+
+    const lf = lfAttributes();
+    const p = parts();
 
     return (
       <Host>
         {this.lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div
-          id={this.#w}
-          data-lf={this.#lf[this.lfUiState]}
-          part={this.#p.breadcrumbs}
-        >
+        <div id={this.#w} data-lf={lf[this.lfUiState]} part={p.breadcrumbs}>
           {jsx.items()}
         </div>
       </Host>
@@ -429,8 +477,4 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
     theme?.unregister(this);
   }
   //#endregion
-
-  #isEnabled(value?: boolean | string) {
-    return value !== false && value !== "false";
-  }
 }

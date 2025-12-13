@@ -13,14 +13,27 @@ import { isTruncation, truncateBreadcrumbPath } from "./helpers.path";
 const PRIMITIVE_SHAPES = new Set(["text", "number", "slot"]);
 //#endregion
 
+/**
+ * Prepares JSX factory functions for the breadcrumbs component.
+ *
+ * v4.0.0 Architecture:
+ * - Uses `controller.get` for base getters (blocks, compInstance, framework, etc.)
+ * - Uses `controller.computed` for derived predicates (isInteractive, isExpanded, isEmpty)
+ * - Uses `controller.actions` for complex operations (toggleExpand, setCurrentNode)
+ * - Routes all events through dispatcher
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
 export const prepBreadcrumbsJsx = (
   getAdapter: () => LfBreadcrumbsAdapter,
 ): LfBreadcrumbsAdapterJsx => {
   //#region Icon
   const icon = (node: LfDataNode): VNode | null => {
-    const { controller } = getAdapter();
-    const { blocks, compInstance, manager, parts } = controller.get;
-    const fw = manager();
+    const { controller, dispatcher } = getAdapter();
+    const { blocks, framework, parts } = controller.get;
+    const fw = framework();
+    const b = blocks();
+    const p = parts();
     const { bemClass } = fw.theme;
 
     const iconCell = node?.cells?.icon as LfDataCell<LfDataShapes> | undefined;
@@ -37,17 +50,14 @@ export const prepBreadcrumbsJsx = (
       "lfValue" in iconProps ? iconProps.lfValue : iconCell.value;
 
     return (
-      <span
-        class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.icon)}
-        part={parts.icon}
-      >
+      <span class={bemClass(b.breadcrumbs._, b.breadcrumbs.icon)} part={p.icon}>
         {isPrimitive ? (
           fw.data.cell.stringify(displayValue as string | number | boolean)
         ) : (
           <LfShape
             cell={iconProps}
             eventDispatcher={async (e: Event) =>
-              compInstance.onLfEvent(e, "lf-event", { node })
+              dispatcher.emit("lf-event", { originalEvent: e, node })
             }
             framework={fw}
             index={0}
@@ -66,10 +76,13 @@ export const prepBreadcrumbsJsx = (
     totalItems: number,
   ): VNode[] => {
     const { controller, elements, handlers } = getAdapter();
-    const { blocks, cyAttributes, isInteractive, manager, parts } =
-      controller.get;
+    const { blocks, cyAttributes, framework, parts } = controller.get;
+    const { isInteractive } = controller.computed;
     const { refs } = elements;
-    const fw = manager();
+    const fw = framework();
+    const b = blocks();
+    const p = parts();
+    const cy = cyAttributes();
     const { bemClass } = fw.theme;
 
     const isCurrent = index === totalItems - 1;
@@ -80,13 +93,13 @@ export const prepBreadcrumbsJsx = (
     return [
       <li
         aria-current={isCurrent ? "page" : undefined}
-        class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.item, {
+        class={bemClass(b.breadcrumbs._, b.breadcrumbs.item, {
           active: isCurrent,
         })}
-        data-cy={cyAttributes.node}
+        data-cy={cy.node}
         data-disabled={isItemInteractive ? undefined : "true"}
         key={node.id ?? `breadcrumb-${index}`}
-        part={`${parts.item}${isCurrent ? ` ${parts.current}` : ""}`}
+        part={`${p.item}${isCurrent ? ` ${p.current}` : ""}`}
         ref={(el) => {
           if (!el || !node.id) {
             return;
@@ -107,8 +120,8 @@ export const prepBreadcrumbsJsx = (
         }
       >
         <span
-          class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.label)}
-          part={parts.label}
+          class={bemClass(b.breadcrumbs._, b.breadcrumbs.label)}
+          part={p.label}
         >
           {icon(node)}
           <span>{label}</span>
@@ -122,25 +135,28 @@ export const prepBreadcrumbsJsx = (
   //#region Items
   const items = (): VNode | null => {
     const { controller } = getAdapter();
-    const { blocks, compInstance, expanded, manager, parts, path } =
-      controller.get;
-    const fw = manager();
+    const { blocks, compInstance, framework, parts, path } = controller.get;
+    const { isExpanded } = controller.computed;
+    const fw = framework();
+    const b = blocks();
+    const p = parts();
+    const comp = compInstance();
     const { bemClass } = fw.theme;
 
     const pathNodes = path();
 
     // When expanded, show all items; otherwise apply truncation
-    const renderable = expanded()
+    const renderable = isExpanded()
       ? pathNodes
-      : truncateBreadcrumbPath(pathNodes, compInstance.lfMaxItems);
+      : truncateBreadcrumbPath(pathNodes, comp.lfMaxItems);
 
     if (!renderable.length) {
       return (
         <div
-          class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.empty)}
-          part={parts.empty}
+          class={bemClass(b.breadcrumbs._, b.breadcrumbs.empty)}
+          part={p.empty}
         >
-          {compInstance.lfEmpty}
+          {comp.lfEmpty}
         </div>
       );
     }
@@ -150,13 +166,10 @@ export const prepBreadcrumbsJsx = (
     return (
       <nav
         aria-label="Breadcrumb"
-        class={bemClass(blocks.breadcrumbs._)}
-        part={parts.breadcrumbs}
+        class={bemClass(b.breadcrumbs._)}
+        part={p.breadcrumbs}
       >
-        <ol
-          class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.list)}
-          part={parts.list}
-        >
+        <ol class={bemClass(b.breadcrumbs._, b.breadcrumbs.list)} part={p.list}>
           {renderable.map((entry, index) => {
             if (isTruncation(entry)) {
               return truncation(index, totalItems);
@@ -172,15 +185,23 @@ export const prepBreadcrumbsJsx = (
   //#region Separator
   const separator = (index: number): VNode => {
     const { controller } = getAdapter();
-    const { blocks, manager, parts, separator: getSeparator } = controller.get;
-    const { bemClass } = manager().theme;
+    const {
+      blocks,
+      framework,
+      parts,
+      separator: getSeparator,
+    } = controller.get;
+    const fw = framework();
+    const b = blocks();
+    const p = parts();
+    const { bemClass } = fw.theme;
 
     return (
       <span
         aria-hidden="true"
-        class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.separator)}
+        class={bemClass(b.breadcrumbs._, b.breadcrumbs.separator)}
         key={`separator-${index}`}
-        part={parts.separator}
+        part={p.separator}
       >
         {getSeparator()}
       </span>
@@ -191,16 +212,20 @@ export const prepBreadcrumbsJsx = (
   //#region Truncation
   const truncation = (index: number, totalItems: number): VNode[] => {
     const { controller, handlers } = getAdapter();
-    const { blocks, isInteractive, manager, parts } = controller.get;
-    const { bemClass } = manager().theme;
+    const { blocks, framework, parts } = controller.get;
+    const { isInteractive } = controller.computed;
+    const fw = framework();
+    const b = blocks();
+    const p = parts();
+    const { bemClass } = fw.theme;
     const isLast = index === totalItems - 1;
     const interactive = isInteractive();
 
-    const dotClass = bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.dot);
+    const dotClass = bemClass(b.breadcrumbs._, b.breadcrumbs.dot);
 
     return [
       <li
-        class={bemClass(blocks.breadcrumbs._, blocks.breadcrumbs.truncation)}
+        class={bemClass(b.breadcrumbs._, b.breadcrumbs.truncation)}
         data-cy="truncation"
         key={`truncation-${index}`}
         onClick={(e) =>
@@ -209,7 +234,7 @@ export const prepBreadcrumbsJsx = (
         onKeyDown={(e) =>
           interactive && handlers.truncation.keydown(e as KeyboardEvent)
         }
-        part={parts.truncation}
+        part={p.truncation}
         role={interactive ? "button" : undefined}
         tabIndex={interactive ? 0 : undefined}
         title={interactive ? "Click to expand all items" : undefined}

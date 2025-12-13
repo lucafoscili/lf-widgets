@@ -1,15 +1,15 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -17,26 +17,44 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface, LfThemeUIState } from "../framework";
+import { LfThemeUIState } from "../framework";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import {
   LF_BREADCRUMBS_BLOCKS,
   LF_BREADCRUMBS_EVENTS,
+  LF_BREADCRUMBS_IDS,
   LF_BREADCRUMBS_PARTS,
 } from "./breadcrumbs.constants";
 
 //#region Class
+/**
+ * Primary interface implemented by the `lf-breadcrumbs` component.
+ * It merges the shared component contract with the component-specific props.
+ */
 export interface LfBreadcrumbsInterface
   extends LfComponent<"LfBreadcrumbs">,
     LfBreadcrumbsPropsInterface {
-  onLfEvent: (
-    e: Event | CustomEvent,
-    eventType: LfBreadcrumbsEvent,
-    args?: LfBreadcrumbsEventArguments,
-  ) => void;
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfBreadcrumbsEventPayload) => void;
+  };
+  /**
+   * Internal runtime state for the current node ID.
+   */
+  currentNodeId: string | null;
+  /**
+   * Internal runtime state for expanded/collapsed view.
+   */
+  expanded: boolean;
   setCurrentNode: (nodeId: string) => Promise<void>;
 }
+/**
+ * DOM element type for the custom element registered as `lf-breadcrumbs`.
+ */
 export interface LfBreadcrumbsElement
   extends HTMLStencilElement,
     Omit<LfBreadcrumbsInterface, LfComponentClassProperties> {}
@@ -64,56 +82,56 @@ export type LfBreadcrumbsRenderable =
 //#endregion
 
 //#region Adapter
+/**
+ * Adapter contract that wires `lf-breadcrumbs` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple assignments (currentNode, expanded)
+ * - controller.computed: Derived predicates (isInteractive, isExpanded, isEmpty)
+ * - controller.actions: Complex operations (toggleExpand, setCurrentNode)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
 export interface LfBreadcrumbsAdapter
-  extends LfComponentAdapter<LfBreadcrumbsInterface> {
+  extends LfComponentAdapter<
+    LfBreadcrumbsInterface,
+    LfBreadcrumbsEventPayload,
+    LfBreadcrumbsAdapterHandlers,
+    LfBreadcrumbsAdapterJsx,
+    LfBreadcrumbsAdapterRefs,
+    LfBreadcrumbsAdapterControllerGetters,
+    LfBreadcrumbsAdapterControllerSetters,
+    LfBreadcrumbsAdapterControllerComputed,
+    LfBreadcrumbsAdapterControllerActions
+  > {
   controller: {
     get: LfBreadcrumbsAdapterControllerGetters;
     set: LfBreadcrumbsAdapterControllerSetters;
+    computed: LfBreadcrumbsAdapterControllerComputed;
+    actions: LfBreadcrumbsAdapterControllerActions;
   };
   elements: {
     jsx: LfBreadcrumbsAdapterJsx;
     refs: LfBreadcrumbsAdapterRefs;
   };
   handlers: LfBreadcrumbsAdapterHandlers;
+  dispatcher: LfBreadcrumbsAdapterDispatcher;
 }
-export interface LfBreadcrumbsAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfBreadcrumbsInterface> {
-  blocks: typeof LF_BREADCRUMBS_BLOCKS;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  dataset: () => LfDataDataset;
-  expanded: () => boolean;
-  isInteractive: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: () => LfFrameworkInterface;
-  parts: typeof LF_BREADCRUMBS_PARTS;
-  path: () => LfDataNode[];
-  separator: () => string;
-  uiSize: () => LfThemeUISize;
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ * Structure mirrors LF_BREADCRUMBS_BLOCKS for DOM-driven alignment.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
+ */
+export interface LfBreadcrumbsAdapterRefs extends LfComponentAdapterRefs {
+  items: Map<string, HTMLElement | null>;
 }
-export type LfBreadcrumbsAdapterInitializerGetters = Pick<
-  LfBreadcrumbsAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "dataset"
-  | "expanded"
-  | "isInteractive"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "path"
-  | "separator"
-  | "uiSize"
->;
-export interface LfBreadcrumbsAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  currentNode: (nodeId: string) => Promise<void>;
-  expanded: (value: boolean) => Promise<void>;
-}
-export type LfBreadcrumbsAdapterInitializerSetters = Pick<
-  LfBreadcrumbsAdapterControllerSetters,
-  "currentNode" | "expanded"
->;
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfBreadcrumbsAdapterJsx extends LfComponentAdapterJsx {
   icon: (node: LfDataNode) => VNode | null;
   item: (node: LfDataNode, index: number, totalItems: number) => VNode[];
@@ -121,9 +139,9 @@ export interface LfBreadcrumbsAdapterJsx extends LfComponentAdapterJsx {
   separator: (index: number) => VNode | null;
   truncation: (index: number, totalItems: number) => VNode[];
 }
-export interface LfBreadcrumbsAdapterRefs extends LfComponentAdapterRefs {
-  items: Map<string, HTMLElement>;
-}
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfBreadcrumbsAdapterHandlers
   extends LfComponentAdapterHandlers {
   item: {
@@ -140,6 +158,88 @@ export interface LfBreadcrumbsAdapterHandlers
     keydown: (e: KeyboardEvent) => Promise<void>;
   };
 }
+/**
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
+export interface LfBreadcrumbsAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfBreadcrumbsInterface,
+    typeof LF_BREADCRUMBS_BLOCKS,
+    typeof LF_BREADCRUMBS_IDS,
+    typeof LF_BREADCRUMBS_PARTS
+  > {
+  /** Current dataset */
+  dataset: () => LfDataDataset;
+  /** Current breadcrumb path nodes */
+  path: () => LfDataNode[];
+  /** Current separator character */
+  separator: () => string;
+  /** Current UI size */
+  uiSize: () => LfThemeUISize;
+}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfBreadcrumbsAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Set the current node by ID */
+  currentNode: (nodeId: string) => Promise<void>;
+  /** Set the expanded state */
+  expanded: (value: boolean) => Promise<void>;
+}
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfBreadcrumbsAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the breadcrumbs are interactive */
+  isInteractive: () => boolean;
+  /** Whether the breadcrumbs are expanded (showing all items) */
+  isExpanded: () => boolean;
+  /** Whether the dataset is empty */
+  isEmpty: () => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfBreadcrumbsAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Toggle the expanded state */
+  toggleExpand: () => void;
+  /** Set the current node by ID */
+  setCurrentNode: (nodeId: string) => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfBreadcrumbsAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfBreadcrumbsEventPayload>;
+export type LfBreadcrumbsAdapterDispatcherDetailOverrides = {
+  [E in LfBreadcrumbsEvent]: E extends "click" | "expand"
+    ? LfBreadcrumbsAdapterDispatchDetailBase & { originalEvent: MouseEvent }
+    : E extends "pointerdown"
+      ? LfBreadcrumbsAdapterDispatchDetailBase & { originalEvent: PointerEvent }
+      : E extends "ready" | "unmount"
+        ? Omit<LfBreadcrumbsAdapterDispatchDetailBase, "originalEvent"> & {
+            originalEvent?: never;
+          }
+        : LfBreadcrumbsAdapterDispatchDetailBase;
+};
+export type LfBreadcrumbsAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfBreadcrumbsEventPayload,
+  LfBreadcrumbsAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Props
