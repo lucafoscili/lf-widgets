@@ -1,15 +1,14 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_CHIP_BLOCKS,
   LF_CHIP_CSS_VARS,
+  LF_CHIP_IDS,
   LF_CHIP_PARTS,
   LF_CHIP_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfChipAdapter,
   LfChipElement,
   LfChipEvent,
-  LfChipEventArguments,
   LfChipEventPayload,
   LfChipInterface,
   LfChipPropsInterface,
@@ -34,8 +33,12 @@ import {
   State,
   VNode,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
+import { prepChipActions } from "./actions.chip";
+import { prepChipComputed } from "./computed.chip";
+import { createAdapter } from "./lf-chip-adapter";
 
 /**
  * The chip component is a stylized UI element that displays a list of data items.
@@ -218,14 +221,13 @@ export class LfChip implements LfChipInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfChipAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_CHIP_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_CHIP_IDS;
   #p = LF_CHIP_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #items: { [id: string]: HTMLElement } = {};
   #nodeItems: VNode[] = [];
   //#endregion
 
@@ -242,50 +244,6 @@ export class LfChip implements LfChipInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfChipEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfChipEvent,
-    args?: LfChipEventArguments,
-  ) {
-    const { expandedNodes, lfDataset, selectedNodes } = this;
-
-    const { expansion, node } = args || {};
-
-    switch (eventType) {
-      case "click":
-        if (expansion && this.#hasChildren(node)) {
-          if (expandedNodes.has(node)) {
-            expandedNodes.delete(node);
-          } else {
-            expandedNodes.add(node);
-          }
-          this.expandedNodes = new Set(expandedNodes);
-        } else if (node) {
-          if (selectedNodes.has(node)) {
-            selectedNodes.delete(node);
-          } else {
-            selectedNodes.add(node);
-          }
-          this.selectedNodes = new Set(selectedNodes);
-        }
-        break;
-      case "delete":
-        const nodeIndex = lfDataset?.nodes?.indexOf(node);
-        if (nodeIndex > -1) {
-          lfDataset.nodes.splice(nodeIndex, 1);
-        }
-        break;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      node,
-      selectedNodes: this.selectedNodes,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -362,39 +320,95 @@ export class LfChip implements LfChipInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        node: null,
+        selectedNodes: this.selectedNodes,
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #hasChildren(node: LfDataNode) {
-    return !!(node.children && node.children.length);
-  }
-  #hasIconOnly(node: LfDataNode) {
-    return !!(node.icon && !node.value);
-  }
-  #isChoice() {
-    return this.lfStyling === "choice";
-  }
-  #isClickable() {
-    return this.lfStyling === "choice" || this.lfStyling === "filter";
-  }
-  #isExpanded(node: LfDataNode) {
-    return this.expandedNodes.has(node);
-  }
-  #isFilter() {
-    return this.lfStyling === "filter";
-  }
-  #isInput() {
-    return this.lfStyling === "input";
-  }
-  #isSelected(node: LfDataNode) {
-    return this.selectedNodes.has(node);
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfChipEvent, detail?: Partial<LfChipEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node ?? null,
+        selectedNodes: this.selectedNodes,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + styling
+   * - controller.set: Simple setters (empty for chip)
+   * - controller.computed: Derived predicates (isChoice, isFilter, isInput, isSelected, etc.)
+   * - controller.actions: Complex operations (toggleExpansion, toggleSelection, deleteNode)
+   * - elements: Refs registry
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+        styling: () => this.#normalizedStyling(),
+      },
+      // Setters - simple single-value assignments (none for chip)
+      {},
+      // Computed - derived predicates (from dedicated file)
+      prepChipComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepChipActions(getAdapter),
+      // JSX - rendering done inline in component, but type requires jsx property
+      { chip: () => this.#prepItemSet() },
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
+  #normalizedStyling(): LfChipStyling {
+    return this.lfStyling
+      ? (this.lfStyling.toLowerCase() as LfChipStyling)
+      : "standard";
   }
   #prepDeleteIcon(node: LfDataNode) {
     const { bemClass, get } = this.#framework.theme;
+    const { controller, dispatcher } = this.#adapter;
+    const { actions } = controller;
 
     const { item } = this.#b;
     const icon = get.icon("squareX");
@@ -409,13 +423,16 @@ export class LfChip implements LfChipInterface {
         })}
         onClick={(e) => {
           e.stopPropagation();
-          this.onLfEvent(e, "delete", { node });
+          actions.deleteNode(node);
+          dispatcher.emit("delete", { originalEvent: e, node });
         }}
       />
     );
   }
   #prepIcons(node: LfDataNode) {
     const { bemClass } = this.#framework.theme;
+    const { computed } = this.#adapter.controller;
+    const { isFilter, isSelected } = computed;
 
     const { item } = this.#b;
     const icons: VNode[] = [];
@@ -437,13 +454,13 @@ export class LfChip implements LfChipInterface {
           icon={node.icon}
           wrapperClass={bemClass(item._, item.icon, {
             leading: true,
-            hidden: this.lfStyling === "filter" && this.#isSelected(node),
+            hidden: isFilter() && isSelected(node),
           })}
         />,
       );
     }
 
-    if (this.#isFilter()) {
+    if (isFilter()) {
       icons.push(
         <span class={bemClass(item._, item.checkmark)}>
           <svg
@@ -464,31 +481,40 @@ export class LfChip implements LfChipInterface {
     return icons;
   }
   #prepItem(node: LfDataNode, i: number) {
-    const { bemClass } = this.#framework.theme;
+    const { theme } = this.#framework;
+    const { bemClass } = theme;
+    const { controller, dispatcher, elements } = this.#adapter;
+    const { cyAttributes, lfAttributes } = controller.get;
+    const { hasIconOnly, isInput, isSelected } = controller.computed;
+    const { toggleSelection } = controller.actions;
 
+    const cy = cyAttributes();
+    const lf = lfAttributes();
     const { item } = this.#b;
+    const { refs } = elements;
 
     return (
       <div
         class={bemClass(item._, null, {
-          "no-label": this.#hasIconOnly(node),
-          selected: this.#isSelected(node),
+          "no-label": hasIconOnly(node),
+          selected: isSelected(node),
         })}
-        data-cy={this.#cy.node}
-        data-lf={this.#lf[this.lfUiState]}
+        data-cy={cy.node}
+        data-lf={lf[this.lfUiState]}
         data-value={node.id}
         onClick={(e) => {
           if (e.button !== 0) {
             return;
           }
-          this.onLfEvent(e, "click", { node });
+          toggleSelection(node);
+          dispatcher.emit("click", { originalEvent: e, node });
         }}
         part={this.#p.item}
         role="row"
         title={node.description ?? ""}
         ref={(el) => {
           if (el) {
-            this.#items[node.id] = el;
+            refs.items.set(String(node.id), el);
           }
         }}
       >
@@ -496,17 +522,17 @@ export class LfChip implements LfChipInterface {
         {this.#prepIcons(node)}
         <span
           class={bemClass(item._, item.primaryAction)}
-          data-cy={this.#cy.input}
+          data-cy={cy.input}
           onBlur={(e) => {
-            this.onLfEvent(e, "blur", { node });
+            dispatcher.emit("blur", { originalEvent: e, node });
           }}
           onFocus={(e) => {
-            this.onLfEvent(e, "focus", { node });
+            dispatcher.emit("focus", { originalEvent: e, node });
           }}
           role="button"
           tabindex={i}
           aria-label={(
-            (this.#hasIconOnly(node) ? this.lfAriaLabel : "") ||
+            (hasIconOnly(node) ? this.lfAriaLabel : "") ||
             (typeof node.value === "string" ? node.value : "") ||
             node.icon ||
             this.rootElement.id ||
@@ -517,7 +543,7 @@ export class LfChip implements LfChipInterface {
         >
           <span class={bemClass(item._, item.text)}>{node.value}</span>
         </span>
-        {this.#isInput() && this.#prepDeleteIcon(node)}
+        {isInput() && this.#prepDeleteIcon(node)}
       </div>
     );
   }
@@ -541,22 +567,25 @@ export class LfChip implements LfChipInterface {
   }
   #prepNode(node: LfDataNode, indent: number) {
     const { bemClass } = this.#framework.theme;
+    const { controller, dispatcher } = this.#adapter;
+    const { hasChildren, isExpanded, showChildren } = controller.computed;
+    const { toggleExpansion } = controller.actions;
 
     const { wrapper } = this.#b;
-    const hasChildren = this.#hasChildren(node);
-    const isExpanded = this.#isExpanded(node);
+    const nodeHasChildren = hasChildren(node);
+    const nodeIsExpanded = isExpanded(node);
     const indentStyle = {
       [LF_CHIP_CSS_VARS.indentOffset]: indent.toString(),
     };
     const className = bemClass(wrapper._, wrapper.node, {
-      expanded: isExpanded,
-      hidden: Boolean(!hasChildren && indent),
+      expanded: nodeIsExpanded,
+      hidden: Boolean(!nodeHasChildren && indent),
     });
 
     this.#nodeItems.push(
       <div
         class={bemClass(wrapper._, null, {
-          hidden: this.#hasChildren(node) && !this.#showChildren(node),
+          hidden: hasChildren(node) && !showChildren(node),
         })}
       >
         <div
@@ -564,18 +593,16 @@ export class LfChip implements LfChipInterface {
           part={this.#p.indent}
           style={indentStyle}
         ></div>
-        {hasChildren ? (
+        {nodeHasChildren ? (
           <FIcon
             framework={this.#framework}
             icon={this.#framework.theme.get.icon(
-              isExpanded ? "chevronDown" : "chevronRight",
+              nodeIsExpanded ? "chevronDown" : "chevronRight",
             )}
             wrapperClass={className}
             onClick={(e) => {
-              this.onLfEvent(e, "click", {
-                expansion: true,
-                node,
-              });
+              toggleExpansion(node);
+              dispatcher.emit("click", { originalEvent: e, node });
             }}
           />
         ) : indent ? (
@@ -585,16 +612,13 @@ export class LfChip implements LfChipInterface {
       </div>,
     );
 
-    if (this.#showChildren(node)) {
+    if (showChildren(node)) {
       for (let index = 0; index < node.children.length; index++) {
         if (node.children[index]) {
           this.#prepNode(node.children[index], indent + 1);
         }
       }
     }
-  }
-  #showChildren(node: LfDataNode) {
-    return this.expandedNodes.has(node);
   }
   //#endregion
 
@@ -606,6 +630,7 @@ export class LfChip implements LfChipInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     if (this.lfValue?.length) {
       this.setSelectedNodes(this.lfValue);
@@ -613,17 +638,27 @@ export class LfChip implements LfChipInterface {
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
+    const { computed, refs } = this.#adapter.controller.computed
+      ? {
+          computed: this.#adapter.controller.computed,
+          refs: this.#adapter.elements.refs,
+        }
+      : { computed: null, refs: null };
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfRipple && hasThemeRipple && this.#isClickable()) {
-      Object.values(this.#items).forEach((el) => {
+    if (this.lfRipple && hasThemeRipple && computed?.isClickable()) {
+      refs?.items.forEach((el) => {
         if (el) {
           effects.register.ripple(el);
         }
       });
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      node: null,
+      selectedNodes: this.selectedNodes,
+    });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -651,6 +686,7 @@ export class LfChip implements LfChipInterface {
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
+    const { isChoice, isFilter, isInput } = this.#adapter.controller.computed;
 
     const { lfStyle } = this;
 
@@ -662,10 +698,10 @@ export class LfChip implements LfChipInterface {
         <div id={this.#w}>
           <div
             class={bemClass(this.#b.chip._, null, {
-              choice: this.#isChoice(),
-              filter: this.#isFilter(),
+              choice: isChoice(),
+              filter: isFilter(),
               flat: this.lfFlat,
-              input: this.#isInput(),
+              input: isInput(),
             })}
             part={this.#p.chip}
             role="grid"
@@ -680,12 +716,18 @@ export class LfChip implements LfChipInterface {
     const { effects, theme } = this.#framework ?? {};
 
     const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple && this.#isClickable()) {
-      Object.values(this.#items).forEach((el) => {
-        if (el) {
-          effects.unregister.ripple(el);
-        }
-      });
+    if (this.#adapter && effects && this.lfRipple && hasThemeRipple) {
+      const { computed, refs } = {
+        computed: this.#adapter.controller.computed,
+        refs: this.#adapter.elements.refs,
+      };
+      if (computed?.isClickable()) {
+        refs?.items.forEach((el) => {
+          if (el) {
+            effects.unregister.ripple(el);
+          }
+        });
+      }
     }
 
     theme?.unregister(this);

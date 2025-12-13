@@ -29,6 +29,18 @@ export const LF_CHIP_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the chip component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_CHIP_IDS = {
+  chip: "chip",
+  item: "item",
+  wrapper: "wrapper",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_CHIP_EVENTS = [
   "blur",
