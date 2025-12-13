@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_BUTTON_BLOCKS,
   LF_BUTTON_IDS,
   LF_BUTTON_PARTS,
@@ -36,7 +34,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepButtonActions } from "./actions.button";
+import { prepButtonComputed } from "./computed.button";
 import { createAdapter } from "./lf-button-adapter";
 
 /**
@@ -308,8 +309,6 @@ export class LfButton implements LfButtonInterface {
   #b = LF_BUTTON_BLOCKS;
   #ids = LF_BUTTON_IDS;
   #p = LF_BUTTON_PARTS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   //#endregion
@@ -488,39 +487,29 @@ export class LfButton implements LfButtonInterface {
    * @see Section 5 of 4_0_0_REFACTORING.md
    */
   #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters + component-specific state reads
-      // ALL are functions () => T per v4.0.0 Section 5.2
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: () => this.#b,
-        compInstance: () => this,
-        cyAttributes: () => this.#cy,
-        framework: () => this.#framework,
-        ids: () => this.#ids,
-        lfAttributes: () => this.#lf,
-        parts: () => this.#p,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
         styling: () => this.#normalizedStyling(),
       },
-      // Setters - simple single-value assignments
-      {
-        list: () => {}, // Enhanced in adapter factory
-      },
-      // Computed - derived predicates
-      {
-        isDisabled: () => this.lfUiState === "disabled",
-        isDropdown: () => Boolean(this.lfDataset?.nodes?.[0]?.children?.length),
-        isOn: () => this.value === "on",
-      },
-      // Actions - complex multi-step operations
-      {
-        toggle: () => {
-          if (this.lfToggable && this.lfUiState !== "disabled") {
-            this.value = this.value === "on" ? "off" : "on";
-          }
-        },
-      },
+      // Setters - simple single-value assignments (enhanced in adapter factory)
+      { list: () => {} },
+      // Computed - derived predicates (from dedicated file)
+      prepButtonComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepButtonActions(getAdapter),
       // Adapter accessor
-      () => this.#adapter,
+      getAdapter,
     );
 
     // Combine adapter parts with dispatcher
