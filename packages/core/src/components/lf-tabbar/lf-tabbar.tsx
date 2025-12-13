@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_TABBAR_BLOCKS,
   LF_TABBAR_PARTS,
@@ -10,6 +8,7 @@ import {
   LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfTabbarAdapter,
   LfTabbarElement,
   LfTabbarEvent,
   LfTabbarEventPayload,
@@ -31,9 +30,11 @@ import {
   Prop,
   State,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { triggerScroll } from "./helpers.utils";
+import { prepTabbarActions } from "./actions.tabbar";
+import { prepTabbarComputed } from "./computed.tabbar";
+import { createAdapter } from "./lf-tabbar-adapter";
 
 /**
  * Represents the tab bar component, which displays a set of tabs for navigation.
@@ -183,15 +184,12 @@ export class LfTabbar implements LfTabbarInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfTabbarAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TABBAR_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
   #p = LF_TABBAR_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #tabs: HTMLElement[] = [];
-  #scrollContainer: HTMLDivElement;
   //#endregion
 
   //#region Events
@@ -207,29 +205,6 @@ export class LfTabbar implements LfTabbarInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfTabbarEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfTabbarEvent,
-    index = 0,
-    node?: LfDataNode,
-  ) {
-    switch (eventType) {
-      case "click":
-        this.value = {
-          index,
-          node,
-        };
-        break;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      node,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -304,85 +279,78 @@ export class LfTabbar implements LfTabbarInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #prepIcon = (node: LfDataNode) => {
-    const { bemClass } = this.#framework.theme;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfTabbarEvent,
+      detail?: Partial<LfTabbarEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const { tab } = this.#b;
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        index: detail?.index,
+        node: detail?.node,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (isSelected, hasNodes)
+   * - controller.actions: Complex operations (select, scroll)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    return (
-      <div class={bemClass(tab._, tab.icon)}>
-        <FIcon framework={this.#framework} icon={node.icon} />
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => ({}) as never,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepTabbarComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepTabbarActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
-  };
-  #prepNode = (node: LfDataNode, index: number) => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
 
-    const { tab } = this.#b;
-    const { value } = this;
-    const isSelected = node === value?.node;
-
-    return (
-      <button
-        aria-selected={isSelected}
-        aria-label={(this.lfAriaLabel && node.value
-          ? `${this.lfAriaLabel} ${node.value}`
-          : node.value ||
-            this.lfAriaLabel ||
-            node.icon ||
-            this.rootElement.id ||
-            "tab"
-        )
-          .toString()
-          .trim()}
-        class={bemClass(tab._, null, {
-          active: isSelected,
-        })}
-        data-cy={this.#cy.button}
-        data-lf={this.#lf[this.lfUiState]}
-        onClick={(e) => {
-          this.onLfEvent(e, "click", index, node);
-        }}
-        onPointerDown={(e) => {
-          this.onLfEvent(e, "pointerdown", index, node);
-        }}
-        part={this.#p.tab}
-        role="tab"
-        tabIndex={index}
-        title={node?.description || ""}
-        ref={(el) => {
-          if (el) {
-            this.#tabs.push(el);
-          }
-        }}
-      >
-        <span class={bemClass(tab._, tab.content)} data-cy={this.#cy.node}>
-          {node.icon && this.#prepIcon(node)}
-          {node.value && (
-            <span class={bemClass(tab._, tab.label)}>{node.value}</span>
-          )}
-        </span>
-        <span
-          class={bemClass(tab._, tab.indicator, {
-            active: isSelected,
-          })}
-        >
-          <span
-            class={bemClass(tab._, tab.indicatorContent, {
-              active: true,
-            })}
-          ></span>
-        </span>
-      </button>
-    );
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -394,8 +362,9 @@ export class LfTabbar implements LfTabbarInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    const { debug } = this.#framework;
+    this.#initAdapter();
 
+    const { debug } = this.#framework;
     const { lfDataset, lfValue } = this;
 
     try {
@@ -424,21 +393,23 @@ export class LfTabbar implements LfTabbarInterface {
   }
   componentDidLoad() {
     const { debug, drag, effects, theme } = this.#framework;
+    const { scrollContainer, tabs } = this.#adapter.elements.refs;
 
-    if (this.#scrollContainer) {
-      drag.register.dragToScroll(this.#scrollContainer);
+    if (scrollContainer) {
+      drag.register.dragToScroll(scrollContainer);
     }
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
     if (this.lfRipple && hasThemeRipple) {
-      this.#tabs.forEach((el) => {
+      tabs.forEach((el) => {
         if (el) {
           effects.register.ripple(el);
         }
       });
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -452,79 +423,42 @@ export class LfTabbar implements LfTabbarInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { data, theme } = this.#framework;
-    const { bemClass, get, setLfStyle } = theme;
-    const { "--lf-icon-next": next, "--lf-icon-previous": prev } =
-      get.current().variables;
+    const { theme } = this.#framework;
+    const { setLfStyle } = theme;
 
-    const { tabbar } = this.#b;
-    const { lfDataset, lfStyle } = this;
+    const { lfStyle } = this;
+    const { tabbar } = this.#adapter.elements.jsx;
+    const { hasNodes } = this.#adapter.controller.computed;
 
-    if (!data.node.exists(lfDataset)) {
+    if (!hasNodes()) {
       return;
     }
-
-    this.#tabs = [];
-    const nodes = lfDataset.nodes;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div class={bemClass(tabbar._)} part={this.#p.tabbbar} role="tablist">
-            {this.lfNavigation && (
-              <lf-button
-                lfIcon={prev}
-                lfStretchY={true}
-                lfStyling="flat"
-                lfUiSize={this.lfUiSize}
-                onLf-button-event={() =>
-                  triggerScroll(this.#scrollContainer, "left")
-                }
-              ></lf-button>
-            )}
-            <div
-              class={bemClass(tabbar._, tabbar.scroll)}
-              ref={(el) => {
-                if (el) {
-                  this.#scrollContainer = el;
-                }
-              }}
-            >
-              {nodes.map((node, index) => {
-                return this.#prepNode(node, index);
-              })}
-            </div>
-            {this.lfNavigation && (
-              <lf-button
-                lfIcon={next}
-                lfStretchY={true}
-                lfStyling="flat"
-                lfUiSize={this.lfUiSize}
-                onLf-button-event={() =>
-                  triggerScroll(this.#scrollContainer, "right")
-                }
-              ></lf-button>
-            )}
-          </div>
-        </div>
+        <div id={this.#w}>{tabbar()}</div>
       </Host>
     );
   }
   disconnectedCallback() {
     const { drag, effects, theme } = this.#framework ?? {};
 
-    if (drag?.getActiveSession(this.#scrollContainer)) {
-      drag.unregister.dragToScroll(this.#scrollContainer);
-    }
+    if (this.#adapter) {
+      const { scrollContainer, tabs } = this.#adapter.elements.refs;
 
-    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple) {
-      this.#tabs?.forEach((el) => {
-        if (el) {
-          effects.unregister.ripple(el);
-        }
-      });
+      if (drag?.getActiveSession(scrollContainer)) {
+        drag.unregister.dragToScroll(scrollContainer);
+      }
+
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple) {
+        tabs?.forEach((el) => {
+          if (el) {
+            effects.unregister.ripple(el);
+          }
+        });
+      }
     }
 
     theme?.unregister(this);
