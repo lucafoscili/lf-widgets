@@ -1,6 +1,11 @@
 import { LfAutocompletePropsInterface } from "./autocomplete.declarations";
 
 //#region Blocks
+/**
+ * BEM block structure for the autocomplete component.
+ * Maps directly to CSS classes and DOM refs.
+ * @see Section 6.3 of 4_0_0_REFACTORING.md
+ */
 export const LF_AUTOCOMPLETE_BLOCKS = {
   autocomplete: {
     _: "autocomplete",
@@ -11,6 +16,20 @@ export const LF_AUTOCOMPLETE_BLOCKS = {
     list: "list",
     spinner: "spinner",
   },
+} as const;
+//#endregion
+
+//#region IDs
+/**
+ * DOM element IDs used by the autocomplete component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_AUTOCOMPLETE_IDS = {
+  autocomplete: "autocomplete",
+  textfield: "textfield",
+  dropdown: "dropdown",
+  list: "list",
+  spinner: "spinner",
 } as const;
 //#endregion
 

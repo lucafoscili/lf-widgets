@@ -15,35 +15,34 @@ export const prepAutocompleteJsx = (
       const { refs } = elements;
       const {
         blocks,
+        compInstance,
         cyAttributes,
-        isLoading,
         lfAttributes,
-        manager,
+        framework,
         parts,
-        highlightedIndex,
       } = controller.get;
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { computed } = controller;
+      const { assignRef, sanitizeProps, theme } = framework();
       const { bemClass } = theme;
       const { list } = handlers;
-      const compInstance = controller.get.compInstance;
-      const lfDataset = controller.get.lfDataset();
+      const comp = compInstance();
+      const lfDataset = comp.lfDataset;
 
-      const listProps = compInstance.lfListProps || {};
-      const dropdownId = `${compInstance.rootElement?.id || "autocomplete"}-dropdown`;
-      const hasQuery =
-        controller.get.inputValue().length >= compInstance.lfMinChars;
+      const listProps = comp.lfListProps || {};
+      const dropdownId = `${comp.rootElement?.id || "autocomplete"}-dropdown`;
+      const hasQuery = computed.inputValue().length >= comp.lfMinChars;
       const hasResults = !!lfDataset?.nodes?.length;
       const showEmpty =
-        !isLoading() && hasQuery && !hasResults && lfDataset !== null;
+        !computed.isLoading() && hasQuery && !hasResults && lfDataset !== null;
       const showList = lfDataset !== null;
 
       return (
         <div
-          class={bemClass(blocks.dropdown._)}
-          data-cy={cyAttributes.dropdownMenu}
-          data-lf={lfAttributes.portal}
+          class={bemClass(blocks().dropdown._)}
+          data-cy={cyAttributes().dropdownMenu}
+          data-lf={lfAttributes().portal}
           id={dropdownId}
-          part={parts.dropdown}
+          part={parts().dropdown}
           ref={assignRef(refs, "dropdown")}
           role="listbox"
         >
@@ -51,26 +50,26 @@ export const prepAutocompleteJsx = (
             lfBarVariant={true}
             lfDimensions="1em"
             lfStyle=":host { --lf-spinner-min-height: 0.25em; }"
-            {...sanitizeProps(compInstance.lfSpinnerProps || {}, "LfSpinner")}
-            class={bemClass(blocks.dropdown._, blocks.dropdown.spinner)}
-            data-cy={cyAttributes.spinner}
-            data-lf={lfAttributes.fadeIn}
-            lfActive={isLoading()}
-            part={parts.spinner}
+            {...sanitizeProps(comp.lfSpinnerProps || {}, "LfSpinner")}
+            class={bemClass(blocks().dropdown._, blocks().dropdown.spinner)}
+            data-cy={cyAttributes().spinner}
+            data-lf={lfAttributes().fadeIn}
+            lfActive={computed.isLoading()}
+            part={parts().spinner}
             ref={assignRef(refs, "spinner")}
           />
           {showList && (
             <lf-list
               lfEmpty={showEmpty ? "Your search returned no results." : ""}
-              lfUiSize={compInstance.lfUiSize}
-              lfUiState={compInstance.lfUiState}
+              lfUiSize={comp.lfUiSize}
+              lfUiState={comp.lfUiState}
               {...sanitizeProps(listProps, "LfList")}
-              class={bemClass(blocks.dropdown._, blocks.dropdown.list)}
+              class={bemClass(blocks().dropdown._, blocks().dropdown.list)}
               lfDataset={lfDataset}
               lfSelectable={true}
-              lfValue={highlightedIndex()}
+              lfValue={computed.highlightedIndex()}
               onLf-list-event={list}
-              part={parts.list}
+              part={parts().list}
               ref={assignRef(refs, "list")}
             />
           )}
@@ -83,17 +82,17 @@ export const prepAutocompleteJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, hasCache, highlightedIndex, manager, parts } =
-        controller.get;
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { blocks, compInstance, framework, parts } = controller.get;
+      const { computed } = controller;
+      const { assignRef, sanitizeProps, theme } = framework();
       const { bemClass } = theme;
       const { textfield } = handlers;
-      const compInstance = controller.get.compInstance;
+      const comp = compInstance();
 
-      const textfieldProps = compInstance.lfTextfieldProps || {};
+      const textfieldProps = comp.lfTextfieldProps || {};
       const htmlAttrs = textfieldProps?.lfHtmlAttributes || {};
-      const dropdownId = `${compInstance.rootElement?.id || "autocomplete"}-dropdown`;
-      const highlighted = highlightedIndex();
+      const dropdownId = `${comp.rootElement?.id || "autocomplete"}-dropdown`;
+      const highlighted = computed.highlightedIndex();
       const ariaAttrs = {
         "aria-autocomplete": "list",
         "aria-controls": dropdownId,
@@ -105,15 +104,20 @@ export const prepAutocompleteJsx = (
 
       return (
         <lf-textfield
-          lfUiSize={compInstance.lfUiSize}
-          lfUiState={compInstance.lfUiState}
+          lfUiSize={comp.lfUiSize}
+          lfUiState={comp.lfUiState}
           {...sanitizeProps(textfieldProps, "LfTextfield")}
-          class={bemClass(blocks.autocomplete._, blocks.autocomplete.textfield)}
+          class={bemClass(
+            blocks().autocomplete._,
+            blocks().autocomplete.textfield,
+          )}
           lfHtmlAttributes={htmlSanitized}
-          lfTrailingIconAction={hasCache() ? LF_THEME_ICONS.dropdown : null}
-          lfValue={compInstance.lfValue}
+          lfTrailingIconAction={
+            computed.hasCache() ? LF_THEME_ICONS.dropdown : null
+          }
+          lfValue={comp.lfValue}
           onLf-textfield-event={textfield}
-          part={parts.textfield}
+          part={parts().textfield}
           ref={assignRef(refs, "textfield")}
         />
       );

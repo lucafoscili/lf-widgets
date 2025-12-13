@@ -2,7 +2,9 @@ import {
   LfAutocompleteAdapter,
   LfAutocompleteAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { LfAutocomplete } from "./lf-autocomplete";
+
+// Debounce timer stored at module level to be accessible
+let debounceTimer: NodeJS.Timeout | null = null;
 
 export const prepAutocompleteHandlers = (
   getAdapter: () => LfAutocompleteAdapter,
@@ -11,19 +13,19 @@ export const prepAutocompleteHandlers = (
     //#region List
     list: async (event) => {
       const { eventType, node } = event.detail;
-      const { controller } = getAdapter();
-      const comp = controller.get.compInstance as LfAutocomplete;
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
 
       switch (eventType) {
         case "click":
           controller.set.blurTimeout.clear();
           if (node) {
             controller.set.highlight(-1);
-            await controller.set.select(node);
+            await controller.actions.selectNode(node);
           }
           break;
         default:
-          comp.onLfEvent(event, "lf-event", { node });
+          dispatcher.emit("lf-event", { originalEvent: event, node });
           break;
       }
     },
@@ -32,38 +34,92 @@ export const prepAutocompleteHandlers = (
     //#region Textfield
     textfield: async (event) => {
       const { eventType, inputValue, originalEvent } = event.detail || {};
-      const { controller, elements } = getAdapter();
-      const comp = controller.get.compInstance as LfAutocomplete;
+      const adapter = getAdapter();
+      const { controller, dispatcher, elements } = adapter;
+      const comp = controller.get.compInstance();
 
       switch (eventType) {
         case "input": {
-          await controller.set.input(inputValue);
-          comp.onLfEvent(event, "input", { query: inputValue });
+          // Update input value via action
+          comp.inputValue = inputValue;
+          const { textfield } = elements.refs;
+          if (textfield) {
+            await textfield.setValue(inputValue);
+          }
+
+          // Clear existing debounce
+          if (debounceTimer) {
+            clearTimeout(debounceTimer);
+          }
+
+          // Check minimum characters
+          if (inputValue.length < comp.lfMinChars) {
+            controller.set.list("close");
+            comp.loading = false;
+            dispatcher.emit("input", {
+              query: inputValue,
+              originalEvent: event,
+            });
+            return;
+          }
+
+          controller.set.list("open");
+          controller.set.highlight(-1);
+
+          // Normalize and check cache
+          const cache = controller.get.cache();
+          const normalized = inputValue.trim().toLowerCase();
+          if (comp.lfCache && cache.has(normalized)) {
+            const entry = cache.get(normalized);
+            if (Date.now() - entry.timestamp > comp.lfCacheTTL) {
+              cache.delete(normalized);
+            } else {
+              comp.lfDataset = entry.dataset;
+              comp.lfListProps = { ...comp.lfListProps, lfFilter: false };
+              comp.loading = false;
+              dispatcher.emit("input", {
+                query: inputValue,
+                originalEvent: event,
+              });
+              return;
+            }
+          }
+
+          // No cache hit - trigger request after debounce
+          comp.lfDataset = null;
+          comp.loading = true;
+
+          debounceTimer = setTimeout(() => {
+            comp.lastRequestedQuery = inputValue;
+            dispatcher.emit("request", { query: inputValue });
+          }, comp.lfDebounceMs);
+
+          dispatcher.emit("input", { query: inputValue, originalEvent: event });
           break;
         }
         case "keydown": {
           const ogEv = originalEvent as KeyboardEvent;
           await keydownHandler(ogEv, controller, elements.refs);
-          comp.onLfEvent(event, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: event });
           break;
         }
         case "blur": {
           controller.set.blurTimeout.new(() => {
-            if (!controller.get.isLoading()) {
+            if (!controller.computed.isLoading()) {
               controller.set.list("close");
               controller.set.highlight(-1);
             }
           });
-          comp.onLfEvent(event, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: event });
           break;
         }
         case "click": {
           controller.set.list();
-          comp.onLfEvent(event, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: event });
           break;
         }
         default: {
-          comp.onLfEvent(event, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: event });
           break;
         }
       }
@@ -78,19 +134,20 @@ const keydownHandler = async (
   controller: LfAutocompleteAdapter["controller"],
   refs: LfAutocompleteAdapter["elements"]["refs"],
 ) => {
-  const { lfDataset, highlightedIndex } = controller.get;
-  const comp = controller.get.compInstance as LfAutocomplete;
+  const { compInstance } = controller.get;
+  const { computed } = controller;
+  const comp = compInstance();
 
   if (!comp.lfNavigation) {
     return;
   }
 
-  const dataset = lfDataset();
+  const dataset = comp.lfDataset;
   if (!dataset?.nodes?.length) {
     return;
   }
 
-  let newIndex = highlightedIndex();
+  let newIndex = computed.highlightedIndex();
 
   switch (event.key) {
     case "ArrowDown": {

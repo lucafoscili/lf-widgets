@@ -1,7 +1,6 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_AUTOCOMPLETE_BLOCKS,
+  LF_AUTOCOMPLETE_IDS,
   LF_AUTOCOMPLETE_PARTS,
   LF_AUTOCOMPLETE_PROPS,
   LF_STYLE_ID,
@@ -13,7 +12,6 @@ import {
   LfAutocompleteEventPayload,
   LfAutocompleteInterface,
   LfDataDataset,
-  LfDataNode,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfListInterface,
@@ -35,7 +33,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepAutocompleteActions } from "./actions.autocomplete";
+import { prepAutocompleteComputed } from "./computed.autocomplete";
 import { createAdapter } from "./lf-autocomplete-adapter";
 
 /**
@@ -302,8 +303,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
   #debounceTimer: NodeJS.Timeout | null = null;
   #framework: LfFrameworkInterface;
   #b = LF_AUTOCOMPLETE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_AUTOCOMPLETE_IDS;
   #p = LF_AUTOCOMPLETE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -333,21 +333,6 @@ export class LfAutocomplete implements LfAutocompleteInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfAutocompleteEventPayload>;
-
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfAutocompleteEvent,
-    args?: { node?: LfDataNode; query?: string },
-  ) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement?.id || "",
-      originalEvent: e,
-      node: args?.node,
-      query: args?.query,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -377,7 +362,11 @@ export class LfAutocomplete implements LfAutocompleteInterface {
    */
   @Method()
   async clearInput(): Promise<void> {
-    await this.#adapter.controller.set.input("");
+    this.inputValue = "";
+    const { textfield } = this.#adapter.elements.refs;
+    if (textfield) {
+      await textfield.setValue("");
+    }
   }
   /**
    * Retrieves the debug information for this component instance.
@@ -455,7 +444,11 @@ export class LfAutocomplete implements LfAutocompleteInterface {
    */
   @Method()
   async setValue(value: string): Promise<void> {
-    await this.#adapter.controller.set.input(value);
+    this.inputValue = value;
+    const { textfield } = this.#adapter.elements.refs;
+    if (textfield) {
+      await textfield.setValue(value);
+    }
   }
   /**
    * Performs cleanup for the component.
@@ -469,8 +462,11 @@ export class LfAutocomplete implements LfAutocompleteInterface {
    * ```
    */
   @Method()
-  async unmount(): Promise<void> {
-    this.onLfEvent(new CustomEvent("unmount"), "unmount");
+  async unmount(ms: number = 0): Promise<void> {
+    setTimeout(() => {
+      this.#adapter.dispatcher.emit("unmount");
+      this.rootElement.remove();
+    }, ms);
   }
   //#endregion
 
@@ -481,6 +477,32 @@ export class LfAutocomplete implements LfAutocompleteInterface {
       this.#blurTimeout = null;
     }
   }
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfAutocompleteEvent,
+      detail?: Partial<LfAutocompleteEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node,
+        query: detail?.query,
+      });
+    },
+  });
   #evictCacheIfNeeded() {
     if (this.#cache.size > this.lfMaxCacheSize) {
       const oldestKey = this.#cache.keys().next().value;
@@ -500,27 +522,37 @@ export class LfAutocomplete implements LfAutocompleteInterface {
     this.#clearBlurTimeout();
     this.#blurTimeout = setTimeout(callback, delay);
   }
-  #initAdapter() {
-    this.#adapter = createAdapter(
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + cache
+   * - controller.set: Simple setters (blurTimeout, dataset, list, highlight)
+   * - controller.computed: Derived predicates (isDisabled, isLoading, hasCache, etc.)
+   * - controller.actions: Complex operations (updateInput, selectNode, highlight, etc.)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
         cache: () => this.#cache,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        hasCache: () => this.lfCache && this.#cache.size > 0,
-        highlightedIndex: () => this.highlightedIndex,
-        indexById: (id: string) =>
-          this.lfDataset?.nodes?.findIndex((n) => n.id === id) ?? -1,
-        inputValue: () => this.inputValue,
-        isDisabled: () => this.lfUiState === "disabled",
-        isLoading: () => this.loading,
-        lfAllowFreeInput: () => this.lfAllowFreeInput,
-        lfAttributes: this.#lf,
-        lfDataset: () => this.lfDataset,
-        manager: this.#framework,
-        parts: this.#p,
-        selectedNode: () => null,
       },
+      // Setters - simple single-value assignments (enhanced in adapter factory)
       {
         blurTimeout: {
           clear: () => {
@@ -551,66 +583,25 @@ export class LfAutocomplete implements LfAutocompleteInterface {
 
           this.#adapter.controller.set.list("open");
         },
-        input: async (value: string) => {
-          this.inputValue = value;
-          const { refs } = this.#adapter.elements;
-          if (refs.textfield) {
-            await refs.textfield.setValue(value);
-          }
-
-          if (this.#debounceTimer) {
-            clearTimeout(this.#debounceTimer);
-          }
-
-          if (value.length < this.lfMinChars) {
-            this.#adapter.controller.set.list("close");
-            this.#setLoading(false);
-            return;
-          }
-
-          this.#adapter.controller.set.list("open");
-          this.#adapter.controller.set.highlight(-1);
-
-          const normalized = this.#normalizeQuery(value);
-          if (this.lfCache && this.#cache.has(normalized)) {
-            const entry = this.#cache.get(normalized);
-            if (Date.now() - entry.timestamp > this.lfCacheTTL) {
-              this.#cache.delete(normalized);
-            } else {
-              this.lfDataset = entry.dataset;
-              this.lfListProps = { ...this.lfListProps, lfFilter: false };
-              this.#setLoading(false);
-              return;
-            }
-          }
-
-          this.lfDataset = null;
-          this.#setLoading(true);
-
-          this.#debounceTimer = setTimeout(() => {
-            this.lastRequestedQuery = value;
-            this.onLfEvent(new CustomEvent("request"), "request", {
-              query: value,
-            });
-          }, this.lfDebounceMs);
-        },
-        select: async (node: LfDataNode) => {
-          this.inputValue = String(node.value || "");
-          const { refs } = this.#adapter.elements;
-          if (refs.textfield) {
-            await refs.textfield.setValue(this.inputValue);
-          }
-          this.#adapter.controller.set.list("close");
-          refs.textfield?.setFocus();
-          this.onLfEvent(new CustomEvent("change"), "change", { node });
-        },
+        list: () => {},
         highlight: (index: number) => {
           this.highlightedIndex = index;
         },
       },
-      () => this.#adapter,
+      // Computed - derived predicates (from dedicated file)
+      prepAutocompleteComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepAutocompleteActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
-  }
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -637,11 +628,13 @@ export class LfAutocomplete implements LfAutocompleteInterface {
   componentDidLoad() {
     const { debug } = this.#framework;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     debug.info.update(this, "did-load");
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
+    const { lfAttributes } = this.#adapter.controller.get;
     const { lfStyle } = this;
     const isExpanded =
       this.#adapter &&
@@ -657,7 +650,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
             aria-haspopup="listbox"
             aria-owns={dropdownId}
             class={bemClass(this.#b.autocomplete._)}
-            data-lf={this.#lf[this.lfUiState]}
+            data-lf={lfAttributes()[this.lfUiState]}
             part={this.#p.autocomplete}
             ref={(el) => {
               if (el) {
