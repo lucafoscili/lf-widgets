@@ -302,7 +302,9 @@ export class LfButton implements LfButtonInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfButtonAdapter;
   #framework: LfFrameworkInterface;
+  #timeout: NodeJS.Timeout;
   #b = LF_BUTTON_BLOCKS;
   #ids = LF_BUTTON_IDS;
   #p = LF_BUTTON_PARTS;
@@ -310,8 +312,6 @@ export class LfButton implements LfButtonInterface {
   #lf = LF_ATTRIBUTES;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #timeout: NodeJS.Timeout;
-  #adapter: LfButtonAdapter;
   //#endregion
 
   //#region Events
@@ -327,24 +327,6 @@ export class LfButton implements LfButtonInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfButtonEventPayload>;
-  /**
-   * Internal event handler that delegates to dispatcher.
-   * Handles click-specific state toggling before emission.
-   * @deprecated Use dispatcher.emit() directly from adapter consumers.
-   */
-  onLfEvent(e: Event | CustomEvent, eventType: LfButtonEvent) {
-    // Handle click-specific state toggling
-    if (eventType === "click") {
-      this.#updateState(this.#isOn() ? "off" : "on");
-    }
-
-    // Emit via dispatcher for consistency
-    this.#adapter.dispatcher.emit(eventType, {
-      originalEvent: e,
-      value: this.value,
-      valueAsBoolean: this.value === "on",
-    });
-  }
   //#endregion
 
   //#region Watchers
@@ -466,41 +448,87 @@ export class LfButton implements LfButtonInterface {
 
   //#region Private methods
   /**
-   * Initializes the adapter with canonical 4-domain structure.
-   * All getters are functions to capture current state.
-   * @see Section 5.2 and 5.3 of 4_0_0_REFACTORING.md
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfButtonEvent,
+      detail?: Partial<LfButtonEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        value: this.value,
+        valueAsBoolean: this.value === "on",
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + styling
+   * - controller.set: Simple setters (list)
+   * - controller.computed: Derived predicates (isDisabled, isDropdown, isOn)
+   * - controller.actions: Complex operations (toggle)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
    */
   #initAdapter = () => {
-    this.#adapter = createAdapter(
-      // Getters - all functions for dynamic state capture
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters + component-specific state reads
+      // ALL are functions () => T per v4.0.0 Section 5.2
       {
         blocks: () => this.#b,
         compInstance: () => this,
         cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
         ids: () => this.#ids,
-        isDisabled: () => this.#isDisabled(),
-        isDropdown: () => this.#isDropdown(),
-        isOn: () => this.#isOn(),
         lfAttributes: () => this.#lf,
-        manager: () => this.#framework,
         parts: () => this.#p,
         styling: () => this.#normalizedStyling(),
       },
-      // Setters - currently empty, can be extended
+      // Setters - simple single-value assignments
       {
-        list: () => {},
+        list: () => {}, // Enhanced in adapter factory
+      },
+      // Computed - derived predicates
+      {
+        isDisabled: () => this.lfUiState === "disabled",
+        isDropdown: () => Boolean(this.lfDataset?.nodes?.[0]?.children?.length),
+        isOn: () => this.value === "on",
+      },
+      // Actions - complex multi-step operations
+      {
+        toggle: () => {
+          if (this.lfToggable && this.lfUiState !== "disabled") {
+            this.value = this.value === "on" ? "off" : "on";
+          }
+        },
       },
       // Adapter accessor
       () => this.#adapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
-  #isDisabled = () => this.lfUiState === "disabled";
-  #isDropdown = () => {
-    return Boolean(this.lfDataset?.nodes?.[0]?.children?.length);
-  };
-  #isOn() {
-    return this.value === "on" ? true : false;
-  }
   #normalizedStyling() {
     return this.lfStyling
       ? (this.lfStyling.toLowerCase() as LfButtonStyling)
@@ -512,7 +540,7 @@ export class LfButton implements LfButtonInterface {
     const isOff = value === "off";
     const isOn = value === "on";
 
-    if (lfToggable && !this.#isDisabled() && (isOff || isOn)) {
+    if (lfToggable && this.lfUiState !== "disabled" && (isOff || isOn)) {
       this.value = value;
     }
   }
@@ -579,6 +607,7 @@ export class LfButton implements LfButtonInterface {
 
     const { lfDataset, lfIcon, lfLabel, lfStyle } = this;
     const { button, dropdown, icon } = this.#adapter.elements.jsx;
+    const { isDropdown } = this.#adapter.controller.computed;
 
     const styling = this.#normalizedStyling();
 
@@ -599,7 +628,7 @@ export class LfButton implements LfButtonInterface {
         {lfStyle && <style id={this.#s}>{theme.setLfStyle(this)}</style>}
         <div id={this.#w}>
           {isIconButton ? icon() : button()}
-          {this.#isDropdown() && dropdown()}
+          {isDropdown() && dropdown()}
         </div>
       </Host>
     );

@@ -11,7 +11,14 @@ import { FIcon } from "../../utils/icon";
 
 /**
  * Prepares JSX factory functions for the button component.
- * Uses dispatcher for event emission (see Section 5.3 of 4_0_0_REFACTORING.md).
+ *
+ * v4.0.0 Architecture:
+ * - Uses `controller.get` for base getters (blocks, compInstance, framework, etc.)
+ * - Uses `controller.computed` for derived predicates (isDisabled, isDropdown, isOn)
+ * - Uses `controller.actions` for complex operations (toggle)
+ * - Routes all events through dispatcher
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export const prepButton = (
   getAdapter: () => LfButtonAdapter,
@@ -25,15 +32,16 @@ export const prepButton = (
         blocks,
         compInstance,
         cyAttributes,
-        isDisabled,
+        framework,
         lfAttributes,
-        manager,
         parts,
         styling,
       } = controller.get;
+      const { isDisabled } = controller.computed;
+      const { toggle } = controller.actions;
 
       const comp = compInstance();
-      const framework = manager();
+      const mgr = framework();
       const b = blocks();
       const p = parts();
       const cy = cyAttributes();
@@ -50,7 +58,7 @@ export const prepButton = (
         rootElement,
       } = comp;
 
-      const { assignRef, theme } = framework;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
       const { refs } = elements;
 
@@ -75,9 +83,14 @@ export const prepButton = (
           data-lf={lf[lfUiState]}
           disabled={isDisabled()}
           onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
-          onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
+          onClick={(e) => {
+            toggle();
+            dispatcher.emit("click", { originalEvent: e });
+          }}
           onFocus={(e) => dispatcher.emit("focus", { originalEvent: e })}
-          onPointerDown={(e) => dispatcher.emit("pointerdown", { originalEvent: e })}
+          onPointerDown={(e) =>
+            dispatcher.emit("pointerdown", { originalEvent: e })
+          }
           part={p.button}
           ref={assignRef(refs, "button")}
           type={lfType ?? "button"}
@@ -99,23 +112,23 @@ export const prepButton = (
         blocks,
         compInstance,
         cyAttributes,
-        isDisabled,
+        framework,
         lfAttributes,
-        manager,
         parts,
         styling,
       } = controller.get;
+      const { isDisabled } = controller.computed;
       const { list } = controller.set;
 
       const comp = compInstance();
-      const framework = manager();
+      const mgr = framework();
       const b = blocks();
       const p = parts();
       const cy = cyAttributes();
       const lf = lfAttributes();
 
       const { lfDataset, lfUiState } = comp;
-      const { assignRef, theme } = framework;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
       const { refs } = elements;
 
@@ -131,7 +144,9 @@ export const prepButton = (
             data-lf={lf[lfUiState]}
             disabled={isDisabled()}
             onClick={() => list()}
-            onPointerDown={(e) => dispatcher.emit("pointerdown", { originalEvent: e })}
+            onPointerDown={(e) =>
+              dispatcher.emit("pointerdown", { originalEvent: e })
+            }
             part={p.dropdown}
             ref={assignRef(refs, "dropdown")}
           >
@@ -159,15 +174,15 @@ export const prepButton = (
         blocks,
         compInstance,
         cyAttributes,
-        isDisabled,
+        framework,
         lfAttributes,
-        manager,
-        isOn,
         parts,
       } = controller.get;
+      const { isDisabled, isOn } = controller.computed;
+      const { toggle } = controller.actions;
 
       const comp = compInstance();
-      const framework = manager();
+      const mgr = framework();
       const b = blocks();
       const p = parts();
       const cy = cyAttributes();
@@ -182,7 +197,7 @@ export const prepButton = (
         rootElement,
         value,
       } = comp;
-      const { assignRef, theme } = framework;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
       const { refs } = elements;
 
@@ -208,9 +223,14 @@ export const prepButton = (
           data-lf={lf[lfUiState]}
           disabled={isDisabled()}
           onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
-          onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
+          onClick={(e) => {
+            toggle();
+            dispatcher.emit("click", { originalEvent: e });
+          }}
           onFocus={(e) => dispatcher.emit("focus", { originalEvent: e })}
-          onPointerDown={(e) => dispatcher.emit("pointerdown", { originalEvent: e })}
+          onPointerDown={(e) =>
+            dispatcher.emit("pointerdown", { originalEvent: e })
+          }
           part={p.button}
           ref={assignRef(refs, "button")}
           value={value}
@@ -228,15 +248,16 @@ export const prepButton = (
 //#region Helpers
 const prepIcon = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
   const { controller, elements } = adapter;
-  const { blocks, compInstance, isOn, manager, parts } = controller.get;
+  const { blocks, compInstance, framework, parts } = controller.get;
+  const { isOn } = controller.computed;
 
   const comp = compInstance();
-  const framework = manager();
+  const mgr = framework();
   const b = blocks();
   const p = parts();
 
   const { lfIcon, lfIconOff, lfToggable } = comp;
-  const { assignRef, theme } = framework;
+  const { assignRef, theme } = mgr;
   const { bemClass, get } = theme;
   const { refs } = elements;
 
@@ -255,22 +276,23 @@ const prepIcon = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
       part={p.icon}
       ref={assignRef(refs, "icon")}
     >
-      <FIcon framework={framework} icon={icon as LfIconType} />
+      <FIcon framework={mgr} icon={icon as LfIconType} />
     </div>
   );
 };
 
 const prepLabel = (adapter: LfButtonAdapter): VNode => {
   const { controller, elements } = adapter;
-  const { blocks, compInstance, isDisabled, manager, parts } = controller.get;
+  const { blocks, compInstance, framework, parts } = controller.get;
+  const { isDisabled } = controller.computed;
 
   const comp = compInstance();
-  const framework = manager();
+  const mgr = framework();
   const b = blocks();
   const p = parts();
 
   const { lfLabel, lfShowSpinner } = comp;
-  const { assignRef, theme } = framework;
+  const { assignRef, theme } = mgr;
   const { bemClass } = theme;
   const { refs } = elements;
 
@@ -305,15 +327,15 @@ const prepNode = (node: LfDataNode): VNode => {
 
 const prepSpinner = (adapter: LfButtonAdapter): VNode => {
   const { controller, elements } = adapter;
-  const { blocks, compInstance, manager, parts } = controller.get;
+  const { blocks, compInstance, framework, parts } = controller.get;
 
   const comp = compInstance();
-  const framework = manager();
+  const mgr = framework();
   const b = blocks();
   const p = parts();
 
   const { lfShowSpinner } = comp;
-  const { assignRef, theme } = framework;
+  const { assignRef, theme } = mgr;
   const { bemClass } = theme;
   const { refs } = elements;
 

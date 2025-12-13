@@ -5,7 +5,13 @@ import {
 
 /**
  * Prepares event handlers for the button component.
- * Uses dispatcher for event emission (see Section 5.3 of 4_0_0_REFACTORING.md).
+ *
+ * v4.0.0 Architecture:
+ * - Uses `controller.actions` for complex operations (toggle)
+ * - Uses `controller.set` for simple assignments (list state)
+ * - Routes all events through dispatcher
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export const prepButtonHandlers = (
   getAdapter: () => LfButtonAdapter,
@@ -19,8 +25,8 @@ export const prepButtonHandlers = (
 
       switch (eventType) {
         case "click":
-          dispatcher.emit("lf-event", { originalEvent: e });
           set.list("close");
+          dispatcher.emit("lf-event", { originalEvent: e });
           break;
       }
     },

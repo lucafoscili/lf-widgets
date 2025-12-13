@@ -1,16 +1,16 @@
 import { LfIconType } from "../foundations";
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -19,7 +19,6 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_BUTTON_BLOCKS,
@@ -39,6 +38,17 @@ import { LfListElement, LfListEventPayload } from "./list.declarations";
 export interface LfButtonInterface
   extends LfComponent<"LfButton">,
     LfButtonPropsInterface {
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfButtonEventPayload) => void;
+  };
+  /**
+   * Internal runtime state mirrored by the component implementation.
+   */
+  value: LfButtonState;
   setMessage: (
     label?: string,
     icon?: LfIconType,
@@ -56,13 +66,35 @@ export interface LfButtonElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-button` into host integrations.
- * Follows canonical 4-domain structure: controller, elements, handlers, dispatcher.
- * @see Section 5.3 of 4_0_0_REFACTORING.md
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple assignments (list state)
+ * - controller.computed: Derived predicates (isDisabled, isDropdown, isOn)
+ * - controller.actions: Complex operations (toggle)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
+export interface LfButtonAdapter
+  extends LfComponentAdapter<
+    LfButtonInterface,
+    LfButtonEventPayload,
+    LfButtonAdapterHandlers,
+    LfButtonAdapterJsx,
+    LfButtonAdapterRefs,
+    LfButtonAdapterControllerGetters,
+    LfButtonAdapterControllerSetters,
+    LfButtonAdapterControllerComputed,
+    LfButtonAdapterControllerActions
+  > {
   controller: {
     get: LfButtonAdapterControllerGetters;
     set: LfButtonAdapterControllerSetters;
+    computed: LfButtonAdapterControllerComputed;
+    actions: LfButtonAdapterControllerActions;
   };
   elements: {
     jsx: LfButtonAdapterJsx;
@@ -74,14 +106,15 @@ export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
 /**
  * Strongly typed DOM references captured by the component adapter.
  * Structure mirrors LF_BUTTON_BLOCKS for DOM-driven alignment.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
  */
 export interface LfButtonAdapterRefs extends LfComponentAdapterRefs {
-  button: HTMLButtonElement;
-  dropdown: HTMLButtonElement;
-  icon: HTMLElement;
-  label: HTMLSpanElement;
-  list: LfListElement;
-  spinner: HTMLElement;
+  button: HTMLButtonElement | null;
+  dropdown: HTMLButtonElement | null;
+  icon: HTMLElement | null;
+  label: HTMLSpanElement | null;
+  list: LfListElement | null;
+  spinner: HTMLElement | null;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -98,65 +131,83 @@ export interface LfButtonAdapterHandlers extends LfComponentAdapterHandlers {
   list: (e: LfEvent<LfListEventPayload>) => void;
 }
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfButtonAdapterInitializerGetters = Pick<
-  LfButtonAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "ids"
-  | "isDisabled"
-  | "isDropdown"
-  | "isOn"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "styling"
->;
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfButtonAdapterInitializerSetters = Pick<
-  LfButtonAdapterControllerSetters,
-  "list"
->;
-/**
- * Read-only controller surface exposed by the adapter for integration code.
- * All dynamic values are functions to capture current state.
- * @see Section 5.2 of 4_0_0_REFACTORING.md
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfButtonAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfButtonInterface> {
-  blocks: () => typeof LF_BUTTON_BLOCKS;
-  compInstance: () => LfButtonInterface;
-  cyAttributes: () => typeof CY_ATTRIBUTES;
-  ids: () => typeof LF_BUTTON_IDS;
-  isDisabled: () => boolean;
-  isDropdown: () => boolean;
-  isOn: () => boolean;
-  lfAttributes: () => typeof LF_ATTRIBUTES;
-  manager: () => LfFrameworkInterface;
-  parts: () => typeof LF_BUTTON_PARTS;
+  extends LfComponentAdapterBaseGetters<
+    LfButtonInterface,
+    typeof LF_BUTTON_BLOCKS,
+    typeof LF_BUTTON_IDS,
+    typeof LF_BUTTON_PARTS
+  > {
+  /** Current button styling (normalized to lowercase) */
   styling: () => LfButtonStyling;
 }
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
  */
 export interface LfButtonAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  /** Control dropdown list visibility */
   list: (state?: "close" | "open" | "toggle") => void;
 }
 /**
- * Dispatcher for centralized event emission.
- * @see Section 5.3 of 4_0_0_REFACTORING.md
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
  */
-export interface LfButtonAdapterDispatcher {
-  emit: (
-    eventType: LfButtonEvent,
-    detail?: Partial<Omit<LfButtonEventPayload, "eventType" | "id" | "comp">>,
-  ) => void;
+export interface LfButtonAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the button is disabled based on lfUiState */
+  isDisabled: () => boolean;
+  /** Whether the button has dropdown children */
+  isDropdown: () => boolean;
+  /** Whether the button is in "on" state (for toggable buttons) */
+  isOn: () => boolean;
 }
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfButtonAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Toggle button state (on/off) for toggable buttons */
+  toggle: () => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfButtonAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfButtonEventPayload>;
+export type LfButtonAdapterDispatcherDetailOverrides = {
+  [E in LfButtonEvent]: E extends "blur" | "focus"
+    ? LfButtonAdapterDispatchDetailBase & { originalEvent: FocusEvent }
+    : E extends "click"
+      ? LfButtonAdapterDispatchDetailBase & { originalEvent: MouseEvent }
+      : E extends "pointerdown"
+        ? LfButtonAdapterDispatchDetailBase & { originalEvent: PointerEvent }
+        : E extends "lf-event"
+          ? LfButtonAdapterDispatchDetailBase & {
+              originalEvent: LfEvent<LfListEventPayload>;
+            }
+          : E extends "ready" | "unmount"
+            ? Omit<LfButtonAdapterDispatchDetailBase, "originalEvent"> & {
+                originalEvent?: never;
+              }
+            : LfButtonAdapterDispatchDetailBase;
+};
+export type LfButtonAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfButtonEventPayload,
+  LfButtonAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Events
