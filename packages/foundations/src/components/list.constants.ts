@@ -15,6 +15,23 @@ export const LF_LIST_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the list component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_LIST_IDS = {
+  deleteIcon: "delete-icon",
+  emptyData: "empty-data",
+  filter: "filter",
+  icon: "icon",
+  list: "list",
+  node: "node",
+  subtitle: "subtitle",
+  title: "title",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_LIST_EVENTS = [
   "blur",

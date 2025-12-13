@@ -1,7 +1,6 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_LIST_BLOCKS,
+  LF_LIST_IDS,
   LF_LIST_PARTS,
   LF_LIST_PROPS,
   LF_STYLE_ID,
@@ -33,7 +32,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepListActions } from "./actions.list";
+import { prepListComputed } from "./computed.list";
 import { createAdapter } from "./lf-list-adapter";
 
 /**
@@ -226,8 +228,7 @@ export class LfList implements LfListInterface {
   #adapter: LfListAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_LIST_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_LIST_IDS;
   #p = LF_LIST_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -249,40 +250,6 @@ export class LfList implements LfListInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfListEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfListEvent,
-    node?: LfDataNode,
-    index = 0,
-  ) {
-    switch (eventType) {
-      case "blur":
-        this.focused = null;
-        break;
-      case "click":
-        this.focused = index;
-        const originalIndex = this.#getOriginalIndexFromVisibleIndex(index);
-        this.#handleSelection(originalIndex);
-        break;
-      case "delete":
-        if (index > -1) {
-          this.lfDataset.nodes.splice(index, 1);
-          this.refresh();
-        }
-        break;
-      case "focus":
-        this.focused = index;
-        break;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      node,
-    });
-  }
   //#endregion
 
   //#region Watchers
@@ -465,7 +432,7 @@ export class LfList implements LfListInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", { node: null });
       this.rootElement.remove();
     }, ms);
   }
@@ -487,6 +454,28 @@ export class LfList implements LfListInterface {
       }
     }
   }
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfListEvent, detail?: Partial<LfListEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node ?? null,
+      });
+    },
+  });
   #debounceFilter(value: string): void {
     if (this.#filterTimeout) {
       clearTimeout(this.#filterTimeout);
@@ -498,6 +487,8 @@ export class LfList implements LfListInterface {
     const { stringify } = this.#framework.data.cell;
     return `${stringify(node.value)} ${stringify(node.description)}`.trim();
   }
+  // @ts-expect-error - Method reserved for future use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   #getOriginalIndexFromVisibleIndex(visibleIndex: number): number {
     const visibleNodes = this.#getVisibleNodes();
     const node = visibleNodes[visibleIndex];
@@ -546,33 +537,69 @@ export class LfList implements LfListInterface {
       isNaN(this.focused) || this.focused === null || this.focused === undefined
     );
   }
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+   * - controller.set: Simple setters (filter, selected, focused)
+   * - controller.computed: Derived predicates (isDisabled, isEmpty, isFilteredEmpty)
+   * - controller.actions: Complex operations (applyFilter, deleteNode, focusElement, selectNode)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
         filterValue: () => this.filter,
         focused: () => this.focused,
         hiddenNodes: () => this.#hiddenNodes,
         indexById: (id: string) =>
           this.lfDataset?.nodes?.findIndex((n) => n.id === id),
-        isDisabled: () => this.lfUiState === "disabled",
-        lfAttributes: this.#lf,
-        manager: this.#framework,
         nodeById: (id: string) =>
           this.lfDataset?.nodes?.find((n) => n.id === id),
-        parts: this.#p,
         selected: () => this.selected,
       },
+      // Setters - simple single-value assignments
       {
         filter: {
           debounce: (value) => this.#debounceFilter(value),
           setValue: (value) => this.#applyFilter(value),
         },
+        focused: (index) => {
+          this.focused = index;
+        },
+        selected: (index) => {
+          this.selected = index;
+        },
       },
-      () => this.#adapter,
+      // Computed - derived predicates (from dedicated file)
+      prepListComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepListActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -593,7 +620,8 @@ export class LfList implements LfListInterface {
   componentDidLoad() {
     const { debug } = this.#framework;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", { node: null });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -618,36 +646,37 @@ export class LfList implements LfListInterface {
     const { bemClass, setLfStyle } = this.#framework.theme;
 
     const { controller, elements } = this.#adapter;
-    const { get } = controller;
+    const { get, computed } = controller;
     const { jsx } = elements;
+    const { lfAttributes } = get;
+    const { isEmpty, isFilteredEmpty } = computed;
     const { emptyData, list } = this.#b;
     const { lfDataset, lfEmpty, lfFilter, lfSelectable, lfStyle } = this;
 
+    const lf = lfAttributes();
     this.#listItems = [];
 
     const visibleNodes =
       lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) || [];
 
     const getIndex = (id: string) => get.indexById(id);
-    const isEmpty = !!!lfDataset?.nodes?.length;
-    const isFilteredEmpty = !isEmpty && visibleNodes.length === 0;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           {lfFilter && jsx.filter()}
-          {isEmpty || isFilteredEmpty ? (
+          {isEmpty() || isFilteredEmpty() ? (
             <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
               <div class={bemClass(emptyData._, emptyData.text)}>
-                {isFilteredEmpty ? "No items match your filter." : lfEmpty}
+                {isFilteredEmpty() ? "No items match your filter." : lfEmpty}
               </div>
             </div>
           ) : (
             <ul
               aria-multiselectable={"false"}
               class={bemClass(list._, null, {
-                empty: isEmpty,
+                empty: isEmpty(),
                 selectable: lfSelectable,
               })}
               part={this.#p.list}
@@ -663,7 +692,7 @@ export class LfList implements LfListInterface {
                       "has-description": !!node.description,
                       selected: isSelected,
                     })}
-                    data-lf={this.#lf[this.lfUiState]}
+                    data-lf={lf[this.lfUiState]}
                     key={node.id}
                     ref={(el) => {
                       if (el && !this.#listItems.includes(el)) {
