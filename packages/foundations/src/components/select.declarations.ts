@@ -1,12 +1,15 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-  LfComponentAdapterGetters,
+  LfComponentAdapter,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
-} from "../foundations";
+} from "../foundations/adapter.declarations";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -14,7 +17,6 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
@@ -37,6 +39,17 @@ import {
 export interface LfSelectInterface
   extends LfComponent<"LfSelect">,
     LfSelectPropsInterface {
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfSelectEventPayload) => void;
+  };
+  /**
+   * Internal runtime state mirrored by the component implementation.
+   */
+  value: string | null;
   getSelectedIndex: () => Promise<number>;
   getValue: () => Promise<LfDataNode>;
   setValue: (id: string) => Promise<void>;
@@ -47,64 +60,143 @@ export interface LfSelectElement
 //#endregion
 
 //#region Adapter
-export interface LfSelectAdapter {
+/**
+ * Adapter contract that wires `lf-select` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple assignments (list state)
+ * - controller.computed: Derived predicates (isDisabled)
+ * - controller.actions: Complex operations (setValue, navigate)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+export interface LfSelectAdapter
+  extends LfComponentAdapter<
+    LfSelectInterface,
+    LfSelectEventPayload,
+    LfSelectAdapterHandlers,
+    LfSelectAdapterJsx,
+    LfSelectAdapterRefs,
+    LfSelectAdapterControllerGetters,
+    LfSelectAdapterControllerSetters,
+    LfSelectAdapterControllerComputed,
+    LfSelectAdapterControllerActions
+  > {
   controller: {
     get: LfSelectAdapterControllerGetters;
     set: LfSelectAdapterControllerSetters;
+    computed: LfSelectAdapterControllerComputed;
+    actions: LfSelectAdapterControllerActions;
   };
   elements: {
     jsx: LfSelectAdapterJsx;
     refs: LfSelectAdapterRefs;
   };
   handlers: LfSelectAdapterHandlers;
+  dispatcher: LfSelectAdapterDispatcher;
 }
-export interface LfSelectAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfSelectInterface> {
-  blocks: typeof LF_SELECT_BLOCKS;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  indexById: (id: string) => number;
-  isDisabled: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  lfDataset: () => LfDataDataset;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_SELECT_PARTS;
-  selectedNode: () => LfDataNode | null;
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ * Structure mirrors LF_SELECT_BLOCKS for DOM-driven alignment.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
+ */
+export interface LfSelectAdapterRefs extends LfComponentAdapterRefs {
+  list: LfListElement | null;
+  select: HTMLDivElement | null;
+  textfield: LfTextfieldElement | null;
 }
-export type LfSelectAdapterInitializerGetters = Pick<
-  LfSelectAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "indexById"
-  | "isDisabled"
-  | "lfAttributes"
-  | "lfDataset"
-  | "manager"
-  | "parts"
-  | "selectedNode"
->;
-export interface LfSelectAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  list: (state?: "toggle" | "open" | "close") => void;
-  value: (id: string) => Promise<void>;
-}
-export type LfSelectAdapterInitializerSetters = Pick<
-  LfSelectAdapterControllerSetters,
-  "value"
->;
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
 export interface LfSelectAdapterJsx extends LfComponentAdapterJsx {
   list: () => VNode | null;
   textfield: () => VNode;
 }
-export interface LfSelectAdapterRefs extends LfComponentAdapterRefs {
-  list: LfListElement;
-  select: HTMLDivElement;
-  textfield: LfTextfieldElement;
-}
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
 export interface LfSelectAdapterHandlers extends LfComponentAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }
+/**
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
+export interface LfSelectAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfSelectInterface,
+    typeof LF_SELECT_BLOCKS,
+    Record<string, never>,
+    typeof LF_SELECT_PARTS
+  > {
+  /** Get node index by id */
+  indexById: (id: string) => number;
+  /** Get lfDataset from component */
+  lfDataset: () => LfDataDataset;
+  /** Get currently selected node */
+  selectedNode: () => LfDataNode | null;
+}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfSelectAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Control dropdown list visibility */
+  list: (state?: "close" | "open" | "toggle") => void;
+}
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfSelectAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the select is disabled based on lfUiState */
+  isDisabled: () => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfSelectAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Navigate to next or previous option */
+  navigate: (direction: "next" | "prev") => Promise<void>;
+  /** Set selected value by id */
+  setValue: (id: string) => Promise<void>;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfSelectAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfSelectEventPayload>;
+export type LfSelectAdapterDispatcherDetailOverrides = {
+  [E in LfSelectEvent]: E extends "lf-event"
+    ? LfSelectAdapterDispatchDetailBase & {
+        originalEvent?: LfEvent<LfListEventPayload | LfTextfieldEventPayload>;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfSelectAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfSelectAdapterDispatchDetailBase;
+};
+export type LfSelectAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfSelectEventPayload,
+  LfSelectAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Events

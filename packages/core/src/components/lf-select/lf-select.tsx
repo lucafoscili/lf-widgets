@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_SELECT_BLOCKS,
   LF_SELECT_PARTS,
   LF_SELECT_PROPS,
@@ -34,7 +32,10 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepSelectActions } from "./actions.select";
+import { prepSelectComputed } from "./computed.select";
 import { createAdapter } from "./lf-select-adapter";
 import { findNodeById, hasNodeWithId } from "./utils.select";
 
@@ -182,11 +183,9 @@ export class LfSelect implements LfSelectInterface {
   //#endregion
 
   //#region Internal variables
-  #framework: LfFrameworkInterface;
   #adapter: LfSelectAdapter;
+  #framework: LfFrameworkInterface;
   #b = LF_SELECT_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
   #p = LF_SELECT_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -205,21 +204,6 @@ export class LfSelect implements LfSelectInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfSelectEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfSelectEvent,
-    node?: LfDataNode,
-    value?: string | number,
-  ) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      node,
-      value,
-    });
-  }
   //#endregion
 
   //#region Watchers
@@ -293,7 +277,7 @@ export class LfSelect implements LfSelectInterface {
    */
   @Method()
   async setValue(id: string): Promise<void> {
-    this.#adapter.controller.set.value(id);
+    await this.#adapter.controller.actions.setValue(id);
   }
   /**
    * Initiates the unmount sequence.
@@ -302,67 +286,90 @@ export class LfSelect implements LfSelectInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        value: this.value,
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #initAdapter() {
-    this.#adapter = createAdapter(
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfSelectEvent,
+      detail?: Partial<LfSelectEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node,
+        value: detail?.value,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+   * - controller.set: Simple setters (list)
+   * - controller.computed: Derived predicates (isDisabled)
+   * - controller.actions: Complex operations (setValue, navigate)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => ({}),
+          parts: () => this.#p,
+        }),
         indexById: (id: string) =>
-          this.lfDataset?.nodes?.findIndex((n) => n.id === id),
-        isDisabled: () => this.lfUiState === "disabled",
-        lfAttributes: this.#lf,
+          this.lfDataset?.nodes?.findIndex((n) => n.id === id) ?? -1,
         lfDataset: () => this.lfDataset,
-        manager: this.#framework,
-        parts: this.#p,
         selectedNode: () => findNodeById(this.lfDataset, this.value),
       },
-      {
-        value: async (value: string) => {
-          const { refs } = this.#adapter.elements;
-
-          const textfield = refs.textfield || null;
-          const list = refs.list || null;
-
-          const maybeSetValue = async (val: string | null) => {
-            this.value = val;
-            const selectedNode = this.#adapter.controller.get.selectedNode();
-            if (list) {
-              await list.selectNodeById(selectedNode?.id || null);
-            }
-            if (textfield) {
-              await textfield.setValue(String(selectedNode?.value || ""));
-            }
-
-            this.onLfEvent(
-              new CustomEvent("change"),
-              "change",
-              selectedNode,
-              val,
-            );
-          };
-
-          if (
-            value &&
-            this.lfDataset &&
-            !hasNodeWithId(this.lfDataset, value)
-          ) {
-            await maybeSetValue(null);
-            return;
-          }
-          await maybeSetValue(value);
-        },
-      },
-      () => this.#adapter,
+      // Setters - simple single-value assignments (enhanced in adapter factory)
+      { list: () => {} },
+      // Computed - derived predicates (from dedicated file)
+      prepSelectComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepSelectActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
-  }
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -382,11 +389,14 @@ export class LfSelect implements LfSelectInterface {
 
     this.#initAdapter();
   }
-  async componentDidLoad() {
-    const { info } = this.#framework.debug;
+  componentDidLoad() {
+    const { debug } = this.#framework;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
-    await info.update(this, "did-load");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      value: this.value,
+    });
+    debug.info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -399,7 +409,9 @@ export class LfSelect implements LfSelectInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { theme } = this.#framework;
+    const { bemClass, setLfStyle } = theme;
+    const { cyAttributes, lfAttributes, parts } = this.#adapter.controller.get;
     const { lfStyle } = this;
 
     return (
@@ -408,8 +420,9 @@ export class LfSelect implements LfSelectInterface {
         <div id={this.#w}>
           <div
             class={bemClass(this.#b.select._)}
-            data-lf={this.#lf[this.lfUiState]}
-            part={this.#p.select}
+            data-cy={cyAttributes().node}
+            data-lf={lfAttributes()[this.lfUiState]}
+            part={parts().select}
             ref={(el) => {
               if (el) {
                 this.#adapter.elements.refs.select = el;
