@@ -8,9 +8,8 @@ import type {
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_RADIO_BLOCKS,
+  LF_RADIO_IDS,
   LF_RADIO_PARTS,
   LF_RADIO_PROPS,
   LF_STYLE_ID,
@@ -34,7 +33,10 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepRadioActions } from "./actions.radio";
+import { prepRadioComputed } from "./computed.radio";
 import { createAdapter } from "./lf-radio-adapter";
 
 /**
@@ -74,7 +76,7 @@ export class LfRadio implements LfRadioInterface {
 
   //#region States
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value: string;
+  @State() value: string | undefined;
   //#endregion
 
   //#region Props
@@ -199,10 +201,9 @@ export class LfRadio implements LfRadioInterface {
 
   //#region Internal variables
   #adapter: LfRadioAdapter;
-  #b = LF_RADIO_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #framework: LfFrameworkInterface;
-  #lf = LF_ATTRIBUTES;
+  #b = LF_RADIO_BLOCKS;
+  #ids = LF_RADIO_IDS;
   #p = LF_RADIO_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -224,32 +225,6 @@ export class LfRadio implements LfRadioInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfRadioEventPayload>;
-  async onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfRadioEvent,
-    _index?: number,
-    node?: LfDataNode,
-  ) {
-    const previousValue = this.value;
-
-    switch (eventType) {
-      case "change":
-      case "click": {
-        await this.#adapter.controller.set.selection.select(node?.id);
-        break;
-      }
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      node: node || null,
-      previousValue: previousValue || null,
-      value: this.value || null,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -258,9 +233,7 @@ export class LfRadio implements LfRadioInterface {
    */
   @Method()
   async clearSelection(): Promise<void> {
-    const { controller } = this.#adapter;
-
-    await controller.set.selection.clear();
+    this.#adapter.controller.actions.clear();
   }
   /**
    * Gets the current adapter instance.
@@ -318,9 +291,7 @@ export class LfRadio implements LfRadioInterface {
    */
   @Method()
   async selectItem(nodeId: string): Promise<void> {
-    const { controller } = this.#adapter;
-
-    await controller.set.selection.select(nodeId);
+    this.#adapter.controller.actions.select(nodeId);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -329,10 +300,84 @@ export class LfRadio implements LfRadioInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        node: null,
+      });
       this.rootElement.remove();
     }, ms);
   }
+  //#endregion
+
+  //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfRadioEvent, detail?: Partial<LfRadioEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        node: detail?.node ?? null,
+        previousValue: detail?.previousValue ?? null,
+        value: this.value ?? null,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: Simple setters (updateDataset)
+   * - controller.computed: Derived predicates (isDisabled, hasNodes, isHorizontal, etc.)
+   * - controller.actions: Complex operations (select, clear, focusNext, focusPrevious)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Setters - simple single-value assignments (enhanced in adapter factory)
+      { updateDataset: () => {} },
+      // Computed - derived predicates (from dedicated file)
+      prepRadioComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepRadioActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -348,85 +393,25 @@ export class LfRadio implements LfRadioInterface {
       this.value = this.lfValue;
     }
 
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        data: {
-          dataset: () => this.lfDataset,
-          nodes: () => this.lfDataset?.nodes || [],
-          nodeById: (id: string) =>
-            this.lfDataset?.nodes?.find((n) => n.id === id),
-          selectedNode: () => {
-            const selectedId = this.value;
-            if (!selectedId || !this.lfDataset?.nodes) {
-              return undefined;
-            }
-
-            return this.lfDataset.nodes.find((n) => n.id === selectedId);
-          },
-        },
-        state: {
-          selectedId: () => this.value,
-          isSelected: (nodeId: string) => this.value === nodeId,
-        },
-        ui: {
-          orientation: () => this.lfOrientation,
-          isLeadingLabel: () => this.lfLeadingLabel,
-          hasRipple: () => this.lfRipple,
-        },
-      },
-      {
-        selection: {
-          select: async (nodeId: string | undefined) => {
-            this.#adapter.controller.get.compInstance;
-
-            const isDisabled = nodeId
-              ? this.#adapter.controller.get.data.nodeById(nodeId)?.isDisabled
-              : this.lfUiState === "disabled"
-                ? true
-                : false;
-
-            if (isDisabled) {
-              return;
-            }
-
-            this.value = nodeId;
-          },
-          clear: async () => {
-            await this.#adapter.controller.set.selection.select(undefined);
-          },
-        },
-        data: {
-          updateDataset: async (dataset: LfDataDataset) => {
-            const currentSelectedId =
-              this.#adapter.controller.get.state.selectedId();
-
-            this.lfDataset = dataset;
-
-            if (currentSelectedId) {
-              const stillExists = dataset?.nodes?.some(
-                (n) => n.id === currentSelectedId,
-              );
-              if (!stillExists) {
-                await this.#adapter.controller.set.selection.clear();
-              }
-            }
-          },
-        },
-      },
-      () => this.#adapter,
-    );
+    this.#initAdapter();
   }
   componentDidLoad() {
-    const { info } = this.#framework.debug;
+    const { debug, effects, theme } = this.#framework;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
-    info.update(this, "did-load");
+    const hasThemeRipple = theme.get.current().hasEffect("ripple");
+    if (this.lfRipple && hasThemeRipple) {
+      this.#adapter.elements.refs.items.forEach((item) => {
+        if (item) {
+          effects.register.ripple(item);
+        }
+      });
+    }
+
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      node: null,
+    });
+    debug.info.update(this, "did-load");
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -440,7 +425,9 @@ export class LfRadio implements LfRadioInterface {
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
     if (this.lfRipple && hasThemeRipple) {
       this.#adapter.elements.refs.items.forEach((item) => {
-        effects.register.ripple(item);
+        if (item) {
+          effects.register.ripple(item);
+        }
       });
     }
 
@@ -449,11 +436,12 @@ export class LfRadio implements LfRadioInterface {
   render() {
     const { setLfStyle } = this.#framework.theme;
     const { jsx } = this.#adapter.elements;
+    const { hasNodes } = this.#adapter.controller.computed;
     const { lfStyle } = this;
 
     const nodes = this.lfDataset?.nodes || [];
 
-    if (!nodes || nodes.length === 0) {
+    if (!hasNodes()) {
       return;
     }
 
@@ -465,16 +453,18 @@ export class LfRadio implements LfRadioInterface {
     );
   }
   disconnectedCallback() {
-    const { effects, theme } = this.#framework;
+    const { effects, theme } = this.#framework ?? {};
 
     const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (hasThemeRipple) {
+    if (hasThemeRipple && effects) {
       this.#adapter.elements.refs.items.forEach((item) => {
-        effects.unregister.ripple(item);
+        if (item) {
+          effects.unregister.ripple(item);
+        }
       });
     }
 
-    theme.unregister(this);
+    theme?.unregister(this);
   }
   //#endregion
 }

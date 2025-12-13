@@ -13,32 +13,33 @@ export const prepRadio = (
     control: (node: LfDataNode): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, compInstance, cyAttributes, manager, parts, state } =
+      const { blocks, compInstance, cyAttributes, framework, parts } =
         controller.get;
+      const { computed } = controller;
       const { blur, change, focus } = handlers;
-      const { theme } = manager;
+      const { theme } = framework();
       const { bemClass } = theme;
 
-      const isSelected = state.isSelected(node.id);
-      const inputName = `${compInstance.rootElement.id || "lf-radio"}-group`;
+      const isSelected = computed.isSelected(node.id);
+      const inputName = `${compInstance().rootElement.id || "lf-radio"}-group`;
 
       return (
-        <div class={bemClass(blocks.control._)}>
+        <div class={bemClass(blocks().control._)}>
           <input
             checked={isSelected}
-            class={bemClass(blocks.control._, blocks.control.input)}
-            data-cy={cyAttributes.input}
+            class={bemClass(blocks().control._, blocks().control.input)}
+            data-cy={cyAttributes().input}
             disabled={node.isDisabled}
             id={node.id}
             name={inputName}
-            onBlur={(e) => blur(e, node.id)}
+            onBlur={(e) => blur(e, node)}
             onChange={(e) => {
-              change(e, node.id);
+              change(e, node);
             }}
             onFocus={(e) => {
-              focus(e, node.id);
+              focus(e, node);
             }}
-            part={parts.input}
+            part={parts().input}
             ref={(el) => {
               if (el) {
                 elements.refs.inputs.set(node.id, el);
@@ -49,12 +50,12 @@ export const prepRadio = (
             value={node.value}
           />
           <div
-            class={bemClass(blocks.control._, blocks.control.circle)}
-            part={parts.circle}
+            class={bemClass(blocks().control._, blocks().control.circle)}
+            part={parts().circle}
           >
             <div
-              class={bemClass(blocks.control._, blocks.control.dot)}
-              part={parts.dot}
+              class={bemClass(blocks().control._, blocks().control.dot)}
+              part={parts().dot}
             ></div>
           </div>
         </div>
@@ -65,36 +66,36 @@ export const prepRadio = (
     //#region Item
     item: (node: LfDataNode, _index: number) => {
       const { controller, elements, handlers } = getAdapter();
-      const { get } = controller;
+      const { get, computed } = controller;
       const { control } = elements.jsx;
-      const { blocks, manager, parts, state, ui } = get;
+      const { blocks, framework, parts } = get;
       const { click } = handlers;
-      const { theme } = manager;
+      const { theme, data } = framework();
       const { bemClass } = theme;
 
-      const isSelected = state.isSelected(node.id);
-      const isLeading = ui.isLeadingLabel();
+      const isSelected = computed.isSelected(node.id);
+      const isLeading = computed.isLeadingLabel();
       const isDisabled = node.isDisabled;
-      const labelText = manager.data.cell.stringify(node.value) || node.id;
+      const labelText = data.cell.stringify(node.value) || node.id;
 
       return (
         <div
-          class={bemClass(blocks.item._, undefined, {
+          class={bemClass(blocks().item._, undefined, {
             leading: isLeading,
             selected: isSelected,
             disabled: isDisabled,
           })}
-          onClick={(e) => click(e, node.id)}
+          onClick={(e) => click(e, node)}
           onPointerDown={(e) => handlers.pointerDown(e, node)}
-          part={parts.item}
+          part={parts().item}
           ref={(el) => {
             if (el) elements.refs.items.set(node.id, el);
           }}
         >
           {control(node)}
           <label
-            class={bemClass(blocks.item._, blocks.item.label)}
-            htmlFor={`${get.compInstance.rootElement.id || "lf-radio"}-group-${node.id}`}
+            class={bemClass(blocks().item._, blocks().item.label)}
+            htmlFor={`${get.compInstance().rootElement.id || "lf-radio"}-group-${node.id}`}
           >
             {labelText}
           </label>
@@ -105,16 +106,16 @@ export const prepRadio = (
 
     //#region Label
     label: (node: LfDataNode): VNode => {
-      const { blocks, manager, parts } = getAdapter().controller.get;
-      const { theme } = manager;
+      const { blocks, framework, parts } = getAdapter().controller.get;
+      const { theme, data } = framework();
       const { bemClass } = theme;
 
-      const labelText = manager.data.cell.stringify(node.value) || node.id;
+      const labelText = data.cell.stringify(node.value) || node.id;
 
       return (
         <label
-          class={bemClass(blocks.item._, blocks.item.label)}
-          part={parts.label}
+          class={bemClass(blocks().item._, blocks().item.label)}
+          part={parts().label}
         >
           {labelText}
         </label>
@@ -125,22 +126,21 @@ export const prepRadio = (
     //#region Radio
     radio: (nodes: LfDataNode[]) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, lfAttributes, manager, parts, ui } =
-        controller.get;
+      const { get, computed } = controller;
+      const { blocks, compInstance, lfAttributes, framework, parts } = get;
       const { item } = elements.jsx;
-      const { bemClass } = manager.theme;
+      const { bemClass } = framework().theme;
 
-      const orientation = ui.orientation();
-      const isHorizontal = orientation === "horizontal";
+      const isHorizontal = computed.isHorizontal();
 
       return (
         <div
-          class={bemClass(blocks._, undefined, {
+          class={bemClass(blocks()._, undefined, {
             horizontal: isHorizontal,
           })}
-          data-lf={lfAttributes[compInstance.lfUiState]}
+          data-lf={lfAttributes()[compInstance().lfUiState]}
           onKeyDown={handlers.keyDown}
-          part={parts.radio}
+          part={parts().radio}
         >
           {nodes.map((node, index) => item(node, index))}
         </div>

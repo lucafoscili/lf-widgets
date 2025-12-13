@@ -3,135 +3,115 @@ import {
   LfRadioAdapter,
   LfRadioAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { LfRadio } from "./lf-radio";
 
-export const createHandlers = (
+/**
+ * Prepares event handlers for the radio component.
+ *
+ * v4.0.0 Architecture:
+ * - Uses `controller.actions` for complex operations (select, clear, focusNext, focusPrevious)
+ * - Uses `controller.computed` for state derivation (selectedId, isSelected)
+ * - Routes all events through dispatcher
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+export const prepRadioHandlers = (
   getAdapter: () => LfRadioAdapter,
 ): LfRadioAdapterHandlers => {
   return {
     //#region Blur
-    blur: async (e: FocusEvent, nodeId: string) => {
+    blur: (e: FocusEvent, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
-      const node = adapter.controller.get.data.nodeById(nodeId);
-      const comp = compInstance as LfRadio;
+      const { dispatcher } = adapter;
 
-      if (!node) {
-        return;
-      }
-
-      comp.onLfEvent(e, "blur", undefined, node);
+      dispatcher.emit("blur", {
+        originalEvent: e,
+        node,
+      });
     },
     //#endregion
 
     //#region Click
-    click: async (e: MouseEvent, nodeId: string) => {
+    click: (e: MouseEvent, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
-      const node = adapter.controller.get.data.nodeById(nodeId);
-      const comp = compInstance as LfRadio;
+      const { actions } = adapter.controller;
+      const { dispatcher } = adapter;
 
-      if (!node) {
-        return;
-      }
-
-      comp.onLfEvent(e, "click", undefined, node);
+      actions.select(node.id);
+      dispatcher.emit("click", {
+        originalEvent: e,
+        node,
+      });
     },
     //#endregion
 
     //#region Change
-    change: async (e: Event, nodeId: string) => {
+    change: (e: Event, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { compInstance, data } = adapter.controller.get;
-      const node = data.nodeById(nodeId);
-      const comp = compInstance as LfRadio;
+      const { actions } = adapter.controller;
+      const { dispatcher } = adapter;
 
-      if (!node) {
-        return;
-      }
-
-      comp.onLfEvent(e, "change", undefined, node);
+      actions.select(node.id);
+      dispatcher.emit("change", {
+        originalEvent: e,
+        node,
+      });
     },
     //#endregion
 
     //#region Focus
-    focus: async (e: FocusEvent, nodeId: string) => {
+    focus: (e: FocusEvent, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { compInstance, data } = adapter.controller.get;
-      const node = data.nodeById(nodeId);
-      const comp = compInstance as LfRadio;
+      const { dispatcher } = adapter;
 
-      if (!node) {
-        return;
-      }
-
-      comp.onLfEvent(e, "focus", undefined, node);
+      dispatcher.emit("focus", {
+        originalEvent: e,
+        node,
+      });
     },
     //#endregion
 
     //#region Key Down
-    keyDown: async (e: KeyboardEvent) => {
+    keyDown: (e: KeyboardEvent) => {
       const adapter = getAdapter();
-      const nodes = adapter.controller.get.data.nodes();
-      const currentId = adapter.controller.get.state.selectedId();
-
-      if (!nodes || nodes.length === 0) {
-        return;
-      }
-
-      const currentIndex = currentId
-        ? nodes.findIndex((n: LfDataNode) => n.id === currentId)
-        : -1;
-
-      let nextIndex = -1;
+      const { actions, computed } = adapter.controller;
 
       switch (e.key) {
         case "ArrowDown":
         case "ArrowRight":
           e.preventDefault();
-          nextIndex =
-            currentIndex === -1 ? 0 : (currentIndex + 1) % nodes.length;
+          actions.focusNext();
           break;
         case "ArrowUp":
         case "ArrowLeft":
           e.preventDefault();
-          nextIndex =
-            currentIndex === -1
-              ? nodes.length - 1
-              : (currentIndex - 1 + nodes.length) % nodes.length;
+          actions.focusPrevious();
           break;
         case " ":
         case "Enter":
           // Space or Enter on focused item selects it
           if (e.target instanceof HTMLInputElement) {
             const nodeId = e.target.value;
-            await adapter.controller.set.selection.select(nodeId);
+            if (!computed.isSelected(nodeId)) {
+              actions.select(nodeId);
+            }
           }
           e.preventDefault();
-          return;
+          break;
         default:
-          return;
-      }
-
-      if (nextIndex !== -1) {
-        const nextNode = nodes[nextIndex];
-        await adapter.controller.set.selection.select(nextNode.id);
-
-        const inputEl = adapter.elements.refs.inputs.get(nextNode.id);
-        if (inputEl) {
-          inputEl.focus();
-        }
+          break;
       }
     },
     //#endregion
 
     //#region Pointer Down
-    pointerDown: async (e: Event, node: LfDataNode) => {
+    pointerDown: (e: PointerEvent, node: LfDataNode) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
-      const comp = compInstance as LfRadio;
+      const { dispatcher } = adapter;
 
-      comp.onLfEvent(e, "pointerdown", undefined, node);
+      dispatcher.emit("pointerdown", {
+        originalEvent: e,
+        node,
+      });
     },
     //#endregion
   };

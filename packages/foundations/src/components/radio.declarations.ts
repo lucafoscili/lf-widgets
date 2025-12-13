@@ -1,14 +1,15 @@
 import {
-  LfComponentAdapterGetters as LfAdapterGetters,
+  LfComponentAdapter,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -19,13 +20,13 @@ import { LfEventPayload } from "../foundations/events.declarations";
 import {
   LfDataDataset,
   LfDataNode,
-  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "../framework/index";
 import {
   LF_RADIO_BLOCKS,
   LF_RADIO_EVENTS,
+  LF_RADIO_IDS,
   LF_RADIO_ORIENTATIONS,
   LF_RADIO_PARTS,
 } from "./radio.constants";
@@ -37,6 +38,17 @@ import {
 export interface LfRadioInterface
   extends LfComponent<"LfRadio">,
     LfRadioPropsInterface {
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfRadioEventPayload) => void;
+  };
+  /**
+   * Internal runtime state - the currently selected node ID.
+   */
+  value: string | undefined;
   /**
    * Clears the current selection.
    */
@@ -80,167 +92,60 @@ export interface LfRadioEventPayload
 
 //#region Adapter
 /**
- * Complete adapter structure for lf-radio.
+ * Adapter contract that wires `lf-radio` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+ * - controller.set: Simple assignments (selection)
+ * - controller.computed: Derived predicates (isDisabled, hasNodes, isHorizontal, etc.)
+ * - controller.actions: Complex operations (select, clear, focusNext, focusPrevious)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfRadioAdapter {
+export interface LfRadioAdapter
+  extends LfComponentAdapter<
+    LfRadioInterface,
+    LfRadioEventPayload,
+    LfRadioAdapterHandlers,
+    LfRadioAdapterJsx,
+    LfRadioAdapterRefs,
+    LfRadioAdapterControllerGetters,
+    LfRadioAdapterControllerSetters,
+    LfRadioAdapterControllerComputed,
+    LfRadioAdapterControllerActions
+  > {
   controller: {
     get: LfRadioAdapterControllerGetters;
     set: LfRadioAdapterControllerSetters;
+    computed: LfRadioAdapterControllerComputed;
+    actions: LfRadioAdapterControllerActions;
   };
   elements: {
     jsx: LfRadioAdapterJsx;
     refs: LfRadioAdapterRefs;
   };
   handlers: LfRadioAdapterHandlers;
+  dispatcher: LfRadioAdapterDispatcher;
 }
 /**
- * Getters namespace for the radio adapter controller.
- * All getters return functions (pure, no invocation).
- */
-export interface LfRadioAdapterControllerGetters
-  extends LfAdapterGetters<LfRadioInterface> {
-  /**
-   * BEM block classes for styling.
-   */
-  blocks: typeof LF_RADIO_BLOCKS;
-  /**
-   * Cypress test attributes.
-   */
-  cyAttributes: typeof CY_ATTRIBUTES;
-  /**
-   * Data-related getters.
-   */
-  data: {
-    /**
-     * Returns a function that gets the current dataset.
-     */
-    dataset: () => LfDataDataset | undefined;
-    /**
-     * Returns a function that gets all nodes as a flat array.
-     */
-    nodes: () => LfDataNode[];
-    /**
-     * Returns the node matching the given ID.
-     */
-    nodeById: (id: string) => LfDataNode | undefined;
-    /**
-     * Returns a function that gets the currently selected node.
-     */
-    selectedNode: () => LfDataNode | undefined;
-  };
-  /**
-   * LF-specific attributes.
-   */
-  lfAttributes: typeof LF_ATTRIBUTES;
-  /**
-   * Framework manager instance.
-   */
-  manager: LfFrameworkInterface;
-  /**
-   * CSS part names for styling.
-   */
-  parts: typeof LF_RADIO_PARTS;
-  /**
-   * State-related getters.
-   */
-  state: {
-    /**
-     * Returns a function that gets the selected ID.
-     */
-    selectedId: () => string | undefined;
-    /**
-     * Returns a function that checks if a node is selected.
-     */
-    isSelected: (nodeId: string) => boolean;
-  };
-  /**
-   * UI-related getters.
-   */
-  ui: {
-    /**
-     * Returns a function that gets the orientation.
-     */
-    orientation: () => LfRadioOrientation;
-    /**
-     * Returns a function that checks if labels are leading.
-     */
-    isLeadingLabel: () => boolean;
-    /**
-     * Returns a function that checks if ripple is enabled.
-     */
-    hasRipple: () => boolean;
-  };
-}
-/**
- * Subset of adapter getters required during initialisation.
- */
-export type LfRadioAdapterInitializerGetters = Pick<
-  LfRadioAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "data"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "state"
-  | "ui"
->;
-/**
- * Setters namespace for the radio adapter controller.
- * All setters are async and return void promises.
- */
-export interface LfRadioAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  /**
-   * Dataset-related setters.
-   */
-  data: {
-    /**
-     * Updates the dataset.
-     * Resets selection if current selection is not in new dataset.
-     */
-    updateDataset: (dataset: LfDataDataset) => Promise<void>;
-  };
-  /**
-   * Selection-related setters.
-   */
-  selection: {
-    /**
-     * Clears the current selection.
-     */
-    clear: () => Promise<void>;
-    /**
-     * Sets the selected node ID.
-     * Triggers animation and event emission.
-     */
-    select: (nodeId: string | undefined) => Promise<void>;
-  };
-}
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfRadioAdapterInitializerSetters = Pick<
-  LfRadioAdapterControllerSetters,
-  "data" | "selection"
->;
-/**
- * Element references for the radio adapter.
- * Store only element handles, no logic.
+ * Strongly typed DOM references captured by the component adapter.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
  */
 export interface LfRadioAdapterRefs extends LfComponentAdapterRefs {
   /**
    * Map of node ID to input element.
    */
-  inputs: Map<string, HTMLInputElement>;
+  inputs: Map<string, HTMLInputElement | null>;
   /**
    * Map of node ID to radio item element.
    */
-  items: Map<string, HTMLElement>;
+  items: Map<string, HTMLElement | null>;
 }
 /**
- * JSX factory functions for the radio adapter.
- * All functions are pure and return VNodes.
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
  */
 export interface LfRadioAdapterJsx extends LfComponentAdapterJsx {
   /**
@@ -261,35 +166,124 @@ export interface LfRadioAdapterJsx extends LfComponentAdapterJsx {
   radio: (nodes: LfDataNode[]) => VNode;
 }
 /**
- * Event handlers for the radio adapter.
- * All handlers are async-capable.
+ * Handler map consumed by the adapter to react to framework events.
  */
 export interface LfRadioAdapterHandlers extends LfComponentAdapterHandlers {
   /**
    * Handles blur on a radio item.
    */
-  blur: (event: FocusEvent, nodeId: string) => Promise<void>;
+  blur: (event: FocusEvent, node: LfDataNode) => void;
   /**
    * Handles change on a radio input.
    */
-  change: (event: Event, nodeId: string) => Promise<void>;
+  change: (event: Event, node: LfDataNode) => void;
   /**
    * Handles click on a radio item.
    */
-  click: (event: MouseEvent, nodeId: string) => Promise<void>;
+  click: (event: MouseEvent, node: LfDataNode) => void;
   /**
    * Handles focus on a radio item.
    */
-  focus: (event: FocusEvent, nodeId: string) => Promise<void>;
+  focus: (event: FocusEvent, node: LfDataNode) => void;
   /**
    * Handles keyboard navigation (arrow keys).
    */
-  keyDown: (event: KeyboardEvent) => Promise<void>;
+  keyDown: (event: KeyboardEvent) => void;
   /**
    * Handles pointer down on a radio item for ripple effect.
    */
-  pointerDown: (event: Event, node: LfDataNode) => Promise<void>;
+  pointerDown: (event: PointerEvent, node: LfDataNode) => void;
 }
+/**
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
+export interface LfRadioAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfRadioInterface,
+    typeof LF_RADIO_BLOCKS,
+    typeof LF_RADIO_IDS,
+    typeof LF_RADIO_PARTS
+  > {}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfRadioAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /**
+   * Updates the dataset.
+   * Resets selection if current selection is not in new dataset.
+   */
+  updateDataset: (dataset: LfDataDataset) => void;
+}
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfRadioAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the radio group is disabled based on lfUiState */
+  isDisabled: () => boolean;
+  /** Whether the radio group has nodes to display */
+  hasNodes: () => boolean;
+  /** Whether the radio group is in horizontal orientation */
+  isHorizontal: () => boolean;
+  /** Whether labels should be leading (before the radio control) */
+  isLeadingLabel: () => boolean;
+  /** Whether ripple effect is enabled */
+  hasRipple: () => boolean;
+  /** Gets the currently selected node ID */
+  selectedId: () => string | undefined;
+  /** Checks if a specific node is selected */
+  isSelected: (nodeId: string) => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfRadioAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Select a radio item by node ID */
+  select: (nodeId: string | undefined) => void;
+  /** Clear the current selection */
+  clear: () => void;
+  /** Focus the next radio item in the list */
+  focusNext: () => void;
+  /** Focus the previous radio item in the list */
+  focusPrevious: () => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfRadioAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfRadioEventPayload>;
+export type LfRadioAdapterDispatcherDetailOverrides = {
+  [E in LfRadioEvent]: E extends "blur" | "focus"
+    ? LfRadioAdapterDispatchDetailBase & { originalEvent: FocusEvent }
+    : E extends "click"
+      ? LfRadioAdapterDispatchDetailBase & { originalEvent: MouseEvent }
+      : E extends "pointerdown"
+        ? LfRadioAdapterDispatchDetailBase & { originalEvent: PointerEvent }
+        : E extends "change"
+          ? LfRadioAdapterDispatchDetailBase & { originalEvent: Event }
+          : E extends "ready" | "unmount"
+            ? Omit<LfRadioAdapterDispatchDetailBase, "originalEvent"> & {
+                originalEvent?: never;
+              }
+            : LfRadioAdapterDispatchDetailBase;
+};
+export type LfRadioAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfRadioEventPayload,
+  LfRadioAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Props

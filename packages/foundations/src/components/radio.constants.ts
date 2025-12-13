@@ -17,6 +17,23 @@ export const LF_RADIO_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the radio component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_RADIO_IDS = {
+  radio: "radio",
+  control: "control",
+  circle: "circle",
+  dot: "dot",
+  input: "input",
+  item: "item",
+  label: "label",
+  ripple: "ripple",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_RADIO_EVENTS = [
   "blur",
