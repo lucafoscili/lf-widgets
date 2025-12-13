@@ -2,6 +2,7 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_BUTTON_BLOCKS,
+  LF_BUTTON_IDS,
   LF_BUTTON_PARTS,
   LF_BUTTON_PROPS,
   LF_STYLE_ID,
@@ -303,6 +304,7 @@ export class LfButton implements LfButtonInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_BUTTON_BLOCKS;
+  #ids = LF_BUTTON_IDS;
   #p = LF_BUTTON_PARTS;
   #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
@@ -325,20 +327,22 @@ export class LfButton implements LfButtonInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfButtonEventPayload>;
+  /**
+   * Internal event handler that delegates to dispatcher.
+   * Handles click-specific state toggling before emission.
+   * @deprecated Use dispatcher.emit() directly from adapter consumers.
+   */
   onLfEvent(e: Event | CustomEvent, eventType: LfButtonEvent) {
-    switch (eventType) {
-      case "click":
-        this.#updateState(this.#isOn() ? "off" : "on");
-        break;
+    // Handle click-specific state toggling
+    if (eventType === "click") {
+      this.#updateState(this.#isOn() ? "off" : "on");
     }
 
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
+    // Emit via dispatcher for consistency
+    this.#adapter.dispatcher.emit(eventType, {
       originalEvent: e,
       value: this.value,
-      valueAsBoolean: this.value === "on" ? true : false,
+      valueAsBoolean: this.value === "on",
     });
   }
   //#endregion
@@ -451,27 +455,42 @@ export class LfButton implements LfButtonInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        value: this.value,
+        valueAsBoolean: this.value === "on",
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Initializes the adapter with canonical 4-domain structure.
+   * All getters are functions to capture current state.
+   * @see Section 5.2 and 5.3 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
     this.#adapter = createAdapter(
+      // Getters - all functions for dynamic state capture
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
+        blocks: () => this.#b,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        ids: () => this.#ids,
         isDisabled: () => this.#isDisabled(),
         isDropdown: () => this.#isDropdown(),
         isOn: () => this.#isOn(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        lfAttributes: () => this.#lf,
+        manager: () => this.#framework,
+        parts: () => this.#p,
         styling: () => this.#normalizedStyling(),
       },
+      // Setters - currently empty, can be extended
+      {
+        list: () => {},
+      },
+      // Adapter accessor
       () => this.#adapter,
     );
   };
@@ -538,7 +557,11 @@ export class LfButton implements LfButtonInterface {
       }
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      value: this.value,
+      valueAsBoolean: this.value === "on",
+    });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {

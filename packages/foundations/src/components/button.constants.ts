@@ -1,6 +1,11 @@
 import { LfButtonPropsInterface } from "./button.declarations";
 
 //#region Blocks
+/**
+ * BEM block structure for the button component.
+ * Maps directly to CSS classes and DOM refs.
+ * @see Section 6.3 of 4_0_0_REFACTORING.md
+ */
 export const LF_BUTTON_BLOCKS = {
   button: {
     _: "button",
@@ -11,6 +16,22 @@ export const LF_BUTTON_BLOCKS = {
     list: "list",
     spinner: "spinner",
   },
+} as const;
+//#endregion
+
+//#region IDs
+/**
+ * DOM element IDs used by the button component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_BUTTON_IDS = {
+  button: "button",
+  dropdown: "dropdown",
+  dropdownRipple: "dropdown-ripple",
+  icon: "icon",
+  label: "label",
+  list: "list",
+  spinner: "spinner",
 } as const;
 //#endregion
 

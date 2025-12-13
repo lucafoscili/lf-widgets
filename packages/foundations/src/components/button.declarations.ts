@@ -24,6 +24,7 @@ import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_BUTTON_BLOCKS,
   LF_BUTTON_EVENTS,
+  LF_BUTTON_IDS,
   LF_BUTTON_PARTS,
   LF_BUTTON_STATE,
   LF_BUTTON_STYLINGS,
@@ -55,6 +56,8 @@ export interface LfButtonElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-button` into host integrations.
+ * Follows canonical 4-domain structure: controller, elements, handlers, dispatcher.
+ * @see Section 5.3 of 4_0_0_REFACTORING.md
  */
 export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
   controller: {
@@ -66,15 +69,19 @@ export interface LfButtonAdapter extends LfComponentAdapter<LfButtonInterface> {
     refs: LfButtonAdapterRefs;
   };
   handlers: LfButtonAdapterHandlers;
+  dispatcher: LfButtonAdapterDispatcher;
 }
 /**
  * Strongly typed DOM references captured by the component adapter.
+ * Structure mirrors LF_BUTTON_BLOCKS for DOM-driven alignment.
  */
 export interface LfButtonAdapterRefs extends LfComponentAdapterRefs {
   button: HTMLButtonElement;
   dropdown: HTMLButtonElement;
-  icon: HTMLButtonElement;
+  icon: HTMLElement;
+  label: HTMLSpanElement;
   list: LfListElement;
+  spinner: HTMLElement;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -98,6 +105,7 @@ export type LfButtonAdapterInitializerGetters = Pick<
   | "blocks"
   | "compInstance"
   | "cyAttributes"
+  | "ids"
   | "isDisabled"
   | "isDropdown"
   | "isOn"
@@ -107,19 +115,29 @@ export type LfButtonAdapterInitializerGetters = Pick<
   | "styling"
 >;
 /**
+ * Subset of adapter setters required during initialisation.
+ */
+export type LfButtonAdapterInitializerSetters = Pick<
+  LfButtonAdapterControllerSetters,
+  "list"
+>;
+/**
  * Read-only controller surface exposed by the adapter for integration code.
+ * All dynamic values are functions to capture current state.
+ * @see Section 5.2 of 4_0_0_REFACTORING.md
  */
 export interface LfButtonAdapterControllerGetters
   extends LfComponentAdapterGetters<LfButtonInterface> {
-  blocks: typeof LF_BUTTON_BLOCKS;
-  compInstance: LfButtonInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
+  blocks: () => typeof LF_BUTTON_BLOCKS;
+  compInstance: () => LfButtonInterface;
+  cyAttributes: () => typeof CY_ATTRIBUTES;
+  ids: () => typeof LF_BUTTON_IDS;
   isDisabled: () => boolean;
   isDropdown: () => boolean;
   isOn: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_BUTTON_PARTS;
+  lfAttributes: () => typeof LF_ATTRIBUTES;
+  manager: () => LfFrameworkInterface;
+  parts: () => typeof LF_BUTTON_PARTS;
   styling: () => LfButtonStyling;
 }
 /**
@@ -128,6 +146,16 @@ export interface LfButtonAdapterControllerGetters
 export interface LfButtonAdapterControllerSetters
   extends LfComponentAdapterSetters {
   list: (state?: "close" | "open" | "toggle") => void;
+}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.3 of 4_0_0_REFACTORING.md
+ */
+export interface LfButtonAdapterDispatcher {
+  emit: (
+    eventType: LfButtonEvent,
+    detail?: Partial<Omit<LfButtonEventPayload, "eventType" | "id" | "comp">>,
+  ) => void;
 }
 //#endregion
 

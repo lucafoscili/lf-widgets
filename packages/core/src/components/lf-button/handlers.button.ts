@@ -2,22 +2,24 @@ import {
   LfButtonAdapter,
   LfButtonAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { LfButton } from "./lf-button";
 
-export const prepSideButtonHandlers = (
+/**
+ * Prepares event handlers for the button component.
+ * Uses dispatcher for event emission (see Section 5.3 of 4_0_0_REFACTORING.md).
+ */
+export const prepButtonHandlers = (
   getAdapter: () => LfButtonAdapter,
 ): LfButtonAdapterHandlers => {
   return {
     list: (e) => {
       const { eventType } = e.detail;
-
-      const { controller } = getAdapter();
-      const { get, set } = controller;
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
+      const { set } = controller;
 
       switch (eventType) {
         case "click":
-          const comp = get.compInstance as LfButton;
-          comp.onLfEvent(e, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: e });
           set.list("close");
           break;
       }
