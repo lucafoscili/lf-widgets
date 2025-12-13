@@ -1,5 +1,6 @@
 import { LfCheckboxPropsInterface } from "./checkbox.declarations";
 
+//#region Blocks
 export const LF_CHECKBOX_BLOCKS = {
   formField: {
     _: "form-field",
@@ -15,7 +16,21 @@ export const LF_CHECKBOX_BLOCKS = {
     surface: "surface",
   },
 } as const;
+//#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the checkbox component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_CHECKBOX_IDS = {
+  input: "input",
+  label: "label",
+  surface: "surface",
+} as const;
+//#endregion
+
+//#region Events
 export const LF_CHECKBOX_EVENTS = [
   "blur",
   "change",

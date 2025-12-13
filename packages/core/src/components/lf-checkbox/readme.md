@@ -60,7 +60,7 @@ Retrieves the current value of the checkbox.
 
 #### Returns
 
-Type: `Promise<"indeterminate" | "off" | "on">`
+Type: `Promise<"off" | "on" | "indeterminate">`
 
 
 
@@ -82,7 +82,7 @@ Sets the value of the checkbox.
 
 | Name    | Type                                          | Description                                                 |
 | ------- | --------------------------------------------- | ----------------------------------------------------------- |
-| `value` | `boolean \| "indeterminate" \| "off" \| "on"` | - The value to set (true, false, or null for indeterminate) |
+| `value` | `boolean \| "off" \| "on" \| "indeterminate"` | - The value to set (true, false, or null for indeterminate) |
 
 #### Returns
 
