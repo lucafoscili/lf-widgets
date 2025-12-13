@@ -16,10 +16,18 @@ This document catalogs architectural improvements for the v4.0.0 major release. 
 ## Table of Contents
 
 1. [Data Layer Simplification](#1-data-layer-simplification)
+   - 1.1 LfDataCell Type Refactoring
+   - 1.2 Flexible Cells Container
+   - 1.3 Value vs lfValue Clarification
+   - 1.4 LfDataCellContainer Duplicate Definition
 2. [Functional Components Architecture](#2-functional-components-architecture)
 3. [Component Boilerplate Reduction](#3-component-boilerplate-reduction)
 4. [Type System Consolidation](#4-type-system-consolidation)
 5. [Adapter Pattern Standardization](#5-adapter-pattern-standardization)
+   - 5.1 Inconsistent Factory Signatures
+   - 5.2 Getter Invocation Inconsistency
+   - 5.3 Dispatcher Pattern for Event Emission
+   - 5.4 Adapter-Everywhere Philosophy
 6. [Architecture Enforcement](#6-architecture-enforcement)
 7. [Testing Coverage](#7-testing-coverage)
 8. [Implementation Priority Matrix](#8-implementation-priority-matrix)
@@ -140,39 +148,111 @@ const cells: LfDataCellContainer = {
 
 ### 1.3 Value vs lfValue Clarification
 
-**Current Confusion**: Two value properties exist with unclear semantics.
+**Current Confusion**: Perceived as "two value properties" but actually a cell→component mapping.
+
+**Reality Check**: Looking at `LfDataCell` type (lines 451-566 in `data.declarations.ts`):
+
+- Cells have `value` property (storage/canonical)
+- Cells inherit component props via `Partial<LfComponentPropsInterface>`
+- Components have `lfValue` prop (rendering)
 
 ```typescript
-// In LfDataCellBase
-value: CellValue;   // Storage/canonical value
-lfValue: CellValue; // Rendering value (component prop)
+// Cell type structure (simplified)
+type LfDataCell<"button"> = Partial<LfButtonPropsInterface> & {
+  shape: "button";
+  value: string;  // Cell's value
+  // lfValue comes from LfButtonPropsInterface, NOT a separate cell property
+};
+
+// The "confusion" is actually a MAPPING, not duplication
+// shapes.tsx maps cell.value → component's lfValue prop
 ```
 
-**Actual Behavior** (discovered in `shapes.tsx` decorator, lines 250-254):
+**Actual Behavior** (in `shapes.tsx`):
 
 ```typescript
-// shapes.tsx automatically maps value → lfValue if missing
+// shapes.tsx automatically maps cell.value → component.lfValue
 if ("value" in props && !("lfValue" in props)) {
   (props as Record<string, unknown>).lfValue = props.value;
 }
 ```
 
-**Proposed Documentation/Clarification**:
+**Clarification Table**:
 
-| Property | Purpose | When Set |
-|----------|---------|----------|
-| `value` | Storage/canonical value for dataset persistence | Always required |
-| `lfValue` | Rendering prop passed to component | Auto-derived from `value` if not set |
+| Context | Property | Purpose | Location |
+|---------|----------|---------|----------|
+| Cell (data layer) | `value` | Canonical storage value | `LfDataCell.value` |
+| Component (UI layer) | `lfValue` | Rendering prop | `LfComponentPropsInterface.lfValue` |
+| Mapping | `value` → `lfValue` | Auto-derived if not explicit | `shapes.tsx` |
 
-**Recommendation**: Document this behavior clearly. Consider making `lfValue` computed-only (derived, never stored).
+**Key Insight**: This is NOT two cell properties—it's a cell property being mapped to a component prop. The perceived duplication is actually the shape renderer bridging data and UI layers.
+
+**Recommendation**:
+
+1. Add JSDoc to `LfDataCell.value` explaining the mapping
+2. Document in architecture.md under "Shape Rendering"
+3. Consider renaming for clarity: `cell.value` is the source, `lfValue` is auto-derived
 
 **Files Affected**:
 
-- `packages/foundations/src/data/data.declarations.ts` (JSDoc)
+- `packages/foundations/src/framework/data.declarations.ts` (JSDoc)
 - `packages/core/src/shapes/shapes.tsx` (already handles mapping)
+- `docs/architecture.md` (add Shape Rendering section)
 
-**Complexity**: Low  
+**Complexity**: Low
 **Priority**: P2 (Documentation, Non-Breaking)
+
+---
+
+### 1.4 LfDataCellContainer Duplicate Definition
+
+**Problem**: `LfDataCellContainer` is defined twice in `data.declarations.ts` (lines 579-604), causing TypeScript interface merging.
+
+```typescript
+// First definition (lines 579-598): Typed interface
+export interface LfDataCellContainer {
+  lfAccordion?: LfDataCellFromName<"lfAccordion">;
+  lfBadge?: LfDataCellFromName<"lfBadge">;
+  lfButton?: LfDataCellFromName<"lfButton">;
+  // ... 15 more typed entries
+}
+
+// Second definition (lines 602-604): Index signature
+export interface LfDataCellContainer {
+  [index: string]: LfDataCell<LfDataShapes>;
+}
+```
+
+**Impact**: The index signature effectively nullifies the typed keys above it. TypeScript merges interfaces, so any string key is valid—defeating the purpose of explicit typing.
+
+**Additionally Missing**: `lfTypewriter` is not present in the typed interface, despite `typewriter` being a valid shape (defined in `LfDataCell` at lines 554-559).
+
+**Proposed Solution**:
+
+```typescript
+// Option A: Remove index signature, keep strict typing (BREAKING)
+export interface LfDataCellContainer {
+  lfAccordion?: LfDataCellFromName<"lfAccordion">;
+  lfBadge?: LfDataCellFromName<"lfBadge">;
+  // ... all typed entries including lfTypewriter
+  lfTypewriter?: LfDataCellFromName<"lfTypewriter">;  // ADD THIS
+}
+
+// Option B: Keep flexible (aligns with 1.2 proposal)
+// Remove typed interface entirely, use only index signature
+export interface LfDataCellContainer {
+  [key: string]: LfDataCell<LfDataShapes>;
+}
+```
+
+**Recommendation**: Since Section 1.2 proposes flexible cells with semantic keys, Option B aligns with that direction. The typed interface becomes unnecessary once `shape` is the discriminator.
+
+**Pre-Refactoring Fix**: Add `lfTypewriter` to the typed interface for consistency until 1.2 is implemented.
+
+**Files Affected**: `packages/foundations/src/framework/data.declarations.ts`
+
+**Complexity**: Low
+**Priority**: P1 (Type Safety Bug)
 
 ---
 
@@ -742,86 +822,207 @@ get: {
 - Always use functions for values that can change
 - Direct access only for truly constant values
 
-**Files Affected**: All adapter getters  
-**Complexity**: Low  
+**Files Affected**: All adapter getters
+**Complexity**: Low
 **Priority**: P3 (Consistency)
+
+---
+
+### 5.3 Dispatcher Pattern for Event Emission
+
+**Problem**: Event emission is scattered throughout components with direct `this.lfEvent.emit()` calls.
+
+```typescript
+// Current: Direct emit scattered throughout component
+onButtonClick() {
+  this.lfEvent.emit({ eventType: "click", id: this.rootId, comp: "LfButton" });
+}
+
+onButtonFocus() {
+  this.lfEvent.emit({ eventType: "focus", id: this.rootId, comp: "LfButton" });
+}
+
+// Problems:
+// 1. Repeated id/comp boilerplate
+// 2. No central place for logging/debugging
+// 3. Easy to miss required fields
+// 4. Inconsistent payload structure across components
+```
+
+**Proposed Solution**: Add `dispatcher` as fourth adapter domain.
+
+```typescript
+// Adapter structure becomes:
+export interface LfComponentAdapter {
+  controller: { get: Getters; set: Setters };
+  elements: { jsx: JsxFactories; refs: Refs };
+  handlers: Handlers;
+  dispatcher: Dispatcher;  // NEW
+}
+
+// Dispatcher implementation
+export const createDispatcher = (
+  getAdapter: () => LfButtonAdapter,
+): LfButtonAdapterDispatcher => {
+  return {
+    emit: (eventType: LfButtonEventType, detail?: Partial<LfButtonEventPayload>) => {
+      const { compInstance, framework, rootId } = getAdapter().controller.get;
+
+      // Optional: Debug logging
+      framework().debug?.log("event", { comp: "LfButton", eventType, id: rootId() });
+
+      // Emit with guaranteed structure
+      compInstance().lfEvent.emit({
+        eventType,
+        id: rootId(),
+        comp: "LfButton",
+        ...detail,
+      });
+    },
+  };
+};
+```
+
+**Usage in Handlers**:
+
+```typescript
+// Before: scattered, verbose
+onButtonClick() {
+  this.lfEvent.emit({ eventType: "click", id: this.rootId, comp: "LfButton", value: this.lfValue });
+}
+
+// After: centralized, clean
+onButtonClick() {
+  this.#adapter.dispatcher.emit("click", { value: this.lfValue });
+}
+```
+
+**Benefits**:
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Boilerplate per emit | ~50 chars | ~20 chars |
+| Debug logging | Manual, inconsistent | Automatic, centralized |
+| Payload validation | None | Can add runtime checks |
+| Cross-cutting concerns | Impossible | Easy (analytics, etc.) |
+| Agent replication | Must understand emit pattern | Copy dispatcher.emit() |
+
+**Standard Adapter Interface (Updated)**:
+
+```typescript
+// Canonical adapter with all 4 domains
+export interface LfComponentAdapter<C extends LfComponentName> {
+  controller: {
+    get: LfComponentAdapterGetters<C>;
+    set: LfComponentAdapterSetters<C>;
+  };
+  elements: {
+    jsx: LfComponentAdapterJsx<C>;
+    refs: LfComponentAdapterRefs<C>;
+  };
+  handlers: LfComponentAdapterHandlers<C>;
+  dispatcher: LfComponentAdapterDispatcher<C>;
+}
+
+// Dispatcher interface per component
+export interface LfComponentAdapterDispatcher<C extends LfComponentName> {
+  emit: (
+    eventType: LfEventType<C>,
+    detail?: Partial<Omit<LfEventPayload<C>, "eventType" | "id" | "comp">>,
+  ) => void;
+}
+```
+
+**Files Affected**: All 18 existing adapter files + 21 new adapters
+**Complexity**: Low (per adapter), Medium (total effort)
+**Priority**: P1 (Consistency, Agent-Friendliness)
+
+---
+
+### 5.4 Adapter-Everywhere Philosophy
+
+**Decision**: Every component MUST have an adapter, regardless of complexity.
+
+**Rationale**:
+
+| Argument | Counter-Argument | Resolution |
+|----------|------------------|------------|
+| "Badge is too simple" | Simple today, may grow tomorrow | Adapter provides structure for growth |
+| "Adds unnecessary indirection" | ~50 lines per simple component | Small cost for architectural consistency |
+| "Overkill for display-only" | Agents pattern-match on structure | Consistency enables mechanical replication |
+
+**Key Insight**: In an AI-assisted codebase, **consistency beats pragmatism**.
+
+When agents scaffold new components, they:
+
+1. Find similar existing components
+2. Copy the structure
+3. Adapt to new requirements
+
+If some components have adapters and some don't, agents will:
+
+- Sometimes copy adapter-based components
+- Sometimes copy non-adapter components
+- Produce inconsistent output
+
+**Rule**: All 39 components will have adapters following the canonical 4-domain structure.
+
+**Simple Component Adapter Example (Badge)**:
+
+```typescript
+// Even simple components get full adapter structure
+export const createAdapter = (
+  getters: LfBadgeAdapterInitializerGetters,
+  setters: LfBadgeAdapterInitializerSetters,
+  getAdapter: () => LfBadgeAdapter,
+): LfBadgeAdapter => ({
+  controller: {
+    get: createGetters(getters),
+    set: {},  // Empty but present
+  },
+  elements: {
+    jsx: createJsx(getAdapter),
+    refs: createRefs(),
+  },
+  handlers: {},  // Empty but present
+  dispatcher: createDispatcher(getAdapter),
+});
+```
+
+**Complexity**: N/A (Philosophy)
+**Priority**: P0 (Foundational Decision)
 
 ---
 
 ## 6. Architecture Enforcement
 
-### 7.1 Problem Statement
+### 6.1 Problem Statement
 
 The `architecture.md` defines canonical patterns, but not all components follow them. This creates inconsistency, makes onboarding harder, and increases maintenance burden.
 
-### 7.2 Components Missing Adapters
+### 6.2 Components Missing Adapters
 
-**Current State**: 17 of 39 components have adapters.
+**Current State**: 18 of 39 components have adapters.
 
-| Has Adapter (17) | Missing Adapter (22) |
+| Has Adapter (18) | Missing Adapter (21) |
 |------------------|---------------------|
-| autocomplete, breadcrumbs, button | accordion, article, badge |
-| canvas, card, carousel | checkbox, chip, code |
-| chart, chat, compare | drawer, header, image |
-| list, masonry, messenger | photoframe, placeholder, progressbar |
-| multiinput, radio, select | slider, snackbar, spinner |
-| shapeeditor, tree | splash, tabbar, textfield |
-| | toast, toggle, typewriter, upload |
+| autocomplete, badge, breadcrumbs, button | accordion, article, checkbox |
+| canvas, card, carousel, chart | chip, code, drawer |
+| chat, compare, list, masonry | header, image, photoframe |
+| messenger, multiinput, radio | placeholder, progressbar, slider |
+| select, shapeeditor, tree | snackbar, spinner, splash |
+| | tabbar, textfield, toast |
+| | toggle, typewriter, upload |
 
 **Impact**: Inconsistent internal structure, harder to maintain, no clear separation of concerns.
 
 **Recommendation**: Retrofit adapters to all components, starting with high-complexity ones.
 
-### 7.3 BLOCKS Naming Inconsistency
+### 6.3 BLOCKS Pattern Compliance Gap
 
-**Problem**: Block structures vary in format across components.
+**Context**: The `architecture.md` defines a canonical BLOCKS pattern, but most components don't fully implement it.
 
-**Pattern A** (Flat - Simple components):
-
-```typescript
-// badge.constants.ts
-export const LF_BADGE_BLOCKS = {
-  badge: { _: "badge", image: "image", label: "label" },
-} as const;
-```
-
-**Pattern B** (Nested - Complex components):
-
-```typescript
-// shapeeditor.constants.ts - has sub-blocks with own `_`
-export const LF_SHAPEEDITOR_BLOCKS = {
-  shapeeditor: {
-    _: "shapeeditor",
-    navigation: {
-      _: "navigation",  // Sub-block!
-      explorer: {
-        _: "explorer",  // Sub-sub-block!
-        tree: "tree",
-      },
-    },
-  },
-} as const;
-```
-
-**Pattern C** (Flat domains - messenger):
-
-```typescript
-// messenger.constants.ts - domains are peers, not nested
-export const LF_MESSENGER_BLOCKS = {
-  character: { _: "character", avatar: "avatar", ... },
-  chat: { _: "chat", chat: "chat", ... },
-  covers: { _: "covers", ... },
-  // No parent "messenger" block wrapping these
-} as const;
-```
-
-**Issues**:
-
-1. Inconsistent root wrapper (some have it, some don't)
-2. Nested `_` convention unclear when to use
-3. No validation that BLOCKS ↔ SCSS ↔ refs actually match
-
-**Proposed Standard**:
+**Canonical Pattern** (from architecture.md):
 
 ```typescript
 // Standard: Always have root block, sub-blocks only when needed
@@ -837,7 +1038,74 @@ export const LF_<COMP>_BLOCKS = {
 } as const;
 ```
 
-### 7.4 Missing DOM-Driven Alignment
+**Current Reality**:
+
+| Component | Follows Canonical? | Pattern Used |
+|-----------|-------------------|--------------|
+| shapeeditor | ✅ Yes | Full nested structure with sub-blocks |
+| messenger | ⚠️ Partial | Flat domains without root wrapper |
+| badge | ⚠️ Partial | Flat structure, no sub-blocks |
+| button | ⚠️ Partial | Flat structure, no sub-blocks |
+| Most others | ⚠️ Partial | Basic flat structure |
+
+**Pattern Variations in Practice**:
+
+**Pattern A** (Flat - Most components):
+
+```typescript
+// badge.constants.ts - Simple flat structure
+export const LF_BADGE_BLOCKS = {
+  badge: { _: "badge", image: "image", label: "label" },
+} as const;
+```
+
+**Pattern B** (Canonical Nested - shapeeditor only):
+
+```typescript
+// shapeeditor.constants.ts - Full canonical with sub-blocks
+export const LF_SHAPEEDITOR_BLOCKS = {
+  shapeeditor: {
+    _: "shapeeditor",
+    navigation: {
+      _: "navigation",  // Sub-block with own BEM namespace
+      explorer: {
+        _: "explorer",  // Sub-sub-block
+        tree: "tree",
+      },
+    },
+  },
+} as const;
+```
+
+**Pattern C** (Flat domains - messenger):
+
+```typescript
+// messenger.constants.ts - Domains as peers, no root wrapper
+export const LF_MESSENGER_BLOCKS = {
+  character: { _: "character", avatar: "avatar", ... },
+  chat: { _: "chat", chat: "chat", ... },
+  covers: { _: "covers", ... },
+  // No parent "messenger" block wrapping these
+} as const;
+```
+
+**Issues**:
+
+1. Only `lf-shapeeditor` fully implements the canonical pattern
+2. Most components use simplified flat structures
+3. No validation that BLOCKS ↔ SCSS ↔ refs actually match
+4. Agents copying from non-canonical components propagate simplified patterns
+
+**Proposed Enforcement**:
+
+1. **Audit all components** against canonical pattern
+2. **Retrofit** components to match architecture.md specification
+3. **Build-time validation** to ensure compliance (see 6.6)
+4. **Update architecture.md** with clearer tier-based guidance:
+   - Simple components: flat structure acceptable
+   - Medium/Complex: must use nested sub-blocks
+
+### 6.4 Missing DOM-Driven Alignment
 
 Per architecture.md, these must align:
 
@@ -852,7 +1120,7 @@ Per architecture.md, these must align:
 
 **Audit Needed**: Script to validate alignment across all components.
 
-### 7.5 Components Requiring Architecture Retrofit
+### 6.5 Components Requiring Architecture Retrofit
 
 **Priority by Complexity**:
 
@@ -865,7 +1133,7 @@ Per architecture.md, these must align:
 | P3 | toast, snackbar, splash | Overlay components |
 | P3 | drawer, header, placeholder | Layout utilities |
 
-### 7.6 Enforcement Tooling Proposal
+### 6.6 Enforcement Tooling Proposal
 
 **Build-Time Validation Script**:
 
@@ -892,7 +1160,7 @@ Per architecture.md, these must align:
 
 ## 7. Testing Coverage
 
-### 8.1 Current State
+### 7.1 Current State
 
 | Metric | Count |
 |--------|-------|
@@ -900,7 +1168,7 @@ Per architecture.md, these must align:
 | Unit test files | 14 |
 | Coverage | ~37% |
 
-### 8.2 Missing Test Coverage
+### 7.2 Missing Test Coverage
 
 Components without dedicated unit tests:
 
@@ -914,7 +1182,7 @@ Components without dedicated unit tests:
 - `lf-carousel`
 - ... (24 more)
 
-### 8.3 Testing Strategy
+### 7.3 Testing Strategy
 
 **Framework Services** (Jest):
 
@@ -944,10 +1212,13 @@ Components without dedicated unit tests:
 | Item | Complexity | Impact | Dependencies |
 |------|------------|--------|--------------|
 | 1.1 LfDataCell mapped types | Medium | High | None |
+| 1.4 LfDataCellContainer fix | Low | High | None |
 | 4.1 Type map consolidation | Medium | High | None |
 | 3.1 Lifecycle boilerplate | Medium | High | None |
+| 5.3 Dispatcher pattern | Medium | High | None |
+| 5.4 Adapter-everywhere | Medium | High | 5.3 |
 | 2.10 FC POC (slider, toggle) | Medium | High | None |
-| 7.x Architecture enforcement tooling | Medium | High | None |
+| 6.x Architecture enforcement tooling | Medium | High | None |
 
 ### Phase 2: Core (v4.0.0-beta)
 
@@ -1002,6 +1273,9 @@ Components without dedicated unit tests:
 | TBD | Dual-mode components (WC + FC) | WC for standalone, FC for composition |
 | TBD | All shapes render via FC | Major performance win for composed usage |
 | TBD | State always in parent | Unidirectional data flow, simpler mental model |
+| TBD | Adapter-everywhere | Consistency > pragmatism; enables mechanical agent replication |
+| TBD | Dispatcher as 4th adapter domain | Centralized event emission, debug logging, cross-cutting concerns |
+| TBD | value→lfValue is mapping, not duplication | Clarifies data layer vs UI layer separation |
 
 ---
 
@@ -1239,5 +1513,5 @@ Before v4.0.0, architecture.md MUST document:
 
 ---
 
-*Last Updated: [Date]*  
-*Author: [Contributor]*
+*Last Updated: 2025-12-13*
+*Authors: Luca Foscili, Claude*

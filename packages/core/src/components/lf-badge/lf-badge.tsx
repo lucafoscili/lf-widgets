@@ -1,11 +1,11 @@
 import {
   LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
-  LF_BADGE_CSS_VARS,
   LF_BADGE_PARTS,
   LF_BADGE_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfBadgeAdapter,
   LfBadgeElement,
   LfBadgeEvent,
   LfBadgeEventPayload,
@@ -31,6 +31,8 @@ import {
   State,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { computeBadgeStyles } from "./elements.badge";
+import { createAdapter } from "./lf-badge-adapter";
 
 /**
  * Simple component that displays a badge with an optional image and label.
@@ -153,6 +155,7 @@ export class LfBadge implements LfBadgeInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
+  #adapter: LfBadgeAdapter;
   #b = LF_BADGE_BLOCKS;
   #lf = LF_ATTRIBUTES;
   #p = LF_BADGE_PARTS;
@@ -236,6 +239,16 @@ export class LfBadge implements LfBadgeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#adapter = createAdapter(
+      {
+        blocks: this.#b,
+        compInstance: this,
+        lfAttributes: this.#lf,
+        manager: this.#framework,
+        parts: this.#p,
+      },
+      () => this.#adapter,
+    );
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -254,62 +267,19 @@ export class LfBadge implements LfBadgeInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
-    const { lfImageProps, lfLabel, lfStyle } = this;
+    const { theme } = this.#framework;
+    const { setLfStyle } = theme;
+    const { lfPosition, lfStyle } = this;
 
-    const isInline = this.lfPosition === "inline";
-    const [ver, hor] = isInline ? [null, null] : this.lfPosition.split("-");
-    const y = ver === "bottom" ? "bottom" : "top";
-    const x = hor === "right" ? "right" : "left";
-    const translateX = hor === "right" ? "50%" : "-50%";
-    const translateY = ver === "bottom" ? "50%" : "-50%";
-
-    const { badge } = this.#b;
-
-    const renderStyles = () => {
-      const styles: Record<string, string> = {};
-      const { transform } = LF_BADGE_CSS_VARS;
-
-      if (!isInline) {
-        styles[y] = "0";
-        styles[x] = "0";
-        styles[transform] = `translate(${translateX}, ${translateY})`;
-      } else {
-        styles[transform] = "none";
-      }
-
-      const hostStyles = Object.entries(styles)
-        .map(([prop, value]) => `${prop}: ${value}`)
-        .join("; ");
-
-      const customStyles = (lfStyle && setLfStyle(this)) || "";
-
-      return `:host { ${hostStyles} }\n${customStyles}`;
-    };
+    const { jsx } = this.#adapter.elements;
 
     return (
       <Host>
-        <style id={this.#s}>{renderStyles()}</style>
-        <div id={this.#w}>
-          <div
-            class={bemClass(badge._, undefined, { [this.lfPosition]: true })}
-            data-lf={this.#lf[this.lfUiState]}
-            onClick={(e) => this.onLfEvent(e, "click")}
-            part={this.#p.badge}
-          >
-            {lfLabel ? (
-              <span class={bemClass(badge._, badge.label)} part={this.#p.label}>
-                {lfLabel}
-              </span>
-            ) : lfImageProps ? (
-              <lf-image
-                class={bemClass(badge._, badge.image)}
-                part={this.#p.image}
-                {...sanitizeProps(lfImageProps, "LfImage")}
-              ></lf-image>
-            ) : null}
-          </div>
+        <style id={this.#s}>
+          {computeBadgeStyles(lfPosition, lfStyle, setLfStyle, this)}
+        </style>
+        <div id={this.#w} data-lf={this.#lf[this.lfUiState]}>
+          {jsx.badge()}
         </div>
       </Host>
     );
