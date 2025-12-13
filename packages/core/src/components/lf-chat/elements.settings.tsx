@@ -2,6 +2,7 @@ import {
   LF_CHAT_IDS,
   LfChatAdapter,
   LfChatAdapterJsx,
+  LfCheckboxElement,
   LfLLMToolDefinition,
 } from "@lf-widgets/foundations";
 import { Fragment, h } from "@stencil/core";
@@ -499,7 +500,7 @@ export const prepSettings = (
                       onLf-checkbox-event={checkbox}
                       ref={(el) => {
                         if (el) {
-                          settings.tools.set(toolName, el);
+                          settings.tools.set(toolName, el as LfCheckboxElement);
                         }
                       }}
                     ></lf-checkbox>

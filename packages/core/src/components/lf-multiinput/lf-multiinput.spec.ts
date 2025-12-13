@@ -98,7 +98,7 @@ describe("lf-multiinput", () => {
 
     const textfield = page.root.shadowRoot.querySelector(
       "lf-textfield",
-    ) as LfTextfieldElement;
+    ) as unknown as LfTextfieldElement;
     textfield.dispatchEvent(
       new CustomEvent("lf-textfield-event", {
         detail: {

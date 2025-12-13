@@ -2,6 +2,7 @@ import {
   LF_CHAT_IDS,
   LfChatAdapter,
   LfChatAdapterJsx,
+  LfChipElement,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 
@@ -157,7 +158,7 @@ export const prepToolbar = (
             part={parts.messageAttachments}
             ref={(el) => {
               if (el) {
-                toolbar.messageAttachments.set(refKey, el);
+                toolbar.messageAttachments.set(refKey, el as LfChipElement);
               }
             }}
           />
