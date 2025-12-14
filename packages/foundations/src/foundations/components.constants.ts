@@ -37,10 +37,255 @@ import { LF_TOGGLE_PROPS } from "../components/toggle.constants";
 import { LF_TREE_PROPS } from "../components/tree.constants";
 import { LF_TYPEWRITER_PROPS } from "../components/typewriter.constants";
 import { LF_UPLOAD_PROPS } from "../components/upload.constants";
-import {
-  LfComponentName,
-  LfComponentPropsMap,
-} from "./components.declarations";
+import type { LfComponentPropsMap } from "./components.declarations";
+
+//#region Component Registry (Single Source of Truth for 4.1)
+/**
+ * Single source of truth for all component metadata.
+ *
+ * This constant defines the canonical mapping between component keys, names, tags,
+ * and events. All other type maps (`LfComponentName`, `LfComponentTagMap`, etc.)
+ * are derived from this constant to ensure consistency.
+ *
+ * @example
+ * ```ts
+ * // Access tag for a component
+ * const tag = LF_COMPONENTS.button.tag; // "lf-button"
+ *
+ * // Access name for a component
+ * const name = LF_COMPONENTS.button.name; // "LfButton"
+ *
+ * // Derive types using typeof
+ * type AllTags = typeof LF_COMPONENTS[keyof typeof LF_COMPONENTS]["tag"];
+ * ```
+ */
+export const LF_COMPONENTS = {
+  accordion: {
+    name: "LfAccordion",
+    tag: "lf-accordion",
+    eventName: "lf-accordion-event",
+  },
+  article: {
+    name: "LfArticle",
+    tag: "lf-article",
+    eventName: "lf-article-event",
+  },
+  autocomplete: {
+    name: "LfAutocomplete",
+    tag: "lf-autocomplete",
+    eventName: "lf-autocomplete-event",
+  },
+  badge: {
+    name: "LfBadge",
+    tag: "lf-badge",
+    eventName: "lf-badge-event",
+  },
+  breadcrumbs: {
+    name: "LfBreadcrumbs",
+    tag: "lf-breadcrumbs",
+    eventName: "lf-breadcrumbs-event",
+  },
+  button: {
+    name: "LfButton",
+    tag: "lf-button",
+    eventName: "lf-button-event",
+  },
+  canvas: {
+    name: "LfCanvas",
+    tag: "lf-canvas",
+    eventName: "lf-canvas-event",
+  },
+  card: {
+    name: "LfCard",
+    tag: "lf-card",
+    eventName: "lf-card-event",
+  },
+  carousel: {
+    name: "LfCarousel",
+    tag: "lf-carousel",
+    eventName: "lf-carousel-event",
+  },
+  chart: {
+    name: "LfChart",
+    tag: "lf-chart",
+    eventName: "lf-chart-event",
+  },
+  chat: {
+    name: "LfChat",
+    tag: "lf-chat",
+    eventName: "lf-chat-event",
+  },
+  checkbox: {
+    name: "LfCheckbox",
+    tag: "lf-checkbox",
+    eventName: "lf-checkbox-event",
+  },
+  chip: {
+    name: "LfChip",
+    tag: "lf-chip",
+    eventName: "lf-chip-event",
+  },
+  code: {
+    name: "LfCode",
+    tag: "lf-code",
+    eventName: "lf-code-event",
+  },
+  compare: {
+    name: "LfCompare",
+    tag: "lf-compare",
+    eventName: "lf-compare-event",
+  },
+  drawer: {
+    name: "LfDrawer",
+    tag: "lf-drawer",
+    eventName: "lf-drawer-event",
+  },
+  header: {
+    name: "LfHeader",
+    tag: "lf-header",
+    eventName: "lf-header-event",
+  },
+  image: {
+    name: "LfImage",
+    tag: "lf-image",
+    eventName: "lf-image-event",
+  },
+  list: {
+    name: "LfList",
+    tag: "lf-list",
+    eventName: "lf-list-event",
+  },
+  masonry: {
+    name: "LfMasonry",
+    tag: "lf-masonry",
+    eventName: "lf-masonry-event",
+  },
+  messenger: {
+    name: "LfMessenger",
+    tag: "lf-messenger",
+    eventName: "lf-messenger-event",
+  },
+  multiInput: {
+    name: "LfMultiInput",
+    tag: "lf-multiinput",
+    eventName: "lf-multiinput-event",
+  },
+  photoframe: {
+    name: "LfPhotoframe",
+    tag: "lf-photoframe",
+    eventName: "lf-photoframe-event",
+  },
+  placeholder: {
+    name: "LfPlaceholder",
+    tag: "lf-placeholder",
+    eventName: "lf-placeholder-event",
+  },
+  progressbar: {
+    name: "LfProgressbar",
+    tag: "lf-progressbar",
+    eventName: "lf-progressbar-event",
+  },
+  radio: {
+    name: "LfRadio",
+    tag: "lf-radio",
+    eventName: "lf-radio-event",
+  },
+  select: {
+    name: "LfSelect",
+    tag: "lf-select",
+    eventName: "lf-select-event",
+  },
+  shapeeditor: {
+    name: "LfShapeeditor",
+    tag: "lf-shapeeditor",
+    eventName: "lf-shapeeditor-event",
+  },
+  slider: {
+    name: "LfSlider",
+    tag: "lf-slider",
+    eventName: "lf-slider-event",
+  },
+  snackbar: {
+    name: "LfSnackbar",
+    tag: "lf-snackbar",
+    eventName: "lf-snackbar-event",
+  },
+  spinner: {
+    name: "LfSpinner",
+    tag: "lf-spinner",
+    eventName: "lf-spinner-event",
+  },
+  splash: {
+    name: "LfSplash",
+    tag: "lf-splash",
+    eventName: "lf-splash-event",
+  },
+  tabbar: {
+    name: "LfTabbar",
+    tag: "lf-tabbar",
+    eventName: "lf-tabbar-event",
+  },
+  textfield: {
+    name: "LfTextfield",
+    tag: "lf-textfield",
+    eventName: "lf-textfield-event",
+  },
+  toast: {
+    name: "LfToast",
+    tag: "lf-toast",
+    eventName: "lf-toast-event",
+  },
+  toggle: {
+    name: "LfToggle",
+    tag: "lf-toggle",
+    eventName: "lf-toggle-event",
+  },
+  tree: {
+    name: "LfTree",
+    tag: "lf-tree",
+    eventName: "lf-tree-event",
+  },
+  typewriter: {
+    name: "LfTypewriter",
+    tag: "lf-typewriter",
+    eventName: "lf-typewriter-event",
+  },
+  upload: {
+    name: "LfUpload",
+    tag: "lf-upload",
+    eventName: "lf-upload-event",
+  },
+} as const;
+
+/**
+ * Keys of the component registry (lowercase identifiers).
+ * @example "accordion" | "article" | "autocomplete" | ...
+ */
+export type LfComponentKey = keyof typeof LF_COMPONENTS;
+
+/**
+ * Union of all canonical component names exposed by the foundations package.
+ * Derived from LF_COMPONENTS constant (single source of truth).
+ * @example "LfAccordion" | "LfArticle" | "LfAutocomplete" | ...
+ */
+export type LfComponentName = (typeof LF_COMPONENTS)[LfComponentKey]["name"];
+
+/**
+ * Union of all custom element tags registered by LF components.
+ * Derived from LF_COMPONENTS constant.
+ * @example "lf-accordion" | "lf-article" | "lf-autocomplete" | ...
+ */
+export type LfComponentTagName = (typeof LF_COMPONENTS)[LfComponentKey]["tag"];
+
+/**
+ * Union of all event names emitted by LF components.
+ * Derived from LF_COMPONENTS constant.
+ * @example "lf-accordion-event" | "lf-article-event" | ...
+ */
+export type LfComponentEventName =
+  (typeof LF_COMPONENTS)[LfComponentKey]["eventName"];
+
+//#endregion
 
 /**
  * Namespace prefix applied to every CSS custom property emitted by LF components.

@@ -33,18 +33,24 @@ export const prepAccordionActions = (
     const comp = compInstance();
 
     if (isExpandible(node)) {
+      // Clone Set before mutation to trigger reactivity
+      const newExpandedSet = new Set(comp.expandedNodeIds);
       if (isExpanded(node)) {
-        comp.expandedNodeIds.delete(node.id);
+        newExpandedSet.delete(node.id);
       } else {
-        comp.expandedNodeIds.add(node.id);
+        newExpandedSet.add(node.id);
       }
+      comp.expandedNodeIds = newExpandedSet;
       dispatcher.emit("expand", { originalEvent: e });
     } else {
+      // Clone Set before mutation to trigger reactivity
+      const newSelectedSet = new Set(comp.selectedNodeIds);
       if (isSelected(node)) {
-        comp.selectedNodeIds.delete(node.id);
+        newSelectedSet.delete(node.id);
       } else {
-        comp.selectedNodeIds.add(node.id);
+        newSelectedSet.add(node.id);
       }
+      comp.selectedNodeIds = newSelectedSet;
       dispatcher.emit("click", { originalEvent: e });
     }
 

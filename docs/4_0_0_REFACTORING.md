@@ -630,7 +630,9 @@ Start with these components (good FC candidates):
 
 ### 3.1 Repeated Lifecycle Pattern
 
-**Problem**: All 38 components repeat identical lifecycle code.
+> **Status**: ⏸️ DEFERRED - Stencil's class transformation makes traditional mixins unreliable. Each component interweaves common lifecycle code with component-specific logic. The boilerplate is small (3-4 lines per hook) and extracting it would require significant restructuring with minimal gain.
+
+**Problem**: All 39 components repeat identical lifecycle code.
 
 ```typescript
 // Repeated in EVERY component
@@ -670,15 +672,22 @@ export function withLfLifecycle<T extends ComponentClass>(Base: T) {
 export class LfButton { ... }
 ```
 
-**Files Affected**: All 38 component `.tsx` files  
+**Why Deferred**:
+
+1. Stencil class transformation makes mixins unreliable
+2. Each component has unique lifecycle logic alongside common parts
+3. The boilerplate is small (3-4 lines) but interwoven with component-specific code
+4. Risk/benefit ratio unfavorable for current architecture
+
+**Files Affected**: All 39 component `.tsx` files  
 **Complexity**: Medium  
-**Priority**: P1 (DRY, Maintainability)
+**Priority**: P3 (Demoted from P1)
 
 ---
 
 ### 3.2 Event Emitter Boilerplate
 
-**Problem**: Identical `@Event()` decorator config repeated 38 times.
+**Problem**: Identical `@Event()` decorator config repeated 39 times.
 
 ```typescript
 // Every component has this exact pattern
@@ -737,10 +746,14 @@ const LF_BUTTON_PROPS = [
 
 ### 4.1 Repeated Type Maps
 
-**Problem**: `components.declarations.ts` contains 6+ maps with 38 entries each.
+> **Status**: ✅ DONE (December 2024)
+>
+> **Implementation**: Created `LF_COMPONENTS` constant in `components.constants.ts` as single source of truth. Derived types (`LfComponentName`, `LfComponentTagMap`, `LfComponentReverseTagMap`, `LfComponentKey`, `LfComponentEventName`, `LfComponentTagName`) are now computed from this constant using mapped types.
+
+**Problem**: `components.declarations.ts` contains 6+ maps with 39 entries each.
 
 ```typescript
-// All have identical 38 entries, different value types
+// All have identical 39 entries, different value types
 type LfComponentTag = "lf-accordion" | "lf-autocomplete" | ...;
 type LfComponentName = "LfAccordion" | "LfAutocomplete" | ...;
 type LfComponentEventName = "lf-accordion-event" | "lf-autocomplete-event" | ...;
@@ -748,36 +761,49 @@ type LfComponentEventName = "lf-accordion-event" | "lf-autocomplete-event" | ...
 interface LfComponentPropsMap {
   "lf-accordion": LfAccordionPropsInterface;
   "lf-autocomplete": LfAutocompletePropsInterface;
-  // ... 36 more
+  // ... 37 more
 }
 
 interface LfComponentElementMap {
   "lf-accordion": HTMLLfAccordionElement;
-  // ... 37 more
+  // ... 38 more
 }
 ```
 
-**Proposed Solution**: Single source of truth with derived types.
+**Implemented Solution**: Single source of truth with derived types.
 
 ```typescript
-// Single definition
-const LF_COMPONENTS = {
+// Single definition in components.constants.ts
+export const LF_COMPONENTS = {
   accordion: {
-    tag: "lf-accordion",
     name: "LfAccordion",
-    event: "lf-accordion-event",
+    tag: "lf-accordion",
+    eventName: "lf-accordion-event",
   },
-  autocomplete: { ... },
-  // ... 36 more
+  // ... 38 more
 } as const;
 
 // Derived types (computed, not manually maintained)
-type LfComponentTag = typeof LF_COMPONENTS[keyof typeof LF_COMPONENTS]["tag"];
-type LfComponentName = typeof LF_COMPONENTS[keyof typeof LF_COMPONENTS]["name"];
-type LfComponentEventName = typeof LF_COMPONENTS[keyof typeof LF_COMPONENTS]["event"];
+export type LfComponentKey = keyof typeof LF_COMPONENTS;
+export type LfComponentName = (typeof LF_COMPONENTS)[LfComponentKey]["name"];
+export type LfComponentTagName = (typeof LF_COMPONENTS)[LfComponentKey]["tag"];
+export type LfComponentEventName = (typeof LF_COMPONENTS)[LfComponentKey]["eventName"];
+
+// In components.declarations.ts - derived mapped types
+export type LfComponentTagMap = {
+  [K in LfComponentKey as (typeof LF_COMPONENTS)[K]["name"]]: (typeof LF_COMPONENTS)[K]["tag"];
+};
+export type LfComponentReverseTagMap = {
+  [K in LfComponentKey as (typeof LF_COMPONENTS)[K]["tag"]]: (typeof LF_COMPONENTS)[K]["name"];
+};
 ```
 
-**Files Affected**: `packages/foundations/src/components/components.declarations.ts`  
+**Files Changed**:
+
+- `packages/foundations/src/foundations/components.constants.ts` - Added `LF_COMPONENTS` constant and derived union types
+- `packages/foundations/src/foundations/components.declarations.ts` - Derived `LfComponentTagMap` and `LfComponentReverseTagMap` from constant
+
+**Lines Removed**: ~160 lines of manual type entries replaced with computed types
 **Complexity**: Medium  
 **Priority**: P1 (Major DRY, Single Source of Truth)
 
@@ -1758,8 +1784,8 @@ Phase 1 added adapters to all 15 remaining components:
 | 1.1 LfDataCell mapped types | Medium | High | None | ✅ DONE |
 | 1.2 Flexible cells container | High | High | 1.1 | ✅ DONE |
 | 1.4 LfDataCellContainer fix | Low | High | None | ✅ DONE |
-| 4.1 Type map consolidation | Medium | High | None | |
-| 3.1 Lifecycle boilerplate | Medium | High | None | |
+| 4.1 Type map consolidation | Medium | High | None | ✅ DONE |
+| 3.1 Lifecycle boilerplate | Medium | High | None | ⏸️ DEFERRED |
 | 5.8 Adapter-everywhere (15 new adapters) | Medium | High | Phase 0 | ✅ DONE |
 | 2.10 FC POC (slider, toggle) | Medium | High | None | |
 | 6.x Architecture enforcement tooling | Medium | High | None | |

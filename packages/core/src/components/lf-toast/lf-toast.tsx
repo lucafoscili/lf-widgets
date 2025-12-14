@@ -186,6 +186,7 @@ export class LfToast implements LfToastInterface {
   //#region Internal variables
   #adapter: LfToastAdapter;
   #framework: LfFrameworkInterface;
+  #dismissTimer: ReturnType<typeof setTimeout> = null;
   #b = LF_TOAST_BLOCKS;
   #ids = LF_TOAST_IDS;
   #lf = LF_ATTRIBUTES;
@@ -352,8 +353,9 @@ export class LfToast implements LfToastInterface {
 
     const { lfTimer } = this;
 
-    if (lfTimer) {
-      setTimeout(() => {
+    // Store timer ID for cleanup and only create if not already running
+    if (lfTimer && !this.#dismissTimer) {
+      this.#dismissTimer = setTimeout(() => {
         this.#adapter.controller.actions.close(null);
       }, lfTimer);
     }
@@ -383,6 +385,11 @@ export class LfToast implements LfToastInterface {
     );
   }
   disconnectedCallback() {
+    // Clean up dismiss timer to prevent memory leaks
+    if (this.#dismissTimer) {
+      clearTimeout(this.#dismissTimer);
+      this.#dismissTimer = null;
+    }
     this.#framework?.theme.unregister(this);
   }
   //#endregion

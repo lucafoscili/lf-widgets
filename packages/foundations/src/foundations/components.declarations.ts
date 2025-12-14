@@ -202,6 +202,11 @@ import {
   LfFrameworkInterface,
 } from "../framework";
 import { LfDebugLifecycleInfo } from "../framework/debug.declarations";
+import {
+  LF_COMPONENTS,
+  LfComponentKey,
+  LfComponentName,
+} from "./components.constants";
 
 /**
  * Strongly typed runtime contract implemented by every LF component.
@@ -445,50 +450,12 @@ export interface LfShapePropsInterface<S extends LfDataShapes = LfDataShapes> {
 export type LfDynamicComponentProps = {
   [K in `lf${Capitalize<string>}`]?: any;
 };
-/**
- * Union of all canonical component names exposed by the foundations package.
- */
-export type LfComponentName =
-  | "LfAccordion"
-  | "LfArticle"
-  | "LfAutocomplete"
-  | "LfBadge"
-  | "LfBreadcrumbs"
-  | "LfButton"
-  | "LfCanvas"
-  | "LfCard"
-  | "LfCarousel"
-  | "LfChart"
-  | "LfChart"
-  | "LfChat"
-  | "LfCheckbox"
-  | "LfChip"
-  | "LfCode"
-  | "LfCompare"
-  | "LfDrawer"
-  | "LfHeader"
-  | "LfImage"
-  | "LfShapeeditor"
-  | "LfList"
-  | "LfMasonry"
-  | "LfMessenger"
-  | "LfMultiInput"
-  | "LfPhotoframe"
-  | "LfPlaceholder"
-  | "LfProgressbar"
-  | "LfRadio"
-  | "LfSelect"
-  | "LfSlider"
-  | "LfSnackbar"
-  | "LfSpinner"
-  | "LfSplash"
-  | "LfToggle"
-  | "LfTabbar"
-  | "LfTextfield"
-  | "LfToast"
-  | "LfTree"
-  | "LfTypewriter"
-  | "LfUpload";
+
+// LfComponentName is now derived from LF_COMPONENTS constant (imported from components.constants.ts)
+// This ensures a single source of truth for component names.
+// Re-export for convenience:
+export type { LfComponentName };
+
 /**
  * Union of the strongly typed props interfaces for every component.
  *
@@ -580,91 +547,17 @@ export type LfComponentPropsMap = {
 };
 /**
  * Maps each component name to the custom element tag it registers.
+ * Derived from LF_COMPONENTS constant for single source of truth.
  */
 export type LfComponentTagMap = {
-  LfAccordion: "lf-accordion";
-  LfArticle: "lf-article";
-  LfAutocomplete: "lf-autocomplete";
-  LfBadge: "lf-badge";
-  LfBreadcrumbs: "lf-breadcrumbs";
-  LfButton: "lf-button";
-  LfCanvas: "lf-canvas";
-  LfCard: "lf-card";
-  LfCarousel: "lf-carousel";
-  LfChart: "lf-chart";
-  LfChat: "lf-chat";
-  LfCheckbox: "lf-checkbox";
-  LfChip: "lf-chip";
-  LfCode: "lf-code";
-  LfCompare: "lf-compare";
-  LfDrawer: "lf-drawer";
-  LfHeader: "lf-header";
-  LfImage: "lf-image";
-  LfList: "lf-list";
-  LfMasonry: "lf-masonry";
-  LfMessenger: "lf-messenger";
-  LfMultiInput: "lf-multiinput";
-  LfPhotoframe: "lf-photoframe";
-  LfPlaceholder: "lf-placeholder";
-  LfProgressbar: "lf-progressbar";
-  LfRadio: "lf-radio";
-  LfSelect: "lf-select";
-  LfShapeeditor: "lf-shapeeditor";
-  LfSlider: "lf-slider";
-  LfSnackbar: "lf-snackbar";
-  LfSpinner: "lf-spinner";
-  LfSplash: "lf-splash";
-  LfToggle: "lf-toggle";
-  LfTabbar: "lf-tabbar";
-  LfTextfield: "lf-textfield";
-  LfToast: "lf-toast";
-  LfTree: "lf-tree";
-  LfTypewriter: "lf-typewriter";
-  LfUpload: "lf-upload";
+  [K in LfComponentKey as (typeof LF_COMPONENTS)[K]["name"]]: (typeof LF_COMPONENTS)[K]["tag"];
 };
 /**
  * Reverse lookup that resolves the canonical component name from a custom element tag.
+ * Derived from LF_COMPONENTS constant for single source of truth.
  */
 export type LfComponentReverseTagMap = {
-  "lf-accordion": "LfAccordion";
-  "lf-article": "LfArticle";
-  "lf-autocomplete": "LfAutocomplete";
-  "lf-badge": "LfBadge";
-  "lf-breadcrumbs": "LfBreadcrumbs";
-  "lf-button": "LfButton";
-  "lf-canvas": "LfCanvas";
-  "lf-card": "LfCard";
-  "lf-carousel": "LfCarousel";
-  "lf-chart": "LfChart";
-  "lf-chat": "LfChat";
-  "lf-checkbox": "LfCheckbox";
-  "lf-chip": "LfChip";
-  "lf-code": "LfCode";
-  "lf-compare": "LfCompare";
-  "lf-drawer": "LfDrawer";
-  "lf-header": "LfHeader";
-  "lf-image": "LfImage";
-  "lf-list": "LfList";
-  "lf-masonry": "LfMasonry";
-  "lf-messenger": "LfMessenger";
-  "lf-multiinput": "LfMultiInput";
-  "lf-photoframe": "LfPhotoframe";
-  "lf-placeholder": "LfPlaceholder";
-  "lf-progressbar": "LfProgressbar";
-  "lf-radio": "LfRadio";
-  "lf-select": "LfSelect";
-  "lf-shapeeditor": "LfShapeeditor";
-  "lf-slider": "LfSlider";
-  "lf-snackbar": "LfSnackbar";
-  "lf-spinner": "LfSpinner";
-  "lf-splash": "LfSplash";
-  "lf-toggle": "LfToggle";
-  "lf-tabbar": "LfTabbar";
-  "lf-textfield": "LfTextfield";
-  "lf-toast": "LfToast";
-  "lf-tree": "LfTree";
-  "lf-typewriter": "LfTypewriter";
-  "lf-upload": "LfUpload";
+  [K in LfComponentKey as (typeof LF_COMPONENTS)[K]["tag"]]: (typeof LF_COMPONENTS)[K]["name"];
 };
 
 //#region Third-party declarations (Stencil)

@@ -180,14 +180,6 @@ export class LfBadge implements LfBadgeInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfBadgeEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfBadgeEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -229,7 +221,7 @@ export class LfBadge implements LfBadgeInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
@@ -248,7 +240,7 @@ export class LfBadge implements LfBadgeInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
