@@ -21,7 +21,7 @@ export const prepNavigationHandlers = (
       const { get, set } = controller;
       const { compInstance } = get;
 
-      const c = compInstance as LfShapeeditor;
+      const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
@@ -40,7 +40,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const c = compInstance as LfShapeeditor;
+      const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
@@ -62,7 +62,7 @@ export const prepNavigationHandlers = (
       const { compInstance, history } = get;
       const { current } = history;
 
-      const c = compInstance as LfShapeeditor;
+      const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
@@ -88,7 +88,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },
@@ -99,7 +99,7 @@ export const prepNavigationHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },

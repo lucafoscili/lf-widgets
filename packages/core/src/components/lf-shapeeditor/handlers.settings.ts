@@ -35,32 +35,33 @@ export const prepSettingsHandlers = (
       const adapter = getAdapter();
       const { compInstance, currentShape, ids } = adapter.controller.get;
 
-      const c = compInstance as LfShapeeditor;
+      const i = ids();
+      const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
       switch (eventType) {
         case "click":
           switch (id) {
-            case ids.settings.actions.delete:
+            case i.settings.actions.delete:
               toggleButtonSpinner(comp, () => deleteShape(adapter));
               break;
-            case ids.settings.actions.badge:
+            case i.settings.actions.badge:
               // Toggle history column visibility in preview panel
               adapter.controller.set.history.togglePopup();
               break;
-            case ids.settings.actions.clear:
+            case i.settings.actions.clear:
               const index = currentShape().shape.index;
               const cb = async () => clearHistory(adapter, index);
               toggleButtonSpinner(comp, cb);
               break;
-            case ids.settings.actions.undo:
+            case i.settings.actions.undo:
               toggleButtonSpinner(comp, () => undo(adapter));
               break;
-            case ids.settings.actions.redo:
+            case i.settings.actions.redo:
               toggleButtonSpinner(comp, () => redo(adapter));
               break;
-            case ids.settings.actions.commit:
+            case i.settings.actions.commit:
               toggleButtonSpinner(comp, () => save(adapter));
               break;
           }
@@ -72,7 +73,7 @@ export const prepSettingsHandlers = (
     tree: (e) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
 
       const { eventType, node } = e.detail;
 
@@ -121,7 +122,7 @@ export const prepSettingsHandlers = (
       const adapter = getAdapter();
       const { compInstance, config } = adapter.controller.get;
 
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
 
       const currentSettings = {
         ...(config?.settings?.() || {}),
@@ -145,19 +146,20 @@ export const prepSettingsHandlers = (
       const adapter = getAdapter();
       const { compInstance, ids } = adapter.controller.get;
 
-      const c = compInstance as LfShapeeditor;
+      const i = ids();
+      const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
       switch (eventType) {
         case "click":
           switch (id) {
-            case ids.settings.controls.controlActions.apply:
+            case i.settings.controls.controlActions.apply:
               toggleButtonSpinner(comp, async () => {
                 c.onLfEvent(e, "apply");
               });
               break;
-            case ids.settings.controls.controlActions.reset:
+            case i.settings.controls.controlActions.reset:
               toggleButtonSpinner(comp, async () => {
                 await resetControls(adapter);
                 c.onLfEvent(e, "reset");

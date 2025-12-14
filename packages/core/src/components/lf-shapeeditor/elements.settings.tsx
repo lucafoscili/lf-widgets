@@ -26,12 +26,17 @@ export const prepSettings = (
     //#region Progressbar
     progressbar: (): VNode => {
       const { controller, elements } = getAdapter();
-      const { blocks, lfAttribute, manager, progressbar } = controller.get;
+      const { blocks, lfAttributes, framework, progressbar } = controller.get;
       const { settings } = elements.refs;
-      const { assignRef, theme } = manager;
+
+      const b = blocks();
+      const lf = lfAttributes();
+      const mgr = framework();
+
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const settingsBlock = blocks.settings;
+      const settingsBlock = b.settings;
 
       const state = progressbar();
       if (!state.visible) {
@@ -43,7 +48,7 @@ export const prepSettings = (
           class={bemClass(settingsBlock._, settingsBlock.progressbar, {
             hidden: !state.visible,
           })}
-          data-lf={lfAttribute.fadeIn}
+          data-lf={lf.fadeIn}
           id={IDS.settings.progressbar}
           lfAnimated={true}
           lfCenteredLabel={true}
@@ -60,21 +65,27 @@ export const prepSettings = (
     //#region Tree (DSL selector)
     tree: (): VNode => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager } = controller.get;
+      const { blocks, compInstance, cyAttributes, framework } = controller.get;
       const { settings } = elements.refs;
       const { tree } = handlers.settings;
-      const { assignRef, theme } = manager;
+
+      const b = blocks();
+      const cy = cyAttributes();
+      const mgr = framework();
+      const comp = compInstance();
+
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const settingsBlock = blocks.settings;
+      const settingsBlock = b.settings;
 
       return (
         <lf-tree
           class={bemClass(settingsBlock._, settingsBlock.tree)}
-          data-cy={cyAttributes.input}
+          data-cy={cy.input}
           id={IDS.settings.tree}
           lfAccordionLayout={true}
-          lfDataset={compInstance.lfValue}
+          lfDataset={comp.lfValue}
           lfFilter={false}
           lfSelectable={true}
           lfUiSize="small"

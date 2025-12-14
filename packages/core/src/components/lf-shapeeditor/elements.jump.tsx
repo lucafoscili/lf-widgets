@@ -10,21 +10,27 @@ export const prepJump = (
 ): (() => VNode) => {
   return () => {
     const { controller, elements, handlers } = getAdapter();
-    const { blocks, cyAttributes, manager, parts } = controller.get;
+    const { blocks, cyAttributes, framework, parts } = controller.get;
     const { navigation } = elements.refs;
     const { load, textfield } = handlers.navigation;
-    const { assignRef, theme } = manager;
+
+    const b = blocks();
+    const cy = cyAttributes();
+    const p = parts();
+    const mgr = framework();
+
+    const { assignRef, theme } = mgr;
     const { bemClass } = theme;
 
-    const jumpBlock = blocks.navigation.jump;
-    const jumpParts = parts.navigation;
+    const jumpBlock = b.navigation.jump;
+    const jumpParts = p.navigation;
 
     return (
       <div class={bemClass(jumpBlock._)} part={jumpParts.jump}>
         {/* Directory Textfield */}
         <lf-textfield
           class={bemClass(jumpBlock._, jumpBlock.textfield)}
-          data-cy={cyAttributes.input}
+          data-cy={cy.input}
           id={IDS.navigation.jump.textfield}
           lfIcon="folder"
           lfLabel="Directory"
@@ -37,7 +43,7 @@ export const prepJump = (
         {/* Load Button */}
         <lf-button
           class={bemClass(jumpBlock._, jumpBlock.load)}
-          data-cy={cyAttributes.button}
+          data-cy={cy.button}
           id={IDS.navigation.jump.load}
           lfLabel="Load"
           lfStretchX={true}

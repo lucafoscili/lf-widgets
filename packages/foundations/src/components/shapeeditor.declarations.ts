@@ -1,16 +1,14 @@
 import { LfIconType } from "../foundations";
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -19,10 +17,10 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUIState } from "../framework/theme.declarations";
 import { LfAccordionEventPayload } from "./accordion.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
+import { LfListElement, LfListEventPayload } from "./list.declarations";
 import {
   LfMasonryElement,
   LfMasonryEventPayload,
@@ -46,7 +44,6 @@ import {
   LfTreeEventPayload,
   LfTreePropsInterface,
 } from "./tree.declarations";
-import { LfListElement, LfListEventPayload } from "./list.declarations";
 
 //#region Class
 /**
@@ -92,13 +89,31 @@ export interface LfShapeeditorElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-shapeeditor` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple assignments (config, history, navigation, etc.)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks grouped by panel
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export interface LfShapeeditorAdapter
-  extends LfComponentAdapter<LfShapeeditorInterface> {
+  extends LfComponentAdapter<
+    LfShapeeditorInterface,
+    LfShapeeditorEventPayload,
+    LfShapeeditorAdapterHandlers,
+    LfShapeeditorAdapterJsx,
+    LfShapeeditorAdapterRefs,
+    LfShapeeditorAdapterControllerGetters,
+    LfShapeeditorAdapterControllerSetters
+  > {
   controller: {
     get: LfShapeeditorAdapterControllerGetters;
     set: LfShapeeditorAdapterControllerSetters;
   };
+  dispatcher: LfShapeeditorAdapterDispatcher;
   elements: {
     jsx: LfShapeeditorAdapterJsx;
     refs: LfShapeeditorAdapterRefs;
@@ -277,48 +292,19 @@ export interface LfShapeeditorAdapterHandlers
   };
 }
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfShapeeditorAdapterInitializerGetters = Pick<
-  LfShapeeditorAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "config"
-  | "currentShape"
-  | "cyAttributes"
-  | "history"
-  | "ids"
-  | "lfAttribute"
-  | "manager"
-  | "navigation"
-  | "parts"
-  | "previewValue"
-  | "progressbar"
-  | "resetKey"
-  | "snackbar"
-  | "spinnerStatus"
->;
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfShapeeditorAdapterInitializerSetters = Pick<
-  LfShapeeditorAdapterControllerSetters,
-  | "config"
-  | "currentShape"
-  | "history"
-  | "navigation"
-  | "previewValue"
-  | "progressbar"
-  | "resetKey"
-  | "snackbar"
->;
-/**
  * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfShapeeditorAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfShapeeditorInterface> {
-  blocks: (typeof LF_SHAPEEDITOR_BLOCKS)["shapeeditor"];
-  compInstance: LfShapeeditorInterface;
+  extends LfComponentAdapterBaseGetters<
+    LfShapeeditorInterface,
+    (typeof LF_SHAPEEDITOR_BLOCKS)["shapeeditor"],
+    (typeof LF_SHAPEEDITOR_IDS)["shapeeditor"],
+    (typeof LF_SHAPEEDITOR_PARTS)["shapeeditor"]
+  > {
+  /** Configuration state reads */
   config: {
     behavior: () => LfShapeeditorBehavior | undefined;
     commitTrigger: () => LfShapeeditorCommitTrigger | undefined;
@@ -330,8 +316,9 @@ export interface LfShapeeditorAdapterControllerGetters
     showApplyButton: () => boolean | undefined;
     showResetButton: () => boolean | undefined;
   };
+  /** Current shape being edited */
   currentShape: () => { shape: LfMasonrySelectedShape; value: string };
-  cyAttributes: typeof CY_ATTRIBUTES;
+  /** History state reads */
   history: {
     current: () => LfMasonrySelectedShape[];
     currentSnapshot: () => {
@@ -342,15 +329,17 @@ export interface LfShapeeditorAdapterControllerGetters
     index: () => number;
     isPopupOpen: () => boolean;
   };
-  ids: (typeof LF_SHAPEEDITOR_IDS)["shapeeditor"];
-  lfAttribute: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
+  /** Navigation panel state reads */
   navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
-  parts: (typeof LF_SHAPEEDITOR_PARTS)["shapeeditor"];
+  /** Preview panel value */
   previewValue: () => string | null;
+  /** Progress bar state */
   progressbar: () => LfShapeeditorProgressbarState;
+  /** Key for forcing re-renders */
   resetKey: () => number;
+  /** Snackbar notification state */
   snackbar: () => LfShapeeditorSnackbarState;
+  /** Spinner visibility */
   spinnerStatus: () => boolean;
 }
 /**
@@ -395,6 +384,30 @@ export type LfShapeeditorEvent = (typeof LF_SHAPEEDITOR_EVENTS)[number];
  */
 export interface LfShapeeditorEventPayload
   extends LfEventPayload<"LfShapeeditor", LfShapeeditorEvent> {}
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfShapeeditorAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfShapeeditorEventPayload>;
+export type LfShapeeditorAdapterDispatcherDetailOverrides = {
+  [E in LfShapeeditorEvent]: E extends "lf-event"
+    ? LfShapeeditorAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfShapeeditorAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfShapeeditorAdapterDispatchDetailBase;
+};
+export type LfShapeeditorAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfShapeeditorEventPayload,
+  LfShapeeditorAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region State

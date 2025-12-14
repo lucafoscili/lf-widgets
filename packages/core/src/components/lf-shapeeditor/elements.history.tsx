@@ -11,14 +11,20 @@ export const prepHistory = (
   return () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
-    const { blocks, history, ids, manager, parts } = controller.get;
+    const { blocks, history, ids, framework, parts } = controller.get;
     const { preview } = elements.refs;
     const { historyList } = handlers.preview;
-    const { assignRef, theme } = manager;
+
+    const b = blocks();
+    const i = ids();
+    const p = parts();
+    const mgr = framework();
+
+    const { assignRef, theme } = mgr;
     const { bemClass } = theme;
 
-    const historyBlock = blocks.preview.history;
-    const historyParts = parts.preview;
+    const historyBlock = b.preview.history;
+    const historyParts = p.preview;
 
     const currentHistory = history.current() || [];
     const currentIndex = history.index();
@@ -36,7 +42,7 @@ export const prepHistory = (
       <div class={bemClass(historyBlock._)} part={historyParts.history}>
         <lf-list
           class={bemClass(historyBlock._, historyBlock.list)}
-          id={ids.preview.history.list}
+          id={i.preview.history.list}
           lfDataset={historyDataset}
           lfEnableDeletions={true}
           lfUiSize="small"

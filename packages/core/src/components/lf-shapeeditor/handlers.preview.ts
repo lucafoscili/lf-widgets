@@ -16,7 +16,7 @@ export const prepPreviewHandlers = (
       const { current } = history;
       const { set } = adapter.controller;
 
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
       const { eventType, node } = e.detail as LfListEventPayload;
 
       switch (eventType) {
@@ -60,7 +60,7 @@ export const prepPreviewHandlers = (
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
-      const comp = compInstance as LfShapeeditor;
+      const comp = compInstance() as LfShapeeditor;
 
       comp.onLfEvent(e, "lf-event");
     },

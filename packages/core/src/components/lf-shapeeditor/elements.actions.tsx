@@ -4,6 +4,12 @@ import { h, VNode } from "@stencil/core";
 /**
  * Prepares the actions sub-block JSX (delete, badge, clear, redo, undo, commit).
  * Part of the settings panel.
+ *
+ * v4.0.0 Architecture:
+ * - All getters are called as functions: `blocks()`, `framework()`, etc.
+ * - Uses `framework` (renamed from `manager`)
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export const prepActions = (
   getAdapter: () => LfShapeeditorAdapter,
@@ -11,16 +17,23 @@ export const prepActions = (
   return () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
-    const { blocks, cyAttributes, history, ids, manager, parts } =
+    const { blocks, cyAttributes, history, ids, framework, parts } =
       controller.get;
     const { current, index, isPopupOpen } = history;
     const { settings } = elements.refs;
     const { actionsButton } = handlers.settings;
-    const { assignRef, theme } = manager;
+
+    // Call getters as functions (v4.0.0)
+    const b = blocks();
+    const cy = cyAttributes();
+    const p = parts();
+    const mgr = framework();
+
+    const { assignRef, theme } = mgr;
     const { bemClass, get } = theme;
 
-    const actionsBlock = blocks.settings.actions;
-    const settingsParts = parts.settings;
+    const actionsBlock = b.settings.actions;
+    const settingsParts = p.settings;
 
     const currentHistory = current();
     const hasHistory = !!currentHistory?.length;
@@ -53,8 +66,8 @@ export const prepActions = (
         {/* Delete Shape */}
         <lf-button
           class={bemClass(actionsBlock._, actionsBlock.delete)}
-          data-cy={cyAttributes.button}
-          id={ids.settings.actions.delete}
+          data-cy={cy.button}
+          id={ids().settings.actions.delete}
           lfIcon={deleteIcon}
           lfLabel="Delete"
           lfStretchX={true}
@@ -67,8 +80,8 @@ export const prepActions = (
         {hasHistory && (
           <lf-button
             class={bemClass(actionsBlock._, actionsBlock.badge)}
-            data-cy={cyAttributes.toggle}
-            id={ids.settings.actions.badge}
+            data-cy={cy.toggle}
+            id={ids().settings.actions.badge}
             lfIcon={historyIcon}
             lfLabel={`History: ${currentIndex + 1}/${total}`}
             lfStretchY={true}
@@ -83,8 +96,8 @@ export const prepActions = (
         {/* Clear History */}
         <lf-button
           class={bemClass(actionsBlock._, actionsBlock.clear)}
-          data-cy={cyAttributes.button}
-          id={ids.settings.actions.clear}
+          data-cy={cy.button}
+          id={ids().settings.actions.clear}
           lfIcon={clearHistoryIcon}
           lfLabel="Clear history"
           lfStretchX={true}
@@ -97,8 +110,8 @@ export const prepActions = (
         {/* Undo */}
         <lf-button
           class={bemClass(actionsBlock._, actionsBlock.undo)}
-          data-cy={cyAttributes.button}
-          id={ids.settings.actions.undo}
+          data-cy={cy.button}
+          id={ids().settings.actions.undo}
           lfIcon={undoIcon}
           lfLabel="Undo"
           lfStretchX={true}
@@ -111,8 +124,8 @@ export const prepActions = (
         {/* Redo */}
         <lf-button
           class={bemClass(actionsBlock._, actionsBlock.redo)}
-          data-cy={cyAttributes.button}
-          id={ids.settings.actions.redo}
+          data-cy={cy.button}
+          id={ids().settings.actions.redo}
           lfIcon={redoIcon}
           lfLabel="Redo"
           lfStretchX={true}
@@ -125,8 +138,8 @@ export const prepActions = (
         {/* Commit/Save Snapshot */}
         <lf-button
           class={bemClass(actionsBlock._, actionsBlock.commit)}
-          data-cy={cyAttributes.button}
-          id={ids.settings.actions.commit}
+          data-cy={cy.button}
+          id={ids().settings.actions.commit}
           lfIcon={saveIcon}
           lfLabel="Save snapshot"
           lfStretchX={true}

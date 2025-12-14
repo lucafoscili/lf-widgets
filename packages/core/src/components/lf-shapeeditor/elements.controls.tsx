@@ -13,10 +13,17 @@ export const prepControls = (
   return () => {
     const adapter = getAdapter();
     const { controller, elements } = adapter;
-    const { blocks, ids, lfAttribute, manager, parts, snackbar } =
+    const { blocks, ids, lfAttributes, framework, parts, snackbar } =
       controller.get;
     const { settings } = elements.refs;
-    const { assignRef, theme } = manager;
+
+    const b = blocks();
+    const i = ids();
+    const lf = lfAttributes();
+    const p = parts();
+    const mgr = framework();
+
+    const { assignRef, theme } = mgr;
     const { bemClass } = theme;
 
     const snackbarState = snackbar();
@@ -26,19 +33,16 @@ export const prepControls = (
     const controlActionsJsx = prepControlActions(getAdapter);
 
     return (
-      <div
-        class={bemClass(blocks.settings.controls._)}
-        part={parts.settings.controls._}
-      >
+      <div class={bemClass(b.settings.controls._)} part={p.settings.controls._}>
         {/* Snackbar notification */}
         {snackbarState.visible && (
           <lf-snackbar
             class={bemClass(
-              blocks.settings.controls._,
-              blocks.settings.controls.snackbar,
+              b.settings.controls._,
+              b.settings.controls.snackbar,
             )}
-            data-lf={lfAttribute.fadeIn}
-            id={ids.settings.controls.snackbar}
+            data-lf={lf.fadeIn}
+            id={i.settings.controls.snackbar}
             lfIcon={"--lf-icon-info"}
             lfMessage={snackbarState.message}
             lfPosition="inline"

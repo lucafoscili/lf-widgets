@@ -11,11 +11,18 @@ export const prepControlActions = (
   return () => {
     const adapter = getAdapter();
     const { controller, elements, handlers } = adapter;
-    const { blocks, config, cyAttributes, ids, manager, parts } =
+    const { blocks, config, cyAttributes, ids, framework, parts } =
       controller.get;
     const { settings } = elements.refs;
     const { controlActionsButton } = handlers.settings;
-    const { assignRef, theme } = manager;
+
+    const b = blocks();
+    const cy = cyAttributes();
+    const i = ids();
+    const p = parts();
+    const mgr = framework();
+
+    const { assignRef, theme } = mgr;
     const { bemClass } = theme;
 
     // Get DSL behavior metadata to determine button visibility
@@ -35,18 +42,18 @@ export const prepControlActions = (
 
     return (
       <div
-        class={bemClass(blocks.settings.controls.controlActions._)}
-        part={parts.settings.controls.controlActions}
+        class={bemClass(b.settings.controls.controlActions._)}
+        part={p.settings.controls.controlActions}
       >
         {/* Reset */}
         {showReset && (
           <lf-button
             class={bemClass(
-              blocks.settings.controls.controlActions._,
-              blocks.settings.controls.controlActions.reset,
+              b.settings.controls.controlActions._,
+              b.settings.controls.controlActions.reset,
             )}
-            data-cy={cyAttributes.button}
-            id={ids.settings.controls.controlActions.reset}
+            data-cy={cy.button}
+            id={i.settings.controls.controlActions.reset}
             lfIcon={"--lf-icon-refresh"}
             lfLabel="Reset"
             lfStretchX={true}
@@ -61,11 +68,11 @@ export const prepControlActions = (
         {showApply && (
           <lf-button
             class={bemClass(
-              blocks.settings.controls.controlActions._,
-              blocks.settings.controls.controlActions.apply,
+              b.settings.controls.controlActions._,
+              b.settings.controls.controlActions.apply,
             )}
-            data-cy={cyAttributes.button}
-            id={ids.settings.controls.controlActions.apply}
+            data-cy={cy.button}
+            id={i.settings.controls.controlActions.apply}
             lfIcon={"--lf-icon-success"}
             lfLabel="Apply"
             lfStretchX={true}

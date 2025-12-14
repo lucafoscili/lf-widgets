@@ -26,15 +26,21 @@ export const prepNavigation = (
     //#region Masonry
     masonry: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, manager, parts } = controller.get;
+      const { blocks, compInstance, framework, parts } = controller.get;
       const { navigation } = elements.refs;
       const { masonry } = handlers.navigation;
-      const { lfDataset, lfShape } = compInstance;
-      const { assignRef, theme } = manager;
+
+      const b = blocks();
+      const p = parts();
+      const mgr = framework();
+      const comp = compInstance();
+
+      const { lfDataset, lfShape } = comp;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const navBlock = blocks.navigation;
-      const navParts = parts.navigation;
+      const navBlock = b.navigation;
+      const navParts = p.navigation;
 
       return (
         <lf-masonry

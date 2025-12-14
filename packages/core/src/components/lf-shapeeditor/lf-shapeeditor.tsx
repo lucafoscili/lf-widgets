@@ -532,10 +532,17 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
   //#region Private methods
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    const adapterParts = createAdapter(
       {
-        blocks: this.#b,
-        compInstance: this,
+        // Base getters (v4.0.0 - ALL must be functions)
+        blocks: () => this.#b,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p,
+        // Component-specific getters
         config: {
           behavior: () => this.configBehavior,
           commitTrigger: () => this.configCommitTrigger,
@@ -548,7 +555,6 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           showResetButton: () => this.configShowResetButton,
         },
         currentShape: () => this.#getSelectedShapeValue(this.currentShape),
-        cyAttributes: this.#cy,
         history: {
           current: () => this.history[this.currentShape.index],
           currentSnapshot: () => {
@@ -565,14 +571,10 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           index: () => this.historyIndex,
           isPopupOpen: () => this.isHistoryPopupOpen,
         },
-        ids: this.#ids,
-        lfAttribute: this.#lf,
-        manager: this.#framework,
         navigation: {
           hasNav: () => Boolean(this.lfNavigation?.treeProps?.lfDataset),
           isTreeOpen: () => this.isNavigationTreeOpen,
         },
-        parts: this.#p,
         previewValue: () => this.previewValue,
         progressbar: () => this.progressbarState,
         resetKey: () => this.resetKey,
@@ -581,38 +583,39 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       },
       {
         config: {
-          behavior: (behavior) => {
+          behavior: (behavior?: LfShapeeditorBehavior) => {
             this.configBehavior = behavior;
           },
-          commitTrigger: (trigger) => {
+          commitTrigger: (trigger?: LfShapeeditorCommitTrigger) => {
             this.configCommitTrigger = trigger;
           },
-          controls: (controls) => {
+          controls: (controls: LfShapeeditorControlConfig[]) => {
             this.configControls = controls || [];
           },
-          enablePreview: (enable) => {
+          enablePreview: (enable?: boolean) => {
             this.configEnablePreview = enable;
           },
-          expandedGroups: (groups) => {
+          expandedGroups: (groups: string[]) => {
             this.expandedSettingsGroups = groups || [];
           },
-          layout: (layout) => {
+          layout: (layout?: LfShapeeditorLayout) => {
             this.configLayout = layout;
           },
-          settings: (settings) => {
+          settings: (settings: LfShapeeditorConfigSettings) => {
             this.configSettings = { ...(settings || {}) };
           },
-          showApplyButton: (show) => {
+          showApplyButton: (show?: boolean) => {
             this.configShowApplyButton = show;
           },
-          showResetButton: (show) => {
+          showResetButton: (show?: boolean) => {
             this.configShowResetButton = show;
           },
         },
-        currentShape: (node) => (this.currentShape = node),
+        currentShape: (node: LfMasonrySelectedShape) =>
+          (this.currentShape = node),
         history: {
-          index: (index) => (this.historyIndex = index),
-          new: (selectedShape, isSnapshot = false) => {
+          index: (index: number) => (this.historyIndex = index),
+          new: (selectedShape: LfMasonrySelectedShape, isSnapshot = false) => {
             const historyByIndex = this.history?.[selectedShape.index] || [];
 
             if (this.historyIndex < historyByIndex.length - 1) {
@@ -628,8 +631,8 @@ export class LfShapeeditor implements LfShapeeditorInterface {
             this.history[selectedShape.index] = historyByIndex;
             this.historyIndex = historyByIndex.length - 1;
           },
-          pop: (index = null) => {
-            if (index !== null) {
+          pop: (index?: number) => {
+            if (index !== null && index !== undefined) {
               this.history[index] = [this.history[index][0]];
               if (this.historyIndex === 0) {
                 this.refresh();
@@ -653,21 +656,41 @@ export class LfShapeeditor implements LfShapeeditorInterface {
             this.isNavigationTreeOpen = !this.isNavigationTreeOpen;
           },
         },
-        previewValue: (value) => {
+        previewValue: (value: string | null) => {
           this.previewValue = value;
         },
-        progressbar: (state) => {
+        progressbar: (state: Partial<LfShapeeditorProgressbarState>) => {
           this.progressbarState = { ...this.progressbarState, ...state };
         },
         resetKey: () => {
           this.resetKey++;
         },
-        snackbar: (state) => {
+        snackbar: (state: Partial<LfShapeeditorSnackbarState>) => {
           this.snackbarState = { ...this.snackbarState, ...state };
         },
       },
       () => this.#adapter,
     );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+          });
+        },
+      },
+    };
   };
   #getSelectedShapeValue(selectedShape: LfMasonrySelectedShape) {
     const { data } = this.#framework;

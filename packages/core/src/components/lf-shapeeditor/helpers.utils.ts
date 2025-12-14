@@ -66,7 +66,8 @@ export const clearSelection = async (adapter: LfShapeeditorAdapter) => {
  */
 export const deleteShape = async (adapter: LfShapeeditorAdapter) => {
   const { compInstance, currentShape } = adapter.controller.get;
-  const { lfDataset } = compInstance;
+  const comp = compInstance();
+  const { lfDataset } = comp;
 
   const s = currentShape();
   if (!s?.shape) {
@@ -80,7 +81,7 @@ export const deleteShape = async (adapter: LfShapeeditorAdapter) => {
   const nodes = [...lfDataset.nodes];
   if (index >= 0 && index < nodes.length) {
     nodes.splice(index, 1);
-    compInstance.lfDataset = { ...lfDataset, nodes };
+    comp.lfDataset = { ...lfDataset, nodes };
   }
 
   await clearSelection(adapter);
@@ -102,9 +103,13 @@ export const findCellByIndex = (
   index: number,
   cellKey?: string,
 ): Partial<LfDataCell<LfDataShapes>> | undefined => {
-  const { compInstance, manager } = adapter.controller.get;
-  const { lfDataset, lfShape } = compInstance;
-  const { getAll } = manager.data.cell.shapes;
+  const { compInstance, framework } = adapter.controller.get;
+
+  const comp = compInstance();
+  const mgr = framework();
+
+  const { lfDataset, lfShape } = comp;
+  const { getAll } = mgr.data.cell.shapes;
 
   if (!lfDataset?.nodes?.[index]) {
     return undefined;
@@ -137,10 +142,11 @@ export const load = async (adapter: LfShapeeditorAdapter) => {
   const { controller, elements } = adapter;
   const { textfield } = elements.refs.navigation.jump;
   const { compInstance } = controller.get;
-  const { lfLoadCallback } = compInstance;
+  const comp = compInstance();
+  const { lfLoadCallback } = comp;
 
   try {
-    await lfLoadCallback(compInstance, await textfield.getValue());
+    await lfLoadCallback(comp, await textfield.getValue());
     clearHistory(adapter);
   } catch (error) {
     console.error("Load operation failed:", error);
@@ -219,10 +225,14 @@ export const redo = async (adapter: LfShapeeditorAdapter) => {
  * @throws Will return early if no current shape is selected
  */
 export const save = async (adapter: LfShapeeditorAdapter) => {
-  const { compInstance, currentShape, history, manager } =
+  const { compInstance, currentShape, history, framework } =
     adapter.controller.get;
-  const { lfDataset, lfShape } = compInstance;
-  const { getAll } = manager.data.cell.shapes;
+
+  const comp = compInstance();
+  const mgr = framework();
+
+  const { lfDataset, lfShape } = comp;
+  const { getAll } = mgr.data.cell.shapes;
 
   const s = currentShape();
   if (!s?.shape) {
@@ -265,7 +275,7 @@ export const save = async (adapter: LfShapeeditorAdapter) => {
 
   await clearHistory(adapter, index);
 
-  compInstance.lfDataset = { ...lfDataset, nodes };
+  comp.lfDataset = { ...lfDataset, nodes };
 };
 //#endregion
 

@@ -27,18 +27,24 @@ export const prepPreview = (
         blocks,
         compInstance,
         history,
-        lfAttribute,
-        manager,
+        lfAttributes,
+        framework,
         previewValue,
       } = controller.get;
       const { preview } = elements.refs;
       const { shape } = handlers.preview;
       const { currentSnapshot } = history;
-      const { lfShape } = compInstance;
-      const { assignRef, theme } = manager;
+
+      const b = blocks();
+      const lf = lfAttributes();
+      const mgr = framework();
+      const comp = compInstance();
+
+      const { lfShape } = comp;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const previewBlock = blocks.preview;
+      const previewBlock = b.preview;
 
       const snapshot = currentSnapshot();
       if (!snapshot) {
@@ -69,13 +75,13 @@ export const prepPreview = (
       return (
         <div
           class={bemClass(previewBlock._, previewBlock.shape)}
-          data-lf={lfAttribute.fadeIn}
+          data-lf={lf.fadeIn}
           ref={assignRef(preview, "shape")}
         >
           <LfShape
             cell={cell}
             eventDispatcher={async (e) => shape(e)}
-            framework={manager}
+            framework={mgr}
             index={snapshot.shape?.index ?? 0}
             shape={lfShape}
           />
@@ -87,17 +93,22 @@ export const prepPreview = (
     //#region Spinner
     spinner: () => {
       const { controller, elements } = getAdapter();
-      const { blocks, ids, manager, spinnerStatus } = controller.get;
+      const { blocks, ids, framework, spinnerStatus } = controller.get;
       const { preview } = elements.refs;
-      const { assignRef, theme } = manager;
+
+      const b = blocks();
+      const i = ids();
+      const mgr = framework();
+
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const previewBlock = blocks.preview;
+      const previewBlock = b.preview;
 
       return (
         <lf-spinner
           class={bemClass(previewBlock._, previewBlock.spinner)}
-          id={ids.preview.spinner}
+          id={i.preview.spinner}
           lfActive={spinnerStatus()}
           lfDimensions="16px"
           lfFader={true}

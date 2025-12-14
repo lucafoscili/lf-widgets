@@ -1,9 +1,8 @@
 import {
   LfShapeeditorAdapter,
+  LfShapeeditorAdapterControllerGetters,
   LfShapeeditorAdapterControllerSetters,
   LfShapeeditorAdapterHandlers,
-  LfShapeeditorAdapterInitializerGetters,
-  LfShapeeditorAdapterInitializerSetters,
   LfShapeeditorAdapterJsx,
   LfShapeeditorAdapterRefs,
 } from "@lf-widgets/foundations";
@@ -14,12 +13,24 @@ import { prepNavigationHandlers } from "./handlers.navigation";
 import { prepPreviewHandlers } from "./handlers.preview";
 import { prepSettingsHandlers } from "./handlers.settings";
 
+/**
+ * Creates the canonical adapter for lf-shapeeditor.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+ * - controller.set: Simple setters (config, history, navigation, etc.)
+ * - elements: JSX factories + refs
+ * - dispatcher: Centralized event emission (passed from component)
+ * - handlers: Event callbacks grouped by panel
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
 //#region Adapter
 export const createAdapter = (
-  getters: LfShapeeditorAdapterInitializerGetters,
-  setters: LfShapeeditorAdapterInitializerSetters,
+  getters: LfShapeeditorAdapterControllerGetters,
+  setters: Omit<LfShapeeditorAdapterControllerSetters, "spinnerStatus">,
   getAdapter: () => LfShapeeditorAdapter,
-): LfShapeeditorAdapter => {
+): Omit<LfShapeeditorAdapter, "dispatcher"> => {
   return {
     controller: {
       get: getters,
@@ -36,14 +47,14 @@ export const createAdapter = (
 
 //#region Controller
 export const createSetters = (
-  setters: LfShapeeditorAdapterInitializerSetters,
+  setters: Omit<LfShapeeditorAdapterControllerSetters, "spinnerStatus">,
   getAdapter: () => LfShapeeditorAdapter,
 ): LfShapeeditorAdapterControllerSetters => {
   return {
     ...setters,
-    spinnerStatus: (active) =>
+    spinnerStatus: (active: boolean) =>
       (getAdapter().elements.refs.preview.spinner.lfActive = active),
-  };
+  } as unknown as LfShapeeditorAdapterControllerSetters;
 };
 //#endregion
 

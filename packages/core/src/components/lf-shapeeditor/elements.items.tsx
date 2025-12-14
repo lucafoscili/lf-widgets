@@ -21,9 +21,14 @@ export const prepItems = (
   return () => {
     const adapter = getAdapter();
     const { controller, handlers } = adapter;
-    const { blocks, config, manager, parts } = controller.get;
+    const { blocks, config, framework, parts } = controller.get;
     const { accordionToggle } = handlers.settings;
-    const { theme } = manager;
+
+    const b = blocks();
+    const p = parts();
+    const mgr = framework();
+
+    const { theme } = mgr;
     const { bemClass } = theme;
 
     const controls = config?.controls?.() || [];
@@ -36,8 +41,8 @@ export const prepItems = (
     if (!hasControls) {
       return (
         <div
-          class={bemClass(blocks.settings.controls.items._)}
-          part={parts.settings.controls.items}
+          class={bemClass(b.settings.controls.items._)}
+          part={p.settings.controls.items}
         >
           <slot name="settings"></slot>
         </div>
@@ -122,8 +127,8 @@ export const prepItems = (
 
     return (
       <div
-        class={bemClass(blocks.settings.controls.items._)}
-        part={parts.settings.controls.items}
+        class={bemClass(b.settings.controls.items._)}
+        part={p.settings.controls.items}
       >
         {segments.map((segment, segmentIdx) => {
           if (segment.type === "standalone") {
@@ -131,8 +136,8 @@ export const prepItems = (
               <div
                 key={segment.control.id}
                 class={bemClass(
-                  blocks.settings.controls.items._,
-                  blocks.settings.controls.items.item,
+                  b.settings.controls.items._,
+                  b.settings.controls.items.item,
                 )}
               >
                 {renderControl(segment.control)}
@@ -157,8 +162,8 @@ export const prepItems = (
           return (
             <lf-accordion
               class={bemClass(
-                blocks.settings.controls.items._,
-                blocks.settings.controls.items.accordion,
+                b.settings.controls.items._,
+                b.settings.controls.items.accordion,
               )}
               key={`accordion-${segmentIdx}`}
               lfDataset={accordionDataset}
@@ -188,16 +193,20 @@ const renderInfoIcon = (
   description: string,
 ): VNode => {
   const { controller, elements } = adapter;
-  const { blocks, manager } = controller.get;
+  const { blocks, framework } = controller.get;
   const { refs } = elements;
-  const { bemClass } = manager.theme;
+
+  const b = blocks();
+  const mgr = framework();
+
+  const { bemClass } = mgr.theme;
 
   return (
     <div
       aria-label={description}
       class={bemClass(
-        blocks.settings.controls.items._,
-        blocks.settings.controls.items.info,
+        b.settings.controls.items._,
+        b.settings.controls.items.info,
       )}
       ref={(el) => {
         if (el) {
@@ -206,7 +215,7 @@ const renderInfoIcon = (
       }}
       tabindex="0"
     >
-      <FIcon framework={manager} icon="--lf-icon-info"></FIcon>
+      <FIcon framework={mgr} icon="--lf-icon-info"></FIcon>
     </div>
   );
 };
@@ -217,11 +226,15 @@ const createControl = (
   adapter: LfShapeeditorAdapter,
 ): VNode => {
   const { controller, handlers } = adapter;
-  const { blocks, manager, resetKey } = controller.get;
+  const { blocks, framework, resetKey } = controller.get;
   const { controls } = handlers.settings;
-  const { items } = blocks.settings.controls;
-  const { logs } = manager.debug;
-  const { bemClass } = manager.theme;
+
+  const b = blocks();
+  const mgr = framework();
+
+  const { items } = b.settings.controls;
+  const { logs } = mgr.debug;
+  const { bemClass } = mgr.theme;
 
   const value = currentValue ?? getDefaultValue(config);
   const infoIcon = config.description
@@ -357,7 +370,7 @@ const createControl = (
 
     default:
       logs.new(
-        adapter.controller.get.compInstance,
+        adapter.controller.get.compInstance(),
         "Unsupported control type: " + (config as any).type,
         "warning",
       );
