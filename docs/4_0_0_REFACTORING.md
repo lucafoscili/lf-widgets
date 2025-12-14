@@ -1,12 +1,79 @@
 # LF Widgets v4.0.0 Architectural Refactoring Proposal
 
-> **Status**: IN PROGRESS  
+> **Status**: PHASE 0 COMPLETE ✅  
 > **Branch**: Already has 200+ files edited  
-> **Timeline**: Must be addressed before v4.0.0 release  
+> **Timeline**: Phase 0 (Adapter Architecture) completed December 2024  
 > **Philosophy**: "This might be the last chance for an architectural overhaul"
 >
 > **⚠️ IMMEDIATE PRIORITY**: Section 5 (Adapter Pattern) is the **HOLY BIBLE** for component architecture.
 > Phase 0 must be completed atomically before any other work proceeds.
+>
+> **🏆 GOLDEN STANDARD**: `lf-shapeeditor` is the reference implementation for v4.0.0 adapter compliance.
+> Use it as the canonical example when migrating other components.
+
+---
+
+## Golden Standard Reference: `lf-shapeeditor`
+
+The `lf-shapeeditor` component serves as the **golden standard** for v4.0.0 adapter architecture. All other component migrations should follow its patterns.
+
+### Key Files (Study These First)
+
+| File | Purpose |
+|------|---------|
+| `packages/foundations/src/components/shapeeditor.declarations.ts` | Type definitions - extends `LfComponentAdapterBaseGetters` |
+| `packages/core/src/components/lf-shapeeditor/lf-shapeeditor.tsx` | Main component - dispatcher + function getters |
+| `packages/core/src/components/lf-shapeeditor/lf-shapeeditor-adapter.ts` | Adapter factory - domain separation |
+| `packages/core/src/components/lf-shapeeditor/elements.*.tsx` | JSX functions - uses `controller.get` as functions |
+| `packages/core/src/components/lf-shapeeditor/handlers.*.ts` | Event handlers - grouped by panel |
+
+### Compliance Checklist (Verified ✅)
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| 5.1 Base Interface Overhaul | ✅ | `extends LfComponentAdapterBaseGetters<...>` |
+| 5.2 All Getters as Functions | ✅ | `blocks: () => this.#b`, `framework: () => this.#framework` |
+| 5.3 No Initializer Types | ✅ | No `*InitializerGetters/Setters` |
+| 5.4 Controller Domains (get/set/computed/actions) | ✅ | All four domains properly separated |
+| 5.5 Dispatcher Mandatory | ✅ | `dispatcher: { emit: ... }` inline |
+| 5.6 Extends Base Interface | ✅ | `LfShapeeditorAdapter extends LfComponentAdapter<...>` |
+| 5.7 Explicit Null in Refs | ✅ | Properly typed element references |
+| `manager` → `framework` | ✅ | All files use `framework` |
+| `lfAttribute` → `lfAttributes` | ✅ | All files use `lfAttributes` |
+
+#### Shapeeditor Domain Separation (Reference Implementation)
+
+**`controller.get`** (pure state reads):
+
+- `config.*` - configuration state
+- `currentShape` - current shape data
+- `history.current`, `history.full`, `history.index`, `history.isPopupOpen`
+- `navigation.isTreeOpen`
+- `previewValue`, `progressbar`, `resetKey`, `snackbar`, `spinnerStatus`
+
+**`controller.set`** (simple single-value assignments):
+
+- `config.*` - configuration setters
+- `currentShape`, `history.index`, `history.isPopupOpen`
+- `navigation.isTreeOpen`
+- `previewValue`, `progressbar`, `snackbar`
+
+**`controller.computed`** (derived values, predicates):
+
+- `history.currentSnapshot` - derives from shape + index
+- `navigation.hasNav` - predicate checking dataset presence
+
+**`controller.actions`** (multi-step operations):
+
+- `history.new` - splice, conditional push, index update
+- `history.pop` - conditional splice, refresh, index reset
+- `history.toggle` - toggle popup visibility
+- `navigation.toggle` - toggle tree visibility
+- `incrementResetKey` - increment counter
+
+### Silver Reference: `lf-button`
+
+For **simpler components** (Tier 1), use `lf-button` as the reference. It demonstrates the minimal v4.0.0 compliant adapter without the complexity of multi-panel layouts.
 
 ---
 
@@ -22,12 +89,14 @@ The **Adapter Pattern Standardization** (Section 5) has been elevated to immedia
 2. **Standardize All Getters as Functions** - Every getter returns `() => T`, no exceptions
 3. **Rename `manager` → `framework`** - Clearer semantics throughout codebase
 4. **Remove Initializer Types** - Eliminate redundant `*AdapterInitializerGetters/Setters` boilerplate
-5. **Add `computed` and `actions` Controller Domains** - Separate predicates/builders from state reads, actions from simple setters
+5. **Controller Domain Separation (MANDATORY)** - Operations MUST go in correct domain: `get` (pure reads), `set` (single assignments), `computed` (predicates/derived), `actions` (multi-step)
 6. **Make Dispatcher Mandatory** - Centralized event emission for all components
 7. **All Adapters Extend Base** - Type safety enforcement
 8. **Adapter-Everywhere** - All 39 components get adapters
 
 **This will break builds until complete. Estimated: 2-3 days focused work.**
+
+> **✅ Phase 0 Complete** (December 2024): All 24 adapter-enabled components migrated to v4.0.0 pattern. 1333/1333 unit tests passing.
 
 ---
 
@@ -1172,15 +1241,24 @@ interface LfChartAdapterController {
 }
 ```
 
-**Progressive Adoption**:
+**Mandatory Categorization**:
 
-- `computed` and `actions` are **optional**
-- Simple components use only `get`/`set`
-- Complex components add `computed`/`actions` as needed
+In an AI-assisted codebase, **consistency beats pragmatism**. When agents scaffold new components, they find similar existing components, copy the structure, and adapt to new requirements. If operations are inconsistently categorized, agents produce inconsistent output.
+
+**Rule**: Operations MUST be placed in the correct domain based on their behavior:
+
+| Operation Type | Domain | Rationale |
+|----------------|--------|-----------|
+| Pure state read | `get` | No side effects, returns current value |
+| Single assignment | `set` | One state change, void return |
+| Derived value / predicate | `computed` | Computes from state, no side effects |
+| Multi-step / toggle / batch | `actions` | Multiple changes, may have side effects |
+
+**Not "optional"**: A component may not *have* any predicates (no `computed`) or multi-step operations (no `actions`), but if it DOES have them, they MUST go in the correct domain. The domains exist for all components; some may simply be empty.
 
 **Files Affected**: Complex component declarations (chart, messenger, chat, shapeeditor, tree, list)
 **Complexity**: Medium
-**Priority**: P1 (Architecture clarity)
+**Priority**: P0 (Consistency is foundational)
 
 ---
 
@@ -1372,17 +1450,16 @@ export type LfComponentAdapterRefs = {
 
 **Decision**: Every component MUST have an adapter, regardless of complexity.
 
-**Current State**: 18 of 39 components have adapters.
+**Current State**: 24 of 39 components have adapters (all v4.0.0 compliant).
 
-| Has Adapter (18) | Missing Adapter (21) |
+| Has Adapter (24) | Missing Adapter (15) |
 |------------------|---------------------|
-| autocomplete, badge, breadcrumbs, button | accordion, article, checkbox |
-| canvas, card, carousel, chart | chip, code, drawer |
-| chat, compare, list, masonry | header, image, photoframe |
-| messenger, multiinput, radio | placeholder, progressbar, slider |
-| select, shapeeditor, tree | snackbar, spinner, splash |
-| | tabbar, textfield, toast |
-| | toggle, typewriter, upload |
+| accordion, autocomplete, badge, breadcrumbs | article, code, drawer |
+| button, canvas, card, carousel, chart | header, image, photoframe |
+| chat, checkbox, chip, compare, list | placeholder, progressbar, slider |
+| masonry, messenger, multiinput, radio | snackbar, spinner, splash |
+| select, shapeeditor, tabbar, textfield | toast, typewriter, upload |
+| toggle, tree | |
 
 **Rationale**: In an AI-assisted codebase, **consistency beats pragmatism**.
 
@@ -1426,9 +1503,9 @@ export const createAdapter = (
 });
 ```
 
-**Files Affected**: 21 components need new adapters
+**Files Affected**: 15 components need new adapters
 **Complexity**: Medium (total effort)
-**Priority**: P0 (Foundational decision)
+**Priority**: P1 (Foundational decision, moved from P0 since Phase 0 complete)
 
 ---
 
@@ -1440,17 +1517,16 @@ The `architecture.md` defines canonical patterns, but not all components follow 
 
 ### 6.2 Components Missing Adapters
 
-**Current State**: 18 of 39 components have adapters.
+**Current State**: 24 of 39 components have adapters (all v4.0.0 compliant).
 
-| Has Adapter (18) | Missing Adapter (21) |
+| Has Adapter (24) | Missing Adapter (15) |
 |------------------|---------------------|
-| autocomplete, badge, breadcrumbs, button | accordion, article, checkbox |
-| canvas, card, carousel, chart | chip, code, drawer |
-| chat, compare, list, masonry | header, image, photoframe |
-| messenger, multiinput, radio | placeholder, progressbar, slider |
-| select, shapeeditor, tree | snackbar, spinner, splash |
-| | tabbar, textfield, toast |
-| | toggle, typewriter, upload |
+| accordion, autocomplete, badge, breadcrumbs | article, code, drawer |
+| button, canvas, card, carousel, chart | header, image, photoframe |
+| chat, checkbox, chip, compare, list | placeholder, progressbar, slider |
+| masonry, messenger, multiinput, radio | snackbar, spinner, splash |
+| select, shapeeditor, tabbar, textfield | toast, typewriter, upload |
+| toggle, tree | |
 
 **Impact**: Inconsistent internal structure, harder to maintain, no clear separation of concerns.
 
@@ -1648,29 +1724,47 @@ Components without dedicated unit tests:
 ### Phase 0: Adapter Architecture Overhaul (IMMEDIATE - Breaks Builds)
 
 > **Warning**: This phase will break ALL builds until completion. Must be done atomically.
+>
+> **Progress**: Phase 0 COMPLETE ✅ (2024-12-14)
+> - `lf-shapeeditor` established as golden standard
+> - All 24 adapter-enabled components migrated to v4.0.0 pattern
+> - 1333/1333 unit tests passing
 
-| Item | Section | Complexity | Impact | Dependencies |
-|------|---------|------------|--------|--------------|
-| 5.1 Base interface overhaul | 5.1 | High | Critical | None |
-| 5.2 Standardize getters as functions | 5.2 | Medium | Critical | 5.1 |
-| 5.3 Remove Initializer types | 5.3 | Low | High | 5.1, 5.2 |
-| 5.4 Add computed/actions domains | 5.4 | Medium | High | 5.1 |
-| 5.5 Make dispatcher mandatory | 5.5 | Medium | High | 5.1 |
-| 5.6 All adapters extend base | 5.6 | Low | High | 5.1 |
-| 5.7 Explicit null in refs | 5.7 | Trivial | Low | None |
-| Rename manager → framework | 5.1 | Medium | High | None |
+| Item | Section | Complexity | Impact | Dependencies | Status |
+|------|---------|------------|--------|--------------|--------|
+| 5.1 Base interface overhaul | 5.1 | High | Critical | None | ✅ Done |
+| 5.2 Standardize getters as functions | 5.2 | Medium | Critical | 5.1 | ✅ Done |
+| 5.3 Remove Initializer types | 5.3 | Low | High | 5.1, 5.2 | ✅ Done |
+| 5.4 Add computed/actions domains | 5.4 | Medium | High | 5.1 | ✅ Done |
+| 5.5 Make dispatcher mandatory | 5.5 | Medium | High | 5.1 | ✅ Done |
+| 5.6 All adapters extend base | 5.6 | Low | High | 5.1 | ✅ Done |
+| 5.7 Explicit null in refs | 5.7 | Trivial | Low | None | ✅ Done |
+| Rename manager → framework | 5.1 | Medium | High | None | ✅ Done |
 
-**Estimated Duration**: 2-3 days of focused work
+**Golden Standard**: `lf-shapeeditor` - use as reference for all migrations
+**Silver Reference**: `lf-button` - use for simple component patterns
 
-**Order of Operations**:
+**Completed Work** (Phase 0):
 
-1. Update `adapter.declarations.ts` with new base types
-2. Update all component `*.declarations.ts` in foundations
-3. Build foundations (`yarn build:foundations`)
-4. Update all adapter implementations in core
-5. Update all component TSX files
+- ✅ All 24 adapter-enabled components migrated to v4.0.0 pattern
+- ✅ Base interface with 7 mandatory getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+- ✅ Four controller domains (get/set/computed/actions) properly separated
+- ✅ All getters are functions `() => T`
+- ✅ 1333/1333 unit tests passing
+
+**Remaining Work** (Phase 1 - Adapter-Everywhere):
+
+- Add adapters to 15 remaining components without adapters
+
+**Order of Operations** (for remaining components):
+
+1. Update component's `*.declarations.ts` in foundations to extend base getters
+2. Build foundations (`yarn build:foundations`)
+3. Update adapter implementation - all getters as functions `() => T`
+4. Update element/handler files to call getters as functions
+5. Add dispatcher inline in component
 6. Build core (`yarn build:core`)
-7. Verify showcase builds
+7. Verify unit tests pass
 
 ### Phase 1: Foundation (Before v4.0.0-alpha)
 
@@ -1680,7 +1774,7 @@ Components without dedicated unit tests:
 | 1.4 LfDataCellContainer fix | Low | High | None |
 | 4.1 Type map consolidation | Medium | High | None |
 | 3.1 Lifecycle boilerplate | Medium | High | None |
-| 5.8 Adapter-everywhere (21 new adapters) | Medium | High | Phase 0 |
+| 5.8 Adapter-everywhere (15 new adapters) | Medium | High | Phase 0 |
 | 2.10 FC POC (slider, toggle) | Medium | High | None |
 | 6.x Architecture enforcement tooling | Medium | High | None |
 
@@ -1728,6 +1822,9 @@ Components without dedicated unit tests:
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2024-12-14 | `lf-shapeeditor` as golden standard | Most complex component, fully migrated to v4.0.0, serves as reference for all other migrations |
+| 2024-12-14 | `computed`/`actions` are MANDATORY when applicable | "Optional" framing was misleading—operations MUST go in correct domain. A component may not *have* any predicates, but if it does, they go in `computed`. Consistency > pragmatism in AI-assisted codebases |
+| 2024-12-14 | Shapeeditor implements all four controller domains | Full get/set/computed/actions separation as reference for other components |
 | 2024-12-13 | Promote common getters to base type | All adapters need blocks/cyAttributes/framework/ids/lfAttributes/parts - enforce at type level |
 | 2024-12-13 | Standardize all getters as functions `() => T` | Consistency, dynamic capture, testability, future-proof |
 | 2024-12-13 | Rename `manager` → `framework` | Clearer semantics; `manager` was vague |
@@ -1981,5 +2078,5 @@ Before v4.0.0, architecture.md MUST document:
 
 ---
 
-*Last Updated: 2025-12-13*
+*Last Updated: 2024-12-14*
 *Authors: Luca Foscili, Claude*

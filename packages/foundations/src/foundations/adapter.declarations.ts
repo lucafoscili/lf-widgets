@@ -1,8 +1,8 @@
 import type { ECElementEvent } from "echarts";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { CY_ATTRIBUTES, LF_ATTRIBUTES } from "./components.constants";
 import { LfComponent, VNode } from "./components.declarations";
 import { LfEvent, LfEventPayload } from "./events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 
 //#region Dispatcher
 /**
@@ -145,7 +145,7 @@ export interface LfComponentAdapter<
    *
    * @see Section 5.5 of 4_0_0_REFACTORING.md
    */
-  dispatcher?: LfComponentAdapterDispatcher<P>;
+  dispatcher: LfComponentAdapterDispatcher<P>;
   /**
    * Event handlers and callbacks for DOM/framework events.
    */

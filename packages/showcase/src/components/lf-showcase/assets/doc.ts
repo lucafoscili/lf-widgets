@@ -1028,7 +1028,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "drawLine",
-        docs: "Programmatically draws a line between two points on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        docs: "Programmatically draws a line between two points on the canvas.\nCoordinates are normalized (0-1 range).",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the line is drawn",
@@ -1038,7 +1038,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "drawPath",
-        docs: "Programmatically draws a path connecting multiple points on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        docs: "Programmatically draws a path connecting multiple points on the canvas.\nCoordinates are normalized (0-1 range).",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the path is drawn",
@@ -1048,7 +1048,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "drawShape",
-        docs: "Programmatically draws a shape (circle or square) at a specific point.\r\nCoordinates are normalized (0-1 range).",
+        docs: "Programmatically draws a shape (circle or square) at a specific point.\nCoordinates are normalized (0-1 range).",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the shape is drawn",
@@ -1058,7 +1058,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "drawText",
-        docs: "Programmatically draws text at a specific point on the canvas.\r\nCoordinates are normalized (0-1 range).",
+        docs: "Programmatically draws text at a specific point on the canvas.\nCoordinates are normalized (0-1 range).",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the text is drawn",
@@ -1089,7 +1089,7 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Retrieves the HTMLLfImageElement from the canvas.",
         returns: {
           type: "Promise<LfImageElement>",
-          docs: "A promise that resolves with the HTMLLfImageElement instance\r\nrepresenting the image element in the canvas.",
+          docs: "A promise that resolves with the HTMLLfImageElement instance\nrepresenting the image element in the canvas.",
         },
         signature: "() => Promise<LfImageElement>",
       },
@@ -1113,7 +1113,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "resizeCanvas",
-        docs: "Resizes the canvas elements to match the container's dimensions.\r\n\r\nThis method performs the following operations:\r\n1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)\r\n2. Extracts image dimensions using `getImageDimensions()` helper\r\n3. Determines image orientation and updates state\r\n4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch\r\n5. Waits for next frame to ensure boxing CSS is applied\r\n6. Sets canvas dimensions to match the final rendered container size\r\n\r\nThe boxing calculation helps correctly map pointer coordinates to image coordinates\r\nwhen the image aspect ratio differs from the available space.",
+        docs: "Resizes the canvas elements to match the container's dimensions.\n\nThis method performs the following operations:\n1. Calculates available space from the parent element (to avoid circular dependency with boxing CSS)\n2. Extracts image dimensions using `getImageDimensions()` helper\n3. Determines image orientation and updates state\n4. Calculates boxing type (letterbox/pillarbox) based on aspect ratio mismatch\n5. Waits for next frame to ensure boxing CSS is applied\n6. Sets canvas dimensions to match the final rendered container size\n\nThe boxing calculation helps correctly map pointer coordinates to image coordinates\nwhen the image aspect ratio differs from the available space.",
         returns: {
           type: "Promise<void>",
           docs: "A Promise that resolves when the resize operation is complete",
@@ -1122,7 +1122,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "setCanvasHeight",
-        docs: "Sets the canvas height for both the board and preview elements.\r\nIf a value is provided, it will set that specific height.\r\nIf no value is provided, it will set the height based on the container's bounding client rect.",
+        docs: "Sets the canvas height for both the board and preview elements.\nIf a value is provided, it will set that specific height.\nIf no value is provided, it will set the height based on the container's bounding client rect.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when the height has been set",
@@ -1131,7 +1131,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "setCanvasWidth",
-        docs: "Sets the width of the canvas element(s).\r\nIf a value is provided, sets the width to that specific value.\r\nIf no value is provided, sets the width to match the container's width.\r\nWhen cursor preview is enabled, also updates the preview canvas width.",
+        docs: "Sets the width of the canvas element(s).\nIf a value is provided, sets the width to that specific value.\nIf no value is provided, sets the width to match the container's width.\nWhen cursor preview is enabled, also updates the preview canvas width.",
         returns: {
           type: "Promise<void>",
           docs: "Promise that resolves when width is set",
@@ -1151,7 +1151,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfAutoResize",
-        docs: "Enables automatic resizing of the canvas when the parent container resizes.\r\nWhen disabled, the canvas will not respond to container size changes.",
+        docs: "Enables automatic resizing of the canvas when the parent container resizes.\nWhen disabled, the canvas will not respond to container size changes.",
         type: "boolean",
       },
       {
@@ -1191,7 +1191,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfStrokeTolerance",
-        docs: "Simplifies the coordinates array by applying the Ramer-Douglas-Peucker algorithm.\r\nThis prop sets the tolerance of the algorithm (null to disable).",
+        docs: "Simplifies the coordinates array by applying the Ramer-Douglas-Peucker algorithm.\nThis prop sets the tolerance of the algorithm (null to disable).",
         type: "number",
       },
       {
@@ -1374,7 +1374,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "nextSlide",
-        docs: "Moves the carousel to the next slide.\r\nTriggers the next slide transition using the carousel controller's next function.",
+        docs: "Moves the carousel to the next slide.\nTriggers the next slide transition using the carousel controller's next function.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the slide transition is complete.",
@@ -1383,7 +1383,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "prevSlide",
-        docs: "Moves the carousel to the previous slide by invoking the `previous` method\r\nfrom the carousel controller's index set.",
+        docs: "Moves the carousel to the previous slide by invoking the `previous` method\nfrom the carousel controller's index set.",
         returns: {
           type: "Promise<void>",
           docs: "A promise that resolves when the slide transition is complete",
@@ -1417,7 +1417,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF Carousel component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Carousel component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -1542,12 +1542,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfDataset",
-        docs: "The data set for the LF Chart component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Chart component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
         name: "lfLegend",
-        docs: "Sets the position of the legend.\r\nSupported values: bottom, left, right, top, hidden.\r\nKeep in mind that legend types are tied to chart types, some combinations might not work.",
+        docs: "Sets the position of the legend.\nSupported values: bottom, left, right, top, hidden.\nKeep in mind that legend types are tied to chart types, some combinations might not work.",
         type: '"bottom" | "hidden" | "left" | "right" | "top"',
       },
       {
@@ -2450,7 +2450,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Chart component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Chart component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -3535,7 +3535,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfMode",
-        docs: 'Behaviour mode for the component.\r\n- "history": single-value + commit history (default).\r\n- "tags": tag selection where the value is a comma-separated list of tags.',
+        docs: 'Behaviour mode for the component.\n- "history": single-value + commit history (default).\n- "tags": tag selection where the value is a comma-separated list of tags.',
         type: '"history" | "tags"',
       },
       {
@@ -4256,7 +4256,7 @@ export const LF_DOC: LfShowcaseDoc = {
     methods: [
       {
         name: "addSnapshot",
-        docs: "Appends a new snapshot to the current shape's history with updated cell properties.\r\nThis is shape-agnostic and works with any cell type.\r\nIt has no effect when the current shape is not set.",
+        docs: "Appends a new snapshot to the current shape's history with updated cell properties.\nThis is shape-agnostic and works with any cell type.\nIt has no effect when the current shape is not set.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -4265,7 +4265,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "clearHistory",
-        docs: "Clears the history related to the shape identified by the index.\r\nWhen index is not provided, it clear the full history.",
+        docs: "Clears the history related to the shape identified by the index.\nWhen index is not provided, it clear the full history.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -4311,7 +4311,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "getDsl",
-        docs: "Returns the full DSL configuration including behavioral metadata.\r\nConsumers can use this to read the current filter's behavior type,\r\ncommit trigger, and button visibility flags.",
+        docs: "Returns the full DSL configuration including behavioral metadata.\nConsumers can use this to read the current filter's behavior type,\ncommit trigger, and button visibility flags.",
         returns: {
           type: "Promise<LfShapeeditorConfigDsl>",
           docs: "The current DSL or null if not set.",
@@ -4338,7 +4338,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "getShapeElement",
-        docs: "Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.\r\nUseful for programmatic access to shape-specific methods like brush settings on canvas.",
+        docs: "Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.\nUseful for programmatic access to shape-specific methods like brush settings on canvas.",
         returns: {
           type: "Promise<Element>",
           docs: "The shape element, or null if not found.",
@@ -4365,7 +4365,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "resetControls",
-        docs: "Resets all controls to their default values as defined in the control configurations.\r\nOnly resets controls that have a defaultValue defined.",
+        docs: "Resets all controls to their default values as defined in the control configurations.\nOnly resets controls that have a defaultValue defined.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -4374,7 +4374,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "setPreviewValue",
-        docs: "Sets a temporary preview value that overrides the current snapshot.\r\nPass null to clear the preview and show the actual snapshot value.",
+        docs: "Sets a temporary preview value that overrides the current snapshot.\nPass null to clear the preview and show the actual snapshot value.",
         returns: {
           type: "Promise<void>",
           docs: "",
@@ -4433,7 +4433,7 @@ export const LF_DOC: LfShowcaseDoc = {
     props: [
       {
         name: "lfDataset",
-        docs: "The data set for the LF Shapeeditor component.\r\nThis property is mutable, meaning it can be changed after the component is initialized.",
+        docs: "The data set for the LF Shapeeditor component.\nThis property is mutable, meaning it can be changed after the component is initialized.",
         type: "LfDataDataset",
       },
       {
@@ -4448,7 +4448,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "lfShape",
-        docs: "The shape type to render in the preview area.\r\nDetermines which LfShape component is used for preview.",
+        docs: "The shape type to render in the preview area.\nDetermines which LfShape component is used for preview.",
         type: '"accordion" | "badge" | "button" | "canvas" | "card" | "chart" | "chat" | "chip" | "code" | "image" | "number" | "photoframe" | "progressbar" | "slot" | "text" | "textfield" | "toggle" | "typewriter" | "upload"',
       },
       {
