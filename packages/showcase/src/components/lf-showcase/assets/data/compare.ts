@@ -43,9 +43,12 @@ export const getCompareFixtures = (
                 {
                   id: "",
                   cells: {
-                    1: { value: "Card " + index },
-                    2: { value },
-                    3: { value: "This is the Card number " + index },
+                    1: { shape: "text", value: "Card " + index },
+                    2: { shape: "text", value },
+                    3: {
+                      shape: "text",
+                      value: "This is the Card number " + index,
+                    },
                     lfImage: {
                       shape: "image",
                       value,

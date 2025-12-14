@@ -131,83 +131,76 @@ The **Adapter Pattern Standardization** (Section 5) has been elevated to immedia
 
 ## 1. Data Layer Simplification
 
-### 1.1 LfDataCell Type Refactoring
+### 1.1 LfDataCell Type Refactoring ✅ COMPLETE
 
-**Problem**: The `LfDataCell` type in `data.declarations.ts` uses a 120-line nested conditional type with 17 levels of nesting.
+> **Status**: Implemented (December 2024). Replaced 120-line nested ternary with clean mapped types.
 
-```typescript
-// Current: Deeply nested ternary (lines 77-196)
-export type LfDataCell<S extends LfDataShapeMap = "text"> =
-  S extends "badge" ? { ... } :
-  S extends "button" ? { ... } :
-  // ... 15+ more branches
-```
+**Original Problem**: The `LfDataCell` type in `data.declarations.ts` used a 120-line nested conditional type with 17 levels of nesting.
 
-**Impact**:
-
-- Hard to maintain and extend
-- TypeScript performance degradation
-- Error messages are cryptic
-
-**Proposed Solution**: Use mapped types with a shape-to-props lookup table.
+**Solution Implemented**: Mapped types with shape-to-props and shape-to-value lookup tables.
 
 ```typescript
-// Proposed: Mapped type approach (~15 lines)
+// NEW: Clean mapped type approach (~50 lines total)
 interface LfDataCellPropsMap {
-  badge: LfBadgePropsInterface;
-  button: LfButtonPropsInterface;
-  canvas: LfCanvasPropsInterface;
-  card: LfCardPropsInterface;
-  chart: LfChartPropsInterface;
-  chat: LfChatPropsInterface;
-  chip: LfChipPropsInterface;
-  code: LfCodePropsInterface;
-  image: LfImagePropsInterface;
-  number: {};
-  photoframe: LfPhotoframePropsInterface;
-  slot: {};
-  text: {};
-  toggle: LfTogglePropsInterface;
-  typewriter: LfTypewriterPropsInterface;
-  upload: LfUploadPropsInterface;
+  accordion: Partial<LfAccordionPropsInterface>;
+  badge: Partial<LfBadgePropsInterface>;
+  button: Partial<LfButtonPropsInterface>;
+  // ... all 19 shapes
 }
 
-// Cell is always: base fields + shape-specific props
-export type LfDataCell<S extends LfDataShapeMap = "text"> = 
-  LfDataCellBase & LfDataCellPropsMap[S];
+interface LfDataCellValueMap {
+  accordion: string;
+  badge: string;
+  chat: LfChatHistory;  // Custom type
+  number: number;
+  toggle: boolean;
+  // ... shape-specific value types
+}
+
+export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
+  T extends LfDataShapes
+    ? LfDataCellPropsMap[T] & {
+        shape: T extends "text" ? T | undefined : T;  // Optional only for "text"
+        value: LfDataCellValueMap[T];
+        htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
+      }
+    : LfDataBaseCell;
 ```
 
-**Files Affected**: `packages/foundations/src/data/data.declarations.ts`
+**Benefits**:
 
-**Complexity**: Medium  
-**Priority**: P0 (High Impact, Foundational)
+- Reduced from ~120 lines to ~50 lines
+- Better TypeScript error messages
+- Easier to maintain and extend
+- Cleaner separation of props vs value types
+
+**Files Changed**: `packages/foundations/src/framework/data.declarations.ts`
+
+**Complexity**: ~~Medium~~ → Resolved
+**Priority**: ~~P0~~ → Complete
 
 ---
 
-### 1.2 Flexible Cells Container
+### 1.2 Flexible Cells Container ✅ COMPLETE
 
-**Problem**: `LfDataCellContainer` uses rigid `lf<Shape>` key naming, limiting to one cell per shape type.
+> **Status**: Implemented (December 2024). Semantic keys now supported with shape discriminator.
+
+**Original Problem**: `LfDataCellContainer` used rigid `lf<Shape>` key naming, limiting to one cell per shape type.
+
+**Solution Implemented**: Index signature allows any key; `shape` property is now the type discriminator.
 
 ```typescript
-// Current: Only one cell per shape type allowed
-type LfDataCellContainer = {
-  lfBadge?: LfDataCell<"badge">;
+// NEW: Flexible keys with shape discriminator
+export interface LfDataCellContainer {
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
   lfButton?: LfDataCell<"button">;
-  // ...
-};
+  // ... other legacy keys (deprecated)
+  
+  /** Flexible index signature allowing any semantic key */
+  [key: string]: LfDataCell<LfDataShapes>;
+}
 
-// Problem: Can't have two buttons or two images in same container
-```
-
-**Proposed Solution**: Allow any key, use `shape` property as discriminator.
-
-```typescript
-// Proposed: Flexible keys with shape discriminator
-type LfDataCellContainer = {
-  [key: string]: LfDataCell<LfDataShapeMap>;  // Any key allowed
-};
-
-// Usage example
+// Usage example - NOW WORKS!
 const cells: LfDataCellContainer = {
   primaryAction: { shape: "button", value: "Submit", lfIcon: "check" },
   secondaryAction: { shape: "button", value: "Cancel", lfIcon: "close" },
@@ -216,28 +209,33 @@ const cells: LfDataCellContainer = {
 };
 ```
 
-**Benefits**:
+**Breaking Change**: Yes - `shape` property is now **required** for all cells (except "text" which is optional).
 
-- Multiple cells of same shape type
-- Semantic naming (`avatar` vs `background` instead of generic `lfImage`)
-- Removes need for `LF_DATA_SHAPE_MAP` key-to-shape mapping
+**Migration Applied**:
 
-**Breaking Change**: Yes - existing code using `cells.lfImage` must migrate to semantic keys.
+- ✅ `packages/framework/src/lf-llm/helpers.tool.wikipedia.ts` - Added shape to text cells
+- ✅ `packages/showcase/src/components/lf-showcase/helpers/dashboard.builder.ts` - Added shape to chart data cells  
+- ✅ `packages/showcase/src/components/lf-showcase/assets/data/card.ts` - Added shape to all cells
+- ✅ `packages/showcase/src/components/lf-showcase/assets/data/carousel.ts` - Added shape to card cells
+- ✅ `packages/showcase/src/components/lf-showcase/assets/data/chart.ts` - Added shape to all data cells
+- ✅ `packages/showcase/src/components/lf-showcase/assets/data/compare.ts` - Added shape to card cells
+- ✅ `packages/showcase/src/components/lf-showcase/lf-showcase.tsx` - Added shape to text cells
 
-**Migration Path**:
+**Also Deprecated**:
 
-1. Add `shape` property to all cells (required)
-2. Deprecate `lf<Shape>` key convention
-3. Provide codemod or migration script
+- `LF_DATA_SHAPE_MAP` constant (in `data.constants.ts`)
+- `LfDataCellNameToShape` type
+- `LfDataCellFromName` utility type
+- All `lf<Shape>` keys in `LfDataCellContainer` (kept for backward compatibility)
 
-**Files Affected**:
+**Files Changed**:
 
-- `packages/foundations/src/data/data.declarations.ts`
-- `packages/foundations/src/data/data.constants.ts` (remove `LF_DATA_SHAPE_MAP`)
-- All shape consumers in `packages/core/`
+- `packages/foundations/src/framework/data.declarations.ts`
+- `packages/foundations/src/framework/data.constants.ts`
+- Multiple showcase/framework files for migration
 
-**Complexity**: High  
-**Priority**: P1 (Breaking, Major Impact)
+**Complexity**: ~~High~~ → Resolved
+**Priority**: ~~P1~~ → Complete
 
 ---
 
@@ -299,55 +297,37 @@ if ("value" in props && !("lfValue" in props)) {
 
 ---
 
-### 1.4 LfDataCellContainer Duplicate Definition
+### 1.4 LfDataCellContainer Duplicate Definition ✅ RESOLVED
 
-**Problem**: `LfDataCellContainer` is defined twice in `data.declarations.ts` (lines 579-604), causing TypeScript interface merging.
+> **Status**: Resolved (December 2024). `lfTypewriter` added to typed interface. Index signature retained pending Section 1.2 implementation.
+
+**Original Problem**: `LfDataCellContainer` had both typed keys AND an index signature in the same interface, with `lfTypewriter` missing from the typed keys.
+
+**Resolution**:
+
+1. ✅ `lfTypewriter` added to the typed interface
+2. ✅ Index signature retained (Option B) since Section 1.2 (Flexible Cells) is imminent
+3. The typed keys now serve as documentation/autocomplete hints while the index signature allows flexible semantic keys
+
+**Current State** (`data.declarations.ts` lines 579-601):
 
 ```typescript
-// First definition (lines 579-598): Typed interface
 export interface LfDataCellContainer {
   lfAccordion?: LfDataCellFromName<"lfAccordion">;
-  lfBadge?: LfDataCellFromName<"lfBadge">;
-  lfButton?: LfDataCellFromName<"lfButton">;
-  // ... 15 more typed entries
-}
-
-// Second definition (lines 602-604): Index signature
-export interface LfDataCellContainer {
-  [index: string]: LfDataCell<LfDataShapes>;
+  // ... 18 typed entries for autocomplete
+  lfTypewriter?: LfDataCellFromName<"lfTypewriter">;  // ✅ Added
+  lfUpload?: LfDataCellFromName<"lfUpload">;
+  /** Index signature for flexible cell keys */
+  [index: string]: LfDataCell<LfDataShapes>;  // Retained for 1.2 compatibility
 }
 ```
 
-**Impact**: The index signature effectively nullifies the typed keys above it. TypeScript merges interfaces, so any string key is valid—defeating the purpose of explicit typing.
-
-**Additionally Missing**: `lfTypewriter` is not present in the typed interface, despite `typewriter` being a valid shape (defined in `LfDataCell` at lines 554-559).
-
-**Proposed Solution**:
-
-```typescript
-// Option A: Remove index signature, keep strict typing (BREAKING)
-export interface LfDataCellContainer {
-  lfAccordion?: LfDataCellFromName<"lfAccordion">;
-  lfBadge?: LfDataCellFromName<"lfBadge">;
-  // ... all typed entries including lfTypewriter
-  lfTypewriter?: LfDataCellFromName<"lfTypewriter">;  // ADD THIS
-}
-
-// Option B: Keep flexible (aligns with 1.2 proposal)
-// Remove typed interface entirely, use only index signature
-export interface LfDataCellContainer {
-  [key: string]: LfDataCell<LfDataShapes>;
-}
-```
-
-**Recommendation**: Since Section 1.2 proposes flexible cells with semantic keys, Option B aligns with that direction. The typed interface becomes unnecessary once `shape` is the discriminator.
-
-**Pre-Refactoring Fix**: Add `lfTypewriter` to the typed interface for consistency until 1.2 is implemented.
+**Next Step**: When Section 1.2 is implemented, the typed keys can be removed entirely—`shape` will be the sole discriminator, and semantic keys (e.g., `avatar`, `background`) will replace `lf<Shape>` convention.
 
 **Files Affected**: `packages/foundations/src/framework/data.declarations.ts`
 
 **Complexity**: Low
-**Priority**: P1 (Type Safety Bug)
+**Priority**: ~~P1~~ → Resolved
 
 ---
 
@@ -1775,8 +1755,9 @@ Phase 1 added adapters to all 15 remaining components:
 
 | Item | Complexity | Impact | Dependencies | Status |
 |------|------------|--------|--------------|--------|
-| 1.1 LfDataCell mapped types | Medium | High | None | |
-| 1.4 LfDataCellContainer fix | Low | High | None | |
+| 1.1 LfDataCell mapped types | Medium | High | None | ✅ DONE |
+| 1.2 Flexible cells container | High | High | 1.1 | ✅ DONE |
+| 1.4 LfDataCellContainer fix | Low | High | None | ✅ DONE |
 | 4.1 Type map consolidation | Medium | High | None | |
 | 3.1 Lifecycle boilerplate | Medium | High | None | |
 | 5.8 Adapter-everywhere (15 new adapters) | Medium | High | Phase 0 | ✅ DONE |
@@ -1785,11 +1766,10 @@ Phase 1 added adapters to all 15 remaining components:
 
 ### Phase 2: Core (v4.0.0-beta)
 
-| Item | Complexity | Impact | Dependencies |
-|------|------------|--------|--------------|
-| 1.2 Flexible cells container | High | High | 1.1 |
-| 2.x FC for all input controls | High | High | 2.10 POC |
-| 4.2 Props inheritance | Low | Medium | None |
+| Item | Complexity | Impact | Dependencies | Status |
+|------|------------|--------|--------------|--------|
+| 2.x FC for all input controls | High | High | 2.10 POC | |
+| 4.2 Props inheritance | Low | Medium | None | |
 
 ### Phase 3: Enhancement (v4.0.0-rc)
 
@@ -1812,14 +1792,15 @@ Phase 1 added adapters to all 15 remaining components:
 
 ## Breaking Changes Summary
 
-| Change | Breaking Level | Migration Path |
-|--------|----------------|----------------|
-| Adapter architecture overhaul | **Internal Breaking** | Phase 0 atomic migration |
-| `manager` → `framework` rename | **Internal Breaking** | Find/replace across codebase |
-| Flexible cells container | Major | Codemod + deprecation warnings |
-| WC → FC internally | None | Internal refactor, public API unchanged |
-| LfShape uses FCs | None | Internal, shapes API unchanged |
-| FC public export | Minor (additive) | New exports, no removals |
+| Change | Breaking Level | Migration Path | Status |
+|--------|----------------|----------------|--------|
+| Adapter architecture overhaul | **Internal Breaking** | Phase 0 atomic migration | ✅ Complete |
+| `manager` → `framework` rename | **Internal Breaking** | Find/replace across codebase | ✅ Complete |
+| Flexible cells container (1.2) | Major | `shape` property now required | ✅ Complete |
+| LfDataCell mapped types (1.1) | Minor | Type-level only, cleaner errors | ✅ Complete |
+| WC → FC internally | None | Internal refactor, public API unchanged | |
+| LfShape uses FCs | None | Internal, shapes API unchanged | |
+| FC public export | Minor (additive) | New exports, no removals | |
 
 ---
 

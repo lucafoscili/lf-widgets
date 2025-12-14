@@ -52,9 +52,12 @@ export const getCarouselFixtures = (
                   {
                     id: "",
                     cells: {
-                      1: { value: "Slide " + index },
-                      2: { value: "" },
-                      3: { value: "This is the slide number " + index },
+                      1: { shape: "text", value: "Slide " + index },
+                      2: { shape: "text", value: "" },
+                      3: {
+                        shape: "text",
+                        value: "This is the slide number " + index,
+                      },
                       lfImage: {
                         shape: "image",
                         value: "lf-website",

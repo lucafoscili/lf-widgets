@@ -42,6 +42,7 @@ export const getChartFixtures = (
       cells: categories.reduce(
         (acc, category) => {
           acc[category] = {
+            shape: "text" as const,
             value:
               category === lfAxis
                 ? randomString()
@@ -49,7 +50,7 @@ export const getChartFixtures = (
           };
           return acc;
         },
-        {} as Record<string, { value: string }>,
+        {} as Record<string, { shape: "text"; value: string }>,
       ),
       id: index.toString(),
     })),
@@ -67,9 +68,18 @@ export const getChartFixtures = (
         ...Array.from({ length: randomNumber(3, 5) }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            X_Value: { value: randomNumber(1, 100).toString() },
-            Y_Value: { value: randomNumber(1, 100).toString() },
-            Bubble_Size: { value: randomNumber(1, 100).toString() },
+            X_Value: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Y_Value: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Bubble_Size: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
           },
         })),
       ],
@@ -85,8 +95,12 @@ export const getChartFixtures = (
         nodes.push({
           id: i.toString(),
           cells: {
-            Date: { value: date.toISOString().split("T")[0] },
+            Date: {
+              shape: "text" as const,
+              value: date.toISOString().split("T")[0],
+            },
             Value: {
+              shape: "text" as const,
               value: Math.floor(Math.random() * 100).toString(),
             },
           },
@@ -114,12 +128,25 @@ export const getChartFixtures = (
           id: index.toString(),
           cells: {
             Date: {
+              shape: "text" as const,
               value: today.toLocaleTimeString(),
             },
-            Open: { value: randomNumber(3, 50).toString() },
-            Close: { value: randomNumber(40, 200).toString() },
-            Low: { value: randomNumber(80, 200).toString() },
-            High: { value: randomNumber(120, 200).toString() },
+            Open: {
+              shape: "text" as const,
+              value: randomNumber(3, 50).toString(),
+            },
+            Close: {
+              shape: "text" as const,
+              value: randomNumber(40, 200).toString(),
+            },
+            Low: {
+              shape: "text" as const,
+              value: randomNumber(80, 200).toString(),
+            },
+            High: {
+              shape: "text" as const,
+              value: randomNumber(120, 200).toString(),
+            },
           },
         })),
       ],
@@ -134,9 +161,15 @@ export const getChartFixtures = (
         ...Array.from({ length: randomNumber(3, 5) }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            Stage: { value: randomString() },
-            Value: { value: randomNumber(1, 100).toString() },
-            Revenue: { value: randomNumber(100, 1000).toString() },
+            Stage: { shape: "text" as const, value: randomString() },
+            Value: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Revenue: {
+              shape: "text" as const,
+              value: randomNumber(100, 1000).toString(),
+            },
           },
         })),
       ],
@@ -150,8 +183,9 @@ export const getChartFixtures = (
         ...Array.from({ length: 36 }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            X: { value: (index - 18).toString() },
+            X: { shape: "text" as const, value: (index - 18).toString() },
             Frequency: {
+              shape: "text" as const,
               value: (
                 Math.exp(-Math.pow(index - 18, 2) / 2) / Math.sqrt(2 * Math.PI)
               ).toString(),
@@ -170,9 +204,18 @@ export const getChartFixtures = (
         ...Array.from({ length: randomNumber(3, 5) }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            Source_Channel: { value: randomNumber(1, 100).toString() },
-            Target_Channel: { value: randomNumber(1, 100).toString() },
-            Mapping_Count: { value: randomNumber(1, 100).toString() },
+            Source_Channel: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Target_Channel: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Mapping_Count: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
           },
         })),
       ],
@@ -191,12 +234,27 @@ export const getChartFixtures = (
         ...Array.from({ length: randomNumber(3, 10) }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            Name: { value: randomString() },
-            Speed: { value: randomNumber(1, 100).toString() },
-            Agility: { value: randomNumber(1, 100).toString() },
-            Strength: { value: randomNumber(1, 100).toString() },
-            Endurance: { value: randomNumber(1, 100).toString() },
-            Intelligence: { value: randomNumber(1, 100).toString() },
+            Name: { shape: "text" as const, value: randomString() },
+            Speed: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Agility: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Strength: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Endurance: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Intelligence: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
           },
         })),
       ],
@@ -211,42 +269,42 @@ export const getChartFixtures = (
         {
           id: "0",
           cells: {
-            Source: { value: "Marketing" },
-            Target: { value: "Sales" },
-            Value: { value: "300" },
+            Source: { shape: "text" as const, value: "Marketing" },
+            Target: { shape: "text" as const, value: "Sales" },
+            Value: { shape: "text" as const, value: "300" },
           },
         },
 
         {
           id: "1",
           cells: {
-            Source: { value: "Sales" },
-            Target: { value: "Support" },
-            Value: { value: "150" },
+            Source: { shape: "text" as const, value: "Sales" },
+            Target: { shape: "text" as const, value: "Support" },
+            Value: { shape: "text" as const, value: "150" },
           },
         },
         {
           id: "2",
           cells: {
-            Source: { value: "Marketing" },
-            Target: { value: "Development" },
-            Value: { value: "200" },
+            Source: { shape: "text" as const, value: "Marketing" },
+            Target: { shape: "text" as const, value: "Development" },
+            Value: { shape: "text" as const, value: "200" },
           },
         },
         {
           id: "3",
           cells: {
-            Source: { value: "Development" },
-            Target: { value: "Operations" },
-            Value: { value: "100" },
+            Source: { shape: "text" as const, value: "Development" },
+            Target: { shape: "text" as const, value: "Operations" },
+            Value: { shape: "text" as const, value: "100" },
           },
         },
         {
           id: "4",
           cells: {
-            Source: { value: "Operations" },
-            Target: { value: "Support" },
-            Value: { value: "50" },
+            Source: { shape: "text" as const, value: "Operations" },
+            Target: { shape: "text" as const, value: "Support" },
+            Value: { shape: "text" as const, value: "50" },
           },
         },
       ],
@@ -260,8 +318,14 @@ export const getChartFixtures = (
         ...Array.from({ length: randomNumber(3, 5) }).map((_c, index) => ({
           id: index.toString(),
           cells: {
-            X: { value: randomNumber(1, 100).toString() },
-            Y: { value: randomNumber(1, 100).toString() },
+            X: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
+            Y: {
+              shape: "text" as const,
+              value: randomNumber(1, 100).toString(),
+            },
           },
         })),
       ],
@@ -278,12 +342,13 @@ export const getChartFixtures = (
         nodes.push({
           id: `${i}-${j}`,
           cells: {
-            X: { value: xCategories[i] },
-            Y: { value: yCategories[j] },
+            X: { shape: "text" as const, value: xCategories[i] },
+            Y: { shape: "text" as const, value: yCategories[j] },
             Heat_Value: {
+              shape: "text" as const,
               value: Math.floor(Math.random() * 100).toString(),
             },
-            Line_Value: { value: (i + j).toString() },
+            Line_Value: { shape: "text" as const, value: (i + j).toString() },
           },
         });
       }

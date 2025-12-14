@@ -87,6 +87,7 @@ export const getCardFixtures = (
                     {
                       cells: {
                         Axis_0: {
+                          shape: "text",
                           value: "key_1",
                         },
                         Series_0: {
@@ -99,6 +100,7 @@ export const getCardFixtures = (
                     {
                       cells: {
                         Axis_0: {
+                          shape: "text",
                           value: "key_2",
                         },
                         Series_0: {
@@ -111,6 +113,7 @@ export const getCardFixtures = (
                     {
                       cells: {
                         Axis_0: {
+                          shape: "text",
                           value: "key_3",
                         },
                         Series_0: {
@@ -123,6 +126,7 @@ export const getCardFixtures = (
                     {
                       cells: {
                         Axis_0: {
+                          shape: "text",
                           value: "key_4",
                         },
                         Series_0: {
@@ -135,6 +139,7 @@ export const getCardFixtures = (
                     {
                       cells: {
                         Axis_0: {
+                          shape: "text",
                           value: "key_5",
                         },
                         Series_0: {
@@ -201,9 +206,9 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "Title" },
-              2: { value: "Subtitle" },
-              3: { value: "Description." },
+              1: { shape: "text", value: "Title" },
+              2: { shape: "text", value: "Subtitle" },
+              3: { shape: "text", value: "Description." },
               lfButton: {
                 shape: "button",
                 value: "Button",
@@ -225,7 +230,7 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "Light theme " },
+              1: { shape: "text", value: "Light theme " },
               lfImage: {
                 shape: "image",
                 value: get(`./assets/showcase/light.webp`).path,
@@ -240,8 +245,8 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "Dark theme " },
-              2: { value: "Default" },
+              1: { shape: "text", value: "Dark theme " },
+              2: { shape: "text", value: "Default" },
               lfImage: {
                 shape: "image",
                 value: get(`./assets/showcase/dark.webp`).path,
@@ -256,9 +261,10 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "Freya" },
-              2: { value: "Goddess of love" },
+              1: { shape: "text", value: "Freya" },
+              2: { shape: "text", value: "Goddess of love" },
               3: {
+                shape: "text",
                 value:
                   "Freya is a goddess associated with love, beauty, fertility, gold, seiðr, war, and death.",
               },
@@ -277,9 +283,10 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "" },
-              2: { value: "" },
+              1: { shape: "text", value: "" },
+              2: { shape: "text", value: "" },
               3: {
+                shape: "text",
                 value:
                   "Thor is a hammer-wielding god associated with thunder, lightning, storms, oak trees, strength, the protection of mankind and also hallowing and fertility.",
               },
@@ -297,9 +304,10 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              1: { value: "Odin" },
-              2: { value: "The Allfather" },
+              1: { shape: "text", value: "Odin" },
+              2: { shape: "text", value: "The Allfather" },
               3: {
+                shape: "text",
                 value: "Odin is a widely revered god in Germanic mythology.",
               },
             },
@@ -337,15 +345,15 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              0: { value: "London, United Kingdom" },
-              1: { value: "22" }, // Temperature °C
-              2: { value: "72" }, // Temperature °F
-              3: { value: "Partly cloudy" },
-              4: { value: "19" }, // Feels like °C
-              5: { value: "66" }, // Feels like °F
-              6: { value: "65" }, // Humidity %
-              7: { value: "15" }, // Wind speed km/h
-              8: { value: "ENE" }, // Wind direction
+              0: { shape: "text", value: "London, United Kingdom" },
+              1: { shape: "text", value: "22" }, // Temperature °C
+              2: { shape: "text", value: "72" }, // Temperature °F
+              3: { shape: "text", value: "Partly cloudy" },
+              4: { shape: "text", value: "19" }, // Feels like °C
+              5: { shape: "text", value: "66" }, // Feels like °F
+              6: { shape: "text", value: "65" }, // Humidity %
+              7: { shape: "text", value: "15" }, // Wind speed km/h
+              8: { shape: "text", value: "ENE" }, // Wind direction
             },
             description: "London weather - partly cloudy",
             id: "london-partly-cloudy",
@@ -356,15 +364,15 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              0: { value: "New York, United States" },
-              1: { value: "18" }, // Temperature °C
-              2: { value: "64" }, // Temperature °F
-              3: { value: "Sunny" },
-              4: { value: "16" }, // Feels like °C
-              5: { value: "61" }, // Feels like °F
-              6: { value: "45" }, // Humidity %
-              7: { value: "8" }, // Wind speed km/h
-              8: { value: "SW" }, // Wind direction
+              0: { shape: "text", value: "New York, United States" },
+              1: { shape: "text", value: "18" }, // Temperature °C
+              2: { shape: "text", value: "64" }, // Temperature °F
+              3: { shape: "text", value: "Sunny" },
+              4: { shape: "text", value: "16" }, // Feels like °C
+              5: { shape: "text", value: "61" }, // Feels like °F
+              6: { shape: "text", value: "45" }, // Humidity %
+              7: { shape: "text", value: "8" }, // Wind speed km/h
+              8: { shape: "text", value: "SW" }, // Wind direction
               lfImage: {
                 shape: "image",
                 value: get(`./assets/showcase/sunny.jpg`).path,
@@ -379,15 +387,15 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              0: { value: "Tokyo, Japan" },
-              1: { value: "12" }, // Temperature °C
-              2: { value: "54" }, // Temperature °F
-              3: { value: "Rainy" },
-              4: { value: "10" }, // Feels like °C
-              5: { value: "50" }, // Feels like °F
-              6: { value: "85" }, // Humidity %
-              7: { value: "25" }, // Wind speed km/h
-              8: { value: "N" }, // Wind direction
+              0: { shape: "text", value: "Tokyo, Japan" },
+              1: { shape: "text", value: "12" }, // Temperature °C
+              2: { shape: "text", value: "54" }, // Temperature °F
+              3: { shape: "text", value: "Rainy" },
+              4: { shape: "text", value: "10" }, // Feels like °C
+              5: { shape: "text", value: "50" }, // Feels like °F
+              6: { shape: "text", value: "85" }, // Humidity %
+              7: { shape: "text", value: "25" }, // Wind speed km/h
+              8: { shape: "text", value: "N" }, // Wind direction
             },
             description: "Tokyo weather - rainy",
             id: "tokyo-rainy",
@@ -398,15 +406,15 @@ export const getCardFixtures = (
         nodes: [
           {
             cells: {
-              0: { value: "Moscow, Russia" },
-              1: { value: "-5" }, // Temperature °C
-              2: { value: "23" }, // Temperature °F
-              3: { value: "Snowy" },
-              4: { value: "-8" }, // Feels like °C
-              5: { value: "18" }, // Feels like °F
-              6: { value: "75" }, // Humidity %
-              7: { value: "12" }, // Wind speed km/h
-              8: { value: "NW" }, // Wind direction
+              0: { shape: "text", value: "Moscow, Russia" },
+              1: { shape: "text", value: "-5" }, // Temperature °C
+              2: { shape: "text", value: "23" }, // Temperature °F
+              3: { shape: "text", value: "Snowy" },
+              4: { shape: "text", value: "-8" }, // Feels like °C
+              5: { shape: "text", value: "18" }, // Feels like °F
+              6: { shape: "text", value: "75" }, // Humidity %
+              7: { shape: "text", value: "12" }, // Wind speed km/h
+              8: { shape: "text", value: "NW" }, // Wind direction
             },
             description: "Moscow weather - snowy",
             id: "moscow-snowy",
@@ -435,9 +443,9 @@ export const getCardFixtures = (
                 {
                   cells: {
                     icon: { shape: "image", value: "widgets" },
-                    text1: { value: "Title" },
-                    text2: { value: "Subtitle" },
-                    text3: { value: "Description." },
+                    text1: { shape: "text", value: "Title" },
+                    text2: { shape: "text", value: "Subtitle" },
+                    text3: { shape: "text", value: "Description." },
                   },
                   id: "card",
                 },

@@ -445,160 +445,181 @@ export interface LfDataBaseCell {
   /** Optional DOM attributes forwarded to the rendered component. */
   htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
 }
+
+//#region LfDataCell Mapped Types
+/**
+ * Maps shape names to their corresponding component props interfaces.
+ * Shapes without component props (primitives) map to empty object.
+ */
+interface LfDataCellPropsMap {
+  accordion: Partial<LfAccordionPropsInterface>;
+  badge: Partial<LfBadgePropsInterface>;
+  button: Partial<LfButtonPropsInterface>;
+  canvas: Partial<LfCanvasPropsInterface>;
+  card: Partial<LfCardPropsInterface>;
+  chart: Partial<LfChartPropsInterface>;
+  chat: Partial<LfChatPropsInterface>;
+  chip: Partial<LfChipPropsInterface>;
+  code: Partial<LfCodePropsInterface>;
+  image: Partial<LfImagePropsInterface>;
+  number: {};
+  photoframe: Partial<LfPhotoframePropsInterface>;
+  progressbar: Partial<LfProgressbarPropsInterface>;
+  slot: {};
+  text: {};
+  textfield: Partial<LfTextfieldPropsInterface>;
+  toggle: Partial<LfTogglePropsInterface>;
+  typewriter: Partial<LfTypewriterPropsInterface>;
+  upload: Partial<LfUploadPropsInterface>;
+}
+
+/**
+ * Maps shape names to their value types.
+ * Most shapes use string, but some have specialized value types.
+ */
+interface LfDataCellValueMap {
+  accordion: string;
+  badge: string;
+  button: string;
+  canvas: string;
+  card: string;
+  chart: string;
+  chat: LfChatHistory;
+  chip: string;
+  code: string;
+  image: string;
+  number: number;
+  photoframe: string;
+  progressbar: number;
+  slot: string;
+  text: string;
+  textfield: string;
+  toggle: boolean;
+  typewriter: string;
+  upload: string;
+}
+
+/**
+ * Shapes where the shape property is optional (only "text" currently).
+ */
+type LfDataCellOptionalShape = "text";
+
 /**
  * Cell descriptor storing typed values for the data framework.
+ * Uses mapped types to provide type-safe shape-specific props.
+ *
+ * @template T - The shape type, defaults to union of all shapes
+ *
+ * @example
+ * ```typescript
+ * // Specific shape - gets typed props
+ * const buttonCell: LfDataCell<"button"> = {
+ *   shape: "button",
+ *   value: "Click me",
+ *   lfIcon: "check" // ✅ Type-safe button prop
+ * };
+ *
+ * // Union type - works with any valid shape
+ * const cell: LfDataCell = { shape: "badge", value: "New" };
+ * ```
  */
 export type LfDataCell<T extends LfDataShapes = LfDataShapes> =
-  T extends "accordion"
-    ? Partial<LfAccordionPropsInterface> & {
-        shape: "accordion";
-        value: string;
+  T extends LfDataShapes
+    ? LfDataCellPropsMap[T] & {
+        shape: T extends LfDataCellOptionalShape ? T | undefined : T;
+        value: LfDataCellValueMap[T];
         htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
       }
-    : T extends "badge"
-      ? Partial<LfBadgePropsInterface> & {
-          shape: "badge";
-          value: string;
-          htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-        }
-      : T extends "button"
-        ? Partial<LfButtonPropsInterface> & {
-            shape: "button";
-            value: string;
-            htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-          }
-        : T extends "canvas"
-          ? Partial<LfCanvasPropsInterface> & {
-              shape: "canvas";
-              value: string;
-              htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-            }
-          : T extends "card"
-            ? Partial<LfCardPropsInterface> & {
-                shape: "card";
-                value: string;
-                htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-              }
-            : T extends "chart"
-              ? Partial<LfChartPropsInterface> & {
-                  shape: "chart";
-                  value: string;
-                  htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                }
-              : T extends "chat"
-                ? Partial<LfChatPropsInterface> & {
-                    shape: "chat";
-                    value: LfChatHistory;
-                    htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                  }
-                : T extends "chip"
-                  ? Partial<LfChipPropsInterface> & {
-                      shape: "chip";
-                      value: string;
-                      htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                    }
-                  : T extends "code"
-                    ? Partial<LfCodePropsInterface> & {
-                        shape: "code";
-                        value: string;
-                        htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                      }
-                    : T extends "image"
-                      ? Partial<LfImagePropsInterface> & {
-                          shape: "image";
-                          value: string;
-                          htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                        }
-                      : T extends "number"
-                        ? {
-                            shape: "number";
-                            value: number;
-                            htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                          }
-                        : T extends "photoframe"
-                          ? Partial<LfPhotoframePropsInterface> & {
-                              shape: "photoframe";
-                              value: string;
-                              htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                            }
-                          : T extends "progressbar"
-                            ? Partial<LfProgressbarPropsInterface> & {
-                                shape: "progressbar";
-                                value: number;
-                                htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                              }
-                            : T extends "slot"
-                              ? {
-                                  shape: "slot";
-                                  value: string;
-                                  htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                }
-                              : T extends "textfield"
-                                ? Partial<LfTextfieldPropsInterface> & {
-                                    shape: "textfield";
-                                    value: string;
-                                    htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                  }
-                                : T extends "toggle"
-                                  ? Partial<LfTogglePropsInterface> & {
-                                      shape: "toggle";
-                                      value: boolean;
-                                      htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                    }
-                                  : T extends "upload"
-                                    ? Partial<LfUploadPropsInterface> & {
-                                        shape: "upload";
-                                        value: string;
-                                        htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                      }
-                                    : T extends "typewriter"
-                                      ? Partial<LfTypewriterPropsInterface> & {
-                                          shape: "typewriter";
-                                          value: string;
-                                          htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                        }
-                                      : T extends "text"
-                                        ? {
-                                            shape?: "text";
-                                            value: string;
-                                            htmlProps?: Partial<LfFrameworkAllowedKeysMap>;
-                                          }
-                                        : LfDataBaseCell;
+    : LfDataBaseCell;
+//#endregion
+
+//#region LfDataCellContainer
 /**
  * Data shape helper describing cell name to for the data framework.
+ * @deprecated Use semantic keys with `shape` discriminator instead. See LfDataCellContainer.
  */
 export type LfDataCellNameToShape = typeof LF_DATA_SHAPE_MAP;
 /**
  * Utility type used by the data framework.
+ * @deprecated Use `LfDataCell<ShapeName>` directly with semantic keys.
  */
 export type LfDataCellFromName<T extends keyof LfDataCellNameToShape> =
   LfDataCell<LfDataCellNameToShape[T]>;
 /**
  * Container holding typed cell values consumed by the data framework.
+ *
+ * **Flexible Cells Pattern (v4.0.0+)**:
+ * Use semantic keys with the `shape` property as the type discriminator.
+ * This allows multiple cells of the same shape type with meaningful names.
+ *
+ * @example
+ * ```typescript
+ * // ✅ New pattern: Semantic keys with shape discriminator
+ * const cells: LfDataCellContainer = {
+ *   primaryAction: { shape: "button", value: "Submit", lfIcon: "check" },
+ *   secondaryAction: { shape: "button", value: "Cancel", lfIcon: "close" },
+ *   avatar: { shape: "image", value: "/user.jpg" },
+ *   background: { shape: "image", value: "/bg.jpg" },
+ *   status: { shape: "badge", value: "Active", lfStyle: "success" },
+ * };
+ *
+ * // ⚠️ Legacy pattern (still supported but deprecated):
+ * const legacyCells: LfDataCellContainer = {
+ *   lfButton: { shape: "button", value: "Click" },
+ *   lfImage: { shape: "image", value: "/img.jpg" },
+ * };
+ * ```
+ *
+ * **Key Benefits**:
+ * - Multiple cells of the same shape type (e.g., two buttons, two images)
+ * - Semantic naming improves code readability
+ * - Shape property provides type safety via discriminated unions
+ *
+ * @see LfDataCell for shape-specific type definitions
  */
 export interface LfDataCellContainer {
-  lfAccordion?: LfDataCellFromName<"lfAccordion">;
-  lfBadge?: LfDataCellFromName<"lfBadge">;
-  lfButton?: LfDataCellFromName<"lfButton">;
-  lfCanvas?: LfDataCellFromName<"lfCanvas">;
-  lfCard?: LfDataCellFromName<"lfCard">;
-  lfChart?: LfDataCellFromName<"lfChart">;
-  lfChat?: LfDataCellFromName<"lfChat">;
-  lfChip?: LfDataCellFromName<"lfChip">;
-  lfCode?: LfDataCellFromName<"lfCode">;
-  lfImage?: LfDataCellFromName<"lfImage">;
-  lfNumber?: LfDataCellFromName<"lfNumber">;
-  lfPhotoframe?: LfDataCellFromName<"lfPhotoframe">;
-  lfProgressbar?: LfDataCellFromName<"lfProgressbar">;
-  lfSlot?: LfDataCellFromName<"lfSlot">;
-  lfText?: LfDataCellFromName<"lfText">;
-  lfTextfield?: LfDataCellFromName<"lfTextfield">;
-  lfToggle?: LfDataCellFromName<"lfToggle">;
-  lfTypewriter?: LfDataCellFromName<"lfTypewriter">;
-  lfUpload?: LfDataCellFromName<"lfUpload">;
-  /** Index signature for flexible cell keys. @see Section 1.2 of 4_0_0_REFACTORING.md */
-  [index: string]: LfDataCell<LfDataShapes>;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfAccordion?: LfDataCell<"accordion">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfBadge?: LfDataCell<"badge">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfButton?: LfDataCell<"button">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfCanvas?: LfDataCell<"canvas">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfCard?: LfDataCell<"card">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfChart?: LfDataCell<"chart">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfChat?: LfDataCell<"chat">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfChip?: LfDataCell<"chip">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfCode?: LfDataCell<"code">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfImage?: LfDataCell<"image">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfNumber?: LfDataCell<"number">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfPhotoframe?: LfDataCell<"photoframe">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfProgressbar?: LfDataCell<"progressbar">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfSlot?: LfDataCell<"slot">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfText?: LfDataCell<"text">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfTextfield?: LfDataCell<"textfield">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfToggle?: LfDataCell<"toggle">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfTypewriter?: LfDataCell<"typewriter">;
+  /** @deprecated Use semantic keys instead. Kept for backward compatibility. */
+  lfUpload?: LfDataCell<"upload">;
+  /** Flexible index signature allowing any semantic key. Shape property determines cell type. */
+  [key: string]: LfDataCell<LfDataShapes>;
 }
+//#endregion
 /**
  * Data shape helper describing data for the data framework.
  */

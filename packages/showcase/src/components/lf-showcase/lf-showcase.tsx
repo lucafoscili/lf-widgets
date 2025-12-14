@@ -272,10 +272,11 @@ export class LfShowcase {
                 value: node.icon,
               },
               text1: {
+                shape: "text",
                 value: stringify(node.value),
               },
-              text2: { value: "" },
-              text3: { value: node.description },
+              text2: { shape: "text", value: "" },
+              text3: { shape: "text", value: node.description },
             },
             id: node.id,
           },

@@ -388,8 +388,8 @@ export const buildGitHubStatsSection = (
                 nodes: activity.map((commits, i) => ({
                   id: `week-${i}`,
                   cells: {
-                    Week: { value: `W${i + 1}` },
-                    Commits: { value: commits.toString() },
+                    Week: { shape: "text", value: `W${i + 1}` },
+                    Commits: { shape: "text", value: commits.toString() },
                   },
                 })),
               },

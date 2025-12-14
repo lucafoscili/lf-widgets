@@ -220,9 +220,13 @@ export const createWikipediaToolHandler = (
             description: "Click to open the article on Wikipedia",
             value: url,
             cells: {
-              text1: { value: title },
-              text2: { value: description ?? `Language: ${lang}` },
+              text1: { shape: "text", value: title },
+              text2: {
+                shape: "text",
+                value: description ?? `Language: ${lang}`,
+              },
               text3: {
+                shape: "text",
                 value: [
                   "- Info:",
                   `Language: ${lang}`,

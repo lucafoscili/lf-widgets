@@ -1,4 +1,20 @@
 //#region Shapes
+/**
+ * Maps legacy `lf<Shape>` cell keys to their shape names.
+ * @deprecated Use semantic keys with the `shape` property as discriminator instead.
+ *
+ * **Migration Guide**:
+ * ```typescript
+ * // Before (deprecated):
+ * node.cells.lfButton  // Only one button allowed
+ *
+ * // After (v4.0.0+):
+ * node.cells.primaryAction   // { shape: "button", value: "Submit" }
+ * node.cells.secondaryAction // { shape: "button", value: "Cancel" }
+ * ```
+ *
+ * @see LfDataCellContainer for the new flexible cells pattern
+ */
 export const LF_DATA_SHAPE_MAP = {
   lfAccordion: "accordion",
   lfBadge: "badge",
