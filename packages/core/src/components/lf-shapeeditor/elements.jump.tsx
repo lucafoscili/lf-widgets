@@ -52,8 +52,7 @@ export const prepJump = (
         >
           <lf-spinner
             lfActive={true}
-            lfDimensions="2px"
-            lfLayout={1}
+            lfLayout="ring"
             slot="spinner"
           ></lf-spinner>
         </lf-button>

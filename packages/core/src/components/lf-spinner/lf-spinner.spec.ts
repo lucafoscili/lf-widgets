@@ -17,7 +17,7 @@ describe("lf-spinner component", () => {
     it("renders with default props", async () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
       expect(page.root).toBeDefined();
-      const spinner = page.root.shadowRoot.querySelector(".spinner-v1");
+      const spinner = page.root.shadowRoot.querySelector(".spinner--ring");
       expect(spinner).not.toBeNull();
     });
 
@@ -32,9 +32,7 @@ describe("lf-spinner component", () => {
       const page = await createPage(
         `<lf-spinner lf-bar-variant="true"></lf-spinner>`,
       );
-      const spinner = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master",
-      );
+      const spinner = page.root.shadowRoot.querySelector(".spinner__bar");
       expect(spinner).not.toBeNull();
     });
 
@@ -50,11 +48,10 @@ describe("lf-spinner component", () => {
       const root = page.root as HTMLLfSpinnerElement;
       expect(root.lfActive).toBe(false);
       expect(root.lfBarVariant).toBe(false);
-      expect(root.lfDimensions).toBe("");
       expect(root.lfFader).toBe(false);
       expect(root.lfFaderTimeout).toBe(3500);
       expect(root.lfFullScreen).toBe(false);
-      expect(root.lfLayout).toBe(1);
+      expect(root.lfLayout).toBe("ring");
       expect(root.lfStyle).toBe("");
       expect(root.lfTimeout).toBe(0);
     });
@@ -111,45 +108,49 @@ describe("lf-spinner component", () => {
 
   describe("Layout Tests", () => {
     it("renders different spinner layouts", async () => {
-      const page = await createPage(`<lf-spinner lf-layout="2"></lf-spinner>`);
-      const spinner = page.root.shadowRoot.querySelector(".spinner-v2");
+      const page = await createPage(
+        `<lf-spinner lf-layout="dots"></lf-spinner>`,
+      );
+      const spinner = page.root.shadowRoot.querySelector(".spinner--dots");
       expect(spinner).not.toBeNull();
     });
 
     it("renders bar layout when bar variant is enabled", async () => {
       const page = await createPage(
-        `<lf-spinner lf-bar-variant="true" lf-layout="1"></lf-spinner>`,
+        `<lf-spinner lf-bar-variant="true" lf-layout="ring"></lf-spinner>`,
       );
-      const wrapper = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master-bar",
-      );
+      const wrapper = page.root.shadowRoot.querySelector(".spinner__bar");
       expect(wrapper).not.toBeNull();
     });
 
     it("renders spinner layout when bar variant is disabled", async () => {
       const page = await createPage(
-        `<lf-spinner lf-bar-variant="false" lf-layout="1"></lf-spinner>`,
+        `<lf-spinner lf-bar-variant="false" lf-layout="ring"></lf-spinner>`,
       );
-      const wrapper = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master-spinner",
-      );
+      const wrapper = page.root.shadowRoot.querySelector(".spinner--ring");
       expect(wrapper).not.toBeNull();
     });
 
     it("changes layout dynamically", async () => {
-      const page = await createPage(`<lf-spinner lf-layout="1"></lf-spinner>`);
+      const page = await createPage(
+        `<lf-spinner lf-layout="ring"></lf-spinner>`,
+      );
       const root = page.root as HTMLLfSpinnerElement;
-      expect(page.root.shadowRoot.querySelector(".spinner-v1")).not.toBeNull();
+      expect(
+        page.root.shadowRoot.querySelector(".spinner--ring"),
+      ).not.toBeNull();
 
-      root.lfLayout = 3;
+      root.lfLayout = "spinner";
       await page.waitForChanges();
-      expect(page.root.shadowRoot.querySelector(".spinner-v3")).not.toBeNull();
+      expect(
+        page.root.shadowRoot.querySelector(".spinner--spinner"),
+      ).not.toBeNull();
     });
   });
 
   describe("Style Tests", () => {
     it("applies custom styles via lfStyle prop", async () => {
-      const customStyle = "#loading-wrapper-master { opacity: 0.5; }";
+      const customStyle = ".spinner { opacity: 0.5; }";
       const page = await createPage(
         `<lf-spinner lf-style="${customStyle}"></lf-spinner>`,
       );
@@ -169,7 +170,7 @@ describe("lf-spinner component", () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
       const root = page.root as HTMLLfSpinnerElement;
 
-      root.lfStyle = ".spinner-v1 { transform: scale(2); }";
+      root.lfStyle = ".spinner--ring { transform: scale(2); }";
       await page.waitForChanges();
 
       const styleEl = page.root.shadowRoot.querySelector("style");
@@ -177,27 +178,27 @@ describe("lf-spinner component", () => {
     });
   });
 
-  describe("Dimension Tests", () => {
-    it("applies custom dimensions via lfDimensions prop", async () => {
+  describe("Size Tests", () => {
+    it("uses lfUiSize for spinner sizing", async () => {
       const page = await createPage(
-        `<lf-spinner lf-dimensions="3em"></lf-spinner>`,
+        `<lf-spinner lf-ui-size="large"></lf-spinner>`,
       );
-      const host = page.root as HTMLElement;
-      expect(host.style.fontSize).toBe("3em");
+      const root = page.root as HTMLLfSpinnerElement;
+      expect(root.lfUiSize).toBe("large");
     });
 
-    it("uses default font size for spinner variant when lfDimensions is empty", async () => {
+    it("has medium lfUiSize by default", async () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
-      const host = page.root as HTMLElement;
-      expect(host.style.fontSize).toBe(".875em");
+      const root = page.root as HTMLLfSpinnerElement;
+      expect(root.lfUiSize).toBe("medium");
     });
 
-    it("uses default font size for bar variant when lfDimensions is empty", async () => {
+    it("lfUiSize applies to bar variants too", async () => {
       const page = await createPage(
-        `<lf-spinner lf-bar-variant="true"></lf-spinner>`,
+        `<lf-spinner lf-bar-variant="true" lf-ui-size="small"></lf-spinner>`,
       );
-      const host = page.root as HTMLElement;
-      expect(host.style.fontSize).toBe("0.25em");
+      const root = page.root as HTMLLfSpinnerElement;
+      expect(root.lfUiSize).toBe("small");
     });
   });
 
@@ -210,13 +211,12 @@ describe("lf-spinner component", () => {
       expect(host.getAttribute("lf-full-screen")).toBe("true");
     });
 
-    it("applies contained styles when lfFullScreen is false", async () => {
+    it("reflects lfFullScreen attribute when false", async () => {
       const page = await createPage(
         `<lf-spinner lf-full-screen="false"></lf-spinner>`,
       );
-      const host = page.root as HTMLElement;
-      expect(host.style.height).toBe("100%");
-      expect(host.style.width).toBe("100%");
+      const root = page.root as HTMLLfSpinnerElement;
+      expect(root.lfFullScreen).toBe(false);
     });
   });
 
@@ -270,21 +270,22 @@ describe("lf-spinner component", () => {
   describe("Public Methods", () => {
     it("getProps returns all current property values", async () => {
       const page = await createPage(
-        `<lf-spinner lf-active="true" lf-layout="2" lf-fader="true"></lf-spinner>`,
+        `<lf-spinner lf-active="true" lf-layout="dots" lf-fader="true"></lf-spinner>`,
       );
       const root = page.root as HTMLLfSpinnerElement;
       const props = await root.getProps();
 
       expect(props).toBeDefined();
       expect(props.lfActive).toBe(true);
-      expect(props.lfLayout).toBe(2);
+      expect(props.lfLayout).toBe("dots");
       expect(props.lfFader).toBe(true);
       expect(props.lfBarVariant).toBe(false);
-      expect(props.lfDimensions).toBe("");
       expect(props.lfFaderTimeout).toBe(3500);
       expect(props.lfFullScreen).toBe(false);
       expect(props.lfStyle).toBe("");
       expect(props.lfTimeout).toBe(0);
+      expect(props.lfUiSize).toBe("medium");
+      expect(props.lfUiState).toBe("primary");
     });
 
     it("getDebugInfo returns debug lifecycle information", async () => {
@@ -367,9 +368,7 @@ describe("lf-spinner component", () => {
       await page.waitForChanges();
       expect(root.lfBarVariant).toBe(true);
 
-      const barWrapper = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master-bar",
-      );
+      const barWrapper = page.root.shadowRoot.querySelector(".spinner__bar");
       expect(barWrapper).not.toBeNull();
     });
 
@@ -377,20 +376,10 @@ describe("lf-spinner component", () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
       const root = page.root as HTMLLfSpinnerElement;
 
-      expect(root.lfLayout).toBe(1);
-      root.lfLayout = 4;
+      expect(root.lfLayout).toBe("ring");
+      root.lfLayout = "grid";
       await page.waitForChanges();
-      expect(root.lfLayout).toBe(4);
-    });
-
-    it("updates lfDimensions dynamically", async () => {
-      const page = await createPage(`<lf-spinner></lf-spinner>`);
-      const root = page.root as HTMLLfSpinnerElement;
-
-      root.lfDimensions = "5em";
-      await page.waitForChanges();
-      expect(root.lfDimensions).toBe("5em");
-      expect((page.root as HTMLElement).style.fontSize).toBe("5em");
+      expect(root.lfLayout).toBe("grid");
     });
 
     it("updates lfTimeout and triggers progress bar restart", async () => {
@@ -412,30 +401,24 @@ describe("lf-spinner component", () => {
       expect(wrapper).not.toBeNull();
     });
 
-    it("renders loading-wrapper-master element", async () => {
+    it("renders spinner element", async () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
-      const master = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master",
-      );
-      expect(master).not.toBeNull();
+      const spinner = page.root.shadowRoot.querySelector(".spinner");
+      expect(spinner).not.toBeNull();
     });
 
-    it("applies spinner-version class when not bar variant", async () => {
+    it("applies layout modifier class when not bar variant", async () => {
       const page = await createPage(`<lf-spinner></lf-spinner>`);
-      const master = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master",
-      );
-      expect(master.classList.contains("spinner-version")).toBe(true);
+      const spinner = page.root.shadowRoot.querySelector(".spinner--ring");
+      expect(spinner).not.toBeNull();
     });
 
-    it("does not apply spinner-version class when bar variant", async () => {
+    it("renders bar variant when lfBarVariant is true", async () => {
       const page = await createPage(
         `<lf-spinner lf-bar-variant="true"></lf-spinner>`,
       );
-      const master = page.root.shadowRoot.querySelector(
-        "#loading-wrapper-master",
-      );
-      expect(master.classList.contains("spinner-version")).toBe(false);
+      const bar = page.root.shadowRoot.querySelector(".spinner__bar");
+      expect(bar).not.toBeNull();
     });
   });
 });

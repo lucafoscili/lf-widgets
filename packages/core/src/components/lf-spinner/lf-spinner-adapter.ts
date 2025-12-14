@@ -5,16 +5,17 @@ import {
   LfSpinnerAdapterControllerGetters,
   LfSpinnerAdapterHandlers,
   LfSpinnerAdapterJsx,
+  LfSpinnerAdapterRefs,
 } from "@lf-widgets/foundations";
-import { createRefs, prepSpinnerJsx } from "./elements.spinner";
+import { prepSpinnerJsx } from "./elements.spinner";
 
 /**
  * Creates the canonical adapter for lf-spinner.
  *
  * v4.0.0 Architecture:
  * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.computed: Derived predicates (isBarVariant, showFader, getConfig, etc.)
- * - controller.actions: Complex operations (startProgressBar, scheduleFader, etc.)
+ * - controller.computed: Derived predicates (isBarVariant, showFader)
+ * - controller.actions: Complex operations (startProgressBar, cancelProgressBar, scheduleFader, clearFaderTimer)
  * - elements: JSX factories + refs
  * - dispatcher: Centralized event emission (passed from component)
  * - handlers: Event callbacks (empty for spinner)
@@ -53,7 +54,21 @@ export const createJsx = (
 
 //#region Handlers
 export const createHandlers = (): LfSpinnerAdapterHandlers => {
-  // Spinner component has no event handlers
   return {};
+};
+//#endregion
+
+//#region Refs
+/**
+ * Creates refs structure matching LF_SPINNER_BLOCKS.
+ * All values explicitly nullable per v4.0.0 Section 5.7.
+ */
+export const createRefs = (): LfSpinnerAdapterRefs => {
+  return {
+    spinner: null,
+    content: null,
+    fader: null,
+    bar: null,
+  };
 };
 //#endregion

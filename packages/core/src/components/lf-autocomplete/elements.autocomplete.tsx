@@ -47,14 +47,13 @@ export const prepAutocompleteJsx = (
           role="listbox"
         >
           <lf-spinner
+            lfActive={computed.isLoading()}
             lfBarVariant={true}
-            lfDimensions="1em"
-            lfStyle=":host { --lf-spinner-min-height: 0.25em; }"
+            lfUiSize="xsmall"
             {...sanitizeProps(comp.lfSpinnerProps || {}, "LfSpinner")}
             class={bemClass(blocks().dropdown._, blocks().dropdown.spinner)}
             data-cy={cyAttributes().spinner}
             data-lf={lfAttributes().fadeIn}
-            lfActive={computed.isLoading()}
             part={parts().spinner}
             ref={assignRef(refs, "spinner")}
           />

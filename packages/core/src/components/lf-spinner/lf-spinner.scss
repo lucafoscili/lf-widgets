@@ -1,98 +1,407 @@
 @use "variables" as *;
 @use "mixins" as *;
-@use "./style.bars" as sb with (
-  $comp: "spinner"
-);
-@use "./style.widgets" as sw with (
-  $comp: "spinner"
-);
 
 $comp: "spinner";
 @include lf-comp-setup($comp, "true", "true");
 
+//#region CSS Custom Properties
 :host {
-  @include lf-el-stretch;
+  /**
+   * @prop --lf-spinner-size: Size of the spinner in em units.
+   *                          Scales automatically with lfUiSize (which adjusts font-size).
+   */
+  --lf-spinner-size: 3em;
+
+  /**
+   * @prop --lf-spinner-color: Primary spinner color (the animated element).
+   *                           Uses the state-aware color set by lf-fw-state-colors mixin.
+   */
+  --lf-spinner-color: rgb(
+    var(--lf-spinner-color-primary, var(--lf-color-primary))
+  );
+
+  /**
+   * @prop --lf-spinner-color-bg: Background color for spinner track/container.
+   *                              Defaults to transparent on-bg color.
+   */
+  --lf-spinner-color-bg: rgba(var(--lf-color-on-bg), 0.2);
+
+  /**
+   * @prop --lf-spinner-speed: Animation duration.
+   */
+  --lf-spinner-speed: 1s;
+
+  /**
+   * @prop --lf-spinner-stroke: Stroke width for ring spinner (scales with em).
+   */
+  --lf-spinner-stroke: 0.15em;
+}
+//#endregion
+
+//#region Host States
+:host {
+  display: block;
+  pointer-events: none;
 }
 
-#loading-wrapper-master {
+:host([lf-full-screen]) {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host([lf-active][lf-fader]) {
+  pointer-events: all;
+  cursor: wait;
+}
+//#endregion
+
+//#region Base Spinner
+.spinner {
   & {
     @include lf-el-transition("fade-in-out");
-    background: transparent;
-    /**
-    * @prop --lf-spinner-min-height: Sets the minimum height for the spinner component.
-    *                                Defaults to => 0
-    */
-    min-height: var(--lf-spinner-min-height, 0);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: var(--lf-spinner-size);
     opacity: 0;
-    overflow: hidden;
-    transform: translateZ(0);
-  }
-
-  &.spinner-version > #loading-wrapper-master-spinner {
-    & {
-      @include lf-el-stretch;
-      position: relative;
-    }
-
-    div {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      margin: auto;
-    }
   }
 
   :host([lf-active]) & {
     opacity: 1;
-
-    &.spinner-version > #loading-wrapper-master-spinner {
-      opacity: 1;
-      overflow: hidden;
-    }
-
-    &[lf-bar-variant] > #loading-wrapper-master-bar {
-      opacity: 1;
-
-      div.spinner-bar-v2 {
-        animation: sk-spinner-bar-v2 20s;
-        background-color: rgb(var(--lf-color-on-#{$comp}));
-        left: -1%;
-      }
-    }
-
-    &.loading-wrapper-big-wait {
-      background: rgba(var(--lf-#{comp}-color-bg, var(--lf-color-bg)), 0.25);
-
-      > #loading-wrapper-master-spinner {
-        font-size: 10px;
-      }
-    }
   }
 
-  :host([lf-full-screen]) & {
+  &__content {
+    position: relative;
+    width: var(--lf-spinner-size);
+    height: var(--lf-spinner-size);
+    flex-shrink: 0;
+  }
+
+  &__fader {
+    @include lf-el-transition("fade-in-out");
+
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
+    background: rgba(var(--lf-color-bg), 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
     pointer-events: none;
-    width: 100%;
-    z-index: 9999;
+    z-index: -1;
 
-    & div,
-    &.spinner-version #loading-wrapper-master-spinner {
-      position: fixed;
-      transition:
-        opacity 1.25s ease-in,
-        background-color 1s ease-in,
-        top 0.5s ease-in;
+    &--visible {
+      opacity: 1;
+    }
+  }
+
+  &__icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lf-spinner-color);
+
+    .spinner__icon-wrapper {
+      width: 100%;
+      height: 100%;
+      animation: spin var(--lf-spinner-speed) linear infinite;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+    }
+  }
+
+  &__bar {
+    width: 100%;
+    height: var(--lf-spinner-size);
+    background: var(--lf-spinner-color-bg);
+    border-radius: calc(var(--lf-spinner-size) / 2);
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: var(--lf-spinner-color);
+    border-radius: inherit;
+    transition: width 0.1s linear;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      animation: shimmer 1.5s infinite;
     }
   }
 }
+//#endregion
 
-:host([lf-active][lf-fader]) #loading-wrapper-master {
-  pointer-events: all;
-  cursor: not-allowed;
+//#region Layout: Ring
+.spinner--ring .spinner__content {
+  &::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0;
+    border: var(--lf-spinner-stroke) solid var(--lf-spinner-color-bg);
+    border-top-color: var(--lf-spinner-color);
+    border-radius: 50%;
+    animation: spin var(--lf-spinner-speed) linear infinite;
+  }
 }
+//#endregion
+
+//#region Layout: Dots
+.spinner--dots .spinner__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--lf-spinner-size) * 0.15);
+
+  &::before,
+  &::after,
+  span {
+    content: "";
+    width: calc(var(--lf-spinner-size) * 0.2);
+    height: calc(var(--lf-spinner-size) * 0.2);
+    background: var(--lf-spinner-color);
+    border-radius: 50%;
+    animation: bounce var(--lf-spinner-speed) ease-in-out infinite;
+  }
+
+  &::before {
+    animation-delay: 0s;
+  }
+
+  span {
+    animation-delay: calc(var(--lf-spinner-speed) * 0.15);
+  }
+
+  &::after {
+    animation-delay: calc(var(--lf-spinner-speed) * 0.3);
+  }
+}
+//#endregion
+
+//#region Layout: Bars (Equalizer)
+.spinner--bars .spinner__content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: calc(var(--lf-spinner-size) * 0.06);
+}
+
+.spinner--bars .bar {
+  width: calc(var(--lf-spinner-size) * 0.12);
+  background: var(--lf-spinner-color);
+  border-radius: calc(var(--lf-spinner-size) * 0.03);
+  animation: equalizer var(--lf-spinner-speed) ease-in-out infinite;
+
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      animation-delay: calc(var(--lf-spinner-speed) * #{($i - 1) * 0.1});
+      height: calc(var(--lf-spinner-size) * #{0.3 + ($i * 0.1)});
+    }
+  }
+}
+//#endregion
+
+//#region Layout: Spinner (Chasing Dots)
+.spinner--spinner .spinner__content {
+  animation: spin calc(var(--lf-spinner-speed) * 2) linear infinite;
+}
+
+.spinner--spinner .dot {
+  position: absolute;
+  width: calc(var(--lf-spinner-size) * 0.2);
+  height: calc(var(--lf-spinner-size) * 0.2);
+  background: var(--lf-spinner-color);
+  border-radius: 50%;
+  animation: chase calc(var(--lf-spinner-speed) * 2) ease-in-out infinite;
+
+  @for $i from 1 through 8 {
+    &:nth-child(#{$i}) {
+      $angle: ($i - 1) * 45deg;
+      top: calc(50% - calc(var(--lf-spinner-size) * 0.1));
+      left: calc(50% - calc(var(--lf-spinner-size) * 0.1));
+      transform: rotate($angle) translateY(calc(var(--lf-spinner-size) * -0.4));
+      animation-delay: calc(var(--lf-spinner-speed) * #{($i - 1) * -0.125});
+    }
+  }
+}
+//#endregion
+
+//#region Layout: Grid
+.spinner--grid .spinner__content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--lf-spinner-size) * 0.08);
+}
+
+.spinner--grid .cell {
+  background: var(--lf-spinner-color);
+  border-radius: calc(var(--lf-spinner-size) * 0.04);
+  animation: pulse calc(var(--lf-spinner-speed) * 1.3) ease-in-out infinite;
+
+  @for $i from 1 through 9 {
+    &:nth-child(#{$i}) {
+      animation-delay: calc(var(--lf-spinner-speed) * #{($i - 1) * 0.1});
+    }
+  }
+}
+//#endregion
+
+//#region Layout: Icon
+.spinner--icon .spinner__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+//#endregion
+
+//#region Layout: Pulse
+.spinner--pulse .spinner__content {
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: calc(var(--lf-spinner-size) * 0.08) solid var(--lf-spinner-color);
+    animation: pulse-scale calc(var(--lf-spinner-speed) * 1.5) ease-out infinite;
+  }
+
+  &::after {
+    animation-delay: calc(var(--lf-spinner-speed) * 0.75);
+  }
+}
+//#endregion
+
+//#region Layout: Wave
+.spinner--wave .spinner__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--lf-spinner-size) * 0.06);
+}
+
+.spinner--wave .wave-bar {
+  width: calc(var(--lf-spinner-size) * 0.1);
+  height: calc(var(--lf-spinner-size) * 0.5);
+  background: var(--lf-spinner-color);
+  border-radius: calc(var(--lf-spinner-size) * 0.05);
+  transform-origin: center;
+  animation: wave calc(var(--lf-spinner-speed) * 0.8) ease-in-out infinite;
+
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      animation-delay: calc(var(--lf-spinner-speed) * #{($i - 1) * 0.1});
+    }
+  }
+}
+//#endregion
+
+//#region Animations
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes equalizer {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes chase {
+  0%,
+  100% {
+    transform: rotate(var(--rotation, 0deg))
+      translateY(calc(var(--lf-spinner-size) * -0.4)) scale(0.5);
+    opacity: 0.3;
+  }
+  50% {
+    transform: rotate(var(--rotation, 0deg))
+      translateY(calc(var(--lf-spinner-size) * -0.4)) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+}
+
+@keyframes pulse-scale {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+//#endregion

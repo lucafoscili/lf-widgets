@@ -1,9 +1,11 @@
 import {
+  LF_ATTRIBUTES,
   LF_SPINNER_BLOCKS,
   LF_SPINNER_IDS,
   LF_SPINNER_PARTS,
   LF_SPINNER_PROPS,
   LF_STYLE_ID,
+  LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfSpinnerAdapter,
@@ -11,7 +13,11 @@ import {
   LfSpinnerEvent,
   LfSpinnerEventPayload,
   LfSpinnerInterface,
+  LfSpinnerLayout,
   LfSpinnerPropsInterface,
+  LfThemeIcon,
+  LfThemeUISize,
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import {
   Component,
@@ -28,13 +34,12 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepSpinnerActions } from "./actions.spinner";
-import { prepSpinnerComputed } from "./computed.spinner";
 import { createAdapter } from "./lf-spinner-adapter";
 
 /**
  * The spinner component displays a loading animation to indicate that a process is underway.
- * The spinner may be displayed as a bar or a spinner, and may include a progress bar.
+ * Multiple layout options are available including ring, dots, bars (equalizer), spinner,
+ * grid, icon (custom), pulse, and wave. A progress bar variant is also supported.
  *
  * @component
  * @tag lf-spinner
@@ -94,20 +99,6 @@ export class LfSpinner implements LfSpinnerInterface {
    */
   @Prop({ mutable: true, reflect: true }) lfBarVariant: boolean = false;
   /**
-   * Defines the width and height of the spinner.
-   * In the bar variant, it specifies only the height.
-   *
-   * @type {string}
-   * @default ""
-   * @mutable
-   *
-   * @example
-   * ```tsx
-   * <lf-spinner lfDimensions="2em"></lf-spinner>
-   * ```
-   */
-  @Prop({ mutable: true }) lfDimensions: string = "";
-  /**
    * Applies a blending modal over the component to darken or lighten the view, based on the theme.
    *
    * @type {boolean}
@@ -147,18 +138,33 @@ export class LfSpinner implements LfSpinnerInterface {
    */
   @Prop({ mutable: true, reflect: true }) lfFullScreen: boolean = false;
   /**
-   * Selects the spinner layout.
+   * Icon to display when using the "icon" layout.
+   * The icon will rotate with the spinner animation.
    *
-   * @type {number}
-   * @default 1
+   * @type {string | LfThemeIcon}
+   * @default ""
    * @mutable
    *
    * @example
    * ```tsx
-   * <lf-spinner lfLayout={2}></lf-spinner>
+   * <lf-spinner lfLayout="icon" lfIcon="camera"></lf-spinner>
    * ```
    */
-  @Prop({ mutable: true }) lfLayout: number = 1;
+  @Prop({ mutable: true }) lfIcon: LfThemeIcon;
+  /**
+   * Selects the spinner layout style.
+   * Available: "ring", "dots", "bars", "spinner", "grid", "icon", "pulse", "wave"
+   *
+   * @type {LfSpinnerLayout}
+   * @default "ring"
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-spinner lfLayout="dots"></lf-spinner>
+   * ```
+   */
+  @Prop({ mutable: true }) lfLayout: LfSpinnerLayout = "ring";
   /**
    * Custom styling for the component.
    *
@@ -168,12 +174,13 @@ export class LfSpinner implements LfSpinnerInterface {
    *
    * @example
    * ```tsx
-   * <lf-spinner lfStyle="#loading-wrapper-master { background-color: #f00; }"></lf-spinner>
+   * <lf-spinner lfStyle=".spinner { --lf-spinner-color: red; }"></lf-spinner>
    * ```
    */
   @Prop({ mutable: true }) lfStyle: string = "";
   /**
    * Duration for the progress bar to fill up (in milliseconds).
+   * Only applies when lfBarVariant is true.
    *
    * @type {number}
    * @default 0
@@ -181,10 +188,38 @@ export class LfSpinner implements LfSpinnerInterface {
    *
    * @example
    * ```tsx
-   * <lf-spinner lfTimeout={5000}></lf-spinner>
+   * <lf-spinner lfBarVariant={true} lfTimeout={5000}></lf-spinner>
    * ```
    */
   @Prop({ mutable: true }) lfTimeout: number = 0;
+  /**
+   * The size of the component.
+   * Controls the spinner dimensions using predefined sizes.
+   *
+   * @type {LfThemeUISize}
+   * @default "medium"
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-spinner lfUiSize="large"></lf-spinner>
+   * ```
+   */
+  @Prop({ mutable: true, reflect: true }) lfUiSize: LfThemeUISize = "medium";
+  /**
+   * Reflects the specified state color defined by the theme.
+   * Controls the spinner color using theme state colors.
+   *
+   * @type {LfThemeUIState}
+   * @default "primary"
+   * @mutable
+   *
+   * @example
+   * ```tsx
+   * <lf-spinner lfUiState="secondary"></lf-spinner>
+   * ```
+   */
+  @Prop({ mutable: true, reflect: true }) lfUiState: LfThemeUIState = "primary";
   //#endregion
 
   //#region Internal variables
@@ -192,11 +227,13 @@ export class LfSpinner implements LfSpinnerInterface {
   #framework: LfFrameworkInterface;
   #b = LF_SPINNER_BLOCKS;
   #ids = LF_SPINNER_IDS;
+  #lf = LF_ATTRIBUTES;
   #p = LF_SPINNER_PARTS;
   #s = LF_STYLE_ID;
+  #w = LF_WRAPPER_ID;
   #animationState = {
     progressAnimationFrame: null as number | null,
-    faderTimer: null as number | null,
+    faderTimer: null as ReturnType<typeof setTimeout> | null,
   };
   //#endregion
 
@@ -205,32 +242,15 @@ export class LfSpinner implements LfSpinnerInterface {
   @Watch("lfFader")
   @Watch("lfFaderTimeout")
   onFaderChange() {
-    if (this.#adapter) {
-      this.#adapter.controller.actions.scheduleFader();
-    }
+    this.#adapter?.controller.actions.scheduleFader();
   }
   @Watch("lfBarVariant")
-  lfBarVariantChanged(newValue: boolean) {
-    if (!this.#framework || !this.#adapter) {
-      return;
-    }
-
-    const { actions } = this.#adapter.controller;
-
-    if (newValue && this.lfTimeout) {
-      actions.startProgressBar();
-    } else {
-      actions.cancelProgressBar();
-    }
-  }
   @Watch("lfTimeout")
-  lfTimeoutChanged(newValue: number, oldValue: number) {
-    if (!this.#framework || !this.#adapter) {
-      return;
-    }
-
-    if (newValue !== oldValue && this.lfBarVariant) {
-      this.#adapter.controller.actions.startProgressBar();
+  onBarChange() {
+    if (this.lfBarVariant && this.lfTimeout) {
+      this.#adapter?.controller.actions.startProgressBar();
+    } else {
+      this.#adapter?.controller.actions.cancelProgressBar();
     }
   }
   //#endregion
@@ -322,15 +342,17 @@ export class LfSpinner implements LfSpinnerInterface {
       });
     },
   });
+
   /**
    * Initializes the adapter with v4.0.0 architecture.
    *
    * Structure:
    * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.computed: Derived predicates (isBarVariant, showFader, getConfig, etc.)
-   * - controller.actions: Complex operations (startProgressBar, scheduleFader, etc.)
+   * - controller.computed: Derived predicates (isBarVariant, showFader)
+   * - controller.actions: Complex operations (startProgressBar, cancelProgressBar, scheduleFader, clearFaderTimer)
    * - elements: JSX factories + refs
    * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks (empty for spinner)
    *
    * @see Section 5 of 4_0_0_REFACTORING.md
    */
@@ -340,17 +362,27 @@ export class LfSpinner implements LfSpinnerInterface {
 
     const adapterWithoutDispatcher = createAdapter(
       // Getters - base getters (via utility)
-      createBaseGetters({
-        blocks: () => this.#b,
-        compInstance: () => this,
-        framework: () => this.#framework,
-        ids: () => this.#ids,
-        parts: () => this.#p,
-      }),
-      // Computed - derived predicates (from dedicated file)
-      prepSpinnerComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepSpinnerActions(getAdapter, this.#animationState),
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Computed - derived predicates
+      {
+        isBarVariant: () => this.lfBarVariant,
+        showFader: () => this.bigWait,
+      },
+      // Actions - complex multi-step operations
+      {
+        startProgressBar: () => this.#startProgressBar(),
+        cancelProgressBar: () => this.#cancelProgressBar(),
+        scheduleFader: () => this.#scheduleFader(),
+        clearFaderTimer: () => this.#clearFaderTimer(),
+      },
       // Adapter accessor
       getAdapter,
     );
@@ -360,6 +392,65 @@ export class LfSpinner implements LfSpinnerInterface {
       ...adapterWithoutDispatcher,
       dispatcher: this.#createDispatcher(),
     };
+  };
+
+  /**
+   * Starts the progress bar animation.
+   */
+  #startProgressBar = () => {
+    this.progress = 0;
+    const startTime = Date.now();
+    const duration = this.lfTimeout;
+
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      this.progress = Math.min((elapsed / duration) * 100, 100);
+
+      if (this.progress < 100) {
+        this.#animationState.progressAnimationFrame =
+          requestAnimationFrame(updateProgress);
+      } else {
+        this.#cancelProgressBar();
+      }
+    };
+
+    this.#animationState.progressAnimationFrame =
+      requestAnimationFrame(updateProgress);
+  };
+
+  /**
+   * Cancels the progress bar animation.
+   */
+  #cancelProgressBar = () => {
+    this.progress = 0;
+    if (this.#animationState.progressAnimationFrame !== null) {
+      cancelAnimationFrame(this.#animationState.progressAnimationFrame);
+      this.#animationState.progressAnimationFrame = null;
+    }
+  };
+
+  /**
+   * Schedules the fader timeout.
+   */
+  #scheduleFader = () => {
+    this.#clearFaderTimer();
+    this.bigWait = false;
+
+    if (this.lfFader && this.lfActive) {
+      this.#animationState.faderTimer = setTimeout(() => {
+        this.bigWait = true;
+      }, this.lfFaderTimeout);
+    }
+  };
+
+  /**
+   * Clears the fader timeout.
+   */
+  #clearFaderTimer = () => {
+    if (this.#animationState.faderTimer !== null) {
+      clearTimeout(this.#animationState.faderTimer);
+      this.#animationState.faderTimer = null;
+    }
   };
   //#endregion
 
@@ -376,53 +467,45 @@ export class LfSpinner implements LfSpinnerInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    const { lfBarVariant, lfTimeout } = this;
-
     // Emit ready event via dispatcher
     this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
 
-    if (lfBarVariant && lfTimeout) {
+    // Start progress bar if applicable
+    if (this.lfBarVariant && this.lfTimeout) {
       this.#adapter.controller.actions.startProgressBar();
+    }
+
+    // Schedule fader if applicable
+    if (this.lfFader && this.lfActive) {
+      this.#adapter.controller.actions.scheduleFader();
     }
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
-
     info.update(this, "will-render");
   }
   componentDidRender() {
     const { info } = this.#framework.debug;
-
     info.update(this, "did-render");
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
-
-    const { lfBarVariant, lfDimensions, lfFullScreen, lfStyle } = this;
-    const { spinner } = this.#adapter.elements.jsx;
-
-    // Host styles - applied directly to the custom element
-    const hostStyle: Record<string, string | undefined> = {
-      fontSize: lfDimensions || (lfBarVariant ? "0.25em" : ".875em"),
-      height: lfFullScreen ? undefined : "100%",
-      width: lfFullScreen ? undefined : "100%",
-    };
+    const { lfStyle } = this;
 
     return (
-      <Host style={hostStyle}>
+      <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        {spinner()}
+        <div data-lf={this.#lf[this.lfUiState]} id={this.#w}>
+          {this.#adapter.elements.jsx.spinner()}
+        </div>
       </Host>
     );
   }
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
-
-    if (this.#adapter) {
-      const { actions } = this.#adapter.controller;
-      actions.cancelProgressBar();
-      actions.clearFaderTimer();
-    }
+    this.#adapter?.controller.actions.cancelProgressBar();
+    this.#adapter?.controller.actions.clearFaderTimer();
   }
+  //#endregion
 }

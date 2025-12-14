@@ -1,11 +1,17 @@
 import {
+  LF_SPINNER_LAYOUTS,
+  LF_THEME_UI_SIZES,
+  LF_THEME_UI_STATES,
   LfArticleDataset,
   LfComponentName,
   LfComponentTag,
-  LfFrameworkInterface,
   LfEventName,
   LfEventPayloadName,
+  LfFrameworkInterface,
+  LfSpinnerLayout,
   LfSpinnerPropsInterface,
+  LfThemeUISize,
+  LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { DOC_IDS } from "../../helpers/constants";
 import { SECTION_FACTORY } from "../../helpers/doc.section";
@@ -67,61 +73,137 @@ export const getSpinnerFixtures = (
     //#region configuration
     configuration: {
       columns: {
-        bar: 3,
-        widget: 3,
+        bar: 1,
+        sizes: 5,
+        states: 5,
+        widget: 4,
+        icon: 2,
       },
     },
     //#endregion
 
     documentation,
     examples: {
-      //#region Bar
-      bar: Array.from({ length: 3 }).reduce<{
+      //#region Bar variant
+      bar: {
+        bar: {
+          description: "Bar variant (progress bar)",
+          hasMinHeight: true,
+          props: {
+            lfActive: true,
+            lfBarVariant: true,
+            lfLayout: "ring",
+            lfUiSize: "xsmall",
+          },
+        },
+      },
+      //#endregion
+
+      //#region Sizes
+      sizes: LF_THEME_UI_SIZES.reduce<{
         [example: string]: LfShowcaseExample<LfSpinnerPropsInterface>;
-      }>((acc, _, index) => {
+      }>((acc, size: LfThemeUISize) => {
         return {
           ...acc,
-          [index + 1]: {
-            description: `Layout ${index + 1}`,
+          [size]: {
+            description: `Size: ${size}`,
             hasMinHeight: true,
             props: {
               lfActive: true,
-              lfBarVariant: true,
-              lfDimensions: "7px",
-              lfLayout: index + 1,
+              lfLayout: "ring",
+              lfUiSize: size,
             },
           },
         };
       }, {}),
       //#endregion
 
-      //#region Widget
-      widget: Array.from({ length: 13 }).reduce<{
+      //#region States
+      states: LF_THEME_UI_STATES.reduce<{
         [example: string]: LfShowcaseExample<LfSpinnerPropsInterface>;
-      }>((acc, _, index) => {
+      }>((acc, state: LfThemeUIState) => {
         return {
           ...acc,
-          [index + 1]: {
-            description: `Layout ${index + 1}`,
+          [state]: {
+            description: `State: ${state}`,
             hasMinHeight: true,
             props: {
               lfActive: true,
-              lfDimensions: "7px",
-              lfLayout: index + 1,
+              lfLayout: "ring",
+              lfUiSize: "medium",
+              lfUiState: state,
             },
           },
-          ["style" + index]: {
-            description: `Layout ${index + 1} (with custom style)`,
+        };
+      }, {}),
+      //#endregion
+
+      //#region Widget layouts
+      widget: LF_SPINNER_LAYOUTS.reduce<{
+        [example: string]: LfShowcaseExample<LfSpinnerPropsInterface>;
+      }>((acc, layout: LfSpinnerLayout) => {
+        return {
+          ...acc,
+          [layout]: {
+            description: `Layout: ${layout}`,
             hasMinHeight: true,
             props: {
               lfActive: true,
-              lfDimensions: "7px",
-              lfLayout: index + 1,
+              lfLayout: layout,
+            },
+          },
+          [`${layout}Styled`]: {
+            description: `Layout: ${layout} (styled)`,
+            hasMinHeight: true,
+            props: {
+              lfActive: true,
+              lfLayout: layout,
               lfStyle: randomStyle(),
             },
           },
         };
       }, {}),
+      //#endregion
+
+      //#region Icon layout examples
+      icon: {
+        camera: {
+          description: "Icon: camera-shutter",
+          hasMinHeight: true,
+          props: {
+            lfActive: true,
+            lfIcon: "camera",
+            lfLayout: "icon",
+          },
+        },
+        refresh: {
+          description: "Icon: refresh",
+          hasMinHeight: true,
+          props: {
+            lfActive: true,
+            lfIcon: "refresh",
+            lfLayout: "icon",
+          },
+        },
+        sync: {
+          description: "Icon: sync",
+          hasMinHeight: true,
+          props: {
+            lfActive: true,
+            lfIcon: "refresh",
+            lfLayout: "icon",
+          },
+        },
+        loading: {
+          description: "Icon: loading",
+          hasMinHeight: true,
+          props: {
+            lfActive: true,
+            lfIcon: "loader",
+            lfLayout: "icon",
+          },
+        },
+      },
       //#endregion
     },
   };

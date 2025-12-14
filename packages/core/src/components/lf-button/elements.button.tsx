@@ -344,7 +344,7 @@ const prepSpinner = (adapter: LfButtonAdapter): VNode => {
       <lf-spinner
         class={bemClass(b.button._, b.button.spinner)}
         lfActive={lfShowSpinner}
-        lfDimensions=".625em"
+        lfLayout="ring"
         part={p.spinner}
         ref={assignRef(refs, "spinner")}
       ></lf-spinner>

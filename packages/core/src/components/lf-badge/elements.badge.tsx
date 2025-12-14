@@ -13,7 +13,7 @@ export const prepBadgeJsx = (
     //#region Badge
     badge: () => {
       const adapter = getAdapter();
-      const { controller, elements } = adapter;
+      const { controller, dispatcher, elements } = adapter;
       const { get } = controller;
 
       // v4.0.0: ALL getters are functions
@@ -28,13 +28,11 @@ export const prepBadgeJsx = (
       const { bemClass } = theme;
       const { refs } = elements;
 
-      const comp = compInstance as LfBadge;
-
       return (
         <div
           class={bemClass(blocks.badge._, undefined, { [lfPosition]: true })}
           data-lf={lfAttributes.fadeIn}
-          onClick={(e) => comp.onLfEvent(e, "click")}
+          onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
           part={parts.badge}
           ref={assignRef(refs, "badge")}
         >

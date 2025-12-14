@@ -9,7 +9,6 @@ import {
   LF_WRAPPER_ID,
   LfBadgeAdapter,
   LfBadgeElement,
-  LfBadgeEvent,
   LfBadgeEventPayload,
   LfBadgeInterface,
   LfBadgePositions,

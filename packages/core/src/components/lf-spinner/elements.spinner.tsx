@@ -1,15 +1,14 @@
 import { LfSpinnerAdapter, LfSpinnerAdapterJsx } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
-import { LF_SPINNER_BARS } from "./helpers.bar";
-import { LF_SPINNER_WIDGETS } from "./helpers.widget";
+import { FIcon } from "../../utils/icon";
 
 /**
  * Prepares JSX factory functions for the spinner component.
  *
  * v4.0.0 Architecture:
  * - Uses `controller.get` for base getters (blocks, compInstance, framework, etc.)
- * - Uses `controller.computed` for derived predicates (isBarVariant, showFader, etc.)
- * - Integrates existing helper files for bar and widget layouts
+ * - Uses `controller.computed` for derived predicates (isBarVariant, showFader)
+ * - Routes all events through dispatcher
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
@@ -21,94 +20,123 @@ export const prepSpinnerJsx = (
     spinner: () => {
       const adapter = getAdapter();
       const { controller, elements } = adapter;
-      const { compInstance } = controller.get;
-      const { getConfig, getWrapperClass, getMasterClass } =
-        controller.computed;
+      const { blocks, compInstance, framework, lfAttributes, parts } =
+        controller.get;
+      const { isBarVariant, showFader } = controller.computed;
 
       const comp = compInstance();
+      const mgr = framework();
+      const b = blocks();
+      const p = parts();
+      const lf = lfAttributes();
+
+      const { lfFader, lfLayout, lfUiState, progress } = comp;
+
+      const { assignRef, theme } = mgr;
+      const { bemClass } = theme;
       const { refs } = elements;
-
-      const { lfBarVariant, lfDimensions, lfFullScreen, lfLayout, progress } =
-        comp;
-
-      const elStyle: Record<string, string | undefined> = {
-        height: lfFullScreen ? undefined : "100%",
-        width: lfFullScreen ? undefined : "100%",
-        fontSize: lfDimensions || (lfBarVariant ? "0.25em" : ".875em"),
-      };
-
-      const config = getConfig();
-      const wrapperClass = getWrapperClass();
-      const masterClass = getMasterClass();
-
-      const spinnerClass =
-        config?.className ||
-        `spinner-${lfBarVariant ? "bar-v" : "v"}${lfLayout}`;
-      const spinnerEl = config?.elements(progress) || [];
+      const spinnerBlocks = b.spinner;
 
       return (
         <div
-          id="lf-component"
-          ref={(el) => {
-            refs.wrapper = el;
-          }}
+          class={`${bemClass(spinnerBlocks._)}${isBarVariant() ? "" : ` spinner--${lfLayout}`}`}
+          data-lf={lf[lfUiState]}
+          part={p.spinner}
+          ref={assignRef(refs, "spinner")}
         >
-          <div
-            id="loading-wrapper-master"
-            class={{
-              ...masterClass,
-            }}
-            style={elStyle}
-            ref={(el) => {
-              refs.master = el;
-            }}
-          >
-            <div id={wrapperClass} style={elStyle}>
+          {isBarVariant() ? (
+            // Bar variant: progress bar
+            <div
+              class={bemClass(spinnerBlocks._, spinnerBlocks.bar)}
+              part={p.bar}
+              ref={assignRef(refs, "bar")}
+            >
               <div
-                class={spinnerClass}
-                ref={(el) => {
-                  refs.spinner = el;
-                }}
-              >
-                {spinnerEl}
-              </div>
+                class={bemClass(spinnerBlocks._, spinnerBlocks.barFill)}
+                style={{ width: `${progress}%` }}
+              />
             </div>
-          </div>
+          ) : (
+            // Widget variant: layout-specific spinner
+            <div
+              class={bemClass(spinnerBlocks._, spinnerBlocks.content)}
+              part={p.content}
+              ref={assignRef(refs, "content")}
+            >
+              {renderLayoutContent(adapter)}
+            </div>
+          )}
+
+          {/* Fader overlay */}
+          {lfFader && (
+            <div
+              class={`${bemClass(spinnerBlocks._, spinnerBlocks.fader)}${showFader() ? " spinner__fader--visible" : ""}`}
+              part={p.fader}
+              ref={assignRef(refs, "fader")}
+            />
+          )}
         </div>
       );
-    },
-    //#endregion
-
-    //#region Bar
-    bar: (layout: number, progress: number): VNode | null => {
-      const config = LF_SPINNER_BARS[layout];
-      if (!config) {
-        return null;
-      }
-
-      const elements = config.elements(progress);
-      return <div class={config.className}>{elements}</div>;
-    },
-    //#endregion
-
-    //#region Widget
-    widget: (layout: number): VNode | null => {
-      const config = LF_SPINNER_WIDGETS[layout];
-      if (!config) {
-        return null;
-      }
-
-      const elements = config.elements();
-      return <div class={config.className}>{elements}</div>;
     },
     //#endregion
   };
 };
 
-//#region Refs
-export const createRefs = () => ({
-  spinner: null as HTMLDivElement | null,
-  wrapper: null as HTMLDivElement | null,
-  master: null as HTMLDivElement | null,
-});
-//#endregion
+/**
+ * Renders the layout-specific content based on the spinner layout type.
+ */
+const renderLayoutContent = (adapter: LfSpinnerAdapter): VNode | VNode[] => {
+  const { controller } = adapter;
+  const { blocks, compInstance, framework } = controller.get;
+
+  const comp = compInstance();
+  const mgr = framework();
+  const b = blocks();
+
+  const { lfLayout, lfIcon } = comp;
+
+  switch (lfLayout) {
+    case "dots":
+      // Middle dot is a span, outer dots are ::before/::after
+      return <span></span>;
+
+    case "bars":
+      // 5 equalizer bars
+      return [1, 2, 3, 4, 5].map((i) => <div class="bar" key={`bar-${i}`} />);
+
+    case "spinner":
+      // 8 chasing dots
+      return [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <div class="dot" key={`dot-${i}`} />
+      ));
+
+    case "grid":
+      // 3x3 grid cells
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+        <div class="cell" key={`cell-${i}`} />
+      ));
+
+    case "icon":
+      return (
+        <div class={b.spinner.icon}>
+          <FIcon
+            framework={mgr}
+            icon={lfIcon || "settings"}
+            wrapperClass="spinner__icon-wrapper"
+          />
+        </div>
+      );
+
+    case "wave":
+      // 5 wave bars
+      return [1, 2, 3, 4, 5].map((i) => (
+        <div class="wave-bar" key={`wave-${i}`} />
+      ));
+
+    case "ring":
+    case "pulse":
+    default:
+      // These layouts use only CSS pseudo-elements
+      return null;
+  }
+};

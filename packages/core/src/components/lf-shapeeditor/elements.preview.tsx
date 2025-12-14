@@ -104,10 +104,9 @@ export const prepPreview = (
           class={bemClass(previewBlock._, previewBlock.spinner)}
           id={i.preview.spinner}
           lfActive={spinnerStatus()}
-          lfDimensions="16px"
           lfFader={true}
           lfFaderTimeout={125}
-          lfLayout={14}
+          lfLayout="grid"
           ref={assignRef(preview, "spinner")}
         ></lf-spinner>
       );

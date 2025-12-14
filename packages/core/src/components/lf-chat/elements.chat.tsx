@@ -269,8 +269,7 @@ export const prepChat = (
         <lf-spinner
           lfActive={showSpinner}
           lfBarVariant={true}
-          lfDimensions="3px"
-          lfLayout={2}
+          lfLayout="dots"
           ref={assignRef(chat, "spinner")}
         ></lf-spinner>
       );

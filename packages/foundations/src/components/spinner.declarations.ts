@@ -17,10 +17,16 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import {
+  LfThemeIcon,
+  LfThemeUISize,
+  LfThemeUIState,
+} from "../framework/theme.declarations";
+import {
   LF_SPINNER_BLOCKS,
   LF_SPINNER_EVENTS,
   LF_SPINNER_IDS,
   LF_SPINNER_PARTS,
+  LfSpinnerLayout,
 } from "./spinner.constants";
 
 //#region Class
@@ -31,6 +37,11 @@ export interface LfSpinnerInterface
   extends LfComponent<"LfSpinner">,
     LfSpinnerPropsInterface {
   /**
+   * Internal runtime state for fader visibility.
+   */
+  bigWait: boolean;
+  getProgress(): Promise<number>;
+  /**
    * Canonical event emitter exposed by the Stencil component instance.
    * Used by adapter dispatchers to centralise event emission.
    */
@@ -38,14 +49,9 @@ export interface LfSpinnerInterface
     emit: (payload: LfSpinnerEventPayload) => void;
   };
   /**
-   * Internal runtime state for fader visibility.
-   */
-  bigWait: boolean;
-  /**
    * Internal runtime state for progress percentage.
    */
   progress: number;
-  getProgress(): Promise<number>;
 }
 /**
  * DOM element type for the custom element registered as `lf-spinner`.
@@ -99,16 +105,15 @@ export interface LfSpinnerAdapter
  */
 export interface LfSpinnerAdapterRefs extends LfComponentAdapterRefs {
   spinner: HTMLDivElement | null;
-  wrapper: HTMLDivElement | null;
-  master: HTMLDivElement | null;
+  content: HTMLDivElement | null;
+  fader: HTMLDivElement | null;
+  bar: HTMLDivElement | null;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
  */
 export interface LfSpinnerAdapterJsx extends LfComponentAdapterJsx {
   spinner: () => VNode;
-  bar: (layout: number, progress: number) => VNode | null;
-  widget: (layout: number) => VNode | null;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
@@ -139,14 +144,6 @@ export interface LfSpinnerAdapterControllerComputed
   isBarVariant: () => boolean;
   /** Whether the fader overlay should be displayed */
   showFader: () => boolean;
-  /** Get the spinner configuration based on variant and layout */
-  getConfig: () =>
-    | { className: string; elements: (progress?: number) => VNode[] }
-    | undefined;
-  /** Get the wrapper class based on variant */
-  getWrapperClass: () => string;
-  /** Get the master element classes */
-  getMasterClass: () => Record<string, boolean>;
 }
 /**
  * Complex multi-step actions.
@@ -203,12 +200,14 @@ export interface LfSpinnerEventPayload
 export interface LfSpinnerPropsInterface {
   lfActive?: boolean;
   lfBarVariant?: boolean;
-  lfDimensions?: string;
   lfFader?: boolean;
   lfFaderTimeout?: number;
   lfFullScreen?: boolean;
-  lfLayout?: number;
+  lfIcon?: LfThemeIcon;
+  lfLayout?: LfSpinnerLayout;
   lfStyle?: string;
   lfTimeout?: number;
+  lfUiSize?: LfThemeUISize;
+  lfUiState?: LfThemeUIState;
 }
 //#endregion

@@ -35,16 +35,12 @@ interface AlignmentResult {
  * Recursively collects all BEM class names that should exist based on BLOCKS constant.
  *
  * @param blocks - The BLOCKS constant to analyze
- * @param parentBlock - Parent block name for nested blocks
  * @returns Array of expected BEM class names
  */
-export function collectExpectedClasses(
-  blocks: BlocksConstant,
-  parentBlock?: string,
-): string[] {
+export function collectExpectedClasses(blocks: BlocksConstant): string[] {
   const classes: string[] = [];
 
-  for (const [blockName, blockDef] of Object.entries(blocks)) {
+  for (const [, blockDef] of Object.entries(blocks)) {
     if (typeof blockDef === "string") {
       // Simple string value - this is an element, not a block
       continue;
@@ -64,10 +60,9 @@ export function collectExpectedClasses(
           classes.push(`${baseClass}__${elementValue}`);
         } else if (typeof elementValue === "object" && elementValue !== null) {
           // Nested block - recurse
-          const nestedClasses = collectExpectedClasses(
-            { [elementName]: elementValue } as BlocksConstant,
-            baseClass,
-          );
+          const nestedClasses = collectExpectedClasses({
+            [elementName]: elementValue,
+          } as BlocksConstant);
           classes.push(...nestedClasses);
         }
       }

@@ -651,7 +651,7 @@ export class LfChat implements LfChatInterface {
     return (
       <Fragment>
         <div class={bemClass(chat._, chat.spinner)}>
-          <lf-spinner lfActive={true} lfDimensions="7px" lfLayout={6} />
+          <lf-spinner lfActive={true} lfLayout="wave" />
         </div>
         <div class={bemClass(chat._, chat.title)}>Just a moment.</div>
         <div class={bemClass(chat._, chat.text)}>
