@@ -14,7 +14,6 @@ const createPage = async (html: string) => {
 };
 
 describe("LfPhotoframe", () => {
-  let intersectionObserverCallback: (entries: any[]) => void;
   let observeMock: jest.Mock;
   let unobserveMock: jest.Mock;
   let disconnectMock: jest.Mock;
@@ -24,9 +23,8 @@ describe("LfPhotoframe", () => {
     unobserveMock = jest.fn();
     disconnectMock = jest.fn();
 
-    // Mock IntersectionObserver with callback capture
-    global.IntersectionObserver = jest.fn().mockImplementation((callback) => {
-      intersectionObserverCallback = callback;
+    // Mock IntersectionObserver
+    global.IntersectionObserver = jest.fn().mockImplementation(() => {
       return {
         observe: observeMock,
         unobserve: unobserveMock,

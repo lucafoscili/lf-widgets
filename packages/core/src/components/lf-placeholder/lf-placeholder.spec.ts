@@ -1,4 +1,4 @@
-import { newSpecPage, SpecPage } from "@stencil/core/testing";
+import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import { LfPlaceholder } from "./lf-placeholder";
 
@@ -374,7 +374,7 @@ describe("LfPlaceholder", () => {
       const page = await createPage(`<lf-placeholder></lf-placeholder>`);
       const component = page.rootInstance as LfPlaceholder;
 
-      component.lfIcon = "loading";
+      component.lfIcon = "photo";
       component.lfThreshold = 0.5;
       component.lfTrigger = "viewport";
       component.lfValue = "LfButton";
@@ -382,7 +382,7 @@ describe("LfPlaceholder", () => {
 
       const props = await component.getProps();
 
-      expect(props.lfIcon).toBe("loading");
+      expect(props.lfIcon).toBe("photo");
       expect(props.lfThreshold).toBe(0.5);
       expect(props.lfTrigger).toBe("viewport");
       expect(props.lfValue).toBe("LfButton");

@@ -431,7 +431,7 @@ describe("lf-article component", () => {
 
     it("refresh updates component after dataset change", async () => {
       component.lfDataset = {
-        nodes: [{ value: "Refreshed Article" }],
+        nodes: [{ id: "refreshed", value: "Refreshed Article" }],
       };
       await component.refresh();
       await page.waitForChanges();
