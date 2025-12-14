@@ -1,9 +1,7 @@
 import {
-  CSS_VAR_PREFIX,
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_IMAGE_BLOCKS,
   LF_IMAGE_CSS_VARS,
+  LF_IMAGE_IDS,
   LF_IMAGE_PARTS,
   LF_IMAGE_PROPS,
   LF_STYLE_ID,
@@ -11,13 +9,12 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
-  LfIconType,
+  LfImageAdapter,
   LfImageElement,
   LfImageEvent,
   LfImageEventPayload,
   LfImageInterface,
   LfImagePropsInterface,
-  LfThemeIconVariable,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import {
@@ -31,11 +28,13 @@ import {
   Method,
   Prop,
   State,
-  VNode,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { FIcon } from "../../utils/icon";
+import { prepImageActions } from "./actions.image";
+import { prepImageComputed } from "./computed.image";
+import { createAdapter } from "./lf-image-adapter";
 
 /**
  * Represents an image component that displays an image or icon.
@@ -183,46 +182,26 @@ export class LfImage implements LfImageInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfImageAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_IMAGE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_IMAGE_IDS;
   #p = LF_IMAGE_PARTS;
   #s = LF_STYLE_ID;
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
   #img: HTMLImageElement | SVGElement = null;
   #resolvedFor?: string;
+  //#endregion
 
   //#region Watchers
   @Watch("lfValue")
   async resetState(newVal?: string, _oldVal?: string) {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
-    this.error = false;
-    this.isLoaded = false;
-    this.resolvedSpriteName = undefined;
-    this.#resolvedFor = undefined;
-
-    if (!newVal) {
-      return;
-    }
-
-    const isUrl = this.#isResourceUrl();
-    if (isUrl) {
-      return;
-    }
-
-    // For sprite icons, mark as loaded immediately
-    this.isLoaded = true;
-    try {
-      const { theme } = this.#framework;
-      theme.get.sprite.ids();
-    } catch (err) {
-      // Sprite not available, will show broken image
-    }
+    await this.#adapter.controller.actions.resetState(newVal);
   }
   //#endregion
 
@@ -273,95 +252,96 @@ export class LfImage implements LfImageInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #createImage(): VNode {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass } = theme;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfImageEvent, detail?: Partial<LfImageEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const { image } = this.#b;
-
-    return (
-      <img
-        {...sanitizeProps(this.lfHtmlAttributes)}
-        class={bemClass(image._, image.img)}
-        data-cy={this.#cy.image}
-        onError={(e) => {
-          this.error = true;
-          this.isLoaded = false;
-          this.onLfEvent(e, "error");
-        }}
-        onLoad={(e) => {
-          this.error = false;
-          this.isLoaded = true;
-          this.onLfEvent(e, "load");
-        }}
-        part={this.#p.img}
-        ref={(el) => {
-          if (el) {
-            this.#img = el;
-          }
-        }}
-        src={this.lfValue}
-      ></img>
-    );
-  }
-  #isResourceUrl() {
-    const { lfValue } = this;
-
-    if (!lfValue || typeof lfValue !== "string") {
-      return false;
-    }
-
-    const resourceUrlPattern =
-      /^(?:(?:https?:\/\/|\/|\.{1,2}\/|[a-zA-Z]:\\|\\\\|blob:).+|data:image\/[a-zA-Z0-9+.-]+(?:;charset=[^;,]+)?(?:;base64)?,.*)$/;
-
-    return resourceUrlPattern.test(lfValue);
-  }
-  #prepSpriteIcon(value?: LfThemeIconVariable): VNode {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
-    const { image } = this.#b;
-    const { variables } = theme.get.current();
-
-    const resolved = !value
-      ? variables["--lf-icon-broken-image"]
-      : value.indexOf(CSS_VAR_PREFIX) > -1
-        ? variables[value]
-        : value;
-
-    if (this.#resolvedFor !== resolved) {
-      this.resolvedSpriteName = undefined;
-      this.#resolvedFor = resolved;
-      theme.get.sprite.hasIcon(resolved).then((exists) => {
-        if (this.#resolvedFor === resolved) {
-          this.resolvedSpriteName = exists
-            ? resolved
-            : variables["--lf-icon-broken-image"];
-        }
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
       });
-    }
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + resolvedFor
+   * - controller.set: Simple setters (error, isLoaded, resolvedSpriteName, resolvedFor, imageRef)
+   * - controller.computed: Derived predicates (isResourceUrl, resolvedSource)
+   * - controller.actions: Complex operations (resolveSprite, resetState)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    const effectiveName = this.resolvedSpriteName ?? resolved;
-
-    return (
-      <FIcon
-        framework={this.#framework}
-        icon={effectiveName as LfIconType}
-        wrapperClass={bemClass(image._, image.icon)}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-        uiState={this.lfUiState}
-      />
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+        resolvedFor: () => this.#resolvedFor,
+      },
+      // Setters - simple single-value assignments
+      {
+        error: (value: boolean) => {
+          this.error = value;
+        },
+        isLoaded: (value: boolean) => {
+          this.isLoaded = value;
+        },
+        resolvedSpriteName: (value: string | undefined) => {
+          this.resolvedSpriteName = value;
+        },
+        resolvedFor: (value: string | undefined) => {
+          this.#resolvedFor = value;
+        },
+        imageRef: (el: HTMLImageElement | SVGElement | null) => {
+          this.#img = el;
+        },
+      },
+      // Computed - derived predicates (from dedicated file)
+      prepImageComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepImageActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
-  }
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -372,8 +352,11 @@ export class LfImage implements LfImageInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
-    if (!this.#isResourceUrl() && this.lfValue) {
+    const { isResourceUrl } = this.#adapter.controller.computed;
+
+    if (!isResourceUrl() && this.lfValue) {
       const { theme } = this.#framework;
       this.isLoaded = true;
       theme.get.sprite.ids();
@@ -382,7 +365,7 @@ export class LfImage implements LfImageInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -397,17 +380,14 @@ export class LfImage implements LfImageInterface {
   }
   render() {
     const { debug, theme } = this.#framework;
-    const { bemClass } = theme;
 
-    const { image } = this.#b;
-    const { error, isLoaded, lfSizeX, lfSizeY, lfStyle, lfValue } = this;
+    const { lfSizeX, lfSizeY, lfStyle, lfValue } = this;
+    const { image } = this.#adapter.elements.jsx;
 
     if (!lfValue) {
       debug.logs.new(this, "Empty image.");
       return;
     }
-
-    const isUrl = this.#isResourceUrl();
 
     return (
       <Host>
@@ -419,33 +399,7 @@ export class LfImage implements LfImageInterface {
           }
           ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
-        <div id={this.#w}>
-          <div
-            class={bemClass(image._, null)}
-            data-lf={this.#lf.fadeIn}
-            onClick={(e) => {
-              this.onLfEvent(e, "click");
-            }}
-            part={this.#p.image}
-          >
-            {(() => {
-              // Error state - show broken image icon
-              if (error) {
-                return this.#prepSpriteIcon();
-              }
-              // URL-based image
-              if (isUrl) {
-                return this.#createImage();
-              }
-              // Sprite icon (non-URL value)
-              if (isLoaded) {
-                return this.#prepSpriteIcon(lfValue as LfThemeIconVariable);
-              }
-
-              return null;
-            })()}
-          </div>
-        </div>
+        <div id={this.#w}>{image()}</div>
       </Host>
     );
   }

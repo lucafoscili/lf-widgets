@@ -14,6 +14,16 @@ export const LF_DRAWER_DISPLAYS = ["dock", "slide"] as const;
 export const LF_DRAWER_EVENTS = ["close", "open", "ready", "unmount"] as const;
 //#endregion
 
+//#region IDs
+export const LF_DRAWER_IDS = {
+  drawer: {
+    content: "content",
+    drawer: "drawer",
+    wrapper: "wrapper",
+  },
+} as const;
+//#endregion
+
 //#region Parts
 export const LF_DRAWER_PARTS = {
   content: "content",

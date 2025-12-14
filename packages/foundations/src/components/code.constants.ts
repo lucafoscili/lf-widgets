@@ -13,6 +13,20 @@ export const LF_CODE_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the code component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_CODE_IDS = {
+  code: "code",
+  header: "header",
+  copy: "copy",
+  pre: "pre",
+  title: "title",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_CODE_EVENTS = ["ready", "unmount"] as const;
 //#endregion

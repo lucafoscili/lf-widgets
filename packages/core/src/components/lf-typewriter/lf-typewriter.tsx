@@ -1,12 +1,14 @@
 import {
   LF_STYLE_ID,
   LF_TYPEWRITER_BLOCKS,
+  LF_TYPEWRITER_IDS,
   LF_TYPEWRITER_PARTS,
   LF_TYPEWRITER_PROPS,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfThemeUISize,
+  LfTypewriterAdapter,
   LfTypewriterCursor,
   LfTypewriterElement,
   LfTypewriterEvent,
@@ -29,7 +31,11 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepTypewriterActions } from "./actions.typewriter";
+import { prepTypewriterComputed } from "./computed.typewriter";
+import { createAdapter } from "./lf-typewriter-adapter";
 
 /**
  * The typewriter component displays text with a typewriter effect.
@@ -147,8 +153,10 @@ export class LfTypewriter implements LfTypewriterInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfTypewriterAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TYPEWRITER_BLOCKS;
+  #ids = LF_TYPEWRITER_IDS;
   #p = LF_TYPEWRITER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -169,27 +177,18 @@ export class LfTypewriter implements LfTypewriterInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfTypewriterEventPayload>;
-
-  onLfEvent(e: Event | CustomEvent, eventType: LfTypewriterEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      originalEvent: e,
-      eventType,
-    });
-  }
   //#endregion
 
   //#region Watchers
   @Watch("lfValue")
   handleLfValueChange() {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
     if (this.lfUpdatable) {
       this.#initializeTexts();
-      this.#resetTyping();
+      this.#adapter.controller.actions.reset();
     }
   }
   //#endregion
@@ -233,7 +232,7 @@ export class LfTypewriter implements LfTypewriterInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
@@ -245,93 +244,80 @@ export class LfTypewriter implements LfTypewriterInterface {
 
     this.#texts = Array.isArray(lfValue) ? lfValue : [lfValue];
   }
-  #startTyping() {
-    const currentText = this.#texts[this.currentTextIndex] || "";
-
-    if (this.isDeleting) {
-      this.displayedText = currentText.substring(
-        0,
-        this.displayedText.length - 1,
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfTypewriterEvent,
+      detail?: Partial<LfTypewriterEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
       );
-    } else {
-      this.displayedText = currentText.substring(
-        0,
-        this.displayedText.length + 1,
-      );
-    }
 
-    if (!this.isDeleting && this.displayedText === currentText) {
-      this.#timeout = setTimeout(() => {
-        if (this.lfLoop) this.isDeleting = true;
-      }, this.lfPause);
-    } else if (this.isDeleting && this.displayedText === "") {
-      this.isDeleting = false;
-      this.currentTextIndex = (this.currentTextIndex + 1) % this.#texts.length;
-    } else {
-      const delay = this.isDeleting ? this.lfDeleteSpeed : this.lfSpeed;
-      this.#timeout = setTimeout(() => this.#startTyping(), delay);
-    }
-  }
-  #resetTyping() {
-    clearTimeout(this.#timeout);
-
-    if (this.displayedText) {
-      this.isDeleting = true;
-      this.#deleteText(() => {
-        this.#completeReset();
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
       });
-    } else {
-      this.#completeReset();
-    }
-  }
-  #deleteText(callback: () => void) {
-    if (this.displayedText.length > 0) {
-      this.displayedText = this.displayedText.slice(0, -1);
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (shouldShowCursor, currentText, texts)
+   * - controller.actions: Animation control operations (start, reset, deleteText, completeReset)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+    // Texts accessor - needed for computed/actions
+    const getTexts = () => this.#texts;
+    // Timeout accessors
+    const setTimeout_ = (timeout: NodeJS.Timeout | undefined) => {
+      this.#timeout = timeout;
+    };
+    const clearTimeout_ = () => {
+      clearTimeout(this.#timeout);
+    };
 
-      this.#timeout = setTimeout(() => {
-        this.#deleteText(callback);
-      }, this.lfDeleteSpeed);
-    } else {
-      callback();
-    }
-  }
-  #completeReset() {
-    this.isDeleting = false;
-    this.currentTextIndex = 0;
-    this.#startTyping();
-  }
-  #prepText() {
-    const { bemClass } = this.#framework.theme;
-
-    const { typewriter } = this.#b;
-    const { currentTextIndex, displayedText, isDeleting, lfCursor, lfTag } =
-      this;
-
-    const shouldShowCursor =
-      lfCursor === "enabled" ||
-      (lfCursor === "auto" &&
-        !isDeleting &&
-        displayedText !== this.#texts[currentTextIndex]);
-
-    const TagName = lfTag || "div";
-
-    return (
-      <div class={bemClass(typewriter._)} part={this.#p.typewriter}>
-        <TagName
-          class={bemClass(typewriter._, typewriter.text)}
-          part={this.#p.text}
-        >
-          <span>{displayedText || "\u00A0"}</span>
-          {shouldShowCursor && (
-            <span
-              class={bemClass(typewriter._, typewriter.cursor)}
-              part={this.#p.cursor}
-            ></span>
-          )}
-        </TagName>
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Computed - derived predicates (from dedicated file)
+      prepTypewriterComputed(getAdapter, getTexts),
+      // Actions - animation control operations (from dedicated file)
+      prepTypewriterActions(getAdapter, setTimeout_, clearTimeout_),
+      // Adapter accessor
+      getAdapter,
     );
-  }
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -342,13 +328,15 @@ export class LfTypewriter implements LfTypewriterInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
     this.#initializeTexts();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
-    requestAnimationFrame(async () => this.#startTyping());
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
+    requestAnimationFrame(async () => this.#adapter.controller.actions.start());
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -365,11 +353,12 @@ export class LfTypewriter implements LfTypewriterInterface {
     const { theme } = this.#framework;
 
     const { lfStyle } = this;
+    const { typewriter } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{theme.setLfStyle(this)}</style>}
-        <div id={this.#w}>{this.#prepText()}</div>
+        <div id={this.#w}>{typewriter()}</div>
       </Host>
     );
   }

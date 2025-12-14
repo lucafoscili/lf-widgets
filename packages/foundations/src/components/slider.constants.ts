@@ -23,6 +23,23 @@ export const LF_SLIDER_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the slider component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_SLIDER_IDS = {
+  formField: "form-field",
+  input: "input",
+  label: "label",
+  slider: "slider",
+  thumb: "thumb",
+  thumbUnderlay: "thumb-underlay",
+  track: "track",
+  value: "value",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_SLIDER_EVENTS = [
   "blur",

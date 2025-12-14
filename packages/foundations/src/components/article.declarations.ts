@@ -1,11 +1,31 @@
 import {
+  LfComponentAdapter,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
+  LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
+} from "../foundations/adapter.declarations";
+import {
   HTMLStencilElement,
   LfComponent,
   LfComponentClassProperties,
+  VNode,
 } from "../foundations/components.declarations";
-import { LfEventPayload } from "../foundations/events.declarations";
+import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
-import { LF_ARTICLE_EVENTS, LF_ARTICLE_TAGNAMES } from "./article.constants";
+import { LfThemeUISize } from "../framework/theme.declarations";
+import {
+  LF_ARTICLE_BLOCKS,
+  LF_ARTICLE_EVENTS,
+  LF_ARTICLE_IDS,
+  LF_ARTICLE_PARTS,
+  LF_ARTICLE_TAGNAMES,
+} from "./article.constants";
 
 //#region Class
 /**
@@ -13,13 +33,145 @@ import { LF_ARTICLE_EVENTS, LF_ARTICLE_TAGNAMES } from "./article.constants";
  */
 export interface LfArticleInterface
   extends LfComponent<"LfArticle">,
-    LfArticlePropsInterface {}
+    LfArticlePropsInterface {
+  /**
+   * Canonical event emitter exposed by the Stencil component instance.
+   * Used by adapter dispatchers to centralise event emission.
+   */
+  lfEvent: {
+    emit: (payload: LfArticleEventPayload) => void;
+  };
+}
 /**
  * DOM element type for the custom element registered as `lf-article`.
  */
 export interface LfArticleElement
   extends HTMLStencilElement,
     Omit<LfArticleInterface, LfComponentClassProperties> {}
+//#endregion
+
+//#region Adapter
+/**
+ * Adapter contract that wires `lf-article` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+ * - controller.set: Simple assignments (if any)
+ * - controller.computed: Derived predicates (hasNodes)
+ * - controller.actions: Complex operations (if any)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks for LfShape events
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+export interface LfArticleAdapter
+  extends LfComponentAdapter<
+    LfArticleInterface,
+    LfArticleEventPayload,
+    LfArticleAdapterHandlers,
+    LfArticleAdapterJsx,
+    LfArticleAdapterRefs,
+    LfArticleAdapterControllerGetters,
+    LfArticleAdapterControllerSetters,
+    LfArticleAdapterControllerComputed,
+    LfArticleAdapterControllerActions
+  > {
+  controller: {
+    get: LfArticleAdapterControllerGetters;
+    set?: LfArticleAdapterControllerSetters;
+    computed: LfArticleAdapterControllerComputed;
+    actions?: LfArticleAdapterControllerActions;
+  };
+  elements: {
+    jsx: LfArticleAdapterJsx;
+    refs: LfArticleAdapterRefs;
+  };
+  handlers: LfArticleAdapterHandlers;
+  dispatcher: LfArticleAdapterDispatcher;
+}
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ * Structure mirrors LF_ARTICLE_BLOCKS for DOM-driven alignment.
+ * All values are explicitly nullable per v4.0.0 Section 5.7.
+ */
+export interface LfArticleAdapterRefs extends LfComponentAdapterRefs {
+  articles: Map<string, HTMLElement>;
+  sections: Map<string, HTMLElement>;
+  paragraphs: Map<string, HTMLElement>;
+  contents: Map<string, HTMLElement>;
+}
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
+export interface LfArticleAdapterJsx extends LfComponentAdapterJsx {
+  /** Main article container factory */
+  article: () => VNode;
+}
+/**
+ * Handler map consumed by the adapter to react to framework events.
+ */
+export interface LfArticleAdapterHandlers extends LfComponentAdapterHandlers {
+  /** Forwards LfShape events through lf-event emission */
+  shape: (e: LfEvent) => Promise<void>;
+}
+/**
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
+export interface LfArticleAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfArticleInterface,
+    typeof LF_ARTICLE_BLOCKS,
+    typeof LF_ARTICLE_IDS,
+    typeof LF_ARTICLE_PARTS
+  > {}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfArticleAdapterControllerSetters
+  extends LfComponentAdapterSetters {}
+/**
+ * Computed values - derived predicates and builders.
+ * Pure functions that compute from current state without side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfArticleAdapterControllerComputed
+  extends LfComponentAdapterComputed {
+  /** Whether the dataset has any nodes to render */
+  hasNodes: () => boolean;
+}
+/**
+ * Complex multi-step actions.
+ * May have side effects, trigger re-renders, or batch state changes.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfArticleAdapterControllerActions
+  extends LfComponentAdapterActions {}
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfArticleAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfArticleEventPayload>;
+export type LfArticleAdapterDispatcherDetailOverrides = {
+  [E in LfArticleEvent]: E extends "lf-event"
+    ? LfArticleAdapterDispatchDetailBase & { originalEvent: LfEvent }
+    : E extends "ready" | "unmount"
+      ? Omit<LfArticleAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfArticleAdapterDispatchDetailBase;
+};
+export type LfArticleAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfArticleEventPayload,
+  LfArticleAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Dataset
@@ -88,5 +240,9 @@ export interface LfArticlePropsInterface {
    * layout or typography without touching the global theme helpers.
    */
   lfStyle?: string;
+  /**
+   * The size of the component.
+   */
+  lfUiSize?: LfThemeUISize;
 }
 //#endregion

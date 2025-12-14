@@ -10,6 +10,10 @@ export const LF_HEADER_BLOCKS = {
 export const LF_HEADER_EVENTS = ["ready", "unmount"] as const;
 //#endregion
 
+//#region Ids
+export const LF_HEADER_IDS = {} as const;
+//#endregion
+
 //#region Parts
 export const LF_HEADER_PARTS = {
   header: "header",

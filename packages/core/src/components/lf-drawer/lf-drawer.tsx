@@ -1,13 +1,12 @@
 import {
-  LF_ATTRIBUTES,
   LF_DRAWER_BLOCKS,
+  LF_DRAWER_IDS,
   LF_DRAWER_PARTS,
   LF_DRAWER_PROPS,
-  LF_DRAWER_SLOT,
-  LF_EFFECTS_FOCUSABLES,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
+  LfDrawerAdapter,
   LfDrawerDisplay,
   LfDrawerElement,
   LfDrawerEvent,
@@ -31,7 +30,11 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepDrawerActions } from "./actions.drawer";
+import { prepDrawerComputed } from "./computed.drawer";
+import { createAdapter } from "./lf-drawer-adapter";
 
 /**
  * Represents a drawer-style component that displays content on the screen,
@@ -154,13 +157,13 @@ export class LfDrawer implements LfDrawerInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfDrawerAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_DRAWER_BLOCKS;
-  #lf = LF_ATTRIBUTES;
+  #i = LF_DRAWER_IDS;
   #p = LF_DRAWER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #drawer: HTMLDivElement;
   #previouslyFocusedElement: HTMLElement | null = null;
   #resizeHandler: () => Promise<void>;
   #resizeTimer: number;
@@ -179,29 +182,13 @@ export class LfDrawer implements LfDrawerInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfDrawerEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfDrawerEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Listeners
   @Listen("keydown")
   listenKeydown(e: KeyboardEvent) {
-    if (!this.lfValue) return;
-
-    switch (e.key) {
-      case "Escape":
-        e.preventDefault();
-        this.close();
-        break;
-      case "Tab":
-        this.#handleFocusTrap(e);
-        break;
+    if (this.#adapter) {
+      this.#adapter.handlers.keyboard(e);
     }
   }
   //#endregion
@@ -209,27 +196,27 @@ export class LfDrawer implements LfDrawerInterface {
   //#region Watchers
   @Watch("lfDisplay")
   onLfDisplayChange(newVal: LfDrawerDisplay, oldVal: LfDrawerDisplay) {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
-    this.#handleBackdropChange(oldVal, newVal);
+    this.#adapter.controller.actions.handleBackdropChange(oldVal, newVal);
   }
   @Watch("lfResponsive")
   onLfResponsiveChange() {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
     if (this.lfResponsive > 0) {
-      this.#applyResponsiveMode();
+      this.#adapter.controller.actions.applyResponsiveMode();
       if (!this.#resizeHandler) {
         this.#resizeHandler = async () => {
           if (this.#resizeTimer) {
             clearTimeout(this.#resizeTimer);
           }
           this.#resizeTimer = window.setTimeout(() => {
-            this.#applyResponsiveMode();
+            this.#adapter.controller.actions.applyResponsiveMode();
             this.#resizeTimer = null;
           }, 200);
         };
@@ -253,20 +240,7 @@ export class LfDrawer implements LfDrawerInterface {
    */
   @Method()
   async close(): Promise<void> {
-    if (!this.lfValue) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      this.lfValue = false;
-      this.onLfEvent(new CustomEvent("close"), "close");
-      this.#framework.effects.backdrop.hide();
-
-      if (this.#previouslyFocusedElement) {
-        this.#previouslyFocusedElement.focus();
-        this.#previouslyFocusedElement = null;
-      }
-    });
+    this.#adapter.controller.actions.close();
   }
   /**
    * Fetches debug information of the component's current state.
@@ -298,31 +272,14 @@ export class LfDrawer implements LfDrawerInterface {
    */
   @Method()
   async isOpened(): Promise<boolean> {
-    return this.lfValue;
+    return this.#adapter.controller.computed.isOpen();
   }
   /**
    * Opens the drawer.
    */
   @Method()
   async open(): Promise<void> {
-    if (this.lfValue) {
-      return;
-    }
-
-    this.#previouslyFocusedElement = document.activeElement as HTMLElement;
-
-    requestAnimationFrame(() => {
-      this.lfValue = true;
-      this.onLfEvent(new CustomEvent("open"), "open");
-
-      if (this.lfDisplay === "slide") {
-        this.#framework.effects.backdrop.show(() => this.close());
-      }
-
-      requestAnimationFrame(() => {
-        this.#focusFirstElementInDrawer();
-      });
-    });
+    this.#adapter.controller.actions.open();
   }
   /**
    * This method is used to trigger a new render of the component.
@@ -339,11 +296,7 @@ export class LfDrawer implements LfDrawerInterface {
    */
   @Method()
   async toggle(): Promise<void> {
-    if (this.lfValue) {
-      this.close();
-    } else {
-      this.open();
-    }
+    this.#adapter.controller.actions.toggle();
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -353,86 +306,86 @@ export class LfDrawer implements LfDrawerInterface {
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
       this.#framework.effects.backdrop.hide();
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #applyResponsiveMode() {
-    if (this.lfResponsive <= 0) {
-      return;
-    }
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfDrawerEvent,
+      detail?: Partial<LfDrawerEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const oldVal = this.lfDisplay;
-    const newVal = window.innerWidth >= this.lfResponsive ? "dock" : "slide";
-    if (newVal !== oldVal) {
-      this.lfDisplay = newVal;
-      this.#handleBackdropChange(oldVal, newVal);
-    }
-  }
-  #handleBackdropChange(oldVal: LfDrawerDisplay, newVal: LfDrawerDisplay) {
-    if (!this.lfValue) {
-      return;
-    }
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
+   * - controller.computed: Derived predicates (isOpen, isResponsive, isSlide, isDock, isModal)
+   * - controller.actions: Complex operations (open, close, toggle, trapFocus, focusFirstElement)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    if (oldVal === "slide" && newVal === "dock") {
-      this.#framework.effects.backdrop.hide();
-    } else if (oldVal === "dock" && newVal === "slide") {
-      this.#framework.effects.backdrop.show(() => this.close());
-    }
-  }
-  #focusFirstElementInDrawer() {
-    if (!this.lfValue) {
-      return;
-    }
+    // Closure for previously focused element management
+    const setPreviouslyFocused = (el: HTMLElement | null) => {
+      this.#previouslyFocusedElement = el;
+    };
+    const getPreviouslyFocused = () => this.#previouslyFocusedElement;
 
-    if (!this.#drawer) {
-      return;
-    }
-
-    const focusable = this.#drawer.querySelector<HTMLElement>(
-      LF_EFFECTS_FOCUSABLES.join(","),
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility) + component-specific state reads
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b.drawer,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#i.drawer,
+          parts: () => this.#p,
+        }),
+        previouslyFocusedElement: () => this.#previouslyFocusedElement,
+      },
+      // Computed - derived predicates (from dedicated file)
+      prepDrawerComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepDrawerActions(getAdapter, setPreviouslyFocused, getPreviouslyFocused),
+      // Adapter accessor
+      getAdapter,
     );
-    if (focusable) {
-      focusable.focus();
-    } else {
-      this.#drawer.focus();
-    }
-  }
-  #handleFocusTrap(e: KeyboardEvent) {
-    if (!this.lfValue || !this.#drawer) {
-      return;
-    }
 
-    const focusableElements = Array.from(
-      this.#drawer.querySelectorAll<HTMLElement>(
-        LF_EFFECTS_FOCUSABLES.join(","),
-      ),
-    ).filter(
-      (el) =>
-        el.offsetWidth > 0 ||
-        el.offsetHeight > 0 ||
-        el === document.activeElement,
-    );
-
-    if (focusableElements.length === 0) {
-      e.preventDefault();
-      return;
-    }
-
-    const firstElem = focusableElements[0];
-    const lastElem = focusableElements[focusableElements.length - 1];
-
-    if (e.shiftKey && document.activeElement === firstElem) {
-      e.preventDefault();
-      lastElem.focus();
-    } else if (!e.shiftKey && document.activeElement === lastElem) {
-      e.preventDefault();
-      firstElem.focus();
-    }
-  }
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -444,14 +397,16 @@ export class LfDrawer implements LfDrawerInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
 
+    this.#initAdapter();
+
     if (this.lfResponsive > 0) {
-      this.#applyResponsiveMode();
+      this.#adapter.controller.actions.applyResponsiveMode();
       this.#resizeHandler = async () => {
         if (this.#resizeTimer) {
           clearTimeout(this.#resizeTimer);
         }
         this.#resizeTimer = window.setTimeout(() => {
-          this.#applyResponsiveMode();
+          this.#adapter.controller.actions.applyResponsiveMode();
           this.#resizeTimer = null;
         }, 200);
       };
@@ -461,7 +416,7 @@ export class LfDrawer implements LfDrawerInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -475,34 +430,25 @@ export class LfDrawer implements LfDrawerInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
-
-    const { drawer } = this.#b;
+    const { setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
-    const isModal = this.lfDisplay === "slide" && this.lfValue;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div
-          aria-modal={isModal}
           id={this.#w}
+          role="dialog"
+          aria-modal={
+            this.#adapter.controller.computed.isModal() ? "true" : null
+          }
           ref={(el) => {
             if (el) {
-              this.#drawer = el;
+              this.#adapter.elements.refs.drawer = el;
             }
           }}
-          role="dialog"
         >
-          <div class={bemClass(drawer._)} part={this.#p.drawer}>
-            <div
-              class={bemClass(drawer._, drawer.content)}
-              lf-data={this.#lf.fadeIn}
-              part={this.#p.content}
-            >
-              <slot name={LF_DRAWER_SLOT}></slot>
-            </div>
-          </div>
+          {this.#adapter.elements.jsx.drawer()}
         </div>
       </Host>
     );

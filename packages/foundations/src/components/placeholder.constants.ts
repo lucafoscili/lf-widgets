@@ -7,7 +7,23 @@ export const LF_PLACEHOLDER_BLOCKS = {
 //#endregion
 
 //#region Events
-export const LF_PLACEHOLDER_EVENTS = ["lf-event", "load", "ready", "unmount"] as const;
+export const LF_PLACEHOLDER_EVENTS = [
+  "lf-event",
+  "load",
+  "ready",
+  "unmount",
+] as const;
+//#endregion
+
+//#region IDs
+/**
+ * DOM element IDs used by the placeholder component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_PLACEHOLDER_IDS = {
+  icon: "icon",
+  placeholder: "placeholder",
+} as const;
 //#endregion
 
 //#region Parts

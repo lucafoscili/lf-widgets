@@ -20,9 +20,9 @@ The content of the header is customizable through slots.
 
 ## Events
 
-| Event             | Description | Type                                |
-| ----------------- | ----------- | ----------------------------------- |
-| `lf-header-event` |             | `CustomEvent<LfHeaderEventPayload>` |
+| Event             | Description                                                                                                                  | Type                                |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `lf-header-event` | Canonical event emitter exposed by the Stencil component instance. Used by adapter dispatchers to centralise event emission. | `CustomEvent<LfHeaderEventPayload>` |
 
 
 ## Methods

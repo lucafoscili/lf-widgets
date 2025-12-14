@@ -27,9 +27,9 @@ The spinner may be displayed as a bar or a spinner, and may include a progress b
 
 ## Events
 
-| Event              | Description | Type                                 |
-| ------------------ | ----------- | ------------------------------------ |
-| `lf-spinner-event` |             | `CustomEvent<LfSpinnerEventPayload>` |
+| Event              | Description                                                                                                                  | Type                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `lf-spinner-event` | Canonical event emitter exposed by the Stencil component instance. Used by adapter dispatchers to centralise event emission. | `CustomEvent<LfSpinnerEventPayload>` |
 
 
 ## Methods

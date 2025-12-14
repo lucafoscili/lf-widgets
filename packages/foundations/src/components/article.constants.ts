@@ -14,6 +14,10 @@ export const LF_ARTICLE_BLOCKS = {
 export const LF_ARTICLE_EVENTS = ["lf-event", "ready", "unmount"] as const;
 //#endregion
 
+//#region IDs
+export const LF_ARTICLE_IDS = {} as const;
+//#endregion
+
 //#region Parts
 export const LF_ARTICLE_PARTS = {
   article: "article",

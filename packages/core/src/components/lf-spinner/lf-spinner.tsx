@@ -1,9 +1,12 @@
 import {
+  LF_SPINNER_BLOCKS,
+  LF_SPINNER_IDS,
+  LF_SPINNER_PARTS,
   LF_SPINNER_PROPS,
   LF_STYLE_ID,
-  LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfSpinnerAdapter,
   LfSpinnerElement,
   LfSpinnerEvent,
   LfSpinnerEventPayload,
@@ -23,9 +26,11 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { LF_SPINNER_BARS } from "./helpers.bar";
-import { LF_SPINNER_WIDGETS } from "./helpers.widget";
+import { prepSpinnerActions } from "./actions.spinner";
+import { prepSpinnerComputed } from "./computed.spinner";
+import { createAdapter } from "./lf-spinner-adapter";
 
 /**
  * The spinner component displays a loading animation to indicate that a process is underway.
@@ -183,11 +188,16 @@ export class LfSpinner implements LfSpinnerInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfSpinnerAdapter;
   #framework: LfFrameworkInterface;
+  #b = LF_SPINNER_BLOCKS;
+  #ids = LF_SPINNER_IDS;
+  #p = LF_SPINNER_PARTS;
   #s = LF_STYLE_ID;
-  #w = LF_WRAPPER_ID;
-  #progressAnimationFrame: number;
-  #faderTimer?: number;
+  #animationState = {
+    progressAnimationFrame: null as number | null,
+    faderTimer: null as number | null,
+  };
   //#endregion
 
   //#region Watchers
@@ -195,29 +205,32 @@ export class LfSpinner implements LfSpinnerInterface {
   @Watch("lfFader")
   @Watch("lfFaderTimeout")
   onFaderChange() {
-    this.#scheduleFader();
+    if (this.#adapter) {
+      this.#adapter.controller.actions.scheduleFader();
+    }
   }
   @Watch("lfBarVariant")
   lfBarVariantChanged(newValue: boolean) {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
+    const { actions } = this.#adapter.controller;
+
     if (newValue && this.lfTimeout) {
-      this.#startProgressBar();
+      actions.startProgressBar();
     } else {
-      this.progress = 0;
-      cancelAnimationFrame(this.#progressAnimationFrame);
+      actions.cancelProgressBar();
     }
   }
   @Watch("lfTimeout")
   lfTimeoutChanged(newValue: number, oldValue: number) {
-    if (!this.#framework) {
+    if (!this.#framework || !this.#adapter) {
       return;
     }
 
     if (newValue !== oldValue && this.lfBarVariant) {
-      this.#startProgressBar();
+      this.#adapter.controller.actions.startProgressBar();
     }
   }
   //#endregion
@@ -230,14 +243,6 @@ export class LfSpinner implements LfSpinnerInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfSpinnerEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfSpinnerEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      originalEvent: e,
-      eventType,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -286,31 +291,76 @@ export class LfSpinner implements LfSpinnerInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #startProgressBar() {
-    this.progress = 0;
-    const startTime = Date.now();
-    const duration = this.lfTimeout;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfSpinnerEvent,
+      detail?: Partial<LfSpinnerEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const updateProgress = () => {
-      const elapsed = Date.now() - startTime;
-      this.progress = Math.min((elapsed / duration) * 100, 100);
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (isBarVariant, showFader, getConfig, etc.)
+   * - controller.actions: Complex operations (startProgressBar, scheduleFader, etc.)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-      if (this.progress < 100) {
-        this.#progressAnimationFrame = requestAnimationFrame(updateProgress);
-      } else {
-        cancelAnimationFrame(this.#progressAnimationFrame);
-      }
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepSpinnerComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepSpinnerActions(getAdapter, this.#animationState),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
     };
-
-    this.#progressAnimationFrame = requestAnimationFrame(updateProgress);
-  }
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -321,17 +371,19 @@ export class LfSpinner implements LfSpinnerInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
     const { lfBarVariant, lfTimeout } = this;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
 
     if (lfBarVariant && lfTimeout) {
-      this.#startProgressBar();
+      this.#adapter.controller.actions.startProgressBar();
     }
   }
   componentWillRender() {
@@ -344,79 +396,33 @@ export class LfSpinner implements LfSpinnerInterface {
 
     info.update(this, "did-render");
   }
-  #scheduleFader() {
-    if (this.#faderTimer) {
-      clearTimeout(this.#faderTimer);
-      this.#faderTimer = undefined;
-    }
-
-    this.bigWait = false;
-    if (this.lfFader && this.lfActive) {
-      this.#faderTimer = window.setTimeout(() => {
-        this.bigWait = true;
-      }, this.lfFaderTimeout);
-    }
-  }
   render() {
     const { setLfStyle } = this.#framework.theme;
 
-    const {
-      bigWait,
-      lfBarVariant,
-      lfDimensions,
-      lfFullScreen,
-      lfLayout,
-      lfStyle,
-      progress,
-    } = this;
+    const { lfBarVariant, lfDimensions, lfFullScreen, lfStyle } = this;
+    const { spinner } = this.#adapter.elements.jsx;
 
-    const elStyle: Record<string, string | undefined> = {
+    // Host styles - applied directly to the custom element
+    const hostStyle: Record<string, string | undefined> = {
+      fontSize: lfDimensions || (lfBarVariant ? "0.25em" : ".875em"),
       height: lfFullScreen ? undefined : "100%",
       width: lfFullScreen ? undefined : "100%",
-      fontSize: lfDimensions || (lfBarVariant ? "0.25em" : ".875em"),
     };
-
-    const config = lfBarVariant
-      ? LF_SPINNER_BARS[lfLayout]
-      : LF_SPINNER_WIDGETS[lfLayout];
-
-    const wrapperClass = lfBarVariant
-      ? "loading-wrapper-master-bar"
-      : "loading-wrapper-master-spinner";
-
-    const masterClass = {
-      "spinner-version": !lfBarVariant,
-      "loading-wrapper-big-wait": bigWait,
-    };
-
-    const spinnerClass =
-      config?.className || `spinner-${lfBarVariant ? "bar-v" : "v"}${lfLayout}`;
-    const spinnerEl = config?.elements(progress) || [];
 
     return (
-      <Host style={elStyle}>
+      <Host style={hostStyle}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w} style={elStyle}>
-          <div
-            id="loading-wrapper-master"
-            class={{
-              ...masterClass,
-            }}
-            style={elStyle}
-          >
-            <div id={wrapperClass} style={elStyle}>
-              <div class={spinnerClass}>{spinnerEl}</div>
-            </div>
-          </div>
-        </div>
+        {spinner()}
       </Host>
     );
   }
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
-    cancelAnimationFrame(this.#progressAnimationFrame);
-    if (this.#faderTimer) {
-      clearTimeout(this.#faderTimer);
+
+    if (this.#adapter) {
+      const { actions } = this.#adapter.controller;
+      actions.cancelProgressBar();
+      actions.clearFaderTimer();
     }
   }
 }

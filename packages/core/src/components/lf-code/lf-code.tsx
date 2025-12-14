@@ -1,11 +1,11 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_CODE_BLOCKS,
+  LF_CODE_IDS,
   LF_CODE_PARTS,
   LF_CODE_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfCodeAdapter,
   LfCodeElement,
   LfCodeEvent,
   LfCodeEventPayload,
@@ -29,7 +29,11 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepCodeActions } from "./actions.code";
+import { prepCodeComputed } from "./computed.code";
+import { createAdapter } from "./lf-code-adapter";
 
 /**
  * The code component displays a snippet of code in a styled container with
@@ -217,14 +221,13 @@ export class LfCode implements LfCodeInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfCodeAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_CODE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_CODE_IDS;
   #p = LF_CODE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #el: HTMLPreElement | HTMLDivElement;
   //#endregion
 
   //#region Events
@@ -240,14 +243,6 @@ export class LfCode implements LfCodeInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfCodeEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfCodeEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Watchers
@@ -312,102 +307,76 @@ export class LfCode implements LfCodeInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {});
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #format(value: string) {
-    const { stringify } = this.#framework.data.cell;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfCodeEvent, detail?: Partial<LfCodeEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    if (typeof value === "string" && /^[\{\}]\s*$/i.test(value)) {
-      return value.trim();
-    } else if (this.#isJson(value)) {
-      const parsed = JSON.parse(value);
-      return JSON.stringify(parsed, null, 2);
-    } else {
-      return stringify(value);
-    }
-  }
-  #isObjectLike(
-    obj: unknown,
-  ): obj is Record<string | number | symbol, unknown> {
-    return typeof obj === "object" && obj !== null;
-  }
-  #isDictionary(
-    obj: unknown,
-  ): obj is Record<string | number | symbol, unknown> {
-    return (
-      this.#isObjectLike(obj) &&
-      Object.values(obj).every((value) => value != null)
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived values (formattedCode, shouldPreserveSpace)
+   * - controller.actions: Complex operations (highlight, copyToClipboard, loadLanguage)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived values (from dedicated file)
+      prepCodeComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepCodeActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
-  }
-  #isJson(value: string | Record<string, unknown>) {
-    return (
-      this.lfLanguage?.toLowerCase() === "json" || this.#isDictionary(value)
-    );
-  }
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   #updateValue() {
-    const { lfFormat, lfValue } = this;
-
-    this.value = lfFormat ? this.#format(lfValue) : lfValue;
-  }
-  #prepHeader() {
-    const { bemClass, get } = this.#framework.theme;
-    const {
-      "--lf-icon-copy": copy,
-      "--lf-icon-copy-ok": copyOk,
-      "--lf-icon-warning": warning,
-    } = get.current().variables;
-
-    const { code } = this.#b;
-    const { lfLanguage, lfShowCopy, lfValue } = this;
-
-    return (
-      <div
-        class={bemClass(code.header._, null, {
-          sticky: this.lfStickyHeader,
-        })}
-        data-lf={this.#lf[this.lfUiState]}
-        part={this.#p.header}
-      >
-        <span
-          class={bemClass(code.header._, code.header.title)}
-          part={this.#p.title}
-        >
-          {lfLanguage}
-        </span>
-        {lfShowCopy && (
-          <lf-button
-            class={bemClass(code.header._, code.header.copy)}
-            data-cy={this.#cy.button}
-            lfIcon={copy}
-            lfLabel="Copy"
-            lfStretchY={true}
-            lfStyling="flat"
-            lfUiSize={this.lfUiSize}
-            lfUiState={this.lfUiState}
-            onLf-button-event={(e) => {
-              const { comp, eventType } = e.detail;
-              switch (eventType) {
-                case "click":
-                  try {
-                    navigator.clipboard.writeText(lfValue);
-                    comp.setMessage("Copied!", copyOk);
-                  } catch (error) {
-                    comp.setMessage("Failed...", warning);
-                  }
-
-                  break;
-              }
-            }}
-            part={this.#p.copy}
-          ></lf-button>
-        )}
-      </div>
-    );
+    const { formattedCode } = this.#adapter.controller.computed;
+    this.value = formattedCode();
   }
   //#endregion
 
@@ -419,17 +388,18 @@ export class LfCode implements LfCodeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
     await this.loadLanguage();
     this.#updateValue();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready", {});
     info.update(this, "did-load");
   }
   componentWillUpdate() {
-    this.value = this.#format(this.lfValue);
+    this.#updateValue();
   }
   componentWillRender() {
     const { info } = this.#framework.debug;
@@ -438,59 +408,21 @@ export class LfCode implements LfCodeInterface {
   }
   componentDidRender() {
     const { info } = this.#framework.debug;
-    const { syntax } = this.#framework;
+    const { highlight } = this.#adapter.controller.actions;
 
-    if (this.#el) {
-      syntax.highlightElement(this.#el);
-    }
+    highlight();
 
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
-
-    const { code } = this.#b;
-    const { lfLanguage, lfPreserveSpaces, lfStyle } = this;
-
-    const isPreserveSpaceMissing = !!(
-      lfPreserveSpaces !== true && lfPreserveSpaces !== false
-    );
-    const lowerCaseLanguage = lfLanguage.toLowerCase();
-    const isLikelyTextual =
-      lowerCaseLanguage === "css" ||
-      lowerCaseLanguage === "doc" ||
-      lowerCaseLanguage === "markdown" ||
-      lowerCaseLanguage === "plaintext" ||
-      lowerCaseLanguage === "text" ||
-      lowerCaseLanguage === "";
-    const shouldPreserveSpace =
-      lfPreserveSpaces || (isPreserveSpaceMissing && !isLikelyTextual);
-    const TagName = shouldPreserveSpace ? "pre" : "div";
+    const { setLfStyle } = this.#framework.theme;
+    const { code } = this.#adapter.elements.jsx;
+    const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div
-            class={bemClass(code._, null, { "has-header": this.lfShowHeader })}
-            part={this.#p.code}
-          >
-            {this.lfShowHeader && this.#prepHeader()}
-            <TagName
-              class={`language-${lfLanguage} ${shouldPreserveSpace ? "" : "body"}`}
-              data-lf={this.lfFadeIn && this.#lf.fadeIn}
-              key={this.value}
-              part={this.#p.prism}
-              ref={(el) => {
-                if (el) {
-                  this.#el = el;
-                }
-              }}
-            >
-              {shouldPreserveSpace ? <code>{this.value}</code> : this.value}
-            </TagName>
-          </div>
-        </div>
+        <div id={this.#w}>{code()}</div>
       </Host>
     );
   }

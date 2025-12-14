@@ -1,14 +1,14 @@
 import {
-  LF_ATTRIBUTES,
   LF_PROGRESSBAR_BLOCKS,
   LF_PROGRESSBAR_CSS_VARIABLES,
+  LF_PROGRESSBAR_IDS,
   LF_PROGRESSBAR_PARTS,
   LF_PROGRESSBAR_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfIconType,
+  LfProgressbarAdapter,
   LfProgressbarElement,
   LfProgressbarEvent,
   LfProgressbarEventPayload,
@@ -28,10 +28,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepProgressbarActions } from "./actions.progressbar";
+import { prepProgressbarComputed } from "./computed.progressbar";
+import { createAdapter } from "./lf-progressbar-adapter";
 
 /**
  * A progress bar component that displays the progress of a task or process.
@@ -188,9 +190,10 @@ export class LfProgressbar implements LfProgressbarInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfProgressbarAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_PROGRESSBAR_BLOCKS;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_PROGRESSBAR_IDS;
   #p = LF_PROGRESSBAR_PARTS;
   #s = LF_STYLE_ID;
   #v = LF_PROGRESSBAR_CSS_VARIABLES;
@@ -210,14 +213,6 @@ export class LfProgressbar implements LfProgressbarInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfProgressbarEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfProgressbarEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -259,13 +254,82 @@ export class LfProgressbar implements LfProgressbarInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {});
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfProgressbarEvent,
+      detail?: Partial<LfProgressbarEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: Simple setters (empty for display component)
+   * - controller.computed: Derived predicates (empty for display component)
+   * - controller.actions: Complex operations (empty for display component)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks (empty for display component)
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Setters - empty for display component
+      {},
+      // Computed - empty for display component
+      prepProgressbarComputed(),
+      // Actions - empty for display component
+      prepProgressbarActions(),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   #normalizePercent(value: number): number {
     if (
       typeof value !== "number" ||
@@ -282,113 +346,6 @@ export class LfProgressbar implements LfProgressbarInterface {
     }
     return value;
   }
-
-  #prepIcon() {
-    const { bemClass } = this.#framework.theme;
-
-    const { progressbar } = this.#b;
-    const { lfIcon } = this;
-
-    return (
-      <div
-        class={bemClass(progressbar._, progressbar.icon)}
-        part={this.#p.icon}
-      >
-        <FIcon framework={this.#framework} icon={lfIcon as LfIconType} />
-      </div>
-    );
-  }
-  #prepLabel() {
-    const { bemClass } = this.#framework.theme;
-
-    const { progressbar } = this.#b;
-    const { lfIcon, lfLabel, lfValue } = this;
-
-    const label: VNode[] = lfLabel
-      ? [
-          <div
-            class={bemClass(progressbar._, progressbar.text)}
-            part={this.#p.text}
-          >
-            {lfLabel}
-          </div>,
-        ]
-      : [
-          <div
-            class={bemClass(progressbar._, progressbar.text)}
-            part={this.#p.text}
-          >
-            {lfValue}
-          </div>,
-          <div
-            class={bemClass(progressbar._, progressbar.mu)}
-            part={this.#p.mu}
-          >
-            %
-          </div>,
-        ];
-    return (
-      <div class={bemClass(progressbar._, progressbar.label)}>
-        {lfIcon && this.#prepIcon()}
-        {label}
-      </div>
-    );
-  }
-  #prepProgressBar() {
-    const { bemClass } = this.#framework.theme;
-
-    const { progressbar } = this.#b;
-
-    return (
-      <div
-        class={bemClass(progressbar._)}
-        data-lf={this.#lf[this.lfUiState]}
-        part={this.#p.progressbar}
-      >
-        <div
-          class={bemClass(progressbar._, progressbar.percentage)}
-          part={this.#p.percentage}
-        >
-          {!this.lfCenteredLabel && this.#prepLabel()}
-        </div>
-        {this.lfCenteredLabel && this.#prepLabel()}
-      </div>
-    );
-  }
-  #prepRadialBar() {
-    const { bemClass } = this.#framework.theme;
-
-    const { pie, progressbar } = this.#b;
-
-    return (
-      <div
-        class={bemClass(progressbar._)}
-        data-lf={this.#lf[this.lfUiState]}
-        part={this.#p.progressbar}
-      >
-        {this.#prepLabel()}
-        <div
-          class={bemClass(pie._, null, {
-            empty: this.lfValue <= 50,
-            full: this.lfValue > 50,
-            "has-value": Boolean(this.lfValue),
-          })}
-        >
-          <div
-            class={bemClass(pie._, pie.halfCircle, {
-              left: true,
-            })}
-          ></div>
-          <div
-            class={bemClass(pie._, pie.halfCircle, {
-              right: true,
-            })}
-          ></div>
-        </div>
-        <div class={bemClass(pie._, pie.track)} part={this.#p.track}></div>
-      </div>
-    );
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -399,11 +356,13 @@ export class LfProgressbar implements LfProgressbarInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {});
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -424,7 +383,8 @@ export class LfProgressbar implements LfProgressbarInterface {
   render() {
     const { theme } = this.#framework;
 
-    const { lfIsRadial, lfStyle, lfValue } = this;
+    const { lfStyle, lfValue } = this;
+    const { progressbar } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -436,9 +396,7 @@ export class LfProgressbar implements LfProgressbarInterface {
                 }
                 ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
-        <div id={this.#w}>
-          {lfIsRadial ? this.#prepRadialBar() : this.#prepProgressBar()}
-        </div>
+        <div id={this.#w}>{progressbar()}</div>
       </Host>
     );
   }

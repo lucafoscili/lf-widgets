@@ -11,6 +11,14 @@ export const LF_SPLASH_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the splash component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_SPLASH_IDS = {} as const;
+//#endregion
+
 //#region Events
 export const LF_SPLASH_EVENTS = ["ready", "unmount"] as const;
 //#endregion

@@ -26,6 +26,23 @@ export const LF_PHOTOFRAME_EVENTS = [
 ] as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the photoframe component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_PHOTOFRAME_IDS = {
+  overlay: "overlay",
+  content: "content",
+  description: "description",
+  icon: "icon",
+  title: "title",
+  photoframe: "photoframe",
+  image: "image",
+  placeholder: "placeholder",
+} as const;
+//#endregion
+
 //#region Orientation
 export const LF_PHOTOFRAME_ORIENTATION = [
   "",

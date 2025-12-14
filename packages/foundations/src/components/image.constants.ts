@@ -14,6 +14,18 @@ export const LF_IMAGE_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the image component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_IMAGE_IDS = {
+  image: "image",
+  icon: "icon",
+  img: "img",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_IMAGE_EVENTS = [
   "click",

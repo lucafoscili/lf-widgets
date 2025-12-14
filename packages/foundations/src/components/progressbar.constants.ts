@@ -25,6 +25,14 @@ export const LF_PROGRESSBAR_BLOCKS = {
 export const LF_PROGRESSBAR_EVENTS = ["ready", "unmount"] as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the progressbar component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_PROGRESSBAR_IDS = {} as const;
+//#endregion
+
 //#region Parts
 export const LF_PROGRESSBAR_PARTS = {
   icon: "icon",

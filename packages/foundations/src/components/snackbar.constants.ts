@@ -20,6 +20,22 @@ export const LF_SNACKBAR_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the snackbar component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_SNACKBAR_IDS = {
+  actionButton: "action-button",
+  actions: "actions",
+  closeButton: "close-button",
+  content: "content",
+  icon: "icon",
+  message: "message",
+  snackbar: "snackbar",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_SNACKBAR_EVENTS = [
   "action",

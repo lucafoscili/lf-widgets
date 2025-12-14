@@ -1,6 +1,11 @@
 import { LfTypewriterPropsInterface } from "./typewriter.declarations";
 
 //#region Blocks
+/**
+ * BEM block structure for the typewriter component.
+ * Maps directly to CSS classes and DOM refs.
+ * @see Section 6.3 of 4_0_0_REFACTORING.md
+ */
 export const LF_TYPEWRITER_BLOCKS = {
   typewriter: {
     _: "typewriter",
@@ -16,6 +21,18 @@ export const LF_TYPEWRITER_CURSORS = ["enabled", "disabled", "auto"] as const;
 
 //#region Events
 export const LF_TYPEWRITER_EVENTS = ["ready", "unmount"] as const;
+//#endregion
+
+//#region IDs
+/**
+ * DOM element IDs used by the typewriter component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_TYPEWRITER_IDS = {
+  cursor: "cursor",
+  text: "text",
+  typewriter: "typewriter",
+} as const;
 //#endregion
 
 //#region Parts

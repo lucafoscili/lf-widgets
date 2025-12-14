@@ -1,6 +1,6 @@
 import {
-  LF_ATTRIBUTES,
   LF_PLACEHOLDER_BLOCKS,
+  LF_PLACEHOLDER_IDS,
   LF_PLACEHOLDER_PARTS,
   LF_PLACEHOLDER_PROPS,
   LF_STYLE_ID,
@@ -8,10 +8,9 @@ import {
   LfComponentName,
   LfComponentProps,
   LfComponentRootElement,
-  LfComponentTag,
   LfDebugLifecycleInfo,
-  LfEvent,
   LfFrameworkInterface,
+  LfPlaceholderAdapter,
   LfPlaceholderElement,
   LfPlaceholderEvent,
   LfPlaceholderEventPayload,
@@ -31,10 +30,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepPlaceholderActions } from "./actions.placeholder";
+import { prepPlaceholderComputed } from "./computed.placeholder";
+import { createAdapter } from "./lf-placeholder-adapter";
 
 /**
  * Represents a placeholder loading component that renders a placeholder until the main component is loaded.
@@ -148,14 +149,14 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfPlaceholderAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_PLACEHOLDER_BLOCKS;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_PLACEHOLDER_IDS;
   #p = LF_PLACEHOLDER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver = null;
-  #placeholderComponent: LfComponentRootElement = null;
   #placeholderComponentLoaded = false;
   //#endregion
 
@@ -172,14 +173,6 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfPlaceholderEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfPlaceholderEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      originalEvent: e,
-      eventType,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -189,7 +182,7 @@ export class LfPlaceholder implements LfPlaceholderInterface {
    */
   @Method()
   async getComponent(): Promise<LfComponentRootElement> {
-    return this.#placeholderComponent;
+    return this.#adapter?.elements.refs.component;
   }
   /**
    * Fetches debug information of the component's current state.
@@ -229,13 +222,77 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfPlaceholderEvent,
+      detail?: Partial<LfPlaceholderEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (shouldRender)
+   * - controller.actions: Complex operations (triggerLoad)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepPlaceholderComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepPlaceholderActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   #setObserver(): void {
     const { debug } = this.#framework;
 
@@ -269,13 +326,14 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
     this.#setObserver();
     this.#intObserver.observe(this.rootElement);
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -286,65 +344,24 @@ export class LfPlaceholder implements LfPlaceholderInterface {
   componentDidRender() {
     const { info } = this.#framework.debug;
 
-    if (this.#placeholderComponent && !this.#placeholderComponentLoaded) {
+    const { component } = this.#adapter.elements.refs;
+    if (component && !this.#placeholderComponentLoaded) {
       this.#placeholderComponentLoaded = true;
-      this.onLfEvent(new CustomEvent("load"), "load");
+      this.#adapter.dispatcher.emit("load");
     }
     info.update(this, "did-render");
   }
   render() {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { theme } = this.#framework;
+    const { setLfStyle } = theme;
 
-    const { placeholder } = this.#b;
-    const { isInViewport, lfValue, lfProps, lfTrigger, lfIcon, lfStyle } = this;
-
-    let content: VNode;
-
-    const shouldRender = Boolean(
-      (lfTrigger === "viewport" && isInViewport) ||
-        (lfTrigger === "props" && lfProps) ||
-        (lfTrigger === "both" && lfProps && isInViewport),
-    );
-
-    if (shouldRender) {
-      const name = lfValue.toLowerCase().replace("lf", "");
-      const evDispatcher = {
-        [`onLf-${name}-event`]: (e: LfEvent) => {
-          this.onLfEvent(e, "lf-event");
-        },
-      };
-      const Tag = ("lf-" + name) as LfComponentTag<typeof lfValue>;
-      content = (
-        <Tag
-          {...(sanitizeProps(lfProps, lfValue) as any)}
-          {...evDispatcher}
-          data-lf={LF_ATTRIBUTES.fadeIn}
-          ref={(el: LfComponentRootElement) =>
-            (this.#placeholderComponent = el)
-          }
-        ></Tag>
-      );
-    } else if (lfIcon) {
-      content = (
-        <div
-          class={bemClass(placeholder._, placeholder.icon)}
-          data-lf={this.#lf.fadeIn}
-          part={this.#p.icon}
-        >
-          <FIcon framework={this.#framework} icon={lfIcon} />
-        </div>
-      );
-    }
+    const { lfStyle } = this;
+    const { placeholder } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div class={bemClass(placeholder._)} part={this.#p.placeholder}>
-            {content}
-          </div>
-        </div>
+        <div id={this.#w}>{placeholder()}</div>
       </Host>
     );
   }

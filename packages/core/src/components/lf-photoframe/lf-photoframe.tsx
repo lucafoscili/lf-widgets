@@ -1,6 +1,6 @@
 import {
-  CY_ATTRIBUTES,
   LF_PHOTOFRAME_BLOCKS,
+  LF_PHOTOFRAME_IDS,
   LF_PHOTOFRAME_PARTS,
   LF_PHOTOFRAME_PROPS,
   LF_STYLE_ID,
@@ -8,6 +8,7 @@ import {
   LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
+  LfPhotoframeAdapter,
   LfPhotoframeElement,
   LfPhotoframeEvent,
   LfPhotoframeEventPayload,
@@ -27,9 +28,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepPhotoframeActions } from "./actions.photoframe";
+import { prepPhotoframeComputed } from "./computed.photoframe";
+import { createAdapter } from "./lf-photoframe-adapter";
 
 /**
  * Represents an image component that displays a photo or graphic.
@@ -136,14 +140,14 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfPhotoframeAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_PHOTOFRAME_BLOCKS;
-  #cy = CY_ATTRIBUTES;
+  #ids = LF_PHOTOFRAME_IDS;
   #p = LF_PHOTOFRAME_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #intObserver: IntersectionObserver;
-  #placeholder: HTMLImageElement;
   //#endregion
 
   //#region Events
@@ -159,32 +163,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfPhotoframeEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfPhotoframeEvent,
-    isPlaceholder = false,
-  ) {
-    switch (eventType) {
-      case "load":
-        if (isPlaceholder) {
-          if (this.#isLandscape(this.#placeholder)) {
-            this.imageOrientation = "horizontal";
-          } else {
-            this.imageOrientation = "vertical";
-          }
-        } else {
-          this.isReady = true;
-        }
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      originalEvent: e,
-      eventType,
-      isPlaceholder,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -226,72 +204,77 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {});
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #isLandscape(image: HTMLImageElement) {
-    return Boolean(image.naturalWidth > image.naturalHeight);
-  }
-  #prepOverlay = (): VNode => {
-    const { lfOverlay } = this;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfPhotoframeEvent,
+      detail?: Partial<LfPhotoframeEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    if (!lfOverlay || typeof lfOverlay !== "object") {
-      return null;
-    }
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        isPlaceholder: detail?.isPlaceholder,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (isInViewport, showPlaceholder, isReady, shouldReplace)
+   * - controller.actions: Complex operations (triggerLoad)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    const { bemClass } = this.#framework.theme;
-
-    const { overlay } = this.#b;
-    const { description, hideOnClick, icon, title } = lfOverlay;
-
-    return (
-      <div
-        class={bemClass(overlay._, null, {
-          "has-actions": hideOnClick,
-        })}
-        onClick={
-          hideOnClick
-            ? (e) => {
-                this.onLfEvent(e, "overlay");
-                this.lfOverlay = null;
-              }
-            : undefined
-        }
-        part={this.#p.overlay}
-      >
-        <div class={bemClass(overlay._, overlay.content)}>
-          {icon && (
-            <lf-image
-              class={bemClass(overlay._, overlay.icon)}
-              lfSizeX="3em"
-              lfSizeY="3em"
-              lfValue={icon}
-              part={this.#p.icon}
-            ></lf-image>
-          )}
-          {title && (
-            <div
-              class={bemClass(overlay._, overlay.title)}
-              part={this.#p.title}
-            >
-              {title}
-            </div>
-          )}
-          {description && (
-            <div
-              class={bemClass(overlay._, overlay.description)}
-              part={this.#p.description}
-            >
-              {description}
-            </div>
-          )}
-        </div>
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepPhotoframeComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepPhotoframeActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   #setObserver() {
     this.#intObserver = new IntersectionObserver(
@@ -312,33 +295,6 @@ export class LfPhotoframe implements LfPhotoframeInterface {
       },
     );
   }
-  #waitForStableConnection(stableDuration: number): Promise<void> {
-    return new Promise((resolve) => {
-      let stableStart: number | null = null;
-
-      const check = () => {
-        if (this.rootElement.isConnected) {
-          if (stableStart === null) {
-            stableStart = performance.now();
-          } else if (performance.now() - stableStart >= stableDuration) {
-            resolve();
-            return;
-          }
-        } else {
-          stableStart = null;
-        }
-        requestAnimationFrame(check);
-      };
-
-      check();
-    });
-  }
-  #debounceLoadEvent(e: Event, isPlaceholder: boolean, stableDuration = 100) {
-    // Wait until the element has been stably connected for the specified duration
-    this.#waitForStableConnection(stableDuration).then(() => {
-      this.onLfEvent(e, "load", isPlaceholder);
-    });
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -350,13 +306,16 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
     this.#setObserver();
     this.#intObserver?.observe(this.rootElement);
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {});
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -370,52 +329,23 @@ export class LfPhotoframe implements LfPhotoframeInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { theme } = this.#framework;
+    const { setLfStyle, bemClass } = theme;
 
-    const { photoframe } = this.#b;
-    const { isInViewport, isReady, lfPlaceholder, lfStyle, lfValue } = this;
-
-    const replace = Boolean(isInViewport && isReady);
+    const { lfStyle, imageOrientation } = this;
+    const { overlay, photoframe } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div
-          class={bemClass(photoframe._, null, {
-            [this.imageOrientation]: this.imageOrientation && true,
-          })}
           id={this.#w}
+          class={bemClass(this.#b.photoframe._, null, {
+            [imageOrientation]: imageOrientation && true,
+          })}
         >
-          {this.#prepOverlay()}
-          <img
-            class={bemClass(photoframe._, photoframe.placeholder, {
-              loaded: Boolean(this.imageOrientation),
-              hidden: replace,
-            })}
-            data-cy={this.#cy.image}
-            onLoad={(e) => {
-              this.#debounceLoadEvent(e, true);
-            }}
-            part={this.#p.placeholder}
-            ref={(el) => {
-              if (el) this.#placeholder = el;
-            }}
-            {...sanitizeProps(lfPlaceholder)}
-          ></img>
-          {isInViewport && (
-            <img
-              class={bemClass(photoframe._, photoframe.image, {
-                active: replace,
-              })}
-              data-cy={this.#cy.image}
-              onLoad={(e) => {
-                this.#debounceLoadEvent(e, false);
-              }}
-              part={this.#p.image}
-              {...sanitizeProps(lfValue)}
-            ></img>
-          )}
+          {overlay()}
+          {photoframe()}
         </div>
       </Host>
     );

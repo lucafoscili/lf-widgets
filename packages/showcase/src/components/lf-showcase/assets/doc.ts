@@ -485,7 +485,7 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "lfSpinnerProps",
         docs: "Sets the props for the internal lf-spinner component.",
-        type: "{ getProgress?: () => Promise<number>; rootElement?: LfSpinnerElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfActive?: boolean; lfBarVariant?: boolean; lfDimensions?: string; lfFader?: boolean; lfFaderTimeout?: number; lfFullScreen?: boolean; lfLayout?: number; lfTimeout?: number; }",
+        type: "{ lfEvent?: { emit: (payload: LfSpinnerEventPayload) => void; }; bigWait?: boolean; progress?: number; getProgress?: () => Promise<number>; rootElement?: LfSpinnerElement; debugInfo?: LfDebugLifecycleInfo; getDebugInfo?: () => Promise<LfDebugLifecycleInfo>; getProps?: (descriptions?: boolean) => Promise<LfComponentPropsFor<LfComponentName>>; lfStyle?: string; refresh?: () => Promise<void>; unmount?: (ms?: number) => Promise<void>; lfActive?: boolean; lfBarVariant?: boolean; lfDimensions?: string; lfFader?: boolean; lfFaderTimeout?: number; lfFullScreen?: boolean; lfLayout?: number; lfTimeout?: number; }",
       },
       {
         name: "lfStyle",

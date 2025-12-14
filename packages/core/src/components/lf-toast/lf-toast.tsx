@@ -3,15 +3,16 @@ import {
   LF_STYLE_ID,
   LF_TOAST_BLOCKS,
   LF_TOAST_CSS_VARIABLES,
+  LF_TOAST_IDS,
   LF_TOAST_PARTS,
   LF_TOAST_PROPS,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfIconType,
   LfThemeIcon,
   LfThemeUISize,
   LfThemeUIState,
+  LfToastAdapter,
   LfToastCloseCallback,
   LfToastElement,
   LfToastEvent,
@@ -30,10 +31,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepToastActions } from "./actions.toast";
+import { prepToastComputed } from "./computed.toast";
+import { createAdapter } from "./lf-toast-adapter";
 
 /**
  * The toast component displays a temporary message to the user.
@@ -181,8 +184,10 @@ export class LfToast implements LfToastInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfToastAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_TOAST_BLOCKS;
+  #ids = LF_TOAST_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_TOAST_PARTS;
   #s = LF_STYLE_ID;
@@ -203,14 +208,6 @@ export class LfToast implements LfToastInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfToastEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfToastEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -252,32 +249,73 @@ export class LfToast implements LfToastInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #prepIcon = (isClose = false): VNode => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfToastEvent, detail?: Partial<LfToastEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const { toast } = this.#b;
-    const icon = isClose ? this.lfCloseIcon : this.lfIcon;
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (hasCloseIcon, hasIcon, hasTimer)
+   * - controller.actions: Complex operations (close)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    return (
-      <div
-        class={bemClass(toast._, toast.icon, {
-          "has-actions": isClose,
-        })}
-        onPointerDown={isClose ? (e) => this.lfCloseCallback(this, e) : null}
-        part={this.#p.icon}
-        tabIndex={isClose && 0}
-      >
-        <FIcon framework={this.#framework} icon={icon as LfIconType} />
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepToastComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepToastActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -289,6 +327,7 @@ export class LfToast implements LfToastInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     if (this.lfCloseIcon === "") {
       const { "--lf-icon-delete": close } =
@@ -299,7 +338,8 @@ export class LfToast implements LfToastInterface {
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -314,11 +354,7 @@ export class LfToast implements LfToastInterface {
 
     if (lfTimer) {
       setTimeout(() => {
-        if (this.lfCloseCallback) {
-          this.lfCloseCallback(this, null);
-        } else {
-          this.unmount();
-        }
+        this.#adapter.controller.actions.close(null);
       }, lfTimer);
     }
 
@@ -326,10 +362,10 @@ export class LfToast implements LfToastInterface {
   }
   render() {
     const { theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { setLfStyle } = theme;
 
-    const { toast } = this.#b;
-    const { lfCloseIcon, lfIcon, lfMessage, lfStyle, lfTimer } = this;
+    const { lfStyle, lfTimer } = this;
+    const { toast } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -341,24 +377,7 @@ export class LfToast implements LfToastInterface {
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
         <div id={this.#w} data-lf={this.#lf.fadeIn}>
-          <div class={bemClass(toast._)} data-lf={this.#lf[this.lfUiState]}>
-            <div
-              class={bemClass(toast._, toast.accent, { temporary: !!lfTimer })}
-            ></div>
-            <div
-              class={bemClass(toast._, toast.messageWrapper, {
-                full: Boolean(lfIcon) && Boolean(lfCloseIcon),
-                "has-actions": Boolean(lfCloseIcon),
-                "has-icon": Boolean(lfIcon),
-              })}
-            >
-              {lfIcon && this.#prepIcon()}
-              {lfMessage && (
-                <div class={bemClass(toast._, toast.message)}>{lfMessage}</div>
-              )}
-              {lfCloseIcon && this.#prepIcon(true)}
-            </div>
-          </div>
+          {toast()}
         </div>
       </Host>
     );

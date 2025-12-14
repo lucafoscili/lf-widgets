@@ -1,14 +1,14 @@
 import {
   LF_HEADER_BLOCKS,
+  LF_HEADER_IDS,
   LF_HEADER_PARTS,
   LF_HEADER_PROPS,
-  LF_HEADER_SLOT,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfHeaderAdapter,
   LfHeaderElement,
-  LfHeaderEvent,
   LfHeaderEventPayload,
   LfHeaderInterface,
   LfHeaderPropsInterface,
@@ -25,7 +25,11 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepHeaderActions } from "./actions.header";
+import { prepHeaderComputed } from "./computed.header";
+import { createAdapter } from "./lf-header-adapter";
 
 /**
  * Represents a header component that displays a title or logo at the top of the screen.
@@ -74,14 +78,16 @@ export class LfHeader implements LfHeaderInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfHeaderAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_HEADER_BLOCKS;
+  #ids = LF_HEADER_IDS;
   #p = LF_HEADER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   //#endregion
 
-  //#region
+  //#region Events
   @Event({
     eventName: "lf-header-event",
     composed: true,
@@ -89,14 +95,6 @@ export class LfHeader implements LfHeaderInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfHeaderEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfHeaderEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      id: this.rootElement.id,
-      originalEvent: e,
-      eventType,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -138,13 +136,64 @@ export class LfHeader implements LfHeaderInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
+  /**
+   * Initializes the adapter for the header component.
+   *
+   * v4.0.0 Architecture:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: Empty for display-only component
+   * - controller.computed: Empty for display-only component
+   * - controller.actions: Empty for display-only component
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Setters - empty for display-only component
+      {},
+      // Computed - empty for display-only component
+      prepHeaderComputed(),
+      // Actions - empty for display-only component
+      prepHeaderActions(),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+          });
+        },
+      },
+    } as LfHeaderAdapter;
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -155,11 +204,12 @@ export class LfHeader implements LfHeaderInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -173,24 +223,15 @@ export class LfHeader implements LfHeaderInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
+    const { header } = this.#adapter.elements.jsx;
 
-    const { header } = this.#b;
     const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <header class={bemClass(header._)} part={this.#p.header}>
-            <section
-              class={bemClass(header._, header.section)}
-              part={this.#p.section}
-            >
-              <slot name={LF_HEADER_SLOT}></slot>
-            </section>
-          </header>
-        </div>
+        <div id={this.#w}>{header()}</div>
       </Host>
     );
   }

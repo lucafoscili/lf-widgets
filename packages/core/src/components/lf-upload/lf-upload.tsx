@@ -1,17 +1,18 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_STYLE_ID,
   LF_UPLOAD_BLOCKS,
+  LF_UPLOAD_IDS,
   LF_UPLOAD_PARTS,
   LF_UPLOAD_PROPS,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkAllowedKeysMap,
   LfFrameworkInterface,
+  LfUploadAdapter,
   LfUploadElement,
   LfUploadEvent,
   LfUploadEventPayload,
+  LfUploadInterface,
   LfUploadPropsInterface,
 } from "@lf-widgets/foundations";
 import {
@@ -25,10 +26,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepUploadActions } from "./actions.upload";
+import { prepUploadComputed } from "./computed.upload";
+import { createAdapter } from "./lf-upload-adapter";
 
 /**
  * The upload component allows users to upload files, displaying the selected files and their sizes.
@@ -52,7 +55,7 @@ import { awaitFramework } from "../../utils/setup";
   styleUrl: "lf-upload.scss",
   shadow: true,
 })
-export class LfUpload {
+export class LfUpload implements LfUploadInterface {
   /**
    * References the root HTML element of the component (<lf-upload>).
    */
@@ -132,15 +135,13 @@ export class LfUpload {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfUploadAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_UPLOAD_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_UPLOAD_IDS;
   #p = LF_UPLOAD_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #label: HTMLElement;
-  #input: HTMLInputElement;
   //#endregion
 
   //#region Events
@@ -156,21 +157,6 @@ export class LfUpload {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfUploadEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfUploadEvent, file?: File) {
-    switch (eventType) {
-      case "delete":
-        this.selectedFiles = this.selectedFiles.filter((f) => f !== file);
-        break;
-    }
-
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      selectedFiles: this.selectedFiles,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -219,127 +205,79 @@ export class LfUpload {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", {
+        selectedFiles: this.selectedFiles,
+      });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #formatFileSize(size: number): string {
-    const units = ["Bytes", "KB", "MB", "GB", "TB"];
-    let unitIndex = 0;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfUploadEvent,
+      detail?: Partial<LfUploadEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    if (size > 10000) {
-      size /= 1024;
-      size /= 1024;
-      unitIndex = 2;
-    } else {
-      while (size >= 1024 && unitIndex < units.length - 1) {
-        size /= 1024;
-        unitIndex++;
-      }
-    }
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        selectedFiles: this.selectedFiles,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (hasSelectedFiles, formatFileSize, getFileIcon)
+   * - controller.actions: Complex operations (handleFiles, deleteFile)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    return `${size.toFixed(2)} ${units[unitIndex]}`;
-  }
-  #handleFileChange() {
-    if (this.#input.files) {
-      this.selectedFiles = Array.from(this.#input.files);
-    } else {
-      this.selectedFiles = [];
-    }
-    this.onLfEvent(new CustomEvent("upload"), "upload");
-  }
-  #prepFileInfo() {
-    const { bemClass } = this.#framework.theme;
-
-    const { fileInfo } = this.#b;
-
-    return this.selectedFiles.map((file, index) => (
-      <div
-        class={bemClass(fileInfo._, fileInfo.item)}
-        data-lf={this.#lf.fadeIn}
-        key={index}
-      >
-        {this.#prepIcon(file)}
-        <span class={bemClass(fileInfo._, fileInfo.name)} title={file.name}>
-          {file.name}
-        </span>
-        <span
-          class={bemClass(fileInfo._, fileInfo.size)}
-          title={file.size.toString()}
-        >
-          {this.#formatFileSize(file.size)}
-        </span>
-        {this.#prepIcon(file, true)}
-      </div>
-    ));
-  }
-  #prepIcon = (f: File, isClear = false): VNode => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
-    const { file, movie, music, pdf, photo, zip } =
-      this.#framework.theme.get.icons();
-    const { "--lf-icon-clear": clear } =
-      this.#framework.theme.get.current().variables;
-
-    const { fileInfo } = this.#b;
-
-    const isLikelyImage =
-      f.type.includes("image") ||
-      f.type.includes("jpg") ||
-      f.type.includes("png") ||
-      f.type.includes("jpeg") ||
-      f.type.includes("gif");
-
-    const isLikelyAudio =
-      f.type.includes("audio") ||
-      f.type.includes("mp3") ||
-      f.type.includes("wav") ||
-      f.type.includes("ogg");
-
-    const isLikelyVideo =
-      f.type.includes("video") ||
-      f.type.includes("mp4") ||
-      f.type.includes("avi") ||
-      f.type.includes("mov");
-
-    const isLikelyZip =
-      f.type.includes("7z") ||
-      f.type.includes("zip") ||
-      f.type.includes("application/zip") ||
-      f.type.includes("application/x-zip-compressed");
-
-    const isLikelyPdf = f.type.includes("pdf");
-
-    const icon = isClear
-      ? clear
-      : isLikelyImage
-        ? photo
-        : isLikelyAudio
-          ? music
-          : isLikelyVideo
-            ? movie
-            : isLikelyPdf
-              ? pdf
-              : isLikelyZip
-                ? zip
-                : file;
-
-    return (
-      <div
-        class={bemClass(fileInfo._, fileInfo.icon, {
-          "has-actions": isClear,
-        })}
-        onClick={isClear ? (e) => this.onLfEvent(e, "delete", f) : null}
-        part={this.#p.icon}
-        tabIndex={isClear && 0}
-        title={isClear ? "Remove file" : f.type}
-      >
-        <FIcon framework={this.#framework} icon={icon} />
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepUploadComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepUploadActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -351,19 +289,25 @@ export class LfUpload {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
+
     if (Array.isArray(this.lfValue)) {
       this.selectedFiles = this.lfValue;
     }
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
+    const { label } = this.#adapter.elements.refs;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfRipple && hasThemeRipple && this.#label) {
-      effects.register.ripple(this.#label);
+    if (this.lfRipple && hasThemeRipple && label) {
+      effects.register.ripple(label);
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", {
+      selectedFiles: this.selectedFiles,
+    });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -377,55 +321,25 @@ export class LfUpload {
     info.update(this, "did-render");
   }
   render() {
-    const { sanitizeProps, theme } = this.#framework;
+    const { theme } = this.#framework;
     const { bemClass, setLfStyle } = theme;
 
-    const { fileInfo, fileUpload, upload } = this.#b;
-    const { lfLabel, lfStyle, selectedFiles } = this;
+    const { upload } = this.#b;
+    const { lfStyle } = this;
+    const { upload: uploadJsx, fileInfo } = this.#adapter.elements.jsx;
+    const { hasSelectedFiles } = this.#adapter.controller.computed;
 
-    const hasSelectedFiles = !!selectedFiles?.length;
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div
             class={bemClass(upload._, null, {
-              "has-description": Boolean(selectedFiles?.length),
+              "has-description": hasSelectedFiles(),
             })}
           >
-            <div class={bemClass(fileUpload._)}>
-              <input
-                {...sanitizeProps(this.lfHtmlAttributes)}
-                class={bemClass(fileUpload._, fileUpload.input)}
-                data-cy={this.#cy.input}
-                id="upload-input"
-                multiple
-                onChange={() => this.#handleFileChange()}
-                ref={(el) => {
-                  if (el) {
-                    this.#input = el;
-                  }
-                }}
-                type="file"
-              />
-              <label
-                class={bemClass(fileUpload._, fileUpload.label)}
-                htmlFor="upload-input"
-                onPointerDown={(e) => this.onLfEvent(e, "pointerdown")}
-                ref={(el) => {
-                  if (el) {
-                    this.#label = el;
-                  }
-                }}
-              >
-                <div class={bemClass(fileUpload._, fileUpload.text)}>
-                  {lfLabel}
-                </div>
-              </label>
-            </div>
-            <div class={bemClass(fileInfo._)}>
-              {hasSelectedFiles && this.#prepFileInfo()}
-            </div>
+            {uploadJsx()}
+            {fileInfo()}
           </div>
         </div>
       </Host>
@@ -434,9 +348,13 @@ export class LfUpload {
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple && this.#label) {
-      effects.unregister.ripple(this.#label);
+    if (this.#adapter) {
+      const { label } = this.#adapter.elements.refs;
+
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple && label) {
+        effects.unregister.ripple(label);
+      }
     }
 
     theme?.unregister(this);

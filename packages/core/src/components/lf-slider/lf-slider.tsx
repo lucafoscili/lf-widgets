@@ -1,14 +1,11 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_SLIDER_BLOCKS,
-  LF_SLIDER_CSS_VARIABLES,
+  LF_SLIDER_IDS,
   LF_SLIDER_PARTS,
   LF_SLIDER_PROPS,
-  LF_STYLE_ID,
-  LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfSliderAdapter,
   LfSliderElement,
   LfSliderEvent,
   LfSliderEventPayload,
@@ -24,13 +21,15 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  h,
-  Host,
   Method,
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepSliderActions } from "./actions.slider";
+import { prepSliderComputed } from "./computed.slider";
+import { createAdapter } from "./lf-slider-adapter";
 
 /**
  * The slider component allows users to select a value within a defined range.
@@ -195,16 +194,11 @@ export class LfSlider implements LfSliderInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfSliderAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_SLIDER_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #lf = LF_ATTRIBUTES;
+  #ids = LF_SLIDER_IDS;
   #p = LF_SLIDER_PARTS;
-  #s = LF_STYLE_ID;
-  #v = LF_SLIDER_CSS_VARIABLES;
-  #w = LF_WRAPPER_ID;
-  #input: HTMLInputElement;
-  #thumb: HTMLElement;
   //#endregion
 
   //#region Events
@@ -220,25 +214,6 @@ export class LfSlider implements LfSliderInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfSliderEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfSliderEvent) {
-    switch (eventType) {
-      case "change":
-        this.setValue(+this.#input.value);
-        this.refresh();
-        break;
-      case "input":
-        this.value.display = +this.#input.value;
-        this.refresh();
-        break;
-    }
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      value: this.value,
-    });
-  }
   //#endregion
   //#region Public methods
   /**
@@ -296,15 +271,77 @@ export class LfSlider implements LfSliderInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount", { value: this.value });
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #isDisabled = (): boolean => {
-    return this.lfUiState === "disabled";
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfSliderEvent,
+      detail?: Partial<LfSliderEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        value: this.value,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (isDisabled, valuePercentage, normalizeValue)
+   * - controller.actions: Complex operations (setValue, setDisplayValue)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepSliderComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepSliderActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -316,6 +353,8 @@ export class LfSlider implements LfSliderInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
+
     const { lfValue } = this;
 
     if (lfValue) {
@@ -324,13 +363,15 @@ export class LfSlider implements LfSliderInterface {
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
+    const { thumb } = this.#adapter.elements.refs;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfRipple && hasThemeRipple && this.#thumb) {
-      effects.register.ripple(this.#thumb);
+    if (this.lfRipple && hasThemeRipple && thumb) {
+      effects.register.ripple(thumb);
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready", { value: this.value });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {
@@ -344,104 +385,20 @@ export class LfSlider implements LfSliderInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { slider } = this.#adapter.elements.jsx;
 
-    const { formField, slider } = this.#b;
-    const { lfLabel, lfLeadingLabel, lfMax, lfMin, lfStep, lfStyle, value } =
-      this;
-
-    return (
-      <Host>
-        <style id={this.#s}>
-          {`
-            :host {
-              ${this.#v.value}: ${((value.display - lfMin) / (lfMax - lfMin)) * 100}%;
-            }
-          ${(lfStyle && setLfStyle(this)) || ""}`}
-        </style>
-        <div id={this.#w}>
-          <div
-            class={bemClass(formField._, null, {
-              leading: lfLeadingLabel,
-            })}
-            part={this.#p.formField}
-          >
-            <div
-              class={bemClass(slider._, null, {
-                "has-value": value.display > lfMin,
-                disabled: this.#isDisabled(),
-              })}
-              data-lf={this.#lf[this.lfUiState]}
-              part={this.#p.slider}
-            >
-              <input
-                type="range"
-                class={bemClass(slider._, slider.nativeControl)}
-                data-cy={this.#cy.input}
-                disabled={this.#isDisabled()}
-                max={lfMax}
-                min={lfMin}
-                onBlur={(e) => {
-                  this.onLfEvent(e, "blur");
-                }}
-                onChange={(e) => {
-                  this.onLfEvent(e, "change");
-                }}
-                onFocus={(e) => {
-                  this.onLfEvent(e, "focus");
-                }}
-                onInput={(e) => {
-                  this.onLfEvent(e, "input");
-                }}
-                onPointerDown={(e) => {
-                  this.onLfEvent(e, "pointerdown");
-                }}
-                part={this.#p.nativeControl}
-                ref={(el) => {
-                  if (el) {
-                    this.#input = el;
-                  }
-                }}
-                step={lfStep}
-                value={value.real}
-              />
-              <div class={bemClass(slider._, slider.track)}>
-                <div class={bemClass(slider._, slider.thumbUnderlay)}>
-                  <div
-                    class={bemClass(slider._, slider.thumb)}
-                    part={this.#p.thumb}
-                    ref={(el) => {
-                      if (el) {
-                        this.#thumb = el;
-                      }
-                    }}
-                  ></div>
-                </div>
-              </div>
-              <span
-                class={bemClass(slider._, slider.value)}
-                part={this.#p.value}
-              >
-                {value.display}
-              </span>
-            </div>
-            <label
-              class={bemClass(formField._, formField.label)}
-              part={this.#p.label}
-            >
-              {lfLabel}
-            </label>
-          </div>
-        </div>
-      </Host>
-    );
+    return slider();
   }
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
 
-    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-    if (effects && this.lfRipple && hasThemeRipple && this.#thumb) {
-      effects.unregister.ripple(this.#thumb);
+    if (this.#adapter) {
+      const { thumb } = this.#adapter.elements.refs;
+
+      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+      if (effects && this.lfRipple && hasThemeRipple && thumb) {
+        effects.unregister.ripple(thumb);
+      }
     }
 
     theme?.unregister(this);

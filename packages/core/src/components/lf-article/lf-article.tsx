@@ -1,16 +1,16 @@
 import {
-  CY_ATTRIBUTES,
   LF_ARTICLE_BLOCKS,
+  LF_ARTICLE_IDS,
   LF_ARTICLE_PARTS,
   LF_ARTICLE_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
+  LfArticleAdapter,
   LfArticleDataset,
   LfArticleElement,
   LfArticleEvent,
   LfArticleEventPayload,
   LfArticleInterface,
-  LfArticleNode,
   LfArticlePropsInterface,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
@@ -22,16 +22,17 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  Fragment,
   h,
   Host,
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
+import { prepArticleActions } from "./actions.article";
+import { prepArticleComputed } from "./computed.article";
+import { createAdapter } from "./lf-article-adapter";
 
 /**
  * Represents an article-style component that displays structured content
@@ -130,9 +131,10 @@ export class LfArticle implements LfArticleInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfArticleAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_ARTICLE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
+  #ids = LF_ARTICLE_IDS;
   #p = LF_ARTICLE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -151,14 +153,6 @@ export class LfArticle implements LfArticleInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfArticleEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfArticleEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -200,155 +194,80 @@ export class LfArticle implements LfArticleInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #recursive(node: LfArticleNode, depth: number) {
-    switch (depth) {
-      case 0:
-        return this.#articleTemplate(node, depth);
-      case 1:
-        return this.#sectionTemplate(node, depth);
-      case 2:
-        return this.#paragraphTemplate(node, depth);
-      default:
-        return node.children?.length
-          ? this.#wrapperTemplate(node, depth)
-          : this.#contentTemplate(node, depth);
-    }
-  }
-  #prepArticle(): VNode[] {
-    const elements: VNode[] = [];
-    const { nodes } = this.lfDataset;
-
-    for (let index = 0; index < nodes.length; index++) {
-      const node = nodes[index];
-      elements.push(this.#recursive(node, 0));
-    }
-    return <Fragment>{elements}</Fragment>;
-  }
-  #articleTemplate(node: LfArticleNode, depth: number): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { children, cssStyle, value } = node;
-
-    return (
-      <Fragment>
-        <article
-          class={bemClass(this.#b.article._)}
-          data-cy={this.#cy.node}
-          data-depth={depth.toString()}
-          part={this.#p.article}
-          style={cssStyle}
-        >
-          {value && <h1>{value}</h1>}
-          {children && node.children.map((c) => this.#recursive(c, depth + 1))}
-        </article>
-      </Fragment>
-    );
-  }
-  #sectionTemplate(node: LfArticleNode, depth: number): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { children, cssStyle, value } = node;
-
-    return (
-      <Fragment>
-        <section
-          class={bemClass(this.#b.section._)}
-          data-cy={this.#cy.node}
-          data-depth={depth.toString()}
-          part={this.#p.section}
-          style={cssStyle}
-        >
-          {value && <h2>{value}</h2>}
-          {children && children.map((c) => this.#recursive(c, depth + 1))}
-        </section>
-      </Fragment>
-    );
-  }
-  #wrapperTemplate(node: LfArticleNode, depth: number): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { children, cssStyle, tagName, value } = node;
-
-    const isList = !!children?.some((c) => c.tagName === "li");
-
-    const ComponentTag = isList ? "ul" : tagName ? tagName : "div";
-    return (
-      <Fragment>
-        {value && <div>{value}</div>}
-        <ComponentTag
-          class={bemClass(this.#b.content._)}
-          data-cy={this.#cy.node}
-          data-depth={depth.toString()}
-          part={this.#p.content}
-          style={cssStyle}
-        >
-          {children && children.map((c) => this.#recursive(c, depth + 1))}
-        </ComponentTag>
-      </Fragment>
-    );
-  }
-  #paragraphTemplate(node: LfArticleNode, depth: number): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { children, cssStyle, value } = node;
-
-    return (
-      <Fragment>
-        <p
-          class={bemClass(this.#b.paragraph._)}
-          data-cy={this.#cy.node}
-          data-depth={depth.toString()}
-          part={this.#p.paragraph}
-          style={cssStyle}
-        >
-          {value && <h3>{value}</h3>}
-          {children && children.map((c) => this.#recursive(c, depth + 1))}
-        </p>
-      </Fragment>
-    );
-  }
-  #contentTemplate(node: LfArticleNode, depth: number): VNode {
-    const { theme } = this.#framework;
-
-    const { cells, cssStyle, tagName, value } = node;
-    const key = cells && Object.keys(cells)[0];
-    const cell = cells?.[key];
-
-    const { content } = this.#b;
-
-    if (cell) {
-      return (
-        <LfShape
-          cell={cell}
-          index={0}
-          shape={cell.shape}
-          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
-          framework={this.#framework}
-        ></LfShape>
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfArticleEvent,
+      detail?: Partial<LfArticleEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
       );
-    } else {
-      const ComponentTag = tagName ? tagName : "span";
-      return (
-        <ComponentTag
-          class={theme.bemClass(content._, content.body, {
-            [ComponentTag]: Boolean(ComponentTag),
-          })}
-          data-depth={depth.toString()}
-          part={this.#p.content}
-          style={cssStyle}
-        >
-          {value}
-        </ComponentTag>
-      );
-    }
-  }
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.set: Simple setters (none for this component)
+   * - controller.computed: Derived predicates (hasNodes)
+   * - controller.actions: Complex operations (none for this component)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks for LfShape events
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Setters - none for this component
+      {},
+      // Computed - derived predicates (from dedicated file)
+      prepArticleComputed(getAdapter),
+      // Actions - none for this component
+      prepArticleActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -359,11 +278,12 @@ export class LfArticle implements LfArticleInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -378,24 +298,15 @@ export class LfArticle implements LfArticleInterface {
   }
   render() {
     const { theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { setLfStyle } = theme;
 
-    const { lfDataset, lfEmpty, lfStyle } = this;
-
-    const { emptyData } = this.#b;
+    const { lfStyle } = this;
+    const { article } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          {lfDataset?.nodes?.length ? (
-            this.#prepArticle()
-          ) : (
-            <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
-              <div class={bemClass(emptyData._, emptyData.text)}>{lfEmpty}</div>
-            </div>
-          )}
-        </div>
+        <div id={this.#w}>{article()}</div>
       </Host>
     );
   }

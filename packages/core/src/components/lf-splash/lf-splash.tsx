@@ -1,11 +1,13 @@
 import {
   LF_SPLASH_BLOCKS,
+  LF_SPLASH_IDS,
   LF_SPLASH_PARTS,
   LF_SPLASH_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
+  LfSplashAdapter,
   LfSplashElement,
   LfSplashEvent,
   LfSplashEventPayload,
@@ -25,7 +27,11 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepSplashActions } from "./actions.splash";
+import { prepSplashComputed } from "./computed.splash";
+import { createAdapter } from "./lf-splash-adapter";
 
 /**
  * The splash component is designed to be displayed during the initial loading of a page or application.
@@ -89,8 +95,10 @@ export class LfSplash implements LfSplashInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfSplashAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_SPLASH_BLOCKS;
+  #ids = LF_SPLASH_IDS;
   #p = LF_SPLASH_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -109,14 +117,6 @@ export class LfSplash implements LfSplashInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfSplashEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfSplashEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -160,7 +160,7 @@ export class LfSplash implements LfSplashInterface {
     setTimeout(() => {
       this.state = "unmounting";
       setTimeout(() => {
-        this.onLfEvent(new CustomEvent("unmount"), "unmount");
+        this.#adapter.dispatcher.emit("unmount");
         this.rootElement.remove();
       }, 300);
     }, ms);
@@ -168,6 +168,70 @@ export class LfSplash implements LfSplashInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfSplashEvent,
+      detail?: Partial<LfSplashEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (isUnmounting)
+   * - controller.actions: Complex operations (none for this simple component)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks (none for this simple component)
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Computed - derived predicates (from dedicated file)
+      prepSplashComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepSplashActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
+    );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -178,11 +242,12 @@ export class LfSplash implements LfSplashInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -196,42 +261,15 @@ export class LfSplash implements LfSplashInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
 
-    const { lfLabel, lfStyle, state } = this;
-    const isUnmounting = state === "unmounting";
-
-    const { splash } = this.#b;
+    const { lfStyle } = this;
+    const { splash } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div
-            class={bemClass(splash._, null, {
-              active: isUnmounting,
-            })}
-            part={this.#p.splash}
-          >
-            <div
-              class={bemClass(splash._, splash.content)}
-              part={this.#p.content}
-            >
-              <div
-                class={bemClass(splash._, splash.widget)}
-                part={this.#p.widget}
-              >
-                <slot></slot>
-              </div>
-              <div
-                class={bemClass(splash._, splash.label)}
-                part={this.#p.label}
-              >
-                {isUnmounting ? "Ready!" : lfLabel}
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id={this.#w}>{splash()}</div>
       </Host>
     );
   }

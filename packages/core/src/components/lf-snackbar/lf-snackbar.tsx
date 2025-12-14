@@ -2,6 +2,7 @@ import {
   LF_ATTRIBUTES,
   LF_SNACKBAR_BLOCKS,
   LF_SNACKBAR_CSS_VARIABLES,
+  LF_SNACKBAR_IDS,
   LF_SNACKBAR_PARTS,
   LF_SNACKBAR_PROPS,
   LF_STYLE_ID,
@@ -10,6 +11,7 @@ import {
   LfFrameworkInterface,
   LfIconType,
   LfSnackbarActionCallback,
+  LfSnackbarAdapter,
   LfSnackbarElement,
   LfSnackbarEvent,
   LfSnackbarEventPayload,
@@ -30,10 +32,12 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { prepSnackbarActions } from "./actions.snackbar";
+import { prepSnackbarComputed } from "./computed.snackbar";
+import { createAdapter } from "./lf-snackbar-adapter";
 
 /**
  * The snackbar component displays a brief notification message at screen edges.
@@ -205,8 +209,10 @@ export class LfSnackbar implements LfSnackbarInterface {
   //#endregion
 
   //#region Internal variables
+  #adapter: LfSnackbarAdapter;
   #framework: LfFrameworkInterface;
   #b = LF_SNACKBAR_BLOCKS;
+  #ids = LF_SNACKBAR_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_SNACKBAR_PARTS;
   #s = LF_STYLE_ID;
@@ -228,14 +234,6 @@ export class LfSnackbar implements LfSnackbarInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfSnackbarEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfSnackbarEvent) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -282,46 +280,78 @@ export class LfSnackbar implements LfSnackbarInterface {
     }
 
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
   //#endregion
 
   //#region Private methods
-  #handleActionClick = (e: PointerEvent) => {
-    e.stopPropagation();
-    this.onLfEvent(e, "action");
-    this.lfActionCallback(this, e);
-  };
-  #handleCloseClick = (e: PointerEvent) => {
-    e.stopPropagation();
-    this.onLfEvent(e, "close");
-    this.unmount();
-  };
-  #prepIcon = (isClose = false): VNode => {
-    const { theme } = this.#framework;
-    const { bemClass } = theme;
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfSnackbarEvent,
+      detail?: Partial<LfSnackbarEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
 
-    const { snackbar } = this.#b;
-    const icon = isClose ? this.lfCloseIcon : this.lfIcon;
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with v4.0.0 architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.computed: Derived predicates (hasAction, hasCloseIcon, hasIcon)
+   * - controller.actions: Complex operations (close)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
+  #initAdapter = () => {
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
 
-    return (
-      <div
-        class={bemClass(
-          snackbar._,
-          isClose ? snackbar.closeButton : snackbar.icon,
-          {
-            main: !isClose && this.lfUiState === "primary",
-          },
-        )}
-        onPointerDown={isClose ? this.#handleCloseClick : null}
-        part={isClose ? this.#p.closeButton : this.#p.icon}
-        tabIndex={isClose ? 0 : undefined}
-      >
-        <FIcon framework={this.#framework} icon={icon} />
-      </div>
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - base getters (via utility)
+      {
+        ...createBaseGetters({
+          blocks: () => this.#b,
+          compInstance: () => this,
+          framework: () => this.#framework,
+          ids: () => this.#ids,
+          parts: () => this.#p,
+        }),
+      },
+      // Computed - derived predicates (from dedicated file)
+      prepSnackbarComputed(getAdapter),
+      // Actions - complex multi-step operations (from dedicated file)
+      prepSnackbarActions(getAdapter),
+      // Adapter accessor
+      getAdapter,
     );
+
+    // Combine adapter parts with dispatcher
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 
@@ -333,6 +363,7 @@ export class LfSnackbar implements LfSnackbarInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
+    this.#initAdapter();
 
     if (!this.lfCloseIcon) {
       const { "--lf-icon-delete": close } =
@@ -349,7 +380,8 @@ export class LfSnackbar implements LfSnackbarInterface {
       }, this.lfDuration);
     }
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    // Emit ready event via dispatcher
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -364,11 +396,10 @@ export class LfSnackbar implements LfSnackbarInterface {
   }
   render() {
     const { theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { setLfStyle } = theme;
 
-    const { snackbar } = this.#b;
-    const { lfAction, lfCloseIcon, lfDuration, lfIcon, lfMessage, lfStyle } =
-      this;
+    const { lfDuration, lfStyle } = this;
+    const { snackbar } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -380,38 +411,7 @@ export class LfSnackbar implements LfSnackbarInterface {
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
         <div id={this.#w} data-lf={this.#lf.fadeIn}>
-          <div class={bemClass(snackbar._)} data-lf={this.#lf[this.lfUiState]}>
-            <div
-              class={bemClass(snackbar._, snackbar.content, {
-                "has-icon": Boolean(lfIcon),
-              })}
-            >
-              {lfIcon && this.#prepIcon()}
-              {lfMessage && (
-                <div
-                  class={bemClass(snackbar._, snackbar.message)}
-                  part={this.#p.message}
-                >
-                  {lfMessage}
-                </div>
-              )}
-            </div>
-            {(lfAction || lfCloseIcon) && (
-              <div class={bemClass(snackbar._, snackbar.actions)}>
-                {lfAction && (
-                  <button
-                    class={bemClass(snackbar._, snackbar.actionButton)}
-                    onPointerDown={this.#handleActionClick}
-                    part={this.#p.actionButton}
-                    type="button"
-                  >
-                    {lfAction}
-                  </button>
-                )}
-                {lfCloseIcon && this.#prepIcon(true)}
-              </div>
-            )}
-          </div>
+          {snackbar()}
         </div>
       </Host>
     );

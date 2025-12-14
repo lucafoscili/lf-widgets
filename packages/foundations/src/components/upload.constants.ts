@@ -1,6 +1,11 @@
 import { LfUploadPropsInterface } from "./upload.declarations";
 
 //#region Blocks
+/**
+ * BEM block structure for the upload component.
+ * Maps directly to CSS classes and DOM refs.
+ * @see Section 6.3 of 4_0_0_REFACTORING.md
+ */
 export const LF_UPLOAD_BLOCKS = {
   fileInfo: {
     _: "file-info",
@@ -17,6 +22,19 @@ export const LF_UPLOAD_BLOCKS = {
     text: "text",
   },
   upload: { _: "upload" },
+} as const;
+//#endregion
+
+//#region IDs
+/**
+ * DOM element IDs used by the upload component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_UPLOAD_IDS = {
+  input: "upload-input",
+  label: "upload-label",
+  fileInfo: "file-info",
+  upload: "upload",
 } as const;
 //#endregion
 
