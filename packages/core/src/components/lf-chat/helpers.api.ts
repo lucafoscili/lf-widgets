@@ -21,8 +21,8 @@ export const apiCall = async (
   updateLastAssistant: boolean = false,
 ) => {
   const { get } = adapter.controller;
-  const { compInstance, manager } = get;
-  const { debug, llm } = manager;
+  const compInstance = get.compInstance();
+  const { debug, llm } = get.framework();
 
   try {
     const request = newRequest(adapter);
@@ -54,8 +54,9 @@ const handleStreamingResponse = async (
   updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
-  const { compInstance, history, manager } = get;
-  const { llm } = manager;
+  const compInstance = get.compInstance();
+  const history = get.history;
+  const { debug, llm } = get.framework();
   const comp = compInstance as LfChat;
   const effectiveConfig = getEffectiveConfig(adapter);
   const endpointUrl = effectiveConfig.llm.endpointUrl;
@@ -89,7 +90,7 @@ const handleStreamingResponse = async (
     })) {
       // Circuit breaker: abort if too many unique tool calls detected
       if (seenToolCallIds.size >= MAX_UNIQUE_TOOL_CALLS) {
-        manager.debug.logs.new(
+        debug.logs.new(
           compInstance,
           `Circuit breaker: ${seenToolCallIds.size} unique tool calls detected (max ${MAX_UNIQUE_TOOL_CALLS}). Aborting stream.`,
           "warning",
@@ -155,7 +156,7 @@ const handleStreamingResponse = async (
           accumulatedToolCalls.push(tc);
         }
 
-        manager.debug.logs.new(
+        debug.logs.new(
           compInstance,
           `Tool calls accumulated: ${accumulatedToolCalls.length}`,
           "informational",
@@ -232,7 +233,7 @@ const handleStreamingResponse = async (
     }
 
     if (accumulatedToolCalls.length > 0) {
-      manager.debug.logs.new(
+      debug.logs.new(
         compInstance,
         `Streaming complete. Total tool calls accumulated: ${accumulatedToolCalls.length}`,
         "informational",
@@ -241,7 +242,7 @@ const handleStreamingResponse = async (
       const normalizedToolCalls =
         normalizeToolCallsForStreaming(accumulatedToolCalls);
 
-      manager.debug.logs.new(
+      debug.logs.new(
         compInstance,
         `After normalization: ${normalizedToolCalls.length} tool calls`,
         "informational",
@@ -271,7 +272,7 @@ const handleStreamingResponse = async (
         const signature = `${name}::${canonicalArgs}`;
 
         if (seenSignatures.has(signature)) {
-          manager.debug.logs.new(
+          debug.logs.new(
             compInstance,
             `Final dedupe: removing duplicate ${name}(${args})`,
             "warning",
@@ -284,7 +285,7 @@ const handleStreamingResponse = async (
       }
 
       if (finalDeduped.length < normalizedToolCalls.length) {
-        manager.debug.logs.new(
+        debug.logs.new(
           compInstance,
           `Final dedupe removed ${normalizedToolCalls.length - finalDeduped.length} duplicates, executing ${finalDeduped.length}`,
           "warning",
@@ -332,8 +333,8 @@ const handleFetchResponse = async (
   updateLastAssistant: boolean = false,
 ): Promise<void> => {
   const { get, set } = adapter.controller;
-  const { history, manager } = get;
-  const { llm } = manager;
+  const history = get.history;
+  const { llm } = get.framework();
   const effectiveConfig = getEffectiveConfig(adapter);
   const endpointUrl = effectiveConfig.llm.endpointUrl;
 

@@ -1,5 +1,7 @@
 import {
   LfShapeeditorAdapter,
+  LfShapeeditorAdapterControllerActions,
+  LfShapeeditorAdapterControllerComputed,
   LfShapeeditorAdapterControllerGetters,
   LfShapeeditorAdapterControllerSetters,
   LfShapeeditorAdapterHandlers,
@@ -17,8 +19,10 @@ import { prepSettingsHandlers } from "./handlers.settings";
  * Creates the canonical adapter for lf-shapeeditor.
  *
  * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
- * - controller.set: Simple setters (config, history, navigation, etc.)
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
  * - elements: JSX factories + refs
  * - dispatcher: Centralized event emission (passed from component)
  * - handlers: Event callbacks grouped by panel
@@ -29,12 +33,16 @@ import { prepSettingsHandlers } from "./handlers.settings";
 export const createAdapter = (
   getters: LfShapeeditorAdapterControllerGetters,
   setters: Omit<LfShapeeditorAdapterControllerSetters, "spinnerStatus">,
+  computed: LfShapeeditorAdapterControllerComputed,
+  actions: LfShapeeditorAdapterControllerActions,
   getAdapter: () => LfShapeeditorAdapter,
 ): Omit<LfShapeeditorAdapter, "dispatcher"> => {
   return {
     controller: {
       get: getters,
       set: createSetters(setters, getAdapter),
+      computed,
+      actions,
     },
     elements: {
       jsx: createJsx(getAdapter),

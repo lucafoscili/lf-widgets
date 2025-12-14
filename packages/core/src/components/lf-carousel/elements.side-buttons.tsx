@@ -13,22 +13,22 @@ export const prepSideButtonsJsx = (
     //#region Back
     back: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
-      const { assignRef, theme } = manager;
+      const { blocks, cyAttributes, framework, parts } = controller.get;
+      const { assignRef, theme } = framework();
       const { refs } = elements;
       const { button } = handlers;
       const { "--lf-icon-previous": prev } = theme.get.current().variables;
 
       return (
         <lf-button
-          class={theme.bemClass(blocks.carousel._, blocks.carousel.back)}
-          data-cy={cyAttributes.button}
-          id={LF_CAROUSEL_IDS.back}
+          class={theme.bemClass(blocks()._, blocks().back)}
+          data-cy={cyAttributes().button}
+          id={LF_CAROUSEL_IDS.carousel.back}
           lfIcon={prev}
           lfStyling="icon"
           lfUiSize="large"
           onLf-button-event={button}
-          part={parts.back}
+          part={parts().back}
           ref={assignRef(refs, "back")}
           title="Previous slide."
         ></lf-button>
@@ -39,22 +39,22 @@ export const prepSideButtonsJsx = (
     //#region Forward
     forward: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
-      const { assignRef, theme } = manager;
+      const { blocks, cyAttributes, framework, parts } = controller.get;
+      const { assignRef, theme } = framework();
       const { refs } = elements;
       const { button } = handlers;
       const { "--lf-icon-next": next } = theme.get.current().variables;
 
       return (
         <lf-button
-          class={theme.bemClass(blocks.carousel._, blocks.carousel.forward)}
-          data-cy={cyAttributes.button}
-          id={LF_CAROUSEL_IDS.forward}
+          class={theme.bemClass(blocks()._, blocks().forward)}
+          data-cy={cyAttributes().button}
+          id={LF_CAROUSEL_IDS.carousel.forward}
           lfIcon={next}
           lfStyling="icon"
           lfUiSize="large"
           onLf-button-event={button}
-          part={parts.forward}
+          part={parts().forward}
           ref={assignRef(refs, "forward")}
           title="Next slide."
         ></lf-button>

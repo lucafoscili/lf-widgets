@@ -19,10 +19,11 @@ import { EChartsOption, PieSeriesOption } from "echarts";
  * - Returns complete ECharts options for pie chart rendering
  */
 export const pie = (getAdapter: () => LfChartAdapter) => {
-  const { columnById, compInstance, manager, seriesData, style } =
-    getAdapter().controller.get;
-  const { lfAxis } = compInstance;
-  const { compute } = manager.color;
+  const adapter = getAdapter();
+  const { axis, framework } = adapter.controller.get;
+  const { columnById, seriesData, style } = adapter.controller.computed;
+  const lfAxis = axis();
+  const { compute } = framework().color;
   const { label, legend, seriesColor, tooltip } = style;
 
   const data = seriesData().map((s) => ({

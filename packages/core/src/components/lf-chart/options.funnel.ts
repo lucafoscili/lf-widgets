@@ -20,11 +20,14 @@ import { EChartsOption, FunnelSeriesOption } from "echarts";
  * - Creates a descending funnel chart with the processed data
  */
 export const funnel = (getAdapter: () => LfChartAdapter) => {
-  const { compInstance, manager, style } = getAdapter().controller.get;
-  const { lfDataset, lfSeries } = compInstance;
+  const adapter = getAdapter();
+  const { dataset, framework, series } = adapter.controller.get;
+  const { style } = adapter.controller.computed;
+  const lfDataset = dataset();
+  const lfSeries = series();
   const { legend, seriesColor, theme, tooltip } = style;
-  const { stringify } = manager.data.cell;
-  const { compute } = manager.color;
+  const { stringify } = framework().data.cell;
+  const { compute } = framework().color;
   const { border, font, text } = theme();
 
   const data = lfSeries.map((seriesName) => {

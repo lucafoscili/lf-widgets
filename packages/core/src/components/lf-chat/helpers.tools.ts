@@ -499,8 +499,8 @@ const shouldAgentContinue = async (
   state: LfChatAgentState,
 ): Promise<boolean> => {
   const { get, set } = adapter.controller;
-  const { debug } = get.manager;
-  const { compInstance } = get;
+  const { debug } = get.framework();
+  const compInstance = get.compInstance();
   const effectiveConfig = getEffectiveConfig(adapter);
   const agentConfig = effectiveConfig.agent;
 
@@ -581,8 +581,9 @@ export const handleToolCalls = async (
 ): Promise<LfDataDataset | null> => {
   const { get, set } = adapter.controller;
   const { toolExecution } = adapter.elements.refs.toolbar;
-  const { compInstance, history } = get;
-  const { debug, theme } = get.manager;
+  const compInstance = get.compInstance();
+  const history = get.history;
+  const { debug, theme } = get.framework();
   const effectiveConfig = getEffectiveConfig(adapter);
 
   const hasToolCalls = Array.isArray(toolCalls) && toolCalls.length > 0;

@@ -1,15 +1,13 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -18,7 +16,6 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfLLMAttachment,
   LfLLMChoiceMessage,
@@ -31,6 +28,7 @@ import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CHAT_BLOCKS,
   LF_CHAT_EVENTS,
+  LF_CHAT_IDS,
   LF_CHAT_LAYOUT,
   LF_CHAT_PARTS,
   LF_CHAT_STATUS,
@@ -79,12 +77,37 @@ export interface LfChatElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-chat` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (async ops, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks grouped by domain
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfChatAdapter extends LfComponentAdapter<LfChatInterface> {
+export interface LfChatAdapter
+  extends LfComponentAdapter<
+    LfChatInterface,
+    LfChatEventPayload,
+    LfChatAdapterHandlers,
+    LfChatAdapterJsx,
+    LfChatAdapterRefs,
+    LfChatAdapterControllerGetters,
+    LfChatAdapterControllerSetters,
+    LfChatAdapterControllerComputed,
+    LfChatAdapterControllerActions
+  > {
   controller: {
     get: LfChatAdapterControllerGetters;
     set: LfChatAdapterControllerSetters;
+    computed: LfChatAdapterControllerComputed;
+    actions: LfChatAdapterControllerActions;
   };
+  dispatcher: LfChatAdapterDispatcher;
   elements: {
     jsx: LfChatAdapterJsx;
     refs: LfChatAdapterRefs;
@@ -238,72 +261,46 @@ export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   };
 }
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfChatAdapterInitializerGetters = Pick<
-  LfChatAdapterControllerGetters,
-  | "agentState"
-  | "blocks"
-  | "compInstance"
-  | "currentAbortStreaming"
-  | "currentAttachments"
-  | "currentEditingId"
-  | "currentPrompt"
-  | "currentTokens"
-  | "currentToolExecution"
-  | "cyAttributes"
-  | "history"
-  | "lastMessage"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "status"
-  | "view"
->;
-
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfChatAdapterInitializerSetters = Pick<
-  LfChatAdapterControllerSetters,
-  | "agentState"
-  | "currentAbortStreaming"
-  | "currentAttachments"
-  | "currentEditingId"
-  | "currentPrompt"
-  | "currentTokens"
-  | "currentToolExecution"
-  | "history"
-  | "status"
-  | "toggleFullScreen"
-  | "view"
->;
-/**
  * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`, async ops go in `actions`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfChatAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfChatInterface> {
+  extends LfComponentAdapterBaseGetters<
+    LfChatInterface,
+    typeof LF_CHAT_BLOCKS,
+    typeof LF_CHAT_IDS,
+    typeof LF_CHAT_PARTS
+  > {
+  /** Agent mode state (iteration progress, tool calls, etc.) */
   agentState: () => LfChatAgentState | null;
-  blocks: typeof LF_CHAT_BLOCKS;
-  compInstance: LfChatInterface;
+  /** Current streaming abort controller */
   currentAbortStreaming: () => AbortController | null;
+  /** Current message attachments */
   currentAttachments: () => LfLLMAttachment[];
+  /** ID of message currently being edited */
   currentEditingId: () => string | null;
+  /** Current prompt being prepared */
   currentPrompt: () => LfLLMChoiceMessage | null;
+  /** Current token usage stats */
   currentTokens: () => LfChatCurrentTokens;
+  /** Current tool execution dataset for chip display */
   currentToolExecution: () => LfDataDataset | null;
-  cyAttributes: typeof CY_ATTRIBUTES;
+  /** Full chat history */
   history: () => LfChatHistory;
+  /** Get last message by role */
   lastMessage: (role?: LfLLMRole) => LfLLMChoiceMessage;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  newPrompt: () => Promise<LfLLMChoiceMessage>;
-  parts: typeof LF_CHAT_PARTS;
+  /** Connection/ready status */
   status: () => LfChatStatus;
+  /** Current view (main/settings) */
   view: () => LfChatView;
 }
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
  */
 export interface LfChatAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -316,8 +313,36 @@ export interface LfChatAdapterControllerSetters
   currentToolExecution: (value: LfDataDataset | null) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
-  toggleFullScreen: () => void;
   view: (view: LfChatView) => void;
+}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfChatAdapterControllerComputed {
+  /** UI state predicates */
+  hasMessages: () => boolean;
+  canSend: () => boolean;
+  canClear: () => boolean;
+  isDisabled: () => boolean;
+  /** Message helpers */
+  messageCount: () => number;
+}
+/**
+ * Multi-step operations that may have side effects.
+ * Includes async operations and complex flows.
+ */
+export interface LfChatAdapterControllerActions {
+  /** Toggle full screen mode */
+  toggleFullScreen: () => void;
+  /** Toggle settings view */
+  toggleSettings: () => void;
+  /**
+   * Prepare a new prompt from textarea input.
+   * This is an async operation that performs blur and getValue.
+   * Moved from `controller.get.newPrompt` as it's not a pure state read.
+   */
+  preparePrompt: () => Promise<LfLLMChoiceMessage | null>;
 }
 //#endregion
 
@@ -334,6 +359,31 @@ export interface LfChatEventPayload
   history: string;
   status: LfChatStatus;
 }
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfChatAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfChatEventPayload>;
+export type LfChatAdapterDispatcherDetailOverrides = {
+  [E in LfChatEvent]: E extends "lf-event"
+    ? LfChatAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfChatAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfChatAdapterDispatchDetailBase;
+};
+export type LfChatAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfChatEventPayload,
+  LfChatAdapterDispatcherDetailOverrides
+>;
+//#endregion
 //#endregion
 
 //#region States

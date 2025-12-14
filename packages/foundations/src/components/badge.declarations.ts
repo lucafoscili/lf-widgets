@@ -1,12 +1,15 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterActions,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import { LF_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -14,11 +17,11 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_BADGE_BLOCKS,
   LF_BADGE_EVENTS,
+  LF_BADGE_IDS,
   LF_BADGE_PARTS,
   LF_BADGE_POSITIONS,
 } from "./badge.constants";
@@ -42,17 +45,42 @@ export interface LfBadgeElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-badge` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+ * - controller.set: Simple assignments (empty for badge)
+ * - controller.computed: Derived predicates (empty for badge)
+ * - controller.actions: Complex operations (empty for badge)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfBadgeAdapter extends LfComponentAdapter<LfBadgeInterface> {
+export interface LfBadgeAdapter
+  extends LfComponentAdapter<
+    LfBadgeInterface,
+    LfBadgeEventPayload,
+    LfBadgeAdapterHandlers,
+    LfBadgeAdapterJsx,
+    LfBadgeAdapterRefs,
+    LfBadgeAdapterControllerGetters,
+    LfBadgeAdapterControllerSetters,
+    LfBadgeAdapterControllerComputed,
+    LfBadgeAdapterControllerActions
+  > {
   controller: {
     get: LfBadgeAdapterControllerGetters;
     set: LfBadgeAdapterControllerSetters;
+    computed: LfBadgeAdapterControllerComputed;
+    actions: LfBadgeAdapterControllerActions;
   };
   elements: {
     jsx: LfBadgeAdapterJsx;
     refs: LfBadgeAdapterRefs;
   };
   handlers: LfBadgeAdapterHandlers;
+  dispatcher: LfBadgeAdapterDispatcher;
 }
 /**
  * Strongly typed DOM references captured by the component adapter.
@@ -71,28 +99,38 @@ export interface LfBadgeAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfBadgeAdapterHandlers extends LfComponentAdapterHandlers {}
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfBadgeAdapterInitializerGetters = Pick<
-  LfBadgeAdapterControllerGetters,
-  "blocks" | "compInstance" | "lfAttributes" | "manager" | "parts"
->;
-/**
- * Read-only controller surface exposed by the adapter for integration code.
+ * Base getters extended with component-specific state reads.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfBadgeAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfBadgeInterface> {
-  blocks: typeof LF_BADGE_BLOCKS;
-  compInstance: LfBadgeInterface;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_BADGE_PARTS;
-}
+  extends LfComponentAdapterBaseGetters<
+    LfBadgeInterface,
+    typeof LF_BADGE_BLOCKS,
+    typeof LF_BADGE_IDS,
+    typeof LF_BADGE_PARTS
+  > {}
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value setters.
+ * Badge is a simple component with no setters.
  */
 export interface LfBadgeAdapterControllerSetters
   extends LfComponentAdapterSetters {}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ * Badge is a simple component with no computed values.
+ */
+export interface LfBadgeAdapterControllerComputed
+  extends LfComponentAdapterComputed {}
+/**
+ * Multi-step operations that may batch changes or toggle state.
+ * May have side effects.
+ * Badge is a simple component with no actions.
+ */
+export interface LfBadgeAdapterControllerActions
+  extends LfComponentAdapterActions {}
 //#endregion
 
 //#region Events
@@ -105,6 +143,30 @@ export type LfBadgeEvent = (typeof LF_BADGE_EVENTS)[number];
  */
 export interface LfBadgeEventPayload
   extends LfEventPayload<"LfBadge", LfBadgeEvent> {}
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfBadgeAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfBadgeEventPayload>;
+export type LfBadgeAdapterDispatcherDetailOverrides = {
+  [E in LfBadgeEvent]: E extends "click"
+    ? LfBadgeAdapterDispatchDetailBase & {
+        originalEvent: MouseEvent | PointerEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfBadgeAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfBadgeAdapterDispatchDetailBase;
+};
+export type LfBadgeAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfBadgeEventPayload,
+  LfBadgeAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Props

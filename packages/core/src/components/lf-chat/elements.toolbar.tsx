@@ -13,19 +13,22 @@ export const prepToolbar = (
     //#region Copy content
     copyContent: (m) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const isDisabled = Boolean(currentPrompt());
+      const isDisabled = Boolean(get.currentPrompt());
 
       return (
         <lf-button
           class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
           id={LF_CHAT_IDS.toolbar.copyContent}
-          lfIcon={get.current().variables["--lf-icon-copy"]}
+          lfIcon={themeGet.current().variables["--lf-icon-copy"]}
           lfStyling="flat"
           lfUiState={isDisabled ? "disabled" : "primary"}
           onLf-button-event={(e) => button(e, m)}
@@ -39,19 +42,22 @@ export const prepToolbar = (
     //#region Edit message
     editMessage: (m) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const isDisabled = Boolean(currentPrompt());
+      const isDisabled = Boolean(get.currentPrompt());
 
       return (
         <lf-button
           class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
           id={LF_CHAT_IDS.toolbar.editMessage}
-          lfIcon={get.current().variables["--lf-icon-edit"]}
+          lfIcon={themeGet.current().variables["--lf-icon-edit"]}
           lfStyling="flat"
           lfUiState={isDisabled ? "disabled" : "primary"}
           onLf-button-event={(e) => button(e, m)}
@@ -66,19 +72,22 @@ export const prepToolbar = (
     //#region Delete message
     deleteMessage: (m) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const isDisabled = Boolean(currentPrompt());
+      const isDisabled = Boolean(get.currentPrompt());
 
       return (
         <lf-button
           class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
           id={LF_CHAT_IDS.toolbar.deleteMessage}
-          lfIcon={get.current().variables["--lf-icon-delete"]}
+          lfIcon={themeGet.current().variables["--lf-icon-delete"]}
           lfStyling="flat"
           lfUiState={isDisabled ? "disabled" : "danger"}
           onLf-button-event={(e) => button(e, m)}
@@ -93,19 +102,22 @@ export const prepToolbar = (
     //#region Regenerate
     regenerate: (m) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const isDisabled = Boolean(currentPrompt());
+      const isDisabled = Boolean(get.currentPrompt());
 
       return (
         <lf-button
           class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
           id={LF_CHAT_IDS.toolbar.regenerate}
-          lfIcon={get.current().variables["--lf-icon-refresh"]}
+          lfIcon={themeGet.current().variables["--lf-icon-refresh"]}
           lfStyling="flat"
           lfUiState={isDisabled ? "disabled" : "primary"}
           onLf-button-event={(e) => button(e, m)}
@@ -120,18 +132,21 @@ export const prepToolbar = (
     //#region Message attachments
     messageAttachments: (m, isEditing = false) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, history, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { chip } = handlers.toolbar;
-      const { theme } = manager;
-      const { bemClass, get } = theme;
+      const { theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
       const attachments = m.attachments;
       if (!attachments || attachments.length === 0) {
         return null;
       }
 
-      const messageIndex = history().indexOf(m);
+      const messageIndex = get.history().indexOf(m);
       const refKey = String(messageIndex);
 
       const styling = isEditing ? "input" : "choice";
@@ -146,8 +161,8 @@ export const prepToolbar = (
                 description: att.name,
                 icon:
                   att.type === "image_url"
-                    ? get.current().variables["--lf-icon-image"]
-                    : get.current().variables["--lf-icon-attachment"],
+                    ? themeGet.current().variables["--lf-icon-image"]
+                    : themeGet.current().variables["--lf-icon-attachment"],
                 id: att.id,
                 value: att.name,
               })),
@@ -170,9 +185,11 @@ export const prepToolbar = (
     //#region Tool chip
     toolExecution: (m) => {
       const { controller, elements } = getAdapter();
-      const { blocks, manager } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
       const { toolbar } = elements.refs;
-      const { assignRef, theme } = manager;
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       const dataset = m.toolExecution;

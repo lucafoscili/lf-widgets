@@ -36,6 +36,8 @@ import {
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { prepMultiInputActions } from "./actions.multiinput";
+import { prepMultiInputComputed } from "./computed.multiinput";
 import {
   historyDiffers,
   historyValues,
@@ -507,32 +509,79 @@ export class LfMultiInput implements LfMultiInputInterface {
     await this.setHistory(union);
   }
   #initAdapter() {
+    const getAdapter = () => this.#adapter;
+
+    // Getters - ALL must be functions per v4.0.0
+    const getters = {
+      blocks: () => this.#b.multiinput,
+      compInstance: () => this,
+      cyAttributes: () => this.#cy,
+      framework: () => this.#framework,
+      ids: () => ({}) as Record<string, never>,
+      lfAttributes: () => this.#lf,
+      parts: () => this.#p,
+      historyNodes: () => this.historyNodes,
+      historyValues: () => historyValues(this.historyNodes),
+      lfDataset: () => this.lfDataset,
+      value: () => this.value,
+      maxHistory: () => this.#maxHistory(),
+      isTagsMode: () => this.#isTagsMode(),
+      allowFreeInput: () => this.lfAllowFreeInput,
+    };
+
+    // Setters - simple single-value assignments
+    const setters = {
+      history: async (nodes: LfDataNode[]) => {
+        await this.#setHistoryNodes(nodes, { preserveColumns: true });
+      },
+      value: async (value: string) => {
+        await this.#updateValue(value, {
+          validate: false,
+          syncTextfield: false,
+        });
+      },
+    };
+
+    // Computed and actions need the adapter, so we create a temporary one first
+    const tempAdapter = {
+      controller: { get: getters, set: setters, computed: null, actions: null },
+    } as unknown as LfMultiInputAdapter;
+
+    // Now build computed and actions with access to the adapter
+    this.#adapter = tempAdapter;
+    const computed = prepMultiInputComputed(getAdapter);
+    const actions = prepMultiInputActions(getAdapter);
+
+    // Dispatcher - centralized event emission
+    const dispatcher = {
+      emit: <E extends LfMultiInputEvent>(
+        eventType: E,
+        detail?: { originalEvent?: Event; node?: LfDataNode; value?: string },
+      ) => {
+        this.#framework?.debug?.logs.new(
+          this,
+          `Event: ${eventType}`,
+          "informational",
+        );
+        this.lfEvent.emit({
+          comp: this,
+          eventType,
+          id: this.rootElement?.id || "",
+          originalEvent: detail?.originalEvent,
+          node: detail?.node,
+          value: detail?.value ?? this.value,
+        });
+      },
+    };
+
+    // Build the final adapter with all domains
     this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        historyNodes: () => this.historyNodes,
-        historyValues: () => historyValues(this.historyNodes),
-        isDisabled: () => this.#isDisabled(),
-        lfAttributes: this.#lf,
-        lfDataset: () => this.lfDataset,
-        manager: this.#framework,
-        parts: this.#p,
-        value: () => this.value,
-      },
-      {
-        history: async (nodes: LfDataNode[]) => {
-          await this.#setHistoryNodes(nodes, { preserveColumns: true });
-        },
-        value: async (value: string) => {
-          await this.#updateValue(value, {
-            validate: false,
-            syncTextfield: false,
-          });
-        },
-      },
-      () => this.#adapter,
+      getters,
+      setters,
+      computed,
+      actions,
+      dispatcher,
+      getAdapter,
     );
   }
   #isDisabled() {

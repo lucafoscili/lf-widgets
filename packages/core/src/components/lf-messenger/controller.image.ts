@@ -1,8 +1,8 @@
 import {
   AVATAR_COVER,
   LfMessengerAdapter,
-  LfMessengerAdapterGetters,
-  LfMessengerAdapterSetters,
+  LfMessengerAdapterControllerGetters,
+  LfMessengerAdapterControllerSetters,
   LfMessengerBaseChildNode,
   LfMessengerBaseRootNode,
   LfMessengerCharacterNode,
@@ -22,13 +22,14 @@ import { LfMessenger } from "./lf-messenger";
 //#region Getters
 export const prepImageGetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterGetters["image"] => {
+): LfMessengerAdapterControllerGetters["image"] => {
   return {
     asCover: (type, character?) => getAsCover(getAdapter, type, character),
     byType: (type, character?) => getByType(getAdapter, type, character),
     coverIndex: (type, character?) => {
       const adapter = getAdapter();
-      const { covers } = adapter.controller.get.compInstance as LfMessenger;
+      const compInstance = adapter.controller.get.compInstance();
+      const { covers } = compInstance as LfMessenger;
       const { id } = defaultToCurrentCharacter(adapter, character);
 
       return covers[id][type];
@@ -60,7 +61,7 @@ export const prepImageGetters = (
 //#region Setters
 export const prepImageSetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterSetters["image"] => {
+): LfMessengerAdapterControllerSetters["image"] => {
   return {
     cover: (
       type: LfMessengerImageTypes,
@@ -68,7 +69,7 @@ export const prepImageSetters = (
       character?: LfMessengerCharacterNode,
     ) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
+      const compInstance = adapter.controller.get.compInstance();
       const { id } = defaultToCurrentCharacter(getAdapter(), character);
 
       const c = compInstance as LfMessenger;
@@ -103,7 +104,8 @@ const getAsCover = (
   character: LfMessengerCharacterNode,
 ) => {
   const adapter = getAdapter();
-  const { compInstance, image } = adapter.controller.get;
+  const compInstance = adapter.controller.get.compInstance();
+  const { image } = adapter.controller.get;
   const { children, id } = defaultToCurrentCharacter(adapter, character);
   const { covers } = compInstance as LfMessenger;
 

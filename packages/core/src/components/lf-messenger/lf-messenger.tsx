@@ -5,6 +5,7 @@ import {
   LF_ATTRIBUTES,
   LF_MESSENGER_BLOCKS,
   LF_MESSENGER_CLEAN_UI,
+  LF_MESSENGER_IDS,
   LF_MESSENGER_PARTS,
   LF_MESSENGER_PROPS,
   LF_STYLE_ID,
@@ -51,6 +52,8 @@ import {
 } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
+import { prepMessengerActions } from "./actions.messenger";
+import { prepMessengerComputed } from "./computed.messenger";
 import {
   assignPropsToChatCell,
   extractPropsFromChatCell,
@@ -170,6 +173,7 @@ export class LfMessenger implements LfMessengerInterface {
   #framework: LfFrameworkInterface;
   #b = LF_MESSENGER_BLOCKS;
   #cy = CY_ATTRIBUTES;
+  #ids = LF_MESSENGER_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_MESSENGER_PARTS;
   #s = LF_STYLE_ID;
@@ -310,17 +314,67 @@ export class LfMessenger implements LfMessengerInterface {
     }
   };
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    const adapterParts = createAdapter(
+      // GET: Pure state reads (ALL must be functions)
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        // Base getters (v4.0.0 - ALL must be functions)
+        blocks: () => this.#b.messenger,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => this.#ids.messenger,
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p.messenger,
+        // Component-specific getters (populated in createGetters)
+        character: null,
+        config: null,
+        data: null,
+        history: null,
+        image: null,
+        status: null,
+        ui: null,
       },
+      // SET: Simple single-value assignments (populated in createSetters)
+      {
+        character: null,
+        data: null,
+        image: null,
+        status: null,
+        ui: null,
+      },
+      // COMPUTED: Derived values and predicates (pure functions)
+      prepMessengerComputed(() => this.#adapter),
+      // ACTIONS: Multi-step operations
+      prepMessengerActions(() => this.#adapter),
       () => this.#adapter,
     );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+
+          const config: LfMessengerConfig = {
+            currentCharacter: this.currentCharacter?.id,
+            ui: this.ui,
+          };
+
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+            config,
+          });
+        },
+      },
+    };
   };
   #initCharacter = (character: LfMessengerCharacterNode) => {
     const { get } = this.#adapter.controller;
@@ -440,7 +494,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepCharacter = (): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { character } = this.#b;
+    const { character } = this.#b.messenger;
     const { controller, elements } = this.#adapter;
     const { name } = controller.get.character;
     const { avatar, biography, save, statusIcon } = elements.jsx.character;
@@ -471,7 +525,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepChat = (): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { chat: c } = this.#b;
+    const { chat: c } = this.#b.messenger;
     const { chat, leftExpander, rightExpander, tabbar } =
       this.#adapter.elements.jsx.chat;
 
@@ -499,7 +553,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepCovers = (type: LfMessengerImageTypes, images: VNode[]): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { covers } = this.#b;
+    const { covers } = this.#b.messenger;
     const { add } = this.#adapter.elements.jsx.customization.form[type];
 
     return (
@@ -517,7 +571,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepExtraContext = (): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { extraContext } = this.#b;
+    const { extraContext } = this.#b.messenger;
     const { customization, options } = this.#adapter.elements.jsx;
     const { back, customize } = options;
     const { filters } = customization;
@@ -553,7 +607,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepForm = (type: LfMessengerImageTypes): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { form } = this.#b;
+    const { form } = this.#b.messenger;
     const { cancel, confirm, description, id, imageUrl, title } =
       this.#adapter.elements.jsx.customization.form[type];
 
@@ -578,7 +632,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepList = (): VNode => {
     const { bemClass } = this.#framework.theme;
 
-    const { list } = this.#b;
+    const { list } = this.#b.messenger;
     const { controller, elements, handlers } = this.#adapter;
     const { byType, coverIndex, title } = controller.get.image;
     const { edit, remove } = elements.jsx.customization.list;
@@ -640,7 +694,7 @@ export class LfMessenger implements LfMessengerInterface {
     const { bemClass } = this.#framework.theme;
 
     return OPTION_TYPE_IDS.map((opt) => {
-      const { options } = this.#b;
+      const { options } = this.#b.messenger;
       const { image } = this.#adapter.controller.get;
       const { asCover } = image;
       const { ui } = this;
@@ -720,7 +774,7 @@ export class LfMessenger implements LfMessengerInterface {
   #prepRoster = () => {
     const { bemClass } = this.#framework.theme;
 
-    const { roster } = this.#b;
+    const { roster_sub: roster } = this.#b.messenger;
     const { get, set } = this.#adapter.controller;
 
     const avatars: VNode[] = [];
@@ -793,7 +847,7 @@ export class LfMessenger implements LfMessengerInterface {
       return;
     }
 
-    const { messenger, roster } = this.#b;
+    const { messenger } = this.#b;
     const { lfStyle } = this;
 
     return (
@@ -801,13 +855,19 @@ export class LfMessenger implements LfMessengerInterface {
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           {this.currentCharacter ? (
-            <div class={bemClass(messenger._)} part={this.#p.messenger}>
+            <div
+              class={bemClass(messenger._)}
+              part={this.#p.messenger.messenger}
+            >
               {this.#prepCharacter()}
               {this.#prepChat()}
               {this.#prepExtraContext()}
             </div>
           ) : (
-            <div class={bemClass(roster._)} part={this.#p.roster}>
+            <div
+              class={bemClass(messenger._, messenger.roster)}
+              part={this.#p.messenger.roster}
+            >
               {this.#prepRoster()}
             </div>
           )}

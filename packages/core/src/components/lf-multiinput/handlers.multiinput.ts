@@ -11,11 +11,11 @@ export const prepMultiInputHandlers = (
     //#region Chip
     chips: async (event) => {
       const { eventType, node } = event.detail || {};
-      const { controller } = getAdapter();
-      const comp = controller.get.compInstance as LfMultiInput;
+      const { controller, dispatcher } = getAdapter();
+      const comp = controller.get.compInstance() as LfMultiInput;
 
-      if (controller.get.isDisabled()) {
-        comp.onLfEvent(event, "lf-event", { node });
+      if (controller.computed.isDisabled()) {
+        dispatcher.emit("lf-event", { originalEvent: event, node });
         return;
       }
 
@@ -26,7 +26,7 @@ export const prepMultiInputHandlers = (
           }
           break;
         default:
-          comp.onLfEvent(event, "lf-event", { node });
+          dispatcher.emit("lf-event", { originalEvent: event, node });
           break;
       }
     },
@@ -35,11 +35,11 @@ export const prepMultiInputHandlers = (
     //#region Textfield
     textfield: async (event) => {
       const { eventType, iconType, inputValue } = event.detail || {};
-      const { controller } = getAdapter();
-      const comp = controller.get.compInstance as LfMultiInput;
+      const { controller, dispatcher } = getAdapter();
+      const comp = controller.get.compInstance() as LfMultiInput;
 
-      if (controller.get.isDisabled()) {
-        comp.onLfEvent(event, "lf-event");
+      if (controller.computed.isDisabled()) {
+        dispatcher.emit("lf-event", { originalEvent: event });
         return;
       }
 
@@ -65,7 +65,7 @@ export const prepMultiInputHandlers = (
           }
           break;
         default:
-          comp.onLfEvent(event, "lf-event");
+          dispatcher.emit("lf-event", { originalEvent: event });
           break;
       }
     },

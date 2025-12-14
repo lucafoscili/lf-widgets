@@ -70,6 +70,28 @@ describe("lf-carousel", () => {
     const page = await createPage(`<lf-carousel></lf-carousel>`);
     const component = page.rootInstance as LfCarousel;
 
+    // Setup dataset with at least 3 slides (nodes with image cells)
+    component.lfDataset = {
+      nodes: [
+        {
+          id: "slide-0",
+          value: "Slide 0",
+          cells: { lfImage: { shape: "image", value: "img0.png" } },
+        },
+        {
+          id: "slide-1",
+          value: "Slide 1",
+          cells: { lfImage: { shape: "image", value: "img1.png" } },
+        },
+        {
+          id: "slide-2",
+          value: "Slide 2",
+          cells: { lfImage: { shape: "image", value: "img2.png" } },
+        },
+      ],
+    };
+    await page.waitForChanges();
+
     await component.goToSlide(2);
     expect(component.currentIndex).toBe(2);
   });

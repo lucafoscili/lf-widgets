@@ -12,12 +12,17 @@ export const prepMultiInputJsx = (
     chips: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, cyAttributes, historyNodes, manager, parts } =
-        controller.get;
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const framework = get.framework();
+      const compInstance = get.compInstance();
+      const nodes = get.historyNodes();
+
+      const { assignRef, sanitizeProps, theme } = framework;
       const { bemClass } = theme;
-      const compInstance = controller.get.compInstance;
-      const nodes = historyNodes();
 
       if (!nodes.length) {
         return null;
@@ -30,7 +35,7 @@ export const prepMultiInputJsx = (
           lfUiSize={compInstance.lfUiSize}
           lfUiState={compInstance.lfUiState}
           {...sanitizeProps(compInstance.lfChipProps, "LfChip")}
-          class={bemClass(blocks.multiinput._, blocks.multiinput.chips)}
+          class={bemClass(blocks._, blocks.chips)}
           data-cy={cyAttributes.node}
           lfValue={compInstance.lfValue?.split(",") || []}
           onLf-chip-event={handlers.chips}
@@ -45,15 +50,20 @@ export const prepMultiInputJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, manager, parts } = controller.get;
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
+      const framework = get.framework();
+      const compInstance = get.compInstance();
+
+      const { assignRef, sanitizeProps, theme } = framework;
       const { bemClass } = theme;
       const { textfield } = handlers;
-      const compInstance = controller.get.compInstance;
 
       return (
         <lf-textfield
-          class={bemClass(blocks.multiinput._, blocks.multiinput.textfield)}
+          class={bemClass(blocks._, blocks.textfield)}
           lfUiSize={compInstance.lfUiSize}
           lfUiState={compInstance.lfUiState}
           {...sanitizeProps(compInstance.lfTextfieldProps, "LfTextfield")}

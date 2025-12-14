@@ -338,7 +338,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
       return;
     }
 
-    const { history } = this.#adapter.controller.set;
+    const { history } = this.#adapter.controller.actions;
 
     const s = newShape(currentShape);
     updateCellProps(s.shape, props);
@@ -375,7 +375,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
     shape: LfMasonrySelectedShape;
     value: string;
   }> {
-    return this.#adapter.controller.get.history.currentSnapshot();
+    return this.#adapter.controller.computed.history.currentSnapshot();
   }
   /**
    * Returns the underlying shape element (e.g., lf-canvas, lf-image, lf-chart) in the preview area.
@@ -533,6 +533,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   //#region Private methods
   #initAdapter = () => {
     const adapterParts = createAdapter(
+      // GET: Pure state reads (ALL must be functions)
       {
         // Base getters (v4.0.0 - ALL must be functions)
         blocks: () => this.#b,
@@ -557,22 +558,11 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         currentShape: () => this.#getSelectedShapeValue(this.currentShape),
         history: {
           current: () => this.history[this.currentShape.index],
-          currentSnapshot: () => {
-            if (this.historyIndex === null) {
-              return null;
-            }
-
-            const snapshot =
-              this.history[this.currentShape.index][this.historyIndex];
-
-            return this.#getSelectedShapeValue(snapshot);
-          },
           full: () => this.history,
           index: () => this.historyIndex,
           isPopupOpen: () => this.isHistoryPopupOpen,
         },
         navigation: {
-          hasNav: () => Boolean(this.lfNavigation?.treeProps?.lfDataset),
           isTreeOpen: () => this.isNavigationTreeOpen,
         },
         previewValue: () => this.previewValue,
@@ -581,6 +571,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         snackbar: () => this.snackbarState,
         spinnerStatus: () => this.isSpinnerActive,
       },
+      // SET: Simple single-value assignments
       {
         config: {
           behavior: (behavior?: LfShapeeditorBehavior) => {
@@ -615,6 +606,44 @@ export class LfShapeeditor implements LfShapeeditorInterface {
           (this.currentShape = node),
         history: {
           index: (index: number) => (this.historyIndex = index),
+          isPopupOpen: (open: boolean) => (this.isHistoryPopupOpen = open),
+        },
+        navigation: {
+          isTreeOpen: (open: boolean) => {
+            this.isNavigationTreeOpen = open;
+          },
+        },
+        previewValue: (value: string | null) => {
+          this.previewValue = value;
+        },
+        progressbar: (state: Partial<LfShapeeditorProgressbarState>) => {
+          this.progressbarState = { ...this.progressbarState, ...state };
+        },
+        snackbar: (state: Partial<LfShapeeditorSnackbarState>) => {
+          this.snackbarState = { ...this.snackbarState, ...state };
+        },
+      },
+      // COMPUTED: Derived values and predicates (pure functions)
+      {
+        history: {
+          currentSnapshot: () => {
+            if (this.historyIndex === null) {
+              return null;
+            }
+
+            const snapshot =
+              this.history[this.currentShape.index][this.historyIndex];
+
+            return this.#getSelectedShapeValue(snapshot);
+          },
+        },
+        navigation: {
+          hasNav: () => Boolean(this.lfNavigation?.treeProps?.lfDataset),
+        },
+      },
+      // ACTIONS: Multi-step operations
+      {
+        history: {
           new: (selectedShape: LfMasonrySelectedShape, isSnapshot = false) => {
             const historyByIndex = this.history?.[selectedShape.index] || [];
 
@@ -644,29 +673,17 @@ export class LfShapeeditor implements LfShapeeditorInterface {
               this.historyIndex = null;
             }
           },
-          togglePopup: () => {
+          toggle: () => {
             this.isHistoryPopupOpen = !this.isHistoryPopupOpen;
           },
         },
         navigation: {
-          isTreeOpen: (open: boolean) => {
-            this.isNavigationTreeOpen = open;
-          },
-          toggleTree: () => {
+          toggle: () => {
             this.isNavigationTreeOpen = !this.isNavigationTreeOpen;
           },
         },
-        previewValue: (value: string | null) => {
-          this.previewValue = value;
-        },
-        progressbar: (state: Partial<LfShapeeditorProgressbarState>) => {
-          this.progressbarState = { ...this.progressbarState, ...state };
-        },
-        resetKey: () => {
+        incrementResetKey: () => {
           this.resetKey++;
-        },
-        snackbar: (state: Partial<LfShapeeditorSnackbarState>) => {
-          this.snackbarState = { ...this.snackbarState, ...state };
         },
       },
       () => this.#adapter,
@@ -778,7 +795,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-    if (this.#adapter.controller.get.navigation.hasNav()) {
+    if (this.#adapter.controller.computed.navigation.hasNav()) {
       this.isNavigationTreeOpen = true;
     }
 

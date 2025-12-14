@@ -13,13 +13,17 @@ export const prepChat = (
     //#region Attachments
     attachments: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, lfAttributes, manager } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
       const { chip } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const lfAttributes = get.lfAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
-      const attachments = controller.get.currentAttachments();
+      const attachments = get.currentAttachments();
       const currentTheme = theme.get.current();
 
       if (!attachments?.length) {
@@ -45,7 +49,7 @@ export const prepChat = (
           }}
           lfStyling="input"
           onLf-chip-event={chip}
-          part={blocks.chat.attachments}
+          part={parts.attachments}
           ref={assignRef(chat, "attachments")}
         ></lf-chip>
       );
@@ -55,11 +59,14 @@ export const prepChat = (
     //#region Clear
     clear: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, cyAttributes, manager, parts } =
-        controller.get;
+      const { get } = controller;
       const { button } = handlers.chat;
       const { chat } = elements.refs;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -70,7 +77,7 @@ export const prepChat = (
           lfIcon={"--lf-icon-clear"}
           lfLabel="Clear"
           lfStyling={"flat"}
-          lfUiState={currentPrompt() ? "disabled" : "danger"}
+          lfUiState={get.currentPrompt() ? "disabled" : "danger"}
           onLf-button-event={button}
           part={parts.clear}
           ref={assignRef(chat, "clear")}
@@ -83,11 +90,14 @@ export const prepChat = (
     //#region Configuration
     configuration: () => {
       const { controller, elements, handlers } = getAdapter();
-
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -110,9 +120,13 @@ export const prepChat = (
     //#region Editable Message
     editableMessage: (m) => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -163,8 +177,9 @@ export const prepChat = (
     //#region Message
     messageBlock: (text) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -178,10 +193,14 @@ export const prepChat = (
     //#region Retry
     retry: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -204,21 +223,18 @@ export const prepChat = (
     //#region Send
     send: () => {
       const { controller, elements, handlers } = getAdapter();
-      const {
-        blocks,
-        currentAbortStreaming,
-        currentPrompt,
-        cyAttributes,
-        manager,
-        parts,
-      } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
-      const isStreaming = Boolean(currentAbortStreaming());
-      const showSpinner = Boolean(currentPrompt() && !isStreaming);
+      const isStreaming = Boolean(get.currentAbortStreaming());
+      const showSpinner = Boolean(get.currentPrompt() && !isStreaming);
       const label = isStreaming ? "Stop" : "Send";
       const status: LfThemeUIState = isStreaming ? "danger" : "primary";
 
@@ -243,11 +259,11 @@ export const prepChat = (
     //#region Spinner
     spinner: () => {
       const { controller, elements } = getAdapter();
-      const { currentPrompt, manager } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
-      const { assignRef } = manager;
+      const { assignRef } = get.framework();
 
-      const showSpinner = Boolean(currentPrompt());
+      const showSpinner = Boolean(get.currentPrompt());
 
       return (
         <lf-spinner
@@ -264,10 +280,14 @@ export const prepChat = (
     //#region Stt
     stt: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { chat } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (

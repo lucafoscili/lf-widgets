@@ -25,11 +25,14 @@ import {
  * Theme colors are applied for styling up/down candlesticks and axes.
  */
 export const candlestick = (getAdapter: () => LfChartAdapter) => {
-  const { compInstance, manager, style } = getAdapter().controller.get;
-  const { lfAxis, lfDataset } = compInstance;
+  const adapter = getAdapter();
+  const { axis, dataset, framework } = adapter.controller.get;
+  const { style } = adapter.controller.computed;
+  const lfAxis = axis();
+  const lfDataset = dataset();
   const { theme, tooltip } = style;
-  const { stringify } = manager.data.cell;
-  const { compute } = manager.color;
+  const { stringify } = framework().data.cell;
+  const { compute } = framework().color;
   const { border, danger, font, success, text } = theme();
 
   const xAxisKey = lfAxis[0];

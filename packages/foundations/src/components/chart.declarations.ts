@@ -10,7 +10,9 @@ import type {
 } from "echarts";
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
@@ -20,7 +22,6 @@ import {
   LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfDataColumn,
   LfDataDataset,
@@ -28,8 +29,10 @@ import {
 } from "../framework/data.declarations";
 import {
   LF_CHART_AXES_TYPES,
+  LF_CHART_BLOCKS,
   LF_CHART_EVENTS,
   LF_CHART_LEGEND_POSITIONS,
+  LF_CHART_PARTS,
   LF_CHART_TYPES,
 } from "./chart.constants";
 
@@ -51,12 +54,36 @@ export interface LfChartElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-chart` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates, option builders (pure functions)
+ * - controller.actions: Multi-step operations (lifecycle, data updates)
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfChartAdapter extends LfComponentAdapter<LfChartInterface> {
+export interface LfChartAdapter
+  extends LfComponentAdapter<
+    LfChartInterface,
+    LfChartEventPayload,
+    LfChartAdapterHandlers,
+    never,
+    never,
+    LfChartAdapterControllerGetters,
+    LfChartAdapterControllerSetters,
+    LfChartAdapterControllerComputed,
+    LfChartAdapterControllerActions
+  > {
   controller: {
     get: LfChartAdapterControllerGetters;
     set: LfChartAdapterControllerSetters;
+    computed: LfChartAdapterControllerComputed;
+    actions: LfChartAdapterControllerActions;
   };
+  dispatcher: LfChartAdapterDispatcher;
   handlers: LfChartAdapterHandlers;
 }
 /**
@@ -77,7 +104,111 @@ export interface LfChartAdapterThemeStyle {
   text: string;
 }
 /**
- * Utility interface used by the `lf-chart` component.
+ * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - computed values go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
+export interface LfChartAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfChartInterface,
+    (typeof LF_CHART_BLOCKS)["chart"],
+    Record<string, string>,
+    (typeof LF_CHART_PARTS)["chart"]
+  > {
+  /** Chart axis configuration */
+  axis: () => LfChartAxis;
+  /** Custom color overrides */
+  colors: () => string[];
+  /** Chart dataset */
+  dataset: () => LfDataDataset;
+  /** Legend placement */
+  legend: () => LfChartLegendPlacement;
+  /** Series identifiers */
+  series: () => string[];
+  /** Chart width */
+  sizeX: () => string;
+  /** Chart height */
+  sizeY: () => string;
+  /** Custom styling */
+  style: () => string;
+  /** Chart type(s) */
+  types: () => LfChartType[];
+  /** X-Axis configuration */
+  xAxis: () => LfChartXAxis;
+  /** Y-Axis configuration */
+  yAxis: () => LfChartYAxis;
+}
+/**
+ * Derived values, predicates, and option builders computed from state.
+ * Pure functions with no side effects.
+ * Contains option builders that COMPUTE complex ECharts configurations.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfChartAdapterControllerComputed {
+  /** Chart type predicates */
+  is: {
+    areaChart: () => boolean;
+    barChart: () => boolean;
+    bubbleChart: () => boolean;
+    calendarChart: () => boolean;
+    candlestickChart: () => boolean;
+    funnelChart: () => boolean;
+    gaussianChart: () => boolean;
+    hbarChart: () => boolean;
+    heatmapChart: () => boolean;
+    lineChart: () => boolean;
+    pieChart: () => boolean;
+    radarChart: () => boolean;
+    sankeyChart: () => boolean;
+    sbarChart: () => boolean;
+    scatterChart: () => boolean;
+  };
+  /** ECharts option builders - COMPUTE complex options from state */
+  options: LfChartAdapterOptions;
+  /** Finds a column by its ID */
+  columnById: (id: string) => LfDataColumn | undefined;
+  /** Maps chart type to ECharts series type */
+  mappedType: (type: LfChartType) => SeriesOption["type"];
+  /** Finds columns matching a series name */
+  seriesColumn: (seriesName: string) => LfDataColumn[];
+  /** Derives series data from dataset */
+  seriesData: () => LfChartSeriesData[];
+  /** Style builders for chart elements */
+  style: LfChartAdapterStyle;
+  /** Derives x-axes data from dataset */
+  xAxesData: () => { id: string; data: string[] }[];
+}
+/**
+ * Multi-step operations that may batch changes or trigger ECharts.
+ * May have side effects.
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
+ */
+export interface LfChartAdapterControllerActions {
+  /** Disposes the ECharts instance */
+  dispose: () => void;
+  /** Triggers a data refresh and re-render */
+  refresh: () => void;
+  /** Re-renders the chart */
+  render: () => void;
+  /** Resizes the chart to fit container */
+  resize: () => void;
+}
+/**
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ */
+export interface LfChartAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  style: {
+    theme: () => void;
+  };
+}
+/**
+ * Style configuration helpers for chart elements.
  */
 export interface LfChartAdapterStyle {
   axis: (
@@ -92,7 +223,8 @@ export interface LfChartAdapterStyle {
   seriesColor: (amount: number) => string[];
 }
 /**
- * Configuration options for the adapter within `lf-chart`.
+ * ECharts option builders for each supported chart type.
+ * These are COMPUTED values - they build complex options from state.
  */
 export interface LfChartAdapterOptions {
   basic: () => EChartsOption;
@@ -105,51 +237,30 @@ export interface LfChartAdapterOptions {
   radar: () => EChartsOption;
   sankey: () => EChartsOption;
 }
+//#endregion
+
+//#region Dispatcher
 /**
- * Subset of adapter getters required during initialisation.
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
  */
-export type LfChartAdapterInitializerGetters = Pick<
-  LfChartAdapterControllerGetters,
-  | "compInstance"
-  | "columnById"
-  | "manager"
-  | "mappedType"
-  | "seriesColumn"
-  | "seriesData"
-  | "style"
-  | "xAxesData"
+export type LfChartAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfChartEventPayload>;
+export type LfChartAdapterDispatcherDetailOverrides = {
+  [E in LfChartEvent]: E extends "click"
+    ? LfChartAdapterDispatchDetailBase & {
+        data: LfChartEventData;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfChartAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfChartAdapterDispatchDetailBase;
+};
+export type LfChartAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfChartEventPayload,
+  LfChartAdapterDispatcherDetailOverrides
 >;
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfChartAdapterInitializerSetters = Pick<
-  LfChartAdapterControllerSetters,
-  "style"
->;
-/**
- * Read-only controller surface exposed by the adapter for integration code.
- */
-export interface LfChartAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfChartInterface> {
-  compInstance: LfChartInterface;
-  columnById: (id: string) => LfDataColumn;
-  manager: LfFrameworkInterface;
-  mappedType: (type: LfChartType) => SeriesOption["type"];
-  options: LfChartAdapterOptions;
-  seriesColumn: (seriesName: string) => LfDataColumn[];
-  seriesData: () => LfChartSeriesData[];
-  style: LfChartAdapterStyle;
-  xAxesData: () => { id: string; data: string[] }[];
-}
-/**
- * Imperative controller callbacks exposed by the adapter.
- */
-export interface LfChartAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  style: {
-    theme: () => void;
-  };
-}
 //#endregion
 
 //#region Events

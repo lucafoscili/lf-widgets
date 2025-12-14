@@ -38,6 +38,7 @@ export * from "./list.constants";
 export * from "./list.declarations";
 export * from "./masonry.constants";
 export * from "./masonry.declarations";
+export * from "./messenger.blocks";
 export * from "./messenger.constants";
 export * from "./messenger.declarations";
 export * from "./multiinput.constants";

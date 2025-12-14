@@ -34,8 +34,7 @@ export const parseMessageContent = (
   role: LfLLMRole,
 ): VNode[] => {
   const { elements, controller } = adapter;
-  const { manager } = controller.get;
-  const { syntax } = manager;
+  const { syntax } = controller.get.framework();
   const { messageBlock } = elements.jsx.chat;
   const contentElements = elements.jsx.content;
 

@@ -54,7 +54,8 @@ export const draw = (
   //#region Shape
   shape: (type: LfCanvasType, x: number, y: number, isFill = true) => {
     const { controller, toolkit } = getAdapter();
-    const { lfBrush, lfSize } = controller.get.compInstance;
+    const { compInstance } = controller.get;
+    const { lfBrush, lfSize } = compInstance();
 
     const { ctx } = toolkit.ctx.get(type);
 

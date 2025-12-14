@@ -15,10 +15,11 @@ export const prepChat = (
     chat: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { character, manager } = controller.get;
+      const { character, framework } = controller.get;
       const { refs } = elements;
       const { chat, current, history } = character;
-      const { assignRef, sanitizeProps } = manager;
+      const fw = framework();
+      const { assignRef, sanitizeProps } = fw;
 
       const system = systemMessage(adapter);
 
@@ -48,10 +49,11 @@ export const prepChat = (
     //#region Left expander
     leftExpander: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, config, manager } = controller.get;
+      const { cyAttributes, config, framework } = controller.get;
       const { refs } = elements;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { "--lf-icon-next": right, "--lf-icon-previous": left } =
         theme.get.current().variables;
 
@@ -60,8 +62,8 @@ export const prepChat = (
 
       return (
         <lf-button
-          data-cy={cyAttributes.button}
-          id={LF_MESSENGER_IDS.chat.leftExpander}
+          data-cy={cyAttributes().button}
+          id={LF_MESSENGER_IDS.messenger.chat.leftExpander}
           lfIcon={icon}
           lfStretchY={true}
           onLf-button-event={button}
@@ -75,10 +77,11 @@ export const prepChat = (
     //#region Right expander
     rightExpander: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { config, cyAttributes, manager } = controller.get;
+      const { config, cyAttributes, framework } = controller.get;
       const { refs } = elements;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { "--lf-icon-next": right, "--lf-icon-previous": left } =
         theme.get.current().variables;
 
@@ -87,8 +90,8 @@ export const prepChat = (
 
       return (
         <lf-button
-          data-cy={cyAttributes.button}
-          id={LF_MESSENGER_IDS.chat.rightExpander}
+          data-cy={cyAttributes().button}
+          id={LF_MESSENGER_IDS.messenger.chat.rightExpander}
           lfIcon={icon}
           lfStretchY={true}
           onLf-button-event={button}
@@ -102,10 +105,11 @@ export const prepChat = (
     //#region Tabbar
     tabbar: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { manager } = controller.get;
+      const { framework } = controller.get;
       const { refs } = elements;
       const { tabbar } = handlers.chat;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
 
       return (
         <lf-tabbar

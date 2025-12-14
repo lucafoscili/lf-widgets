@@ -17,10 +17,10 @@ export const prepOptionsHandlers = (
       switch (eventType) {
         case "click":
           switch (id) {
-            case LF_MESSENGER_IDS.options.customize:
+            case LF_MESSENGER_IDS.messenger.options.customize:
               customization(true);
               break;
-            case LF_MESSENGER_IDS.options.back:
+            case LF_MESSENGER_IDS.messenger.options.back:
               customization(false);
               break;
           }

@@ -12,8 +12,9 @@ export const prepOptions = (
     //#region Back
     back: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, manager } = controller.get;
-      const { assignRef, theme } = manager;
+      const { cyAttributes, framework } = controller.get;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { options } = elements.refs;
       const { button } = handlers.options;
 
@@ -21,8 +22,8 @@ export const prepOptions = (
 
       return (
         <lf-button
-          data-cy={cyAttributes.button}
-          id={LF_MESSENGER_IDS.options.back}
+          data-cy={cyAttributes().button}
+          id={LF_MESSENGER_IDS.messenger.options.back}
           lfIcon={icon}
           lfLabel="Back"
           lfStretchX={true}
@@ -36,8 +37,9 @@ export const prepOptions = (
     //#region Customization
     customize: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, manager } = controller.get;
-      const { assignRef, theme } = manager;
+      const { cyAttributes, framework } = controller.get;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { options } = elements.refs;
       const { button } = handlers.options;
 
@@ -45,8 +47,8 @@ export const prepOptions = (
 
       return (
         <lf-button
-          data-cy={cyAttributes.button}
-          id={LF_MESSENGER_IDS.options.customize}
+          data-cy={cyAttributes().button}
+          id={LF_MESSENGER_IDS.messenger.options.customize}
           lfIcon={icon}
           lfLabel="Customize"
           lfStretchX={true}

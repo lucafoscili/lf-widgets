@@ -38,8 +38,7 @@ export const prepSettingsHandlers = (
       const { eventType, id } = e.detail;
 
       const { get, set } = getAdapter().controller;
-      const { compInstance } = get;
-      const comp = compInstance as LfChat;
+      const comp = get.compInstance() as LfChat;
 
       switch (eventType) {
         case "click":
@@ -65,8 +64,7 @@ export const prepSettingsHandlers = (
 
       const adapter = getAdapter();
       const { get } = adapter.controller;
-      const { compInstance } = get;
-      const comp = compInstance as LfChat;
+      const comp = get.compInstance() as LfChat;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       switch (eventType) {
@@ -117,8 +115,7 @@ export const prepSettingsHandlers = (
       const { eventType, id, value } = e.detail;
 
       const { get } = getAdapter().controller;
-      const { compInstance } = get;
-      const comp = compInstance as LfChat;
+      const comp = get.compInstance() as LfChat;
 
       switch (eventType) {
         case "change":

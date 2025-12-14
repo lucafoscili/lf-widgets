@@ -33,7 +33,9 @@ export const LF_CHART_LEGEND_POSITIONS = [
 
 //#region Parts
 export const LF_CHART_PARTS = {
-  chart: "chart",
+  chart: {
+    _: "chart",
+  },
 } as const;
 //#endregion
 

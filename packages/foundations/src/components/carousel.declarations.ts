@@ -1,12 +1,13 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import { CY_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -15,11 +16,11 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CAROUSEL_BLOCKS,
   LF_CAROUSEL_EVENTS,
+  LF_CAROUSEL_IDS,
   LF_CAROUSEL_PARTS,
 } from "./carousel.constants";
 
@@ -41,13 +42,37 @@ export interface LfCarouselElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-carousel` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export interface LfCarouselAdapter
-  extends LfComponentAdapter<LfCarouselInterface> {
+  extends LfComponentAdapter<
+    LfCarouselInterface,
+    LfCarouselEventPayload,
+    LfCarouselAdapterHandlers,
+    LfCarouselAdapterJsx,
+    LfCarouselAdapterRefs,
+    LfCarouselAdapterControllerGetters,
+    LfCarouselAdapterControllerSetters,
+    LfCarouselAdapterControllerComputed,
+    LfCarouselAdapterControllerActions
+  > {
   controller: {
     get: LfCarouselAdapterControllerGetters;
     set: LfCarouselAdapterControllerSetters;
+    computed: LfCarouselAdapterControllerComputed;
+    actions: LfCarouselAdapterControllerActions;
   };
+  dispatcher: LfCarouselAdapterDispatcher;
   elements: {
     jsx: LfCarouselAdapterJsx;
     refs: LfCarouselAdapterRefs;
@@ -75,57 +100,71 @@ export interface LfCarouselAdapterHandlers extends LfComponentAdapterHandlers {
   button: (e: CustomEvent<LfButtonEventPayload>) => void;
 }
 /**
- * Subset of adapter getters required during initialisation.
- */
-export type LfCarouselAdapterInitializerGetters = Pick<
-  LfCarouselAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "index"
-  | "interval"
-  | "manager"
-  | "parts"
-  | "totalSlides"
->;
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfCarouselAdapterInitializerSetters = Pick<
-  LfCarouselAdapterControllerSetters,
-  "index" | "interval"
->;
-/**
  * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfCarouselAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfCarouselInterface> {
-  blocks: typeof LF_CAROUSEL_BLOCKS;
-  compInstance: LfCarouselInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  index: {
-    current: () => number;
-  };
+  extends LfComponentAdapterBaseGetters<
+    LfCarouselInterface,
+    (typeof LF_CAROUSEL_BLOCKS)["carousel"],
+    typeof LF_CAROUSEL_IDS,
+    typeof LF_CAROUSEL_PARTS
+  > {
+  /** Current slide index */
+  currentIndex: () => number;
+  /** Autoplay interval timer */
   interval: () => NodeJS.Timeout;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_CAROUSEL_PARTS;
+  /** Total number of slides */
   totalSlides: () => number;
 }
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
  */
 export interface LfCarouselAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  /** Set current slide index directly */
+  currentIndex: (value: number) => void;
+  /** Set autoplay interval timer */
+  interval: (value: NodeJS.Timeout) => void;
+}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfCarouselAdapterControllerComputed {
+  /** Predicate: can navigate to next slide */
+  hasNext: () => boolean;
+  /** Predicate: can navigate to previous slide */
+  hasPrev: () => boolean;
+  /** Predicate: has slides to display */
+  hasSlides: () => boolean;
+}
+/**
+ * Multi-step operations that may batch changes or toggle state.
+ * May have side effects.
+ */
+export interface LfCarouselAdapterControllerActions {
+  /** Navigation actions */
+  navigation: {
+    /** Go to next slide (wraps around) */
+    next: () => void;
+    /** Go to previous slide (wraps around) */
+    prev: () => void;
+    /** Go to specific slide by index with validation */
+    goTo: (index: number) => void;
+  };
+  /** Autoplay actions */
   autoplay: {
+    /** Start autoplay if conditions met */
     start: () => void;
+    /** Stop autoplay and clear interval */
     stop: () => void;
   };
-  index: {
-    current: (value: number) => void;
-    next: () => void;
-    previous: () => void;
-  };
-  interval: (value: NodeJS.Timeout) => void;
 }
 //#endregion
 
@@ -139,6 +178,30 @@ export type LfCarouselEvent = (typeof LF_CAROUSEL_EVENTS)[number];
  */
 export interface LfCarouselEventPayload
   extends LfEventPayload<"LfCarousel", LfCarouselEvent> {}
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfCarouselAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfCarouselEventPayload>;
+export type LfCarouselAdapterDispatcherDetailOverrides = {
+  [E in LfCarouselEvent]: E extends "lf-event"
+    ? LfCarouselAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfCarouselAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfCarouselAdapterDispatchDetailBase;
+};
+export type LfCarouselAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfCarouselEventPayload,
+  LfCarouselAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Props

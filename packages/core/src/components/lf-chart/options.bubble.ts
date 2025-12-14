@@ -23,11 +23,14 @@ import { EChartsOption } from "echarts";
  * const options = bubble(() => myChartAdapter);
  */
 export const bubble = (getAdapter: () => LfChartAdapter) => {
-  const { get } = getAdapter().controller;
-  const { columnById, compInstance, manager, style } = get;
-  const { lfAxis, lfDataset, lfSeries } = compInstance;
-  const { axis, seriesColor, theme, tooltip } = style;
-  const { stringify } = manager.data.cell;
+  const adapter = getAdapter();
+  const { axis, dataset, framework, series } = adapter.controller.get;
+  const { columnById, style } = adapter.controller.computed;
+  const lfAxis = axis();
+  const lfDataset = dataset();
+  const lfSeries = series();
+  const { axis: axisStyle, seriesColor, theme, tooltip } = style;
+  const { stringify } = framework().data.cell;
   const { font, text } = theme();
 
   const xAxisKey = lfAxis[0];
@@ -67,11 +70,11 @@ export const bubble = (getAdapter: () => LfChartAdapter) => {
       name: columnById(xAxisKey)?.title || xAxisKey,
       nameLocation: "middle",
       nameGap: 25,
-      axisLabel: axis("x").axisLabel,
+      axisLabel: axisStyle("x").axisLabel,
     },
     yAxis: {
       name: columnById(yAxisKey)?.title || yAxisKey,
-      axisLabel: axis("y").axisLabel,
+      axisLabel: axisStyle("y").axisLabel,
     },
     series: [
       {

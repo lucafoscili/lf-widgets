@@ -1,10 +1,10 @@
 import {
   LfChatAdapter,
+  LfChatAdapterControllerActions,
+  LfChatAdapterControllerComputed,
   LfChatAdapterControllerGetters,
   LfChatAdapterControllerSetters,
   LfChatAdapterHandlers,
-  LfChatAdapterInitializerGetters,
-  LfChatAdapterInitializerSetters,
   LfChatAdapterJsx,
   LfChatAdapterRefs,
 } from "@lf-widgets/foundations";
@@ -16,17 +16,35 @@ import { prepToolbar } from "./elements.toolbar";
 import { prepChatHandlers } from "./handlers.chat";
 import { prepSettingsHandlers } from "./handlers.settings";
 import { prepToolbarHandlers } from "./handlers.toolbar";
-import { ensureMessageId } from "./helpers.message-id";
 
+/**
+ * Creates the canonical adapter for lf-chat.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (async ops, toggles)
+ * - elements: JSX factories + refs
+ * - dispatcher: Centralized event emission (passed from component)
+ * - handlers: Event callbacks grouped by domain
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+//#region Adapter
 export const createAdapter = (
-  getters: LfChatAdapterInitializerGetters,
-  setters: LfChatAdapterInitializerSetters,
+  getters: LfChatAdapterControllerGetters,
+  setters: Omit<LfChatAdapterControllerSetters, "spinnerStatus">,
+  computed: LfChatAdapterControllerComputed,
+  actions: LfChatAdapterControllerActions,
   getAdapter: () => LfChatAdapter,
-): LfChatAdapter => {
+): Omit<LfChatAdapter, "dispatcher"> => {
   return {
     controller: {
-      get: createGetters(getters, getAdapter),
+      get: getters,
       set: createSetters(setters),
+      computed,
+      actions,
     },
     elements: {
       jsx: createElementsJsx(getAdapter),
@@ -38,33 +56,10 @@ export const createAdapter = (
 //#endregion
 
 //#region Controller
-export const createGetters = (
-  getters: LfChatAdapterInitializerGetters,
-  getAdapter: () => LfChatAdapter,
-): LfChatAdapterControllerGetters => {
-  return {
-    ...getters,
-    newPrompt: async () => {
-      const { textarea } = getAdapter().elements.refs.input;
-
-      await textarea.setBlur();
-      const message = await textarea.getValue();
-      if (message) {
-        const newMessage = ensureMessageId({
-          role: "user",
-          content: message,
-        });
-        return newMessage;
-      } else {
-        return null;
-      }
-    },
-  };
-};
 export const createSetters = (
-  setters: LfChatAdapterInitializerSetters,
+  setters: Omit<LfChatAdapterControllerSetters, "spinnerStatus">,
 ): LfChatAdapterControllerSetters => {
-  return setters;
+  return setters as LfChatAdapterControllerSetters;
 };
 //#endregion
 

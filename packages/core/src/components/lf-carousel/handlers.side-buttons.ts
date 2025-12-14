@@ -11,15 +11,15 @@ export const prepSideButtonHandlers = (
     button: (e) => {
       const { eventType, id } = e.detail;
 
-      const { next, previous } = getAdapter().controller.set.index;
+      const { prev, next } = getAdapter().controller.actions.navigation;
 
       switch (eventType) {
         case "click":
           switch (id) {
-            case LF_CAROUSEL_IDS.back:
-              previous();
+            case LF_CAROUSEL_IDS.carousel.back:
+              prev();
               break;
-            case LF_CAROUSEL_IDS.forward:
+            case LF_CAROUSEL_IDS.carousel.forward:
               next();
               break;
           }

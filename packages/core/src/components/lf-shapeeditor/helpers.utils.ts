@@ -23,7 +23,7 @@ export const clearHistory = async (
   adapter: LfShapeeditorAdapter,
   index: number = null,
 ) => {
-  const { history } = adapter.controller.set;
+  const { history } = adapter.controller.actions;
 
   if (index === null) {
     history.pop();
@@ -185,7 +185,7 @@ export const resetControls = async (adapter: LfShapeeditorAdapter) => {
   adapter.controller.set.config.settings(resetSettings);
 
   // Increment resetKey to force control re-creation
-  adapter.controller.set.resetKey();
+  adapter.controller.actions.incrementResetKey();
 };
 //#endregion
 
@@ -225,8 +225,8 @@ export const redo = async (adapter: LfShapeeditorAdapter) => {
  * @throws Will return early if no current shape is selected
  */
 export const save = async (adapter: LfShapeeditorAdapter) => {
-  const { compInstance, currentShape, history, framework } =
-    adapter.controller.get;
+  const { compInstance, currentShape, framework } = adapter.controller.get;
+  const { history } = adapter.controller.computed;
 
   const comp = compInstance();
   const mgr = framework();

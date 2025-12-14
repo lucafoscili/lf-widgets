@@ -23,21 +23,21 @@ export const prepChatHandlers = (
       const { get, set } = controller;
       const { refs } = elements;
       const { chat, input } = refs;
-      const { llm } = get.manager;
-      const comp = get.compInstance as LfChat;
+      const { llm } = get.framework();
+      const comp = get.compInstance() as LfChat;
 
       switch (eventType) {
         case "click":
           switch (id) {
             // Attach File
             case LF_CHAT_IDS.input.attachFile: {
-              await get.compInstance.handleFileAttachment();
+              await get.compInstance().handleFileAttachment();
               break;
             }
 
             // Attach Image
             case LF_CHAT_IDS.input.attachImage: {
-              await get.compInstance.handleImageAttachment();
+              await get.compInstance().handleImageAttachment();
               break;
             }
 
@@ -68,7 +68,7 @@ export const prepChatHandlers = (
               try {
                 const { controller, elements } = adapter;
                 const { get, set } = controller;
-                const comp = get.compInstance as LfChat;
+                const comp = get.compInstance() as LfChat;
 
                 const editingId = get.currentEditingId();
                 if (!editingId) {
@@ -100,7 +100,7 @@ export const prepChatHandlers = (
 
             // Full Screen
             case LF_CHAT_IDS.input.fullScreen: {
-              set.toggleFullScreen();
+              controller.actions.toggleFullScreen();
               break;
             }
 

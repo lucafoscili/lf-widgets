@@ -1,33 +1,32 @@
 import {
   LfMessengerAdapter,
-  LfMessengerAdapterGetters,
-  LfMessengerAdapterSetters,
+  LfMessengerAdapterControllerGetters,
+  LfMessengerAdapterControllerSetters,
   LfMessengerCharacterNode,
 } from "@lf-widgets/foundations";
-import { defaultToCurrentCharacter, hasCharacters } from "./helpers.utils";
+import { defaultToCurrentCharacter } from "./helpers.utils";
 import { LfMessenger } from "./lf-messenger";
 
 //#region Getters
 export const prepCharacterGetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterGetters["character"] => {
+): LfMessengerAdapterControllerGetters["character"] => {
   return {
     biography: (character?) => getBiography(getAdapter, character),
     byId: (id) => {
-      const { lfDataset } = getAdapter().controller.get
-        .compInstance as LfMessenger;
+      const compInstance = getAdapter().controller.get.compInstance();
+      const { lfDataset } = compInstance as LfMessenger;
       return lfDataset.nodes.find((n) => n.id === id);
     },
     chat: (character?) => getChat(getAdapter, character),
     current: () => {
-      const { currentCharacter } = getAdapter().controller.get
-        .compInstance as LfMessenger;
-      return currentCharacter;
+      const compInstance = getAdapter().controller.get.compInstance();
+      return (compInstance as LfMessenger).currentCharacter;
     },
     history: (character?) => getHistory(getAdapter, character),
     list: () => {
-      const { lfDataset } = getAdapter().controller.get
-        .compInstance as LfMessenger;
+      const compInstance = getAdapter().controller.get.compInstance();
+      const { lfDataset } = compInstance as LfMessenger;
       return lfDataset.nodes || [];
     },
     name: (character?) => getName(getAdapter, character),
@@ -40,11 +39,11 @@ export const prepCharacterGetters = (
 //#region Setters
 export const prepCharacterSetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterSetters["character"] => {
+): LfMessengerAdapterControllerSetters["character"] => {
   return {
     chat: (chat, character?) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
+      const compInstance = adapter.controller.get.compInstance();
       const { id } = defaultToCurrentCharacter(getAdapter(), character);
 
       const c = compInstance as LfMessenger;
@@ -53,7 +52,7 @@ export const prepCharacterSetters = (
     },
     current: (character) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
+      const compInstance = adapter.controller.get.compInstance();
 
       const c = compInstance as LfMessenger;
 
@@ -61,7 +60,7 @@ export const prepCharacterSetters = (
     },
     history: (history, character?) => {
       const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
+      const compInstance = adapter.controller.get.compInstance();
       const { id } = defaultToCurrentCharacter(getAdapter(), character);
 
       const c = compInstance as LfMessenger;
@@ -74,32 +73,6 @@ export const prepCharacterSetters = (
         }
       }
     },
-    next: (character?) => {
-      const adapter = getAdapter();
-      if (!hasCharacters(adapter)) {
-        return;
-      }
-
-      const { set } = adapter.controller;
-
-      const c = defaultToCurrentCharacter(getAdapter(), character);
-      const { next } = adapter.controller.get.character;
-
-      set.character.current(next(c));
-    },
-    previous: (character?) => {
-      const adapter = getAdapter();
-      if (!hasCharacters(adapter)) {
-        return;
-      }
-
-      const { set } = adapter.controller;
-
-      const c = defaultToCurrentCharacter(getAdapter(), character);
-      const { previous } = adapter.controller.get.character;
-
-      set.character.current(previous(c));
-    },
   };
 };
 //#endregion
@@ -110,7 +83,8 @@ const getBiography = (
   character: LfMessengerCharacterNode,
 ) => {
   const adapter = getAdapter();
-  const { stringify } = adapter.controller.get.manager.data.cell;
+  const framework = adapter.controller.get.framework();
+  const { stringify } = framework.data.cell;
 
   const c = defaultToCurrentCharacter(getAdapter(), character);
 
@@ -128,7 +102,8 @@ const getChat = (
   character: LfMessengerCharacterNode,
 ) => {
   const adapter = getAdapter();
-  const { chat } = adapter.controller.get.compInstance as LfMessenger;
+  const compInstance = adapter.controller.get.compInstance();
+  const { chat } = compInstance as LfMessenger;
   const { id } = defaultToCurrentCharacter(adapter, character);
 
   return chat[id];
@@ -138,7 +113,8 @@ const getHistory = (
   character: LfMessengerCharacterNode,
 ) => {
   const adapter = getAdapter();
-  const { history } = adapter.controller.get.compInstance as LfMessenger;
+  const compInstance = adapter.controller.get.compInstance();
+  const { history } = compInstance as LfMessenger;
   const { id } = defaultToCurrentCharacter(getAdapter(), character);
 
   return history[id];
@@ -160,10 +136,11 @@ const fetch = (
   next?: boolean,
 ) => {
   const adapter = getAdapter();
-  const { lfDataset } = adapter.controller.get.compInstance;
+  const compInstance = adapter.controller.get.compInstance();
+  const { lfDataset } = compInstance;
   const { id } = defaultToCurrentCharacter(getAdapter(), character);
 
-  if (!hasCharacters(adapter)) {
+  if (!lfDataset?.nodes?.length) {
     return null;
   }
 

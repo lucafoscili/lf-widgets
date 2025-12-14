@@ -1,7 +1,7 @@
 import {
   LfMessengerAdapter,
-  LfMessengerAdapterGetters,
-  LfMessengerAdapterSetters,
+  LfMessengerAdapterControllerGetters,
+  LfMessengerAdapterControllerSetters,
   LfMessengerBaseChildNode,
   LfMessengerImageTypes,
   LfMessengerPanelsValue,
@@ -12,10 +12,10 @@ import { LfMessenger } from "./lf-messenger";
 //#region Getters
 export const prepUiGetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterGetters["ui"] => {
+): LfMessengerAdapterControllerGetters["ui"] => {
   return () => {
-    const { ui } = getAdapter().controller.get.compInstance as LfMessenger;
-    return ui;
+    const compInstance = getAdapter().controller.get.compInstance();
+    return (compInstance as LfMessenger).ui;
   };
 };
 //#endregion
@@ -23,10 +23,10 @@ export const prepUiGetters = (
 //#region Setters
 export const prepUiSetters = (
   getAdapter: () => LfMessengerAdapter,
-): LfMessengerAdapterSetters["ui"] => {
+): LfMessengerAdapterControllerSetters["ui"] => {
   return {
     customization: (value) => {
-      const { compInstance } = getAdapter().controller.get;
+      const compInstance = getAdapter().controller.get.compInstance();
 
       const c = compInstance as LfMessenger;
 
@@ -34,7 +34,7 @@ export const prepUiSetters = (
       c.refresh();
     },
     filters: (filters) => {
-      const { compInstance } = getAdapter().controller.get;
+      const compInstance = getAdapter().controller.get.compInstance();
 
       const c = compInstance as LfMessenger;
 
@@ -42,7 +42,7 @@ export const prepUiSetters = (
       c.refresh();
     },
     options: (value, type) => {
-      const { compInstance } = getAdapter().controller.get;
+      const compInstance = getAdapter().controller.get.compInstance();
 
       const c = compInstance as LfMessenger;
 
@@ -65,7 +65,8 @@ const setFormState = async <T extends LfMessengerUnionChildIds>(
 ) => {
   const adapter = getAdapter();
   const { controller } = adapter;
-  const { compInstance, image } = controller.get;
+  const compInstance = controller.get.compInstance();
+  const { image } = controller.get;
   const { formStatusMap, ui } = compInstance as LfMessenger;
 
   ui.form[type] = value;
@@ -84,7 +85,7 @@ const setPanel = (
   value?: boolean,
 ) => {
   const adapter = getAdapter();
-  const { compInstance } = adapter.controller.get;
+  const compInstance = adapter.controller.get.compInstance();
   const { panels } = (compInstance as LfMessenger).ui;
 
   switch (panel) {

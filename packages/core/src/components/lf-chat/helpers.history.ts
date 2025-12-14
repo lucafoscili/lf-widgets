@@ -20,7 +20,7 @@ export const setH = async (
 ): Promise<void> => {
   const { controller } = adapter;
   const { get, set } = controller;
-  const { debug } = get.manager;
+  const { debug } = get.framework();
 
   if (!fromFile) {
     try {

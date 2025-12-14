@@ -98,8 +98,8 @@ export const defaultToCurrentCharacter = (
   adapter: LfMessengerAdapter,
   character: LfMessengerCharacterNode,
 ) => {
-  const { currentCharacter } = adapter.controller.get
-    .compInstance as LfMessenger;
+  const { currentCharacter } =
+    adapter.controller.get.compInstance() as LfMessenger;
   return character ?? currentCharacter;
 };
 //#endregion
@@ -157,7 +157,7 @@ export const assignPropsToChatCell = (
  * @returns {boolean} True if there are characters present, false otherwise.
  */
 export const hasCharacters = (adapter: LfMessengerAdapter) => {
-  const { lfDataset } = adapter.controller.get.compInstance;
+  const { lfDataset } = adapter.controller.get.compInstance();
 
   const nodes = lfDataset?.nodes || [];
   return !!nodes.length;
@@ -172,7 +172,7 @@ export const hasCharacters = (adapter: LfMessengerAdapter) => {
  * @returns `true` if nodes array exists and has length > 0, `false` otherwise
  */
 export const hasNodes = (adapter: LfMessengerAdapter) => {
-  const { lfDataset } = adapter.controller.get.compInstance;
+  const { lfDataset } = adapter.controller.get.compInstance();
 
   return !!lfDataset?.nodes?.length;
 };
@@ -222,7 +222,7 @@ export const systemMessage = (adapter: LfMessengerAdapter) => {
     const { character, compInstance, image } = adapter.controller.get;
     const { biography } = character;
     const { asCover } = image;
-    const { options: isEnabled } = (compInstance as LfMessenger).ui;
+    const { options: isEnabled } = (compInstance() as LfMessenger).ui;
 
     const location = asCover("locations").node;
     const outfit = asCover("outfits").node;
@@ -289,6 +289,6 @@ export const updateDataset = (adapter: LfMessengerAdapter) => {
   const { controller } = adapter;
   const { compInstance } = controller.get;
 
-  (compInstance as LfMessenger).save();
+  (compInstance() as LfMessenger).save();
 };
 //#endregion

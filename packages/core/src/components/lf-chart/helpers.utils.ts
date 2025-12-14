@@ -1,6 +1,7 @@
 import {
   LF_THEME_COLORS_DATA_PREFIX,
   LfChartAdapter,
+  LfChartAxesTypes,
   LfColorInput,
   LfThemeColorDataVariables,
 } from "@lf-widgets/foundations";
@@ -19,9 +20,10 @@ const baseAxis = (
   getAdapter: () => LfChartAdapter,
 ): XAXisComponentOption | YAXisComponentOption => {
   const adapter = getAdapter();
-  const { manager, style } = adapter.controller.get;
+  const { framework } = adapter.controller.get;
+  const { style } = adapter.controller.computed;
   const { border, font, text } = style.theme();
-  const { compute } = manager.color;
+  const { compute } = framework().color;
 
   return {
     alignTicks: false,
@@ -68,9 +70,13 @@ export const applyOpacity = (color: string, opacity: string) =>
  * Prepares the axis configuration for a chart by applying common settings.
  *
  * @param getAdapter - A function that returns a LfChartAdapter instance used for chart configuration
+ * @param axisType - Optional axis type parameter (for interface compatibility)
  * @returns The configured common axis settings
  */
-export const prepAxis = (getAdapter: () => LfChartAdapter) => {
+export const prepAxis = (
+  getAdapter: () => LfChartAdapter,
+  _axisType?: LfChartAxesTypes,
+) => {
   const commonAxis = baseAxis(getAdapter);
 
   return commonAxis;
@@ -84,7 +90,7 @@ export const prepAxis = (getAdapter: () => LfChartAdapter) => {
  * @returns An EChartsOption object containing label configuration with styling based on the theme
  */
 export const prepLabel = (getAdapter: () => LfChartAdapter) => {
-  const { font, text } = getAdapter().controller.get.style.theme();
+  const { font, text } = getAdapter().controller.computed.style.theme();
 
   const label: EChartsOption = {
     show: true,
@@ -123,8 +129,10 @@ export const prepLabel = (getAdapter: () => LfChartAdapter) => {
  * - Text styling from theme
  */
 export const prepLegend = (getAdapter: () => LfChartAdapter) => {
-  const { compInstance, seriesData, style } = getAdapter().controller.get;
-  const { lfLegend } = compInstance;
+  const adapter = getAdapter();
+  const { legend: getLegend } = adapter.controller.get;
+  const { seriesData, style } = adapter.controller.computed;
+  const lfLegend = getLegend();
   const { font, text } = style.theme();
 
   if (lfLegend === "hidden") {
@@ -132,7 +140,7 @@ export const prepLegend = (getAdapter: () => LfChartAdapter) => {
   }
 
   const data = seriesData().map((s) => s.name);
-  const legend: LegendComponentOption = {
+  const legendConfig: LegendComponentOption = {
     data,
     itemGap: 12,
     [lfLegend]: 0,
@@ -141,7 +149,7 @@ export const prepLegend = (getAdapter: () => LfChartAdapter) => {
       fontFamily: font,
     },
   };
-  return legend;
+  return legendConfig;
 };
 //#endregion
 
@@ -165,10 +173,11 @@ export const prepSeries = (
   getAdapter: () => LfChartAdapter,
   amount: number,
 ) => {
-  const { compInstance, manager } = getAdapter().controller.get;
-  const { lfColors } = compInstance;
-  const { compute, random } = manager.color;
-  const { variables } = manager.theme.get.current();
+  const adapter = getAdapter();
+  const { colors, framework } = adapter.controller.get;
+  const lfColors = colors();
+  const { compute, random } = framework().color;
+  const { variables } = framework().theme.get.current();
 
   const colorArray: LfColorInput[] = [];
 
@@ -205,9 +214,10 @@ export const prepTooltip = (
   formatter?: TooltipComponentFormatterCallback<any>,
 ) => {
   const adapter = getAdapter();
-  const { manager, style } = adapter.controller.get;
+  const { framework } = adapter.controller.get;
+  const { style } = adapter.controller.computed;
   const { background, border, font, text } = style.theme();
-  const { compute } = manager.color;
+  const { compute } = framework().color;
 
   const tooltip: TooltipComponentOption = {
     backgroundColor: `rgba(${compute(background).rgbValues}, 0.875)`,

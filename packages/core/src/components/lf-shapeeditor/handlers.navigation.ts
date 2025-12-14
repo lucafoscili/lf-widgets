@@ -18,7 +18,7 @@ export const prepNavigationHandlers = (
 
       const adapter = getAdapter();
       const { controller } = adapter;
-      const { get, set } = controller;
+      const { get, actions } = controller;
       const { compInstance } = get;
 
       const c = compInstance() as LfShapeeditor;
@@ -27,7 +27,7 @@ export const prepNavigationHandlers = (
 
       switch (eventType) {
         case "click":
-          set.navigation.toggleTree();
+          actions.navigation.toggle();
           break;
       }
     },
@@ -58,7 +58,7 @@ export const prepNavigationHandlers = (
 
       const adapter = getAdapter();
       const { controller } = adapter;
-      const { get, set } = controller;
+      const { get, set, actions } = controller;
       const { compInstance, history } = get;
       const { current } = history;
 
@@ -76,7 +76,7 @@ export const prepNavigationHandlers = (
 
             const h = current();
             set.history.index(h ? h.length - 1 : 0);
-            set.history.new(selectedShape);
+            actions.history.new(selectedShape);
           }
           break;
       }

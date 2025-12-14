@@ -28,6 +28,21 @@ export const LF_CANVAS_EVENTS = [
 ] as const;
 //#endregion
 
+//#region IDs
+/**
+ * Element ID constants for the canvas component.
+ * Used for assigning unique IDs to child elements.
+ */
+export const LF_CANVAS_IDS = {
+  canvas: {
+    _: "canvas",
+    board: "board",
+    image: "image",
+    preview: "preview",
+  },
+} as const;
+//#endregion
+
 //#region Parts
 export const LF_CANVAS_PARTS = {
   board: "board",

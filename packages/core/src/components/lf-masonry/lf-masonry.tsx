@@ -4,6 +4,7 @@ import {
   LF_MASONRY_BLOCKS,
   LF_MASONRY_CSS_VARS,
   LF_MASONRY_DEFAULT_COLUMNS,
+  LF_MASONRY_IDS,
   LF_MASONRY_PARTS,
   LF_MASONRY_PROPS,
   LF_STYLE_ID,
@@ -41,6 +42,8 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { LfShape } from "../../utils/shapes";
+import { createActions } from "./actions.masonry";
+import { createComputed } from "./computed.masonry";
 import { createAdapter } from "./lf-masonry-adapter";
 
 /**
@@ -198,6 +201,7 @@ export class LfMasonry implements LfMasonryInterface {
   #framework: LfFrameworkInterface;
   #b = LF_MASONRY_BLOCKS;
   #cy = CY_ATTRIBUTES;
+  #ids = LF_MASONRY_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_MASONRY_PARTS;
   #s = LF_STYLE_ID;
@@ -379,30 +383,82 @@ export class LfMasonry implements LfMasonryInterface {
 
   //#region Private methods
   #initAdapter = () => {
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        currentColumns: () => this.#currentColumns,
-        cyAttributes: this.#cy,
-        isMasonry: () => this.#isMasonry(),
-        isVertical: () => this.#isVertical(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-        shapes: () => this.shapes,
+    // GET: Pure state reads (ALL must be functions)
+    const getters = {
+      // Base getters (v4.0.0 - ALL must be functions)
+      blocks: () => this.#b,
+      compInstance: () => this,
+      cyAttributes: () => this.#cy,
+      framework: () => this.#framework,
+      ids: () => this.#ids,
+      lfAttributes: () => this.#lf,
+      parts: () => this.#p,
+      // Component-specific getters
+      currentColumns: () => this.#currentColumns,
+      selectedIndex: () => this.selectedShape?.index,
+      selectedShape: () => this.selectedShape,
+      shapes: () => this.shapes,
+      view: () => this.lfView,
+    };
+
+    // SET: Simple single-value assignments
+    const setters = {
+      selectedIndex: (index: number | undefined) => {
+        if (index !== undefined) {
+          const shape = this.shapes?.[this.lfShape]?.[index];
+          this.selectedShape = shape ? { index, shape } : {};
+        } else {
+          this.selectedShape = {};
+        }
       },
+      selectedShape: (shape: LfMasonrySelectedShape) => {
+        this.selectedShape = shape;
+      },
+      view: (view: LfMasonryView) => {
+        this.lfView = view;
+      },
+    };
+
+    // COMPUTED: Derived values and predicates (pure functions)
+    const computed = createComputed(getters);
+
+    // ACTIONS: Multi-step operations
+    const actions = createActions(() => this.#adapter);
+
+    const adapterParts = createAdapter(
+      getters,
+      setters,
+      computed,
+      actions,
       () => this.#adapter,
     );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+            selectedShape: detail?.selectedShape ?? this.selectedShape,
+          });
+        },
+      },
+    };
   };
   #hasShapes = () => {
     return !!this.shapes?.[this.lfShape];
   };
   #isMasonry = () => {
     return this.lfView === "main";
-  };
-  #isVertical = () => {
-    return this.lfView === "vertical";
   };
   #debounce = (cb: () => void, wait: number) => {
     return () => {

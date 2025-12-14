@@ -1,12 +1,13 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import { CY_ATTRIBUTES } from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -14,12 +15,12 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_CANVAS_BLOCKS,
   LF_CANVAS_BRUSH,
   LF_CANVAS_CURSOR,
   LF_CANVAS_EVENTS,
+  LF_CANVAS_IDS,
   LF_CANVAS_PARTS,
   LF_CANVAS_TYPES,
 } from "./canvas.constants";
@@ -113,12 +114,37 @@ export interface LfCanvasElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-canvas` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (clear, undo, etc.)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks grouped by context
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
-export interface LfCanvasAdapter extends LfComponentAdapter<LfCanvasInterface> {
+export interface LfCanvasAdapter
+  extends LfComponentAdapter<
+    LfCanvasInterface,
+    LfCanvasEventPayload,
+    LfCanvasAdapterHandlers,
+    LfCanvasAdapterJsx,
+    LfCanvasAdapterRefs,
+    LfCanvasAdapterControllerGetters,
+    LfCanvasAdapterControllerSetters,
+    LfCanvasAdapterControllerComputed,
+    LfCanvasAdapterControllerActions
+  > {
   controller: {
     get: LfCanvasAdapterControllerGetters;
     set: LfCanvasAdapterControllerSetters;
+    computed: LfCanvasAdapterControllerComputed;
+    actions: LfCanvasAdapterControllerActions;
   };
+  dispatcher: LfCanvasAdapterDispatcher;
   elements: {
     jsx: LfCanvasAdapterJsx;
     refs: LfCanvasAdapterRefs;
@@ -126,29 +152,7 @@ export interface LfCanvasAdapter extends LfComponentAdapter<LfCanvasInterface> {
   handlers: LfCanvasAdapterHandlers;
   toolkit: LfCanvasAdapterToolkit;
 }
-/**
- * Subset of adapter getters required during initialisation.
- */
-export type LfCanvasAdapterInitializerGetters = Pick<
-  LfCanvasAdapterControllerGetters,
-  | "blocks"
-  | "boxing"
-  | "compInstance"
-  | "cyAttributes"
-  | "isCursorPreview"
-  | "isPainting"
-  | "manager"
-  | "orientation"
-  | "parts"
-  | "points"
->;
-/**
- * Subset of adapter setters required during initialisation.
- */
-export type LfCanvasAdapterInitializerSetters = Pick<
-  LfCanvasAdapterControllerSetters,
-  "boxing" | "isPainting" | "orientation" | "points"
->;
+
 /**
  * Handler map consumed by the adapter to react to framework events.
  */
@@ -166,22 +170,31 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
 }
 /**
  * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfCanvasAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfCanvasInterface> {
-  blocks: typeof LF_CANVAS_BLOCKS;
+  extends LfComponentAdapterBaseGetters<
+    LfCanvasInterface,
+    (typeof LF_CANVAS_BLOCKS)["canvas"],
+    (typeof LF_CANVAS_IDS)["canvas"],
+    typeof LF_CANVAS_PARTS
+  > {
+  /** Current boxing mode state */
   boxing: () => LfCanvasBoxing;
-  compInstance: LfCanvasInterface;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  isCursorPreview: () => boolean;
+  /** Current painting state */
   isPainting: () => boolean;
-  manager: LfFrameworkInterface;
+  /** Current image orientation */
   orientation: () => LfCanvasOrientation;
-  parts: typeof LF_CANVAS_PARTS;
+  /** Current stroke points array */
   points: () => LfCanvasPoints;
 }
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
  */
 export interface LfCanvasAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -189,6 +202,33 @@ export interface LfCanvasAdapterControllerSetters
   isPainting: (value: boolean) => void;
   orientation: (value: LfCanvasOrientation) => void;
   points: (value: LfCanvasPoints) => void;
+}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfCanvasAdapterControllerComputed {
+  /** Check if cursor preview mode is active */
+  isCursorPreview: () => boolean;
+  /** Check if preview should be rendered (cursor preview OR lfPreview prop) */
+  shouldRenderPreview: () => boolean;
+  /** Check if currently drawing a stroke */
+  isDrawing: () => boolean;
+  /** Check if canvas has any drawn content (points exist) */
+  hasPoints: () => boolean;
+}
+/**
+ * Multi-step operations that may batch changes or have side effects.
+ */
+export interface LfCanvasAdapterControllerActions {
+  /** Clears the canvas and resets points state */
+  clearCanvas: (type?: LfCanvasType) => void;
+  /** Finalizes the current stroke (commit to board canvas) */
+  finalizeStroke: () => void;
+  /** Sets up canvas context with current drawing settings */
+  setupContext: (type: LfCanvasType, isFill?: boolean) => void;
+  /** Clears and redraws preview canvas */
+  redrawPreview: () => void;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -269,6 +309,34 @@ export interface LfCanvasEventPayload
   extends LfEventPayload<"LfCanvas", LfCanvasEvent> {
   points: Array<{ x: number; y: number }>;
 }
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfCanvasAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfCanvasEventPayload>;
+export type LfCanvasAdapterDispatcherDetailOverrides = {
+  [E in LfCanvasEvent]: E extends "lf-event"
+    ? LfCanvasAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "stroke"
+      ? LfCanvasAdapterDispatchDetailBase & {
+          originalEvent: PointerEvent;
+        }
+      : E extends "ready" | "unmount"
+        ? Omit<LfCanvasAdapterDispatchDetailBase, "originalEvent"> & {
+            originalEvent?: never;
+          }
+        : LfCanvasAdapterDispatchDetailBase;
+};
+export type LfCanvasAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfCanvasEventPayload,
+  LfCanvasAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region States

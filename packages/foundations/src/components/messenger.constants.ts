@@ -9,73 +9,12 @@ import {
   LfMessengerUI,
 } from "./messenger.declarations";
 
-//#region Blocks
-export const LF_MESSENGER_BLOCKS = {
-  character: {
-    _: "character",
-    avatar: "avatar",
-    biography: "biography",
-    image: "image",
-    label: "label",
-    name: "name",
-    nameWrapper: "name-wrapper",
-    saveButton: "save-button",
-    status: "status",
-  },
-  chat: {
-    _: "chat",
-    chat: "chat",
-    expander: "expander",
-    navigation: "navigation",
-  },
-  covers: {
-    _: "covers",
-    add: "add",
-    images: "images",
-    label: "label",
-    title: "title",
-  },
-  extraContext: {
-    _: "extra-context",
-    list: "list",
-    options: "options",
-  },
-  form: {
-    _: "form",
-    button: "button",
-    confirm: "confirm",
-    field: "field",
-    label: "label",
-  },
-  list: {
-    _: "list",
-    actions: "actions",
-    image: "image",
-  },
-  messenger: { _: "messenger" },
-  options: {
-    _: "options",
-    blocker: "blocker",
-    blockerIcon: "blocker-icon",
-    blockerLabel: "blocker-label",
-    cover: "cover",
-    info: "info",
-    label: "label",
-    name: "name",
-    placeholder: "placeholder",
-    placeholderIcon: "placeholder-icon",
-    wrapper: "wrapper",
-  },
-  roster: {
-    _: "roster",
-    emptyData: "empty-data",
-    image: "image",
-    label: "label",
-    name: "name",
-    portrait: "portrait",
-  },
-} as const;
-//#endregion
+// Re-export blocks and types from separate file to avoid circular dependency issues
+export {
+  LF_MESSENGER_BLOCKS,
+  LfMessengerBlocksType,
+  LfMessengerBlockType,
+} from "./messenger.blocks";
 
 //#region Clean UI flags
 /**
@@ -119,11 +58,20 @@ export const LF_MESSENGER_CLEAN_UI = (): LfMessengerUI => {
 };
 //#endregion
 
+//#region Events
+/**
+ * Event types emitted by the lf-messenger component.
+ */
+export const LF_MESSENGER_EVENTS = ["ready", "save", "unmount"] as const;
+//#endregion
+
 //#region Parts
 export const LF_MESSENGER_PARTS = {
-  emptyData: "empty-data",
-  messenger: "messenger",
-  roster: "roster",
+  messenger: {
+    messenger: "messenger",
+    emptyData: "empty-data",
+    roster: "roster",
+  },
 } as const;
 //#endregion
 
@@ -140,21 +88,24 @@ export const LF_MESSENGER_PROPS = [
 /**
  * Object containing constant ID values used throughout the messenger component.
  * @constant
- * @property {Object} chat - IDs related to chat elements
- * @property {string} chat.leftExpander - ID for the left expansion control
- * @property {string} chat.rightExpander - ID for the right expansion control
- * @property {Object} options - IDs related to option buttons
- * @property {string} options.back - ID for the back navigation button
- * @property {string} options.customize - ID for the customization button
+ * @property {Object} messenger - Top-level namespace for messenger IDs
+ * @property {Object} messenger.chat - IDs related to chat elements
+ * @property {string} messenger.chat.leftExpander - ID for the left expansion control
+ * @property {string} messenger.chat.rightExpander - ID for the right expansion control
+ * @property {Object} messenger.options - IDs related to option buttons
+ * @property {string} messenger.options.back - ID for the back navigation button
+ * @property {string} messenger.options.customize - ID for the customization button
  */
 export const LF_MESSENGER_IDS = {
-  chat: {
-    leftExpander: "left-expander",
-    rightExpander: "right-expaner",
-  },
-  options: {
-    back: "back-button",
-    customize: "customize-button",
+  messenger: {
+    chat: {
+      leftExpander: "left-expander",
+      rightExpander: "right-expaner",
+    },
+    options: {
+      back: "back-button",
+      customize: "customize-button",
+    },
   },
 } as const;
 //#endregion

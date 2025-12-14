@@ -3,7 +3,6 @@ import {
   LfMasonryAdapter,
   LfMasonryAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { addColumn, changeView, removeColumn } from "./helpers.utils";
 
 export const controlsHandlers = (
   getAdapter: () => LfMasonryAdapter,
@@ -12,18 +11,19 @@ export const controlsHandlers = (
     //#region Button
     button: (e) => {
       const { eventType, id } = e.detail;
+      const { actions } = getAdapter().controller;
 
       switch (eventType) {
         case "click":
           switch (id) {
             case LF_MASONRY_IDS.masonry:
-              changeView(getAdapter());
+              actions.cycleView();
               break;
             case LF_MASONRY_IDS.removeColumn:
-              removeColumn(getAdapter());
+              actions.removeColumn();
               break;
             case LF_MASONRY_IDS.addColumn:
-              addColumn(getAdapter());
+              actions.addColumn();
               break;
           }
           break;

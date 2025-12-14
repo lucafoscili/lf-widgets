@@ -23,17 +23,11 @@ export const prepPreview = (
     //#region Shape
     shape: () => {
       const { controller, elements, handlers } = getAdapter();
-      const {
-        blocks,
-        compInstance,
-        history,
-        lfAttributes,
-        framework,
-        previewValue,
-      } = controller.get;
+      const { blocks, compInstance, lfAttributes, framework, previewValue } =
+        controller.get;
+      const { history } = controller.computed;
       const { preview } = elements.refs;
       const { shape } = handlers.preview;
-      const { currentSnapshot } = history;
 
       const b = blocks();
       const lf = lfAttributes();
@@ -46,7 +40,7 @@ export const prepPreview = (
 
       const previewBlock = b.preview;
 
-      const snapshot = currentSnapshot();
+      const snapshot = history.currentSnapshot();
       if (!snapshot) {
         return;
       }

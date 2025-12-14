@@ -2,6 +2,7 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_CAROUSEL_BLOCKS,
+  LF_CAROUSEL_IDS,
   LF_CAROUSEL_PARTS,
   LF_CAROUSEL_PROPS,
   LF_STYLE_ID,
@@ -37,8 +38,11 @@ import {
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
 import { LfShape } from "../../utils/shapes";
-import { autoplay, navigation } from "./helpers.utils";
-import { createAdapter } from "./lf-carousel-adapter";
+import {
+  createActions,
+  createAdapter,
+  createComputed,
+} from "./lf-carousel-adapter";
 
 /**
  * The carousel component displays a carousel with slides that can be navigated using navigation controls or by clicking on slide indicators.
@@ -169,7 +173,7 @@ export class LfCarousel implements LfCarouselInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
-  #b = LF_CAROUSEL_BLOCKS;
+  #b = LF_CAROUSEL_BLOCKS.carousel;
   #cy = CY_ATTRIBUTES;
   #lf = LF_ATTRIBUTES;
   #p = LF_CAROUSEL_PARTS;
@@ -270,9 +274,9 @@ export class LfCarousel implements LfCarouselInterface {
    */
   @Method()
   async goToSlide(index: number): Promise<void> {
-    const { current } = this.#adapter.controller.set.index;
+    const { goTo } = this.#adapter.controller.actions.navigation;
 
-    current(index);
+    goTo(index);
   }
   /**
    * Moves the carousel to the next slide.
@@ -281,7 +285,7 @@ export class LfCarousel implements LfCarouselInterface {
    */
   @Method()
   async nextSlide(): Promise<void> {
-    const { next } = this.#adapter.controller.set.index;
+    const { next } = this.#adapter.controller.actions.navigation;
 
     next();
   }
@@ -292,9 +296,9 @@ export class LfCarousel implements LfCarouselInterface {
    */
   @Method()
   async prevSlide(): Promise<void> {
-    const { previous } = this.#adapter.controller.set.index;
+    const { prev } = this.#adapter.controller.actions.navigation;
 
-    previous();
+    prev();
   }
   /**
    * This method is used to trigger a new render of the component.
@@ -318,39 +322,53 @@ export class LfCarousel implements LfCarouselInterface {
 
   //#region Private methods
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    const adapterParts = createAdapter(
+      // GET: Pure state reads (ALL must be functions)
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: CY_ATTRIBUTES,
-        index: {
-          current: () => this.currentIndex,
-        },
+        // Base getters (v4.0.0 - ALL must be functions)
+        blocks: () => this.#b,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => LF_CAROUSEL_IDS,
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p,
+        // Component-specific getters
+        currentIndex: () => this.currentIndex,
         interval: () => this.#interval,
-        manager: this.#framework,
-        parts: LF_CAROUSEL_PARTS,
         totalSlides: () => this.#getTotalSlides(),
       },
+      // SET: Simple single-value assignments
       {
-        index: {
-          current: (value) => (this.currentIndex = value),
-          next: () => {
-            this.currentIndex = navigation.calcNextIdx(
-              this.currentIndex,
-              this.#getTotalSlides(),
-            );
-          },
-          previous: () => {
-            this.currentIndex = navigation.calcPreviousIdx(
-              this.currentIndex,
-              this.#getTotalSlides(),
-            );
-          },
-        },
+        currentIndex: (value) => (this.currentIndex = value),
         interval: (value) => (this.#interval = value),
       },
+      // COMPUTED: Derived values and predicates (created via factory)
+      createComputed(() => this.#adapter),
+      // ACTIONS: Multi-step operations (created via factory)
+      createActions(() => this.#adapter),
       () => this.#adapter,
     );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+          });
+        },
+      },
+    };
   };
   #getTotalSlides() {
     return this.shapes?.[this.lfShape]?.length || 0;
@@ -361,7 +379,7 @@ export class LfCarousel implements LfCarouselInterface {
   #prepCarousel(): VNode {
     const { bemClass } = this.#framework.theme;
 
-    const { carousel } = this.#b;
+    const carousel = this.#b;
     const { elements } = this.#adapter;
     const { jsx } = elements;
     const { back, forward } = jsx;
@@ -392,7 +410,7 @@ export class LfCarousel implements LfCarouselInterface {
   #prepIndicators(): VNode[] {
     const { bemClass } = this.#framework.theme;
 
-    const { slideBar } = this.#b;
+    const { slideBar } = LF_CAROUSEL_BLOCKS;
     const totalSlides = this.#getTotalSlides();
 
     const segments = [];
@@ -427,7 +445,7 @@ export class LfCarousel implements LfCarouselInterface {
 
     const { currentIndex, lfShape } = this;
 
-    const { carousel } = this.#b;
+    const carousel = this.#b;
 
     const props: Partial<LfDataCell<LfDataShapes>>[] = this.shapes[lfShape].map(
       () => ({
@@ -471,13 +489,13 @@ export class LfCarousel implements LfCarouselInterface {
     this.updateShapes();
 
     if (this.lfAutoPlay) {
-      autoplay.start(this.#adapter);
+      this.#adapter.controller.actions.autoplay.start();
     }
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
     const { register } = this.#framework.drag;
-    const { next, previous } = this.#adapter.controller.set.index;
+    const { next, prev } = this.#adapter.controller.actions.navigation;
 
     register.swipe(this.#carousel, {
       onEnd: (_e, session) => {
@@ -486,7 +504,7 @@ export class LfCarousel implements LfCarouselInterface {
           if (direction === "left") {
             next();
           } else if (direction === "right") {
-            previous();
+            prev();
           }
         }
       },
@@ -510,7 +528,7 @@ export class LfCarousel implements LfCarouselInterface {
 
     const { lfStyle } = this;
 
-    const { carousel } = this.#b;
+    const carousel = this.#b;
 
     return (
       <Host>
@@ -536,7 +554,7 @@ export class LfCarousel implements LfCarouselInterface {
   disconnectedCallback() {
     this.#framework?.drag.unregister.swipe(this.#carousel);
     this.#framework?.theme.unregister(this);
-    autoplay.stop(this.#adapter);
+    this.#adapter?.controller.actions.autoplay.stop();
   }
   //#endregion
 }

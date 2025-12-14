@@ -41,10 +41,11 @@ import {
  * // Use the returned options with ECharts instance
  */
 export const basic = (getAdapter: () => LfChartAdapter) => {
-  const { manager, mappedType, seriesData, style, xAxesData } =
-    getAdapter().controller.get;
+  const { framework } = getAdapter().controller.get;
+  const { mappedType, seriesData, style, xAxesData } =
+    getAdapter().controller.computed;
   const { axis, legend, seriesColor, theme, tooltip } = style;
-  const { compute } = manager.color;
+  const { compute } = framework().color;
   const { background, font, text } = theme();
 
   const xAxes: XAXisComponentOption[] = [];

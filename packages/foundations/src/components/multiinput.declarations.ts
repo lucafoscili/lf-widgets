@@ -1,7 +1,8 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-  LfComponentAdapterGetters,
+  LfComponentAdapter,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
@@ -14,7 +15,6 @@ import {
   LfComponentClassProperties,
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkInterface } from "../framework";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
@@ -50,53 +50,118 @@ export interface LfMultiInputElement
 //#endregion
 
 //#region Adapter
-export interface LfMultiInputAdapter {
+/**
+ * Adapter contract that wires `lf-multiinput` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+export interface LfMultiInputAdapter
+  extends LfComponentAdapter<
+    LfMultiInputInterface,
+    LfMultiInputEventPayload,
+    LfMultiInputAdapterHandlers,
+    LfMultiInputAdapterJsx,
+    LfMultiInputAdapterRefs,
+    LfMultiInputAdapterControllerGetters,
+    LfMultiInputAdapterControllerSetters,
+    LfMultiInputAdapterControllerComputed,
+    LfMultiInputAdapterControllerActions
+  > {
   controller: {
     get: LfMultiInputAdapterControllerGetters;
     set: LfMultiInputAdapterControllerSetters;
+    computed: LfMultiInputAdapterControllerComputed;
+    actions: LfMultiInputAdapterControllerActions;
   };
+  dispatcher: LfMultiInputAdapterDispatcher;
   elements: {
     jsx: LfMultiInputAdapterJsx;
     refs: LfMultiInputAdapterRefs;
   };
   handlers: LfMultiInputAdapterHandlers;
 }
+/**
+ * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
+ */
 export interface LfMultiInputAdapterControllerGetters
-  extends LfComponentAdapterGetters<LfMultiInputInterface> {
-  blocks: typeof LF_MULTIINPUT_BLOCKS;
-  cyAttributes: typeof CY_ATTRIBUTES;
+  extends LfComponentAdapterBaseGetters<
+    LfMultiInputInterface,
+    (typeof LF_MULTIINPUT_BLOCKS)["multiinput"],
+    Record<string, never>,
+    typeof LF_MULTIINPUT_PARTS
+  > {
+  /** Current history nodes */
   historyNodes: () => LfDataNode[];
+  /** Current history values as strings */
   historyValues: () => string[];
-  lfAttributes: typeof LF_ATTRIBUTES;
+  /** Current dataset */
   lfDataset: () => LfDataDataset;
-  isDisabled: () => boolean;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_MULTIINPUT_PARTS;
+  /** Current input value */
   value: () => string;
+  /** Maximum history entries allowed */
+  maxHistory: () => number;
+  /** Whether component is in tags mode */
+  isTagsMode: () => boolean;
+  /** Whether free input is allowed */
+  allowFreeInput: () => boolean;
 }
-export type LfMultiInputAdapterInitializerGetters = Pick<
-  LfMultiInputAdapterControllerGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "historyNodes"
-  | "historyValues"
-  | "isDisabled"
-  | "lfAttributes"
-  | "lfDataset"
-  | "manager"
-  | "parts"
-  | "value"
->;
+/**
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ */
 export interface LfMultiInputAdapterControllerSetters
   extends LfComponentAdapterSetters {
+  /** Replace history nodes */
   history: (nodes: LfDataNode[]) => Promise<void>;
+  /** Update current value */
   value: (value: string) => Promise<void>;
 }
-export type LfMultiInputAdapterInitializerSetters = Pick<
-  LfMultiInputAdapterControllerSetters,
-  "history" | "value"
->;
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfMultiInputAdapterControllerComputed {
+  /** Whether history has items */
+  hasItems: () => boolean;
+  /** Whether component is disabled */
+  isDisabled: () => boolean;
+  /** Whether max history limit is reached */
+  isAtLimit: () => boolean;
+  /** Whether value is a duplicate in history */
+  isDuplicate: (value: string) => boolean;
+  /** Whether the value is allowed (based on mode and allowFreeInput) */
+  isValueAllowed: (value: string) => boolean;
+  /** Get current tags from value (tags mode only) */
+  currentTags: () => string[];
+}
+/**
+ * Multi-step operations that may batch changes or have side effects.
+ */
+export interface LfMultiInputAdapterControllerActions {
+  /** Add item to history with validation */
+  addItem: (value: string) => Promise<void>;
+  /** Remove item from history by index */
+  removeItem: (index: number) => Promise<void>;
+  /** Clear all history items */
+  clearAll: () => Promise<void>;
+  /** Commit current value (validate + add to history + clear input) */
+  commitValue: (value: string) => Promise<void>;
+  /** Toggle tag selection (tags mode only) */
+  toggleTag: (tag: string) => Promise<void>;
+}
 export interface LfMultiInputAdapterJsx extends LfComponentAdapterJsx {
   chips: () => VNode | null;
   textfield: () => VNode;
@@ -110,6 +175,30 @@ export interface LfMultiInputAdapterHandlers
   chips: (event: LfEvent<LfChipEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
 }
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfMultiInputAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfMultiInputEventPayload>;
+export type LfMultiInputAdapterDispatcherDetailOverrides = {
+  [E in LfMultiInputEvent]: E extends "lf-event"
+    ? LfMultiInputAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfMultiInputAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfMultiInputAdapterDispatchDetailBase;
+};
+export type LfMultiInputAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfMultiInputEventPayload,
+  LfMultiInputAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region Events

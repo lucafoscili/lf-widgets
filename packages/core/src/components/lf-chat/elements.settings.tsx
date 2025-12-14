@@ -15,13 +15,17 @@ export const prepSettings = (
     //#region Back
     back: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { button } = handlers.settings;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const icon = get.current().variables["--lf-icon-previous"];
+      const icon = themeGet.current().variables["--lf-icon-previous"];
 
       return (
         <lf-button
@@ -43,12 +47,16 @@ export const prepSettings = (
     agentSettings: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { checkbox, textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       const agentEnabled = effectiveConfig.agent.enabled;
@@ -76,7 +84,7 @@ export const prepSettings = (
               max: 50,
               type: "number",
             }}
-            lfIcon={get.icon("refresh")}
+            lfIcon={themeGet.icon("refresh")}
             lfLabel="Max Iterations"
             lfValue={stringify(maxIterations)}
             onLf-textfield-event={textfield}
@@ -105,12 +113,16 @@ export const prepSettings = (
     contextWindow: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -122,7 +134,7 @@ export const prepSettings = (
             min: 1024,
             type: "number",
           }}
-          lfIcon={get.icon("arrowAutofitContent")}
+          lfIcon={themeGet.icon("arrowAutofitContent")}
           lfLabel="Context Window Size"
           lfValue={stringify(effectiveConfig.llm.contextWindow)}
           onLf-textfield-event={textfield}
@@ -137,11 +149,15 @@ export const prepSettings = (
     endpoint: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -149,7 +165,7 @@ export const prepSettings = (
           class={bemClass(blocks.settings._, blocks.settings.textfield)}
           data-cy={cyAttributes.input}
           id={LF_CHAT_IDS.options.endpointUrl}
-          lfIcon={get.icon("network")}
+          lfIcon={themeGet.icon("network")}
           lfLabel="Endpoint URL"
           lfValue={effectiveConfig.llm.endpointUrl}
           onLf-textfield-event={textfield}
@@ -163,18 +179,22 @@ export const prepSettings = (
     //#region Export History
     exportHistory: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { button } = handlers.settings;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
       return (
         <lf-button
           class={bemClass(blocks.settings._, blocks.settings.exportHistory)}
           data-cy={cyAttributes.button}
           id={LF_CHAT_IDS.options.exportHistory}
-          lfIcon={get.icon("download")}
+          lfIcon={themeGet.icon("download")}
           lfLabel="Export history"
           lfStretchX={true}
           onLf-button-event={button}
@@ -189,12 +209,16 @@ export const prepSettings = (
     frequencyPenalty: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -206,7 +230,7 @@ export const prepSettings = (
             min: 0,
             type: "number",
           }}
-          lfIcon={get.icon("codeCircle2")}
+          lfIcon={themeGet.icon("codeCircle2")}
           lfLabel="Frequency Penalty"
           lfValue={stringify(effectiveConfig.llm.frequencyPenalty)}
           onLf-textfield-event={textfield}
@@ -220,18 +244,22 @@ export const prepSettings = (
     //#region Import History
     importHistory: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { button } = handlers.settings;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
       return (
         <lf-button
           class={bemClass(blocks.settings._, blocks.settings.importHistory)}
           data-cy={cyAttributes.button}
           id={LF_CHAT_IDS.options.importHistory}
-          lfIcon={get.icon("upload")}
+          lfIcon={themeGet.icon("upload")}
           lfLabel="Import history"
           lfStretchX={true}
           onLf-button-event={button}
@@ -246,12 +274,16 @@ export const prepSettings = (
     maxTokens: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -263,7 +295,7 @@ export const prepSettings = (
             min: 10,
             type: "number",
           }}
-          lfIcon={get.icon("numbers")}
+          lfIcon={themeGet.icon("numbers")}
           lfLabel="Max tokens count"
           lfValue={stringify(effectiveConfig.llm.maxTokens)}
           onLf-textfield-event={textfield}
@@ -278,12 +310,16 @@ export const prepSettings = (
     polling: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -295,7 +331,7 @@ export const prepSettings = (
             min: 10,
             type: "number",
           }}
-          lfIcon={get.icon("hourglassLow")}
+          lfIcon={themeGet.icon("hourglassLow")}
           lfLabel="Polling interval"
           lfValue={stringify(effectiveConfig.llm.pollingInterval)}
           onLf-textfield-event={textfield}
@@ -310,12 +346,16 @@ export const prepSettings = (
     presencePenalty: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -327,7 +367,7 @@ export const prepSettings = (
             min: -2,
             type: "number",
           }}
-          lfIcon={get.icon("schema")}
+          lfIcon={themeGet.icon("schema")}
           lfLabel="Presence penalty"
           lfValue={stringify(effectiveConfig.llm.presencePenalty)}
           onLf-textfield-event={textfield}
@@ -342,12 +382,16 @@ export const prepSettings = (
     seed: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -358,7 +402,7 @@ export const prepSettings = (
           lfHtmlAttributes={{
             type: "number",
           }}
-          lfIcon={get.icon("ikosaedr")}
+          lfIcon={themeGet.icon("ikosaedr")}
           lfLabel="Random Seed (-1 for random)"
           lfValue={stringify(effectiveConfig.llm.seed)}
           onLf-textfield-event={textfield}
@@ -373,10 +417,14 @@ export const prepSettings = (
     system: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, theme } = manager;
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
@@ -401,12 +449,16 @@ export const prepSettings = (
     temperature: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -419,7 +471,7 @@ export const prepSettings = (
             min: 0.1,
             type: "number",
           }}
-          lfIcon={get.icon("temperature")}
+          lfIcon={themeGet.icon("temperature")}
           lfLabel="Temperature"
           lfValue={stringify(effectiveConfig.llm.temperature)}
           onLf-textfield-event={textfield}
@@ -434,10 +486,13 @@ export const prepSettings = (
     tools: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
       const { settings } = elements.refs;
       const { checkbox } = handlers.settings;
-      const { theme } = manager;
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
@@ -518,12 +573,16 @@ export const prepSettings = (
     topP: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
-      const { assignRef, data, theme } = manager;
+      const { assignRef, data, theme } = get.framework();
       const { stringify } = data.cell;
-      const { bemClass, get } = theme;
+      const { bemClass, get: themeGet } = theme;
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
@@ -537,7 +596,7 @@ export const prepSettings = (
             step: 0.1,
             type: "number",
           }}
-          lfIcon={get.icon("template")}
+          lfIcon={themeGet.icon("template")}
           lfLabel="Top P"
           lfValue={stringify(effectiveConfig.llm.topP)}
           onLf-textfield-event={textfield}

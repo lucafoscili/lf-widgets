@@ -12,6 +12,18 @@ export const LF_BADGE_BLOCKS = {
 } as const;
 //#endregion
 
+//#region IDs
+/**
+ * DOM element IDs used by the badge component.
+ * Structure mirrors BLOCKS for consistency.
+ */
+export const LF_BADGE_IDS = {
+  badge: "badge",
+  image: "image",
+  label: "label",
+} as const;
+//#endregion
+
 //#region Events
 export const LF_BADGE_EVENTS = [
   "click",

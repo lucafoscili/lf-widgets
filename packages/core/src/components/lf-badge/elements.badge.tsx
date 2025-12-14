@@ -14,10 +14,17 @@ export const prepBadgeJsx = (
     badge: () => {
       const adapter = getAdapter();
       const { controller, elements } = adapter;
-      const { blocks, compInstance, lfAttributes, manager, parts } =
-        controller.get;
+      const { get } = controller;
+
+      // v4.0.0: ALL getters are functions
+      const blocks = get.blocks();
+      const compInstance = get.compInstance();
+      const lfAttributes = get.lfAttributes();
+      const framework = get.framework();
+      const parts = get.parts();
+
       const { lfImageProps, lfLabel, lfPosition } = compInstance;
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { assignRef, sanitizeProps, theme } = framework;
       const { bemClass } = theme;
       const { refs } = elements;
 

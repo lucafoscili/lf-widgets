@@ -3,7 +3,6 @@ import {
   LfChartAdapterHandlers,
 } from "@lf-widgets/foundations";
 import { ECElementEvent } from "echarts";
-import { LfChart } from "./lf-chart";
 
 //#region prepChartHandlers
 export const prepChartHandlers = (
@@ -11,10 +10,11 @@ export const prepChartHandlers = (
 ): LfChartAdapterHandlers => {
   return {
     onClick: (e: ECElementEvent) => {
-      const { compInstance, seriesColumn } = getAdapter().controller.get;
-      const { lfDataset } = compInstance;
+      const adapter = getAdapter();
+      const { dataset } = adapter.controller.get;
+      const { seriesColumn } = adapter.controller.computed;
 
-      const comp = compInstance as LfChart;
+      const lfDataset = dataset();
 
       const seriesName = e.seriesName;
       const dataIndex = e.dataIndex;
@@ -35,11 +35,14 @@ export const prepChartHandlers = (
         y = String(y);
       }
 
-      comp.onLfEvent(new Event("click"), "click", {
-        column,
-        node,
-        x,
-        y,
+      adapter.dispatcher.emit("click", {
+        originalEvent: new Event("click"),
+        data: {
+          column,
+          node,
+          x,
+          y,
+        },
       });
     },
   };

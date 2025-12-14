@@ -1,6 +1,8 @@
 import {
+  CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
+  LF_BADGE_IDS,
   LF_BADGE_PARTS,
   LF_BADGE_PROPS,
   LF_STYLE_ID,
@@ -157,6 +159,8 @@ export class LfBadge implements LfBadgeInterface {
   #framework: LfFrameworkInterface;
   #adapter: LfBadgeAdapter;
   #b = LF_BADGE_BLOCKS;
+  #cy = CY_ATTRIBUTES;
+  #ids = LF_BADGE_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_BADGE_PARTS;
   #s = LF_STYLE_ID;
@@ -239,16 +243,7 @@ export class LfBadge implements LfBadgeInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-    this.#adapter = createAdapter(
-      {
-        blocks: this.#b,
-        compInstance: this,
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
-      },
-      () => this.#adapter,
-    );
+    this.#initAdapter();
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;
@@ -287,5 +282,50 @@ export class LfBadge implements LfBadgeInterface {
   disconnectedCallback() {
     this.#framework?.theme.unregister(this);
   }
+  //#endregion
+
+  //#region Private methods
+  #initAdapter = () => {
+    const adapterParts = createAdapter(
+      // GET: Pure state reads (ALL must be functions)
+      {
+        // Base getters (v4.0.0 - ALL must be functions)
+        blocks: () => this.#b,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p,
+      },
+      // SET: Simple single-value assignments (empty for badge)
+      {},
+      // COMPUTED: Derived values and predicates (empty for badge)
+      {},
+      // ACTIONS: Multi-step operations (empty for badge)
+      {},
+      () => this.#adapter,
+    );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+          });
+        },
+      },
+    };
+  };
   //#endregion
 }

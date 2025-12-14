@@ -8,8 +8,10 @@ export const prepContentElements = (
     //#region Blockquote
     blockquote: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -24,8 +26,10 @@ export const prepContentElements = (
     //#region Image
     image: (url, alt) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -43,8 +47,10 @@ export const prepContentElements = (
     //#region Bold
     bold: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -57,8 +63,10 @@ export const prepContentElements = (
     //#region Bullet List
     bulletList: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -69,8 +77,10 @@ export const prepContentElements = (
     //#region Code Fence
     codeFence: (language, code) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -88,8 +98,10 @@ export const prepContentElements = (
     //#region Heading
     heading: (level, children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -103,8 +115,10 @@ export const prepContentElements = (
     //#region Horizontal Rule
     horizontalRule: (): VNode => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -115,8 +129,10 @@ export const prepContentElements = (
     //#region Inline Code
     inlineCode: (content) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -129,8 +145,10 @@ export const prepContentElements = (
     //#region Inline Container
     inlineContainer: (children: (VNode | string)[]) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -145,8 +163,10 @@ export const prepContentElements = (
     //#region Italic
     italic: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -157,8 +177,10 @@ export const prepContentElements = (
     //#region Line Break
     lineBreak: () => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -169,8 +191,10 @@ export const prepContentElements = (
     //#region Link
     link: (href, children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -190,8 +214,10 @@ export const prepContentElements = (
     //#region List Item
     listItem: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -204,8 +230,10 @@ export const prepContentElements = (
     //#region Ordered List
     orderedList: (children) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 
@@ -216,8 +244,10 @@ export const prepContentElements = (
     //#region Paragraph
     paragraph: (children: (VNode | string)[]) => {
       const { controller } = getAdapter();
-      const { blocks, manager } = controller.get;
-      const { theme } = manager;
+      const { get } = controller;
+
+      const blocks = get.blocks();
+      const { theme } = get.framework();
       const { bemClass } = theme;
       const { messages } = blocks;
 

@@ -22,11 +22,14 @@ import { applyOpacity } from "./helpers.utils";
  * with customizable styling and interactive features.
  */
 export const radar = (getAdapter: () => LfChartAdapter) => {
-  const { compInstance, manager, seriesData, style } =
-    getAdapter().controller.get;
-  const { lfAxis, lfDataset, lfSeries } = compInstance;
+  const adapter = getAdapter();
+  const { axis, dataset, framework, series } = adapter.controller.get;
+  const { seriesData, style } = adapter.controller.computed;
+  const lfAxis = axis();
+  const lfDataset = dataset();
+  const lfSeries = series();
   const { legend, seriesColor, theme, tooltip } = style;
-  const { stringify } = manager.data.cell;
+  const { stringify } = framework().data.cell;
   const { font, text } = theme();
 
   const indicator = lfSeries.map((seriesName) => {

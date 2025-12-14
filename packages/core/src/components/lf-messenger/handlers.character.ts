@@ -49,7 +49,7 @@ export const prepCharacterHandlers = (
               strJson = character.history();
               break;
             case "lfDataset":
-              strJson = JSON.stringify(compInstance.lfDataset, null, 2);
+              strJson = JSON.stringify(compInstance().lfDataset, null, 2);
               break;
             case "settings":
               strJson = JSON.stringify(config(), null, 2);

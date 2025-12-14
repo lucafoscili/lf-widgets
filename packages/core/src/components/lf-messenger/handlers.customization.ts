@@ -19,7 +19,7 @@ export const prepCustomizationHandlers = (
       const { get, set } = adapter.controller;
       const { compInstance } = get;
 
-      const comp = compInstance as LfMessenger;
+      const comp = compInstance() as LfMessenger;
 
       if (eventType === "click") {
         switch (action) {
@@ -62,7 +62,7 @@ export const prepCustomizationHandlers = (
 
       const { get, set } = getAdapter().controller;
       const { compInstance } = get;
-      const { filters } = (compInstance as LfMessenger).ui;
+      const { filters } = (compInstance() as LfMessenger).ui;
 
       switch (eventType) {
         case "click":

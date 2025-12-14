@@ -14,10 +14,11 @@ export const prepCustomization = (
     //#region Filters
     filters: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { character, manager } = controller.get;
+      const { character, framework } = controller.get;
       const { customization } = elements.refs;
       const { chip } = handlers.customization;
-      const { assignRef } = manager;
+      const fw = framework();
+      const { assignRef } = fw;
 
       return (
         <lf-chip
@@ -39,7 +40,8 @@ export const prepCustomization = (
     list: {
       edit: (type, node) => {
         const { controller, elements, handlers } = getAdapter();
-        const { assignRef, theme } = controller.get.manager;
+        const fw = controller.get.framework();
+        const { assignRef, theme } = fw;
         const { customization } = elements.refs;
         const { button } = handlers.customization;
 
@@ -57,7 +59,8 @@ export const prepCustomization = (
       },
       remove: (type, node) => {
         const { controller, elements, handlers } = getAdapter();
-        const { assignRef, theme } = controller.get.manager;
+        const fw = controller.get.framework();
+        const { assignRef, theme } = fw;
         const { customization } = elements.refs;
         const { button } = handlers.customization;
 
@@ -89,18 +92,19 @@ const prepForms = (
         add: () => {
           const adapter = getAdapter();
           const { controller, elements, handlers } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
           const { button } = handlers.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass } = theme;
 
           const { "--lf-icon-add": icon } = theme.get.current().variables;
 
           return (
             <lf-button
-              class={bemClass(blocks.covers._, blocks.covers.add)}
-              data-cy={cyAttributes.button}
+              class={bemClass(blocks().covers._, blocks().covers.add)}
+              data-cy={cyAttributes().button}
               lfIcon={icon}
               lfLabel="New"
               lfStretchY={true}
@@ -114,18 +118,19 @@ const prepForms = (
         cancel: () => {
           const adapter = getAdapter();
           const { controller, elements, handlers } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
           const { button } = handlers.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass } = theme;
 
           const { "--lf-icon-clear": icon } = theme.get.current().variables;
 
           return (
             <lf-button
-              class={bemClass(blocks.form._, blocks.form.button)}
-              data-cy={cyAttributes.button}
+              class={bemClass(blocks().form._, blocks().form.button)}
+              data-cy={cyAttributes().button}
               lfIcon={icon}
               lfLabel="Cancel"
               lfStyling="flat"
@@ -137,18 +142,19 @@ const prepForms = (
         confirm: () => {
           const adapter = getAdapter();
           const { controller, elements, handlers } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
           const { button } = handlers.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass } = theme;
 
           const { "--lf-icon-success": icon } = theme.get.current().variables;
 
           return (
             <lf-button
-              class={bemClass(blocks.form._, blocks.form.button)}
-              data-cy={cyAttributes.button}
+              class={bemClass(blocks().form._, blocks().form.button)}
+              data-cy={cyAttributes().button}
               lfIcon={icon}
               lfLabel="Confirm"
               lfStyling="outlined"
@@ -160,15 +166,16 @@ const prepForms = (
         description: (node?) => {
           const adapter = getAdapter();
           const { controller, elements } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass, get } = theme;
 
           return (
             <lf-textfield
-              class={bemClass(blocks.form._, blocks.form.field)}
-              data-cy={cyAttributes.input}
+              class={bemClass(blocks().form._, blocks().form.field)}
+              data-cy={cyAttributes().input}
               lfStretchX={true}
               lfIcon={get.icon("id")}
               lfLabel="Description"
@@ -181,15 +188,16 @@ const prepForms = (
         id: (id: LfMessengerUnionChildIds) => {
           const adapter = getAdapter();
           const { controller, elements } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass, get } = theme;
 
           return (
             <lf-textfield
-              class={bemClass(blocks.form._, blocks.form.field)}
-              data-cy={cyAttributes.input}
+              class={bemClass(blocks().form._, blocks().form.field)}
+              data-cy={cyAttributes().input}
               key={`id-edit-${id}`}
               lfStretchX={true}
               lfIcon={get.icon("key")}
@@ -203,15 +211,16 @@ const prepForms = (
         imageUrl: (node?) => {
           const adapter = getAdapter();
           const { controller, elements } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass, get } = theme;
 
           return (
             <lf-textfield
-              class={bemClass(blocks.form._, blocks.form.field)}
-              data-cy={cyAttributes.input}
+              class={bemClass(blocks().form._, blocks().form.field)}
+              data-cy={cyAttributes().input}
               lfStretchX={true}
               lfIcon={get.icon("photo")}
               lfLabel="Image URL"
@@ -224,15 +233,16 @@ const prepForms = (
         title: (node?) => {
           const adapter = getAdapter();
           const { controller, elements } = adapter;
-          const { blocks, cyAttributes, manager } = controller.get;
+          const { blocks, cyAttributes, framework } = controller.get;
           const { form } = elements.refs.customization;
-          const { assignRef, theme } = manager;
+          const fw = framework();
+          const { assignRef, theme } = fw;
           const { bemClass, get } = theme;
 
           return (
             <lf-textfield
-              class={bemClass(blocks.form._, blocks.form.field)}
-              data-cy={cyAttributes.input}
+              class={bemClass(blocks().form._, blocks().form.field)}
+              data-cy={cyAttributes().input}
               lfStretchX={true}
               lfIcon={get.icon("forms")}
               lfLabel="Title"

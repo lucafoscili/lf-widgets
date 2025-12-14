@@ -1,15 +1,13 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
 import {
   HTMLStencilElement,
   LfComponent,
@@ -18,7 +16,6 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LfChatElement,
@@ -30,7 +27,12 @@ import { LfChipElement, LfChipEventPayload } from "./chip.declarations";
 import { LfCodeElement } from "./code.declarations";
 import { LfImageElement } from "./image.declarations";
 import { LfListEventPayload } from "./list.declarations";
-import { LF_MESSENGER_BLOCKS, LF_MESSENGER_PARTS } from "./messenger.constants";
+import { LfMessengerBlockType } from "./messenger.blocks";
+import {
+  LF_MESSENGER_EVENTS,
+  LF_MESSENGER_IDS,
+  LF_MESSENGER_PARTS,
+} from "./messenger.constants";
 import { LfTabbarElement, LfTabbarEventPayload } from "./tabbar.declarations";
 import { LfTextfieldElement } from "./textfield.declarations";
 
@@ -52,13 +54,37 @@ export interface LfMessengerElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-messenger` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks grouped by panel
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export interface LfMessengerAdapter
-  extends LfComponentAdapter<LfMessengerInterface> {
+  extends LfComponentAdapter<
+    LfMessengerInterface,
+    LfMessengerEventPayload,
+    LfMessengerAdapterHandlers,
+    LfMessengerAdapterJsx,
+    LfMessengerAdapterRefs,
+    LfMessengerAdapterControllerGetters,
+    LfMessengerAdapterControllerSetters,
+    LfMessengerAdapterControllerComputed,
+    LfMessengerAdapterControllerActions
+  > {
   controller: {
-    get: LfMessengerAdapterGetters;
-    set: LfMessengerAdapterSetters;
+    get: LfMessengerAdapterControllerGetters;
+    set: LfMessengerAdapterControllerSetters;
+    computed: LfMessengerAdapterControllerComputed;
+    actions: LfMessengerAdapterControllerActions;
   };
+  dispatcher: LfMessengerAdapterDispatcher;
   elements: {
     jsx: LfMessengerAdapterJsx;
     refs: LfMessengerAdapterRefs;
@@ -190,138 +216,163 @@ export interface LfMessengerAdapterHandlers extends LfComponentAdapterHandlers {
   };
 }
 /**
- * Subset of adapter getters required during initialisation.
+ * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
-export type LfMessengerAdapterInitializerGetters = Pick<
-  LfMessengerAdapterGetters,
-  | "blocks"
-  | "compInstance"
-  | "cyAttributes"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
->;
-/**
- * Utility interface used by the `lf-messenger` component.
- */
-export interface LfMessengerAdapterGetCharacter {
-  biography: (character?: LfMessengerCharacterNode) => string;
-  byId: (id: string) => LfMessengerCharacterNode;
-  chat: (character?: LfMessengerCharacterNode) => LfChatPropsInterface;
-  current: () => LfMessengerCharacterNode;
-  history: (character?: LfMessengerCharacterNode) => string;
-  list: () => LfMessengerCharacterNode[];
-  name: (character?: LfMessengerCharacterNode) => string;
-  next: (character?: LfMessengerCharacterNode) => LfMessengerCharacterNode;
-  previous: (character?: LfMessengerCharacterNode) => LfMessengerCharacterNode;
-}
-/**
- * Utility interface used by the `lf-messenger` component.
- */
-export interface LfMessengerAdapterGetImage {
-  asCover: <T extends LfMessengerImageTypes>(
-    type: T,
-    character?: LfMessengerCharacterNode,
-  ) => {
-    node?: LfMessengerBaseChildNode<LfMessengerUnionChildIds>;
-    title?: string;
-    value: string;
+export interface LfMessengerAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfMessengerInterface,
+    LfMessengerBlockType,
+    (typeof LF_MESSENGER_IDS)["messenger"],
+    (typeof LF_MESSENGER_PARTS)["messenger"]
+  > {
+  /** Character state reads */
+  character: {
+    /** Get character biography text */
+    biography: (character?: LfMessengerCharacterNode) => string;
+    /** Get character by ID */
+    byId: (id: string) => LfMessengerCharacterNode;
+    /** Get chat configuration for character */
+    chat: (character?: LfMessengerCharacterNode) => LfChatPropsInterface;
+    /** Get currently selected character */
+    current: () => LfMessengerCharacterNode;
+    /** Get chat history for character */
+    history: (character?: LfMessengerCharacterNode) => string;
+    /** Get all characters */
+    list: () => LfMessengerCharacterNode[];
+    /** Get character name */
+    name: (character?: LfMessengerCharacterNode) => string;
+    /** Get next character in list */
+    next: (character?: LfMessengerCharacterNode) => LfMessengerCharacterNode;
+    /** Get previous character in list */
+    previous: (
+      character?: LfMessengerCharacterNode,
+    ) => LfMessengerCharacterNode;
   };
-  byType: <T extends LfMessengerImageTypes>(
-    type: T,
-    character?: LfMessengerCharacterNode,
-  ) => Array<LfMessengerBaseChildNode<LfMessengerUnionChildIds>>;
-  coverIndex: (
-    type: LfMessengerImageTypes,
-    character?: LfMessengerCharacterNode,
-  ) => number;
-  newId: <T extends LfMessengerImageTypes>(
-    type: T,
-  ) => LfMessengerChildIds<LfMessengerUnionChildIds>;
-  root: <T extends LfMessengerImageTypes>(
-    type: T,
-    character?: LfMessengerCharacterNode,
-  ) => LfMessengerBaseRootNode<LfMessengerImageTypes>;
-  title: <T extends LfMessengerUnionChildIds>(
-    node: LfMessengerBaseChildNode<T>,
-  ) => string;
-}
-/**
- * Utility interface used by the `lf-messenger` component.
- */
-export interface LfMessengerAdapterGetters
-  extends LfComponentAdapterGetters<LfMessengerInterface> {
-  blocks: typeof LF_MESSENGER_BLOCKS;
-  compInstance: LfMessengerInterface;
-  character: LfMessengerAdapterGetCharacter;
+  /** Configuration state reads */
   config: () => LfMessengerConfig;
-  cyAttributes: typeof CY_ATTRIBUTES;
+  /** Dataset state reads */
+  data: () => LfMessengerDataset;
+  /** History state reads */
   history: () => LfMessengerHistory;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  image: LfMessengerAdapterGetImage;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_MESSENGER_PARTS;
+  /** Image state reads */
+  image: {
+    /** Get image as cover with metadata */
+    asCover: <T extends LfMessengerImageTypes>(
+      type: T,
+      character?: LfMessengerCharacterNode,
+    ) => {
+      node?: LfMessengerBaseChildNode<LfMessengerUnionChildIds>;
+      title?: string;
+      value: string;
+    };
+    /** Get images by type */
+    byType: <T extends LfMessengerImageTypes>(
+      type: T,
+      character?: LfMessengerCharacterNode,
+    ) => Array<LfMessengerBaseChildNode<LfMessengerUnionChildIds>>;
+    /** Get cover index for image type */
+    coverIndex: (
+      type: LfMessengerImageTypes,
+      character?: LfMessengerCharacterNode,
+    ) => number;
+    /** Generate new ID for image type */
+    newId: <T extends LfMessengerImageTypes>(
+      type: T,
+    ) => LfMessengerChildIds<LfMessengerUnionChildIds>;
+    /** Get root node for image type */
+    root: <T extends LfMessengerImageTypes>(
+      type: T,
+      character?: LfMessengerCharacterNode,
+    ) => LfMessengerBaseRootNode<LfMessengerImageTypes>;
+    /** Get image title */
+    title: <T extends LfMessengerUnionChildIds>(
+      node: LfMessengerBaseChildNode<T>,
+    ) => string;
+  };
+  /** Status state reads */
   status: {
+    /** Get connection status */
     connection: () => LfChatStatus;
+    /** Get form editing status map */
     formStatus: () => LfMessengerEditingStatus<LfMessengerImageTypes>;
+    /** Get currently hovered customization option */
     hoveredCustomizationOption: () => LfMessengerBaseChildNode<LfMessengerUnionChildIds>;
+    /** Save operation status */
     save: {
+      /** Whether save is in progress */
       inProgress: () => boolean;
     };
   };
+  /** UI state reads */
+  ui: () => LfMessengerUI;
 }
 /**
- * Utility interface used by the `lf-messenger` component.
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
  */
-export interface LfMessengerAdapterSetCharacter
+export interface LfMessengerAdapterControllerSetters
   extends LfComponentAdapterSetters {
-  chat: (
-    chat: LfChatPropsInterface,
-    character?: LfMessengerCharacterNode,
-  ) => void;
-  current: (character?: LfMessengerCharacterNode) => void;
-  history: (history: string, character?: LfMessengerCharacterNode) => void;
-  next: (character?: LfMessengerCharacterNode) => void;
-  previous: (character?: LfMessengerCharacterNode) => void;
-}
-/**
- * Utility interface used by the `lf-messenger` component.
- */
-export interface LfMessengerAdapterSetImage extends LfComponentAdapterSetters {
-  cover: (
-    type: LfMessengerImageTypes,
-    value: number,
-    character?: LfMessengerCharacterNode,
-  ) => void;
-}
-/**
- * Utility interface used by the `lf-messenger` component.
- */
-export interface LfMessengerAdapterSetters extends LfComponentAdapterSetters {
-  character: LfMessengerAdapterSetCharacter;
+  /** Character setters */
+  character: {
+    /** Set chat configuration */
+    chat: (
+      chat: LfChatPropsInterface,
+      character?: LfMessengerCharacterNode,
+    ) => void;
+    /** Set current character */
+    current: (character?: LfMessengerCharacterNode) => void;
+    /** Set chat history */
+    history: (history: string, character?: LfMessengerCharacterNode) => void;
+  };
+  /** Persist dataset */
   data: () => void;
-  image: LfMessengerAdapterSetImage;
+  /** Image setters */
+  image: {
+    /** Set cover index */
+    cover: (
+      type: LfMessengerImageTypes,
+      value: number,
+      character?: LfMessengerCharacterNode,
+    ) => void;
+  };
+  /** Status setters */
   status: {
+    /** Set connection status */
     connection: (status: LfChatStatus) => void;
+    /** Set editing status */
     editing: <T extends LfMessengerUnionChildIds>(
       type: LfMessengerImageTypes,
       id: LfMessengerChildIds<T>,
     ) => void;
+    /** Set hovered customization option */
     hoveredCustomizationOption: <T extends LfMessengerUnionChildIds>(
       node: LfMessengerBaseChildNode<T>,
     ) => void;
+    /** Save status setters */
     save: {
+      /** Set save in progress flag */
       inProgress: (value: boolean) => void;
     };
   };
+  /** UI setters */
   ui: {
+    /** Set customization view visibility */
     customization: (value: boolean) => void;
+    /** Set filters */
     filters: (filter: LfMessengerFilters) => void;
+    /** Set option visibility */
     options: <T extends LfMessengerImageRootIds<LfMessengerOptionTypes>>(
       value: boolean,
       type: LfMessengerRootIds<T>,
     ) => void;
+    /** Toggle panel collapsed state */
     panel: (panel: LfMessengerPanelsValue, value?: boolean) => boolean;
+    /** Set form state */
     setFormState: <T extends LfMessengerUnionChildIds>(
       value: boolean,
       type: LfMessengerImageTypes,
@@ -329,7 +380,81 @@ export interface LfMessengerAdapterSetters extends LfComponentAdapterSetters {
     ) => void;
   };
 }
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfMessengerAdapterControllerComputed {
+  /** Character computed values */
+  character: {
+    /** Whether a character is currently selected */
+    hasCharacter: () => boolean;
+    /** Whether the given ID matches the current character */
+    isCurrentCharacter: (id: string) => boolean;
+  };
+  /** Image computed values */
+  image: {
+    /** Whether there are any images of the given type */
+    hasImages: (type: LfMessengerImageTypes) => boolean;
+  };
+  /** UI computed values */
+  ui: {
+    /** Whether the given panel is collapsed */
+    isPanelCollapsed: (panel: LfMessengerPanelsValue) => boolean;
+    /** Whether the customization view is active */
+    isCustomizing: () => boolean;
+    /** Whether the given filter is active */
+    isFilterActive: (filter: LfMessengerImageTypes) => boolean;
+    /** Whether the given option is enabled */
+    isOptionEnabled: (option: LfMessengerOptionTypes) => boolean;
+  };
+}
+/**
+ * Multi-step operations that may batch changes or toggle state.
+ * May have side effects.
+ */
+export interface LfMessengerAdapterControllerActions {
+  /** Character actions */
+  character: {
+    /** Navigate to next character */
+    next: (character?: LfMessengerCharacterNode) => void;
+    /** Navigate to previous character */
+    previous: (character?: LfMessengerCharacterNode) => void;
+    /** Select a character by node */
+    select: (character: LfMessengerCharacterNode) => void;
+  };
+  /** UI actions */
+  ui: {
+    /** Toggle panel collapsed state */
+    togglePanel: (panel: LfMessengerPanelsValue) => void;
+    /** Toggle customization view */
+    toggleCustomization: () => void;
+    /** Toggle filter */
+    toggleFilter: (filter: LfMessengerImageTypes) => void;
+    /** Toggle option */
+    toggleOption: (option: LfMessengerOptionTypes) => void;
+  };
+}
 //#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfMessengerAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfMessengerEventPayload>;
+export type LfMessengerAdapterDispatcherDetailOverrides = {
+  [E in LfMessengerEvent]: E extends "ready" | "unmount"
+    ? Omit<LfMessengerAdapterDispatchDetailBase, "originalEvent"> & {
+        originalEvent?: never;
+      }
+    : LfMessengerAdapterDispatchDetailBase;
+};
+export type LfMessengerAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfMessengerEventPayload,
+  LfMessengerAdapterDispatcherDetailOverrides
+>;
 
 //#region Character node
 /**
@@ -648,7 +773,7 @@ export type LfMessengerPanelsValue = "left" | "right";
 /**
  * Union of event identifiers emitted by `lf-messenger`.
  */
-export type LfMessengerEvent = "ready" | "save" | "unmount";
+export type LfMessengerEvent = (typeof LF_MESSENGER_EVENTS)[number];
 /**
  * Detail payload structure dispatched with `lf-messenger` events.
  */

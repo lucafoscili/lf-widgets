@@ -207,8 +207,7 @@ export const handleAttachmentClick = async (
     return;
   }
 
-  const { manager } = adapter.controller.get;
-  const { effects } = manager;
+  const { effects } = adapter.controller.get.framework();
 
   if (attachment.type === "image_url") {
     // Open image in lightbox
@@ -256,7 +255,7 @@ export const handleAttachmentDelete = async (
 ): Promise<void> => {
   const { controller } = adapter;
   const { get, set } = controller;
-  const comp = get.compInstance as LfChat;
+  const comp = get.compInstance() as LfChat;
 
   const messageIndex = get.history().indexOf(message);
   if (messageIndex === -1) {

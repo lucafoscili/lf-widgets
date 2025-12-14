@@ -282,7 +282,7 @@ describe("lf-chat", () => {
     const adapter: any = {
       controller: {
         get: {
-          compInstance: {
+          compInstance: () => ({
             lfConfig: {
               llm: {},
               tools: {
@@ -291,8 +291,8 @@ describe("lf-chat", () => {
               ui: {},
               attachments: {},
             },
-          },
-          manager: {
+          }),
+          framework: () => ({
             debug: {
               logs: {
                 new: jest.fn(),
@@ -304,7 +304,7 @@ describe("lf-chat", () => {
               }),
               getBuiltinToolHandlers: () => ({}),
             },
-          },
+          }),
         },
       },
     };
@@ -348,7 +348,7 @@ describe("lf-chat", () => {
     const adapter: any = {
       controller: {
         get: {
-          compInstance: {
+          compInstance: () => ({
             lfConfig: {
               llm: {},
               tools: {
@@ -357,8 +357,8 @@ describe("lf-chat", () => {
               ui: {},
               attachments: {},
             },
-          },
-          manager: {
+          }),
+          framework: () => ({
             debug: {
               logs: {
                 new: jest.fn(),
@@ -370,7 +370,7 @@ describe("lf-chat", () => {
               }),
               getBuiltinToolHandlers: () => ({}),
             },
-          },
+          }),
         },
       },
     };

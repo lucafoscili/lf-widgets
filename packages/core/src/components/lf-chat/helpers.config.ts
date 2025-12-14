@@ -63,8 +63,8 @@ export const getEffectiveConfig = (
   adapter: LfChatAdapter,
 ): Required<LfChatConfig> => {
   const { get } = adapter.controller;
-  const { compInstance, manager } = get;
-  const { llm } = manager;
+  const compInstance = get.compInstance();
+  const { llm } = get.framework();
   const component = compInstance as LfChat;
   const config = component.lfConfig || {};
 
@@ -207,8 +207,8 @@ export const getAllToolHandlers = (
   adapter: LfChatAdapter,
 ): LfLLMToolHandlers => {
   const { get } = adapter.controller;
-  const { compInstance, manager } = get;
-  const { llm } = manager;
+  const compInstance = get.compInstance();
+  const { llm } = get.framework();
   const component = compInstance as LfChat;
 
   // Get builtin handlers directly from the new API (already properly typed)

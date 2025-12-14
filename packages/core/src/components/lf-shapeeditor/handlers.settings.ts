@@ -48,7 +48,7 @@ export const prepSettingsHandlers = (
               break;
             case i.settings.actions.badge:
               // Toggle history column visibility in preview panel
-              adapter.controller.set.history.togglePopup();
+              adapter.controller.actions.history.toggle();
               break;
             case i.settings.actions.clear:
               const index = currentShape().shape.index;

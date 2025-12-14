@@ -25,10 +25,14 @@ import { EChartsOption, HeatmapSeriesOption } from "echarts";
  * - Data management utilities
  */
 export const calendar = (getAdapter: () => LfChartAdapter) => {
-  const { compInstance, manager, style } = getAdapter().controller.get;
-  const { lfAxis, lfDataset, lfSeries } = compInstance;
+  const adapter = getAdapter();
+  const { axis, dataset, framework, series } = adapter.controller.get;
+  const { style } = adapter.controller.computed;
+  const lfAxis = axis();
+  const lfDataset = dataset();
+  const lfSeries = series();
   const { seriesColor, theme, tooltip } = style;
-  const { stringify } = manager.data.cell;
+  const { stringify } = framework().data.cell;
   const { background, border, font, text } = theme();
 
   const dateKey = lfAxis[0];

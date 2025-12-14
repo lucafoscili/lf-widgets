@@ -91,8 +91,10 @@ export interface LfShapeeditorElement
  * Adapter contract that wires `lf-shapeeditor` into host integrations.
  *
  * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + component state
- * - controller.set: Simple assignments (config, history, navigation, etc.)
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
  * - elements: JSX factories + refs
  * - dispatcher: REQUIRED centralized event emission
  * - handlers: Event callbacks grouped by panel
@@ -107,11 +109,15 @@ export interface LfShapeeditorAdapter
     LfShapeeditorAdapterJsx,
     LfShapeeditorAdapterRefs,
     LfShapeeditorAdapterControllerGetters,
-    LfShapeeditorAdapterControllerSetters
+    LfShapeeditorAdapterControllerSetters,
+    LfShapeeditorAdapterControllerComputed,
+    LfShapeeditorAdapterControllerActions
   > {
   controller: {
     get: LfShapeeditorAdapterControllerGetters;
     set: LfShapeeditorAdapterControllerSetters;
+    computed: LfShapeeditorAdapterControllerComputed;
+    actions: LfShapeeditorAdapterControllerActions;
   };
   dispatcher: LfShapeeditorAdapterDispatcher;
   elements: {
@@ -294,6 +300,7 @@ export interface LfShapeeditorAdapterHandlers
 /**
  * Read-only controller surface exposed by the adapter for integration code.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
  *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
@@ -321,16 +328,12 @@ export interface LfShapeeditorAdapterControllerGetters
   /** History state reads */
   history: {
     current: () => LfMasonrySelectedShape[];
-    currentSnapshot: () => {
-      shape: LfMasonrySelectedShape;
-      value: string;
-    };
     full: () => LfShapeeditorHistory;
     index: () => number;
     isPopupOpen: () => boolean;
   };
   /** Navigation panel state reads */
-  navigation: { hasNav: () => boolean; isTreeOpen: () => boolean };
+  navigation: { isTreeOpen: () => boolean };
   /** Preview panel value */
   previewValue: () => string | null;
   /** Progress bar state */
@@ -343,7 +346,9 @@ export interface LfShapeeditorAdapterControllerGetters
   spinnerStatus: () => boolean;
 }
 /**
- * Imperative controller callbacks exposed by the adapter.
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
  */
 export interface LfShapeeditorAdapterControllerSetters
   extends LfComponentAdapterSetters {
@@ -361,16 +366,48 @@ export interface LfShapeeditorAdapterControllerSetters
   currentShape: (node: LfMasonrySelectedShape) => void;
   history: {
     index: (index: number) => void;
-    new: (shape: LfMasonrySelectedShape, isSnapshot?: boolean) => void;
-    pop: (index?: number) => void;
-    togglePopup: () => void;
+    isPopupOpen: (open: boolean) => void;
   };
-  navigation: { isTreeOpen: (open: boolean) => void; toggleTree: () => void };
+  navigation: { isTreeOpen: (open: boolean) => void };
   previewValue: (value: string | null) => void;
   progressbar: (state: Partial<LfShapeeditorProgressbarState>) => void;
-  resetKey: () => void;
   snackbar: (state: Partial<LfShapeeditorSnackbarState>) => void;
   spinnerStatus: (active: boolean) => void;
+}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfShapeeditorAdapterControllerComputed {
+  /** Derives current snapshot from shape + history index */
+  history: {
+    currentSnapshot: () => {
+      shape: LfMasonrySelectedShape;
+      value: string;
+    };
+  };
+  /** Predicate: whether navigation panel has data */
+  navigation: { hasNav: () => boolean };
+}
+/**
+ * Multi-step operations that may batch changes or toggle state.
+ * May have side effects.
+ */
+export interface LfShapeeditorAdapterControllerActions {
+  history: {
+    /** Add new snapshot (splice + push + index update) */
+    new: (shape: LfMasonrySelectedShape, isSnapshot?: boolean) => void;
+    /** Remove history entries (conditional splice + refresh) */
+    pop: (index?: number) => void;
+    /** Toggle popup visibility */
+    toggle: () => void;
+  };
+  navigation: {
+    /** Toggle tree visibility */
+    toggle: () => void;
+  };
+  /** Increment reset key to force re-render */
+  incrementResetKey: () => void;
 }
 //#endregion
 

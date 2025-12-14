@@ -14,13 +14,12 @@ export const prepCanvasHandlers = (
       endCapture: (e) => {
         e.preventDefault();
 
-        const { controller, elements, toolkit } = getAdapter();
-        const { get, set } = controller;
-        const { compInstance, isCursorPreview, points } = get;
+        const { controller, dispatcher, elements, toolkit } = getAdapter();
+        const { computed, get, set } = controller;
+        const { compInstance, points } = get;
+        const { isCursorPreview } = computed;
         const { board } = elements.refs;
-        const { lfPreview } = compInstance;
-
-        const comp = compInstance as LfCanvas;
+        const { lfPreview } = compInstance();
 
         board.releasePointerCapture(e.pointerId);
         const { ctx, height, width } = toolkit.ctx.get("board");
@@ -54,7 +53,7 @@ export const prepCanvasHandlers = (
           toolkit.ctx.clear("preview");
         }
 
-        comp.onLfEvent(e, "stroke");
+        dispatcher.emit("stroke", { originalEvent: e });
 
         set.isPainting(false);
       },
@@ -83,8 +82,10 @@ export const prepCanvasHandlers = (
         e.preventDefault();
 
         const { controller, toolkit } = getAdapter();
-        const { compInstance, isCursorPreview, isPainting } = controller.get;
-        const { lfPreview } = compInstance;
+        const { computed, get } = controller;
+        const { compInstance, isPainting } = get;
+        const { isCursorPreview } = computed;
+        const { lfPreview } = compInstance();
 
         if (isPainting()) {
           if (isCursorPreview()) {
@@ -127,7 +128,7 @@ export const prepCanvasHandlers = (
     image: {
       onLoad: async (e) => {
         const adapter = getAdapter();
-        const { controller } = adapter;
+        const { controller, dispatcher } = adapter;
         const { get, set } = controller;
         const { compInstance } = get;
 
@@ -136,9 +137,9 @@ export const prepCanvasHandlers = (
           const orientation = calcOrientation(image);
           set.orientation(orientation);
           // Recalculate boxing now that image dimensions are available
-          await (compInstance as LfCanvas).resizeCanvas();
+          await (compInstance() as LfCanvas).resizeCanvas();
         }
-        (compInstance as LfCanvas).onLfEvent(e, "lf-event");
+        dispatcher.emit("lf-event", { originalEvent: e });
       },
     },
     //#endregion

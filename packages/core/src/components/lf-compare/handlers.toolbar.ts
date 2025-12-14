@@ -12,20 +12,20 @@ export const prepToolbarHandlers = (
     button: (e) => {
       const { eventType, id, valueAsBoolean } = e.detail;
 
-      const { set } = getAdapter().controller;
+      const { actions, set } = getAdapter().controller;
       const { leftButton, changeView, rightButton } = LF_COMPARE_IDS;
 
       switch (eventType) {
         case "click":
           switch (id) {
             case leftButton:
-              set.leftPanelOpened(valueAsBoolean);
+              actions.toggleLeftPanel();
               break;
             case changeView:
               set.splitView(valueAsBoolean);
               break;
             case rightButton:
-              set.rightPanelOpened(valueAsBoolean);
+              actions.toggleRightPanel();
               break;
           }
           break;

@@ -1,14 +1,14 @@
 import {
   LfComponentAdapter,
-  LfComponentAdapterGetters,
+  LfComponentAdapterBaseGetters,
+  LfComponentAdapterDispatchDetail,
+  LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-} from "../foundations/components.constants";
+
 import {
   HTMLStencilElement,
   LfComponent,
@@ -22,11 +22,12 @@ import {
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
-import { LfFrameworkInterface } from "../framework/framework.declarations";
+
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_MASONRY_BLOCKS,
   LF_MASONRY_EVENTS,
+  LF_MASONRY_IDS,
   LF_MASONRY_PARTS,
   LF_MASONRY_VIEWS,
 } from "./masonry.constants";
@@ -53,12 +54,37 @@ export interface LfMasonryElement
 //#region Adapter
 /**
  * Adapter contract that wires `lf-masonry` into host integrations.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: REQUIRED centralized event emission
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
  */
 export interface LfMasonryAdapter
-  extends LfComponentAdapter<LfMasonryInterface> {
+  extends LfComponentAdapter<
+    LfMasonryInterface,
+    LfMasonryEventPayload,
+    LfMasonryAdapterHandlers,
+    LfMasonryAdapterJsx,
+    LfMasonryAdapterRefs,
+    LfMasonryAdapterControllerGetters,
+    LfMasonryAdapterControllerSetters,
+    LfMasonryAdapterControllerComputed,
+    LfMasonryAdapterControllerActions
+  > {
   controller: {
-    get: LfMasonryAdapterGetters;
+    get: LfMasonryAdapterControllerGetters;
+    set: LfMasonryAdapterControllerSetters;
+    computed: LfMasonryAdapterControllerComputed;
+    actions: LfMasonryAdapterControllerActions;
   };
+  dispatcher: LfMasonryAdapterDispatcher;
   elements: {
     jsx: LfMasonryAdapterJsx;
     refs: LfMasonryAdapterRefs;
@@ -89,36 +115,77 @@ export interface LfMasonryAdapterHandlers extends LfComponentAdapterHandlers {
   button: (e: CustomEvent<LfButtonEventPayload>) => void;
 }
 /**
- * Subset of adapter getters required during initialisation.
+ * Read-only controller surface exposed by the adapter for integration code.
+ * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
+ * Contains ONLY pure state reads - predicates go in `computed`.
+ *
+ * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
-export type LfMasonryAdapterInitializerGetters = Pick<
-  LfMasonryAdapterGetters,
-  | "blocks"
-  | "compInstance"
-  | "currentColumns"
-  | "cyAttributes"
-  | "isMasonry"
-  | "isVertical"
-  | "lfAttributes"
-  | "manager"
-  | "parts"
-  | "shapes"
->;
-/**
- * Utility interface used by the `lf-masonry` component.
- */
-export interface LfMasonryAdapterGetters
-  extends LfComponentAdapterGetters<LfMasonryInterface> {
-  blocks: typeof LF_MASONRY_BLOCKS;
-  compInstance: LfMasonryInterface;
+export interface LfMasonryAdapterControllerGetters
+  extends LfComponentAdapterBaseGetters<
+    LfMasonryInterface,
+    typeof LF_MASONRY_BLOCKS,
+    typeof LF_MASONRY_IDS,
+    typeof LF_MASONRY_PARTS
+  > {
+  /** Current column count */
   currentColumns: () => number;
-  cyAttributes: typeof CY_ATTRIBUTES;
-  isMasonry: () => boolean;
-  isVertical: () => boolean;
-  lfAttributes: typeof LF_ATTRIBUTES;
-  manager: LfFrameworkInterface;
-  parts: typeof LF_MASONRY_PARTS;
+  /** Selected shape index */
+  selectedIndex: () => number | undefined;
+  /** Currently selected shape */
+  selectedShape: () => LfMasonrySelectedShape;
+  /** All shapes keyed by shape type */
   shapes: () => LfDataShapesMap;
+  /** Current view type */
+  view: () => LfMasonryView;
+}
+/**
+ * Simple single-value assignments exposed by the adapter.
+ * Each setter performs exactly ONE state change.
+ * Multi-step operations go in `actions`.
+ */
+export interface LfMasonryAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Set selected index */
+  selectedIndex: (index: number | undefined) => void;
+  /** Set selected shape state */
+  selectedShape: (shape: LfMasonrySelectedShape) => void;
+  /** Set current view */
+  view: (view: LfMasonryView) => void;
+}
+/**
+ * Derived values and predicates computed from state.
+ * Pure functions with no side effects.
+ */
+export interface LfMasonryAdapterControllerComputed {
+  /** Predicate: whether component has any shapes */
+  hasShapes: () => boolean;
+  /** Predicate: whether a shape is selected */
+  hasSelection: () => boolean;
+  /** Predicate: whether specific index is selected */
+  isSelected: (index: number) => boolean;
+  /** Predicate: whether view is masonry */
+  isMasonry: () => boolean;
+  /** Predicate: whether view is vertical */
+  isVertical: () => boolean;
+}
+/**
+ * Multi-step operations that may batch changes or toggle state.
+ * May have side effects.
+ */
+export interface LfMasonryAdapterControllerActions {
+  /** Select a shape by index (updates state + emits event) */
+  select: (index: number) => void;
+  /** Clear the current selection */
+  clearSelection: () => void;
+  /** Toggle selection for an index */
+  toggleSelection: (index: number) => void;
+  /** Cycle through view modes */
+  cycleView: () => void;
+  /** Add a column to the masonry */
+  addColumn: () => void;
+  /** Remove a column from the masonry */
+  removeColumn: () => void;
 }
 //#endregion
 
@@ -134,6 +201,30 @@ export interface LfMasonryEventPayload
   extends LfEventPayload<"LfMasonry", LfMasonryEvent> {
   selectedShape: LfMasonrySelectedShape;
 }
+//#endregion
+
+//#region Dispatcher
+/**
+ * Dispatcher for centralized event emission.
+ * @see Section 5.5 of 4_0_0_REFACTORING.md
+ */
+export type LfMasonryAdapterDispatchDetailBase =
+  LfComponentAdapterDispatchDetail<LfMasonryEventPayload>;
+export type LfMasonryAdapterDispatcherDetailOverrides = {
+  [E in LfMasonryEvent]: E extends "lf-event"
+    ? LfMasonryAdapterDispatchDetailBase & {
+        originalEvent: CustomEvent;
+      }
+    : E extends "ready" | "unmount"
+      ? Omit<LfMasonryAdapterDispatchDetailBase, "originalEvent"> & {
+          originalEvent?: never;
+        }
+      : LfMasonryAdapterDispatchDetailBase;
+};
+export type LfMasonryAdapterDispatcher = LfComponentAdapterDispatcher<
+  LfMasonryEventPayload,
+  LfMasonryAdapterDispatcherDetailOverrides
+>;
 //#endregion
 
 //#region States

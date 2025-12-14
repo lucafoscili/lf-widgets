@@ -74,7 +74,8 @@ export const ctx = (
   //#region Setup
   setup: (type: LfCanvasType, isFill = false) => {
     const { controller, toolkit } = getAdapter();
-    const { lfColor, lfOpacity, lfSize } = controller.get.compInstance;
+    const { compInstance } = controller.get;
+    const { lfColor, lfOpacity, lfSize } = compInstance();
 
     const { ctx } = toolkit.ctx.get(type);
 

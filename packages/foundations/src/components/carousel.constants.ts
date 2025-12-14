@@ -22,8 +22,10 @@ export const LF_CAROUSEL_EVENTS = ["lf-event", "ready", "unmount"] as const;
 
 //#region Ids
 export const LF_CAROUSEL_IDS = {
-  back: "back-button",
-  forward: "forward-button",
+  carousel: {
+    back: "back-button",
+    forward: "forward-button",
+  },
 } as const;
 //#endregion
 

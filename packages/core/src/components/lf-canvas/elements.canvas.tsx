@@ -13,21 +13,21 @@ export const prepCanvasJsx = (
     board: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, cyAttributes, manager, parts } = controller.get;
-      const { assignRef, theme } = manager;
+      const { blocks, cyAttributes, framework, parts } = controller.get;
+      const { assignRef, theme } = framework();
       const { bemClass } = theme;
       const { onPointerDown, onPointerMove, onPointerOut, onPointerUp } =
         handlers.board;
 
       return (
         <canvas
-          class={bemClass(blocks.canvas._, blocks.canvas.board)}
-          data-cy={cyAttributes.canvas}
+          class={bemClass(blocks()._, blocks().board)}
+          data-cy={cyAttributes().canvas}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerOut={onPointerOut}
           onPointerUp={onPointerUp}
-          part={parts.board}
+          part={parts().board}
           ref={assignRef(refs, "board")}
         ></canvas>
       );
@@ -37,7 +37,7 @@ export const prepCanvasJsx = (
     //#region Image
     image: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, manager, parts } =
+      const { blocks, compInstance, cyAttributes, framework, parts } =
         controller.get;
       const { refs } = elements;
       const { onLoad } = handlers.image;
@@ -50,16 +50,16 @@ export const prepCanvasJsx = (
             break;
         }
       };
-      const { assignRef, sanitizeProps, theme } = manager;
+      const { assignRef, sanitizeProps, theme } = framework();
       const { bemClass } = theme;
 
       return (
         <lf-image
-          {...sanitizeProps(compInstance.lfImageProps, "LfImage")}
-          class={bemClass(blocks.canvas._, blocks.canvas.image)}
-          data-cy={cyAttributes.image}
+          {...sanitizeProps(compInstance().lfImageProps, "LfImage")}
+          class={bemClass(blocks()._, blocks().image)}
+          data-cy={cyAttributes().image}
           onLf-image-event={onImageEvent}
-          part={parts.image}
+          part={parts().image}
           ref={assignRef(refs, "image")}
         ></lf-image>
       );
@@ -69,16 +69,16 @@ export const prepCanvasJsx = (
     //#region Preview
     preview: () => {
       const { controller, elements } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
-      const { assignRef, theme } = manager;
+      const { blocks, cyAttributes, framework, parts } = controller.get;
+      const { assignRef, theme } = framework();
       const { refs } = elements;
       const { bemClass } = theme;
 
       return (
         <canvas
-          class={bemClass(blocks.canvas._, blocks.canvas.preview)}
-          data-cy={cyAttributes.canvas}
-          part={parts.preview}
+          class={bemClass(blocks()._, blocks().preview)}
+          data-cy={cyAttributes().canvas}
+          part={parts().preview}
           ref={assignRef(refs, "preview")}
         ></canvas>
       );

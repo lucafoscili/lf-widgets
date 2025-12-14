@@ -13,22 +13,20 @@ export const prepInput = (
     //#region Attach Image
     attachImage: () => {
       const { controller, elements, handlers } = getAdapter();
-      const {
-        blocks,
-        currentAttachments,
-        currentPrompt,
-        cyAttributes,
-        manager,
-        parts,
-      } = controller.get;
+      const { get } = controller;
       const { input } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
-      const hasAttachments = currentAttachments().length > 0;
+      const hasAttachments = get.currentAttachments().length > 0;
       const title = hasAttachments
-        ? currentAttachments()
+        ? get
+            .currentAttachments()
             .map((att) => att.name)
             .join(", ")
         : "Attach an image (ensure the model supports image inputs).";
@@ -41,7 +39,7 @@ export const prepInput = (
           lfIcon={"--lf-icon-image"}
           lfStretchY={true}
           lfStyling={hasAttachments ? "raised" : "flat"}
-          lfUiState={currentPrompt() ? "disabled" : "primary"}
+          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
           onLf-button-event={button}
           part={parts.attachImage}
           ref={assignRef(input, "attachImage")}
@@ -54,22 +52,20 @@ export const prepInput = (
     //#region Attach File
     attachFile: () => {
       const { controller, elements, handlers } = getAdapter();
-      const {
-        blocks,
-        currentAttachments,
-        currentPrompt,
-        cyAttributes,
-        manager,
-        parts,
-      } = controller.get;
+      const { get } = controller;
       const { input } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
-      const hasAttachments = currentAttachments().length > 0;
+      const hasAttachments = get.currentAttachments().length > 0;
       const title = hasAttachments
-        ? currentAttachments()
+        ? get
+            .currentAttachments()
             .map((att) => att.name)
             .join(", ")
         : "Attach a file (ensure the model supports file inputs).";
@@ -82,7 +78,7 @@ export const prepInput = (
           lfIcon={"--lf-icon-attachment"}
           lfStretchY={true}
           lfStyling={hasAttachments ? "raised" : "flat"}
-          lfUiState={currentPrompt() ? "disabled" : "primary"}
+          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
           onLf-button-event={button}
           part={parts.attachFile}
           ref={assignRef(input, "attachFile")}
@@ -95,10 +91,14 @@ export const prepInput = (
     //#region Configuration
     configuration: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { input } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -121,10 +121,14 @@ export const prepInput = (
     //region Full Screen
     fullScreen: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, cyAttributes, manager, parts } = controller.get;
+      const { get } = controller;
       const { input } = elements.refs;
       const { button } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -146,14 +150,17 @@ export const prepInput = (
     progressbar: () => {
       const adapter = getAdapter();
       const { controller, elements } = adapter;
+      const { get } = controller;
       const { input } = elements.refs;
-      const { blocks, currentTokens, manager, parts } = controller.get;
+
+      const blocks = get.blocks();
+      const parts = get.parts();
       const effectiveConfig = getEffectiveConfig(adapter);
       const lfContextWindow = effectiveConfig.llm.contextWindow;
-      const { assignRef, theme } = manager;
-      const { bemClass, get } = theme;
+      const { assignRef, theme } = get.framework();
+      const { bemClass, get: themeGet } = theme;
 
-      const { current, percentage } = currentTokens();
+      const { current, percentage } = get.currentTokens();
       const title = `Estimated tokens used: ${current}/${lfContextWindow}`;
 
       return (
@@ -161,7 +168,7 @@ export const prepInput = (
           class={bemClass(blocks.input._, blocks.input.progressbar)}
           id={LF_CHAT_IDS.input.progressbar}
           lfCenteredLabel={true}
-          lfIcon={get.icon("percentage60")}
+          lfIcon={themeGet.icon("percentage60")}
           lfLabel="Context window"
           lfUiSize="xsmall"
           lfValue={percentage}
@@ -176,11 +183,14 @@ export const prepInput = (
     //#region Textarea
     textarea: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, currentPrompt, cyAttributes, manager, parts } =
-        controller.get;
+      const { get } = controller;
       const { input } = elements.refs;
       const { textfield } = handlers.chat;
-      const { assignRef, theme } = manager;
+
+      const blocks = get.blocks();
+      const cyAttributes = get.cyAttributes();
+      const parts = get.parts();
+      const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       return (
@@ -191,7 +201,7 @@ export const prepInput = (
           lfStretchX={true}
           lfLabel="What's on your mind?"
           lfStyling="textarea"
-          lfUiState={currentPrompt() ? "disabled" : "primary"}
+          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
           onLf-textfield-event={textfield}
           part={parts.prompt}
           ref={assignRef(input, "textarea")}

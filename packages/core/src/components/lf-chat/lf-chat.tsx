@@ -2,11 +2,13 @@ import {
   CY_ATTRIBUTES,
   LF_ATTRIBUTES,
   LF_CHAT_BLOCKS,
+  LF_CHAT_IDS,
   LF_CHAT_PARTS,
   LF_CHAT_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChatAdapter,
+  LfChatAdapterDispatcher,
   LfChatAgentState,
   LfChatConfig,
   LfChatCurrentTokens,
@@ -44,6 +46,8 @@ import {
 } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
+import { prepChatActions } from "./actions.chat";
+import { prepChatComputed } from "./computed.chat";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
@@ -433,50 +437,86 @@ export class LfChat implements LfChatInterface {
 
   //#region Private methods
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    // Create adapter without dispatcher first (circular reference)
+    const adapterWithoutDispatcher = createAdapter(
+      // Getters - ALL must be functions () => T per v4.0.0
       {
         agentState: () => this.agentState,
-        blocks: this.#b,
-        compInstance: this,
+        blocks: () => this.#b,
+        compInstance: () => this,
         currentAbortStreaming: () => this.currentAbortStreaming,
         currentAttachments: () => this.currentAttachments,
         currentEditingId: () => this.currentEditingId,
         currentPrompt: () => this.currentPrompt,
         currentTokens: () => this.currentTokens,
         currentToolExecution: () => this.currentToolExecution,
-        cyAttributes: this.#cy,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
         history: () => this.history,
+        ids: () => LF_CHAT_IDS,
         lastMessage: (role = "user") => {
           return this.history
             .slice()
             .reverse()
             .find((m) => m.role === role);
         },
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p,
         status: () => this.status,
         view: () => this.view,
       },
+      // Setters - simple single-value assignments
       {
-        agentState: (value) => (this.agentState = value),
-        currentAbortStreaming: (value) => (this.currentAbortStreaming = value),
-        currentAttachments: (value) => (this.currentAttachments = value),
-        currentEditingId: (value) => (this.currentEditingId = value),
-        currentPrompt: (value) => (this.currentPrompt = value),
-        currentTokens: (value) => (this.currentTokens = value),
-        currentToolExecution: (value) => (this.currentToolExecution = value),
-        history: async (cb) => {
+        agentState: (value: LfChatAgentState | null) =>
+          (this.agentState = value),
+        currentAbortStreaming: (value: AbortController | null) =>
+          (this.currentAbortStreaming = value),
+        currentAttachments: (value: LfLLMAttachment[]) =>
+          (this.currentAttachments = value),
+        currentEditingId: (value: string | null) =>
+          (this.currentEditingId = value),
+        currentPrompt: (value: LfLLMChoiceMessage | null) =>
+          (this.currentPrompt = value),
+        currentTokens: (value: LfChatCurrentTokens) =>
+          (this.currentTokens = value),
+        currentToolExecution: (value: LfDataDataset | null) =>
+          (this.currentToolExecution = value),
+        history: async (cb: () => unknown) => {
           cb();
           this.currentTokens = await calcTokens(this.#adapter);
           this.onLfEvent(new CustomEvent("update"), "update");
         },
-        status: (status) => (this.status = status),
-        toggleFullScreen: () => (this.fullScreen = !this.fullScreen),
-        view: (view) => (this.view = view),
+        status: (status: LfChatStatus) => (this.status = status),
+        view: (view: LfChatView) => (this.view = view),
       },
+      // Computed - derived values, predicates
+      prepChatComputed(() => this.#adapter),
+      // Actions - multi-step operations, async ops
+      prepChatActions(() => this.#adapter),
+      // getAdapter factory
       () => this.#adapter,
     );
+
+    // Create inline dispatcher per v4.0.0 Section 5.5
+    const dispatcher: LfChatAdapterDispatcher = {
+      emit: (eventType, detail) => {
+        const payload: LfChatEventPayload = {
+          comp: this,
+          eventType,
+          id: this.rootElement.id,
+          history: JSON.stringify(this.history) || "",
+          status: this.status,
+          originalEvent: (detail as LfChatEventPayload)?.originalEvent,
+        };
+        this.lfEvent.emit(payload);
+      },
+    };
+
+    // Combine into final adapter
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher,
+    } as LfChatAdapter;
   };
   async #checkLLMStatus() {
     if (this.view === "settings") {

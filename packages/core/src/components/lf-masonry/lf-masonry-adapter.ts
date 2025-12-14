@@ -1,20 +1,44 @@
 import {
   LfMasonryAdapter,
+  LfMasonryAdapterControllerActions,
+  LfMasonryAdapterControllerComputed,
+  LfMasonryAdapterControllerGetters,
+  LfMasonryAdapterControllerSetters,
   LfMasonryAdapterHandlers,
-  LfMasonryAdapterInitializerGetters,
   LfMasonryAdapterJsx,
   LfMasonryAdapterRefs,
 } from "@lf-widgets/foundations";
 import { prepControls } from "./elements.controls";
 import { controlsHandlers } from "./handlers.controls";
 
+/**
+ * Creates the canonical adapter for lf-masonry.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: Centralized event emission (passed from component)
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
+//#region Adapter
 export const createAdapter = (
-  getters: LfMasonryAdapterInitializerGetters,
+  getters: LfMasonryAdapterControllerGetters,
+  setters: LfMasonryAdapterControllerSetters,
+  computed: LfMasonryAdapterControllerComputed,
+  actions: LfMasonryAdapterControllerActions,
   getAdapter: () => LfMasonryAdapter,
-): LfMasonryAdapter => {
+): Omit<LfMasonryAdapter, "dispatcher"> => {
   return {
     controller: {
       get: getters,
+      set: setters,
+      computed,
+      actions,
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -23,6 +47,7 @@ export const createAdapter = (
     handlers: createHandlers(getAdapter),
   };
 };
+//#endregion
 
 //#region Elements
 export const createJsx = (

@@ -129,7 +129,7 @@ export const regenerateMessage = async (
   const { get, set } = adapter.controller;
 
   const h = get.history();
-  const compInstance = get.compInstance as LfChat;
+  const compInstance = get.compInstance() as LfChat;
 
   requestAnimationFrame(async () => {
     set.currentPrompt(m);
@@ -154,7 +154,7 @@ export const regenerateMessage = async (
  */
 export const resetPrompt = async (adapter: LfChatAdapter) => {
   const { get, set } = adapter.controller;
-  const comp = get.compInstance as LfChat;
+  const comp = get.compInstance() as LfChat;
 
   requestAnimationFrame(async () => {
     set.currentPrompt(null);
@@ -169,7 +169,7 @@ export const resetPrompt = async (adapter: LfChatAdapter) => {
  * Submits a user prompt to the chat adapter and processes the response.
  *
  * This function performs the following operations:
- * 1. Retrieves the current prompt from the adapter
+ * 1. Retrieves the current prompt from the adapter using preparePrompt action
  * 2. Updates the current prompt state
  * 3. Adds the prompt to chat history if valid
  * 4. Makes an API call with the adapter
@@ -181,13 +181,14 @@ export const resetPrompt = async (adapter: LfChatAdapter) => {
  * @throws Will throw an error if the API call fails
  */
 export const submitPrompt = async (adapter: LfChatAdapter) => {
-  const { get, set } = adapter.controller;
+  const { get, set, actions } = adapter.controller;
   const { history, compInstance } = get;
-  const comp = compInstance as LfChat;
+  const comp = compInstance() as LfChat;
 
   resetAgentState(adapter);
 
-  const userMessage = await get.newPrompt();
+  // Use actions.preparePrompt instead of get.newPrompt (v4.0.0 migration)
+  const userMessage = await actions.preparePrompt();
   if (userMessage) {
     ensureMessageId(userMessage);
   }

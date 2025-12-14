@@ -3,6 +3,7 @@ import {
   LF_ATTRIBUTES,
   LF_COMPARE_BLOCKS,
   LF_COMPARE_CSS_VARS,
+  LF_COMPARE_DEFAULTS,
   LF_COMPARE_PARTS,
   LF_COMPARE_PROPS,
   LF_STYLE_ID,
@@ -149,6 +150,7 @@ export class LfCompare implements LfCompareInterface {
   #v = LF_COMPARE_CSS_VARS;
   #w = LF_WRAPPER_ID;
   #adapter: LfCompareAdapter;
+  #sliderPosition = 50;
   //#endregion
 
   //#region Events
@@ -242,49 +244,95 @@ export class LfCompare implements LfCompareInterface {
 
   //#region Private methods
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    const adapterParts = createAdapter(
+      // GET: Pure state reads (ALL must be functions)
       {
-        blocks: this.#b,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        isOverlay: () => this.#isOverlay(),
-        lfAttributes: this.#lf,
-        manager: this.#framework,
-        parts: this.#p,
+        // Base getters (v4.0.0 - ALL must be functions)
+        blocks: () => this.#b,
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => ({}),
+        lfAttributes: () => this.#lf,
+        parts: () => this.#p,
+        // Component-specific getters
+        defaults: () => LF_COMPARE_DEFAULTS(),
+        leftPanelOpened: () => this.isLeftPanelOpened,
+        rightPanelOpened: () => this.isRightPanelOpened,
+        leftShape: () => this.leftShape,
+        rightShape: () => this.rightShape,
         shapes: () => this.#getShapes(),
+        sliderPosition: () => this.#sliderPosition,
+        view: () => this.lfView,
       },
+      // SET: Simple single-value assignments
       {
-        leftPanelOpened: (value?) => {
-          if (value === undefined) {
-            this.isLeftPanelOpened = !this.isLeftPanelOpened;
-          } else {
-            this.isLeftPanelOpened = value;
-          }
+        leftPanelOpened: (value: boolean) => {
+          this.isLeftPanelOpened = value;
         },
         leftShape: (shape) => (this.leftShape = shape),
-        rightPanelOpened: (value?) => {
-          if (value === undefined) {
-            this.isRightPanelOpened = !this.isRightPanelOpened;
-          } else {
-            this.isRightPanelOpened = value;
-          }
+        rightPanelOpened: (value: boolean) => {
+          this.isRightPanelOpened = value;
         },
         rightShape: (shape) => (this.rightShape = shape),
+        sliderPosition: (value: number) => {
+          this.#sliderPosition = value;
+        },
         splitView: (value) => {
           this.lfView = value ? "split" : "main";
         },
       },
+      // COMPUTED: Derived values and predicates (pure functions)
+      {
+        isOverlay: () => this.lfView === "main",
+        isAtStart: () => this.#sliderPosition === 0,
+        isAtEnd: () => this.#sliderPosition === 100,
+        hasShapes: () => this.#hasShapes(),
+      },
+      // ACTIONS: Multi-step operations
+      {
+        toggleLeftPanel: () => {
+          this.isLeftPanelOpened = !this.isLeftPanelOpened;
+        },
+        toggleRightPanel: () => {
+          this.isRightPanelOpened = !this.isRightPanelOpened;
+        },
+        setPositionWithBounds: (position: number) => {
+          this.#sliderPosition = Math.max(0, Math.min(100, position));
+          this.rootElement.style.setProperty(
+            this.#v.overlayWidth,
+            `${100 - this.#sliderPosition}%`,
+          );
+        },
+      },
       () => this.#adapter,
     );
+
+    // Add dispatcher for centralized event emission (v4.0.0)
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: this.rootElement.id,
+            originalEvent: detail?.originalEvent,
+          });
+        },
+      },
+    };
   };
   #getShapes() {
     return this.shapes?.[this.lfShape] || [];
   }
   #hasShapes() {
     return !!this.shapes?.[this.lfShape];
-  }
-  #isOverlay() {
-    return !!(this.lfView === "main");
   }
   #prepCompare(): VNode {
     const { bemClass } = this.#framework.theme;
@@ -324,7 +372,7 @@ export class LfCompare implements LfCompareInterface {
     const { bemClass } = theme;
 
     const { view } = this.#b;
-    const { left, right } = this.#adapter.controller.get.defaults;
+    const { left, right } = this.#adapter.controller.get.defaults();
     const { leftTree, rightTree } = this.#adapter.elements.jsx;
     const {
       isLeftPanelOpened,
@@ -366,7 +414,7 @@ export class LfCompare implements LfCompareInterface {
           </div>
           {isLeftPanelOpened && leftTree()}
           {isRightPanelOpened && rightTree()}
-          {this.#isOverlay() && (
+          {this.#adapter.controller.computed.isOverlay() && (
             <div
               class={bemClass(view._, view.slider)}
               onChange={this.#updateOverlayInput}
@@ -398,11 +446,8 @@ export class LfCompare implements LfCompareInterface {
   #updateOverlayInput = (event: InputEvent) => {
     const { target } = event;
     if (target instanceof HTMLInputElement) {
-      const sliderValue = 100 - parseInt(target.value);
-      this.rootElement.style.setProperty(
-        this.#v.overlayWidth,
-        `${sliderValue}%`,
-      );
+      const sliderValue = parseInt(target.value);
+      this.#adapter.controller.actions.setPositionWithBounds(sliderValue);
     }
   };
   //#endregion

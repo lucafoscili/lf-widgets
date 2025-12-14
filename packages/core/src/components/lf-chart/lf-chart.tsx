@@ -6,11 +6,10 @@ import {
   LF_STYLE_ID,
   LF_WRAPPER_ID,
   LfChartAdapter,
+  LfChartAdapterDispatcher,
   LfChartAdapterThemeStyle,
   LfChartAxis,
   LfChartElement,
-  LfChartEvent,
-  LfChartEventData,
   LfChartEventPayload,
   LfChartInterface,
   LfChartLegendPlacement,
@@ -38,13 +37,10 @@ import {
 import { dispose, ECharts, init } from "echarts";
 import { awaitFramework } from "../../utils/setup";
 import {
-  prepAxis,
-  prepLabel,
-  prepLegend,
-  prepSeries,
-  prepTooltip,
-} from "./helpers.utils";
-import { createAdapter } from "./lf-chart-adapter";
+  createAdapter,
+  createGetters,
+  createSetters,
+} from "./lf-chart-adapter";
 
 /**
  * Represents a chart component that displays data in various formats, such as
@@ -271,19 +267,6 @@ export class LfChart implements LfChartInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfChartEventPayload>;
-  onLfEvent(
-    e: Event | CustomEvent,
-    eventType: LfChartEvent,
-    data?: LfChartEventData,
-  ) {
-    this.lfEvent.emit({
-      comp: this,
-      eventType,
-      id: this.rootElement.id,
-      originalEvent: e,
-      data,
-    });
-  }
   //#endregion
 
   //#region Public methods
@@ -335,7 +318,7 @@ export class LfChart implements LfChartInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.onLfEvent(new CustomEvent("unmount"), "unmount");
+      this.#adapter.dispatcher.emit("unmount");
       this.rootElement.remove();
     }, ms);
   }
@@ -360,44 +343,52 @@ export class LfChart implements LfChartInterface {
     }
   }
   #initAdapter = () => {
-    this.#adapter = createAdapter(
-      {
-        compInstance: this,
-        columnById: (id: string) =>
-          this.#framework.data.column.find(this.lfDataset, { id })[0],
-        manager: this.#framework,
-        mappedType: (type) => {
-          switch (type) {
-            case "area":
-            case "gaussian":
-              return "line";
-            case "calendar":
-            case "hbar":
-            case "sbar":
-              return "bar";
-            case "bubble":
-              return "scatter";
-            default:
-              return type;
-          }
-        },
-        seriesColumn: (series) =>
-          this.#framework.data.column.find(this.lfDataset, { title: series }),
-        seriesData: () => this.#seriesData,
-        style: {
-          axis: () => prepAxis(() => this.#adapter),
-          label: () => prepLabel(() => this.#adapter),
-          legend: () => prepLegend(() => this.#adapter),
-          seriesColor: (amount: number) =>
-            prepSeries(() => this.#adapter, amount),
-          theme: () => this.themeValues,
-          tooltip: (formatter) => prepTooltip(() => this.#adapter, formatter),
-        },
-        xAxesData: () => this.#axesData,
-      },
-      { style: { theme: () => this.#updateThemeColors() } },
+    const getters = createGetters(this, () => this.#framework);
+    const setters = createSetters(() => this.#updateThemeColors());
+
+    // Build the adapter without dispatcher first
+    const adapterWithoutDispatcher = createAdapter(
+      getters,
+      setters,
+      () => this.#seriesData,
+      () => this.#axesData,
+      () => this.themeValues,
       () => this.#adapter,
     );
+
+    // Create dispatcher with inline emit
+    const dispatcher: LfChartAdapterDispatcher = {
+      emit: (eventType, detail) => {
+        const payload: LfChartEventPayload = {
+          comp: this,
+          eventType,
+          id: this.rootElement.id,
+          originalEvent: (detail as any)?.originalEvent,
+          data: (detail as any)?.data,
+        };
+        this.lfEvent.emit(payload);
+      },
+    };
+
+    // Assemble the full adapter
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher,
+    } as LfChartAdapter;
+
+    // Expose action callbacks
+    (this.#adapter as any)._disposeChart = () => {
+      if (this.#chart && this.#container) {
+        dispose(this.#container);
+      }
+    };
+    (this.#adapter as any)._refresh = () => forceUpdate(this);
+    (this.#adapter as any)._render = () => this.#init();
+    (this.#adapter as any)._resize = () => {
+      if (this.#chart && this.#container) {
+        this.#chart.resize();
+      }
+    };
   };
   #consistencyCheck() {
     const { logs } = this.#framework.debug;
@@ -531,7 +522,7 @@ export class LfChart implements LfChartInterface {
     this.#chart.on("click", this.#adapter.handlers.onClick);
   }
   #createChartOptions() {
-    const { options } = this.#adapter.controller.get;
+    const { options } = this.#adapter.controller.computed;
     const {
       basic,
       bubble,
@@ -621,7 +612,7 @@ export class LfChart implements LfChartInterface {
     });
     this.#resizeObserver.observe(this.#container);
 
-    this.onLfEvent(new CustomEvent("ready"), "ready");
+    this.#adapter.dispatcher.emit("ready");
     info.update(this, "did-load");
   }
   componentWillRender() {
@@ -666,7 +657,7 @@ export class LfChart implements LfChartInterface {
         <div id={this.#w}>
           <div
             class={bemClass(this.#b.chart._)}
-            part={this.#p.chart}
+            part={this.#p.chart._}
             ref={(chartContainer) => (this.#container = chartContainer)}
           ></div>
         </div>

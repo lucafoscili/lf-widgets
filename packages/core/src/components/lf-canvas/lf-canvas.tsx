@@ -1,6 +1,8 @@
 import {
   CY_ATTRIBUTES,
+  LF_ATTRIBUTES,
   LF_CANVAS_BLOCKS,
+  LF_CANVAS_IDS,
   LF_CANVAS_PARTS,
   LF_CANVAS_PROPS,
   LF_STYLE_ID,
@@ -224,6 +226,8 @@ export class LfCanvas implements LfCanvasInterface {
   #framework: LfFrameworkInterface;
   #b = LF_CANVAS_BLOCKS;
   #cy = CY_ATTRIBUTES;
+  #ids = LF_CANVAS_IDS;
+  #lfAttr = LF_ATTRIBUTES;
   #p = LF_CANVAS_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -247,19 +251,13 @@ export class LfCanvas implements LfCanvasInterface {
     bubbles: true,
   })
   lfEvent: EventEmitter<LfCanvasEventPayload>;
-  onLfEvent(e: Event | CustomEvent, eventType: LfCanvasEvent) {
-    const { coordinates } = this.#adapter.toolkit;
-    const { lfStrokeTolerance, points, rootElement } = this;
-
-    this.lfEvent.emit({
-      comp: this,
-      id: rootElement.id,
-      originalEvent: e,
-      eventType,
-      points:
-        lfStrokeTolerance !== null && points?.length
-          ? coordinates.simplify(points, lfStrokeTolerance)
-          : points,
+  /**
+   * Emits an event through the dispatcher.
+   * @deprecated Use dispatcher.emit directly for new code
+   */
+  onLfEvent(e: Event | CustomEvent | PointerEvent, eventType: LfCanvasEvent) {
+    this.#adapter.dispatcher.emit(eventType, {
+      originalEvent: e as PointerEvent,
     });
   }
   //#endregion
@@ -537,7 +535,7 @@ export class LfCanvas implements LfCanvasInterface {
     board.height = height;
     board.width = width;
 
-    if (this.#isCursorPreview()) {
+    if (this.#adapter.controller.computed.isCursorPreview()) {
       preview.height = height;
       preview.width = width;
     }
@@ -553,18 +551,19 @@ export class LfCanvas implements LfCanvasInterface {
   @Method()
   async setCanvasHeight(value?: number): Promise<void> {
     const { board, preview } = this.#adapter.elements.refs;
+    const { isCursorPreview } = this.#adapter.controller.computed;
 
     if (value !== undefined) {
       board.height = value;
 
-      if (this.#isCursorPreview()) {
+      if (isCursorPreview()) {
         preview.height = value;
       }
     } else {
       const { height } = this.#container.getBoundingClientRect();
       board.height = height;
 
-      if (this.#isCursorPreview()) {
+      if (isCursorPreview()) {
         preview.height = height;
       }
     }
@@ -581,18 +580,19 @@ export class LfCanvas implements LfCanvasInterface {
   @Method()
   async setCanvasWidth(value?: number): Promise<void> {
     const { board, preview } = this.#adapter.elements.refs;
+    const { isCursorPreview } = this.#adapter.controller.computed;
 
     if (value !== undefined) {
       board.width = value;
 
-      if (this.#isCursorPreview()) {
+      if (isCursorPreview()) {
         preview.width = value;
       }
     } else {
       const { width } = this.#container.getBoundingClientRect();
       board.width = width;
 
-      if (this.#isCursorPreview()) {
+      if (isCursorPreview()) {
         preview.width = width;
       }
     }
@@ -665,19 +665,27 @@ export class LfCanvas implements LfCanvasInterface {
    * Initializes the canvas adapter with getters, setters, and toolkit references.
    * Creates the adapter that manages component state and provides helper methods
    * for canvas operations, coordinate calculations, and drawing.
+   *
+   * v4.0.0 Architecture:
+   * - controller.get: Pure state reads (ALL must be functions `() => T`)
+   * - controller.set: Simple single-value assignments
+   * - controller.computed: Derived values, predicates (pure functions)
+   * - controller.actions: Multi-step operations (clear, finalize, etc.)
+   * - dispatcher: Centralized event emission (inline)
    */
   #initAdapter = () => {
-    this.#adapter = createAdapter(
+    const adapterParts = createAdapter(
       {
-        blocks: this.#b,
+        blocks: () => this.#b.canvas,
         boxing: () => this.boxing,
-        compInstance: this,
-        cyAttributes: this.#cy,
-        isCursorPreview: () => this.#isCursorPreview(),
+        compInstance: () => this,
+        cyAttributes: () => this.#cy,
+        framework: () => this.#framework,
+        ids: () => this.#ids.canvas,
         isPainting: () => this.isPainting,
-        manager: this.#framework,
+        lfAttributes: () => this.#lfAttr,
         orientation: () => this.orientation,
-        parts: this.#p,
+        parts: () => this.#p,
         points: () => this.points,
       },
       {
@@ -688,6 +696,34 @@ export class LfCanvas implements LfCanvasInterface {
       },
       () => this.#adapter,
     );
+
+    // Create full adapter with inline dispatcher
+    this.#adapter = {
+      ...adapterParts,
+      dispatcher: {
+        emit: (eventType, detail) => {
+          const { coordinates } = this.#adapter.toolkit;
+          const { lfStrokeTolerance, points, rootElement } = this;
+
+          this.#framework?.debug?.logs.new(
+            this,
+            `Event: ${eventType}`,
+            "informational",
+          );
+
+          this.lfEvent.emit({
+            comp: this,
+            eventType,
+            id: rootElement.id,
+            originalEvent: detail?.originalEvent,
+            points:
+              lfStrokeTolerance !== null && points?.length
+                ? coordinates.simplify(points, lfStrokeTolerance)
+                : points,
+          });
+        },
+      },
+    };
   };
   /**
    * Initializes the ResizeObserver to monitor dimension changes.
@@ -723,13 +759,6 @@ export class LfCanvas implements LfCanvasInterface {
     });
     this.#resizeObserver.observe(observeTarget);
   };
-  /**
-   * Checks if the cursor preview mode is enabled.
-   * @returns True if cursor preview is enabled, false otherwise
-   */
-  #isCursorPreview() {
-    return this.lfCursor === "preview";
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -768,10 +797,11 @@ export class LfCanvas implements LfCanvasInterface {
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
+    const { isCursorPreview, shouldRenderPreview } =
+      this.#adapter.controller.computed;
 
     const { board, image, preview } = this.#adapter.elements.jsx;
     const { lfStyle } = this;
-    const shouldRenderPreview = this.#isCursorPreview() || this.lfPreview;
 
     const { canvas } = this.#b;
 
@@ -781,7 +811,7 @@ export class LfCanvas implements LfCanvasInterface {
         <div id={this.#w}>
           <div
             class={bemClass(canvas._, null, {
-              hidden: this.#isCursorPreview(),
+              hidden: isCursorPreview(),
             })}
             part={this.#p.canvas}
             ref={(el) => {
@@ -792,7 +822,7 @@ export class LfCanvas implements LfCanvasInterface {
           >
             {image()}
             {board()}
-            {shouldRenderPreview && preview()}
+            {shouldRenderPreview() && preview()}
           </div>
         </div>
       </Host>

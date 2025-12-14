@@ -1,49 +1,52 @@
 import {
   LfCarouselAdapter,
+  LfCarouselAdapterControllerActions,
+  LfCarouselAdapterControllerComputed,
+  LfCarouselAdapterControllerGetters,
   LfCarouselAdapterControllerSetters,
   LfCarouselAdapterHandlers,
-  LfCarouselAdapterInitializerGetters,
-  LfCarouselAdapterInitializerSetters,
   LfCarouselAdapterJsx,
   LfCarouselAdapterRefs,
 } from "@lf-widgets/foundations";
+import { createActions } from "./actions.carousel";
+import { createComputed } from "./computed.carousel";
 import { prepSideButtonsJsx } from "./elements.side-buttons";
 import { prepSideButtonHandlers } from "./handlers.side-buttons";
-import { autoplay } from "./helpers.utils";
 
+/**
+ * Creates the canonical adapter for lf-carousel.
+ *
+ * v4.0.0 Architecture:
+ * - controller.get: Pure state reads (ALL must be functions `() => T`)
+ * - controller.set: Simple single-value assignments
+ * - controller.computed: Derived values, predicates (pure functions)
+ * - controller.actions: Multi-step operations (toggles, batch changes)
+ * - elements: JSX factories + refs
+ * - dispatcher: Centralized event emission (passed from component)
+ * - handlers: Event callbacks
+ *
+ * @see Section 5 of 4_0_0_REFACTORING.md
+ */
 //#region Adapter
 export const createAdapter = (
-  getters: LfCarouselAdapterInitializerGetters,
-  setters: LfCarouselAdapterInitializerSetters,
+  getters: LfCarouselAdapterControllerGetters,
+  setters: LfCarouselAdapterControllerSetters,
+  computed: LfCarouselAdapterControllerComputed,
+  actions: LfCarouselAdapterControllerActions,
   getAdapter: () => LfCarouselAdapter,
-): LfCarouselAdapter => {
+): Omit<LfCarouselAdapter, "dispatcher"> => {
   return {
     controller: {
       get: getters,
-      set: createSetters(setters, getAdapter),
+      set: setters,
+      computed,
+      actions,
     },
     elements: {
       jsx: createJsx(getAdapter),
       refs: createRefs(),
     },
     handlers: createHandlers(getAdapter),
-  };
-};
-//#endregion
-
-//#region Controller
-export const createSetters = (
-  setters: LfCarouselAdapterInitializerSetters,
-  getAdapter: () => LfCarouselAdapter,
-): LfCarouselAdapterControllerSetters => {
-  const { start, stop } = autoplay;
-
-  return {
-    ...setters,
-    autoplay: {
-      start: () => start(getAdapter()),
-      stop: () => stop(getAdapter()),
-    },
   };
 };
 //#endregion
@@ -68,4 +71,8 @@ export const createHandlers = (
 export const createRefs = (): LfCarouselAdapterRefs => {
   return { back: null, forward: null };
 };
+//#endregion
+
+//#region Re-exports for convenience
+export { createActions, createComputed };
 //#endregion

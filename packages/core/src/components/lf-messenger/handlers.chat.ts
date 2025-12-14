@@ -14,17 +14,18 @@ export const prepChatHandlers = (
       const { comp, eventType, id } = e.detail;
 
       const { get, set } = getAdapter().controller;
-      const { "--lf-icon-previous": left, "--lf-icon-next": right } =
-        get.manager.theme.get.current().variables;
+      const { "--lf-icon-previous": left, "--lf-icon-next": right } = get
+        .framework()
+        .theme.get.current().variables;
 
       switch (eventType) {
         case "click":
           switch (id) {
-            case LF_MESSENGER_IDS.chat.leftExpander:
+            case LF_MESSENGER_IDS.messenger.chat.leftExpander:
               const newLeft = set.ui.panel("left");
               comp.lfIcon = newLeft ? right : left;
               break;
-            case LF_MESSENGER_IDS.chat.rightExpander:
+            case LF_MESSENGER_IDS.messenger.chat.rightExpander:
               const newRight = set.ui.panel("right");
               comp.lfIcon = newRight ? left : right;
               break;
@@ -59,19 +60,19 @@ export const prepChatHandlers = (
     tabbar: async (e: CustomEvent<LfTabbarEventPayload>) => {
       const { eventType, node } = e.detail;
 
-      const { current, next, previous } = getAdapter().controller.set.character;
+      const { actions, set } = getAdapter().controller;
 
       switch (eventType) {
         case "click":
           switch (node.id) {
             case "next":
-              next();
+              actions.character.next();
               break;
             case "previous":
-              previous();
+              actions.character.previous();
               break;
             default:
-              current(null);
+              set.character.current(null);
               break;
           }
       }

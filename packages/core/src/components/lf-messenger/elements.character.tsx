@@ -13,11 +13,12 @@ export const prepCharacter = (
     //#region Avatar
     avatar: () => {
       const { controller, elements } = getAdapter();
-      const { blocks, cyAttributes, image, lfAttributes, manager } =
+      const { blocks, cyAttributes, image, lfAttributes, framework } =
         controller.get;
       const { character } = elements.refs;
       const { asCover } = image;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { bemClass } = theme;
 
       const { title, value } = asCover("avatars");
@@ -25,9 +26,9 @@ export const prepCharacter = (
       return (
         <img
           alt={title || ""}
-          class={bemClass(blocks.character._, blocks.character.image)}
-          data-cy={cyAttributes.image}
-          data-lf={lfAttributes.fadeIn}
+          class={bemClass(blocks().character._, blocks().character.image)}
+          data-cy={cyAttributes().image}
+          data-lf={lfAttributes().fadeIn}
           ref={assignRef(character, "avatar")}
           src={value}
           title={title || ""}
@@ -41,7 +42,8 @@ export const prepCharacter = (
       const { controller, elements } = getAdapter();
       const { character } = elements.refs;
       const { biography } = controller.get.character;
-      const { assignRef } = controller.get.manager;
+      const fw = controller.get.framework();
+      const { assignRef } = fw;
 
       return (
         <lf-code
@@ -57,23 +59,21 @@ export const prepCharacter = (
     //#region Save
     save: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, manager, status } = controller.get;
+      const { cyAttributes, framework, status, blocks } = controller.get;
       const { character } = elements.refs;
       const { button } = handlers.character;
       const { inProgress } = status.save;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { bemClass } = theme;
 
       const isSaving = inProgress();
 
       return (
         <lf-button
-          class={bemClass(
-            controller.get.blocks.character._,
-            controller.get.blocks.character.saveButton,
-          )}
-          data-cy={cyAttributes.button}
-          lfDataset={LF_MESSENGER_MENU(manager.theme)}
+          class={bemClass(blocks().character._, blocks().character.saveButton)}
+          data-cy={cyAttributes().button}
+          lfDataset={LF_MESSENGER_MENU(fw.theme)}
           lfLabel={"Save"}
           lfShowSpinner={isSaving}
           lfStretchY={true}
@@ -89,17 +89,18 @@ export const prepCharacter = (
     //#region Status icon
     statusIcon: () => {
       const { controller, elements } = getAdapter();
-      const { blocks, manager, status } = controller.get;
+      const { blocks, framework, status } = controller.get;
       const { character } = elements.refs;
       const { connection } = status;
-      const { assignRef, theme } = manager;
+      const fw = framework();
+      const { assignRef, theme } = fw;
       const { bemClass } = theme;
 
       const { color, title } = statusIconOptions(connection());
 
       return (
         <div
-          class={bemClass(blocks.character._, blocks.character.status, {
+          class={bemClass(blocks().character._, blocks().character.status, {
             offline: color === "danger",
             online: color === "success",
           })}
