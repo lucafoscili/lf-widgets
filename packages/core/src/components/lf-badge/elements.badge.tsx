@@ -5,6 +5,7 @@ import {
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 import { LfBadge } from "./lf-badge";
+import { LfBadgeFC } from "./lf-badge-fc";
 
 export const prepBadgeJsx = (
   getAdapter: () => LfBadgeAdapter,
@@ -17,40 +18,25 @@ export const prepBadgeJsx = (
       const { get } = controller;
 
       // v4.0.0: ALL getters are functions
-      const blocks = get.blocks();
       const compInstance = get.compInstance();
-      const lfAttributes = get.lfAttributes();
       const framework = get.framework();
-      const parts = get.parts();
 
-      const { lfImageProps, lfLabel, lfPosition } = compInstance;
-      const { assignRef, sanitizeProps, theme } = framework;
-      const { bemClass } = theme;
+      const { lfImageProps, lfLabel, lfPosition, lfUiSize, lfUiState } =
+        compInstance;
+      const { assignRef } = framework;
       const { refs } = elements;
 
       return (
-        <div
-          class={bemClass(blocks.badge._, undefined, { [lfPosition]: true })}
-          data-lf={lfAttributes.fadeIn}
+        <LfBadgeFC
+          badgeRef={assignRef(refs, "badge")}
+          framework={framework}
+          imageProps={lfImageProps}
+          label={lfLabel}
           onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
-          part={parts.badge}
-          ref={assignRef(refs, "badge")}
-        >
-          {lfLabel ? (
-            <span
-              class={bemClass(blocks.badge._, blocks.badge.label)}
-              part={parts.label}
-            >
-              {lfLabel}
-            </span>
-          ) : lfImageProps ? (
-            <lf-image
-              class={bemClass(blocks.badge._, blocks.badge.image)}
-              part={parts.image}
-              {...sanitizeProps(lfImageProps, "LfImage")}
-            ></lf-image>
-          ) : null}
-        </div>
+          position={lfPosition}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion

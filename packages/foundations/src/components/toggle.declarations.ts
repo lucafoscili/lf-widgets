@@ -17,6 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_TOGGLE_BLOCKS,
@@ -224,5 +225,67 @@ export interface LfTogglePropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: boolean;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the `LfToggleFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfToggleFCProps {
+  /** Accessible label for the toggle control */
+  ariaLabel?: string;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Whether the toggle is disabled */
+  disabled?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Reference callback for the input element */
+  inputRef?: (el: HTMLInputElement | null) => void;
+  /** Text label displayed alongside the toggle */
+  label?: string;
+  /** When true, displays the label before the toggle */
+  leadingLabel?: boolean;
+  /** Callback fired on blur event */
+  onBlur?: (e: FocusEvent) => void;
+  /** Callback fired on change event (value toggled) */
+  onChange?: (value: boolean, e: Event) => void;
+  /** Callback fired on focus event */
+  onFocus?: (e: FocusEvent) => void;
+  /** Callback fired on label click */
+  onLabelClick?: (e: MouseEvent) => void;
+  /** Callback fired on pointer down (for ripple effects) */
+  onPointerDown?: (e: PointerEvent) => void;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Reference callback for the thumb element (for ripple effects) */
+  thumbRef?: (el: HTMLElement | null) => void;
+  /** Reference callback for the track element */
+  trackRef?: (el: HTMLElement | null) => void;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** The current toggle value (true = on, false = off) */
+  value: boolean;
 }
 //#endregion

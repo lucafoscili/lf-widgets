@@ -1,17 +1,42 @@
 # LF Widgets v4.0.0 Architectural Refactoring Proposal
 
 > **Status**: PHASE 0 + PHASE 1 (Adapter-Everywhere) COMPLETE ✅  
+> **Status**: PHASE 2 (Functional Components) IN PROGRESS 🚧  
 > **Branch**: Already has 200+ files edited  
 > **Timeline**: Phase 0+1 (Adapter Architecture) completed December 2024  
 > **Philosophy**: "This might be the last chance for an architectural overhaul"
 >
 > **🎉 MILESTONE**: All 39 components now have v4.0.0 compliant adapters!
 >
-> - 1333/1333 unit tests passing
+> - 1332/1332 unit tests passing
 > - Full build passing
 >
 > **🏆 GOLDEN STANDARD**: `lf-shapeeditor` is the reference implementation for complex components.
 > **🥈 SILVER STANDARD**: `lf-button` is the reference for simple components.
+> **🌟 FC REFERENCE**: `lf-slider` is the first Functional Component conversion.
+
+---
+
+## FC Reference: `lf-slider` (First Functional Component)
+
+The `lf-slider` component is the **first FC conversion** demonstrating the dual-mode pattern (WC wrapper + FC core).
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `packages/foundations/src/components/slider.declarations.ts` | Includes `LfSliderFCProps` interface |
+| `packages/core/src/components/lf-slider/lf-slider-fc.tsx` | Stateless Functional Component |
+| `packages/core/src/components/lf-slider/lf-slider.tsx` | Web Component (thin wrapper) |
+| `packages/core/src/components/lf-slider/elements.slider.tsx` | JSX using `<LfSliderFC>` |
+
+### FC Pattern Summary
+
+1. **FC is stateless**: All state managed by parent WC
+2. **Framework as prop**: FC receives `framework` for theming utilities
+3. **Callbacks not events**: FC uses `onChange`, `onInput` callbacks instead of CustomEvents
+4. **Ref forwarding**: FC exposes `inputRef`, `thumbRef`, `trackRef` for parent to capture DOM references
+5. **WC remains thin wrapper**: Handles lifecycle, events, state, passes to FC
 
 ---
 
@@ -547,26 +572,89 @@ interface Lf<Component>FCProps {
 
 ### 2.6 Styling Strategy
 
-FCs don't have Shadow DOM, so they inherit parent's styles:
+FCs don't have Shadow DOM, so their styles must be adopted into parent shadow roots via `GLOBAL_STYLES`. This is handled automatically by `theme.register()`.
+
+#### 2.6.1 FC Style Architecture
+
+```
+packages/core/src/style/
+├── global.scss              # Includes all FC styles
+├── mixins/
+│   ├── _fcomponents.scss    # FIcon and other utility FCs
+│   ├── _fc-form-field.scss  # Shared form wrapper (ALL form FCs)
+│   ├── _fc-slider.scss      # Slider-specific styles
+│   ├── _fc-textfield.scss   # Textfield-specific (future)
+│   └── _fc-toggle.scss      # Toggle-specific (future)
+```
+
+#### 2.6.2 Shared Form Field Pattern
+
+**Critical Insight**: All form-based FCs (slider, textfield, toggle, checkbox, radio, select) share a common `.form-field` wrapper. This is centralized in `_fc-form-field.scss`:
 
 ```scss
-// lf-textfield.scss is imported by:
-// 1. Web Component (via styleUrl) - for standalone usage
-// 2. Parent component (via @import) - for composed usage
-
-// The SCSS structure remains the same:
-.textfield {
-  &__label { ... }
-  &__input { ... }
+// _fc-form-field.scss - ONE source of truth for ALL form FCs
+.form-field {
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--lf-form-color-on-bg, var(--lf-color-on-bg));
+  display: inline-flex;
+  font-family: var(--lf-form-font-family, var(--lf-font-family-label));
+  gap: var(--lf-form-gap, 0.5em);
+  // ... common form styling
+  
+  &__label { /* Shared label styling */ }
+  &--leading { /* Label-first modifier */ }
+  &--disabled { /* Disabled state */ }
+  &--error { /* Error state */ }
+  &--success { /* Success state */ }
 }
 ```
 
-**Adopted Stylesheets** (for non-Shadow DOM contexts):
+**Benefits**:
 
-```typescript
-// Parent component adopts child styles
-this.#framework.theme.adoptStylesheet(this.el.shadowRoot, "textfield");
+- **Consistency**: All forms look and behave identically
+- **Smaller bundle**: No duplication of `.form-field` across FCs
+- **Single theming surface**: `--lf-form-*` variables control all forms
+- **Easy maintenance**: Fix once, applies everywhere
+
+#### 2.6.3 Component-Specific Styles
+
+Each FC has its own partial for component-specific styling:
+
+```scss
+// _fc-slider.scss - Slider-specific ONLY
+.slider {
+  &__track { ... }
+  &__thumb { ... }
+  &__value { ... }
+  &__native-control { ... }
+}
+// Note: Does NOT include .form-field (comes from shared partial)
 ```
+
+#### 2.6.4 CSS Custom Properties
+
+FC styles use two naming conventions:
+
+| Convention | Example | Scope |
+|------------|---------|-------|
+| `--lf-form-*` | `--lf-form-padding` | Shared across ALL form FCs |
+| `--lf-<comp>-*` | `--lf-slider-thumb-height` | Component-specific |
+
+#### 2.6.5 Global Style Inclusion
+
+All FC styles are included via `global.scss`:
+
+```scss
+// global.scss
+@use "./mixins/fcomponents";      // FIcon, etc.
+@use "./mixins/fc-form-field";    // Shared form wrapper
+@use "./mixins/fc-slider";        // Slider-specific
+// @use "./mixins/fc-textfield";  // Future
+// @use "./mixins/fc-toggle";     // Future
+```
+
+This generates `GLOBAL_STYLES` which is adopted into all shadow roots.
 
 ### 2.7 Benefits
 
@@ -611,7 +699,144 @@ this.#framework.theme.adoptStylesheet(this.el.shadowRoot, "textfield");
 | Documentation | Document FC props, WC adapts automatically |
 | Ripple effects | FC accepts ripple ref, parent triggers effect |
 
-### 2.10 Proof of Concept Priority
+### 2.10 Lessons Learned
+
+Critical insights from the FC migration process:
+
+#### 2.10.1 Preserve `@prop` JSDoc Comments
+
+**Problem**: When migrating SCSS from WC to FC partials, `@prop` JSDoc comments were accidentally lost. These comments are **required** for README documentation generation.
+
+**Original WC pattern**:
+
+```scss
+// In lf-slider.scss (WC)
+/**
+ * @prop --lf-slider-padding: Sets the padding for the slider component.
+ *                            Defaults to => 2em
+ */
+padding: var(--lf-#{$comp}-padding, 2em 0.5em);
+```
+
+**Correct FC pattern** (must preserve comments):
+
+```scss
+// In _fc-slider.scss (FC partial)
+/**
+ * @prop --lf-slider-margin: Sets the margin for the slider component.
+ *                           Defaults to => 0 0.75em
+ */
+margin: var(--lf-slider-margin, 0 0.75em);
+```
+
+**Lesson**: Always copy `@prop` comments verbatim when migrating styles. These populate the component's CSS custom properties documentation in the README.
+
+#### 2.10.2 Positioned Children Require Positioned Parents
+
+**Problem**: Removing `position: relative` from `.slider` caused `.slider__native-control` (which uses `position: absolute`) to misalign, positioning relative to the nearest positioned ancestor instead.
+
+**Lesson**: When using flex layout with absolutely positioned children, ensure the flex container has `position: relative`:
+
+```scss
+.slider {
+  display: flex;
+  flex-direction: column;
+  position: relative;  // REQUIRED for absolute children!
+  // ...
+  
+  &__native-control {
+    position: absolute;  // Positions relative to .slider
+    top: 0;
+    left: 0;
+    // ...
+  }
+}
+```
+
+#### 2.10.3 Avoid Layout Hacks
+
+**Problem**: Initial fix for value display overflow used `overflow: visible` on `.form-field` — a band-aid that didn't address root cause.
+
+**Better Solution**: Proper flex layout with natural document flow:
+
+```scss
+// ❌ Band-aid fix
+.form-field {
+  overflow: visible;  // Allows overflow but bounding box is wrong
+}
+
+// ✅ Proper fix - use flex layout
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  
+  &__track { order: 0; }  // Track first
+  &__value { order: 1; text-align: center; }  // Value naturally flows below
+}
+```
+
+**Lesson**: When elements overflow their containers, restructure the layout rather than allowing overflow. Proper flow ensures correct bounding boxes and predictable behavior.
+
+#### 2.10.4 FC State/Size Props (Not CSS Cascade)
+
+**Problem**: WCs use CSS-based state colors (`data-lf` attribute + `lf-fw-state-colors` mixin) and size scaling (`:host([lf-ui-size])` selector). This doesn't work for FCs because:
+
+1. **Portals break DOM hierarchy** - portaled content lives outside the cascade
+2. **Shadow boundaries** can interfere with CSS variable inheritance
+3. **Composed FCs** (e.g., AutocompleteFC → TextfieldFC + ListFC) need explicit state propagation
+
+**Solution**: FCs require explicit `uiState` and `uiSize` props:
+
+```tsx
+interface LfSliderFCProps {
+  // ... other props
+  uiState?: LfThemeUIState;  // "primary" | "success" | "danger" | etc.
+  uiSize?: LfThemeUISize;    // "small" | "medium" | "large" | etc.
+}
+
+// FC applies these to root element:
+<div
+  class="form-field"
+  data-lf={uiState}
+  style={{ "--lf-fc-ui-size": `var(--lf-ui-size-${uiSize})` }}
+>
+```
+
+**CSS Variable Fallback Chain**:
+
+```scss
+// FC SCSS uses 3-level fallback:
+background-color: rgba(
+  var(
+    --lf-slider-color-primary,                    // 1. Component override
+    var(--lf-fc-color-primary, var(--lf-color-primary))  // 2. FC state, 3. Global
+  ),
+  ...
+);
+
+// _fc-states.scss defines FC state colors:
+[data-lf="success"] {
+  --lf-fc-color-primary: var(--lf-color-success);
+}
+```
+
+**Parent must propagate state to children (including portaled)**:
+
+```tsx
+// AutocompleteFC with error state
+<AutocompleteFC uiState="error">
+  <TextfieldFC uiState={uiState} />  // Explicit pass
+  {framework.portal.render(
+    <ListFC uiState={uiState} />,    // Portal also needs explicit state!
+    container
+  )}
+</AutocompleteFC>
+```
+
+**Lesson**: CSS cascade is unreliable for composed FCs. Always use explicit props for state/size propagation. This is actually a benefit: predictable, type-safe, works with portals.
+
+### 2.11 Proof of Concept Priority
 
 Start with these components (good FC candidates):
 

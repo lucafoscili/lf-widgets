@@ -1,11 +1,38 @@
+/**
+ * @prop --lf-button-align-items: Sets the align items for the button component.
+ *                                Defaults to => center
+ * @prop --lf-button-border-radius: Sets the border radius for the button component.
+ *                                  Defaults to => var(--lf-ui-border-radius)
+ * @prop --lf-button-color-primary: Sets the primary color for the button component.
+ *                                  Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
+ * @prop --lf-button-cursor: Sets the cursor for the button component.
+ *                           Defaults to => pointer
+ * @prop --lf-button-font-family: Sets the font family for the button component.
+ *                                Defaults to => var(--lf-font-family-primary)
+ * @prop --lf-button-font-size: Sets the font size for the button component.
+ *                              Defaults to => var(--lf-font-size-primary)
+ * @prop --lf-button-font-weight: Sets the font weight for the button component.
+ *                                Defaults to => var(--lf-font-weight-primary)
+ * @prop --lf-button-height: Sets the height for the button component.
+ *                           Defaults to => 3em
+ * @prop --lf-button-icon-height: Sets the icon height for the button component.
+ *                                Defaults to => 1.5em
+ * @prop --lf-button-icon-width: Sets the icon width for the button component.
+ *                               Defaults to => 1.5em
+ * @prop --lf-button-justify-content: Sets the justify content for the button component.
+ *                                    Defaults to => center
+ * @prop --lf-button-min-width: Sets the min width for the button component.
+ *                              Defaults to => 4em
+ * @prop --lf-button-padding: Sets the padding for the button component.
+ *                            Defaults to => 0 1.25em
+ * @prop --lf-button-text-decoration: Sets the text decoration for the button component.
+ *                                    Defaults to => none
+ * @prop --lf-button-text-transform: Sets the text transform for the button component.
+ *                                   Defaults to => uppercase
+ */
+
 @use "variables" as *;
 @use "mixins" as *;
-@use "./style.button" as sb with (
-  $comp: "button"
-);
-@use "./style.icon" as si with (
-  $comp: "button"
-);
 
 $comp: "button";
 @include lf-comp-setup($comp, "true", "true", "false", "true", "true", 4px);
@@ -43,5 +70,3 @@ $comp: "button";
     height: 100%;
   }
 }
-
-/* local partials loaded above */

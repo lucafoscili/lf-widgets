@@ -27,7 +27,11 @@
 @use "./mixins/fcomponents";
 @use "./mixins/fc-form-field";
 @use "./mixins/fc-states";
+@use "./mixins/fc-badge";
+@use "./mixins/fc-button";
 @use "./mixins/fc-slider";
+@use "./mixins/fc-textfield";
+@use "./mixins/fc-toggle";
 
 // -----------------------------------------------------------------------------
 // Scrollbar Styles

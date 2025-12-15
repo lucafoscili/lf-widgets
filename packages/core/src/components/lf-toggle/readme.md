@@ -109,25 +109,22 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                              | Description                                                                                         |
-| --------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `--lf-toggle-border-radius`       | Sets the border radius for the toggle component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-toggle-color-on-bg`         | Sets the color-on-bg color for the toggle component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-toggle-color-on-surface`    | Sets the color-on-surface color for the toggle component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-toggle-color-primary`       | Sets the color-primary color for the toggle component. Defaults to => var(--lf-color-primary)       |
-| `--lf-toggle-color-surface`       | Sets the color-surface color for the toggle component. Defaults to => var(--lf-color-surface)       |
-| `--lf-toggle-font-family`         | Sets the primary font family for the toggle component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-toggle-font-size`           | Sets the font size for the toggle component. Defaults to => var(--lf-font-size)                     |
-| `--lf-toggle-form-padding`        | Sets the padding for the toggle form field. Defaults to => 0.5em                                    |
-| `--lf-toggle-input-height`        | Sets the height for the toggle component's input. Defaults to => 3em                                |
-| `--lf-toggle-label-min-width`     | Sets the min-width for the toggle label. Defaults to => max-content                                 |
-| `--lf-toggle-label-padding-left`  | Sets the left padding for the toggle label. Defaults to => 1em                                      |
-| `--lf-toggle-label-padding-right` | Sets the right padding for the toggle label. Defaults to => 1em                                     |
-| `--lf-toggle-margin`              | Sets the margin for the toggle component. Defaults to => 1em 0.5em                                  |
-| `--lf-toggle-min-width`           | Sets the min-width for the toggle component. Defaults to => 4em                                     |
-| `--lf-toggle-thumb-size`          | Sets the size for the toggle component's thumb. Defaults to => 1.5em                                |
-| `--lf-toggle-track-height`        | Sets the height for the toggle component's track. Defaults to => 0.5em                              |
-| `--lf-toggle-track-width`         | Sets the width for the toggle component's track. Defaults to => 3em                                 |
+| Name                              | Description                                                                                              |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-toggle-border-radius`       | Sets the border radius for the toggle track. Defaults to => var(--lf-ui-border-radius, 1em)              |
+| `--lf-toggle-box-shadow`          | Sets the box shadow for the toggle track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
+| `--lf-toggle-font-family`         | Sets the primary font family for the toggle component. Defaults to => var(--lf-font-family-primary)      |
+| `--lf-toggle-font-size`           | Sets the font size for the toggle component. Defaults to => var(--lf-font-size)                          |
+| `--lf-toggle-form-padding`        | Sets the padding for the toggle form field. Defaults to => 0.5em                                         |
+| `--lf-toggle-input-height`        | Sets the height for the toggle input. Defaults to => 3em                                                 |
+| `--lf-toggle-label-min-width`     | Sets the min-width for the toggle label. Defaults to => max-content                                      |
+| `--lf-toggle-label-padding-left`  | Sets the left padding for the toggle label. Defaults to => 1em                                           |
+| `--lf-toggle-label-padding-right` | Sets the right padding for the toggle label. Defaults to => 1em                                          |
+| `--lf-toggle-margin`              | Sets the margin for the toggle component. Defaults to => 1em 0.5em                                       |
+| `--lf-toggle-min-width`           | Sets the min-width for the toggle component. Defaults to => 4em                                          |
+| `--lf-toggle-thumb-size`          | Sets the size for the toggle thumb. Defaults to => 1.5em                                                 |
+| `--lf-toggle-track-height`        | Sets the height for the toggle track. Defaults to => 0.5em                                               |
+| `--lf-toggle-track-width`         | Sets the width for the toggle track. Defaults to => 3em                                                  |
 
 
 ## Dependencies

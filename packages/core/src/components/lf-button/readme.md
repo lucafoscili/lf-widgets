@@ -138,23 +138,23 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                           | Description                                                                                         |
-| ------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `--lf-button-align-items`      | Sets the align items for the button component. Defaults to => center                                |
-| `--lf-button-border-radius`    | Sets the border radius for the button component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-button-color-border`     | Sets the color-border color for the button component. Defaults to => var(--lf-color-border)         |
-| `--lf-button-color-on-primary` | Sets the color-on-primary color for the button component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-button-color-primary`    | Sets the color-primary color for the button component. Defaults to => var(--lf-color-primary)       |
-| `--lf-button-cursor`           | Sets the cursor for the button component. Defaults to => pointer                                    |
-| `--lf-button-font-family`      | Sets the primary font family for the button component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-button-font-size`        | Sets the font size for the button component. Defaults to => var(--lf-font-size)                     |
-| `--lf-button-font-weight`      | Sets the font weight for the button component. Defaults to => var(--lf-font-weight-primary)         |
-| `--lf-button-height`           | Sets the height for the button component. Defaults to => 3em                                        |
-| `--lf-button-justify-content`  | Sets the justify content for the button component. Defaults to => center                            |
-| `--lf-button-min-width`        | Sets the min width for the button component. Defaults to => 4em                                     |
-| `--lf-button-padding`          | Sets the padding for the button component. Defaults to => 0 1.25em                                  |
-| `--lf-button-text-decoration`  | Sets the text decoration for the button component. Defaults to => none                              |
-| `--lf-button-text-transform`   | Sets the text transform for the button component. Defaults to => uppercase                          |
+| Name                          | Description                                                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `--lf-button-align-items`     | Sets the align items for the button component. Defaults to => center                                                |
+| `--lf-button-border-radius`   | Sets the border radius for the button component. Defaults to => var(--lf-ui-border-radius)                          |
+| `--lf-button-color-primary`   | Sets the primary color for the button component. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary)) |
+| `--lf-button-cursor`          | Sets the cursor for the button component. Defaults to => pointer                                                    |
+| `--lf-button-font-family`     | Sets the font family for the button component. Defaults to => var(--lf-font-family-primary)                         |
+| `--lf-button-font-size`       | Sets the font size for the button component. Defaults to => var(--lf-font-size-primary)                             |
+| `--lf-button-font-weight`     | Sets the font weight for the button component. Defaults to => var(--lf-font-weight-primary)                         |
+| `--lf-button-height`          | Sets the height for the button component. Defaults to => 3em                                                        |
+| `--lf-button-icon-height`     | Sets the icon height for the button component. Defaults to => 1.5em                                                 |
+| `--lf-button-icon-width`      | Sets the icon width for the button component. Defaults to => 1.5em                                                  |
+| `--lf-button-justify-content` | Sets the justify content for the button component. Defaults to => center                                            |
+| `--lf-button-min-width`       | Sets the min width for the button component. Defaults to => 4em                                                     |
+| `--lf-button-padding`         | Sets the padding for the button component. Defaults to => 0 1.25em                                                  |
+| `--lf-button-text-decoration` | Sets the text decoration for the button component. Defaults to => none                                              |
+| `--lf-button-text-transform`  | Sets the text transform for the button component. Defaults to => uppercase                                          |
 
 
 ## Dependencies

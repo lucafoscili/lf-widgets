@@ -19,6 +19,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_BUTTON_BLOCKS,
@@ -262,4 +263,70 @@ export type LfButtonStyling = (typeof LF_BUTTON_STYLINGS)[number];
  * Union of type identifiers defined in `LF_BUTTON_TYPES`.
  */
 export type LfButtonType = (typeof LF_BUTTON_TYPES)[number];
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfButtonFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfButtonFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Whether the button is disabled */
+  disabled?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Icon to display */
+  icon?: string;
+  /** Unique identifier for the button */
+  id?: string;
+  /** Button label text */
+  label?: string;
+  /** Callback fired on blur event */
+  onBlur?: (e: FocusEvent) => void;
+  /** Callback fired on click event */
+  onClick?: (e: MouseEvent) => void;
+  /** Callback fired on focus event */
+  onFocus?: (e: FocusEvent) => void;
+  /** Callback fired on pointer down (for ripple effects) */
+  onPointerDown?: (e: PointerEvent) => void;
+  /** Reference callback for the button element */
+  buttonRef?: (el: HTMLButtonElement | null) => void;
+  /** Reference callback for the ripple element */
+  rippleRef?: (el: HTMLElement | null) => void;
+  /** Whether to show ripple effect */
+  showRipple?: boolean;
+  /** Whether to show spinner (loading state) */
+  showSpinner?: boolean;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Styling mode: flat, floating, icon, outlined, raised */
+  styling?: LfButtonStyling;
+  /** Tooltip text */
+  tooltip?: string;
+  /** Whether to display the icon after the label */
+  trailingIcon?: boolean;
+  /** Button type attribute (button, submit, reset) */
+  type?: LfButtonType;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+}
 //#endregion

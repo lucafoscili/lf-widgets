@@ -12,6 +12,8 @@ import {
 import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { LfSliderFC } from "../lf-slider/lf-slider-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
+import { LfToggleFC } from "../lf-toggle/lf-toggle-fc";
 
 /**
  * Prepares the items sub-block JSX (accordion + individual control items).
@@ -368,31 +370,51 @@ const createControl = (
       );
     }
 
-    case "textfield":
-      return (
-        <div key={controlKey} class={bemClass(items._, items.item)}>
-          <lf-textfield
-            lfLabel={config.label}
-            lfValue={value as string}
-            onLf-textfield-event={(e) => controls.textfield(e, config.id)}
-          ></lf-textfield>
-          {infoIcon}
-        </div>
-      );
+    case "textfield": {
+      // FC handler - calls controlChange directly without CustomEvent
+      const { controlChange } = adapter.handlers.settings;
+      const handleChange = (val: string) => {
+        controlChange(null, config.id, val, "change");
+      };
+      const handleInput = (val: string) => {
+        controlChange(null, config.id, val, "input");
+      };
 
-    case "toggle":
       return (
         <div key={controlKey} class={bemClass(items._, items.item)}>
-          <lf-toggle
-            lfAriaLabel={config.label}
-            lfLabel={config.label}
-            lfLeadingLabel={true}
-            lfValue={value as boolean}
-            onLf-toggle-event={(e) => controls.toggle(e, config.id)}
-          ></lf-toggle>
+          <LfTextfieldFC
+            framework={mgr}
+            label={config.label}
+            value={value as string}
+            onChange={handleChange}
+            onInput={handleInput}
+          />
           {infoIcon}
         </div>
       );
+    }
+
+    case "toggle": {
+      // FC handler - calls controlChange directly without CustomEvent
+      const { controlChange } = adapter.handlers.settings;
+      const handleChange = (val: boolean) => {
+        controlChange(null, config.id, val, "change");
+      };
+
+      return (
+        <div key={controlKey} class={bemClass(items._, items.item)}>
+          <LfToggleFC
+            framework={mgr}
+            ariaLabel={config.label}
+            label={config.label}
+            leadingLabel={true}
+            value={value as boolean}
+            onChange={handleChange}
+          />
+          {infoIcon}
+        </div>
+      );
+    }
 
     default:
       logs.new(

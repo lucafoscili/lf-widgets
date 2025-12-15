@@ -1,5 +1,6 @@
 import { LfToggleAdapter, LfToggleAdapterJsx } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { LfToggleFC } from "./lf-toggle-fc";
 
 /**
  * Prepares JSX factory functions for the toggle component.
@@ -9,8 +10,9 @@ import { h, VNode } from "@stencil/core";
  * - Uses `controller.computed` for derived predicates (isDisabled, isOn)
  * - Uses `handlers` for event callbacks
  * - Routes all events through dispatcher
+ * - Wraps `LfToggleFC` functional component for actual rendering
  *
- * @see Section 5 of 4_0_0_REFACTORING.md
+ * @see Section 2 & 5 of 4_0_0_REFACTORING.md
  */
 export const prepToggle = (
   getAdapter: () => LfToggleAdapter,
@@ -20,90 +22,37 @@ export const prepToggle = (
     toggle: (): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const {
-        blocks,
-        compInstance,
-        cyAttributes,
-        framework,
-        lfAttributes,
-        parts,
-      } = controller.get;
+      const { compInstance, framework } = controller.get;
       const { isDisabled, isOn } = controller.computed;
 
       const comp = compInstance();
       const mgr = framework();
-      const b = blocks();
-      const p = parts();
-      const cy = cyAttributes();
-      const lf = lfAttributes();
 
-      const { lfAriaLabel, lfLabel, lfLeadingLabel, lfUiState, rootElement } =
+      const { lfAriaLabel, lfLabel, lfLeadingLabel, lfUiSize, lfUiState } =
         comp;
 
-      const { assignRef, theme } = mgr;
-      const { bemClass } = theme;
+      const { assignRef } = mgr;
       const { refs } = elements;
 
-      const { formField, toggle } = b;
-
-      const accessibleLabel = (
-        lfAriaLabel ||
-        lfLabel ||
-        rootElement.id ||
-        "toggle"
-      ).trim();
-
       return (
-        <div
-          class={bemClass(formField._, null, {
-            leading: lfLeadingLabel,
-          })}
-          data-lf={lf[lfUiState]}
-        >
-          <div
-            class={bemClass(toggle._, null, {
-              active: isOn(),
-            })}
-            part={p.toggle}
-          >
-            <div
-              class={bemClass(toggle._, toggle.track)}
-              part={p.track}
-              ref={assignRef(refs, "track")}
-            ></div>
-            <div class={bemClass(toggle._, toggle.thumbUnderlay)}>
-              <div
-                class={bemClass(toggle._, toggle.thumb)}
-                part={p.thumb}
-                ref={assignRef(refs, "thumb")}
-              ></div>
-              <input
-                aria-label={accessibleLabel}
-                checked={isOn()}
-                class={bemClass(toggle._, toggle.nativeControl)}
-                data-cy={cy.input}
-                disabled={isDisabled()}
-                onBlur={(e) => handlers.toggle.onBlur(e)}
-                onChange={(e) => handlers.toggle.onChange(e)}
-                onFocus={(e) => handlers.toggle.onFocus(e)}
-                onPointerDown={(e) => handlers.toggle.onPointerDown(e)}
-                part={p.nativeControl}
-                ref={assignRef(refs, "input")}
-                role="switch"
-                type="checkbox"
-                value={isOn() ? "on" : "off"}
-              ></input>
-            </div>
-          </div>
-          <label
-            class={bemClass(formField._, formField.label)}
-            onClick={(e) => handlers.label.onClick(e)}
-            part={p.label}
-            ref={assignRef(refs, "label")}
-          >
-            {lfLabel}
-          </label>
-        </div>
+        <LfToggleFC
+          ariaLabel={lfAriaLabel}
+          disabled={isDisabled()}
+          framework={mgr}
+          inputRef={assignRef(refs, "input")}
+          label={lfLabel}
+          leadingLabel={lfLeadingLabel}
+          onBlur={(e) => handlers.toggle.onBlur(e)}
+          onChange={(_, e) => handlers.toggle.onChange(e)}
+          onFocus={(e) => handlers.toggle.onFocus(e)}
+          onLabelClick={(e) => handlers.label.onClick(e)}
+          onPointerDown={(e) => handlers.toggle.onPointerDown(e)}
+          thumbRef={assignRef(refs, "thumb")}
+          trackRef={assignRef(refs, "track")}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+          value={isOn()}
+        />
       );
     },
     //#endregion

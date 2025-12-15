@@ -89,6 +89,256 @@ export const GLOBAL_STYLES = {
     "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
     "pointer-events": "none"
   },
+  ".badge": {
+    "align-items": "center",
+    "background-color": "rgba(var(--lf-badge-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-badge-background-alpha, var(--lf-ui-alpha-glass-solid, 0.875)))",
+    "border-radius": "var(--lf-badge-border-radius, 50%)",
+    "box-shadow": "var(--lf-badge-box-shadow, 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2))",
+    "display": "inline-flex",
+    "font-family": "var(--lf-badge-font-family, var(--lf-font-family-button))",
+    "font-size": "var(--lf-badge-font-size, var(--lf-fc-ui-size, var(--lf-font-size-button)))",
+    "font-weight": "var(--lf-badge-font-weight, var(--lf-font-weight-button))",
+    "height": "var(--lf-badge-height, 1.5em)",
+    "justify-content": "center",
+    "padding": "var(--lf-badge-padding, 0.25em)",
+    "position": "relative",
+    "text-align": "center",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "var(--lf-badge-width, 1.5em)"
+  },
+  ".badge--inline": {
+    "position": "static",
+    "transform": "none"
+  },
+  ".badge--top-left": {
+    "position": "absolute",
+    "left": "0",
+    "top": "0",
+    "transform": "translate(-50%, -50%)"
+  },
+  ".badge--top-right": {
+    "position": "absolute",
+    "right": "0",
+    "top": "0",
+    "transform": "translate(50%, -50%)"
+  },
+  ".badge--bottom-left": {
+    "position": "absolute",
+    "bottom": "0",
+    "left": "0",
+    "transform": "translate(-50%, 50%)"
+  },
+  ".badge--bottom-right": {
+    "position": "absolute",
+    "bottom": "0",
+    "right": "0",
+    "transform": "translate(50%, 50%)"
+  },
+  ".badge__label": {
+    "color": "rgb(var(--lf-badge-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))))",
+    "overflow": "hidden",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  },
+  ".badge__image": {
+    "--lf-image-color-primary": "var(\n    --lf-badge-color-on-primary,\n    var(--lf-fc-color-on-primary, var(--lf-color-on-primary))\n  )",
+    "backdrop-filter": "unset",
+    "height": "var(--lf-badge-image-height, 1em)",
+    "left": "50%",
+    "position": "absolute",
+    "top": "50%",
+    "transform": "translate(-50%, -50%)",
+    "width": "var(--lf-badge-image-width, 1em)"
+  },
+  ".button": {
+    "align-items": "var(--lf-button-align-items, center)",
+    "background-color": "transparent",
+    "border": "none",
+    "border-radius": "var(--lf-button-border-radius, var(--lf-ui-border-radius))",
+    "box-sizing": "border-box",
+    "color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)",
+    "cursor": "var(--lf-button-cursor, pointer)",
+    "display": "inline-flex",
+    "font-family": "var(--lf-button-font-family, var(--lf-font-family-primary))",
+    "font-size": "calc(var(--lf-button-font-size, var(--lf-font-size-primary)) * var(--lf-fc-ui-size, 1))",
+    "font-weight": "var(--lf-button-font-weight, var(--lf-font-weight-primary))",
+    "height": "var(--lf-button-height, 3em)",
+    "justify-content": "var(--lf-button-justify-content, center)",
+    "min-width": "var(--lf-button-min-width, 4em)",
+    "outline": "none",
+    "overflow": "visible",
+    "padding": "var(--lf-button-padding, 0 1.25em)",
+    "position": "relative",
+    "text-decoration": "var(--lf-button-text-decoration, none)",
+    "text-transform": "var(--lf-button-text-transform, uppercase)",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "user-select": "none",
+    "vertical-align": "middle"
+  },
+  ".button:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".button:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".button--flat": {
+    "background-color": "transparent"
+  },
+  ".button--floating": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-radius": "1.5em",
+    "box-shadow": "0 0.215em 0.35em -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 0.43em 0.71em 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 0.07em 1.285em 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)",
+    "font-weight": "500",
+    "font-size": "1em",
+    "height": "3.4em",
+    "width": "auto",
+    "padding": "0 1.5em"
+  },
+  ".button--floating.button--no-label": {
+    "border-radius": "50%",
+    "height": "4em",
+    "padding": "0",
+    "width": "4em"
+  },
+  ".button--floating:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--floating:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)",
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--floating:active": {
+    "box-shadow": "0 7px 8px -4px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 12px 17px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 5px 22px 4px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--icon": {
+    "background-color": "transparent",
+    "border": "none",
+    "border-radius": "50%",
+    "box-sizing": "border-box",
+    "cursor": "var(--lf-button-cursor, pointer)",
+    "display": "inline-block",
+    "font-size": "calc(1em * var(--lf-fc-ui-size, 1))",
+    "height": "unset",
+    "min-width": "unset",
+    "outline": "none",
+    "padding": "0.75em",
+    "position": "relative",
+    "text-decoration": "var(--lf-button-text-decoration, none)",
+    "user-select": "none"
+  },
+  ".button--icon:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)"
+  },
+  ".button--icon:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)"
+  },
+  ".button--icon.button--has-spinner": {
+    "pointer-events": "none"
+  },
+  ".button--icon.button--has-spinner .button__icon": {
+    "opacity": "0"
+  },
+  ".button--icon.button--has-spinner .button__spinner": {
+    "width": "100%",
+    "height": "100%",
+    "left": "0",
+    "position": "absolute",
+    "top": "0"
+  },
+  ".button--icon .button__icon": {
+    "display": "flex",
+    "height": "1.75em",
+    "margin": "auto",
+    "width": "1.75em"
+  },
+  ".button--icon .button__icon--active": {
+    "display": "none"
+  },
+  ".button--outlined": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-width": "1px",
+    "border-style": "solid"
+  },
+  ".button--outlined:not(.button--disabled)": {
+    "border-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)",
+    "background-color": "transparent"
+  },
+  ".button--outlined:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".button--outlined:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".button--raised": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "box-shadow": "0 3px 1px -2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 2px 2px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 1px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--raised:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
+    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--raised:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)",
+    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--raised:active": {
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--no-label": {
+    "min-width": "unset",
+    "padding": "0 0.5em"
+  },
+  ".button--no-label .button__icon": {
+    "margin": "0"
+  },
+  ".button--has-spinner": {
+    "pointer-events": "none"
+  },
+  ".button--disabled": {
+    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
+    "pointer-events": "none"
+  },
+  ".button__icon": {
+    "align-items": "center",
+    "display": "flex",
+    "height": "var(--lf-button-icon-height, 1.5em)",
+    "justify-content": "center",
+    "margin-left": "-0.25em",
+    "margin-right": "0.75em",
+    "width": "var(--lf-button-icon-width, 1.5em)"
+  },
+  ".button__icon--hidden": {
+    "visibility": "hidden"
+  },
+  ".button__label": {
+    "overflow": "hidden",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  },
+  ".button__label + .button__icon": {
+    "margin-left": "0.75em",
+    "margin-right": "-0.25em"
+  },
+  ".button__label--hidden": {
+    "visibility": "hidden"
+  },
+  ".button__spinner": {
+    "width": "100%",
+    "left": "0",
+    "position": "absolute"
+  },
+  ".button__ripple": {
+    "border-radius": "inherit",
+    "inset": "0",
+    "overflow": "hidden",
+    "pointer-events": "none",
+    "position": "absolute"
+  },
   ".slider": {
     "display": "flex",
     "flex-direction": "column",
@@ -177,6 +427,364 @@ export const GLOBAL_STYLES = {
   ".slider--disabled": {
     "opacity": "0.5",
     "pointer-events": "none"
+  },
+  ".textfield": {
+    "align-items": "baseline",
+    "border-radius": "var(--lf-textfield-border-radius, var(--lf-ui-border-radius))",
+    "box-sizing": "border-box",
+    "display": "inline-flex",
+    "height": "var(--lf-textfield-height, 3.5em)",
+    "position": "relative",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "100%"
+  },
+  ".textfield--has-icon .textfield__label": {
+    "left": "1.25em"
+  },
+  ".textfield--filled .textfield__icon": {
+    "color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)"
+  },
+  ".textfield--filled .textfield__label": {
+    "color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)"
+  },
+  ".textfield--focused .textfield__icon": {
+    "color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)"
+  },
+  ".textfield--focused .textfield__label": {
+    "color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)"
+  },
+  ".textfield--filled .textfield__underline:after": {
+    "width": "100%"
+  },
+  ".textfield--focused .textfield__underline:after": {
+    "width": "100%"
+  },
+  ".textfield--flat.textfield--filled .textfield__label": {
+    "transform": "translateY(-130%) scale(0.75)"
+  },
+  ".textfield--flat.textfield--focused .textfield__label": {
+    "transform": "translateY(-130%) scale(0.75)"
+  },
+  ".textfield--raised.textfield--filled .textfield__label": {
+    "transform": "translateY(-130%) scale(0.75)"
+  },
+  ".textfield--raised.textfield--focused .textfield__label": {
+    "transform": "translateY(-130%) scale(0.75)"
+  },
+  ".textfield--flat.textfield--has-icon .textfield__label": {
+    "left": "3.5em"
+  },
+  ".textfield--raised.textfield--has-icon .textfield__label": {
+    "left": "3.5em"
+  },
+  ".textfield--flat .textfield__label": {
+    "left": "1.25em",
+    "right": "initial"
+  },
+  ".textfield--raised .textfield__label": {
+    "left": "1.25em",
+    "right": "initial"
+  },
+  ".textfield--raised": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".textfield--raised:hover": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".textfield--raised.textfield--focused": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-heavy, 0.75))"
+  },
+  ".textfield--outlined": {
+    "border": "1px solid rgba(var(--lf-color-border), 0.775)",
+    "padding-top": "0"
+  },
+  ".textfield--textarea": {
+    "border": "1px solid rgba(var(--lf-color-border), 0.775)",
+    "padding-top": "0",
+    "align-items": "center",
+    "flex-direction": "column",
+    "height": "auto",
+    "overflow": "visible",
+    "padding": "0",
+    "transition": "none"
+  },
+  ".textfield--outlined:hover": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.775)"
+  },
+  ".textfield--textarea:hover": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.775)"
+  },
+  ".textfield--outlined.textfield--focused": {
+    "border-color": "rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))",
+    "box-shadow": "inset 0 0 0 0.15em rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))"
+  },
+  ".textfield--textarea.textfield--focused": {
+    "border-color": "rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))",
+    "box-shadow": "inset 0 0 0 0.15em rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))"
+  },
+  ".textfield--outlined.textfield--filled": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".textfield--textarea.textfield--filled": {
+    "background-color": "rgba(var(--lf-textfield-color-surface, var(--lf-color-surface)), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".textfield--textarea .textfield__input": {
+    "box-shadow": "inset 0px 0px 0px 0px rgba(var(--lf-color-border), 0)",
+    "box-sizing": "border-box",
+    "flex-grow": "1",
+    "height": "auto",
+    "overflow-x": "hidden",
+    "overflow-y": "auto",
+    "padding": "1em",
+    "resize": "none",
+    "transition": "box-shadow 0.2s ease-in-out"
+  },
+  ".textfield--textarea .textfield__input--error": {
+    "box-shadow": "inset 0px 0px 4px 1px rgba(var(--lf-color-danger), 0.775)"
+  },
+  ".textfield--textarea .textfield__label": {
+    "left": "0.25em",
+    "position": "relative",
+    "top": "2.75em"
+  },
+  ".textfield--trailing-icon": {
+    "flex-direction": "row-reverse"
+  },
+  ".textfield--trailing-icon .textfield__icon": {
+    "padding": "0 0.5em"
+  },
+  ".textfield--trailing-icon .textfield__label": {
+    "left": "1.1em"
+  },
+  ".textfield__icon": {
+    "align-self": "center",
+    "color": "var(--lf-textfield-color-on-bg, var(--lf-color-on-bg))",
+    "cursor": "pointer",
+    "outline": "none",
+    "transition": "opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "padding": "var(--lf-textfield-icon-padding, 0 0 0 0.75em)"
+  },
+  ".textfield__icon-action": {
+    "align-self": "center",
+    "color": "var(--lf-textfield-color-on-bg, var(--lf-color-on-bg))",
+    "cursor": "pointer",
+    "outline": "none",
+    "transition": "opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "padding": "var(--lf-textfield-icon-action-padding, 0 0.75em 0 0)"
+  },
+  ".textfield__icon:hover": {
+    "opacity": "0.75"
+  },
+  ".textfield__icon-action:hover": {
+    "opacity": "0.75"
+  },
+  ".textfield__icon:focus": {
+    "box-shadow": "0 0 0 0.15em rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))"
+  },
+  ".textfield__icon-action:focus": {
+    "box-shadow": "0 0 0 0.15em rgb(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))))"
+  },
+  ".textfield__input": {
+    "appearance": "none",
+    "-webkit-appearance": "none",
+    "background": "none",
+    "border": "none",
+    "border-radius": "0",
+    "box-sizing": "border-box",
+    "caret-color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.75)",
+    "color": "var(--lf-textfield-color-on-bg, var(--lf-color-on-bg))",
+    "cursor": "var(--lf-textfield-input-cursor, text)",
+    "flex": "1 1 auto",
+    "font-family": "var(--lf-textfield-font-family, var(--lf-font-family-primary))",
+    "font-size": "var(--lf-textfield-font-size, var(--lf-font-size-primary))",
+    "font-weight": "var(--lf-textfield-font-weight, var(--lf-font-weight-primary))",
+    "-webkit-font-smoothing": "antialiased",
+    "height": "100%",
+    "margin": "0",
+    "min-width": "0",
+    "outline": "none",
+    "padding": "var(--lf-textfield-padding, 0 1em)",
+    "text-decoration": "inherit",
+    "text-transform": "inherit",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "100%"
+  },
+  ".textfield__input::placeholder": {
+    "color": "rgba(var(--lf-textfield-color-on-bg, var(--lf-color-on-bg)), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".textfield__label": {
+    "color": "var(--lf-textfield-color-on-bg, var(--lf-color-on-bg))",
+    "cursor": "text",
+    "font-family": "var(--lf-textfield-label-font-family, var(--lf-font-family-label))",
+    "font-size": "var(--lf-textfield-label-font-size, var(--lf-font-size-label))",
+    "font-weight": "var(--lf-textfield-label-font-weight, var(--lf-font-weight-label))",
+    "left": "0.25em",
+    "overflow": "hidden",
+    "pointer-events": "none",
+    "position": "absolute",
+    "right": "initial",
+    "text-align": "left",
+    "text-overflow": "ellipsis",
+    "top": "50%",
+    "transform": "translateY(-50%)",
+    "transform-origin": "left top",
+    "transition": "color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "white-space": "nowrap"
+  },
+  ".textfield__underline": {
+    "max-width": "100%",
+    "overflow": "hidden"
+  },
+  ".textfield__underline:before": {
+    "border-radius": "2px",
+    "bottom": "0",
+    "content": "\"\"",
+    "height": "2px",
+    "left": "0",
+    "position": "absolute",
+    "background-color": "rgba(var(--lf-textfield-color-on-bg, var(--lf-color-on-bg)), 0.225)",
+    "width": "100%"
+  },
+  ".textfield__underline:after": {
+    "border-radius": "2px",
+    "bottom": "0",
+    "content": "\"\"",
+    "height": "2px",
+    "left": "0",
+    "position": "absolute",
+    "background-color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "transition": "width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "0"
+  },
+  ".textfield__resizer": {
+    "align-self": "stretch",
+    "display": "inline-flex",
+    "flex-direction": "column",
+    "flex-grow": "1",
+    "max-height": "100%",
+    "max-width": "100%",
+    "min-height": "var(--lf-textfield-resizer-min-height, 3em)",
+    "min-width": "-webkit-fill-available",
+    "overflow": "hidden",
+    "resize": "both",
+    "transform": "translateX(-1px) translateY(-1px)"
+  },
+  ".textfield__helper-text": {
+    "color": "rgba(var(--lf-textfield-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.75)",
+    "font-family": "var(--lf-textfield-helper-font-family, var(--lf-font-family-subtitle))",
+    "font-size": "var(--lf-textfield-helper-font-size, var(--lf-font-size-subtitle))",
+    "font-weight": "var(--lf-textfield-helper-font-weight, var(--lf-font-weight-subtitle))",
+    "line-height": "normal",
+    "margin": "0",
+    "opacity": "0",
+    "text-decoration": "inherit",
+    "text-transform": "inherit",
+    "transition": "opacity 0.3s ease-in-out",
+    "will-change": "opacity"
+  },
+  ".textfield__helper-text--active": {
+    "opacity": "1",
+    "transition": "none",
+    "will-change": "initial"
+  },
+  ".textfield__helper-line": {
+    "border-top": "1px solid rgba(var(--lf-color-border), 0.775)",
+    "box-sizing": "border-box",
+    "display": "flex",
+    "justify-content": "space-between",
+    "padding-right": "1em",
+    "padding-left": "1em"
+  },
+  ".textfield__counter": {
+    "color": "rgba(var(--lf-textfield-color-on-bg, var(--lf-color-on-bg)), 0.75)",
+    "font-family": "var(--lf-textfield-counter-font-family, var(--lf-font-family-subtitle))",
+    "font-size": "var(--lf-textfield-counter-font-size, var(--lf-font-size-subtitle))",
+    "font-weight": "var(--lf-textfield-counter-font-weight, var(--lf-font-weight-subtitle))",
+    "margin-left": "auto"
+  },
+  ".textfield--disabled": {
+    "opacity": "0.5",
+    "pointer-events": "none"
+  },
+  ".toggle": {
+    "align-items": "center",
+    "display": "inline-flex",
+    "margin": "var(--lf-toggle-margin, 1em 0.5em)",
+    "min-width": "var(--lf-toggle-min-width, 4em)",
+    "outline": "none",
+    "position": "relative",
+    "user-select": "none"
+  },
+  ".toggle:hover::before": {
+    "background-color": "rgba(var(--lf-toggle-color-surface, var(--lf-fc-color-surface, var(--lf-color-bg))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-radius": "50%",
+    "content": "\"\"",
+    "height": "2.5em",
+    "left": "calc(50% - 0.5em)",
+    "padding": "0.5em",
+    "position": "absolute",
+    "top": "50%",
+    "transform": "translate(-50%, -50%)",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "2.5em"
+  },
+  ".toggle--active .toggle__track": {
+    "background-color": "rgba(var(--lf-toggle-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-heavy, 0.75))"
+  },
+  ".toggle--active .toggle__thumb": {
+    "background-color": "rgba(var(--lf-toggle-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "transform": "translateX(100%) translateY(-50%)"
+  },
+  ".toggle--disabled": {
+    "opacity": "0.5",
+    "pointer-events": "none"
+  },
+  ".toggle__track": {
+    "background-color": "rgba(var(--lf-toggle-color-surface, var(--lf-fc-color-surface, var(--lf-color-bg))), var(--lf-ui-alpha-glass, 0.375))",
+    "border-radius": "var(--lf-toggle-border-radius, var(--lf-ui-border-radius, 1em))",
+    "box-shadow": "var(--lf-toggle-box-shadow, 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2))",
+    "box-sizing": "border-box",
+    "height": "var(--lf-toggle-track-height, 0.5em)",
+    "position": "relative",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "var(--lf-toggle-track-width, 3em)"
+  },
+  ".toggle__thumb-underlay": {
+    "display": "flex",
+    "justify-content": "center",
+    "left": "0",
+    "pointer-events": "none",
+    "position": "absolute",
+    "top": "50%",
+    "transform": "translateY(-50%)"
+  },
+  ".toggle__thumb": {
+    "background-color": "rgba(var(--lf-toggle-color-surface, var(--lf-fc-color-surface, var(--lf-color-bg))), var(--lf-ui-alpha-glass, 0.375))",
+    "border-radius": "50%",
+    "cursor": "pointer",
+    "height": "var(--lf-toggle-thumb-size, 1.5em)",
+    "left": "0",
+    "overflow": "hidden",
+    "position": "absolute",
+    "top": "50%",
+    "transform": "translateY(-50%)",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "var(--lf-toggle-thumb-size, 1.5em)"
+  },
+  ".toggle__thumb:hover": {
+    "background-color": "rgba(var(--lf-toggle-color-surface, var(--lf-fc-color-surface, var(--lf-color-bg))), var(--lf-ui-alpha-glass-solid, 0.875))"
+  },
+  ".toggle__native-control": {
+    "cursor": "pointer",
+    "height": "var(--lf-toggle-input-height, 3em)",
+    "left": "-0.5em",
+    "opacity": "0",
+    "position": "absolute",
+    "top": "-1.25em",
+    "width": "4em",
+    "z-index": "1"
   },
   "*::-webkit-scrollbar": {
     "width": "9px"

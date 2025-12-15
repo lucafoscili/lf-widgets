@@ -1,0 +1,215 @@
+// ============================================================================
+// FC-TOGGLE - Functional Component Toggle Styles
+// ============================================================================
+// Toggle-specific styles for the LfToggleFC functional component.
+// Works in conjunction with _fc-form-field.scss for the wrapper.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-toggle-* CSS custom properties for theming
+//
+// Dependencies:
+// - _fc-form-field.scss (provides .form-field wrapper)
+//
+// Usage:
+//   <LfToggleFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Toggle Core
+// -----------------------------------------------------------------------------
+.toggle {
+  & {
+    align-items: center;
+    display: inline-flex;
+    /**
+     * @prop --lf-toggle-margin: Sets the margin for the toggle component.
+     *                           Defaults to => 1em 0.5em
+     */
+    margin: var(--lf-toggle-margin, 1em 0.5em);
+    /**
+     * @prop --lf-toggle-min-width: Sets the min-width for the toggle component.
+     *                              Defaults to => 4em
+     */
+    min-width: var(--lf-toggle-min-width, 4em);
+    outline: none;
+    position: relative;
+    user-select: none;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Hover Effect (background highlight)
+  // -----------------------------------------------------------------------------
+  &:hover::before {
+    background-color: rgba(
+      var(
+        --lf-toggle-color-surface,
+        var(--lf-fc-color-surface, var(--lf-color-bg))
+      ),
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
+    border-radius: 50%;
+    content: "";
+    height: 2.5em;
+    left: calc(50% - 0.5em);
+    padding: 0.5em;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition:
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 2.5em;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Active State (toggle is ON)
+  // -----------------------------------------------------------------------------
+  &--active {
+    .toggle__track {
+      background-color: rgba(
+        var(
+          --lf-toggle-color-primary,
+          var(--lf-fc-color-primary, var(--lf-color-primary))
+        ),
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
+    }
+
+    .toggle__thumb {
+      background-color: rgba(
+        var(
+          --lf-toggle-color-primary,
+          var(--lf-fc-color-primary, var(--lf-color-primary))
+        ),
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
+      transform: translateX(100%) translateY(-50%);
+    }
+  }
+
+  // -----------------------------------------------------------------------------
+  // Disabled State
+  // -----------------------------------------------------------------------------
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Track
+  // -----------------------------------------------------------------------------
+  &__track {
+    background-color: rgba(
+      var(
+        --lf-toggle-color-surface,
+        var(--lf-fc-color-surface, var(--lf-color-bg))
+      ),
+      var(--lf-ui-alpha-glass, 0.375)
+    );
+    /**
+     * @prop --lf-toggle-border-radius: Sets the border radius for the toggle track.
+     *                                  Defaults to => var(--lf-ui-border-radius, 1em)
+     */
+    border-radius: var(
+      --lf-toggle-border-radius,
+      var(--lf-ui-border-radius, 1em)
+    );
+    box-shadow: var(
+      --lf-toggle-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    box-sizing: border-box;
+    /**
+     * @prop --lf-toggle-track-height: Sets the height for the toggle track.
+     *                                 Defaults to => 0.5em
+     */
+    height: var(--lf-toggle-track-height, 0.5em);
+    position: relative;
+    transition:
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /**
+     * @prop --lf-toggle-track-width: Sets the width for the toggle track.
+     *                                Defaults to => 3em
+     */
+    width: var(--lf-toggle-track-width, 3em);
+  }
+
+  // -----------------------------------------------------------------------------
+  // Thumb Underlay (positioning container)
+  // -----------------------------------------------------------------------------
+  &__thumb-underlay {
+    display: flex;
+    justify-content: center;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  // -----------------------------------------------------------------------------
+  // Thumb
+  // -----------------------------------------------------------------------------
+  &__thumb {
+    background-color: rgba(
+      var(
+        --lf-toggle-color-surface,
+        var(--lf-fc-color-surface, var(--lf-color-bg))
+      ),
+      var(--lf-ui-alpha-glass, 0.375)
+    );
+    border-radius: 50%;
+    cursor: pointer;
+    /**
+     * @prop --lf-toggle-thumb-size: Sets the size for the toggle thumb.
+     *                               Defaults to => 1.5em
+     */
+    height: var(--lf-toggle-thumb-size, 1.5em);
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition:
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: var(--lf-toggle-thumb-size, 1.5em);
+
+    &:hover {
+      background-color: rgba(
+        var(
+          --lf-toggle-color-surface,
+          var(--lf-fc-color-surface, var(--lf-color-bg))
+        ),
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
+    }
+  }
+
+  // -----------------------------------------------------------------------------
+  // Native Input (hidden, for accessibility)
+  // -----------------------------------------------------------------------------
+  &__native-control {
+    cursor: pointer;
+    /**
+     * @prop --lf-toggle-input-height: Sets the height for the toggle input.
+     *                                 Defaults to => 3em
+     */
+    height: var(--lf-toggle-input-height, 3em);
+    left: -0.5em;
+    opacity: 0;
+    position: absolute;
+    top: -1.25em;
+    width: 4em;
+    z-index: 1;
+  }
+}

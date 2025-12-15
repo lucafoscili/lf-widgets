@@ -152,20 +152,10 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                 | Description                                                                                            |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `--lf-textfield-border-color`        | Sets the border color for the textfield component. Defaults to => var(--lf-color-border)               |
-| `--lf-textfield-border-radius`       | Sets the border radius for the textfield component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-textfield-color-on-bg`         | Sets the color-on-bg color for the textfield component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-textfield-color-primary`       | Sets the color-primary color for the textfield component. Defaults to => var(--lf-color-primary)       |
-| `--lf-textfield-color-surface`       | Sets the color-surface color for the textfield component. Defaults to => var(--lf-color-surface)       |
-| `--lf-textfield-font-family`         | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-textfield-font-size`           | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
-| `--lf-textfield-height`              | Sets the height for the textfield component. Defaults to => 3.5em                                      |
-| `--lf-textfield-icon-action-padding` | Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0                            |
-| `--lf-textfield-icon-padding`        | Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em                                   |
-| `--lf-textfield-input-cursor`        | Sets the cursor for the textfield input. Defaults to => text                                           |
-| `--lf-textfield-padding`             | Sets the padding for the textfield component. Defaults to => 0 1em                                     |
+| Name                         | Description                                                                                            |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--lf-textfield-font-family` | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-textfield-font-size`   | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
 
 
 ## Dependencies

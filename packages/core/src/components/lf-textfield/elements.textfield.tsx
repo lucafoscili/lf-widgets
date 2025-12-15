@@ -1,10 +1,13 @@
 import {
+  LF_STYLE_ID,
+  LF_WRAPPER_ID,
   LfIconType,
   LfTextfieldAdapter,
   LfTextfieldAdapterJsx,
 } from "@lf-widgets/foundations";
-import { h, VNode } from "@stencil/core";
+import { h, Host, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
+import { LfTextfieldFC } from "./lf-textfield-fc";
 
 /**
  * Prepares JSX factory functions for the textfield component.
@@ -14,13 +17,65 @@ import { FIcon } from "../../utils/icon";
  * - Uses `controller.computed` for derived predicates (isDisabled, isOutlined, isTextarea)
  * - Uses `controller.actions` for complex operations (updateState, formatJSON)
  * - Routes all events through handlers
+ * - Wraps `LfTextfieldFC` functional component for actual rendering
  *
- * @see Section 5 of 4_0_0_REFACTORING.md
+ * @see Section 2 & 5 of 4_0_0_REFACTORING.md
  */
 export const prepTextfieldElements = (
   getAdapter: () => LfTextfieldAdapter,
 ): LfTextfieldAdapterJsx => {
   return {
+    //#region Textfield (FC wrapper)
+    textfield: (): VNode => {
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
+      const { compInstance, formattingError, framework, maxLength, styling } =
+        controller.get;
+      const { isDisabled } = controller.computed;
+
+      const comp = compInstance();
+      const mgr = framework();
+      const { assignRef, theme } = mgr;
+      const { setLfStyle } = theme;
+      const { refs } = elements;
+
+      return (
+        <Host>
+          {comp.lfStyle && <style id={LF_STYLE_ID}>{setLfStyle(comp)}</style>}
+          <div id={LF_WRAPPER_ID}>
+            <LfTextfieldFC
+              disabled={isDisabled()}
+              formatJSON={comp.lfFormatJSON}
+              formattingError={formattingError()}
+              framework={mgr}
+              helper={comp.lfHelper}
+              htmlAttributes={comp.lfHtmlAttributes}
+              icon={comp.lfIcon}
+              inputRef={assignRef(refs, "input")}
+              label={comp.lfLabel}
+              maxLength={maxLength()}
+              onBlur={(e) => handlers.input.onBlur(e)}
+              onChange={(_, e) => handlers.input.onChange(e)}
+              onClick={(e) => handlers.input.onClick(e)}
+              onFocus={(e) => handlers.input.onFocus(e)}
+              onIconClick={(e, iconType) => handlers.icon.onClick(e, iconType)}
+              onInput={(_, e) => handlers.input.onInput(e)}
+              onKeyDown={(e) => handlers.input.onKeyDown(e)}
+              status={comp.status}
+              styling={styling()}
+              trailingIcon={comp.lfTrailingIcon}
+              trailingIconAction={comp.lfTrailingIconAction}
+              uiSize={comp.lfUiSize}
+              uiState={comp.lfUiState}
+              value={comp.value}
+            />
+            {adapter.elements.jsx.helper()}
+          </div>
+        </Host>
+      );
+    },
+    //#endregion
+
     //#region Counter
     counter: (): VNode => {
       const adapter = getAdapter();

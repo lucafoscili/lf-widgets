@@ -8,6 +8,7 @@ import {
 } from "@lf-widgets/foundations";
 import { Fragment, h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
+import { LfButtonFC } from "./lf-button-fc";
 
 /**
  * Prepares JSX factory functions for the button component.
@@ -17,8 +18,9 @@ import { FIcon } from "../../utils/icon";
  * - Uses `controller.computed` for derived predicates (isDisabled, isDropdown, isOn)
  * - Uses `controller.actions` for complex operations (toggle)
  * - Routes all events through dispatcher
+ * - Wraps `LfButtonFC` functional component for actual rendering
  *
- * @see Section 5 of 4_0_0_REFACTORING.md
+ * @see Section 2 & 5 of 4_0_0_REFACTORING.md
  */
 export const prepButton = (
   getAdapter: () => LfButtonAdapter,
@@ -28,60 +30,32 @@ export const prepButton = (
     button: () => {
       const adapter = getAdapter();
       const { controller, dispatcher, elements } = adapter;
-      const {
-        blocks,
-        compInstance,
-        cyAttributes,
-        framework,
-        lfAttributes,
-        parts,
-        styling,
-      } = controller.get;
+      const { compInstance, framework, styling } = controller.get;
       const { isDisabled } = controller.computed;
       const { toggle } = controller.actions;
 
       const comp = compInstance();
       const mgr = framework();
-      const b = blocks();
-      const p = parts();
-      const cy = cyAttributes();
-      const lf = lfAttributes();
 
       const {
-        lfAriaLabel,
         lfIcon,
         lfLabel,
         lfShowSpinner,
         lfTrailingIcon,
         lfType,
+        lfUiSize,
         lfUiState,
-        rootElement,
       } = comp;
 
-      const { assignRef, theme } = mgr;
-      const { bemClass } = theme;
+      const { assignRef } = mgr;
       const { refs } = elements;
 
-      const accessibleLabel = (
-        lfAriaLabel ||
-        lfLabel ||
-        lfIcon ||
-        rootElement.id ||
-        "button"
-      ).trim();
-
       return (
-        <button
-          aria-label={accessibleLabel}
-          class={bemClass(b.button._, null, {
-            [styling()]: true,
-            disabled: isDisabled(),
-            "has-spinner": lfShowSpinner,
-            "no-label": !lfLabel || lfLabel === " ",
-          })}
-          data-cy={cy.button}
-          data-lf={lf[lfUiState]}
+        <LfButtonFC
           disabled={isDisabled()}
+          framework={mgr}
+          icon={lfIcon}
+          label={lfLabel}
           onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
           onClick={(e) => {
             toggle();
@@ -91,15 +65,14 @@ export const prepButton = (
           onPointerDown={(e) =>
             dispatcher.emit("pointerdown", { originalEvent: e })
           }
-          part={p.button}
-          ref={assignRef(refs, "button")}
+          buttonRef={assignRef(refs, "button")}
+          showSpinner={lfShowSpinner}
+          styling={styling()}
+          trailingIcon={lfTrailingIcon}
           type={lfType ?? "button"}
-        >
-          {lfTrailingIcon
-            ? [prepLabel(adapter), lfIcon && prepIcon(adapter)]
-            : [lfIcon && prepIcon(adapter), prepLabel(adapter)]}
-          {prepSpinner(adapter)}
-        </button>
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion
@@ -170,58 +143,35 @@ export const prepButton = (
     icon: () => {
       const adapter = getAdapter();
       const { controller, dispatcher, elements } = adapter;
-      const {
-        blocks,
-        compInstance,
-        cyAttributes,
-        framework,
-        lfAttributes,
-        parts,
-      } = controller.get;
+      const { compInstance, framework } = controller.get;
       const { isDisabled, isOn } = controller.computed;
       const { toggle } = controller.actions;
 
       const comp = compInstance();
       const mgr = framework();
-      const b = blocks();
-      const p = parts();
-      const cy = cyAttributes();
-      const lf = lfAttributes();
 
       const {
-        lfAriaLabel,
+        lfIcon,
+        lfIconOff,
         lfShowSpinner,
         lfToggable,
         lfType,
+        lfUiSize,
         lfUiState,
-        rootElement,
-        value,
       } = comp;
-      const { assignRef, theme } = mgr;
-      const { bemClass } = theme;
+
+      const { assignRef } = mgr;
       const { refs } = elements;
 
-      const accessibleLabel = (
-        lfAriaLabel ||
-        comp.lfLabel ||
-        comp.lfIcon ||
-        rootElement.id ||
-        "button"
-      ).trim();
+      // Determine which icon to show based on toggle state
+      const iconOff = lfIconOff ? lfIconOff : `off-${lfIcon}`;
+      const displayIcon = lfToggable && !isOn() ? iconOff : lfIcon;
 
       return (
-        <button
-          aria-label={accessibleLabel}
-          class={bemClass(b.button._, null, {
-            active: lfToggable && isOn(),
-            disabled: isDisabled(),
-            "has-spinner": lfShowSpinner,
-            icon: true,
-            toggable: lfToggable,
-          })}
-          data-cy={cy.button}
-          data-lf={lf[lfUiState]}
+        <LfButtonFC
           disabled={isDisabled()}
+          framework={mgr}
+          icon={displayIcon}
           onBlur={(e) => dispatcher.emit("blur", { originalEvent: e })}
           onClick={(e) => {
             toggle();
@@ -231,14 +181,13 @@ export const prepButton = (
           onPointerDown={(e) =>
             dispatcher.emit("pointerdown", { originalEvent: e })
           }
-          part={p.button}
-          ref={assignRef(refs, "button")}
-          value={value}
-          type={lfType ? lfType : "button"}
-        >
-          {prepIcon(adapter)}
-          {prepSpinner(adapter)}
-        </button>
+          buttonRef={assignRef(refs, "button")}
+          showSpinner={lfShowSpinner}
+          styling="icon"
+          type={lfType ?? "button"}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion
@@ -281,34 +230,6 @@ const prepIcon = (adapter: LfButtonAdapter, isDropdown = false): VNode => {
   );
 };
 
-const prepLabel = (adapter: LfButtonAdapter): VNode => {
-  const { controller, elements } = adapter;
-  const { blocks, compInstance, framework, parts } = controller.get;
-  const { isDisabled } = controller.computed;
-
-  const comp = compInstance();
-  const mgr = framework();
-  const b = blocks();
-  const p = parts();
-
-  const { lfLabel, lfShowSpinner } = comp;
-  const { assignRef, theme } = mgr;
-  const { bemClass } = theme;
-  const { refs } = elements;
-
-  return (
-    <span
-      class={bemClass(b.button._, b.button.label, {
-        hidden: lfShowSpinner && !isDisabled(),
-      })}
-      part={p.label}
-      ref={assignRef(refs, "label")}
-    >
-      {lfLabel}
-    </span>
-  );
-};
-
 const prepNode = (node: LfDataNode): VNode => {
   const { children, value } = node;
 
@@ -322,33 +243,6 @@ const prepNode = (node: LfDataNode): VNode => {
     </Fragment>
   ) : (
     currentNode
-  );
-};
-
-const prepSpinner = (adapter: LfButtonAdapter): VNode => {
-  const { controller, elements } = adapter;
-  const { blocks, compInstance, framework, parts } = controller.get;
-
-  const comp = compInstance();
-  const mgr = framework();
-  const b = blocks();
-  const p = parts();
-
-  const { lfShowSpinner } = comp;
-  const { assignRef, theme } = mgr;
-  const { bemClass } = theme;
-  const { refs } = elements;
-
-  return (
-    lfShowSpinner && (
-      <lf-spinner
-        class={bemClass(b.button._, b.button.spinner)}
-        lfActive={lfShowSpinner}
-        lfLayout="ring"
-        part={p.spinner}
-        ref={assignRef(refs, "spinner")}
-      ></lf-spinner>
-    )
   );
 };
 //#endregion

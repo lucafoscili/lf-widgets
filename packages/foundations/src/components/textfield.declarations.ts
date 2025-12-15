@@ -19,7 +19,10 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LF_THEME_ICONS } from "../framework";
-import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
+import {
+  LfFrameworkAllowedKeysMap,
+  LfFrameworkInterface,
+} from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_TEXTFIELD_BLOCKS,
@@ -199,6 +202,7 @@ export interface LfTextfieldAdapterJsx extends LfComponentAdapterJsx {
   input: () => VNode;
   label: () => VNode;
   textarea: () => VNode;
+  textfield: () => VNode;
   underline: () => VNode;
 }
 /**
@@ -311,4 +315,84 @@ export type LfTextfieldAdapterDispatcher = LfComponentAdapterDispatcher<
   LfTextfieldEventPayload,
   LfTextfieldAdapterDispatcherDetailOverrides
 >;
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfTextfieldFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfTextfieldFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Whether the textfield is disabled */
+  disabled?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Helper text displayed below the input */
+  helper?: LfTextfieldHelper;
+  /** Icon to display in the textfield */
+  icon?: LfIconType | null;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Reference callback for the input element */
+  inputRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
+  /** Text label displayed alongside/above the input */
+  label?: string;
+  /** Maximum character length for input */
+  maxLength?: number;
+  /** Callback fired on blur event */
+  onBlur?: (e: FocusEvent) => void;
+  /** Callback fired on change event (value committed) */
+  onChange?: (value: string, e: Event) => void;
+  /** Callback fired on input click */
+  onClick?: (e: MouseEvent) => void;
+  /** Callback fired on focus event */
+  onFocus?: (e: FocusEvent) => void;
+  /** Callback fired on icon click */
+  onIconClick?: (e: MouseEvent, iconType: "regular" | "action") => void;
+  /** Callback fired on input event (value changing) */
+  onInput?: (value: string, e: Event) => void;
+  /** Callback fired on keydown event */
+  onKeyDown?: (e: KeyboardEvent) => void;
+  /** Placeholder text for outlined styling */
+  placeholder?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Current styling variant */
+  styling?: LfTextfieldStyling;
+  /** Action icon to display (e.g., clear, visibility toggle) */
+  trailingIconAction?: LfTextfieldTrailingIconAction;
+  /** Whether to position the regular icon at the trailing edge */
+  trailingIcon?: boolean;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** The current textfield value */
+  value: string;
+  /** Current status modifiers */
+  status?: Set<LfTextfieldModifiers>;
+  /** Formatting error message (for textarea JSON formatting) */
+  formattingError?: string;
+  /** JSON formatting configuration */
+  formatJSON?: LfTextfieldFormatJSON | null;
+  /** HTML attributes to spread on the input */
+  htmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
+}
 //#endregion

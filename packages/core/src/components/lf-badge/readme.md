@@ -82,17 +82,14 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                        |
-| ----------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--lf-badge-border-radius`    | Sets the border radius for the badge component. Defaults to => 50%                                 |
-| `--lf-badge-color-on-primary` | Sets the color-on-primary color for the badge component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-badge-color-primary`    | Sets the color-primary color for the badge component. Defaults to => var(--lf-color-primary)       |
-| `--lf-badge-font-family`      | Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-badge-font-size`        | Sets the font size for the badge component. Defaults to => var(--lf-font-size)                     |
-| `--lf-badge-height`           | Sets the height for the badge component. Defaults to => 1.5em                                      |
-| `--lf-badge-padding`          | Sets the padding for the badge component. Defaults to => 0.25em                                    |
-| `--lf-badge-place-content`    | Sets the place content for the badge component. Defaults to => center                              |
-| `--lf-badge-width`            | Sets the width for the badge component. Defaults to => 1.5em                                       |
+| Name                       | Description                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------- |
+| `--lf-badge-border-radius` | Sets the border radius for the badge component. Defaults to => 50%                                 |
+| `--lf-badge-font-family`   | Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-badge-font-size`     | Sets the font size for the badge component. Defaults to => var(--lf-font-size)                     |
+| `--lf-badge-height`        | Sets the height for the badge component. Defaults to => 1.5em                                      |
+| `--lf-badge-padding`       | Sets the padding for the badge component. Defaults to => 0.25em                                    |
+| `--lf-badge-width`         | Sets the width for the badge component. Defaults to => 1.5em                                       |
 
 
 ## Dependencies

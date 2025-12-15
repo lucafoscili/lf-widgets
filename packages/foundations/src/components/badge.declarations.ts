@@ -17,6 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_BADGE_BLOCKS,
@@ -185,4 +186,50 @@ export interface LfBadgePropsInterface {
  * Utility type used by the `lf-badge` component.
  */
 export type LfBadgePositions = (typeof LF_BADGE_POSITIONS)[number];
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfBadgeFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfBadgeFCProps {
+  /** Reference callback for the badge element */
+  badgeRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Props for an image to display inside the badge */
+  imageProps?: LfImagePropsInterface;
+  /** Text label displayed inside the badge */
+  label?: string;
+  /** Callback fired on click event */
+  onClick?: (e: MouseEvent | PointerEvent) => void;
+  /** Position of the badge relative to its container */
+  position?: LfBadgePositions;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+}
 //#endregion
