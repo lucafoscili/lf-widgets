@@ -1,5 +1,6 @@
 import {
   CY_ATTRIBUTES,
+  LF_PORTAL_BASE_ZINDEX,
   LF_PORTAL_DEFAULT_OPTIONS,
   LfFrameworkClickCb,
   LfFrameworkInterface,
@@ -17,8 +18,12 @@ import {
  * This class provides functionality to:
  * - Append an element to a dedicated portal container.
  * - Position elements using absolute (document-relative) or fixed (viewport-relative) strategies.
- * - Handle click-away actions.
+ * - Handle click-away actions (can be disabled).
  * - Support fullscreen mode for elements that need to escape transform ancestors.
+ * - Auto-increment z-index for nested portals.
+ * - Watch anchor elements for size changes.
+ * - Handle scroll containers.
+ * - Support enter/exit animations.
  *
  * Position strategies:
  * - `absolute` (default for element anchors): Document-relative positioning that scrolls
@@ -39,6 +44,20 @@ import {
  *
  * // Fullscreen mode
  * portal.open(element, parentEl, undefined, 0, 'auto', { fullscreen: true });
+ *
+ * // Modal dialog (no click-away, auto z-index)
+ * portal.open(element, parentEl, undefined, 0, 'auto', {
+ *   fullscreen: true,
+ *   disableClickAway: true,
+ *   zIndex: 'auto'
+ * });
+ *
+ * // Animated dropdown
+ * portal.open(element, parentEl, anchorEl, 4, 'bl', {
+ *   enterClass: 'dropdown-enter',
+ *   exitClass: 'dropdown-exit',
+ *   exitDuration: 200
+ * });
  * ```
  *
  * @public
@@ -55,6 +74,9 @@ export class LfPortal implements LfPortalInterface {
 
   #resizeElements = new Set<HTMLElement>();
   #resizeHandler: (() => void) | null = null;
+
+  /** Current auto-increment z-index counter */
+  #currentZIndex = LF_PORTAL_BASE_ZINDEX;
 
   constructor(lfFramework: LfFrameworkInterface) {
     this.#MANAGER = lfFramework;
@@ -77,7 +99,7 @@ export class LfPortal implements LfPortalInterface {
     this.#PORTAL.appendChild(element);
   };
 
-  #clean = (element: HTMLElement) => {
+  #clean = (element: HTMLElement, skipAnimation = false) => {
     if (!this.isInPortal(element)) {
       return;
     }
@@ -85,8 +107,60 @@ export class LfPortal implements LfPortalInterface {
     const state = this.#STATE.get(element);
     if (!state) return;
 
-    const { dismissCb, parent } = state;
-    this.#MANAGER.removeClickCallback(dismissCb);
+    const { anchorObserver, dismissCb, options, parent, scrollHandler } = state;
+
+    // Handle exit animation
+    if (!skipAnimation && options.exitClass && options.exitDuration) {
+      element.classList.add(options.exitClass);
+      if (options.enterClass) {
+        element.classList.remove(options.enterClass);
+      }
+
+      setTimeout(() => {
+        this.#cleanupElement(
+          element,
+          dismissCb,
+          anchorObserver,
+          scrollHandler,
+          options,
+          parent,
+        );
+      }, options.exitDuration);
+      return;
+    }
+
+    this.#cleanupElement(
+      element,
+      dismissCb,
+      anchorObserver,
+      scrollHandler,
+      options,
+      parent,
+    );
+  };
+
+  #cleanupElement = (
+    element: HTMLElement,
+    dismissCb: LfFrameworkClickCb | null,
+    anchorObserver: ResizeObserver | undefined,
+    scrollHandler: (() => void) | undefined,
+    options: LfPortalOptions,
+    parent: HTMLElement,
+  ) => {
+    // Remove click callback if it exists
+    if (dismissCb) {
+      this.#MANAGER.removeClickCallback(dismissCb);
+    }
+
+    // Clean up anchor observer
+    if (anchorObserver) {
+      anchorObserver.disconnect();
+    }
+
+    // Clean up scroll handler
+    if (scrollHandler && options.scrollContainer) {
+      options.scrollContainer.removeEventListener("scroll", scrollHandler);
+    }
 
     // Remove from resize tracking
     this.#resizeElements.delete(element);
@@ -97,6 +171,14 @@ export class LfPortal implements LfPortalInterface {
 
     // Remove fullscreen attribute if present
     delete element.dataset.lfFullscreen;
+
+    // Remove animation classes
+    if (options.enterClass) {
+      element.classList.remove(options.enterClass);
+    }
+    if (options.exitClass) {
+      element.classList.remove(options.exitClass);
+    }
 
     if (parent) {
       parent.appendChild(element);
@@ -126,6 +208,36 @@ export class LfPortal implements LfPortalInterface {
     window.addEventListener("resize", this.#resizeHandler);
   };
 
+  #setupAnchorObserver = (
+    element: HTMLElement,
+    anchor: HTMLElement,
+  ): ResizeObserver => {
+    const observer = new ResizeObserver(
+      this.#debounce(() => {
+        this.recalculate(element);
+      }, 50),
+    );
+    observer.observe(anchor);
+    return observer;
+  };
+
+  #setupScrollHandler = (
+    element: HTMLElement,
+    container: HTMLElement,
+  ): (() => void) => {
+    const handler = this.#debounce(() => {
+      this.recalculate(element);
+    }, 16); // ~60fps throttle
+
+    container.addEventListener("scroll", handler, { passive: true });
+    return handler;
+  };
+
+  #getNextZIndex = (): number => {
+    this.#currentZIndex += 1;
+    return this.#currentZIndex;
+  };
+
   #schedulePositionUpdate = (element: HTMLElement) => {
     this.#RAF.queue.add(element);
 
@@ -141,7 +253,7 @@ export class LfPortal implements LfPortalInterface {
 
   #executeRun = (element: HTMLElement) => {
     if (!this.isInPortal(element) || !element.isConnected) {
-      this.#clean(element);
+      this.#clean(element, true);
       return;
     }
 
@@ -159,7 +271,7 @@ export class LfPortal implements LfPortalInterface {
 
     // Handle fullscreen mode
     if (options.fullscreen) {
-      this.#applyFullscreen(element);
+      this.#applyFullscreen(element, state);
       return;
     }
 
@@ -175,9 +287,15 @@ export class LfPortal implements LfPortalInterface {
       // Only fixed positioning needs continuous RAF updates
       requestAnimationFrame(() => this.#schedulePositionUpdate(element));
     }
+
+    // Apply custom dimensions after positioning
+    this.#applyCustomDimensions(element, options);
+
+    // Apply z-index
+    this.#applyZIndex(element, state);
   };
 
-  #applyFullscreen = (element: HTMLElement) => {
+  #applyFullscreen = (element: HTMLElement, state: LfPortalState) => {
     this.#resetStyle(element);
 
     const { style } = element;
@@ -189,10 +307,37 @@ export class LfPortal implements LfPortalInterface {
     style.height = "100vh";
     style.maxWidth = "none";
     style.maxHeight = "none";
-    style.zIndex = "var(--lf-ui-zindex-fullscreen, 9999)";
+
+    // Apply z-index for fullscreen
+    this.#applyZIndex(element, state);
 
     // Add data attribute for CSS targeting
     element.dataset.lfFullscreen = "true";
+  };
+
+  #applyCustomDimensions = (element: HTMLElement, options: LfPortalOptions) => {
+    const { style } = element;
+
+    if (options.maxWidth) {
+      style.maxWidth = options.maxWidth;
+    }
+    if (options.maxHeight) {
+      style.maxHeight = options.maxHeight;
+    }
+  };
+
+  #applyZIndex = (element: HTMLElement, state: LfPortalState) => {
+    const { options } = state;
+    const { style } = element;
+
+    if (state.zIndex !== undefined) {
+      style.zIndex = String(state.zIndex);
+    } else if (options.zIndex !== undefined && options.zIndex !== "auto") {
+      style.zIndex = String(options.zIndex);
+    } else if (options.fullscreen) {
+      style.zIndex = "var(--lf-ui-zindex-fullscreen, 9999)";
+    }
+    // Otherwise, CSS default from portal mixin applies
   };
 
   #calculateAbsolutePosition = (element: HTMLElement, state: LfPortalState) => {
@@ -481,7 +626,7 @@ export class LfPortal implements LfPortalInterface {
    * @param anchor - Position anchor (element or coordinates)
    * @param margin - Margin from anchor
    * @param placement - Preferred placement
-   * @param options - Portal options (position strategy, resize handling, fullscreen)
+   * @param options - Portal options (position strategy, resize handling, fullscreen, etc.)
    */
   open = (
     element: HTMLElement,
@@ -515,24 +660,60 @@ export class LfPortal implements LfPortalInterface {
       state.options = resolvedOptions;
     } else {
       // Create new state
-      const dismissCb: LfFrameworkClickCb = {
-        cb: () => {
-          this.close(element);
-        },
-        element,
-      };
+      let dismissCb: LfFrameworkClickCb | null = null;
+
+      // Only setup click-away if not disabled
+      if (!resolvedOptions.disableClickAway) {
+        dismissCb = {
+          cb: () => {
+            this.close(element);
+          },
+          element,
+        };
+        this.#MANAGER.addClickCallback(dismissCb, true);
+      }
+
+      // Determine z-index
+      let zIndex: number | undefined;
+      if (resolvedOptions.zIndex === "auto") {
+        zIndex = this.#getNextZIndex();
+      } else if (typeof resolvedOptions.zIndex === "number") {
+        zIndex = resolvedOptions.zIndex;
+      }
+
+      // Setup anchor observer if requested
+      let anchorObserver: ResizeObserver | undefined;
+      if (resolvedOptions.watchAnchor && this.#isAnchorHTMLElement(anchor)) {
+        anchorObserver = this.#setupAnchorObserver(element, anchor);
+      }
+
+      // Setup scroll container handler if requested
+      let scrollHandler: (() => void) | undefined;
+      if (resolvedOptions.scrollContainer) {
+        scrollHandler = this.#setupScrollHandler(
+          element,
+          resolvedOptions.scrollContainer,
+        );
+      }
 
       this.#STATE.set(element, {
         anchor,
+        anchorObserver,
         dismissCb,
         margin,
         options: resolvedOptions,
         parent,
         placement,
+        scrollHandler,
+        zIndex,
       });
 
-      this.#MANAGER.addClickCallback(dismissCb, true);
       this.#appendToWrapper(element);
+
+      // Apply enter animation class
+      if (resolvedOptions.enterClass) {
+        element.classList.add(resolvedOptions.enterClass);
+      }
     }
 
     // Setup resize listener if requested

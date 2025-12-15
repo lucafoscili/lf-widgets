@@ -35,13 +35,18 @@ export const prepChatActions = (
 
     if (!isFullscreen) {
       // Enter fullscreen via portal - escapes transform ancestors
+      // Using zIndex: 'auto' ensures dropdowns inside the chat will layer correctly
       portal.open(
         rootElement,
         rootElement.parentElement || document.body,
         undefined,
         0,
         "auto",
-        { fullscreen: true },
+        {
+          fullscreen: true,
+          disableClickAway: true,
+          zIndex: "auto",
+        },
       );
     } else {
       // Exit fullscreen - portal returns element to original parent

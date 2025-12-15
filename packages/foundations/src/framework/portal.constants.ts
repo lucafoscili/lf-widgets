@@ -23,15 +23,47 @@ export const LF_PORTAL_POSITION_STRATEGIES = {
 
 //#region Default Options
 export const LF_PORTAL_DEFAULT_OPTIONS: {
-  recalculateOnResize: boolean;
-  positionStrategy: undefined;
+  disableClickAway: boolean;
+  enterClass: undefined;
+  exitClass: undefined;
+  exitDuration: number;
   fullscreen: boolean;
+  maxHeight: undefined;
+  maxWidth: undefined;
+  positionStrategy: undefined;
+  recalculateOnResize: boolean;
+  scrollContainer: undefined;
+  watchAnchor: boolean;
+  zIndex: undefined;
 } = {
-  /** Whether to recalculate position on window resize */
-  recalculateOnResize: false,
-  /** Position strategy - auto-detected based on anchor type if undefined */
-  positionStrategy: undefined,
+  /** Disable click-away dismissal */
+  disableClickAway: false,
+  /** CSS class for enter animation */
+  enterClass: undefined,
+  /** CSS class for exit animation */
+  exitClass: undefined,
+  /** Duration to wait for exit animation (ms) */
+  exitDuration: 0,
   /** Fullscreen mode - element covers entire viewport */
   fullscreen: false,
+  /** Override max-height */
+  maxHeight: undefined,
+  /** Override max-width */
+  maxWidth: undefined,
+  /** Position strategy - auto-detected based on anchor type if undefined */
+  positionStrategy: undefined,
+  /** Whether to recalculate position on window resize */
+  recalculateOnResize: false,
+  /** Scrollable container to watch */
+  scrollContainer: undefined,
+  /** Watch anchor element for changes */
+  watchAnchor: false,
+  /** Custom z-index */
+  zIndex: undefined,
 };
+//#endregion
+
+//#region Z-Index
+/** Base z-index for auto-incrementing portal layers */
+export const LF_PORTAL_BASE_ZINDEX = 1000;
 //#endregion

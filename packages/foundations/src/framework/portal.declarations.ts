@@ -35,10 +35,46 @@ export interface LfPortalInterface {
  */
 export interface LfPortalOptions {
   /**
-   * Whether to recalculate position on window resize.
+   * Disable automatic click-away dismissal.
+   * When true, the portal will not close when clicking outside.
+   * Useful for modal dialogs or persistent panels.
    * @default false
    */
-  recalculateOnResize?: boolean;
+  disableClickAway?: boolean;
+  /**
+   * CSS class to add when the portal enters (for animations).
+   * The class is added immediately when the portal opens.
+   * @example "fade-in"
+   */
+  enterClass?: string;
+  /**
+   * CSS class to add when the portal exits (for animations).
+   * The class is added before closing, with a delay for the animation.
+   * @example "fade-out"
+   */
+  exitClass?: string;
+  /**
+   * Duration to wait for exit animation before removing element (ms).
+   * Only used when exitClass is specified.
+   * @default 0
+   */
+  exitDuration?: number;
+  /**
+   * Fullscreen mode - element covers entire viewport.
+   * When true, ignores anchor positioning and uses fixed positioning at 100vw/100vh.
+   * @default false
+   */
+  fullscreen?: boolean;
+  /**
+   * Override max-height for the portal element (CSS value).
+   * @example "300px" or "50vh"
+   */
+  maxHeight?: string;
+  /**
+   * Override max-width for the portal element (CSS value).
+   * @example "400px" or "80vw"
+   */
+  maxWidth?: string;
   /**
    * Position strategy for the portal element.
    * - 'absolute': Document-relative, scrolls with page naturally (default for element anchors)
@@ -47,11 +83,29 @@ export interface LfPortalOptions {
    */
   positionStrategy?: LfPortalPositionStrategy;
   /**
-   * Fullscreen mode - element covers entire viewport.
-   * When true, ignores anchor positioning and uses fixed positioning at 100vw/100vh.
+   * Whether to recalculate position on window resize.
    * @default false
    */
-  fullscreen?: boolean;
+  recalculateOnResize?: boolean;
+  /**
+   * Scrollable container to watch for scroll events.
+   * When specified, portal position recalculates on container scroll.
+   * Useful for portals anchored to elements inside scrollable containers.
+   */
+  scrollContainer?: HTMLElement;
+  /**
+   * Watch the anchor element for size/position changes using ResizeObserver.
+   * Automatically recalculates position when anchor changes.
+   * @default false
+   */
+  watchAnchor?: boolean;
+  /**
+   * Custom z-index for the portal.
+   * - If a number, uses that exact value
+   * - If 'auto', assigns an auto-incrementing z-index (useful for nested portals)
+   * @default uses CSS variable --lf-ui-zindex-portal
+   */
+  zIndex?: number | "auto";
 }
 //#endregion
 
@@ -64,8 +118,10 @@ export type LfPortalAnchor = HTMLElement | LfPortalCoordinates;
 export interface LfPortalState {
   /** Anchor element or coordinates driving positioning. */
   anchor: LfPortalAnchor;
+  /** ResizeObserver watching the anchor element (if watchAnchor is true). */
+  anchorObserver?: ResizeObserver;
   /** Click-away callback registered to dismiss the portal. */
-  dismissCb: LfFrameworkClickCb;
+  dismissCb: LfFrameworkClickCb | null;
   /** Margin applied when positioning relative to the anchor. */
   margin: number;
   /** Portal configuration options. */
@@ -74,6 +130,10 @@ export interface LfPortalState {
   parent: HTMLElement;
   /** Preferred placement string (auto, top-left, etc.). */
   placement: LfPortalPlacements;
+  /** Scroll handler for scrollContainer option. */
+  scrollHandler?: () => void;
+  /** Assigned z-index value (for auto-increment tracking). */
+  zIndex?: number;
 }
 /** Explicit viewport coordinates used as an anchor fallback. */
 export interface LfPortalCoordinates {

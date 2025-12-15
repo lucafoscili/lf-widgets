@@ -185,6 +185,24 @@ describe("LfPortal positioning logic", () => {
       }
     ).requestAnimationFrame = requestAnimationFrameMock;
     window.requestAnimationFrame = requestAnimationFrameMock;
+
+    // Mock scroll positions (required for absolute positioning calculations)
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 0,
+    });
+    Object.defineProperty(window, "scrollX", {
+      configurable: true,
+      value: 0,
+    });
+    Object.defineProperty(document.documentElement, "scrollTop", {
+      configurable: true,
+      value: 0,
+    });
+    Object.defineProperty(document.documentElement, "scrollLeft", {
+      configurable: true,
+      value: 0,
+    });
   });
 
   afterEach(() => {
@@ -199,6 +217,7 @@ describe("LfPortal positioning logic", () => {
 
   it("anchors to the anchor's left edge when auto placement has room on the right", () => {
     (window as any).innerWidth = 1000;
+    (window as any).innerHeight = 800;
 
     const parent = document.createElement("div");
     document.body.appendChild(parent);
@@ -237,7 +256,10 @@ describe("LfPortal positioning logic", () => {
     expect(requestAnimationFrameMock).toHaveBeenCalled();
     rafCallbacks.shift()?.(0);
 
+    // Portal uses absolute positioning by default for element anchors
+    // Position is document-relative (anchor.left + scrollX = 100 + 0 = 100)
     expect(element.style.left).toBe("100px");
     expect(element.style.right).toBe("");
+    expect(element.style.position).toBe("absolute");
   });
 });
