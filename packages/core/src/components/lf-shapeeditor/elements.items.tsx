@@ -7,9 +7,11 @@ import {
   LfShapeeditorLayoutGroup,
   LfShapeeditorLayoutRenderItem,
   LfShapeeditorRenderSegment,
+  LfSliderValue,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
+import { LfSliderFC } from "../lf-slider/lf-slider-fc";
 
 /**
  * Prepares the items sub-block JSX (accordion + individual control items).
@@ -325,22 +327,46 @@ const createControl = (
         </div>
       );
 
-    case "slider":
+    case "slider": {
+      // Create slider value object from raw number
+      const numValue = value as number;
+      const min = config.min ?? 0;
+      const max = config.max ?? 100;
+      const step = config.step ?? 1;
+      const percentage = ((numValue - min) / (max - min)) * 100;
+      const sliderValue: LfSliderValue = {
+        display: numValue,
+        real: numValue,
+      };
+
+      // FC handler - calls controlChange directly without CustomEvent
+      const { controlChange } = adapter.handlers.settings;
+      const handleChange = (val: number) => {
+        controlChange(null, config.id, val, "change");
+      };
+      const handleInput = (val: number) => {
+        controlChange(null, config.id, val, "input");
+      };
+
       return (
         <div key={controlKey} class={bemClass(items._, items.item)}>
-          <lf-slider
-            lfLabel={config.label}
-            lfLeadingLabel={true}
-            lfMin={config.min}
-            lfMax={config.max}
-            lfStep={config.step}
-            lfValue={value as number}
-            onLf-slider-event={(e) => controls.slider(e, config.id)}
-          ></lf-slider>
+          <LfSliderFC
+            framework={mgr}
+            label={config.label}
+            leadingLabel={true}
+            min={min}
+            max={max}
+            step={step}
+            value={sliderValue}
+            onChange={handleChange}
+            onInput={handleInput}
+            style={{ "--lf_slider_value": `${percentage}%` }}
+          />
           {config.unit && <span class="unit">{config.unit}</span>}
           {infoIcon}
         </div>
       );
+    }
 
     case "textfield":
       return (

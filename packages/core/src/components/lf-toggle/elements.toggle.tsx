@@ -58,12 +58,12 @@ export const prepToggle = (
           class={bemClass(formField._, null, {
             leading: lfLeadingLabel,
           })}
+          data-lf={lf[lfUiState]}
         >
           <div
             class={bemClass(toggle._, null, {
               active: isOn(),
             })}
-            data-lf={lf[lfUiState]}
             part={p.toggle}
           >
             <div

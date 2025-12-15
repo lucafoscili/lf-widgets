@@ -260,7 +260,16 @@
 
 /*******************************************
  * @mixin lf-fw-portal
- * Simple conditional portal display mixin.
+ * Portal display mixin with support for absolute and fixed positioning strategies.
+ *
+ * Position strategies:
+ * - absolute (default): Document-relative, scrolls with page naturally.
+ *   Calculated once on open, no continuous updates needed.
+ * - fixed: Viewport-relative, stays fixed on screen.
+ *   Used for coordinate anchors (context menus) with RAF updates.
+ *
+ * The position strategy is set dynamically in JS based on anchor type.
+ * CSS provides base styling; JS overrides position property as needed.
  *
  * @param {Boolean} $active - If true, displays the portal; if false, hides it (display: none).
  *******************************************/
@@ -273,13 +282,26 @@
       max-height: 45dvh;
       max-width: 45dvw;
       overflow: auto;
-      position: fixed;
+      // Default to absolute - JS will override to fixed for coordinate anchors
+      position: absolute;
       width: auto;
       z-index: var(--lf-ui-zindex-portal);
 
       @media (max-width: 600px) {
         max-height: 80dvh;
         max-width: 90dvw;
+      }
+
+      // Fullscreen mode - applied via data-lf-fullscreen attribute
+      &[data-lf-fullscreen="true"] {
+        height: 100vh;
+        left: 0;
+        max-height: none;
+        max-width: none;
+        position: fixed;
+        top: 0;
+        width: 100vw;
+        z-index: var(--lf-ui-zindex-fullscreen, 9999);
       }
     }
   }

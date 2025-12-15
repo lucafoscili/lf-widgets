@@ -1,0 +1,103 @@
+// ============================================================================
+// FC-FORM-FIELD - Shared Form Field Styles for Functional Components
+// ============================================================================
+// This file provides the common `.form-field` wrapper used by ALL form-based
+// functional components: slider, textfield, toggle, checkbox, radio, select.
+//
+// Benefits:
+// - Single source of truth for form field styling
+// - Consistent appearance across all form shapes
+// - Reduced bundle size (no duplication)
+// - Unified theming via `--lf-form-*` CSS custom properties
+//
+// Usage:
+// All form FCs render: <div class="form-field">...</div>
+// Component-specific styles are in separate _fc-<component>.scss files.
+//
+// CSS Custom Properties:
+// - --lf-form-color-on-bg: Text color (inherits from --lf-color-on-bg)
+// - --lf-form-font-family: Font family (inherits from --lf-font-family-label)
+// - --lf-form-font-size: Font size (inherits from --lf-font-size-label)
+// - --lf-form-font-weight: Font weight (inherits from --lf-font-weight-label)
+// - --lf-form-padding: Container padding (default: 2em 0.5em)
+// - --lf-form-label-padding: Label padding (default: 1.5em)
+// - --lf-form-gap: Gap between elements (default: 0.5em)
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Form Field Container
+// -----------------------------------------------------------------------------
+// Base wrapper for all form components. Provides consistent layout, typography,
+// and theming. Modifiers handle label positioning and states.
+// -----------------------------------------------------------------------------
+.form-field {
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--lf-form-color-on-bg, var(--lf-color-on-bg));
+  display: inline-flex;
+  font-family: var(--lf-form-font-family, var(--lf-font-family-label));
+  font-size: var(--lf-form-font-size, var(--lf-font-size-label));
+  font-weight: var(--lf-form-font-weight, var(--lf-font-weight-label));
+  gap: var(--lf-form-gap, 0.5em);
+  height: 100%;
+  padding: var(--lf-form-padding, 2em 0.5em);
+  vertical-align: middle;
+  width: 100%;
+
+  // ---------------------------------------------------------------------------
+  // Label Element
+  // ---------------------------------------------------------------------------
+  &__label {
+    min-width: var(--lf-form-label-min-width, max-content);
+    overflow: hidden;
+    padding-left: var(--lf-form-label-padding, 1.5em);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Leading Label Modifier (label before control)
+  // ---------------------------------------------------------------------------
+  &--leading {
+    .form-field__label {
+      margin-left: auto;
+      margin-right: 0;
+      order: -1;
+      padding-left: 0;
+      padding-right: var(--lf-form-label-padding, 1.5em);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // State Modifiers
+  // ---------------------------------------------------------------------------
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &--error {
+    .form-field__label {
+      color: var(--lf-form-color-error, var(--lf-color-danger));
+    }
+  }
+
+  &--success {
+    .form-field__label {
+      color: var(--lf-form-color-success, var(--lf-color-success));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size Modifiers (optional - components can override)
+  // ---------------------------------------------------------------------------
+  &--small {
+    font-size: var(--lf-form-font-size-small, 0.875em);
+    padding: var(--lf-form-padding-small, 1.5em 0.375em);
+  }
+
+  &--large {
+    font-size: var(--lf-form-font-size-large, 1.125em);
+    padding: var(--lf-form-padding-large, 2.5em 0.625em);
+  }
+}

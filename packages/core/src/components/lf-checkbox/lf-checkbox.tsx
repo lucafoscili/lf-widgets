@@ -377,6 +377,7 @@ export class LfCheckbox implements LfCheckboxInterface {
             class={bemClass(formField._, null, {
               leading: lfLeadingLabel,
             })}
+            data-lf={lf[lfUiState]}
           >
             <div
               class={bemClass(checkbox._)}
@@ -396,7 +397,6 @@ export class LfCheckbox implements LfCheckboxInterface {
                   indeterminate: isIndeterminate(),
                   disabled: isDisabled(),
                 })}
-                data-lf={lf[lfUiState]}
                 part={this.#p.checkbox}
               >
                 {input()}

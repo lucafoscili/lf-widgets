@@ -273,9 +273,12 @@ export interface LfShapeeditorAdapterHandlers
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
     /** Accordion toggle handler */
     accordionToggle: (e: CustomEvent<LfAccordionEventPayload>) => Promise<void>;
-    /** Control change handler (internal - called by type-specific handlers) */
+    /**
+     * Control change handler (internal - called by type-specific handlers).
+     * Event parameter is nullable to support FC usage where no CustomEvent is emitted.
+     */
     controlChange: (
-      e: CustomEvent | Event,
+      e: CustomEvent | Event | null,
       controlId: string,
       value: unknown,
       eventType: LfShapeeditorControlEventType,

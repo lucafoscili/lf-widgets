@@ -15,6 +15,169 @@ export const GLOBAL_STYLES = {
     "height": "100%",
     "width": "100%"
   },
+  ".form-field": {
+    "align-items": "center",
+    "box-sizing": "border-box",
+    "color": "var(--lf-form-color-on-bg, var(--lf-color-on-bg))",
+    "display": "inline-flex",
+    "font-family": "var(--lf-form-font-family, var(--lf-font-family-label))",
+    "font-size": "calc(var(--lf-form-font-size, var(--lf-font-size-label)) * var(--lf-fc-ui-size, 1))",
+    "font-weight": "var(--lf-form-font-weight, var(--lf-font-weight-label))",
+    "gap": "var(--lf-form-gap, 0.5em)",
+    "height": "100%",
+    "padding": "var(--lf-form-padding, 2em 0.5em)",
+    "vertical-align": "middle",
+    "width": "100%"
+  },
+  ".form-field__label": {
+    "min-width": "var(--lf-form-label-min-width, max-content)",
+    "overflow": "hidden",
+    "padding-left": "var(--lf-form-label-padding, 1.5em)",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  },
+  ".form-field--leading .form-field__label": {
+    "margin-left": "auto",
+    "margin-right": "0",
+    "order": "-1",
+    "padding-left": "0",
+    "padding-right": "var(--lf-form-label-padding, 1.5em)"
+  },
+  ".form-field--disabled": {
+    "opacity": "0.5",
+    "pointer-events": "none"
+  },
+  ".form-field--error .form-field__label": {
+    "color": "var(--lf-form-color-error, var(--lf-color-danger))"
+  },
+  ".form-field--success .form-field__label": {
+    "color": "var(--lf-form-color-success, var(--lf-color-success))"
+  },
+  ".form-field--small": {
+    "font-size": "var(--lf-form-font-size-small, 0.875em)",
+    "padding": "var(--lf-form-padding-small, 1.5em 0.375em)"
+  },
+  ".form-field--large": {
+    "font-size": "var(--lf-form-font-size-large, 1.125em)",
+    "padding": "var(--lf-form-padding-large, 2.5em 0.625em)"
+  },
+  "[data-lf=danger]": {
+    "--lf-fc-color-primary": "var(--lf-color-danger)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-danger)"
+  },
+  "[data-lf=info]": {
+    "--lf-fc-color-primary": "var(--lf-color-info)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-info)"
+  },
+  "[data-lf=primary]": {
+    "--lf-fc-color-primary": "var(--lf-color-primary)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-primary)"
+  },
+  "[data-lf=secondary]": {
+    "--lf-fc-color-primary": "var(--lf-color-secondary)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-secondary)"
+  },
+  "[data-lf=success]": {
+    "--lf-fc-color-primary": "var(--lf-color-success)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-success)"
+  },
+  "[data-lf=warning]": {
+    "--lf-fc-color-primary": "var(--lf-color-warning)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-warning)"
+  },
+  "[data-lf=disabled]": {
+    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
+    "pointer-events": "none"
+  },
+  ".slider": {
+    "display": "flex",
+    "flex-direction": "column",
+    "gap": "var(--lf-slider-gap, 0.5em)",
+    "margin": "var(--lf-slider-margin, 0 0.75em)",
+    "min-width": "var(--lf-slider-min-width, 7em)",
+    "outline": "none",
+    "position": "relative",
+    "user-select": "none",
+    "width": "100%"
+  },
+  ".slider--has-value .slider__track::after": {
+    "background-color": "rgba(var(--lf-slider-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-heavy, 0.75))",
+    "border-radius": "var(--lf-slider-border-radius, var(--lf-ui-border-radius))",
+    "content": "\"\"",
+    "height": "100%",
+    "left": "0",
+    "position": "absolute",
+    "top": "0",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), width 0.1s ease-out",
+    "width": "var(--lf_slider_value)"
+  },
+  ".slider__label": {
+    "cursor": "pointer",
+    "margin-left": "0",
+    "margin-right": "auto",
+    "padding-left": "var(--lf-slider-label-padding-left, 0.5em)",
+    "padding-right": "0",
+    "user-select": "none"
+  },
+  ".slider__value": {
+    "color": "var(--lf-slider-color-on-bg, var(--lf-color-on-bg))",
+    "font-family": "var(--lf-slider-font-family, var(--lf-font-family-button))",
+    "font-size": "var(--lf-slider-font-size, var(--lf-font-size-button))",
+    "font-weight": "var(--lf-slider-font-weight, var(--lf-font-weight-button))",
+    "order": "1",
+    "text-align": "center",
+    "white-space": "nowrap"
+  },
+  ".slider__track": {
+    "background-color": "rgba(var(--lf-slider-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
+    "border-radius": "var(--lf-slider-border-radius, var(--lf-ui-border-radius))",
+    "box-shadow": "var(--lf-slider-box-shadow, 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2))",
+    "box-sizing": "border-box",
+    "height": "var(--lf-slider-track-height, 0.5em)",
+    "margin-top": "var(--lf-slider-track-margin-top, 0.75em)",
+    "order": "0",
+    "position": "relative",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "100%"
+  },
+  ".slider__thumb-underlay": {
+    "border-radius": "50%",
+    "display": "flex",
+    "justify-content": "center",
+    "left": "var(--lf_slider_value)",
+    "pointer-events": "none",
+    "position": "absolute",
+    "top": "var(--lf-slider-thumb-underlay-top, -0.6em)",
+    "transform": "translateX(-50%)",
+    "transition": "left 0.1s ease-out"
+  },
+  ".slider__thumb": {
+    "background-color": "rgba(var(--lf-slider-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-heavy, 0.75))",
+    "border-radius": "50%",
+    "box-shadow": "var(--lf-slider-thumb-box-shadow, 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2))",
+    "cursor": "pointer",
+    "height": "var(--lf-slider-thumb-height, 1.5em)",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "var(--lf-slider-thumb-width, 1.5em)"
+  },
+  ".slider__thumb:hover": {
+    "background-color": "rgba(var(--lf-slider-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "transform": "scale(var(--lf-slider-thumb-hover-scale, 1.1))"
+  },
+  ".slider__native-control": {
+    "cursor": "pointer",
+    "height": "var(--lf-slider-input-height, 3em)",
+    "left": "0",
+    "opacity": "0",
+    "position": "absolute",
+    "top": "0",
+    "width": "100%",
+    "z-index": "2"
+  },
+  ".slider--disabled": {
+    "opacity": "0.5",
+    "pointer-events": "none"
+  },
   "*::-webkit-scrollbar": {
     "width": "9px"
   },
@@ -705,7 +868,7 @@ export const GLOBAL_STYLES = {
     "max-height": "45dvh",
     "max-width": "45dvw",
     "overflow": "auto",
-    "position": "fixed",
+    "position": "absolute",
     "width": "auto",
     "z-index": "var(--lf-ui-zindex-portal)"
   },
@@ -714,6 +877,16 @@ export const GLOBAL_STYLES = {
       "max-height": "80dvh",
       "max-width": "90dvw"
     }
+  },
+  ".lf-portal [data-lf=portal][data-lf-fullscreen=true]": {
+    "height": "100vh",
+    "left": "0",
+    "max-height": "none",
+    "max-width": "none",
+    "position": "fixed",
+    "top": "0",
+    "width": "100vw",
+    "z-index": "var(--lf-ui-zindex-fullscreen, 9999)"
   },
   ".lf-tooltip": {
     "--lf-tooltip-arrow-size": "6px",

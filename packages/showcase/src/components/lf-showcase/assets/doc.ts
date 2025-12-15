@@ -4633,7 +4633,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-box-shadow",
-        docs: "Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-comp-color-on-bg, var(--lf-color-on-bg)), 0.2)",
+        docs: "Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-slider-color-on-bg",
@@ -4645,27 +4645,27 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-font-family",
-        docs: "Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)",
+        docs: "Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-button)",
       },
       {
         name: "--lf-slider-font-size",
-        docs: "Sets the font size for the slider component. Defaults to => var(--lf-font-size)",
+        docs: "Sets the font size for the slider component. Defaults to => var(--lf-font-size-button)",
+      },
+      {
+        name: "--lf-slider-font-weight",
+        docs: "Sets the font weight for the slider component. Defaults to => var(--lf-font-weight-button)",
+      },
+      {
+        name: "--lf-slider-gap",
+        docs: "Sets the gap between slider elements. Defaults to => 0.5em",
       },
       {
         name: "--lf-slider-input-height",
         docs: "Sets the height for the slider component's input. Defaults to => 3em",
       },
       {
-        name: "--lf-slider-label-min-width",
-        docs: "Sets the min-width for the slider label. Defaults to => max-content",
-      },
-      {
         name: "--lf-slider-label-padding-left",
-        docs: "Sets the left padding for the slider label. Defaults to => 1.5em",
-      },
-      {
-        name: "--lf-slider-label-padding-right",
-        docs: "Sets the right padding for the slider label. Defaults to => 1.5em",
+        docs: "Sets the left padding for the slider label. Defaults to => 0.5em",
       },
       {
         name: "--lf-slider-margin",
@@ -4676,20 +4676,12 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the min-width for the slider component. Defaults to => 7em",
       },
       {
-        name: "--lf-slider-overflow",
-        docs: "Sets the overflow for the slider component. Defaults to => hidden",
-      },
-      {
-        name: "--lf-slider-padding",
-        docs: "Sets the padding for the slider component. Defaults to => 2em",
-      },
-      {
         name: "--lf-slider-thumb-box-shadow",
-        docs: "Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-comp-color-on-bg, var(--lf-color-on-bg)), 0.2)",
+        docs: "Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-slider-thumb-height",
-        docs: "Sets the height for the slider component's thumb. Defaults to => 1.25em",
+        docs: "Sets the height for the slider component's thumb. Defaults to => 1.5em",
       },
       {
         name: "--lf-slider-thumb-hover-scale",
@@ -4701,15 +4693,15 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-thumb-width",
-        docs: "Sets the width for the slider component's thumb. Defaults to => 1.25em",
+        docs: "Sets the width for the slider component's thumb. Defaults to => 1.5em",
       },
       {
         name: "--lf-slider-track-height",
         docs: "Sets the height for the slider component's track. Defaults to => 0.5em",
       },
       {
-        name: "--lf-slider-value-bottom-position",
-        docs: "Sets the bottom position for the slider component's value. Defaults to => -3em",
+        name: "--lf-slider-track-margin-top",
+        docs: "Sets the top margin for the slider track. Defaults to => 0.75em",
       },
     ],
   },

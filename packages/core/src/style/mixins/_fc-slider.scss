@@ -1,0 +1,202 @@
+// ============================================================================
+// FC-SLIDER - Functional Component Slider Styles
+// ============================================================================
+// Slider-specific styles for the LfSliderFC functional component.
+// Works in conjunction with _fc-form-field.scss for the wrapper.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-slider-* CSS custom properties for theming
+//
+// Dependencies:
+// - _fc-form-field.scss (provides .form-field wrapper)
+//
+// Usage:
+//   <LfSliderFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Slider Core
+// -----------------------------------------------------------------------------
+.slider {
+  & {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lf-slider-gap, 0.5em);
+    margin: var(--lf-slider-margin, 0 0.75em);
+    min-width: var(--lf-slider-min-width, 7em);
+    outline: none;
+    position: relative;
+    user-select: none;
+    width: 100%;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Value Track Fill (pseudo-element on track)
+  // -----------------------------------------------------------------------------
+  &--has-value {
+    .slider__track::after {
+      background-color: rgba(
+        var(
+          --lf-slider-color-primary,
+          var(--lf-fc-color-primary, var(--lf-color-primary))
+        ),
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
+      border-radius: var(--lf-slider-border-radius, var(--lf-ui-border-radius));
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      transition:
+        background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        width 0.1s ease-out;
+      width: var(--lf_slider_value);
+    }
+  }
+
+  // -----------------------------------------------------------------------------
+  // Label (inside slider, not form-field label)
+  // -----------------------------------------------------------------------------
+  &__label {
+    cursor: pointer;
+    margin-left: 0;
+    margin-right: auto;
+    padding-left: var(--lf-slider-label-padding-left, 0.5em);
+    padding-right: 0;
+    user-select: none;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Value Display
+  // -----------------------------------------------------------------------------
+  &__value {
+    color: var(--lf-slider-color-on-bg, var(--lf-color-on-bg));
+    font-family: var(--lf-slider-font-family, var(--lf-font-family-button));
+    font-size: var(--lf-slider-font-size, var(--lf-font-size-button));
+    font-weight: var(--lf-slider-font-weight, var(--lf-font-weight-button));
+    order: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Track
+  // -----------------------------------------------------------------------------
+  &__track {
+    background-color: rgba(
+      var(
+        --lf-slider-color-primary,
+        var(--lf-fc-color-primary, var(--lf-color-primary))
+      ),
+      var(--lf-ui-alpha-glass, 0.375)
+    );
+    border-radius: var(--lf-slider-border-radius, var(--lf-ui-border-radius));
+    box-shadow: var(
+      --lf-slider-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    box-sizing: border-box;
+    height: var(--lf-slider-track-height, 0.5em);
+    margin-top: var(--lf-slider-track-margin-top, 0.75em);
+    order: 0;
+    position: relative;
+    transition:
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Thumb Underlay (positioning container)
+  // -----------------------------------------------------------------------------
+  &__thumb-underlay {
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    left: var(--lf_slider_value);
+    pointer-events: none;
+    position: absolute;
+    top: var(--lf-slider-thumb-underlay-top, -0.6em);
+    transform: translateX(-50%);
+    transition: left 0.1s ease-out;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Thumb
+  // -----------------------------------------------------------------------------
+  &__thumb {
+    background-color: rgba(
+      var(
+        --lf-slider-color-primary,
+        var(--lf-fc-color-primary, var(--lf-color-primary))
+      ),
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
+    border-radius: 50%;
+    /**
+     */
+    box-shadow: var(
+      --lf-slider-thumb-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    cursor: pointer;
+    height: var(--lf-slider-thumb-height, 1.5em);
+    transition:
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: var(--lf-slider-thumb-width, 1.5em);
+
+    &:hover {
+      background-color: rgba(
+        var(
+          --lf-slider-color-primary,
+          var(--lf-fc-color-primary, var(--lf-color-primary))
+        ),
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      );
+      /**
+       */
+      transform: scale(var(--lf-slider-thumb-hover-scale, 1.1));
+    }
+  }
+
+  // -----------------------------------------------------------------------------
+  // Native Input (hidden, for accessibility)
+  // -----------------------------------------------------------------------------
+  &__native-control {
+    cursor: pointer;
+    /**
+     */
+    height: var(--lf-slider-input-height, 3em);
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Disabled State
+  // -----------------------------------------------------------------------------
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

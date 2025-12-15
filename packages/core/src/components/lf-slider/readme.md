@@ -110,43 +110,28 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                | Description                                                                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--lf-slider-border-radius`         | Sets the border radius for the slider component. Defaults to => var(--lf-ui-border-radius)                                                       |
-| `--lf-slider-box-shadow`            | Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-comp-color-on-bg, var(--lf-color-on-bg)), 0.2) |
-| `--lf-slider-color-on-bg`           | Sets the color-on-bg color for the slider component. Defaults to => var(--lf-color-on-bg)                                                        |
-| `--lf-slider-color-primary`         | Sets the color-primary color for the slider component. Defaults to => var(--lf-color-primary)                                                    |
-| `--lf-slider-font-family`           | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)                                              |
-| `--lf-slider-font-size`             | Sets the font size for the slider component. Defaults to => var(--lf-font-size)                                                                  |
-| `--lf-slider-input-height`          | Sets the height for the slider component's input. Defaults to => 3em                                                                             |
-| `--lf-slider-label-min-width`       | Sets the min-width for the slider label. Defaults to => max-content                                                                              |
-| `--lf-slider-label-padding-left`    | Sets the left padding for the slider label. Defaults to => 1.5em                                                                                 |
-| `--lf-slider-label-padding-right`   | Sets the right padding for the slider label. Defaults to => 1.5em                                                                                |
-| `--lf-slider-margin`                | Sets the margin for the slider component. Defaults to => 0 0.75em                                                                                |
-| `--lf-slider-min-width`             | Sets the min-width for the slider component. Defaults to => 7em                                                                                  |
-| `--lf-slider-overflow`              | Sets the overflow for the slider component. Defaults to => hidden                                                                                |
-| `--lf-slider-padding`               | Sets the padding for the slider component. Defaults to => 2em                                                                                    |
-| `--lf-slider-thumb-box-shadow`      | Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-comp-color-on-bg, var(--lf-color-on-bg)), 0.2) |
-| `--lf-slider-thumb-height`          | Sets the height for the slider component's thumb. Defaults to => 1.25em                                                                          |
-| `--lf-slider-thumb-hover-scale`     | Sets the scale for the slider component's thumb on hover. Defaults to => 1.1                                                                     |
-| `--lf-slider-thumb-underlay-top`    | Sets the top position for the slider component's thumb underlay. Defaults to => -0.6em                                                           |
-| `--lf-slider-thumb-width`           | Sets the width for the slider component's thumb. Defaults to => 1.25em                                                                           |
-| `--lf-slider-track-height`          | Sets the height for the slider component's track. Defaults to => 0.5em                                                                           |
-| `--lf-slider-value-bottom-position` | Sets the bottom position for the slider component's value. Defaults to => -3em                                                                   |
+| Name                             | Description                                                                                                          |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `--lf-slider-border-radius`      | Sets the border radius for the slider component. Defaults to => var(--lf-ui-border-radius)                           |
+| `--lf-slider-box-shadow`         | Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
+| `--lf-slider-color-on-bg`        | Sets the color-on-bg color for the slider component. Defaults to => var(--lf-color-on-bg)                            |
+| `--lf-slider-color-primary`      | Sets the color-primary color for the slider component. Defaults to => var(--lf-color-primary)                        |
+| `--lf-slider-font-family`        | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-button)                   |
+| `--lf-slider-font-size`          | Sets the font size for the slider component. Defaults to => var(--lf-font-size-button)                               |
+| `--lf-slider-font-weight`        | Sets the font weight for the slider component. Defaults to => var(--lf-font-weight-button)                           |
+| `--lf-slider-gap`                | Sets the gap between slider elements. Defaults to => 0.5em                                                           |
+| `--lf-slider-input-height`       | Sets the height for the slider component's input. Defaults to => 3em                                                 |
+| `--lf-slider-label-padding-left` | Sets the left padding for the slider label. Defaults to => 0.5em                                                     |
+| `--lf-slider-margin`             | Sets the margin for the slider component. Defaults to => 0 0.75em                                                    |
+| `--lf-slider-min-width`          | Sets the min-width for the slider component. Defaults to => 7em                                                      |
+| `--lf-slider-thumb-box-shadow`   | Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
+| `--lf-slider-thumb-height`       | Sets the height for the slider component's thumb. Defaults to => 1.5em                                               |
+| `--lf-slider-thumb-hover-scale`  | Sets the scale for the slider component's thumb on hover. Defaults to => 1.1                                         |
+| `--lf-slider-thumb-underlay-top` | Sets the top position for the slider component's thumb underlay. Defaults to => -0.6em                               |
+| `--lf-slider-thumb-width`        | Sets the width for the slider component's thumb. Defaults to => 1.5em                                                |
+| `--lf-slider-track-height`       | Sets the height for the slider component's track. Defaults to => 0.5em                                               |
+| `--lf-slider-track-margin-top`   | Sets the top margin for the slider track. Defaults to => 0.75em                                                      |
 
-
-## Dependencies
-
-### Used by
-
- - [lf-shapeeditor](../lf-shapeeditor)
-
-### Graph
-```mermaid
-graph TD;
-  lf-shapeeditor --> lf-slider
-  style lf-slider fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

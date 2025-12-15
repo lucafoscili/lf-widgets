@@ -331,7 +331,6 @@ Type: `Promise<void>`
 - [lf-checkbox](../lf-checkbox)
 - [lf-multiinput](../lf-multiinput)
 - [lf-select](../lf-select)
-- [lf-slider](../lf-slider)
 
 ### Graph
 ```mermaid
@@ -360,7 +359,6 @@ graph TD;
   lf-shapeeditor --> lf-checkbox
   lf-shapeeditor --> lf-multiinput
   lf-shapeeditor --> lf-select
-  lf-shapeeditor --> lf-slider
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
   lf-masonry --> lf-button

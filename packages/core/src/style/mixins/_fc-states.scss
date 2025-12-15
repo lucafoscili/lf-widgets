@@ -1,0 +1,82 @@
+// ============================================================================
+// FC-STATES - State Colors and Sizing for Functional Components
+// ============================================================================
+// This file provides state color theming and size scaling for ALL FCs.
+// Unlike WC state colors (which use component-namespaced variables), FC state
+// colors use a shared `--lf-fc-color-primary` variable that cascades to children.
+//
+// Why explicit props over CSS cascade?
+// - Portals break DOM hierarchy (CSS cascade doesn't work)
+// - Shadow boundaries can interfere with inheritance
+// - Explicit props = predictable, type-safe state propagation
+//
+// Usage:
+// FCs receive `uiState` and `uiSize` props, then apply:
+// - `data-lf={uiState}` for state colors
+// - `--lf-fc-ui-size` CSS variable for sizing
+//
+// @see Section 2.10 of 4_0_0_REFACTORING.md (Lessons Learned)
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// State Colors for FCs
+// -----------------------------------------------------------------------------
+// These rules set --lf-fc-color-primary based on data-lf attribute.
+// FCs should use var(--lf-fc-color-primary, var(--lf-color-primary)) for theming.
+// -----------------------------------------------------------------------------
+
+// Danger state
+[data-lf="danger"] {
+  --lf-fc-color-primary: var(--lf-color-danger);
+  --lf-fc-color-on-primary: var(--lf-color-on-danger);
+}
+
+// Info state
+[data-lf="info"] {
+  --lf-fc-color-primary: var(--lf-color-info);
+  --lf-fc-color-on-primary: var(--lf-color-on-info);
+}
+
+// Primary state (default, no override needed)
+[data-lf="primary"] {
+  --lf-fc-color-primary: var(--lf-color-primary);
+  --lf-fc-color-on-primary: var(--lf-color-on-primary);
+}
+
+// Secondary state
+[data-lf="secondary"] {
+  --lf-fc-color-primary: var(--lf-color-secondary);
+  --lf-fc-color-on-primary: var(--lf-color-on-secondary);
+}
+
+// Success state
+[data-lf="success"] {
+  --lf-fc-color-primary: var(--lf-color-success);
+  --lf-fc-color-on-primary: var(--lf-color-on-success);
+}
+
+// Warning state
+[data-lf="warning"] {
+  --lf-fc-color-primary: var(--lf-color-warning);
+  --lf-fc-color-on-primary: var(--lf-color-on-warning);
+}
+
+// Disabled state
+[data-lf="disabled"] {
+  opacity: var(--lf-ui-opacity-disabled, 0.6);
+  pointer-events: none;
+}
+
+// -----------------------------------------------------------------------------
+// Size Scaling for FCs
+// -----------------------------------------------------------------------------
+// FCs set --lf-fc-ui-size on their root element via inline style.
+// This scales font-size which cascades to children.
+// Default is 1 (medium).
+// -----------------------------------------------------------------------------
+.form-field {
+  font-size: calc(
+    var(--lf-form-font-size, var(--lf-font-size-label)) *
+      var(--lf-fc-ui-size, 1)
+  );
+}

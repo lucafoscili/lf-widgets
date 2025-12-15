@@ -18,10 +18,16 @@
 // ============================================================================
 
 // -----------------------------------------------------------------------------
-// Functional Component Styles (FIcon, etc.)
+// Functional Component Styles (FIcon, FCs)
 // -----------------------------------------------------------------------------
 // Base styles for functional components - source in _fcomponents.scss
+// Shared form styles in _fc-form-field.scss (used by slider, textfield, etc.)
+// FC state colors and sizing in _fc-states.scss (data-lf attributes, --lf-fc-ui-size)
+// Component-specific FC styles in _fc-<component>.scss files
 @use "./mixins/fcomponents";
+@use "./mixins/fc-form-field";
+@use "./mixins/fc-states";
+@use "./mixins/fc-slider";
 
 // -----------------------------------------------------------------------------
 // Scrollbar Styles

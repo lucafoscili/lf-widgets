@@ -163,6 +163,7 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
       getState: jest.fn(),
       isInPortal: jest.fn(),
       open: jest.fn(),
+      recalculate: jest.fn(),
     },
     syntax: {
       markdown: {} as any, // Hard to mock markdown-it
