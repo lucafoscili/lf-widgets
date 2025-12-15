@@ -1,5 +1,8 @@
 import { LfFrameworkClickCb } from "./framework.declarations";
-import { LF_PORTAL_PLACEMENTS } from "./portal.constants";
+import {
+  LF_PORTAL_PLACEMENTS,
+  LF_PORTAL_POSITION_STRATEGIES,
+} from "./portal.constants";
 
 //#region Class
 /**
@@ -19,7 +22,36 @@ export interface LfPortalInterface {
     anchor?: LfPortalAnchor,
     margin?: number,
     placement?: LfPortalPlacements,
+    options?: LfPortalOptions,
   ) => void;
+  /** Force recalculation of portal position. */
+  recalculate: (element: HTMLElement) => void;
+}
+//#endregion
+
+//#region Options
+/**
+ * Configuration options for portal behavior.
+ */
+export interface LfPortalOptions {
+  /**
+   * Whether to recalculate position on window resize.
+   * @default false
+   */
+  recalculateOnResize?: boolean;
+  /**
+   * Position strategy for the portal element.
+   * - 'absolute': Document-relative, scrolls with page naturally (default for element anchors)
+   * - 'fixed': Viewport-relative, stays fixed on screen (default for coordinate anchors)
+   * @default auto-detected based on anchor type
+   */
+  positionStrategy?: LfPortalPositionStrategy;
+  /**
+   * Fullscreen mode - element covers entire viewport.
+   * When true, ignores anchor positioning and uses fixed positioning at 100vw/100vh.
+   * @default false
+   */
+  fullscreen?: boolean;
 }
 //#endregion
 
@@ -36,6 +68,8 @@ export interface LfPortalState {
   dismissCb: LfFrameworkClickCb;
   /** Margin applied when positioning relative to the anchor. */
   margin: number;
+  /** Portal configuration options. */
+  options: LfPortalOptions;
   /** Original parent the element is returned to on close. */
   parent: HTMLElement;
   /** Preferred placement string (auto, top-left, etc.). */
@@ -55,4 +89,10 @@ export type LfPortalPlacement = keyof typeof LF_PORTAL_PLACEMENTS;
  */
 export type LfPortalPlacements =
   (typeof LF_PORTAL_PLACEMENTS)[LfPortalPlacement];
+/** Position strategy key type. */
+export type LfPortalPositionStrategyKey =
+  keyof typeof LF_PORTAL_POSITION_STRATEGIES;
+/** Position strategy value type. */
+export type LfPortalPositionStrategy =
+  (typeof LF_PORTAL_POSITION_STRATEGIES)[LfPortalPositionStrategyKey];
 //#endregion
