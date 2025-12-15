@@ -95,9 +95,9 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
   //#region States
   /**
-   * Debug information state property created through LFManager debug utility.
+   * Debug information state property created through LfFramework debug utility.
    * Used to store and manage debug-related information for the component.
-   * @remarks This state property is initialized using the debug.info.create() method from the lfFramework instance.
+   * @remarks This state property is initialized using the debug.info.create() method from the framework instance.
    */
   @State() debugInfo: LfDebugLifecycleInfo;
   /**

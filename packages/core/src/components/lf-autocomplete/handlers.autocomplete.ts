@@ -54,7 +54,7 @@ export const prepAutocompleteHandlers = (
 
           // Check minimum characters
           if (inputValue.length < comp.lfMinChars) {
-            controller.set.list("close");
+            controller.actions.list("close");
             comp.loading = false;
             dispatcher.emit("input", {
               query: inputValue,
@@ -63,7 +63,7 @@ export const prepAutocompleteHandlers = (
             return;
           }
 
-          controller.set.list("open");
+          controller.actions.list("open");
           controller.set.highlight(-1);
 
           // Normalize and check cache
@@ -106,7 +106,7 @@ export const prepAutocompleteHandlers = (
         case "blur": {
           controller.set.blurTimeout.new(() => {
             if (!controller.computed.isLoading()) {
-              controller.set.list("close");
+              controller.actions.list("close");
               controller.set.highlight(-1);
             }
           });
@@ -114,7 +114,7 @@ export const prepAutocompleteHandlers = (
           break;
         }
         case "click": {
-          controller.set.list();
+          controller.actions.list();
           dispatcher.emit("lf-event", { originalEvent: event });
           break;
         }
@@ -170,18 +170,18 @@ const keydownHandler = async (
     }
     case "Escape": {
       event.preventDefault();
-      controller.set.list("close");
+      controller.actions.list("close");
       controller.set.highlight(-1);
       break;
     }
     case "Tab": {
-      controller.set.list("close");
+      controller.actions.list("close");
       controller.set.highlight(-1);
       break;
     }
     case "Enter": {
       event.preventDefault();
-      controller.set.list();
+      controller.actions.list();
       break;
     }
   }

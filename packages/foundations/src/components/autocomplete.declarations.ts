@@ -177,8 +177,6 @@ export interface LfAutocompleteAdapterControllerSetters
   };
   /** Update dataset and handle caching */
   dataset: (dataset: LfDataDataset | null) => void;
-  /** Control dropdown list visibility */
-  list: (state?: "close" | "open" | "toggle") => void;
   /** Set highlighted index */
   highlight: (index: number) => void;
 }
@@ -215,6 +213,8 @@ export interface LfAutocompleteAdapterControllerComputed
  */
 export interface LfAutocompleteAdapterControllerActions
   extends LfComponentAdapterActions {
+  /** Control dropdown list visibility - multi-step portal operation */
+  list: (state?: "close" | "open" | "toggle") => void;
   /** Updates the input value and triggers debounced request if needed */
   updateInput: (value: string) => Promise<void>;
   /** Selects a node from the dropdown list */

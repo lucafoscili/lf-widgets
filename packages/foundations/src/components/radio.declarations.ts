@@ -212,13 +212,7 @@ export interface LfRadioAdapterControllerGetters
  * Each setter performs exactly ONE state change.
  */
 export interface LfRadioAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  /**
-   * Updates the dataset.
-   * Resets selection if current selection is not in new dataset.
-   */
-  updateDataset: (dataset: LfDataDataset) => void;
-}
+  extends LfComponentAdapterSetters {}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
@@ -258,6 +252,11 @@ export interface LfRadioAdapterControllerActions
   focusNext: () => void;
   /** Focus the previous radio item in the list */
   focusPrevious: () => void;
+  /**
+   * Updates the dataset.
+   * Resets selection if current selection is not in new dataset.
+   */
+  updateDataset: (dataset: LfDataDataset) => void;
 }
 /**
  * Dispatcher for centralized event emission.

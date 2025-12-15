@@ -116,4 +116,27 @@ export const prepRadioActions = (
       inputEl?.focus();
     }
   },
+
+  /**
+   * Updates the dataset.
+   * Resets selection if current selection is not in new dataset.
+   */
+  updateDataset: (dataset) => {
+    const adapter = getAdapter();
+    const { compInstance } = adapter.controller.get;
+    const { selectedId } = adapter.controller.computed;
+    const comp = compInstance();
+
+    const currentSelectedId = selectedId();
+    comp.lfDataset = dataset;
+
+    if (currentSelectedId) {
+      const stillExists = dataset?.nodes?.some(
+        (n) => n.id === currentSelectedId,
+      );
+      if (!stillExists) {
+        adapter.controller.actions.clear();
+      }
+    }
+  },
 });

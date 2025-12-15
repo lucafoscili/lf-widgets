@@ -36,7 +36,7 @@ export const createAdapter = (
   return {
     controller: {
       get: getters,
-      set: createSetters(setters, getAdapter),
+      set: createSetters(setters),
       computed,
       actions,
     },
@@ -52,45 +52,9 @@ export const createAdapter = (
 //#region Controller
 export const createSetters = (
   setters: LfAutocompleteAdapterControllerSetters,
-  getAdapter: () => LfAutocompleteAdapter,
 ): LfAutocompleteAdapterControllerSetters => {
   return {
     ...setters,
-    list: (state = "toggle") => {
-      const adapter = getAdapter();
-      const { controller, elements } = adapter;
-      const { framework } = controller.get;
-      const { autocomplete, dropdown, textfield } = elements.refs;
-      const { close, isInPortal, open } = framework().portal;
-
-      const syncDropdownWidth = () => {
-        if (!dropdown || !textfield) {
-          return;
-        }
-        const { width } = textfield.getBoundingClientRect();
-        if (width > 0) {
-          dropdown.style.minWidth = `${width}px`;
-        }
-      };
-
-      switch (state) {
-        case "close":
-          close(dropdown);
-          break;
-        case "open":
-          open(dropdown, autocomplete, textfield);
-          syncDropdownWidth();
-          break;
-        default:
-          if (isInPortal(dropdown)) {
-            close(dropdown);
-          } else {
-            open(dropdown, autocomplete, textfield);
-            syncDropdownWidth();
-          }
-          break;
-      }
-    },
   };
 };
 //#endregion

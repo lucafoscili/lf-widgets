@@ -502,8 +502,8 @@ export class LfButton implements LfButtonInterface {
         }),
         styling: () => this.#normalizedStyling(),
       },
-      // Setters - simple single-value assignments (enhanced in adapter factory)
-      { list: () => {} },
+      // Setters - simple single-value assignments (empty, list moved to actions)
+      {},
       // Computed - derived predicates (from dedicated file)
       prepButtonComputed(getAdapter),
       // Actions - complex multi-step operations (from dedicated file)

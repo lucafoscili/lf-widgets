@@ -20,6 +20,35 @@ export const prepButtonActions = (
   getAdapter: () => LfButtonAdapter,
 ): LfButtonAdapterControllerActions => ({
   /**
+   * Controls dropdown list visibility.
+   * Multi-step portal operation with open/close/toggle logic.
+   */
+  list: (state = "toggle") => {
+    const adapter = getAdapter();
+    const { controller, elements } = adapter;
+    const { framework } = controller.get;
+    const { dropdown, list } = elements.refs;
+
+    const { close, isInPortal, open } = framework().portal;
+
+    switch (state) {
+      case "close":
+        close(list);
+        break;
+      case "open":
+        open(list, dropdown);
+        break;
+      default:
+        if (isInPortal(list)) {
+          close(list);
+        } else {
+          open(list, dropdown);
+        }
+        break;
+    }
+  },
+
+  /**
    * Toggles the button state between "on" and "off".
    * Only works when:
    * - lfToggable is true

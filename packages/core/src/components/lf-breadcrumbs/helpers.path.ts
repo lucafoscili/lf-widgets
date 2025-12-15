@@ -7,7 +7,7 @@ import {
 
 //#region buildBreadcrumbPath
 export const buildBreadcrumbPath = (
-  manager: LfFrameworkInterface,
+  framework: LfFrameworkInterface,
   dataset: LfDataDataset | undefined,
   currentNodeId?: string,
   showRoot: boolean = true,
@@ -17,7 +17,10 @@ export const buildBreadcrumbPath = (
   }
 
   const targetId = currentNodeId ?? dataset.nodes[0]?.id;
-  const resolved = manager.data.node.resolveTargets(dataset, targetId ?? null);
+  const resolved = framework.data.node.resolveTargets(
+    dataset,
+    targetId ?? null,
+  );
   const targetNode = resolved.nodes[0] ?? dataset.nodes[0];
 
   if (!targetNode) {
@@ -29,7 +32,7 @@ export const buildBreadcrumbPath = (
 
   while (cursor) {
     ancestors.unshift(cursor);
-    const parent = manager.data.node.getParent(dataset.nodes, cursor);
+    const parent = framework.data.node.getParent(dataset.nodes, cursor);
     cursor = parent ?? null;
   }
 

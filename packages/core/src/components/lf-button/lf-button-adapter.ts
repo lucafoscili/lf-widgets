@@ -36,7 +36,7 @@ export const createAdapter = (
   return {
     controller: {
       get: getters,
-      set: createSetters(setters, getAdapter),
+      set: createSetters(setters),
       computed,
       actions,
     },
@@ -52,34 +52,9 @@ export const createAdapter = (
 //#region Controller
 export const createSetters = (
   setters: LfButtonAdapterControllerSetters,
-  getAdapter: () => LfButtonAdapter,
 ): LfButtonAdapterControllerSetters => {
   return {
     ...setters,
-    list: (state = "toggle") => {
-      const adapter = getAdapter();
-      const { controller, elements } = adapter;
-      const { framework } = controller.get;
-      const { dropdown, list } = elements.refs;
-
-      const { close, isInPortal, open } = framework().portal;
-
-      switch (state) {
-        case "close":
-          close(list);
-          break;
-        case "open":
-          open(list, dropdown);
-          break;
-        default:
-          if (isInPortal(list)) {
-            close(list);
-          } else {
-            open(list, dropdown);
-          }
-          break;
-      }
-    },
   };
 };
 //#endregion

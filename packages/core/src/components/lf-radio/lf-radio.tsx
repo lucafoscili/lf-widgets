@@ -362,8 +362,8 @@ export class LfRadio implements LfRadioInterface {
           parts: () => this.#p,
         }),
       },
-      // Setters - simple single-value assignments (enhanced in adapter factory)
-      { updateDataset: () => {} },
+      // Setters - simple single-value assignments (empty, updateDataset moved to actions)
+      {},
       // Computed - derived predicates (from dedicated file)
       prepRadioComputed(getAdapter),
       // Actions - complex multi-step operations (from dedicated file)

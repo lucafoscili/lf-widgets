@@ -118,7 +118,7 @@ export const prepButton = (
         styling,
       } = controller.get;
       const { isDisabled } = controller.computed;
-      const { list } = controller.set;
+      const { list } = controller.actions;
 
       const comp = compInstance();
       const mgr = framework();

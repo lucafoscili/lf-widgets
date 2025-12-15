@@ -148,10 +148,7 @@ export interface LfSelectAdapterControllerGetters
  * Each setter performs exactly ONE state change.
  */
 export interface LfSelectAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  /** Control dropdown list visibility */
-  list: (state?: "close" | "open" | "toggle") => void;
-}
+  extends LfComponentAdapterSetters {}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
@@ -171,6 +168,8 @@ export interface LfSelectAdapterControllerComputed
  */
 export interface LfSelectAdapterControllerActions
   extends LfComponentAdapterActions {
+  /** Control dropdown list visibility - multi-step portal operation */
+  list: (state?: "close" | "open" | "toggle") => void;
   /** Navigate to next or previous option */
   navigate: (direction: "next" | "prev") => Promise<void>;
   /** Set selected value by id */

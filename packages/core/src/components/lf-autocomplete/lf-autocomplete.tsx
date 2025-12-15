@@ -290,7 +290,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
     if (newValue && this.#adapter) {
       const { dropdown } = this.#adapter.elements.refs;
       if (dropdown && !this.#framework.portal.isInPortal(dropdown)) {
-        this.#adapter.controller.set.list("open");
+        this.#adapter.controller.actions.list("open");
       }
     }
   }
@@ -552,7 +552,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
         }),
         cache: () => this.#cache,
       },
-      // Setters - simple single-value assignments (enhanced in adapter factory)
+      // Setters - simple single-value assignments (list moved to actions)
       {
         blurTimeout: {
           clear: () => {
@@ -581,9 +581,8 @@ export class LfAutocomplete implements LfAutocompleteInterface {
             return;
           }
 
-          this.#adapter.controller.set.list("open");
+          this.#adapter.controller.actions.list("open");
         },
-        list: () => {},
         highlight: (index: number) => {
           this.highlightedIndex = index;
         },

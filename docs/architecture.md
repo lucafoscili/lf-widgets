@@ -808,7 +808,7 @@ handlers: {
     switch (eventType) {
       case "click":
         controller.set.value(node.id);
-        controller.set.list("close");
+        controller.actions.list("close");
         break;
     }
     
@@ -1099,7 +1099,7 @@ list: async (event: CustomEvent<LfListEventPayload>) => {
   switch (eventType) {
     case "click":
       controller.set.value(node.id);
-      controller.set.list("close");
+      controller.actions.list("close");
       break;
   }
   

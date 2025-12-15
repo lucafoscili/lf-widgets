@@ -36,7 +36,7 @@ export const createAdapter = (
   return {
     controller: {
       get: getters,
-      set: createSetters(setters, getAdapter),
+      set: createSetters(setters),
       computed,
       actions,
     },
@@ -52,34 +52,9 @@ export const createAdapter = (
 //#region Controller
 export const createSetters = (
   setters: LfSelectAdapterControllerSetters,
-  getAdapter: () => LfSelectAdapter,
 ): LfSelectAdapterControllerSetters => {
   return {
     ...setters,
-    list: (state = "toggle") => {
-      const adapter = getAdapter();
-      const { controller, elements } = adapter;
-      const { framework } = controller.get;
-      const { list, select, textfield } = elements.refs;
-
-      const { close, isInPortal, open } = framework().portal;
-
-      switch (state) {
-        case "close":
-          close(list);
-          break;
-        case "open":
-          open(list, select, textfield);
-          break;
-        default:
-          if (isInPortal(list)) {
-            close(list);
-          } else {
-            open(list, select, textfield);
-          }
-          break;
-      }
-    },
   };
 };
 //#endregion

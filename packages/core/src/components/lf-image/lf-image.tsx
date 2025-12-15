@@ -71,9 +71,9 @@ export class LfImage implements LfImageInterface {
 
   //#region States
   /**
-   * Debug information state property created through LFManager debug utility.
-   * Used to store and manage debug-related information for the accordion component.
-   * @remarks This state property is initialized using the debug.info.create() method from the lfFramework instance.
+   * Debug information state property created through LfFramework debug utility.
+   * Used to store and manage debug-related information for the image component.
+   * @remarks This state property is initialized using the debug.info.create() method from the framework instance.
    */
   @State() debugInfo: LfDebugLifecycleInfo;
   /**

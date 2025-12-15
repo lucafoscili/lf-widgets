@@ -21,6 +21,35 @@ export const prepSelectActions = (
   getAdapter: () => LfSelectAdapter,
 ): LfSelectAdapterControllerActions => ({
   /**
+   * Controls dropdown list visibility.
+   * Multi-step portal operation with open/close/toggle logic.
+   */
+  list: (state = "toggle") => {
+    const adapter = getAdapter();
+    const { controller, elements } = adapter;
+    const { framework } = controller.get;
+    const { list, select, textfield } = elements.refs;
+
+    const { close, isInPortal, open } = framework().portal;
+
+    switch (state) {
+      case "close":
+        close(list);
+        break;
+      case "open":
+        open(list, select, textfield);
+        break;
+      default:
+        if (isInPortal(list)) {
+          close(list);
+        } else {
+          open(list, select, textfield);
+        }
+        break;
+    }
+  },
+
+  /**
    * Sets the selected value by id.
    * Updates both internal state and child components (list, textfield).
    * Emits a 'change' event on value change.

@@ -37,7 +37,7 @@ export const createAdapter = (
   return {
     controller: {
       get: getters,
-      set: createSetters(setters, getAdapter),
+      set: createSetters(setters),
       computed,
       actions,
     },
@@ -53,28 +53,9 @@ export const createAdapter = (
 //#region Controller
 export const createSetters = (
   setters: LfRadioAdapterControllerSetters,
-  getAdapter: () => LfRadioAdapter,
 ): LfRadioAdapterControllerSetters => {
   return {
     ...setters,
-    updateDataset: (dataset) => {
-      const adapter = getAdapter();
-      const { compInstance } = adapter.controller.get;
-      const { selectedId } = adapter.controller.computed;
-      const comp = compInstance();
-
-      const currentSelectedId = selectedId();
-      comp.lfDataset = dataset;
-
-      if (currentSelectedId) {
-        const stillExists = dataset?.nodes?.some(
-          (n) => n.id === currentSelectedId,
-        );
-        if (!stillExists) {
-          adapter.controller.actions.clear();
-        }
-      }
-    },
   };
 };
 //#endregion

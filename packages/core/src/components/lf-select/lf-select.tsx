@@ -354,8 +354,8 @@ export class LfSelect implements LfSelectInterface {
         lfDataset: () => this.lfDataset,
         selectedNode: () => findNodeById(this.lfDataset, this.value),
       },
-      // Setters - simple single-value assignments (enhanced in adapter factory)
-      { list: () => {} },
+      // Setters - simple single-value assignments (empty, list moved to actions)
+      {},
       // Computed - derived predicates (from dedicated file)
       prepSelectComputed(getAdapter),
       // Actions - complex multi-step operations (from dedicated file)

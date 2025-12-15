@@ -151,10 +151,7 @@ export interface LfButtonAdapterControllerGetters
  * Each setter performs exactly ONE state change.
  */
 export interface LfButtonAdapterControllerSetters
-  extends LfComponentAdapterSetters {
-  /** Control dropdown list visibility */
-  list: (state?: "close" | "open" | "toggle") => void;
-}
+  extends LfComponentAdapterSetters {}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
@@ -178,6 +175,8 @@ export interface LfButtonAdapterControllerComputed
  */
 export interface LfButtonAdapterControllerActions
   extends LfComponentAdapterActions {
+  /** Control dropdown list visibility - multi-step portal operation */
+  list: (state?: "close" | "open" | "toggle") => void;
   /** Toggle button state (on/off) for toggable buttons */
   toggle: () => void;
 }

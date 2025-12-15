@@ -16,7 +16,7 @@ export const prepSelectHandlers = (
       switch (eventType) {
         case "click":
           await controller.actions.setValue(node.id);
-          controller.set.list("close");
+          controller.actions.list("close");
           refs.textfield?.setFocus();
           break;
       }
@@ -35,7 +35,7 @@ export const prepSelectHandlers = (
 
       switch (eventType) {
         case "click": {
-          controller.set.list();
+          controller.actions.list();
           break;
         }
         case "keydown": {
@@ -83,12 +83,12 @@ const keydownHandler = async (
     }
     case "Escape": {
       event.preventDefault();
-      controller.set.list("close");
+      controller.actions.list("close");
       break;
     }
     case "Enter": {
       event.preventDefault();
-      controller.set.list();
+      controller.actions.list();
       break;
     }
     default: {

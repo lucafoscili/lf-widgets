@@ -21,6 +21,46 @@ export const prepAutocompleteActions = (
   getAdapter: () => LfAutocompleteAdapter,
 ): LfAutocompleteAdapterControllerActions => ({
   /**
+   * Controls dropdown list visibility.
+   * Multi-step portal operation with open/close/toggle logic.
+   */
+  list: (state = "toggle") => {
+    const adapter = getAdapter();
+    const { controller, elements } = adapter;
+    const { framework } = controller.get;
+    const { autocomplete, dropdown, textfield } = elements.refs;
+    const { close, isInPortal, open } = framework().portal;
+
+    const syncDropdownWidth = () => {
+      if (!dropdown || !textfield) {
+        return;
+      }
+      const { width } = textfield.getBoundingClientRect();
+      if (width > 0) {
+        dropdown.style.minWidth = `${width}px`;
+      }
+    };
+
+    switch (state) {
+      case "close":
+        close(dropdown);
+        break;
+      case "open":
+        open(dropdown, autocomplete, textfield);
+        syncDropdownWidth();
+        break;
+      default:
+        if (isInPortal(dropdown)) {
+          close(dropdown);
+        } else {
+          open(dropdown, autocomplete, textfield);
+          syncDropdownWidth();
+        }
+        break;
+    }
+  },
+
+  /**
    * Updates the input value.
    * Note: Debounce logic is handled in the handlers for better encapsulation.
    */
@@ -55,7 +95,7 @@ export const prepAutocompleteActions = (
       await textfield.setValue(comp.inputValue);
     }
 
-    adapter.controller.set.list("close");
+    adapter.controller.actions.list("close");
     textfield?.setFocus();
 
     dispatcher.emit("change", { node });
