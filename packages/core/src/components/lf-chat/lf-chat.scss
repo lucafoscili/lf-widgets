@@ -70,12 +70,7 @@ $comp: "chat";
   }
 
   &--full {
-    height: 100vh;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    z-index: var(--lf-ui-z-index-fullscreen, 9999);
+    @include lf-el-stretch;
   }
 
   &__attachments {

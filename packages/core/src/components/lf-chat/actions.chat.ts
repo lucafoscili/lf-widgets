@@ -15,15 +15,41 @@ export const prepChatActions = (
   getAdapter: () => LfChatAdapter,
 ): LfChatAdapterControllerActions => ({
   /**
-   * Toggle full screen mode for the chat component
+   * Toggle full screen mode for the chat component using portal.
+   *
+   * Uses the portal's fullscreen mode to escape transform ancestors,
+   * which would otherwise break position:fixed CSS.
    */
   toggleFullScreen: () => {
     const adapter = getAdapter();
-    const comp = adapter.controller.get.compInstance();
-    // Access the component's internal fullScreen state via the component
-    (comp as unknown as { fullScreen: boolean }).fullScreen = !(
-      comp as unknown as { fullScreen: boolean }
-    ).fullScreen;
+    const { get } = adapter.controller;
+    const comp = get.compInstance();
+    const framework = get.framework();
+    const { portal } = framework;
+
+    // Access component state and root element
+    const isFullscreen = (comp as unknown as { fullScreen: boolean })
+      .fullScreen;
+    const rootElement = (comp as unknown as { rootElement: HTMLElement })
+      .rootElement;
+
+    if (!isFullscreen) {
+      // Enter fullscreen via portal - escapes transform ancestors
+      portal.open(
+        rootElement,
+        rootElement.parentElement || document.body,
+        undefined,
+        0,
+        "auto",
+        { fullscreen: true },
+      );
+    } else {
+      // Exit fullscreen - portal returns element to original parent
+      portal.close(rootElement);
+    }
+
+    // Toggle internal state for component awareness
+    (comp as unknown as { fullScreen: boolean }).fullScreen = !isFullscreen;
   },
 
   /**
