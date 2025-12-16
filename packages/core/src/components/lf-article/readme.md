@@ -116,10 +116,6 @@ Type: `Promise<void>`
 
 ## Dependencies
 
-### Used by
-
- - [lf-chat](../lf-chat)
-
 ### Depends on
 
 - [lf-accordion](../lf-accordion)
@@ -195,7 +191,13 @@ graph TD;
   lf-card --> lf-toggle
   lf-card --> lf-typewriter
   lf-card --> lf-upload
-  lf-chat --> lf-article
+  lf-chat --> lf-chip
+  lf-chat --> lf-button
+  lf-chat --> lf-textfield
+  lf-chat --> lf-spinner
+  lf-chat --> lf-code
+  lf-chat --> lf-progressbar
+  lf-chat --> lf-checkbox
   lf-code --> lf-button
   lf-photoframe --> lf-image
   style lf-article fill:#f9f,stroke:#333,stroke-width:4px

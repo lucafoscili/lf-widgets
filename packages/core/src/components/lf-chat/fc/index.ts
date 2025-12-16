@@ -1,0 +1,13 @@
+/**
+ * lf-chat Functional Components
+ *
+ * Per Section 5.9 "Mirroring Rule":
+ * Each elements file maps to a corresponding FC that composes the JSX functions.
+ * These FCs receive the adapter and render pure UI based on adapter state.
+ */
+
+export { ChatConnectingFC, ChatConnectingFCProps } from "./chat-connecting-fc";
+export { ChatMessagesFC, ChatMessagesFCProps } from "./chat-messages-fc";
+export { ChatOfflineFC, ChatOfflineFCProps } from "./chat-offline-fc";
+export { ChatRequestFC, ChatRequestFCProps } from "./chat-request-fc";
+export { ChatSettingsFC, ChatSettingsFCProps } from "./chat-settings-fc";

@@ -140,6 +140,39 @@ $box-shadow-color: var(
   }
 
   // ---------------------------------------------------------------------------
+  // Dropdown Styling
+  // ---------------------------------------------------------------------------
+  &--dropdown {
+    & {
+      max-width: max-content;
+      min-width: unset;
+      padding: 0.5em;
+      position: relative;
+    }
+
+    &:before {
+      background-color: rgba(
+        var(
+          --lf-button-color-primary,
+          var(--lf-fc-color-primary, var(--lf-color-primary))
+        ),
+        0.25
+      );
+      content: "";
+      height: 100%;
+      left: 0;
+      opacity: 0.75;
+      position: absolute;
+      top: 0;
+      width: 1px;
+    }
+
+    .button__icon {
+      margin: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Flat Styling (default - transparent background)
   // ---------------------------------------------------------------------------
   &--flat {
@@ -269,11 +302,12 @@ $box-shadow-color: var(
       }
 
       .button__spinner {
-        width: 100%;
+        font-size: 0.5em;
         height: 100%;
         left: 0;
         position: absolute;
         top: 0;
+        width: 100%;
       }
     }
 
@@ -490,16 +524,5 @@ $box-shadow-color: var(
     top: 50%;
     transform: translate(-50%, -50%);
     width: var(--lf-button-spinner-size, 1.5em);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Ripple Element
-  // ---------------------------------------------------------------------------
-  &__ripple {
-    border-radius: inherit;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    position: absolute;
   }
 }

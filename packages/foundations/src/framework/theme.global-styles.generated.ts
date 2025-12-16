@@ -182,6 +182,25 @@ export const GLOBAL_STYLES = {
   ".button:focus": {
     "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
   },
+  ".button--dropdown": {
+    "max-width": "max-content",
+    "min-width": "unset",
+    "padding": "0.5em",
+    "position": "relative"
+  },
+  ".button--dropdown:before": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25)",
+    "content": "\"\"",
+    "height": "100%",
+    "left": "0",
+    "opacity": "0.75",
+    "position": "absolute",
+    "top": "0",
+    "width": "1px"
+  },
+  ".button--dropdown .button__icon": {
+    "margin": "0"
+  },
   ".button--flat": {
     "background-color": "transparent"
   },
@@ -244,11 +263,12 @@ export const GLOBAL_STYLES = {
     "opacity": "0"
   },
   ".button--icon.button--has-spinner .button__spinner": {
-    "width": "100%",
+    "font-size": "0.5em",
     "height": "100%",
     "left": "0",
     "position": "absolute",
-    "top": "0"
+    "top": "0",
+    "width": "100%"
   },
   ".button--icon .button__icon": {
     "display": "flex",
@@ -335,13 +355,6 @@ export const GLOBAL_STYLES = {
     "top": "50%",
     "transform": "translate(-50%, -50%)",
     "width": "var(--lf-button-spinner-size, 1.5em)"
-  },
-  ".button__ripple": {
-    "border-radius": "inherit",
-    "inset": "0",
-    "overflow": "hidden",
-    "pointer-events": "none",
-    "position": "absolute"
   },
   ".image": {
     "height": "var(--lf_image_height, 0)",

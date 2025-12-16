@@ -19,9 +19,7 @@ import {
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfIconType,
   LfLLMAttachment,
-  LfLLMChoiceMessage,
   LfLLMToolHandlers,
   LfThemeUISize,
 } from "@lf-widgets/foundations";
@@ -31,21 +29,24 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  Fragment,
   h,
   Host,
   Method,
   Prop,
   State,
-  VNode,
   Watch,
 } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
+import {
+  ChatConnectingFC,
+  ChatMessagesFC,
+  ChatOfflineFC,
+  ChatRequestFC,
+  ChatSettingsFC,
+} from "./fc";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
-import { parseMessageContent } from "./helpers.parsing";
 import { createAdapter, LfChatInitialState } from "./lf-chat-adapter";
 
 /**
@@ -620,207 +621,34 @@ export class LfChat implements LfChatInterface {
     }
     this.onLfEvent(new CustomEvent("polling"), "polling");
   }
-  #prepChat = (): VNode => {
-    const { bemClass } = this.#framework.theme;
-    const { get } = this.#adapter.controller;
-    const effectiveConfig = getEffectiveConfig(this.#adapter);
-    const emptyMessage = effectiveConfig.ui.emptyMessage;
-
-    const { chat, commands, input, messages, request } = this.#b;
-    const { attachments, clear, editableMessage, send, spinner, stt } =
-      this.#adapter.elements.jsx.chat;
-    const {
-      attachFile,
-      attachImage,
-      configuration: inputConfiguration,
-      fullScreen,
-      progressbar,
-      textarea,
-    } = this.#adapter.elements.jsx.input;
-    const history = get.history();
-    const currentEditingId = get.currentEditingId();
-
-    return (
-      <Fragment>
-        <div class={bemClass(request._)}>
-          {attachments()}
-          <div class={bemClass(input._)}>
-            {attachImage()}
-            {attachFile()}
-            {inputConfiguration()}
-            {fullScreen()}
-            {textarea()}
-            {progressbar()}
-          </div>
-          <div class={bemClass(commands._)}>
-            {clear()}
-            {stt()}
-            {send()}
-          </div>
-        </div>
-        <div
-          class={bemClass(messages._)}
-          ref={(el) => (this.#messagesContainer = el)}
-        >
-          {history?.length ? (
-            history
-              .filter((m) => {
-                if (m.role === "tool") {
-                  return false;
-                }
-                return true;
-              })
-              .map((m, index) => {
-                const isEditing =
-                  Boolean(currentEditingId) && m.id === currentEditingId;
-                return (
-                  <div
-                    class={bemClass(messages._, messages.container, {
-                      [m.role]: true,
-                      textarea: isEditing,
-                    })}
-                    key={index}
-                    ref={(el) => {
-                      if (el && index === history.length - 1) {
-                        this.#lastMessage = el;
-                      }
-                    }}
-                  >
-                    <div
-                      class={bemClass(messages._, messages.content, {
-                        [m.role]: true,
-                      })}
-                    >
-                      {isEditing ? editableMessage(m) : this.#prepContent(m)}
-                    </div>
-                    {this.#prepToolbar(m, isEditing)}
-                  </div>
-                );
-              })
-          ) : (
-            <div class={bemClass(messages._, messages.empty)}>
-              {emptyMessage}
-            </div>
-          )}
-        </div>
-        <div class={bemClass(chat._, chat.spinnerBar)}>{spinner()}</div>
-      </Fragment>
-    );
-  };
-  #prepConnecting: () => VNode[] = () => {
-    const { bemClass } = this.#framework.theme;
-
-    const { chat } = this.#b;
-
-    return (
-      <Fragment>
-        <div class={bemClass(chat._, chat.spinner)}>
-          <lf-spinner lfActive={true} lfLayout="wave" />
-        </div>
-        <div class={bemClass(chat._, chat.title)}>Just a moment.</div>
-        <div class={bemClass(chat._, chat.text)}>
-          Contacting the LLM endpoint...
-        </div>
-      </Fragment>
-    );
-  };
-  #prepContent = (message: LfLLMChoiceMessage): VNode[] => {
-    const nodes: VNode[] = [];
-
-    if (message.articleContent) {
-      nodes.push(<lf-article lfDataset={message.articleContent}></lf-article>);
-    }
-
-    const hasText = Boolean(message.content && message.content.trim().length);
-    const shouldRenderText = message.role !== "tool" || !message.articleContent;
-
-    if (hasText && shouldRenderText) {
-      nodes.push(
-        ...parseMessageContent(this.#adapter, message.content, message.role),
-      );
-    }
-
-    return nodes;
-  };
-  #prepOffline: () => VNode[] = () => {
-    const { bemClass, get } = this.#framework.theme;
-
-    const { chat } = this.#b;
-    const { configuration, retry } = this.#adapter.elements.jsx.chat;
-    const icon = get.icon("door");
-
-    return (
-      <Fragment>
-        <div class={bemClass(chat._, chat.error)}>
-          <FIcon
-            framework={this.#framework}
-            icon={icon as LfIconType}
-            wrapperClass={bemClass(chat._, chat.icon)}
-          />
-          <div class={bemClass(chat._, chat.title)}>Zzz...</div>
-          <div class={bemClass(chat._, chat.text)}>
-            The LLM endpoint is currently offline.
-          </div>
-        </div>
-        {configuration()}
-        {retry()}
-      </Fragment>
-    );
-  };
-  #prepSettings = () => {
-    const { bemClass, get } = this.#framework.theme;
-
-    const { settings } = this.#b;
-    const {
-      agentSettings,
-      back,
-      contextWindow,
-      endpoint,
-      exportHistory,
-      frequencyPenalty,
-      importHistory,
-      maxTokens,
-      polling,
-      presencePenalty,
-      system,
-      seed,
-      temperature,
-      tools,
-      topP,
-    } = this.#adapter.elements.jsx.settings;
-
-    // Create stable dataset reference to prevent accordion collapse on re-render
+  /**
+   * Ensures the settings accordion dataset is created (stable reference to prevent collapse).
+   */
+  #ensureSettingsAccordionDataset = () => {
     if (!this.#settingsAccordionDataset) {
+      const { get } = this.#framework.theme;
       this.#settingsAccordionDataset = {
         nodes: [
           {
-            cells: {
-              slot: { shape: "slot", value: "llm" },
-            },
+            cells: { slot: { shape: "slot", value: "llm" } },
             icon: get.icon("ai"),
             id: "llm",
             value: "LLM Configuration",
           },
           {
-            cells: {
-              slot: { shape: "slot", value: "advanced" },
-            },
+            cells: { slot: { shape: "slot", value: "advanced" } },
             icon: get.icon("settings"),
             id: "advanced",
             value: "Advanced Settings",
           },
           {
-            cells: {
-              slot: { shape: "slot", value: "agent" },
-            },
+            cells: { slot: { shape: "slot", value: "agent" } },
             icon: get.icon("robot"),
             id: "agent",
             value: "Agent Mode",
           },
           {
-            cells: {
-              slot: { shape: "slot", value: "tools" },
-            },
+            cells: { slot: { shape: "slot", value: "tools" } },
             icon: get.icon("adjustmentsHorizontal"),
             id: "tools",
             value: "Tools",
@@ -828,82 +656,6 @@ export class LfChat implements LfChatInterface {
         ],
       };
     }
-
-    return (
-      <div class={bemClass(settings._)} part={this.#p.settings}>
-        <div class={bemClass(settings._, settings.header)}>
-          {back()}
-          {importHistory()}
-          {exportHistory()}
-        </div>
-        <div
-          class={bemClass(settings._, settings.configuration)}
-          part={this.#p.configuration}
-        >
-          <lf-accordion
-            class={bemClass(settings._, settings.accordion)}
-            lfDataset={this.#settingsAccordionDataset}
-            lfRipple={true}
-          >
-            <div slot="llm" class={bemClass(settings._, settings.slotContent)}>
-              {system()}
-              {endpoint()}
-              {temperature()}
-              {maxTokens()}
-              {topP()}
-              {frequencyPenalty()}
-              {presencePenalty()}
-            </div>
-            <div
-              slot="advanced"
-              class={bemClass(settings._, settings.slotContent)}
-            >
-              {contextWindow()}
-              {seed()}
-              {polling()}
-            </div>
-            <div
-              slot="agent"
-              class={bemClass(settings._, settings.slotContent)}
-            >
-              {agentSettings()}
-            </div>
-            <div
-              slot="tools"
-              class={bemClass(settings._, settings.slotContent)}
-            >
-              {tools()}
-            </div>
-          </lf-accordion>
-        </div>
-      </div>
-    );
-  };
-  #prepToolbar = (m: LfLLMChoiceMessage, isEditing = false): VNode => {
-    const { bemClass } = this.#framework.theme;
-
-    const { toolbar } = this.#b;
-    const {
-      copyContent,
-      deleteMessage,
-      messageAttachments,
-      regenerate,
-      editMessage,
-      toolExecution,
-    } = this.#adapter.elements.jsx.toolbar;
-
-    return (
-      <div class={bemClass(toolbar._)} part={this.#p.toolbar}>
-        {messageAttachments(m, isEditing)}
-        <div class={bemClass(toolbar._, toolbar.buttons)}>
-          {deleteMessage(m)}
-          {copyContent(m)}
-          {editMessage(m)}
-          {m.role === "user" && regenerate(m)}
-        </div>
-        {toolExecution(m)}
-      </div>
-    );
   };
 
   //#region Lifecycle hooks
@@ -970,6 +722,9 @@ export class LfChat implements LfChatInterface {
     const view = get.view();
     const fullScreen = get.fullScreen();
 
+    // Ensure settings accordion dataset is created once
+    this.#ensureSettingsAccordionDataset();
+
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
@@ -983,13 +738,30 @@ export class LfChat implements LfChatInterface {
             })}
             part={this.#p.chat}
           >
-            {view === "settings"
-              ? this.#prepSettings()
-              : status === "ready"
-                ? this.#prepChat()
-                : status === "connecting"
-                  ? this.#prepConnecting()
-                  : this.#prepOffline()}
+            {view === "settings" ? (
+              <ChatSettingsFC
+                adapter={this.#adapter}
+                accordionDataset={this.#settingsAccordionDataset}
+              />
+            ) : status === "ready" ? (
+              [
+                <ChatRequestFC adapter={this.#adapter} />,
+                <ChatMessagesFC
+                  adapter={this.#adapter}
+                  messagesContainerRef={(el) => (this.#messagesContainer = el)}
+                  lastMessageRef={(el, index) => {
+                    const history = get.history();
+                    if (el && index === history.length - 1) {
+                      this.#lastMessage = el;
+                    }
+                  }}
+                />,
+              ]
+            ) : status === "connecting" ? (
+              <ChatConnectingFC adapter={this.#adapter} />
+            ) : (
+              <ChatOfflineFC adapter={this.#adapter} />
+            )}
           </div>
         </div>
       </Host>

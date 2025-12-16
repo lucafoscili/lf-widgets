@@ -271,12 +271,10 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [lf-spinner](../lf-spinner)
-- [lf-article](../lf-article)
-- [lf-accordion](../lf-accordion)
 - [lf-chip](../lf-chip)
 - [lf-button](../lf-button)
 - [lf-textfield](../lf-textfield)
+- [lf-spinner](../lf-spinner)
 - [lf-code](../lf-code)
 - [lf-progressbar](../lf-progressbar)
 - [lf-checkbox](../lf-checkbox)
@@ -284,26 +282,21 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
-  lf-chat --> lf-spinner
-  lf-chat --> lf-article
-  lf-chat --> lf-accordion
   lf-chat --> lf-chip
   lf-chat --> lf-button
   lf-chat --> lf-textfield
+  lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
-  lf-article --> lf-chat
-  lf-accordion --> lf-chat
-  lf-badge --> lf-image
   lf-button --> lf-list
   lf-button --> lf-spinner
   lf-list --> lf-textfield
-  lf-canvas --> lf-image
-  lf-card --> lf-chat
   lf-code --> lf-button
-  lf-photoframe --> lf-image
+  lf-accordion --> lf-chat
+  lf-article --> lf-chat
   lf-breadcrumbs --> lf-chat
+  lf-card --> lf-chat
   lf-carousel --> lf-chat
   lf-compare --> lf-chat
   lf-masonry --> lf-chat

@@ -99,6 +99,7 @@ export const LfButtonFC: FunctionalComponent<LfButtonFCProps> = ({
     <lf-spinner
       class={bemClass(button._, button.spinner)}
       lfActive={showSpinner}
+      lfUiSize="xxsmall"
       lfLayout="ring"
       part={parts.spinner}
     ></lf-spinner>
