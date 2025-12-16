@@ -7,6 +7,8 @@ import {
   LfToggleAdapterRefs,
   LfToggleState,
 } from "@lf-widgets/foundations";
+import { prepToggleActions } from "./actions.toggle";
+import { prepToggleComputed } from "./computed.toggle";
 import { prepToggle } from "./elements.toggle";
 import { prepToggleHandlers } from "./handlers.toggle";
 
@@ -72,34 +74,12 @@ export const createAdapter = (
     },
   };
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // COMPUTED - Derive from closure state (no side effects)
-  // ═══════════════════════════════════════════════════════════════════════════
-  const computed = {
-    isDisabled: () => baseGetters.compInstance().lfUiState === "disabled",
-    isOn: () => _value === "on",
-  };
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ACTIONS - Complex operations (may batch multiple state changes)
-  // ═══════════════════════════════════════════════════════════════════════════
-  const actions = {
-    /**
-     * Toggle between "on" and "off".
-     * Uses setters.value() which handles disabled check and triggers render.
-     */
-    toggle: () => {
-      const newValue: LfToggleState = _value === "on" ? "off" : "on";
-      setters.value(newValue);
-    },
-  };
-
   return {
     controller: {
       get: getters,
       set: setters,
-      computed,
-      actions,
+      computed: createComputed(getAdapter),
+      actions: createActions(getAdapter),
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -107,6 +87,16 @@ export const createAdapter = (
     },
     handlers: createHandlers(getAdapter),
   };
+};
+//#endregion
+
+//#region Controller
+export const createComputed = (getAdapter: () => LfToggleAdapter) => {
+  return prepToggleComputed(getAdapter);
+};
+
+export const createActions = (getAdapter: () => LfToggleAdapter) => {
+  return prepToggleActions(getAdapter);
 };
 //#endregion
 

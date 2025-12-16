@@ -14,6 +14,7 @@
 > **🏆 GOLDEN STANDARD**: `lf-shapeeditor` is the reference implementation for complex components.
 > **🥈 SILVER STANDARD**: `lf-button` is the reference for simple components.
 > **🌟 FC REFERENCE**: `lf-slider` is the first Functional Component conversion.
+> **⚡ ADAPTER-AS-CORE REFERENCE**: `lf-toggle` is the canonical implementation for Section 5.9 pattern.
 
 ---
 
@@ -146,6 +147,7 @@ The **Adapter Pattern Standardization** (Section 5) has been elevated to immedia
    - 5.6 All Adapters Must Extend Base Interface
    - 5.7 Explicit Null in Refs
    - 5.8 Adapter-Everywhere Philosophy
+   - 5.9 "Adapter as Core" Pattern (State Ownership) 🆕
 6. [Architecture Enforcement](#6-architecture-enforcement)
 7. [Testing Coverage](#7-testing-coverage)
 8. [Implementation Priority Matrix](#8-implementation-priority-matrix)
@@ -841,11 +843,13 @@ background-color: rgba(
 **Problem**: The `--lf-ui-size-*` variables are **multipliers** (0.65 to 1.35), not font sizes. Using them directly as font-size produces tiny text.
 
 **Wrong**:
+
 ```scss
 font-size: var(--lf-fc-ui-size, var(--lf-font-size));  // 0.75 ≠ 0.75em!
 ```
 
 **Correct**: Multiply base font-size by the multiplier:
+
 ```scss
 font-size: calc(var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1));
 ```
@@ -1773,6 +1777,257 @@ export const createAdapter = (
 **Files Affected**: ~~15 components need new adapters~~ ✅ ALL COMPLETE
 **Complexity**: Medium (total effort)
 **Priority**: ~~P1~~ ✅ DONE
+
+---
+
+### 5.9 "Adapter as Core" Pattern (State Ownership)
+
+> **Status**: REFERENCE COMPLETE ✅ - `lf-toggle` is the canonical implementation
+> **Reference**: `packages/core/src/components/lf-toggle/`
+> **Files**: `lf-toggle.tsx`, `lf-toggle-adapter.ts`, `lf-toggle-fc.tsx`, `computed.toggle.ts`, `actions.toggle.ts`
+
+**Problem**: Stencil's `@State` mechanism leads to:
+
+1. **Multiple @State variables** → Multiple renders during a single user action
+2. **State labyrinths** → Hard to reason about what triggers re-renders
+3. **Testing complexity** → State tightly coupled to Stencil's reactivity system
+4. **Portability issues** → Component logic locked into Stencil
+
+**Solution**: Move runtime state ownership from WC to adapter.
+
+#### Architecture Diagram
+
+```plaintext
+┌─────────────────────────────────────────────────────────────────┐
+│                    ADAPTER (THE CORE)                           │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ Closure State (replaces @State)                             │ │
+│  │  let _value: LfToggleState = initialValue;                  │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │ get.*    │ │ set.*    │ │computed.*│ │ actions.*            │ │
+│  │ (reads)  │ │ (writes) │ │(derived) │ │ (batch ops)          │ │
+│  └──────────┘ └────┬─────┘ └──────────┘ └────────┬─────────────┘ │
+│                    │                             │               │
+│                    └──────────┬──────────────────┘               │
+│                               ▼                                  │
+│                    onStateChange() callback                      │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    WC (LIFECYCLE SHELL)                          │
+│                                                                  │
+│  @State _renderTick = 0;  ← ONLY Stencil state!                 │
+│                                                                  │
+│  @Prop lfValue;  ← HTML interface                               │
+│  // No @Watch needed - initial value passed to adapter          │
+│                                                                  │
+│  onStateChange = () => this._renderTick++;                      │
+│                                                                  │
+│  render() → <FC adapter={this.#adapter} />                      │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    FC (PURE RENDERER)                            │
+│  - Reads state via adapter.controller.get.*                     │
+│  - Calls handlers via adapter.handlers.*                        │
+│  - Sets refs via adapter.elements.refs.*                        │
+│  - Zero state awareness                                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **Closure State** | Adapter factory creates closure variables that hold runtime state |
+| **Single @State** | WC has only `_renderTick` - incremented when adapter calls `onStateChange()` |
+| **Explicit Renders** | Only `onStateChange()` triggers re-render - no surprises |
+| **Batch-Friendly** | Actions can make multiple state changes, call `onStateChange()` once |
+
+#### File Structure (Maintains SoC)
+
+```plaintext
+lf-toggle/
+├── lf-toggle.tsx             # WC: thin shell, single @State _renderTick
+├── lf-toggle-adapter.ts      # Factory: owns closure state, wires everything
+├── lf-toggle-fc.tsx          # Functional Component (pure renderer)
+├── elements.toggle.tsx       # JSX factory (uses FC)
+├── handlers.toggle.ts        # Event handlers
+├── computed.toggle.ts        # Predicates (isDisabled, isOn)
+└── actions.toggle.ts         # Complex operations (toggle)
+```
+
+**Key Insight**: Even though state lives in the adapter closure, computed and actions are still in separate files for SoC. They access state via `controller.get.*` and mutate via `controller.set.*`.
+
+#### Adapter Factory Pattern
+
+```typescript
+// lf-toggle-adapter.ts
+export const createAdapter = (
+  baseGetters: Omit<LfToggleAdapterControllerGetters, "value">,
+  initialValue: LfToggleState,
+  onStateChange: () => void,  // Callback to trigger WC re-render
+  getAdapter: () => LfToggleAdapter,
+): Omit<LfToggleAdapter, "dispatcher"> => {
+  
+  // ═══════════════════════════════════════════════════════════════
+  // CLOSURE STATE - The single source of truth
+  // ═══════════════════════════════════════════════════════════════
+  let _value: LfToggleState = initialValue;
+
+  // Getters read from closure
+  const getters: LfToggleAdapterControllerGetters = {
+    ...baseGetters,
+    value: () => _value,  // Reads closure variable
+  };
+
+  // Setters write to closure + trigger render
+  const setters: LfToggleAdapterControllerSetters = {
+    value: (state: LfToggleState) => {
+      if (_value !== state) {
+        _value = state;
+        onStateChange();  // Signal WC to re-render
+      }
+    },
+  };
+
+  return {
+    controller: {
+      get: getters,
+      set: setters,
+      computed: createComputed(getAdapter),   // Separate file
+      actions: createActions(getAdapter),      // Separate file
+    },
+    elements: { jsx: createJsx(getAdapter), refs: createRefs() },
+    handlers: createHandlers(getAdapter),
+  };
+};
+```
+
+#### Computed/Actions Access Pattern
+
+```typescript
+// computed.toggle.ts - Reads state via getter
+export const prepToggleComputed = (
+  getAdapter: () => LfToggleAdapter,
+): LfToggleAdapterControllerComputed => ({
+  isOn: () => getAdapter().controller.get.value() === "on",
+  isDisabled: () => getAdapter().controller.get.compInstance().lfUiState === "disabled",
+});
+
+// actions.toggle.ts - Reads via getter, writes via setter
+export const prepToggleActions = (
+  getAdapter: () => LfToggleAdapter,
+): LfToggleAdapterControllerActions => ({
+  toggle: () => {
+    const adapter = getAdapter();
+    const currentValue = adapter.controller.get.value();
+    const newValue = currentValue === "on" ? "off" : "on";
+    adapter.controller.set.value(newValue);  // Triggers onStateChange
+  },
+});
+```
+
+#### WC Shell Pattern
+
+```typescript
+// lf-toggle.tsx
+@Component({ tag: "lf-toggle", shadow: true })
+export class LfToggle {
+  // ONLY @State - render tick counter
+  @State() private _renderTick = 0;
+  
+  // HTML interface (props)
+  @Prop() lfValue: boolean = false;
+  
+  #adapter: LfToggleAdapter;
+  
+  #initAdapter = () => {
+    const getAdapter = () => this.#adapter;
+    const onStateChange = () => this._renderTick++;  // Trigger re-render
+    const initialValue: LfToggleState = this.lfValue ? "on" : "off";
+    
+    const adapterWithoutDispatcher = createAdapter(
+      createBaseGetters({ /* ... */ }),
+      initialValue,
+      onStateChange,
+      getAdapter,
+    );
+    
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
+    };
+  };
+  
+  render() {
+    return <Host>{this.#adapter.elements.jsx.toggle()}</Host>;
+  }
+}
+```
+
+#### Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Predictable Renders** | Only `onStateChange()` triggers render - no Stencil magic |
+| **Testable** | Adapter can be unit tested without DOM |
+| **Portable** | Adapter pattern works with any renderer (React, Vue, vanilla) |
+| **Batch Operations** | Actions can make N state changes → 1 render |
+| **Debugging** | Single point to trace all state changes |
+| **True Prop Immutability** | See 5.9.1 below - explicit control over what's reactive |
+
+#### 5.9.1 Prop Reactivity Control (Bonus Benefit)
+
+**Insight**: Stencil's `mutable` prop option is misleading - all props are technically mutable from the parent. The "Adapter as Core" pattern gives us **true control** over prop reactivity.
+
+**LFW Convention**: `lfValue` props are **init-time only**. To update a component's value, users must:
+
+1. Perform a UI action (user interaction), OR
+2. Call `setValue()` programmatically
+
+**With Adapter as Core**, we can now enforce this explicitly:
+
+```typescript
+// lfValue: init-time only (no @Watch needed)
+// Value lives in adapter closure, parent prop changes are ignored after mount
+
+// Other props: reactive via @Watch → adapter sync
+@Watch("lfUiState")
+onUiStateChange(newValue: LfThemeUIState) {
+  // Sync to adapter if needed, or just let render() read from this.lfUiState
+}
+```
+
+**Key Insight**: Since the FC reads `lfUiState`, `lfLabel`, etc. directly from `compInstance()` (the WC), those props are naturally reactive - Stencil handles the re-render when they change. Only **closure state** (like `_value`) is isolated from prop changes.
+
+This gives us a clean separation:
+
+- **Closure state** (`_value`): Owned by adapter, init from prop, updated via `setValue()`
+- **Config props** (`lfLabel`, `lfUiState`, etc.): Read directly from WC, naturally reactive
+
+#### Migration Checklist
+
+When converting a component to "Adapter as Core":
+
+- [ ] Identify all `@State` variables (candidates for closure state)
+- [ ] Add `@State _renderTick = 0` as the only Stencil state
+- [ ] Create `onStateChange = () => this._renderTick++` callback
+- [ ] Update adapter factory to accept `initialValue` and `onStateChange`
+- [ ] Move state to closure variables in adapter factory
+- [ ] Update getters to read from closure
+- [ ] Update setters to write to closure + call `onStateChange()`
+- [ ] Ensure `computed.*.ts` reads via `controller.get.*`
+- [ ] Ensure `actions.*.ts` reads via `controller.get.*`, writes via `controller.set.*`
+- [ ] Remove old `@State` variables from WC
+- [ ] Tests still pass: `yarn test:unit`
+
+**Files Affected**: All FC-converted components
+**Complexity**: Medium
+**Priority**: P1 (Architectural - enables predictable renders)
 
 ---
 
