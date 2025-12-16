@@ -219,16 +219,24 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                            | Description                                                                                       |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-chat-attachments-padding` | Sets the attachments padding for the chat component. Defaults to => 0 1em                         |
-| `--lf-chat-border-radius`       | Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-chat-buttons-padding`     | Sets the padding for the buttons of the chat component. Defaults to => 1em 0                      |
-| `--lf-chat-font-family`         | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-chat-font-size`           | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                     |
-| `--lf-chat-inner-padding`       | Sets the inner padding for the chat component. Defaults to => 0 1em                               |
-| `--lf-chat-outer-grid-gap`      | Sets the outer grid gap for the chat component. Defaults to => 0.75em                             |
-| `--lf-chat-padding`             | Sets the padding for the chat component. Defaults to => 1em                                       |
+| Name                            | Description                                                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `--lf-chat-attachments-padding` | Padding for attachments area. Defaults to => 0                                                       |
+| `--lf-chat-buttons-padding`     | Padding for button area. Defaults to => 1em 0                                                        |
+| `--lf-chat-color-bg`            | Background color for chat container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))           |
+| `--lf-chat-color-border`        | Border color for elements. Defaults to => var(--lf-state-border, var(--lf-color-border))             |
+| `--lf-chat-color-on-bg`         | Text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                      |
+| `--lf-chat-color-on-primary`    | Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))      |
+| `--lf-chat-color-on-surface`    | Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))               |
+| `--lf-chat-color-primary`       | Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                |
+| `--lf-chat-color-surface`       | Surface color for messages/elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) |
+| `--lf-chat-font-family`         | Sets the primary font family for the chat component. Defaults to => var(--lf-font-family-primary)    |
+| `--lf-chat-font-size`           | Sets the font size for the chat component. Defaults to => var(--lf-font-size)                        |
+| `--lf-chat-icon-color`          | Color for status icons. Defaults to => rgba($bgC, 1)                                                 |
+| `--lf-chat-icon-height`         | Height for icons. Defaults to => 4em                                                                 |
+| `--lf-chat-icon-width`          | Width for icons. Defaults to => 4em                                                                  |
+| `--lf-chat-outer-grid-gap`      | Gap between main sections. Defaults to => 0.75em                                                     |
+| `--lf-chat-padding`             | Padding for the chat container. Defaults to => 1em 0                                                 |
 
 
 ## Dependencies

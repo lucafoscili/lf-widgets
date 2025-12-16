@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/toggle" as toggle-fc;
 
 $comp: "toggle";
 
@@ -9,58 +10,5 @@ $comp: "toggle";
   @include lf-el-stretch;
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* State-aware color variables (set via data-lf attribute):
-* @prop --lf-#{$comp}-color-primary: Primary color for checked track.
-*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
-* @prop --lf-#{$comp}-color-surface: Surface color for unchecked track.
-*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
-* @prop --lf-#{$comp}-color-on-surface: Color for unchecked thumb.
-*                                       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
-* @prop --lf-#{$comp}-color-on-bg: Color for label text.
-*                                  Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
-* @prop --lf-#{$comp}-color-on-primary: Color for checked thumb indicators.
-*                                       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
-*
-* Layout/sizing variables:
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the toggle track.
-*                                    Defaults to => var(--lf-ui-border-radius, 1em)
-* @prop --lf-#{$comp}-box-shadow: Sets the box shadow for the toggle track.
-*                                 Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
-* @prop --lf-#{$comp}-form-padding: Sets the padding for the toggle form field.
-*                                   Defaults to => 0.5em
-* @prop --lf-#{$comp}-input-height: Sets the height for the toggle input.
-*                                   Defaults to => 3em
-* @prop --lf-#{$comp}-label-min-width: Sets the min-width for the toggle label.
-*                                      Defaults to => max-content
-* @prop --lf-#{$comp}-label-padding-left: Sets the left padding for the toggle label.
-*                                         Defaults to => 1em
-* @prop --lf-#{$comp}-label-padding-right: Sets the right padding for the toggle label.
-*                                          Defaults to => 1em
-* @prop --lf-#{$comp}-margin: Sets the margin for the toggle component.
-*                             Defaults to => 1em 0.5em
-* @prop --lf-#{$comp}-min-width: Sets the min-width for the toggle component.
-*                                Defaults to => 4em
-* @prop --lf-#{$comp}-thumb-border-radius: Sets the border radius for the thumb.
-*                                          Defaults to => 50%
-* @prop --lf-#{$comp}-thumb-inset: Sets the inset for the thumb positioning.
-*                                  Defaults to => 0.125em
-* @prop --lf-#{$comp}-thumb-offset: Sets the offset for checked thumb position.
-*                                   Defaults to => 1.25em
-* @prop --lf-#{$comp}-thumb-shadow: Sets the box shadow for the thumb.
-*                                   Defaults to => 0 2px 4px rgba(0, 0, 0, 0.2)
-* @prop --lf-#{$comp}-thumb-size: Sets the size for the toggle thumb.
-*                                 Defaults to => 1.25em
-* @prop --lf-#{$comp}-track-border-radius: Sets the border radius for the track.
-*                                          Defaults to => 1em
-* @prop --lf-#{$comp}-track-height: Sets the height for the toggle track.
-*                                   Defaults to => 1.5em
-* @prop --lf-#{$comp}-track-width: Sets the width for the toggle track.
-*                                  Defaults to => 2.75em
-* @prop --lf-#{$comp}-underlay-size: Sets the size for the focus underlay.
-*                                    Defaults to => 2.5em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include toggle-fc.lf-toggle-docs($comp);

@@ -9,9 +9,7 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-image.scss) for Stencil docs generation, NOT here.
+// - Exports lf-image-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
@@ -19,12 +17,40 @@
 @use "../colors" as *;
 @use "../transitions" as *;
 
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-image-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-on-bg: Color for icon content.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface background for placeholder.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-border-radius: Border radius for the image.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-fit: Object fit for the image element.
+   *       Defaults to => cover
+   * @prop --lf-#{$comp}-height: Height for the image component.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-icon-size: Size for the icon fallback.
+   *       Defaults to => 3em
+   * @prop --lf-#{$comp}-position: Object position for the image.
+   *       Defaults to => center
+   * @prop --lf-#{$comp}-width: Width for the image component.
+   *       Defaults to => auto
+   */
+}
+
 // Generate color variables using the unified system
 $comp: "image";
 @include lf-color-vars($comp);
 
 // -----------------------------------------------------------------------------
 // Image Core
+// -----------------------------------------------------------------------------
+// NOTE: Width/height use internal underscore variables (--lf_image_*) which are
+// set dynamically by the WC based on lfSizeX/lfSizeY props. The public hyphen
+// variables (--lf-image-*) serve as fallbacks for FC usage or user overrides.
 // -----------------------------------------------------------------------------
 .image {
   & {
@@ -36,18 +62,18 @@ $comp: "image";
     color: rgba($onBgC, 1);
     display: inline-flex;
     font-size: calc(1em * var(--lf-ui-size, 1));
-    height: var(--lf-image-height, auto);
+    height: var(--lf_image_height, var(--lf-image-height, auto));
     justify-content: center;
     overflow: hidden;
     position: relative;
     @include lf-transitions((opacity, transform));
-    width: var(--lf-image-width, auto);
+    width: var(--lf_image_width, var(--lf-image-width, auto));
   }
 
   // ---------------------------------------------------------------------------
   // Native Image Element
   // ---------------------------------------------------------------------------
-  &__element {
+  &__img {
     display: block;
     height: 100%;
     object-fit: var(--lf-image-fit, cover);
@@ -60,8 +86,8 @@ $comp: "image";
   // ---------------------------------------------------------------------------
   &__icon {
     fill: currentColor;
-    height: var(--lf-image-icon-size, 3em);
-    width: var(--lf-image-icon-size, 3em);
+    height: var(--lf_image_height, var(--lf-image-icon-size, 3em));
+    width: var(--lf_image_width, var(--lf-image-icon-size, 3em));
   }
 
   // ---------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/snackbar" as snackbar-fc;
 
 $comp: "snackbar";
 @include lf-comp-setup($comp, "true", "false", "true", "false", "true");
@@ -236,23 +237,5 @@ $comp: "snackbar";
   }
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-#{$comp}-action-font-family: Font family for action button.
-*                                         Defaults to => inherit
-* @prop --lf-#{$comp}-action-font-size: Font size for action button.
-*                                       Defaults to => 0.875em
-* @prop --lf-#{$comp}-glass-opacity: Opacity for the glass reflection effect.
-*                                    Defaults to => var(--lf-ui-alpha-glass, 0.375)
-* @prop --lf-#{$comp}-max-width: Sets the maximum width for the snackbar.
-*                                Defaults to => clamp(288px, 80vw, 568px)
-* @prop --lf-#{$comp}-message-font-size: Font size for the message.
-*                                        Defaults to => 0.875em
-* @prop --lf-#{$comp}-min-width: Sets the minimum width for the snackbar.
-*                                Defaults to => 288px
-* @prop --lf-#{$comp}-padding: Sets the padding for the snackbar.
-*                              Defaults to => 0.875em 1em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include snackbar-fc.lf-snackbar-docs($comp);

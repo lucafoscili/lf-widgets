@@ -9,15 +9,47 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-toggle.scss) for Stencil docs generation, NOT here.
+// - Exports lf-toggle-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-toggle-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for active/on state.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for track background.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Thumb color in off state.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-on-bg: Label text color.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-thumb-border-radius: Border radius for thumb.
+   *       Defaults to => 50%
+   * @prop --lf-#{$comp}-thumb-inset: Inset for thumb positioning.
+   *       Defaults to => 0.125em
+   * @prop --lf-#{$comp}-thumb-offset: Translation distance when on.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-thumb-shadow: Box shadow for thumb.
+   *       Defaults to => 0 2px 4px rgba(0, 0, 0, 0.2)
+   * @prop --lf-#{$comp}-thumb-size: Size for the thumb.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-track-border-radius: Border radius for track.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-track-height: Height for the track.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-track-width: Width for the track.
+   *       Defaults to => 2.75em
+   * @prop --lf-#{$comp}-underlay-size: Size for focus underlay.
+   *       Defaults to => 2.5em
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "toggle";

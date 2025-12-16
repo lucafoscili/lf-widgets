@@ -1,0 +1,587 @@
+// =============================================================================
+// CHAT - Component Styles
+// =============================================================================
+// Chat-specific styles for the LfChatFC functional component.
+// Complex messaging interface with messages, input, settings, and attachments.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-chat-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-chat-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary accent color.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-bg: Background color for chat container.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface color for messages/elements.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-border: Border color for elements.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-attachments-padding: Padding for attachments area.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-buttons-padding: Padding for button area.
+   *       Defaults to => 1em 0
+   * @prop --lf-#{$comp}-icon-color: Color for status icons.
+   *       Defaults to => rgba($bgC, 1)
+   * @prop --lf-#{$comp}-icon-height: Height for icons.
+   *       Defaults to => 4em
+   * @prop --lf-#{$comp}-icon-width: Width for icons.
+   *       Defaults to => 4em
+   * @prop --lf-#{$comp}-outer-grid-gap: Gap between main sections.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-padding: Padding for the chat container.
+   *       Defaults to => 1em 0
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "chat";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Chat Container
+// -----------------------------------------------------------------------------
+.chat {
+  & {
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+    box-sizing: border-box;
+    display: grid;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: 100%;
+    margin: auto;
+    padding: var(--lf-chat-padding, 1em 0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Layout Modifiers
+  // ---------------------------------------------------------------------------
+  &--bottom {
+    align-content: center;
+    grid-gap: var(--lf-chat-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "messages"
+      "spinner"
+      "attachments"
+      "request";
+    grid-template-rows: 1fr repeat(3, auto);
+  }
+
+  &--top {
+    grid-gap: var(--lf-chat-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "request"
+      "attachments"
+      "messages"
+      "spinner";
+    grid-template-rows: repeat(2, auto) 1fr auto;
+  }
+
+  &--connecting,
+  &--offline {
+    grid-template-areas: none;
+    grid-template-rows: repeat(3, auto);
+  }
+
+  &--settings {
+    align-content: flex-start;
+  }
+
+  &--full {
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Attachments
+  // ---------------------------------------------------------------------------
+  &__attachments {
+    backdrop-filter: unset;
+    box-sizing: border-box;
+    grid-area: attachments;
+    height: auto;
+    min-height: 0;
+    padding: var(--lf-chat-attachments-padding, 0);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Configuration & Retry
+  // ---------------------------------------------------------------------------
+  &__configuration,
+  &__retry {
+    backdrop-filter: unset;
+    justify-self: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Edit Container
+  // ---------------------------------------------------------------------------
+  &__edit-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  &__edit-buttons {
+    display: flex;
+    justify-content: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Error State
+  // ---------------------------------------------------------------------------
+  &__error {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    padding: 2em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    color: var(--lf-chat-icon-color, rgba($bgC, 1));
+    height: var(--lf-chat-icon-height, 4em);
+    justify-self: center;
+    margin-bottom: 0.75em;
+    opacity: 0.75;
+    width: var(--lf-chat-icon-width, 4em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Spinner
+  // ---------------------------------------------------------------------------
+  &__spinner {
+    min-height: 3em;
+  }
+
+  &__spinner-bar {
+    bottom: 0;
+    grid-area: spinner;
+    height: 0.25em;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text Elements
+  // ---------------------------------------------------------------------------
+  &__text {
+    font-family: var(--lf-font-family-subtitle);
+    font-size: var(--lf-font-size-subtitle);
+    font-style: italic;
+    font-weight: var(--lf-font-weight-subtitle);
+    opacity: 0.6;
+    text-align: center;
+  }
+
+  &__title {
+    font-family: var(--lf-font-family-title);
+    font-size: var(--lf-font-size-title);
+    font-weight: var(--lf-font-weight-title);
+    text-align: center;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Commands
+// -----------------------------------------------------------------------------
+.commands {
+  & {
+    align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    padding: var(--lf-chat-buttons-padding, 1em 0);
+  }
+
+  &__clear,
+  &__stt {
+    backdrop-filter: unset;
+  }
+
+  &__stt {
+    padding: 0 1em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Input
+// -----------------------------------------------------------------------------
+.input {
+  & {
+    display: grid;
+    grid-template-areas:
+      "image textarea configuration"
+      "image progressbar configuration"
+      "file progressbar fullscreen";
+    grid-template-columns: auto 1fr auto;
+  }
+
+  &__attach-file {
+    grid-area: file;
+  }
+
+  &__attach-image {
+    grid-area: image;
+  }
+
+  &__configuration {
+    grid-area: configuration;
+  }
+
+  &__full-screen {
+    grid-area: fullscreen;
+  }
+
+  &__progressbar {
+    grid-area: progressbar;
+  }
+
+  &__textarea {
+    grid-area: textarea;
+    overflow-x: hidden;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Request
+// -----------------------------------------------------------------------------
+.request {
+  box-sizing: border-box;
+  grid-area: request;
+  max-width: 100%;
+  padding: var(--lf-chat-inner-padding, 0 1em);
+  width: 100%;
+}
+
+// -----------------------------------------------------------------------------
+// Settings
+// -----------------------------------------------------------------------------
+.settings {
+  & {
+    display: grid;
+    grid-gap: 0.5em;
+    grid-template-areas:
+      "header"
+      "configuration";
+    grid-template-rows: auto 1fr;
+    height: 100%;
+  }
+
+  &__configuration {
+    grid-area: configuration;
+    overflow: auto;
+  }
+
+  &__header {
+    display: flex;
+    grid-area: header;
+    width: 100%;
+  }
+
+  &__textfield {
+    box-sizing: border-box;
+    padding-top: 0.75em;
+  }
+
+  &__textarea {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-top: 0.75em 0;
+  }
+
+  &__tools-container {
+    box-sizing: border-box;
+    margin-top: 0.75em;
+    padding: 0.5em;
+  }
+
+  &__tools-header {
+    align-items: center;
+    border-bottom: 1px solid rgba($borderC, 0.5);
+    display: flex;
+    font-weight: 600;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.25em;
+  }
+
+  &__tools-category {
+    margin-bottom: 0.5em;
+    padding-left: 0.5em;
+  }
+
+  &__tools {
+    display: block;
+    font-size: 0.875em;
+    font-weight: 500;
+    margin-bottom: 0.25em;
+    opacity: 0.8;
+  }
+
+  &__tools-item {
+    margin-left: 0.5em;
+    padding: 0.125em 0;
+  }
+
+  &__tools-checkbox {
+    font-size: 0.9em;
+  }
+
+  &__agent-container {
+    box-sizing: border-box;
+    margin-top: 0.75em;
+    padding: 0.5em;
+  }
+
+  &__agent-header {
+    align-items: center;
+    border-bottom: 1px solid rgba($borderC, 0.5);
+    display: flex;
+    font-weight: 600;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.25em;
+  }
+
+  &__accordion {
+    width: 100%;
+  }
+
+  &__slot-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.5em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Toolbar
+// -----------------------------------------------------------------------------
+.toolbar {
+  & {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-solid, 0.875));
+    border-bottom-left-radius: var(
+      --lf-chat-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    border-bottom-right-radius: var(
+      --lf-chat-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-sizing: border-box;
+    justify-content: flex-end;
+    padding: 0.5em;
+    width: 100%;
+  }
+
+  &__button {
+    margin: 0 2px;
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 0.5em;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  &__message-attachments {
+    --lf-chip-padding: 0.25em 0.5em;
+
+    box-sizing: border-box;
+    margin-bottom: 0.5em;
+    padding: 0 0.5em;
+    width: 100%;
+  }
+
+  &__tool-execution {
+    justify-self: left;
+    overflow: auto;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Messages
+// -----------------------------------------------------------------------------
+.messages {
+  & {
+    --lf-article-padding: 0 0.75em 1em 0.75em;
+
+    align-content: start;
+    box-sizing: border-box;
+    display: grid;
+    grid-area: messages;
+    grid-gap: var(--lf-chat-grid-gap, 0.75em);
+    grid-template-columns: 1fr;
+    margin-bottom: var(--lf-chat-margin-bottom, 1em);
+    margin-top: var(--lf-chat-margin-top, 1em);
+    overflow: auto;
+    padding: var(--lf-chat-inner-padding, 0 1em);
+    width: 100%;
+    word-break: normal;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message Container
+  // ---------------------------------------------------------------------------
+  &__container {
+    & {
+      background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+      border-radius: var(--lf-chat-border-radius, var(--lf-ui-border-radius));
+      height: max-content;
+      max-width: var(--lf-chat-message-max-width, 75%);
+      position: relative;
+      @include lf-transitions((background-color));
+    }
+
+    &:hover {
+      background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &--assistant {
+      --lf-typewriter-color-bg: none;
+      --lf-typewriter-padding: 0;
+
+      justify-self: start;
+    }
+
+    &--user {
+      justify-self: end;
+    }
+
+    &--textarea {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Empty State
+  // ---------------------------------------------------------------------------
+  &__empty {
+    font-style: italic;
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content
+  // ---------------------------------------------------------------------------
+  &__content {
+    font-family: var(--lf-font-family-body);
+    font-size: var(--lf-font-size-body);
+    font-weight: var(--lf-font-weight-body);
+    margin: 0;
+    max-width: 100%;
+    padding: 0.75em;
+    white-space: pre-line;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Code
+  // ---------------------------------------------------------------------------
+  &__code {
+    height: auto;
+    padding: 0.75em 0;
+  }
+
+  &__inline-code {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-hint, 0.125));
+    border-radius: var(
+      --lf-chat-inline-code-border-radius,
+      var(--lf-border-radius, 0.25em)
+    );
+    font-family: var(--lf-font-family-code);
+    font-size: var(--lf-font-size-code);
+    font-weight: var(--lf-font-weight-code);
+    padding: var(--lf-chat-inline-code-padding, 0.2em 0.4em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Headings
+  // ---------------------------------------------------------------------------
+  &__heading {
+    font-family: var(--lf-font-family-title);
+    font-size: var(--lf-font-size-title);
+    font-weight: var(--lf-font-weight-title);
+    margin-bottom: var(--lf-chat-heading-margin-bottom, 0.5em);
+    margin-top: var(--lf-chat-heading-margin-top, 1em);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Blockquote
+  // ---------------------------------------------------------------------------
+  &__blockquote {
+    border-left-color: rgba(
+      $surfaceC,
+      var(--lf-chat-blockquote-border-opacity, 0.3)
+    );
+    border-left-style: solid;
+    border-left-width: var(--lf-chat-blockquote-border-width, 3px);
+    font-style: italic;
+    margin: var(--lf-chat-blockquote-margin, 1em 0);
+    padding: var(--lf-chat-blockquote-padding, 0.5em 1em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lists
+  // ---------------------------------------------------------------------------
+  &__list {
+    margin: var(--lf-chat-list-margin, 0.5em 0);
+    padding-left: var(--lf-chat-list-padding-left, 2em);
+  }
+
+  &__list-item {
+    margin: var(--lf-chat-list-item-margin, 0.25em 0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Links
+  // ---------------------------------------------------------------------------
+  &__link {
+    color: var(--lf-chat-link-color, rgba($primaryC, 1));
+    text-decoration: underline;
+    @include lf-transitions((opacity));
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Horizontal Rule
+  // ---------------------------------------------------------------------------
+  &__hr {
+    border: none;
+    border-top-color: rgba($surfaceC, 0.125);
+    border-top-style: solid;
+    border-top-width: var(--lf-chat-hr-border-width, 1px);
+    margin: var(--lf-chat-hr-margin, 1em 0);
+    opacity: var(--lf-chat-hr-opacity, 0.2);
+  }
+}

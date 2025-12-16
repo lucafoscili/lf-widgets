@@ -1,0 +1,219 @@
+// =============================================================================
+// SLIDER - Component Styles
+// =============================================================================
+// Slider-specific styles for the LfSliderFC functional component.
+// Works in conjunction with _fc-form-field.scss for the wrapper.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-slider-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-slider-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for track fill and thumb.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-bg: Color for value text.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-border-radius: Border radius for track and thumb.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-box-shadow: Box shadow for track.
+   *       Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+   * @prop --lf-#{$comp}-font-family: Font family for value display.
+   *       Defaults to => var(--lf-font-family-button)
+   * @prop --lf-#{$comp}-font-size: Font size for value display.
+   *       Defaults to => var(--lf-font-size-button)
+   * @prop --lf-#{$comp}-font-weight: Font weight for value display.
+   *       Defaults to => var(--lf-font-weight-button)
+   * @prop --lf-#{$comp}-gap: Gap between label and track.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-label-padding-left: Left padding for label.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-margin: Margin for slider container.
+   *       Defaults to => 0 0.75em
+   * @prop --lf-#{$comp}-min-width: Minimum width for slider.
+   *       Defaults to => 7em
+   * @prop --lf-#{$comp}-thumb-box-shadow: Box shadow for thumb.
+   *       Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+   * @prop --lf-#{$comp}-thumb-height: Height for the thumb.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-thumb-underlay-top: Top position for underlay.
+   *       Defaults to => -1em
+   * @prop --lf-#{$comp}-thumb-width: Width for the thumb.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-track-height: Height for the track.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-track-margin-top: Top margin for track.
+   *       Defaults to => 0.75em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "slider";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Slider Core
+// -----------------------------------------------------------------------------
+.slider {
+  & {
+    display: flex;
+    flex-direction: column;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    gap: var(--lf-slider-gap, 0.5em);
+    margin: var(--lf-slider-margin, 0 0.75em);
+    min-width: var(--lf-slider-min-width, 7em);
+    outline: none;
+    position: relative;
+    user-select: none;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Value Track Fill (pseudo-element on track)
+  // ---------------------------------------------------------------------------
+  &--has-value {
+    .slider__track::after {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      border-radius: var(--lf-slider-border-radius, var(--lf-ui-border-radius));
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      transition:
+        background-color 0.3s $lf-easing-bounce,
+        width 0.1s ease-out;
+      width: var(--lf_slider_value);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label (inside slider, not form-field label)
+  // ---------------------------------------------------------------------------
+  &__label {
+    cursor: pointer;
+    margin-left: 0;
+    margin-right: auto;
+    padding-left: var(--lf-slider-label-padding-left, 0.5em);
+    padding-right: 0;
+    user-select: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Value Display
+  // ---------------------------------------------------------------------------
+  &__value {
+    color: rgba($onBgC, 1);
+    font-family: var(--lf-slider-font-family, var(--lf-font-family-button));
+    font-size: var(--lf-slider-font-size, var(--lf-font-size-button));
+    font-weight: var(--lf-slider-font-weight, var(--lf-font-weight-button));
+    order: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track
+  // ---------------------------------------------------------------------------
+  &__track {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(--lf-slider-border-radius, var(--lf-ui-border-radius));
+    box-shadow: var(
+      --lf-slider-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    box-sizing: border-box;
+    height: var(--lf-slider-track-height, 0.5em);
+    margin-top: var(--lf-slider-track-margin-top, 0.75em);
+    order: 0;
+    position: relative;
+    @include lf-transitions;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Thumb Underlay (ripple container / state layer)
+  // ---------------------------------------------------------------------------
+  &__thumb-underlay {
+    align-items: center;
+    background-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    height: 2.5em;
+    justify-content: center;
+    left: var(--lf_slider_value);
+    overflow: hidden;
+    position: absolute;
+    top: var(--lf-slider-thumb-underlay-top, -1em);
+    transform: translateX(-50%);
+    transition:
+      left 0.1s ease-out,
+      background-color 0.3s $lf-easing-bounce;
+    width: 2.5em;
+
+    // Override [data-lf-ripple-host] { position: relative } with higher specificity
+    &[data-lf-ripple-host] {
+      position: absolute;
+    }
+  }
+
+  // Hover state for the underlay (state layer effect)
+  &:hover &__thumb-underlay {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Thumb
+  // ---------------------------------------------------------------------------
+  &__thumb {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    border-radius: 50%;
+    box-shadow: var(
+      --lf-slider-thumb-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    cursor: pointer;
+    height: var(--lf-slider-thumb-height, 1.5em);
+    @include lf-transitions;
+    width: var(--lf-slider-thumb-width, 1.5em);
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+      transform: scale(var(--lf-slider-thumb-hover-scale, 1.1));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Native Input (hidden, for accessibility)
+  // ---------------------------------------------------------------------------
+  &__native-control {
+    cursor: pointer;
+    height: var(--lf-slider-input-height, 3em);
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled State
+  // ---------------------------------------------------------------------------
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

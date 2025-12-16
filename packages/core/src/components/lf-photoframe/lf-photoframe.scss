@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/photoframe" as photoframe-fc;
 
 $comp: "photoframe";
 
@@ -15,56 +16,5 @@ $comp: "photoframe";
   position: relative;
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* State-aware color variables (set via data-lf attribute):
-* @prop --lf-#{$comp}-color-bg: Background color for overlay.
-*                               Defaults to => var(--lf-state-bg, var(--lf-color-bg))
-* @prop --lf-#{$comp}-color-on-bg: Color for content on overlay.
-*                                  Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
-* @prop --lf-#{$comp}-color-surface: Surface background color for icon fallback.
-*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
-* @prop --lf-#{$comp}-color-on-surface: Color for icon fallback content.
-*                                       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
-*
-* Layout/sizing variables:
-* @prop --lf-#{$comp}-aspect-ratio: Sets the aspect ratio for the photoframe.
-*                                   Defaults to => auto
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the photoframe.
-*                                    Defaults to => var(--lf-ui-border-radius)
-* @prop --lf-#{$comp}-description-size: Sets the font size for the description.
-*                                       Defaults to => 0.875em
-* @prop --lf-#{$comp}-fade-out-time: Sets the fade out time for the placeholder of the #{$comp} component.
-*                                    Defaults to => 1750ms
-* @prop --lf-#{$comp}-fit: Sets the object fit for the image.
-*                          Defaults to => cover
-* @prop --lf-#{$comp}-height: Sets the height for the photoframe.
-*                             Defaults to => auto
-* @prop --lf-#{$comp}-image-fit: Sets the object fit for the image of the #{$comp} component.
-*                                Defaults to => cover
-* @prop --lf-#{$comp}-overlay-align: Sets the alignment for overlay content.
-*                                    Defaults to => flex-end
-* @prop --lf-#{$comp}-overlay-justify: Sets the justification for overlay content.
-*                                      Defaults to => flex-end
-* @prop --lf-#{$comp}-overlay-opacity: Sets the default opacity for the overlay.
-*                                      Defaults to => 0
-* @prop --lf-#{$comp}-overlay-opacity-hover: Sets the hover opacity for the overlay.
-*                                            Defaults to => 1
-* @prop --lf-#{$comp}-overlay-padding: Sets the padding for the overlay.
-*                                      Defaults to => 1em
-* @prop --lf-#{$comp}-overlay-zindex: Sets the z-index for the overlay of the #{$comp} component.
-*                                     Defaults to => 2
-* @prop --lf-#{$comp}-placeholder-fit: Sets the object fit for the placeholder of the #{$comp} component.
-*                                      Defaults to => cover
-* @prop --lf-#{$comp}-position: Sets the object position for the image.
-*                               Defaults to => center
-* @prop --lf-#{$comp}-title-size: Sets the font size for the title.
-*                                 Defaults to => 1.125em
-* @prop --lf-#{$comp}-title-weight: Sets the font weight for the title.
-*                                   Defaults to => 600
-* @prop --lf-#{$comp}-width: Sets the width for the photoframe.
-*                            Defaults to => auto
-*/
+// Import documentation from FC mixin (single source of truth)
+@include photoframe-fc.lf-photoframe-docs($comp);

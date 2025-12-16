@@ -8,15 +8,54 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-badge.scss) for Stencil docs generation, NOT here.
+// - Exports lf-badge-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/badge" as badge-fc;
+//   @include badge-fc.lf-badge-docs("badge");
+// =============================================================================
+@mixin lf-badge-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary/background color for the badge.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-background-alpha: Background alpha for the badge.
+   *       Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)
+   * @prop --lf-#{$comp}-border-radius: Border radius for the badge.
+   *       Defaults to => 50%
+   * @prop --lf-#{$comp}-box-shadow: Box shadow for the badge.
+   *       Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
+   * @prop --lf-#{$comp}-font-family: Font family for the badge.
+   *       Defaults to => var(--lf-font-family-button)
+   * @prop --lf-#{$comp}-font-size: Base font size (scaled by --lf-ui-size).
+   *       Defaults to => var(--lf-font-size)
+   * @prop --lf-#{$comp}-font-weight: Font weight for the badge.
+   *       Defaults to => var(--lf-font-weight-button)
+   * @prop --lf-#{$comp}-height: Height for the badge.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-image-height: Height for the badge image.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-image-width: Width for the badge image.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-padding: Padding for the badge.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-width: Width for the badge.
+   *       Defaults to => 1.5em
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "badge";

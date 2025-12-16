@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/chat" as chat-fc;
 
 $comp: "chat";
 @include lf-comp-setup("chat", "false", "false", "false", "false", "true");
@@ -12,21 +13,5 @@ $comp: "chat";
   position: relative;
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-#{$comp}-attachments-padding: Sets the attachments padding for the #{$comp} component.
-*                                          Defaults to => 0 1em
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
-*                                    Defaults to => var(--lf-ui-border-radius)
-* @prop --lf-#{$comp}-buttons-padding: Sets the padding for the buttons of the #{$comp} component.
-*                                      Defaults to => 1em 0
-* @prop --lf-#{$comp}-inner-padding: Sets the inner padding for the #{$comp} component.
-*                                    Defaults to => 0 1em
-* @prop --lf-#{$comp}-outer-grid-gap: Sets the outer grid gap for the #{$comp} component.
-*                                     Defaults to => 0.75em
-* @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
-*                              Defaults to => 1em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include chat-fc.lf-chat-docs($comp);

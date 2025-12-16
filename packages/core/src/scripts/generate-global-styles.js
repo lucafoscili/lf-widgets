@@ -176,6 +176,11 @@ const createGlobalStylesMap = (scssPath) => {
       continue;
     }
 
+    // @charset is added by sass:math and other sass built-ins - skip it
+    if (node.type === "charset") {
+      continue;
+    }
+
     throw new Error(`Unsupported at-rule type: ${node.type}`);
   }
 

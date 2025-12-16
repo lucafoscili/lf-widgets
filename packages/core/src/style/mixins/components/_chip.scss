@@ -9,15 +9,70 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-chip.scss) for Stencil docs generation, NOT here.
+// - Exports lf-chip-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-chip-docs($comp) {
+  /**
+   * State-aware color variables (set via data-lf attribute):
+   * @prop --lf-#{$comp}-color-primary: Primary color for selected/active states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Color for content on primary backgrounds.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface background color.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Color for content on surface backgrounds.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-border: Border color for chips.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-color-on-bg: Color for text on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   *
+   * Wrapper variables:
+   * @prop --lf-#{$comp}-align-items: Sets the alignment for the wrapper.
+   *       Defaults to => center
+   * @prop --lf-#{$comp}-margin: Sets the margin for the wrapper.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-indent-multiplier: Multiplier for indent width calculation.
+   *       Defaults to => 10
+   *
+   * Item/chip variables:
+   * @prop --lf-#{$comp}-border-radius: Sets the border radius for chips.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-height: Sets the height for chip items.
+   *       Defaults to => 2em
+   * @prop --lf-#{$comp}-item-height: Sets the height for the items.
+   *       Defaults to => 2em
+   * @prop --lf-#{$comp}-item-margin: Sets the margin for the items.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-item-max-width: Sets the max-width for the items.
+   *       Defaults to => max-content
+   * @prop --lf-#{$comp}-item-outline: Sets the outline for the items.
+   *       Defaults to => none
+   * @prop --lf-#{$comp}-item-padding: Sets the padding for the items.
+   *       Defaults to => 0 0.75em
+   * @prop --lf-#{$comp}-item-text-decoration: Sets the text-decoration for the items.
+   *       Defaults to => inherit
+   * @prop --lf-#{$comp}-item-text-transform: Sets the text-transform for the items.
+   *       Defaults to => inherit
+   * @prop --lf-#{$comp}-padding: Sets the padding for chips.
+   *       Defaults to => 0 0.75em
+   *
+   * Chip set variables:
+   * @prop --lf-#{$comp}-set-gap: Sets the gap for chip sets.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-set-padding: Sets the padding for chip sets.
+   *       Defaults to => 0.25em
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "chip";
@@ -249,5 +304,161 @@ $comp: "chip";
 
   .chip__trailing-action {
     pointer-events: none;
+  }
+}
+
+// =============================================================================
+// WRAPPER - Container for chip with indent support
+// =============================================================================
+.wrapper {
+  & {
+    align-items: var(--lf-chip-align-items, center);
+    display: flex;
+  }
+
+  &--hidden {
+    .dropdown-icon {
+      transform: unset;
+    }
+  }
+
+  // Indent spacer for tree-like structures
+  &__indent {
+    width: calc(
+      var(--lf-chip-margin, 0.25em) * var(--lf_chip_indent_offset, 0) *
+        var(--lf-chip-indent-multiplier, 10)
+    );
+  }
+
+  // Node icon (dropdown/expand indicator)
+  &__node {
+    color: rgba($onBgC, 1);
+    cursor: pointer;
+    display: flex;
+    fill: currentColor;
+    flex-direction: column;
+    height: 1.5em;
+    margin: 0;
+    overflow: hidden;
+    @include lf-transitions((transform));
+    width: 1.5em;
+
+    &:hover {
+      transform: scale(1.25);
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+}
+
+// =============================================================================
+// ITEM - Alternative chip item styling (legacy support)
+// =============================================================================
+.item {
+  & {
+    align-items: center;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    border-radius: var(--lf-chip-border-radius, 1em);
+    box-shadow:
+      1px 1px 2px 0px rgba(var(--lf-color-on-surface), 0.25),
+      0 0 1px 0 rgba(var(--lf-color-on-surface), 0.375);
+    box-sizing: border-box;
+    color: rgba($onSurfaceC, 1);
+    display: inline-flex;
+    font-family: var(--lf-font-family-list, var(--lf-font-family-primary));
+    font-size: var(--lf-font-size-list, var(--lf-font-size));
+    height: var(--lf-chip-item-height, 2em);
+    margin: var(--lf-chip-item-margin, 0.25em);
+    max-width: var(--lf-chip-item-max-width, max-content);
+    outline: var(--lf-chip-item-outline, none);
+    padding: var(--lf-chip-item-padding, 0 0.75em);
+    position: relative;
+    text-decoration: var(--lf-chip-item-text-decoration, inherit);
+    text-transform: var(--lf-chip-item-text-transform, inherit);
+    @include lf-transitions((box-shadow));
+    user-select: none;
+  }
+
+  // Leading icon
+  &__icon--leading {
+    &:not(.item__icon--hidden) {
+      margin-left: -0.25em;
+      margin-right: 0.35em;
+    }
+  }
+
+  // Generic icon
+  &__icon {
+    display: block;
+    fill: currentColor;
+    height: 1em;
+    outline: none;
+    width: 1em;
+
+    &--leading:not(.item__icon--hidden) {
+      height: 1.25em;
+      width: 1.25em;
+    }
+
+    &--trailing {
+      margin-right: -0.25em;
+      margin-left: 0.35em;
+    }
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  // Checkmark SVG (filter chips)
+  &__checkmark-svg {
+    height: 1.25em;
+    @include lf-transitions(
+      (width),
+      0.4s,
+      cubic-bezier(0.18, 0.89, 0.32, 1.28)
+    );
+    width: 0;
+  }
+
+  &__checkmark-path {
+    stroke: rgba($onSurfaceC, 1);
+    stroke-dasharray: 29.7833385;
+    stroke-dashoffset: 29.7833385;
+    stroke-width: 0.15em;
+    @include lf-transitions(
+      (stroke-dashoffset),
+      0.5s,
+      cubic-bezier(0.34, 1.56, 0.64, 1)
+    );
+  }
+
+  // Primary action area
+  &__primary-action {
+    outline: none;
+
+    .item__text {
+      white-space: nowrap;
+    }
+  }
+
+  // Spinner (loading state)
+  &__spinner {
+    animation: lf-chip-spin 0.8s linear infinite;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top-color: rgba(var(--lf-color-spinner), 1);
+    height: 1em;
+    width: 1em;
+  }
+
+  &__spinner-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-left: -0.25em;
+    margin-right: 0.35em;
   }
 }

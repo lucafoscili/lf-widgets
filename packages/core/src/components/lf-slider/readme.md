@@ -111,27 +111,25 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                             | Description                                                                                                          |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `--lf-slider-border-radius`      | Sets the border radius for the slider component. Defaults to => var(--lf-ui-border-radius)                           |
-| `--lf-slider-box-shadow`         | Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
-| `--lf-slider-color-on-bg`        | Sets the color-on-bg color for the slider component. Defaults to => var(--lf-color-on-bg)                            |
-| `--lf-slider-color-primary`      | Sets the color-primary color for the slider component. Defaults to => var(--lf-color-primary)                        |
-| `--lf-slider-font-family`        | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)                  |
-| `--lf-slider-font-size`          | Sets the font size for the slider component. Defaults to => var(--lf-font-size)                                      |
-| `--lf-slider-font-weight`        | Sets the font weight for the slider component. Defaults to => var(--lf-font-weight-button)                           |
-| `--lf-slider-gap`                | Sets the gap between slider elements. Defaults to => 0.5em                                                           |
-| `--lf-slider-input-height`       | Sets the height for the slider component's input. Defaults to => 3em                                                 |
-| `--lf-slider-label-padding-left` | Sets the left padding for the slider label. Defaults to => 0.5em                                                     |
-| `--lf-slider-margin`             | Sets the margin for the slider component. Defaults to => 0 0.75em                                                    |
-| `--lf-slider-min-width`          | Sets the min-width for the slider component. Defaults to => 7em                                                      |
-| `--lf-slider-thumb-box-shadow`   | Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
-| `--lf-slider-thumb-height`       | Sets the height for the slider component's thumb. Defaults to => 1.5em                                               |
-| `--lf-slider-thumb-hover-scale`  | Sets the scale for the slider component's thumb on hover. Defaults to => 1.1                                         |
-| `--lf-slider-thumb-underlay-top` | Sets the top position for the slider component's thumb underlay. Defaults to => -0.6em                               |
-| `--lf-slider-thumb-width`        | Sets the width for the slider component's thumb. Defaults to => 1.5em                                                |
-| `--lf-slider-track-height`       | Sets the height for the slider component's track. Defaults to => 0.5em                                               |
-| `--lf-slider-track-margin-top`   | Sets the top margin for the slider component's track. Defaults to => 0.75em                                          |
+| Name                             | Description                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--lf-slider-border-radius`      | Border radius for track and thumb. Defaults to => var(--lf-ui-border-radius)                            |
+| `--lf-slider-box-shadow`         | Box shadow for track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)                    |
+| `--lf-slider-color-on-bg`        | Color for value text. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                       |
+| `--lf-slider-color-primary`      | Primary color for track fill and thumb. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-slider-font-family`        | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)     |
+| `--lf-slider-font-size`          | Sets the font size for the slider component. Defaults to => var(--lf-font-size)                         |
+| `--lf-slider-font-weight`        | Font weight for value display. Defaults to => var(--lf-font-weight-button)                              |
+| `--lf-slider-gap`                | Gap between label and track. Defaults to => 0.5em                                                       |
+| `--lf-slider-label-padding-left` | Left padding for label. Defaults to => 0.5em                                                            |
+| `--lf-slider-margin`             | Margin for slider container. Defaults to => 0 0.75em                                                    |
+| `--lf-slider-min-width`          | Minimum width for slider. Defaults to => 7em                                                            |
+| `--lf-slider-thumb-box-shadow`   | Box shadow for thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)                    |
+| `--lf-slider-thumb-height`       | Height for the thumb. Defaults to => 1.5em                                                              |
+| `--lf-slider-thumb-underlay-top` | Top position for underlay. Defaults to => -1em                                                          |
+| `--lf-slider-thumb-width`        | Width for the thumb. Defaults to => 1.5em                                                               |
+| `--lf-slider-track-height`       | Height for the track. Defaults to => 0.5em                                                              |
+| `--lf-slider-track-margin-top`   | Top margin for track. Defaults to => 0.75em                                                             |
 
 
 ----------------------------------------------

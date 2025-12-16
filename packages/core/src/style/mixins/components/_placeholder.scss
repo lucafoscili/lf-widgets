@@ -9,15 +9,41 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-placeholder.scss) for Stencil docs generation, NOT here.
+// - Exports lf-placeholder-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-placeholder-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary/icon color.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface background color.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-border-radius: Border radius for the placeholder.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-height: Height for the placeholder.
+   *       Defaults to => 100%
+   * @prop --lf-#{$comp}-icon-size: Size for the animated icon.
+   *       Defaults to => 3em
+   * @prop --lf-#{$comp}-min-height: Minimum height.
+   *       Defaults to => 3em
+   * @prop --lf-#{$comp}-min-width: Minimum width.
+   *       Defaults to => 3em
+   * @prop --lf-#{$comp}-padding: Padding for the placeholder.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-width: Width for the placeholder.
+   *       Defaults to => 100%
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "placeholder";

@@ -82,21 +82,21 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                                      |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `--lf-badge-background-alpha` | Sets the background alpha for the badge. Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)                    |
-| `--lf-badge-border-radius`    | Sets the border radius for the badge. Defaults to => 50%                                                         |
-| `--lf-badge-box-shadow`       | Sets the box shadow for the badge. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)              |
-| `--lf-badge-color-on-primary` | Sets the text color for the badge label. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))   |
-| `--lf-badge-color-primary`    | Sets the primary/background color for the badge. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
-| `--lf-badge-font-family`      | Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)               |
-| `--lf-badge-font-size`        | Sets the font size for the badge component. Defaults to => var(--lf-font-size)                                   |
-| `--lf-badge-font-weight`      | Sets the font weight for the badge. Defaults to => var(--lf-font-weight-button)                                  |
-| `--lf-badge-height`           | Sets the height for the badge. Defaults to => 1.5em                                                              |
-| `--lf-badge-image-height`     | Sets the height for the badge image. Defaults to => 1em                                                          |
-| `--lf-badge-image-width`      | Sets the width for the badge image. Defaults to => 1em                                                           |
-| `--lf-badge-padding`          | Sets the padding for the badge. Defaults to => 0.25em                                                            |
-| `--lf-badge-width`            | Sets the width for the badge. Defaults to => 1.5em                                                               |
+| Name                          | Description                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--lf-badge-background-alpha` | Background alpha for the badge. Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)                    |
+| `--lf-badge-border-radius`    | Border radius for the badge. Defaults to => 50%                                                         |
+| `--lf-badge-box-shadow`       | Box shadow for the badge. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)              |
+| `--lf-badge-color-on-primary` | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))    |
+| `--lf-badge-color-primary`    | Primary/background color for the badge. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-badge-font-family`      | Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)      |
+| `--lf-badge-font-size`        | Sets the font size for the badge component. Defaults to => var(--lf-font-size)                          |
+| `--lf-badge-font-weight`      | Font weight for the badge. Defaults to => var(--lf-font-weight-button)                                  |
+| `--lf-badge-height`           | Height for the badge. Defaults to => 1.5em                                                              |
+| `--lf-badge-image-height`     | Height for the badge image. Defaults to => 1em                                                          |
+| `--lf-badge-image-width`      | Width for the badge image. Defaults to => 1em                                                           |
+| `--lf-badge-padding`          | Padding for the badge. Defaults to => 0.25em                                                            |
+| `--lf-badge-width`            | Width for the badge. Defaults to => 1.5em                                                               |
 
 
 ## Dependencies

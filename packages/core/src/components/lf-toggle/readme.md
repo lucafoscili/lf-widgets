@@ -109,33 +109,23 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                              | Description                                                                                                                        |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `--lf-toggle-border-radius`       | Sets the border radius for the toggle track. Defaults to => var(--lf-ui-border-radius, 1em)                                        |
-| `--lf-toggle-box-shadow`          | Sets the box shadow for the toggle track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)                           |
-| `--lf-toggle-color-on-bg`         | Color for label text. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                                                  |
-| `--lf-toggle-color-on-primary`    | Color for checked thumb indicators. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary)) Layout/sizing variables: |
-| `--lf-toggle-color-on-surface`    | Color for unchecked thumb. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))                                   |
-| `--lf-toggle-color-primary`       | Primary color for checked track. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                                   |
-| `--lf-toggle-color-surface`       | Surface color for unchecked track. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                                 |
-| `--lf-toggle-font-family`         | Sets the primary font family for the toggle component. Defaults to => var(--lf-font-family-primary)                                |
-| `--lf-toggle-font-size`           | Sets the font size for the toggle component. Defaults to => var(--lf-font-size)                                                    |
-| `--lf-toggle-form-padding`        | Sets the padding for the toggle form field. Defaults to => 0.5em                                                                   |
-| `--lf-toggle-input-height`        | Sets the height for the toggle input. Defaults to => 3em                                                                           |
-| `--lf-toggle-label-min-width`     | Sets the min-width for the toggle label. Defaults to => max-content                                                                |
-| `--lf-toggle-label-padding-left`  | Sets the left padding for the toggle label. Defaults to => 1em                                                                     |
-| `--lf-toggle-label-padding-right` | Sets the right padding for the toggle label. Defaults to => 1em                                                                    |
-| `--lf-toggle-margin`              | Sets the margin for the toggle component. Defaults to => 1em 0.5em                                                                 |
-| `--lf-toggle-min-width`           | Sets the min-width for the toggle component. Defaults to => 4em                                                                    |
-| `--lf-toggle-thumb-border-radius` | Sets the border radius for the thumb. Defaults to => 50%                                                                           |
-| `--lf-toggle-thumb-inset`         | Sets the inset for the thumb positioning. Defaults to => 0.125em                                                                   |
-| `--lf-toggle-thumb-offset`        | Sets the offset for checked thumb position. Defaults to => 1.25em                                                                  |
-| `--lf-toggle-thumb-shadow`        | Sets the box shadow for the thumb. Defaults to => 0 2px 4px rgba(0, 0, 0, 0.2)                                                     |
-| `--lf-toggle-thumb-size`          | Sets the size for the toggle thumb. Defaults to => 1.25em                                                                          |
-| `--lf-toggle-track-border-radius` | Sets the border radius for the track. Defaults to => 1em                                                                           |
-| `--lf-toggle-track-height`        | Sets the height for the toggle track. Defaults to => 1.5em                                                                         |
-| `--lf-toggle-track-width`         | Sets the width for the toggle track. Defaults to => 2.75em                                                                         |
-| `--lf-toggle-underlay-size`       | Sets the size for the focus underlay. Defaults to => 2.5em                                                                         |
+| Name                              | Description                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `--lf-toggle-color-on-bg`         | Label text color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                       |
+| `--lf-toggle-color-on-surface`    | Thumb color in off state. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))     |
+| `--lf-toggle-color-primary`       | Primary color for active/on state. Defaults to => var(--lf-state-primary, var(--lf-color-primary))  |
+| `--lf-toggle-color-surface`       | Surface color for track background. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) |
+| `--lf-toggle-font-family`         | Sets the primary font family for the toggle component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-toggle-font-size`           | Sets the font size for the toggle component. Defaults to => var(--lf-font-size)                     |
+| `--lf-toggle-thumb-border-radius` | Border radius for thumb. Defaults to => 50%                                                         |
+| `--lf-toggle-thumb-inset`         | Inset for thumb positioning. Defaults to => 0.125em                                                 |
+| `--lf-toggle-thumb-offset`        | Translation distance when on. Defaults to => 1.25em                                                 |
+| `--lf-toggle-thumb-shadow`        | Box shadow for thumb. Defaults to => 0 2px 4px rgba(0, 0, 0, 0.2)                                   |
+| `--lf-toggle-thumb-size`          | Size for the thumb. Defaults to => 1.25em                                                           |
+| `--lf-toggle-track-border-radius` | Border radius for track. Defaults to => 1em                                                         |
+| `--lf-toggle-track-height`        | Height for the track. Defaults to => 1.5em                                                          |
+| `--lf-toggle-track-width`         | Width for the track. Defaults to => 2.75em                                                          |
+| `--lf-toggle-underlay-size`       | Size for focus underlay. Defaults to => 2.5em                                                       |
 
 
 ## Dependencies

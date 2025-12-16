@@ -87,19 +87,24 @@ Type: `Promise<void>`
 
 | Name                               | Description                                                                                           |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `--lf-snackbar-action-font-family` | Font family for action button. Defaults to => inherit                                                 |
-| `--lf-snackbar-action-font-size`   | Font size for action button. Defaults to => 0.875em                                                   |
+| `--lf-snackbar-action-font-family` | Font family for action buttons. Defaults to => inherit                                                |
+| `--lf-snackbar-action-font-size`   | Font size for action buttons. Defaults to => 0.875em                                                  |
 | `--lf-snackbar-border-radius`      | Sets the border radius for the snackbar component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-snackbar-close-button-size`  | Size for close button. Defaults to => 1.5em                                                           |
+| `--lf-snackbar-color-on-primary`   | Text on primary. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))                |
 | `--lf-snackbar-color-on-surface`   | Sets the color-on-surface color for the snackbar component. Defaults to => var(--lf-color-on-surface) |
 | `--lf-snackbar-color-primary`      | Sets the color-primary color for the snackbar component. Defaults to => var(--lf-color-primary)       |
 | `--lf-snackbar-color-surface`      | Sets the color-surface color for the snackbar component. Defaults to => var(--lf-color-surface)       |
 | `--lf-snackbar-font-family`        | Sets the primary font family for the snackbar component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-snackbar-font-size`          | Sets the font size for the snackbar component. Defaults to => var(--lf-font-size)                     |
-| `--lf-snackbar-glass-opacity`      | Opacity for the glass reflection effect. Defaults to => var(--lf-ui-alpha-glass, 0.375)               |
-| `--lf-snackbar-max-width`          | Sets the maximum width for the snackbar. Defaults to => clamp(288px, 80vw, 568px)                     |
-| `--lf-snackbar-message-font-size`  | Font size for the message. Defaults to => 0.875em                                                     |
-| `--lf-snackbar-min-width`          | Sets the minimum width for the snackbar. Defaults to => 288px                                         |
-| `--lf-snackbar-padding`            | Sets the padding for the snackbar. Defaults to => 0.875em 1em                                         |
+| `--lf-snackbar-glass-opacity`      | Opacity for glass effect. Defaults to => var(--lf-ui-alpha-glass, 0.375)                              |
+| `--lf-snackbar-icon-color`         | Color for leading icon. Defaults to => rgba($primaryC, 1)                                             |
+| `--lf-snackbar-icon-height`        | Height for icon. Defaults to => 1.5em                                                                 |
+| `--lf-snackbar-icon-width`         | Width for icon. Defaults to => 1.5em                                                                  |
+| `--lf-snackbar-max-width`          | Maximum width for snackbar. Defaults to => clamp(288px, 80vw, 568px)                                  |
+| `--lf-snackbar-message-font-size`  | Font size for message. Defaults to => 0.875em                                                         |
+| `--lf-snackbar-min-width`          | Minimum width for snackbar. Defaults to => 288px                                                      |
+| `--lf-snackbar-padding`            | Padding for snackbar content. Defaults to => 0.875em 1em                                              |
 
 
 ## Dependencies

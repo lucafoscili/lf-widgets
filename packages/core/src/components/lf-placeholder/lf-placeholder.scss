@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/placeholder" as placeholder-fc;
 
 $comp: "placeholder";
 
@@ -22,36 +23,5 @@ $comp: "placeholder";
   }
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* State-aware color variables (set via data-lf attribute):
-* @prop --lf-#{$comp}-color-primary: Primary color for the icon.
-*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
-* @prop --lf-#{$comp}-color-surface: Surface background color.
-*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
-* @prop --lf-#{$comp}-color-on-surface: Color for text content.
-*                                       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
-*
-* Layout/sizing variables:
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the placeholder.
-*                                    Defaults to => var(--lf-ui-border-radius)
-* @prop --lf-#{$comp}-height: Sets the height for the placeholder.
-*                             Defaults to => 100%
-* @prop --lf-#{$comp}-hor-alignment: Sets the horizontal alignment for the #{$comp} component.
-*                                    Defaults to => center
-* @prop --lf-#{$comp}-icon-size: Sets the size for the icon.
-*                                Defaults to => 3em
-* @prop --lf-#{$comp}-min-height: Sets the minimum height for the placeholder.
-*                                 Defaults to => 3em
-* @prop --lf-#{$comp}-min-width: Sets the minimum width for the placeholder.
-*                                Defaults to => 3em
-* @prop --lf-#{$comp}-padding: Sets the padding for the placeholder.
-*                              Defaults to => 1em
-* @prop --lf-#{$comp}-ver-alignment: Sets the vertical alignment for the #{$comp} component.
-*                                    Defaults to => center
-* @prop --lf-#{$comp}-width: Sets the width for the placeholder.
-*                            Defaults to => 100%
-*/
+// Import documentation from FC mixin (single source of truth)
+@include placeholder-fc.lf-placeholder-docs($comp);

@@ -1,0 +1,155 @@
+// =============================================================================
+// TOAST - Component Styles
+// =============================================================================
+// Toast-specific styles for the LfToastFC functional component.
+// Notification messages with accent bar and optional actions.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-toast-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-toast-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for accent bar.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-bg: Message text color.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-surface: Background color for toast.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-accent-height: Height for accent bar.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-border-radius: Border radius for toast.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-icon-color: Color for leading icon.
+   *       Defaults to => rgba($primaryC, 1)
+   * @prop --lf-#{$comp}-icon-height: Height for icon.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-icon-margin: Margin for icon.
+   *       Defaults to => auto 0.5em
+   * @prop --lf-#{$comp}-icon-opacity: Opacity for icon.
+   *       Defaults to => 1
+   * @prop --lf-#{$comp}-icon-width: Width for icon.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-message-align-content: Alignment for message content.
+   *       Defaults to => center
+   * @prop --lf-#{$comp}-message-padding: Padding for message.
+   *       Defaults to => 0.75em 0.75em 0.75em 0
+   * @prop --lf-#{$comp}-padding: Padding for toast wrapper.
+   *       Defaults to => 0.75em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "toast";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Toast Container
+// -----------------------------------------------------------------------------
+.toast {
+  & {
+    animation: lf-toast-slide-in 250ms ease-out;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    border-radius: var(--lf-toast-border-radius, var(--lf-ui-border-radius));
+    box-shadow: var(--lf-ui-box-shadow-modal);
+    box-sizing: border-box;
+    display: grid;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Accent Bar
+  // ---------------------------------------------------------------------------
+  &__accent {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      height: var(--lf-toast-accent-height, 0.25em);
+      width: 100%;
+    }
+
+    &--temporary {
+      animation: lf-reduce-width linear var(--lf_toast_timer, 5000ms) forwards;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message Wrapper
+  // ---------------------------------------------------------------------------
+  &__message-wrapper {
+    align-content: var(--lf-toast-message-align-content, center);
+    box-sizing: border-box;
+    display: grid;
+    gap: 1em;
+    grid-template-columns: 1fr;
+    height: 100%;
+    overflow: auto;
+    padding: var(--lf-toast-padding, 0.75em);
+
+    &--has-icon {
+      grid-template-columns: auto 1fr;
+    }
+
+    &--has-actions {
+      grid-template-columns: 1fr auto;
+    }
+
+    &--full {
+      grid-template-columns: auto 1fr auto;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    & {
+      color: var(--lf-toast-icon-color, rgba($primaryC, 1));
+      height: var(--lf-toast-icon-height, 1.5em);
+      margin: var(--lf-toast-icon-margin, auto 0.5em);
+      opacity: var(--lf-toast-icon-opacity, 1);
+      width: var(--lf-toast-icon-width, 1.5em);
+    }
+
+    &--has-actions {
+      & {
+        cursor: pointer;
+        margin: auto 0.5em auto auto;
+        position: relative;
+        @include lf-transitions-quick((opacity));
+      }
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message
+  // ---------------------------------------------------------------------------
+  &__message {
+    color: rgba($bgC, 1);
+    overflow: auto;
+    padding: var(--lf-toast-message-padding, 0.75em 0.75em 0.75em 0);
+  }
+}
+
+// NOTE: Toast keyframes are centralized in _transitions.scss:
+// - lf-toast-slide-in, lf-toast-slide-up
+// - lf-reduce-width (shared with other components)

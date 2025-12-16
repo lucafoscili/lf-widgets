@@ -9,15 +9,39 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-checkbox.scss) for Stencil docs generation, NOT here.
+// - Exports lf-checkbox-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-checkbox-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for checked/active states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Color for checkmark on primary background.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface/track background color.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-animation-duration: Animation duration for state changes.
+   *       Defaults to => 90ms
+   * @prop --lf-#{$comp}-border-radius: Border radius for the background.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-checkmark-stroke-width: Stroke width for checkmark.
+   *       Defaults to => 3.12px
+   * @prop --lf-#{$comp}-size: Size for the checkbox control.
+   *       Defaults to => 1.5em
+   * @prop --lf-#{$comp}-surface-border-radius: Border radius for the surface.
+   *       Defaults to => 50%
+   * @prop --lf-#{$comp}-surface-size: Size for the surface area.
+   *       Defaults to => 3.5em
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "checkbox";

@@ -79,32 +79,28 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                    | Description                                                                                                                     |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `--lf-photoframe-aspect-ratio`          | Sets the aspect ratio for the photoframe. Defaults to => auto                                                                   |
-| `--lf-photoframe-border-radius`         | Sets the border radius for the photoframe. Defaults to => var(--lf-ui-border-radius)                                            |
-| `--lf-photoframe-color-bg`              | Background color for overlay. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                                             |
-| `--lf-photoframe-color-on-bg`           | Color for content on overlay. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                                       |
-| `--lf-photoframe-color-on-surface`      | Color for icon fallback content. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface)) Layout/sizing variables: |
-| `--lf-photoframe-color-surface`         | Surface background color for icon fallback. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                     |
-| `--lf-photoframe-description-size`      | Sets the font size for the description. Defaults to => 0.875em                                                                  |
-| `--lf-photoframe-fade-out-time`         | Sets the fade out time for the placeholder of the photoframe component. Defaults to => 1750ms                                   |
-| `--lf-photoframe-fit`                   | Sets the object fit for the image. Defaults to => cover                                                                         |
-| `--lf-photoframe-font-family`           | Sets the primary font family for the photoframe component. Defaults to => var(--lf-font-family-primary)                         |
-| `--lf-photoframe-font-size`             | Sets the font size for the photoframe component. Defaults to => var(--lf-font-size)                                             |
-| `--lf-photoframe-height`                | Sets the height for the photoframe. Defaults to => auto                                                                         |
-| `--lf-photoframe-image-fit`             | Sets the object fit for the image of the photoframe component. Defaults to => cover                                             |
-| `--lf-photoframe-overlay-align`         | Sets the alignment for overlay content. Defaults to => flex-end                                                                 |
-| `--lf-photoframe-overlay-justify`       | Sets the justification for overlay content. Defaults to => flex-end                                                             |
-| `--lf-photoframe-overlay-opacity`       | Sets the default opacity for the overlay. Defaults to => 0                                                                      |
-| `--lf-photoframe-overlay-opacity-hover` | Sets the hover opacity for the overlay. Defaults to => 1                                                                        |
-| `--lf-photoframe-overlay-padding`       | Sets the padding for the overlay. Defaults to => 1em                                                                            |
-| `--lf-photoframe-overlay-zindex`        | Sets the z-index for the overlay of the photoframe component. Defaults to => 2                                                  |
-| `--lf-photoframe-placeholder-fit`       | Sets the object fit for the placeholder of the photoframe component. Defaults to => cover                                       |
-| `--lf-photoframe-position`              | Sets the object position for the image. Defaults to => center                                                                   |
-| `--lf-photoframe-title-size`            | Sets the font size for the title. Defaults to => 1.125em                                                                        |
-| `--lf-photoframe-title-weight`          | Sets the font weight for the title. Defaults to => 600                                                                          |
-| `--lf-photoframe-width`                 | Sets the width for the photoframe. Defaults to => auto                                                                          |
+| Name                                    | Description                                                                                             |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--lf-photoframe-aspect-ratio`          | Aspect ratio for the frame. Defaults to => auto                                                         |
+| `--lf-photoframe-border-radius`         | Border radius for the frame. Defaults to => var(--lf-ui-border-radius)                                  |
+| `--lf-photoframe-color-bg`              | Background color for overlay. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                     |
+| `--lf-photoframe-color-on-bg`           | Text color on overlay. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                      |
+| `--lf-photoframe-color-on-surface`      | Icon color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))            |
+| `--lf-photoframe-color-surface`         | Surface background for icon fallback. Defaults to => var(--lf-state-surface, var(--lf-color-surface))   |
+| `--lf-photoframe-description-size`      | Font size for description. Defaults to => 0.875em                                                       |
+| `--lf-photoframe-fit`                   | Object fit for the image. Defaults to => cover                                                          |
+| `--lf-photoframe-font-family`           | Sets the primary font family for the photoframe component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-photoframe-font-size`             | Sets the font size for the photoframe component. Defaults to => var(--lf-font-size)                     |
+| `--lf-photoframe-height`                | Height for the frame. Defaults to => auto                                                               |
+| `--lf-photoframe-overlay-align`         | Alignment for overlay content. Defaults to => flex-end                                                  |
+| `--lf-photoframe-overlay-justify`       | Justify content for overlay. Defaults to => flex-end                                                    |
+| `--lf-photoframe-overlay-opacity`       | Opacity for the overlay. Defaults to => 0                                                               |
+| `--lf-photoframe-overlay-opacity-hover` | Opacity on hover. Defaults to => 1                                                                      |
+| `--lf-photoframe-overlay-padding`       | Padding for overlay content. Defaults to => 1em                                                         |
+| `--lf-photoframe-position`              | Object position for the image. Defaults to => center                                                    |
+| `--lf-photoframe-title-size`            | Font size for title. Defaults to => 1.125em                                                             |
+| `--lf-photoframe-title-weight`          | Font weight for title. Defaults to => 600                                                               |
+| `--lf-photoframe-width`                 | Width for the frame. Defaults to => auto                                                                |
 
 
 ## Dependencies

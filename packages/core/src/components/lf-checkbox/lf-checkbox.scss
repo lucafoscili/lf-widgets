@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/checkbox" as checkbox-fc;
 
 $comp: "checkbox";
 @include lf-comp-setup($comp, "true", "true", "false", "false", "true");
@@ -8,40 +9,5 @@ $comp: "checkbox";
   @include lf-el-stretch;
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* State-aware color variables (set via data-lf attribute):
-* @prop --lf-#{$comp}-color-primary: Primary color for checked/active states.
-*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
-* @prop --lf-#{$comp}-color-on-primary: Color for content on primary backgrounds.
-*                                       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
-* @prop --lf-#{$comp}-color-surface: Surface/track background color.
-*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
-*
-* Layout/sizing variables:
-* @prop --lf-#{$comp}-animation-duration: Sets the animation duration for state changes.
-*                                         Defaults to => 90ms
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} background.
-*                                    Defaults to => var(--lf-ui-border-radius)
-* @prop --lf-#{$comp}-checkmark-stroke-width: Sets the stroke width for the checkmark.
-*                                             Defaults to => 3.12px
-* @prop --lf-#{$comp}-form-padding: Sets the padding for the #{$comp} form field.
-*                                   Defaults to => 0.5em
-* @prop --lf-#{$comp}-label-min-width: Sets the min-width for the #{$comp} label.
-*                                      Defaults to => max-content
-* @prop --lf-#{$comp}-label-padding-left: Sets the left padding for the #{$comp} label.
-*                                         Defaults to => 1em
-* @prop --lf-#{$comp}-label-padding-right: Sets the right padding for the #{$comp} label.
-*                                          Defaults to => 1em
-* @prop --lf-#{$comp}-mixedmark-width: Sets the width for the #{$comp} mixed mark.
-*                                      Defaults to => 70%
-* @prop --lf-#{$comp}-surface-border-radius: Sets the border radius for the #{$comp} surface.
-*                                            Defaults to => 50%
-* @prop --lf-#{$comp}-surface-size: Sets the size for the #{$comp} surface.
-*                                   Defaults to => 3.5em
-* @prop --lf-#{$comp}-size: Sets the size for the #{$comp} component.
-*                           Defaults to => 1.5em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include checkbox-fc.lf-checkbox-docs($comp);

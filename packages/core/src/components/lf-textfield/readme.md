@@ -152,17 +152,24 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                 | Description                                                                                            |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `--lf-textfield-font-family`         | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-textfield-font-size`           | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
-| `--lf-textfield-height`              | Sets the height for the textfield component. Defaults to => 3.5em                                      |
-| `--lf-textfield-icon-action-padding` | Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0                            |
-| `--lf-textfield-icon-padding`        | Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em                                   |
-| `--lf-textfield-icon-size`           | Sets the size for the textfield icons. Defaults to => 1.5em                                            |
-| `--lf-textfield-input-cursor`        | Sets the cursor for the textfield input. Defaults to => text                                           |
-| `--lf-textfield-padding`             | Sets the padding for the textfield component. Defaults to => 0 1em                                     |
-| `--lf-textfield-resizer-min-height`  | Sets the minimum height for the textfield resizer. Defaults to => 3em                                  |
+| Name                               | Description                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--lf-textfield-border-radius`     | Border radius for the field. Defaults to => var(--lf-ui-border-radius)                                 |
+| `--lf-textfield-color-border`      | Border color for outlined variant. Defaults to => var(--lf-state-border, var(--lf-color-border))       |
+| `--lf-textfield-color-on-bg`       | Text and icon color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                       |
+| `--lf-textfield-color-primary`     | Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))        |
+| `--lf-textfield-color-surface`     | Surface color for raised variant. Defaults to => var(--lf-state-surface, var(--lf-color-surface))      |
+| `--lf-textfield-counter-padding`   | Padding for character counter. Defaults to => 0.5em 0.875em 0 0                                        |
+| `--lf-textfield-font-family`       | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-textfield-font-size`         | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
+| `--lf-textfield-height`            | Height for the textfield. Defaults to => 3.5em                                                         |
+| `--lf-textfield-helper-padding`    | Padding for helper text. Defaults to => 0.375em 0.875em 0 0.875em                                      |
+| `--lf-textfield-icon-size`         | Size for leading/trailing icons. Defaults to => 1.5em                                                  |
+| `--lf-textfield-input-padding`     | Padding for the input element. Defaults to => 0.25em 0.5em                                             |
+| `--lf-textfield-label-font-size`   | Font size for the label. Defaults to => 0.75em                                                         |
+| `--lf-textfield-label-font-weight` | Font weight for the label. Defaults to => var(--lf-font-weight-button)                                 |
+| `--lf-textfield-label-transition`  | Transition for label animation. Defaults to => 150ms cubic-bezier(0.4, 0, 0.2, 1)                      |
+| `--lf-textfield-outline-width`     | Width for focus outline. Defaults to => 0.15em                                                         |
 
 
 ## Dependencies

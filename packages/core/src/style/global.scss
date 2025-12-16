@@ -20,7 +20,8 @@
 // - Phase 1 Foundation: Complete (_colors, _transitions, _component-base, _states)
 // - Phase 2 Simple: Complete (badge, button, checkbox, chip, image, photoframe,
 //                   placeholder, progressbar, spinner, toggle)
-// - Other components: Using legacy system (_fc-*.scss)
+// - Phase 3 Complex: Complete (chat, slider, snackbar, textfield, toast)
+// - ALL FC COMPONENTS MIGRATED TO UNIFIED SYSTEM!
 // - Cross-Reference: SCSS_UNIFICATION.md
 // ============================================================================
 
@@ -39,37 +40,42 @@
 // Each file is included directly to avoid variable scoping issues.
 @use "./mixins/components/badge";
 @use "./mixins/components/button";
+@use "./mixins/components/chat";
 @use "./mixins/components/checkbox";
 @use "./mixins/components/chip";
 @use "./mixins/components/image";
 @use "./mixins/components/photoframe";
 @use "./mixins/components/placeholder";
 @use "./mixins/components/progressbar";
+@use "./mixins/components/slider";
+@use "./mixins/components/snackbar";
 @use "./mixins/components/spinner";
+@use "./mixins/components/textfield";
+@use "./mixins/components/toast";
 @use "./mixins/components/toggle";
 
 // -----------------------------------------------------------------------------
-// Legacy Functional Component Styles (MIGRATION IN PROGRESS)
+// Legacy Functional Component Styles (DEPRECATED - kept for backward compat)
 // -----------------------------------------------------------------------------
-// These will be migrated to mixins/components/ following the unified pattern.
-// Once migrated, remove from here and add to the migrated section above.
+// All FC components have been migrated to the unified system above.
+// These legacy files are kept temporarily for reference and backward compat.
 @use "./mixins/fcomponents";
 @use "./mixins/fc-form-field";
-@use "./mixins/fc-states"; // DEPRECATED: Use ./mixins/states instead (kept for backward compat)
+@use "./mixins/fc-states"; // DEPRECATED: Use ./mixins/states instead
 // @use "./mixins/fc-badge";       // MIGRATED to ./mixins/components/badge
 // @use "./mixins/fc-button";      // MIGRATED to ./mixins/components/button
-@use "./mixins/fc-chat";
+// @use "./mixins/fc-chat";        // MIGRATED to ./mixins/components/chat
 // @use "./mixins/fc-checkbox";    // MIGRATED to ./mixins/components/checkbox
 // @use "./mixins/fc-chip";        // MIGRATED to ./mixins/components/chip
 // @use "./mixins/fc-image";       // MIGRATED to ./mixins/components/image
 // @use "./mixins/fc-photoframe";  // MIGRATED to ./mixins/components/photoframe
 // @use "./mixins/fc-placeholder"; // MIGRATED to ./mixins/components/placeholder
 // @use "./mixins/fc-progressbar"; // MIGRATED to ./mixins/components/progressbar
-@use "./mixins/fc-slider";
-@use "./mixins/fc-snackbar";
+// @use "./mixins/fc-slider";      // MIGRATED to ./mixins/components/slider
+// @use "./mixins/fc-snackbar";    // MIGRATED to ./mixins/components/snackbar
 // @use "./mixins/fc-spinner";     // MIGRATED to ./mixins/components/spinner
-@use "./mixins/fc-textfield";
-@use "./mixins/fc-toast";
+// @use "./mixins/fc-textfield";   // MIGRATED to ./mixins/components/textfield
+// @use "./mixins/fc-toast";       // MIGRATED to ./mixins/components/toast
 // @use "./mixins/fc-toggle";      // MIGRATED to ./mixins/components/toggle
 
 // -----------------------------------------------------------------------------

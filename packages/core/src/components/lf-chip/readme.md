@@ -112,30 +112,31 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                             | Description                                                                                                        |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `--lf-chip-align-items`          | Sets the alignment for the wrapper. Defaults to => center                                                          |
-| `--lf-chip-border-radius`        | Sets the border radius for chips. Defaults to => 1em                                                               |
-| `--lf-chip-color-border`         | Border color for chips. Defaults to => var(--lf-state-border, var(--lf-color-border))                              |
-| `--lf-chip-color-on-bg`          | Color for text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Layout/sizing variables: |
-| `--lf-chip-color-on-primary`     | Color for content on primary backgrounds. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))    |
-| `--lf-chip-color-on-surface`     | Color for content on surface backgrounds. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))    |
-| `--lf-chip-color-primary`        | Primary color for selected/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))          |
-| `--lf-chip-color-surface`        | Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                          |
-| `--lf-chip-font-family`          | Sets the primary font family for the chip component. Defaults to => var(--lf-font-family-primary)                  |
-| `--lf-chip-font-size`            | Sets the font size for the chip component. Defaults to => var(--lf-font-size)                                      |
-| `--lf-chip-height`               | Sets the height for chip items. Defaults to => 2em                                                                 |
-| `--lf-chip-item-height`          | Sets the height for the items. Defaults to => 2em                                                                  |
-| `--lf-chip-item-margin`          | Sets the margin for the items. Defaults to => 0.25em                                                               |
-| `--lf-chip-item-max-width`       | Sets the max-width for the items. Defaults to => max-content                                                       |
-| `--lf-chip-item-outline`         | Sets the outline for the items. Defaults to => none                                                                |
-| `--lf-chip-item-padding`         | Sets the padding for the items. Defaults to => 0 0.75em                                                            |
-| `--lf-chip-item-text-decoration` | Sets the text-decoration for the items. Defaults to => inherit                                                     |
-| `--lf-chip-item-text-transform`  | Sets the text-transform for the items. Defaults to => inherit                                                      |
-| `--lf-chip-margin`               | Sets the margin for the wrapper. Defaults to => 0.25em                                                             |
-| `--lf-chip-padding`              | Sets the padding for chips. Defaults to => 0 0.75em                                                                |
-| `--lf-chip-set-gap`              | Sets the gap for chip sets. Defaults to => 0.5em                                                                   |
-| `--lf-chip-set-padding`          | Sets the padding for chip sets. Defaults to => 0.25em                                                              |
+| Name                             | Description                                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--lf-chip-align-items`          | Sets the alignment for the wrapper. Defaults to => center                                                       |
+| `--lf-chip-border-radius`        | Sets the border radius for chips. Defaults to => 1em                                                            |
+| `--lf-chip-color-border`         | Border color for chips. Defaults to => var(--lf-state-border, var(--lf-color-border))                           |
+| `--lf-chip-color-on-bg`          | Color for text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Wrapper variables:    |
+| `--lf-chip-color-on-primary`     | Color for content on primary backgrounds. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary)) |
+| `--lf-chip-color-on-surface`     | Color for content on surface backgrounds. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface)) |
+| `--lf-chip-color-primary`        | Primary color for selected/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))       |
+| `--lf-chip-color-surface`        | Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                       |
+| `--lf-chip-font-family`          | Sets the primary font family for the chip component. Defaults to => var(--lf-font-family-primary)               |
+| `--lf-chip-font-size`            | Sets the font size for the chip component. Defaults to => var(--lf-font-size)                                   |
+| `--lf-chip-height`               | Sets the height for chip items. Defaults to => 2em                                                              |
+| `--lf-chip-indent-multiplier`    | Multiplier for indent width calculation. Defaults to => 10 Item/chip variables:                                 |
+| `--lf-chip-item-height`          | Sets the height for the items. Defaults to => 2em                                                               |
+| `--lf-chip-item-margin`          | Sets the margin for the items. Defaults to => 0.25em                                                            |
+| `--lf-chip-item-max-width`       | Sets the max-width for the items. Defaults to => max-content                                                    |
+| `--lf-chip-item-outline`         | Sets the outline for the items. Defaults to => none                                                             |
+| `--lf-chip-item-padding`         | Sets the padding for the items. Defaults to => 0 0.75em                                                         |
+| `--lf-chip-item-text-decoration` | Sets the text-decoration for the items. Defaults to => inherit                                                  |
+| `--lf-chip-item-text-transform`  | Sets the text-transform for the items. Defaults to => inherit                                                   |
+| `--lf-chip-margin`               | Sets the margin for the wrapper. Defaults to => 0.25em                                                          |
+| `--lf-chip-padding`              | Sets the padding for chips. Defaults to => 0 0.75em Chip set variables:                                         |
+| `--lf-chip-set-gap`              | Sets the gap for chip sets. Defaults to => 0.5em                                                                |
+| `--lf-chip-set-padding`          | Sets the padding for chip sets. Defaults to => 0.25em                                                           |
 
 
 ## Dependencies

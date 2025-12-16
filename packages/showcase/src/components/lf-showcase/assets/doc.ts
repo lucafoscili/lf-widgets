@@ -597,20 +597,24 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-badge-background-color",
-        docs: "Sets the background color for the badge component. Defaults to => rgba(var(--lf-fc-color-primary, var(--lf-color-primary)), 0.875)",
+        name: "--lf-badge-background-alpha",
+        docs: "Background alpha for the badge. Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)",
       },
       {
         name: "--lf-badge-border-radius",
-        docs: "Sets the border radius for the badge component. Defaults to => 50%",
+        docs: "Border radius for the badge. Defaults to => 50%",
       },
       {
         name: "--lf-badge-box-shadow",
-        docs: "Sets the box shadow for the badge component. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)",
+        docs: "Box shadow for the badge. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-badge-color-on-primary",
-        docs: "Sets the text color for the badge label. Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-badge-color-primary",
+        docs: "Primary/background color for the badge. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-badge-font-family",
@@ -622,27 +626,27 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-badge-font-weight",
-        docs: "Sets the font weight for the badge component. Defaults to => var(--lf-font-weight-button)",
+        docs: "Font weight for the badge. Defaults to => var(--lf-font-weight-button)",
       },
       {
         name: "--lf-badge-height",
-        docs: "Sets the height for the badge component. Defaults to => 1.5em",
+        docs: "Height for the badge. Defaults to => 1.5em",
       },
       {
         name: "--lf-badge-image-height",
-        docs: "Sets the height for the badge image. Defaults to => 1em",
+        docs: "Height for the badge image. Defaults to => 1em",
       },
       {
         name: "--lf-badge-image-width",
-        docs: "Sets the width for the badge image. Defaults to => 1em",
+        docs: "Width for the badge image. Defaults to => 1em",
       },
       {
         name: "--lf-badge-padding",
-        docs: "Sets the padding for the badge component. Defaults to => 0.25em",
+        docs: "Padding for the badge. Defaults to => 0.25em",
       },
       {
         name: "--lf-badge-width",
-        docs: "Sets the width for the badge component. Defaults to => 1.5em",
+        docs: "Width for the badge. Defaults to => 1.5em",
       },
     ],
   },
@@ -967,19 +971,23 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-button-align-items",
-        docs: "Sets the align items for the button component. Defaults to => center",
+        docs: "Alignment for button content. Defaults to => center",
       },
       {
         name: "--lf-button-border-radius",
-        docs: "Sets the border radius for the button component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the button. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-button-color-on-primary",
+        docs: "Text color on filled button surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-button-color-primary",
-        docs: "Sets the primary color for the button component. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))",
+        docs: "Primary color for the button. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-button-cursor",
-        docs: "Sets the cursor for the button component. Defaults to => pointer",
+        docs: "Cursor style for the button. Defaults to => pointer",
       },
       {
         name: "--lf-button-font-family",
@@ -991,39 +999,39 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-button-font-weight",
-        docs: "Sets the font weight for the button component. Defaults to => var(--lf-font-weight-primary)",
+        docs: "Font weight for the button. Defaults to => var(--lf-font-weight-primary)",
       },
       {
         name: "--lf-button-height",
-        docs: "Sets the height for the button component. Defaults to => 3em",
+        docs: "Height for the button. Defaults to => 3em",
       },
       {
         name: "--lf-button-icon-height",
-        docs: "Sets the icon height for the button component. Defaults to => 1.5em",
+        docs: "Icon height inside the button. Defaults to => 1.5em",
       },
       {
         name: "--lf-button-icon-width",
-        docs: "Sets the icon width for the button component. Defaults to => 1.5em",
+        docs: "Icon width inside the button. Defaults to => 1.5em",
       },
       {
         name: "--lf-button-justify-content",
-        docs: "Sets the justify content for the button component. Defaults to => center",
+        docs: "Justify content for button. Defaults to => center",
       },
       {
         name: "--lf-button-min-width",
-        docs: "Sets the min width for the button component. Defaults to => 4em",
+        docs: "Minimum width for the button. Defaults to => 4em",
       },
       {
         name: "--lf-button-padding",
-        docs: "Sets the padding for the button component. Defaults to => 0 1.25em",
+        docs: "Padding for the button. Defaults to => 0 1.25em",
       },
       {
         name: "--lf-button-text-decoration",
-        docs: "Sets the text decoration for the button component. Defaults to => none",
+        docs: "Text decoration for the button. Defaults to => none",
       },
       {
         name: "--lf-button-text-transform",
-        docs: "Sets the text transform for the button component. Defaults to => uppercase",
+        docs: "Text transform for the button. Defaults to => uppercase",
       },
     ],
   },
@@ -1790,15 +1798,39 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-chat-attachments-padding",
-        docs: "Sets the attachments padding for the chat component. Defaults to => 0 1em",
-      },
-      {
-        name: "--lf-chat-border-radius",
-        docs: "Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Padding for attachments area. Defaults to => 0",
       },
       {
         name: "--lf-chat-buttons-padding",
-        docs: "Sets the padding for the buttons of the chat component. Defaults to => 1em 0",
+        docs: "Padding for button area. Defaults to => 1em 0",
+      },
+      {
+        name: "--lf-chat-color-bg",
+        docs: "Background color for chat container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
+        name: "--lf-chat-color-border",
+        docs: "Border color for elements. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
+        name: "--lf-chat-color-on-bg",
+        docs: "Text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-chat-color-on-primary",
+        docs: "Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-chat-color-on-surface",
+        docs: "Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-chat-color-primary",
+        docs: "Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-chat-color-surface",
+        docs: "Surface color for messages/elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-chat-font-family",
@@ -1809,16 +1841,24 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the chat component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-chat-inner-padding",
-        docs: "Sets the inner padding for the chat component. Defaults to => 0 1em",
+        name: "--lf-chat-icon-color",
+        docs: "Color for status icons. Defaults to => rgba($bgC, 1)",
+      },
+      {
+        name: "--lf-chat-icon-height",
+        docs: "Height for icons. Defaults to => 4em",
+      },
+      {
+        name: "--lf-chat-icon-width",
+        docs: "Width for icons. Defaults to => 4em",
       },
       {
         name: "--lf-chat-outer-grid-gap",
-        docs: "Sets the outer grid gap for the chat component. Defaults to => 0.75em",
+        docs: "Gap between main sections. Defaults to => 0.75em",
       },
       {
         name: "--lf-chat-padding",
-        docs: "Sets the padding for the chat component. Defaults to => 1em",
+        docs: "Padding for the chat container. Defaults to => 1em 0",
       },
     ],
   },
@@ -1924,15 +1964,27 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-checkbox-animation-duration",
-        docs: "Sets the animation duration for state changes. Defaults to => 90ms",
+        docs: "Animation duration for state changes. Defaults to => 90ms",
       },
       {
         name: "--lf-checkbox-border-radius",
-        docs: "Sets the border radius for the checkbox background. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the background. Defaults to => var(--lf-ui-border-radius)",
       },
       {
         name: "--lf-checkbox-checkmark-stroke-width",
-        docs: "Sets the stroke width for the checkmark. Defaults to => 3.12px",
+        docs: "Stroke width for checkmark. Defaults to => 3.12px",
+      },
+      {
+        name: "--lf-checkbox-color-on-primary",
+        docs: "Color for checkmark on primary background. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-checkbox-color-primary",
+        docs: "Primary color for checked/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-checkbox-color-surface",
+        docs: "Surface/track background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-checkbox-font-family",
@@ -1943,36 +1995,16 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the checkbox component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-checkbox-form-padding",
-        docs: "Sets the padding for the checkbox form field. Defaults to => 0.5em",
-      },
-      {
-        name: "--lf-checkbox-label-min-width",
-        docs: "Sets the min-width for the checkbox label. Defaults to => max-content",
-      },
-      {
-        name: "--lf-checkbox-label-padding-left",
-        docs: "Sets the left padding for the checkbox label. Defaults to => 1em",
-      },
-      {
-        name: "--lf-checkbox-label-padding-right",
-        docs: "Sets the right padding for the checkbox label. Defaults to => 1em",
-      },
-      {
-        name: "--lf-checkbox-mixedmark-width",
-        docs: "Sets the width for the checkbox mixed mark. Defaults to => 70%",
-      },
-      {
         name: "--lf-checkbox-size",
-        docs: "Sets the size for the checkbox component. Defaults to => 1.5em",
+        docs: "Size for the checkbox control. Defaults to => 1.5em",
       },
       {
         name: "--lf-checkbox-surface-border-radius",
-        docs: "Sets the border radius for the checkbox surface. Defaults to => 50%",
+        docs: "Border radius for the surface. Defaults to => 50%",
       },
       {
         name: "--lf-checkbox-surface-size",
-        docs: "Sets the size for the checkbox surface. Defaults to => 3.5em",
+        docs: "Size for the surface area. Defaults to => 3.5em",
       },
     ],
   },
@@ -2092,8 +2124,32 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the alignment for the wrapper. Defaults to => center",
       },
       {
+        name: "--lf-chip-border-radius",
+        docs: "Sets the border radius for chips. Defaults to => 1em",
+      },
+      {
+        name: "--lf-chip-color-border",
+        docs: "Border color for chips. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
         name: "--lf-chip-color-on-bg",
-        docs: "Sets the color for the filter layout checkmark. Defaults to => var(--lf-color-on-surface)",
+        docs: "Color for text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Wrapper variables:",
+      },
+      {
+        name: "--lf-chip-color-on-primary",
+        docs: "Color for content on primary backgrounds. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-chip-color-on-surface",
+        docs: "Color for content on surface backgrounds. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-chip-color-primary",
+        docs: "Primary color for selected/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-chip-color-surface",
+        docs: "Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-chip-font-family",
@@ -2102,6 +2158,14 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-chip-font-size",
         docs: "Sets the font size for the chip component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-chip-height",
+        docs: "Sets the height for chip items. Defaults to => 2em",
+      },
+      {
+        name: "--lf-chip-indent-multiplier",
+        docs: "Multiplier for indent width calculation. Defaults to => 10 Item/chip variables:",
       },
       {
         name: "--lf-chip-item-height",
@@ -2134,6 +2198,18 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-chip-margin",
         docs: "Sets the margin for the wrapper. Defaults to => 0.25em",
+      },
+      {
+        name: "--lf-chip-padding",
+        docs: "Sets the padding for chips. Defaults to => 0 0.75em Chip set variables:",
+      },
+      {
+        name: "--lf-chip-set-gap",
+        docs: "Sets the gap for chip sets. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-chip-set-padding",
+        docs: "Sets the padding for chip sets. Defaults to => 0.25em",
       },
     ],
   },
@@ -2709,8 +2785,20 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-image-color-primary",
-        docs: "Sets the primary color for the icon. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))",
+        name: "--lf-image-border-radius",
+        docs: "Border radius for the image. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-image-color-on-bg",
+        docs: "Color for icon content. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-image-color-surface",
+        docs: "Surface background for placeholder. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
+        name: "--lf-image-fit",
+        docs: "Object fit for the image element. Defaults to => cover",
       },
       {
         name: "--lf-image-font-family",
@@ -2721,12 +2809,20 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the image component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-image-margin",
-        docs: "Sets the margin for the image component. Defaults to => auto",
+        name: "--lf-image-height",
+        docs: "Height for the image component. Defaults to => auto",
       },
       {
-        name: "--lf-image-object-fit",
-        docs: "Sets the object fit for the image element. Defaults to => cover",
+        name: "--lf-image-icon-size",
+        docs: "Size for the icon fallback. Defaults to => 3em",
+      },
+      {
+        name: "--lf-image-position",
+        docs: "Object position for the image. Defaults to => center",
+      },
+      {
+        name: "--lf-image-width",
+        docs: "Width for the image component. Defaults to => auto",
       },
     ],
   },
@@ -3527,8 +3623,36 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-photoframe-fade-out-time",
-        docs: "Sets the fade out time for the placeholder of the photoframe component. Defaults to => 1750ms",
+        name: "--lf-photoframe-aspect-ratio",
+        docs: "Aspect ratio for the frame. Defaults to => auto",
+      },
+      {
+        name: "--lf-photoframe-border-radius",
+        docs: "Border radius for the frame. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-photoframe-color-bg",
+        docs: "Background color for overlay. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
+        name: "--lf-photoframe-color-on-bg",
+        docs: "Text color on overlay. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-photoframe-color-on-surface",
+        docs: "Icon color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-photoframe-color-surface",
+        docs: "Surface background for icon fallback. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
+        name: "--lf-photoframe-description-size",
+        docs: "Font size for description. Defaults to => 0.875em",
+      },
+      {
+        name: "--lf-photoframe-fit",
+        docs: "Object fit for the image. Defaults to => cover",
       },
       {
         name: "--lf-photoframe-font-family",
@@ -3539,16 +3663,44 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the photoframe component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-photoframe-image-fit",
-        docs: "Sets the object fit for the image of the photoframe component. Defaults to => cover",
+        name: "--lf-photoframe-height",
+        docs: "Height for the frame. Defaults to => auto",
       },
       {
-        name: "--lf-photoframe-overlay-zindex",
-        docs: "Sets the z-index for the overlay of the photoframe component. Defaults to => 2",
+        name: "--lf-photoframe-overlay-align",
+        docs: "Alignment for overlay content. Defaults to => flex-end",
       },
       {
-        name: "--lf-photoframe-placeholder-fit",
-        docs: "Sets the object fit for the placeholder of the photoframe component. Defaults to => cover",
+        name: "--lf-photoframe-overlay-justify",
+        docs: "Justify content for overlay. Defaults to => flex-end",
+      },
+      {
+        name: "--lf-photoframe-overlay-opacity",
+        docs: "Opacity for the overlay. Defaults to => 0",
+      },
+      {
+        name: "--lf-photoframe-overlay-opacity-hover",
+        docs: "Opacity on hover. Defaults to => 1",
+      },
+      {
+        name: "--lf-photoframe-overlay-padding",
+        docs: "Padding for overlay content. Defaults to => 1em",
+      },
+      {
+        name: "--lf-photoframe-position",
+        docs: "Object position for the image. Defaults to => center",
+      },
+      {
+        name: "--lf-photoframe-title-size",
+        docs: "Font size for title. Defaults to => 1.125em",
+      },
+      {
+        name: "--lf-photoframe-title-weight",
+        docs: "Font weight for title. Defaults to => 600",
+      },
+      {
+        name: "--lf-photoframe-width",
+        docs: "Width for the frame. Defaults to => auto",
       },
     ],
   },
@@ -3634,6 +3786,22 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-placeholder-border-radius",
+        docs: "Border radius for the placeholder. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-placeholder-color-on-surface",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-placeholder-color-primary",
+        docs: "Primary/icon color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-placeholder-color-surface",
+        docs: "Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
         name: "--lf-placeholder-font-family",
         docs: "Sets the primary font family for the placeholder component. Defaults to => var(--lf-font-family-primary)",
       },
@@ -3642,12 +3810,28 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the placeholder component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-placeholder-hor-alignment",
-        docs: "Sets the horizontal alignment for the placeholder component. Defaults to => center",
+        name: "--lf-placeholder-height",
+        docs: "Height for the placeholder. Defaults to => 100%",
       },
       {
-        name: "--lf-placeholder-ver-alignment",
-        docs: "Sets the vertical alignment for the placeholder component. Defaults to => center",
+        name: "--lf-placeholder-icon-size",
+        docs: "Size for the animated icon. Defaults to => 3em",
+      },
+      {
+        name: "--lf-placeholder-min-height",
+        docs: "Minimum height. Defaults to => 3em",
+      },
+      {
+        name: "--lf-placeholder-min-width",
+        docs: "Minimum width. Defaults to => 3em",
+      },
+      {
+        name: "--lf-placeholder-padding",
+        docs: "Padding for the placeholder. Defaults to => 1em",
+      },
+      {
+        name: "--lf-placeholder-width",
+        docs: "Width for the placeholder. Defaults to => 100%",
       },
     ],
   },
@@ -3776,15 +3960,19 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-progressbar-height",
-        docs: "Sets the height for the progressbar component. Defaults to => 100%",
+        docs: "Height for linear progressbar. Defaults to => 0.5em",
       },
       {
-        name: "--lf-progressbar-padding",
-        docs: "Sets the padding for the progressbar component. Defaults to => 1em 0em",
+        name: "--lf-progressbar-radial-size",
+        docs: "Size for radial progressbar. Defaults to => 4em",
       },
       {
-        name: "--lf-progressbar-width",
-        docs: "Sets the width for the progressbar component. Defaults to => 100%",
+        name: "--lf-progressbar-radial-thickness",
+        docs: "Stroke thickness for radial. Defaults to => 0.375em",
+      },
+      {
+        name: "--lf-progressbar-radial-value-size",
+        docs: "Font size for center value. Defaults to => 1em",
       },
     ],
   },
@@ -4505,19 +4693,19 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-slider-border-radius",
-        docs: "Sets the border radius for the slider component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for track and thumb. Defaults to => var(--lf-ui-border-radius)",
       },
       {
         name: "--lf-slider-box-shadow",
-        docs: "Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
+        docs: "Box shadow for track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-slider-color-on-bg",
-        docs: "Sets the color-on-bg color for the slider component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Color for value text. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-slider-color-primary",
-        docs: "Sets the color-primary color for the slider component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary color for track fill and thumb. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-slider-font-family",
@@ -4529,55 +4717,47 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-font-weight",
-        docs: "Sets the font weight for the slider component. Defaults to => var(--lf-font-weight-button)",
+        docs: "Font weight for value display. Defaults to => var(--lf-font-weight-button)",
       },
       {
         name: "--lf-slider-gap",
-        docs: "Sets the gap between slider elements. Defaults to => 0.5em",
-      },
-      {
-        name: "--lf-slider-input-height",
-        docs: "Sets the height for the slider component's input. Defaults to => 3em",
+        docs: "Gap between label and track. Defaults to => 0.5em",
       },
       {
         name: "--lf-slider-label-padding-left",
-        docs: "Sets the left padding for the slider label. Defaults to => 0.5em",
+        docs: "Left padding for label. Defaults to => 0.5em",
       },
       {
         name: "--lf-slider-margin",
-        docs: "Sets the margin for the slider component. Defaults to => 0 0.75em",
+        docs: "Margin for slider container. Defaults to => 0 0.75em",
       },
       {
         name: "--lf-slider-min-width",
-        docs: "Sets the min-width for the slider component. Defaults to => 7em",
+        docs: "Minimum width for slider. Defaults to => 7em",
       },
       {
         name: "--lf-slider-thumb-box-shadow",
-        docs: "Sets the box-shadow for the slider component's thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
+        docs: "Box shadow for thumb. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-slider-thumb-height",
-        docs: "Sets the height for the slider component's thumb. Defaults to => 1.5em",
-      },
-      {
-        name: "--lf-slider-thumb-hover-scale",
-        docs: "Sets the scale for the slider component's thumb on hover. Defaults to => 1.1",
+        docs: "Height for the thumb. Defaults to => 1.5em",
       },
       {
         name: "--lf-slider-thumb-underlay-top",
-        docs: "Sets the top position for the slider component's thumb underlay. Defaults to => -0.6em",
+        docs: "Top position for underlay. Defaults to => -1em",
       },
       {
         name: "--lf-slider-thumb-width",
-        docs: "Sets the width for the slider component's thumb. Defaults to => 1.5em",
+        docs: "Width for the thumb. Defaults to => 1.5em",
       },
       {
         name: "--lf-slider-track-height",
-        docs: "Sets the height for the slider component's track. Defaults to => 0.5em",
+        docs: "Height for the track. Defaults to => 0.5em",
       },
       {
         name: "--lf-slider-track-margin-top",
-        docs: "Sets the top margin for the slider component's track. Defaults to => 0.75em",
+        docs: "Top margin for track. Defaults to => 0.75em",
       },
     ],
   },
@@ -4675,15 +4855,23 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-snackbar-action-font-family",
-        docs: "Font family for action button. Defaults to => inherit",
+        docs: "Font family for action buttons. Defaults to => inherit",
       },
       {
         name: "--lf-snackbar-action-font-size",
-        docs: "Font size for action button. Defaults to => 0.875em",
+        docs: "Font size for action buttons. Defaults to => 0.875em",
       },
       {
         name: "--lf-snackbar-border-radius",
         docs: "Sets the border radius for the snackbar component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-snackbar-close-button-size",
+        docs: "Size for close button. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-snackbar-color-on-primary",
+        docs: "Text on primary. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-snackbar-color-on-surface",
@@ -4707,23 +4895,35 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-snackbar-glass-opacity",
-        docs: "Opacity for the glass reflection effect. Defaults to => var(--lf-ui-alpha-glass, 0.375)",
+        docs: "Opacity for glass effect. Defaults to => var(--lf-ui-alpha-glass, 0.375)",
+      },
+      {
+        name: "--lf-snackbar-icon-color",
+        docs: "Color for leading icon. Defaults to => rgba($primaryC, 1)",
+      },
+      {
+        name: "--lf-snackbar-icon-height",
+        docs: "Height for icon. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-snackbar-icon-width",
+        docs: "Width for icon. Defaults to => 1.5em",
       },
       {
         name: "--lf-snackbar-max-width",
-        docs: "Sets the maximum width for the snackbar. Defaults to => clamp(288px, 80vw, 568px)",
+        docs: "Maximum width for snackbar. Defaults to => clamp(288px, 80vw, 568px)",
       },
       {
         name: "--lf-snackbar-message-font-size",
-        docs: "Font size for the message. Defaults to => 0.875em",
+        docs: "Font size for message. Defaults to => 0.875em",
       },
       {
         name: "--lf-snackbar-min-width",
-        docs: "Sets the minimum width for the snackbar. Defaults to => 288px",
+        docs: "Minimum width for snackbar. Defaults to => 288px",
       },
       {
         name: "--lf-snackbar-padding",
-        docs: "Sets the padding for the snackbar. Defaults to => 0.875em 1em",
+        docs: "Padding for snackbar content. Defaults to => 0.875em 1em",
       },
     ],
   },
@@ -4834,12 +5034,36 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-spinner-border-radius",
+        docs: "Border radius for layout wrapper. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-spinner-color-bg",
+        docs: "Background color for layout wrapper. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
+        name: "--lf-spinner-color-on-bg",
+        docs: "Label text color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-spinner-color-primary",
+        docs: "Primary color for spinner elements. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
         name: "--lf-spinner-font-family",
         docs: "Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-spinner-font-size",
         docs: "Sets the font size for the spinner component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-spinner-ring-thickness",
+        docs: "Thickness for ring spinners. Defaults to => 0.35em",
+      },
+      {
+        name: "--lf-spinner-size",
+        docs: "Size for the spinner. Defaults to => 7em",
       },
     ],
   },
@@ -5263,6 +5487,30 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-textfield-border-radius",
+        docs: "Border radius for the field. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-textfield-color-border",
+        docs: "Border color for outlined variant. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
+        name: "--lf-textfield-color-on-bg",
+        docs: "Text and icon color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-textfield-color-primary",
+        docs: "Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-textfield-color-surface",
+        docs: "Surface color for raised variant. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
+        name: "--lf-textfield-counter-padding",
+        docs: "Padding for character counter. Defaults to => 0.5em 0.875em 0 0",
+      },
+      {
         name: "--lf-textfield-font-family",
         docs: "Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary)",
       },
@@ -5272,31 +5520,35 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-textfield-height",
-        docs: "Sets the height for the textfield component. Defaults to => 3.5em",
+        docs: "Height for the textfield. Defaults to => 3.5em",
       },
       {
-        name: "--lf-textfield-icon-action-padding",
-        docs: "Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0",
-      },
-      {
-        name: "--lf-textfield-icon-padding",
-        docs: "Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em",
+        name: "--lf-textfield-helper-padding",
+        docs: "Padding for helper text. Defaults to => 0.375em 0.875em 0 0.875em",
       },
       {
         name: "--lf-textfield-icon-size",
-        docs: "Sets the size for the textfield icons. Defaults to => 1.5em",
+        docs: "Size for leading/trailing icons. Defaults to => 1.5em",
       },
       {
-        name: "--lf-textfield-input-cursor",
-        docs: "Sets the cursor for the textfield input. Defaults to => text",
+        name: "--lf-textfield-input-padding",
+        docs: "Padding for the input element. Defaults to => 0.25em 0.5em",
       },
       {
-        name: "--lf-textfield-padding",
-        docs: "Sets the padding for the textfield component. Defaults to => 0 1em",
+        name: "--lf-textfield-label-font-size",
+        docs: "Font size for the label. Defaults to => 0.75em",
       },
       {
-        name: "--lf-textfield-resizer-min-height",
-        docs: "Sets the minimum height for the textfield resizer. Defaults to => 3em",
+        name: "--lf-textfield-label-font-weight",
+        docs: "Font weight for the label. Defaults to => var(--lf-font-weight-button)",
+      },
+      {
+        name: "--lf-textfield-label-transition",
+        docs: "Transition for label animation. Defaults to => 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+      },
+      {
+        name: "--lf-textfield-outline-width",
+        docs: "Width for focus outline. Defaults to => 0.15em",
       },
     ],
   },
@@ -5384,11 +5636,23 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-toast-accent-height",
-        docs: "Sets the height for the toast accent. Defaults to => 0.25em",
+        docs: "Height for accent bar. Defaults to => 0.25em",
       },
       {
         name: "--lf-toast-border-radius",
         docs: "Sets the border radius for the toast component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-toast-color-bg",
+        docs: "Message text color. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
+        name: "--lf-toast-color-primary",
+        docs: "Primary color for accent bar. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-toast-color-surface",
+        docs: "Background color for toast. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-toast-font-family",
@@ -5399,24 +5663,36 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the toast component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-toast-icon-color",
+        docs: "Color for leading icon. Defaults to => rgba($primaryC, 1)",
+      },
+      {
+        name: "--lf-toast-icon-height",
+        docs: "Height for icon. Defaults to => 1.5em",
+      },
+      {
         name: "--lf-toast-icon-margin",
-        docs: "Sets the margin for the toast icon. Defaults to => auto 0.5em",
+        docs: "Margin for icon. Defaults to => auto 0.5em",
       },
       {
         name: "--lf-toast-icon-opacity",
-        docs: "Sets the opacity for the toast icon. Defaults to => 1",
+        docs: "Opacity for icon. Defaults to => 1",
+      },
+      {
+        name: "--lf-toast-icon-width",
+        docs: "Width for icon. Defaults to => 1.5em",
       },
       {
         name: "--lf-toast-message-align-content",
-        docs: "Sets the align-content for the toast message wrapper. Defaults to => center",
+        docs: "Alignment for message content. Defaults to => center",
       },
       {
         name: "--lf-toast-message-padding",
-        docs: "Sets the padding for the toast message. Defaults to => 0.75em 0.75em 0.75em 0",
+        docs: "Padding for message. Defaults to => 0.75em 0.75em 0.75em 0",
       },
       {
         name: "--lf-toast-padding",
-        docs: "Sets the padding for the toast message wrapper. Defaults to => 0.75em",
+        docs: "Padding for toast wrapper. Defaults to => 0.75em",
       },
     ],
   },
@@ -5521,12 +5797,20 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-toggle-border-radius",
-        docs: "Sets the border radius for the toggle track. Defaults to => var(--lf-ui-border-radius, 1em)",
+        name: "--lf-toggle-color-on-bg",
+        docs: "Label text color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
-        name: "--lf-toggle-box-shadow",
-        docs: "Sets the box shadow for the toggle track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
+        name: "--lf-toggle-color-on-surface",
+        docs: "Thumb color in off state. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-toggle-color-primary",
+        docs: "Primary color for active/on state. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-toggle-color-surface",
+        docs: "Surface color for track background. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-toggle-font-family",
@@ -5537,44 +5821,40 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the toggle component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-toggle-form-padding",
-        docs: "Sets the padding for the toggle form field. Defaults to => 0.5em",
+        name: "--lf-toggle-thumb-border-radius",
+        docs: "Border radius for thumb. Defaults to => 50%",
       },
       {
-        name: "--lf-toggle-input-height",
-        docs: "Sets the height for the toggle input. Defaults to => 3em",
+        name: "--lf-toggle-thumb-inset",
+        docs: "Inset for thumb positioning. Defaults to => 0.125em",
       },
       {
-        name: "--lf-toggle-label-min-width",
-        docs: "Sets the min-width for the toggle label. Defaults to => max-content",
+        name: "--lf-toggle-thumb-offset",
+        docs: "Translation distance when on. Defaults to => 1.25em",
       },
       {
-        name: "--lf-toggle-label-padding-left",
-        docs: "Sets the left padding for the toggle label. Defaults to => 1em",
-      },
-      {
-        name: "--lf-toggle-label-padding-right",
-        docs: "Sets the right padding for the toggle label. Defaults to => 1em",
-      },
-      {
-        name: "--lf-toggle-margin",
-        docs: "Sets the margin for the toggle component. Defaults to => 1em 0.5em",
-      },
-      {
-        name: "--lf-toggle-min-width",
-        docs: "Sets the min-width for the toggle component. Defaults to => 4em",
+        name: "--lf-toggle-thumb-shadow",
+        docs: "Box shadow for thumb. Defaults to => 0 2px 4px rgba(0, 0, 0, 0.2)",
       },
       {
         name: "--lf-toggle-thumb-size",
-        docs: "Sets the size for the toggle thumb. Defaults to => 1.5em",
+        docs: "Size for the thumb. Defaults to => 1.25em",
+      },
+      {
+        name: "--lf-toggle-track-border-radius",
+        docs: "Border radius for track. Defaults to => 1em",
       },
       {
         name: "--lf-toggle-track-height",
-        docs: "Sets the height for the toggle track. Defaults to => 0.5em",
+        docs: "Height for the track. Defaults to => 1.5em",
       },
       {
         name: "--lf-toggle-track-width",
-        docs: "Sets the width for the toggle track. Defaults to => 3em",
+        docs: "Width for the track. Defaults to => 2.75em",
+      },
+      {
+        name: "--lf-toggle-underlay-size",
+        docs: "Size for focus underlay. Defaults to => 2.5em",
       },
     ],
   },

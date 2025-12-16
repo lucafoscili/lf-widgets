@@ -89,22 +89,20 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                | Description                                                                                                            |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `--lf-placeholder-border-radius`    | Sets the border radius for the placeholder. Defaults to => var(--lf-ui-border-radius)                                  |
-| `--lf-placeholder-color-on-surface` | Color for text content. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface)) Layout/sizing variables: |
-| `--lf-placeholder-color-primary`    | Primary color for the icon. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                            |
-| `--lf-placeholder-color-surface`    | Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                              |
-| `--lf-placeholder-font-family`      | Sets the primary font family for the placeholder component. Defaults to => var(--lf-font-family-primary)               |
-| `--lf-placeholder-font-size`        | Sets the font size for the placeholder component. Defaults to => var(--lf-font-size)                                   |
-| `--lf-placeholder-height`           | Sets the height for the placeholder. Defaults to => 100%                                                               |
-| `--lf-placeholder-hor-alignment`    | Sets the horizontal alignment for the placeholder component. Defaults to => center                                     |
-| `--lf-placeholder-icon-size`        | Sets the size for the icon. Defaults to => 3em                                                                         |
-| `--lf-placeholder-min-height`       | Sets the minimum height for the placeholder. Defaults to => 3em                                                        |
-| `--lf-placeholder-min-width`        | Sets the minimum width for the placeholder. Defaults to => 3em                                                         |
-| `--lf-placeholder-padding`          | Sets the padding for the placeholder. Defaults to => 1em                                                               |
-| `--lf-placeholder-ver-alignment`    | Sets the vertical alignment for the placeholder component. Defaults to => center                                       |
-| `--lf-placeholder-width`            | Sets the width for the placeholder. Defaults to => 100%                                                                |
+| Name                                | Description                                                                                              |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-placeholder-border-radius`    | Border radius for the placeholder. Defaults to => var(--lf-ui-border-radius)                             |
+| `--lf-placeholder-color-on-surface` | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))             |
+| `--lf-placeholder-color-primary`    | Primary/icon color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                      |
+| `--lf-placeholder-color-surface`    | Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                |
+| `--lf-placeholder-font-family`      | Sets the primary font family for the placeholder component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-placeholder-font-size`        | Sets the font size for the placeholder component. Defaults to => var(--lf-font-size)                     |
+| `--lf-placeholder-height`           | Height for the placeholder. Defaults to => 100%                                                          |
+| `--lf-placeholder-icon-size`        | Size for the animated icon. Defaults to => 3em                                                           |
+| `--lf-placeholder-min-height`       | Minimum height. Defaults to => 3em                                                                       |
+| `--lf-placeholder-min-width`        | Minimum width. Defaults to => 3em                                                                        |
+| `--lf-placeholder-padding`          | Padding for the placeholder. Defaults to => 1em                                                          |
+| `--lf-placeholder-width`            | Width for the placeholder. Defaults to => 100%                                                           |
 
 
 ----------------------------------------------

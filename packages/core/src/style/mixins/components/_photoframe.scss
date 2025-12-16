@@ -9,15 +9,57 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-photoframe.scss) for Stencil docs generation, NOT here.
+// - Exports lf-photoframe-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-photoframe-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-bg: Background color for overlay.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on overlay.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface background for icon fallback.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Icon color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-aspect-ratio: Aspect ratio for the frame.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-border-radius: Border radius for the frame.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-fit: Object fit for the image.
+   *       Defaults to => cover
+   * @prop --lf-#{$comp}-height: Height for the frame.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-overlay-align: Alignment for overlay content.
+   *       Defaults to => flex-end
+   * @prop --lf-#{$comp}-overlay-justify: Justify content for overlay.
+   *       Defaults to => flex-end
+   * @prop --lf-#{$comp}-overlay-opacity: Opacity for the overlay.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-overlay-opacity-hover: Opacity on hover.
+   *       Defaults to => 1
+   * @prop --lf-#{$comp}-overlay-padding: Padding for overlay content.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-position: Object position for the image.
+   *       Defaults to => center
+   * @prop --lf-#{$comp}-title-size: Font size for title.
+   *       Defaults to => 1.125em
+   * @prop --lf-#{$comp}-title-weight: Font weight for title.
+   *       Defaults to => 600
+   * @prop --lf-#{$comp}-description-size: Font size for description.
+   *       Defaults to => 0.875em
+   * @prop --lf-#{$comp}-width: Width for the frame.
+   *       Defaults to => auto
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "photoframe";

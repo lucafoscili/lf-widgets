@@ -95,12 +95,10 @@ Type: `Promise<void>`
 | `--lf-progressbar-color-surface`     | Sets the color-surface color for the progressbar component. Defaults to => var(--lf-color-surface)       |
 | `--lf-progressbar-font-family`       | Sets the primary font family for the progressbar component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-progressbar-font-size`         | Sets the font size for the progressbar component. Defaults to => var(--lf-font-size)                     |
-| `--lf-progressbar-height`            | Sets the height for the progressbar component. Defaults to => 0.5em                                      |
-| `--lf-progressbar-padding`           | Sets the padding for the progressbar component. Defaults to => 1em 0em                                   |
-| `--lf-progressbar-radial-size`       | Sets the size for radial progress bar. Defaults to => 4em                                                |
-| `--lf-progressbar-radial-thickness`  | Sets the stroke width for radial progress bar. Defaults to => 0.375em                                    |
-| `--lf-progressbar-radial-value-size` | Sets the font size for center value. Defaults to => 1em                                                  |
-| `--lf-progressbar-width`             | Sets the width for the progressbar component. Defaults to => 100%                                        |
+| `--lf-progressbar-height`            | Height for linear progressbar. Defaults to => 0.5em                                                      |
+| `--lf-progressbar-radial-size`       | Size for radial progressbar. Defaults to => 4em                                                          |
+| `--lf-progressbar-radial-thickness`  | Stroke thickness for radial. Defaults to => 0.375em                                                      |
+| `--lf-progressbar-radial-value-size` | Font size for center value. Defaults to => 1em                                                           |
 
 
 ## Dependencies

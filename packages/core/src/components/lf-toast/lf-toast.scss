@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/toast" as toast-fc;
 
 $comp: "toast";
 
@@ -13,21 +14,5 @@ $comp: "toast";
   z-index: var(--lf-ui-zindex-#{$comp}, 998);
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-#{$comp}-accent-height: Sets the height for the #{$comp} accent.
-*                                    Defaults to => 0.25em
-* @prop --lf-#{$comp}-icon-margin: Sets the margin for the #{$comp} icon.
-*                                  Defaults to => auto 0.5em
-* @prop --lf-#{$comp}-icon-opacity: Sets the opacity for the #{$comp} icon.
-*                                   Defaults to => 1
-* @prop --lf-#{$comp}-message-align-content: Sets the align-content for the #{$comp} message wrapper.
-*                                            Defaults to => center
-* @prop --lf-#{$comp}-message-padding: Sets the padding for the #{$comp} message.
-*                                      Defaults to => 0.75em 0.75em 0.75em 0
-* @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} message wrapper.
-*                              Defaults to => 0.75em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include toast-fc.lf-toast-docs($comp);

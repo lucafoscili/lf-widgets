@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/textfield" as textfield-fc;
 
 $comp: "textfield";
 
@@ -16,23 +17,5 @@ $comp: "textfield";
   }
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-textfield-height: Sets the height for the textfield component.
-*                              Defaults to => 3.5em
-* @prop --lf-textfield-icon-action-padding: Sets the padding for the textfield action icon.
-*                                           Defaults to => 0 0.75em 0 0
-* @prop --lf-textfield-icon-padding: Sets the padding for the textfield icon.
-*                                    Defaults to => 0 0 0 0.75em
-* @prop --lf-textfield-icon-size: Sets the size for the textfield icons.
-*                                 Defaults to => 1.5em
-* @prop --lf-textfield-input-cursor: Sets the cursor for the textfield input.
-*                                    Defaults to => text
-* @prop --lf-textfield-padding: Sets the padding for the textfield component.
-*                               Defaults to => 0 1em
-* @prop --lf-textfield-resizer-min-height: Sets the minimum height for the textfield resizer.
-*                                          Defaults to => 3em
-*/
+// Import documentation from FC mixin (single source of truth)
+@include textfield-fc.lf-textfield-docs($comp);

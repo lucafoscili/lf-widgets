@@ -9,15 +9,37 @@
 // - Supports state theming via data-lf attribute
 // - Supports size scaling via --lf-ui-size
 // - All selectors are plain BEM classes (no :host)
-//
-// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
-// WC SCSS file (lf-progressbar.scss) for Stencil docs generation, NOT here.
+// - Exports lf-progressbar-docs() mixin for WC SCSS files to import
 //
 // Cross-Reference: SCSS_UNIFICATION.md §4.1
 // =============================================================================
 
 @use "../colors" as *;
 @use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-progressbar-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for progress bar.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-surface: Track/background color.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-bg: Label/value text color.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-border-radius: Border radius for the bar.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-height: Height for linear progressbar.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-radial-size: Size for radial progressbar.
+   *       Defaults to => 4em
+   * @prop --lf-#{$comp}-radial-thickness: Stroke thickness for radial.
+   *       Defaults to => 0.375em
+   * @prop --lf-#{$comp}-radial-value-size: Font size for center value.
+   *       Defaults to => 1em
+   */
+}
 
 // Generate color variables using the unified system
 $comp: "progressbar";
@@ -168,32 +190,6 @@ $comp: "progressbar";
   }
 }
 
-// =============================================================================
-// KEYFRAMES
-// =============================================================================
-@keyframes lf-progressbar-indeterminate {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
-}
-
-@keyframes lf-progressbar-radial-indeterminate {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 100, 200;
-    stroke-dashoffset: -35;
-  }
-  100% {
-    stroke-dasharray: 100, 200;
-    stroke-dashoffset: -125;
-  }
-}
+// NOTE: Progressbar keyframes are centralized in _transitions.scss:
+// - lf-progressbar-indeterminate
+// - lf-progressbar-radial-indeterminate

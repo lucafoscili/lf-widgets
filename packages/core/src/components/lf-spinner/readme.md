@@ -96,16 +96,16 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                                |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `--lf-spinner-border-radius`  | Border radius for layout container. Defaults to => 0.5em                                                   |
-| `--lf-spinner-color-bg`       | Background color for layout container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))               |
-| `--lf-spinner-color-on-bg`    | Color for label text. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Layout/sizing variables: |
-| `--lf-spinner-color-primary`  | Primary color for the spinner element. Defaults to => var(--lf-state-primary, var(--lf-color-primary))     |
-| `--lf-spinner-font-family`    | Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary)       |
-| `--lf-spinner-font-size`      | Sets the font size for the spinner component. Defaults to => var(--lf-font-size)                           |
-| `--lf-spinner-ring-thickness` | Stroke width for ring spinner variants. Defaults to => 0.35em                                              |
-| `--lf-spinner-size`           | Size of the spinner in em units. Defaults to => 7em. Scales with lfUiSize (font-size).                     |
+| Name                          | Description                                                                                          |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `--lf-spinner-border-radius`  | Border radius for layout wrapper. Defaults to => 0.5em                                               |
+| `--lf-spinner-color-bg`       | Background color for layout wrapper. Defaults to => var(--lf-state-bg, var(--lf-color-bg))           |
+| `--lf-spinner-color-on-bg`    | Label text color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                        |
+| `--lf-spinner-color-primary`  | Primary color for spinner elements. Defaults to => var(--lf-state-primary, var(--lf-color-primary))  |
+| `--lf-spinner-font-family`    | Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-spinner-font-size`      | Sets the font size for the spinner component. Defaults to => var(--lf-font-size)                     |
+| `--lf-spinner-ring-thickness` | Thickness for ring spinners. Defaults to => 0.35em                                                   |
+| `--lf-spinner-size`           | Size for the spinner. Defaults to => 7em                                                             |
 
 
 ## Dependencies
