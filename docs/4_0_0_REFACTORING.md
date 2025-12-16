@@ -14,10 +14,10 @@
 > - 1689/1689 unit tests passing
 > - Full build passing
 >
-> **🏆 GOLDEN STANDARD**: `lf-shapeeditor` is the reference implementation for complex components.
+> **🏆 GOLDEN STANDARD**: `lf-chat` is the reference implementation for complex FC components with "Adapter as Core" pattern.
 > **🥈 SILVER STANDARD**: `lf-button` is the reference for simple components.
-> **🌟 FC REFERENCE**: `lf-slider` is the first Functional Component conversion.
-> **⚡ ADAPTER-AS-CORE REFERENCE**: `lf-toggle` is the canonical implementation for Section 5.9 pattern.
+> **🌟 FC REFERENCE (Simple)**: `lf-toggle` is the canonical "Adapter as Core" implementation for simple components.
+> **📦 LEGACY GOLDEN**: `lf-shapeeditor` remains reference for pre-FC complex components.
 
 ---
 
