@@ -96,15 +96,10 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                       | Description                                                                                               |
-| -------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `--lf-spinner-color`       | Primary spinner color (the animated element). Uses the state-aware color set by lf-fw-state-colors mixin. |
-| `--lf-spinner-color-bg`    | Background color for spinner track/container. Defaults to transparent on-bg color.                        |
-| `--lf-spinner-font-family` | Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary)      |
-| `--lf-spinner-font-size`   | Sets the font size for the spinner component. Defaults to => var(--lf-font-size)                          |
-| `--lf-spinner-size`        | Size of the spinner in em units. Scales automatically with lfUiSize (which adjusts font-size).            |
-| `--lf-spinner-speed`       | Animation duration.                                                                                       |
-| `--lf-spinner-stroke`      | Stroke width for ring spinner (scales with em).                                                           |
+| Name                       | Description                                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `--lf-spinner-font-family` | Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-spinner-font-size`   | Sets the font size for the spinner component. Defaults to => var(--lf-font-size)                     |
 
 
 ## Dependencies

@@ -81,8 +81,6 @@ Type: `Promise<void>`
 
 | Name                              | Description                                                                                             |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--lf-photoframe-color-bg`        | Sets the color-bg color for the photoframe component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-photoframe-color-on-bg`     | Sets the color-on-bg color for the photoframe component. Defaults to => var(--lf-color-on-bg)           |
 | `--lf-photoframe-fade-out-time`   | Sets the fade out time for the placeholder of the photoframe component. Defaults to => 1750ms           |
 | `--lf-photoframe-font-family`     | Sets the primary font family for the photoframe component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-photoframe-font-size`       | Sets the font size for the photoframe component. Defaults to => var(--lf-font-size)                     |

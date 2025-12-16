@@ -1,0 +1,178 @@
+// ============================================================================
+// FC-PHOTOFRAME - Functional Component Photoframe Styles
+// ============================================================================
+// Photoframe-specific styles for the LfPhotoframeFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-photoframe-* CSS custom properties for theming
+//
+// Usage:
+//   <LfPhotoframeFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "photoframe";
+$bgC: var(--lf-#{$comp}-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg)));
+$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
+
+// -----------------------------------------------------------------------------
+// Photoframe Container
+// -----------------------------------------------------------------------------
+.photoframe {
+  & {
+    box-sizing: border-box;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Orientation Modifiers
+  // ---------------------------------------------------------------------------
+  &--landscape {
+    img {
+      width: 100%;
+    }
+  }
+
+  &--portrait {
+    img {
+      height: 100%;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Image
+  // ---------------------------------------------------------------------------
+  &__image {
+    & {
+      display: none;
+      left: 0;
+      /**
+       * @prop --lf-photoframe-image-fit: Sets the object fit for the image of the photoframe component.
+       *                                  Defaults to => cover
+       */
+      object-fit: var(--lf-#{$comp}-image-fit, cover);
+      position: absolute;
+      top: 0;
+      z-index: 0;
+    }
+
+    &--active {
+      display: block;
+      position: relative;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Placeholder
+  // ---------------------------------------------------------------------------
+  &__placeholder {
+    & {
+      display: none;
+      /**
+       * @prop --lf-photoframe-placeholder-fit: Sets the object fit for the placeholder of the photoframe component.
+       *                                        Defaults to => cover
+       */
+      object-fit: var(--lf-#{$comp}-placeholder-fit, cover);
+      /**
+       * @prop --lf-photoframe-fade-out-time: Sets the fade out time for the placeholder of the photoframe component.
+       *                                      Defaults to => 1750ms
+       */
+      transition: opacity var(--lf-#{$comp}-fade-out-time, 1750ms) ease-out;
+      will-change: opacity;
+      z-index: 1;
+    }
+
+    &--hidden {
+      opacity: 0;
+      position: absolute;
+    }
+
+    &--loaded {
+      display: block;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Overlay
+// -----------------------------------------------------------------------------
+.overlay {
+  & {
+    background-color: rgba($bgC, 1);
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    /**
+     * @prop --lf-photoframe-overlay-zindex: Sets the z-index for the overlay of the photoframe component.
+     *                                       Defaults to => 2
+     */
+    z-index: var(--lf-#{$comp}-overlay-zindex, 2);
+  }
+
+  &--has-actions {
+    & {
+      cursor: pointer;
+    }
+
+    &:hover {
+      .overlay__content {
+        transform: scale(1.5);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Overlay Content
+  // ---------------------------------------------------------------------------
+  &__content,
+  &__description,
+  &__title {
+    color: rgba($onBgC, 1);
+    text-align: center;
+  }
+
+  &__content {
+    display: grid;
+    font-family: var(--lf-font-family-subtitle);
+    font-size: var(--lf-font-size-subtitle);
+    font-weight: var(--lf-font-weight-subtitle);
+    grid-gap: 0.75em;
+    margin: auto;
+    overflow: hidden;
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  &__description {
+    font-family: var(--lf-font-family-caption);
+    font-size: var(--lf-font-size-caption);
+    font-weight: var(--lf-font-weight-caption);
+  }
+
+  &__title {
+    font-family: var(--lf-font-family-title);
+    font-size: var(--lf-font-size-title);
+    font-weight: var(--lf-font-weight-title);
+  }
+
+  &__icon {
+    margin: auto;
+  }
+}

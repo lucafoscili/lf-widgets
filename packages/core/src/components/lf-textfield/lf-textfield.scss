@@ -1,4 +1,26 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "textfield";
+
+@include lf-comp-setup($comp, "true", "false", "false", "false", "true");
+
+:host {
+  width: 100%;
+}
+
+:host([lf-stretch-y]) {
+  &,
+  #lf-component {
+    height: 100%;
+  }
+}
+
 /**
+* IMPORTANT!
+* CSS Custom Properties are documented here to allow the Stencil auto-Docs
+* generator to pick them up, but their actual definitions are in the FC mixin.
+*
 * @prop --lf-textfield-height: Sets the height for the textfield component.
 *                              Defaults to => 3.5em
 * @prop --lf-textfield-icon-action-padding: Sets the padding for the textfield action icon.
@@ -14,35 +36,3 @@
 * @prop --lf-textfield-resizer-min-height: Sets the minimum height for the textfield resizer.
 *                                          Defaults to => 3em
 */
-@use "variables" as *;
-@use "mixins" as *;
-
-// ============================================================================
-// LF-TEXTFIELD WEB COMPONENT STYLES
-// ============================================================================
-// This file contains ONLY :host styles for the Web Component wrapper.
-// All class-based styles are now in _fc-textfield.scss (global stylesheet)
-// which styles the LfTextfieldFC functional component.
-//
-// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
-// They populate the component README with CSS custom property documentation.
-// These comments are preserved here even though the actual styles are in the FC.
-// ============================================================================
-
-$comp: "textfield";
-@include lf-comp-setup($comp, "true", "false", "false", "false", "true");
-
-// -----------------------------------------------------------------------------
-// Host Styles
-// -----------------------------------------------------------------------------
-:host {
-  width: 100%;
-}
-
-:host([lf-stretch-y]) {
-  &,
-  #lf-component,
-  .textfield {
-    height: 100%;
-  }
-}

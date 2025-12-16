@@ -29,9 +29,18 @@
 @use "./mixins/fc-states";
 @use "./mixins/fc-badge";
 @use "./mixins/fc-button";
+@use "./mixins/fc-chat";
+@use "./mixins/fc-checkbox";
+@use "./mixins/fc-chip";
 @use "./mixins/fc-image";
+@use "./mixins/fc-photoframe";
+@use "./mixins/fc-placeholder";
+@use "./mixins/fc-progressbar";
 @use "./mixins/fc-slider";
+@use "./mixins/fc-snackbar";
+@use "./mixins/fc-spinner";
 @use "./mixins/fc-textfield";
+@use "./mixins/fc-toast";
 @use "./mixins/fc-toggle";
 
 // -----------------------------------------------------------------------------

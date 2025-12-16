@@ -1,0 +1,266 @@
+// ============================================================================
+// FC-PROGRESSBAR - Functional Component Progressbar Styles
+// ============================================================================
+// Progressbar-specific styles for the LfProgressbarFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-progressbar-* CSS custom properties for theming
+//
+// Usage:
+//   <LfProgressbarFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "progressbar";
+$primaryC: var(
+  --lf-#{$comp}-color-primary,
+  var(--lf-fc-color-primary, var(--lf-color-primary))
+);
+$surfaceC: var(
+  --lf-#{$comp}-color-surface,
+  var(--lf-fc-color-surface, var(--lf-color-surface))
+);
+$bgC: var(--lf-#{$comp}-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg)));
+$onSurfaceC: var(--lf-#{$comp}-color-on-surface, var(--lf-color-on-surface));
+$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
+$borderC: 0.1em solid rgba($onSurfaceC, 0.375);
+
+// -----------------------------------------------------------------------------
+// Progressbar Container
+// -----------------------------------------------------------------------------
+.progressbar {
+  & {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+    /**
+     * @prop --lf-progressbar-border-radius: Sets the border radius for the progressbar.
+     *                                       Defaults to => var(--lf-ui-border-radius)
+     */
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
+    box-sizing: border-box;
+    /**
+     * @prop --lf-progressbar-height: Sets the height for the progressbar component.
+     *                                Defaults to => 100%
+     */
+    height: var(--lf-#{$comp}-height, 100%);
+    overflow: hidden;
+    /**
+     * @prop --lf-progressbar-width: Sets the width for the progressbar component.
+     *                               Defaults to => 100%
+     */
+    width: var(--lf-#{$comp}-width, 100%);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    /**
+     * @prop --lf-progressbar-icon-color: Sets the color for the progressbar icon.
+     *                                    Defaults to => var(--lf-color-primary)
+     */
+    color: var(--lf-#{$comp}-icon-color, rgba($primaryC, 1));
+    /**
+     * @prop --lf-progressbar-icon-height: Sets the height for the progressbar icon.
+     *                                     Defaults to => 1.5em
+     */
+    height: var(--lf-#{$comp}-icon-height, 1.5em);
+    margin: 0 0.75em;
+    /**
+     * @prop --lf-progressbar-icon-width: Sets the width for the progressbar icon.
+     *                                    Defaults to => 1.5em
+     */
+    width: var(--lf-#{$comp}-icon-width, 1.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    align-items: center;
+    color: rgba($primaryC, 1);
+    display: flex;
+    font-family: var(--lf-#{$comp}-font-family, var(--lf-font-family-button));
+    font-size: var(--lf-#{$comp}-font-size, var(--lf-font-size-button));
+    font-weight: var(--lf-#{$comp}-font-weight, var(--lf-font-weight-button));
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    min-width: max-content;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  &__mu {
+    font-size: 0.5em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Percentage Fill
+  // ---------------------------------------------------------------------------
+  &__percentage {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+    /**
+     * @prop --lf-progressbar-border-radius: Sets the border radius for the percentage fill.
+     *                                       Defaults to => var(--lf-ui-border-radius)
+     */
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
+    box-sizing: border-box;
+    height: var(--lf-#{$comp}-height, 100%);
+    /**
+     * @prop --lf-progressbar-padding: Sets the padding for the progressbar component.
+     *                                 Defaults to => 1em 0em
+     */
+    padding: var(--lf-#{$comp}-padding, 1em 0);
+    position: relative;
+    text-align: center;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: var(--lf_progressbar_percentage_width);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Centered Label Modifier
+  // ---------------------------------------------------------------------------
+  &--centered-label {
+    position: relative;
+
+    .progressbar__percentage {
+      position: static;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Animated Modifier
+  // ---------------------------------------------------------------------------
+  &--animated {
+    .progressbar__percentage {
+      animation: lf-progressbar-stripes 2s linear infinite;
+      background-image: linear-gradient(
+        -45deg,
+        rgba($surfaceC, 0.125) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba($surfaceC, 0.125) 50%,
+        rgba($surfaceC, 0.125) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 3em 3em;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Radial Modifier
+  // ---------------------------------------------------------------------------
+  &--radial {
+    & {
+      background: none;
+      border: none;
+      font-size: 10em;
+      height: 1em;
+      margin: auto;
+      overflow: visible;
+      position: relative;
+      width: 1em;
+    }
+
+    &:nth-child(3n + 1) {
+      clear: both;
+    }
+
+    .progressbar__icon {
+      margin: 0 0.15em;
+    }
+
+    .progressbar__label {
+      color: rgba($bgC, 1);
+      cursor: default;
+      display: flex;
+      font-size: 0.15em;
+    }
+
+    .progressbar__mu {
+      color: rgba($bgC, 1);
+      font-size: 0.5em;
+      padding-bottom: 0.75em;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Pie Chart (Radial)
+// -----------------------------------------------------------------------------
+.pie {
+  & {
+    clip: rect(0, 1em, 1em, 0.5em);
+    height: 1em;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 1em;
+  }
+
+  &--empty {
+    .pie__half-circle--right {
+      display: none;
+    }
+  }
+
+  &--full {
+    & {
+      clip: rect(auto, auto, auto, auto);
+    }
+
+    .pie__half-circle--right {
+      transform: rotate(180deg);
+    }
+  }
+
+  &--has-value {
+    .pie__half-circle {
+      border-color: rgba($primaryC, 1);
+    }
+
+    .pie__half-circle--left {
+      transform: var(--lf_progressbar_transform);
+      transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+  }
+
+  &__half-circle {
+    border: $borderC;
+    border-radius: 50%;
+    clip: rect(0, 0.5em, 1em, 0);
+    height: 1em;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 1em;
+  }
+
+  &__track {
+    border: $borderC;
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Keyframes
+// -----------------------------------------------------------------------------
+@keyframes lf-progressbar-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 3em 3em;
+  }
+}

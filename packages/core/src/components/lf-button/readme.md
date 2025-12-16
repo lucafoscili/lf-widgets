@@ -144,8 +144,8 @@ Type: `Promise<void>`
 | `--lf-button-border-radius`   | Sets the border radius for the button component. Defaults to => var(--lf-ui-border-radius)                          |
 | `--lf-button-color-primary`   | Sets the primary color for the button component. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary)) |
 | `--lf-button-cursor`          | Sets the cursor for the button component. Defaults to => pointer                                                    |
-| `--lf-button-font-family`     | Sets the font family for the button component. Defaults to => var(--lf-font-family-primary)                         |
-| `--lf-button-font-size`       | Sets the font size for the button component. Defaults to => var(--lf-font-size-primary)                             |
+| `--lf-button-font-family`     | Sets the primary font family for the button component. Defaults to => var(--lf-font-family-primary)                 |
+| `--lf-button-font-size`       | Sets the font size for the button component. Defaults to => var(--lf-font-size)                                     |
 | `--lf-button-font-weight`     | Sets the font weight for the button component. Defaults to => var(--lf-font-weight-primary)                         |
 | `--lf-button-height`          | Sets the height for the button component. Defaults to => 3em                                                        |
 | `--lf-button-icon-height`     | Sets the icon height for the button component. Defaults to => 1.5em                                                 |

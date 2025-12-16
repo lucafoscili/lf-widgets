@@ -87,9 +87,6 @@ Type: `Promise<void>`
 | ---------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `--lf-toast-accent-height`         | Sets the height for the toast accent. Defaults to => 0.25em                                        |
 | `--lf-toast-border-radius`         | Sets the border radius for the toast component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-toast-color-on-bg`           | Sets the color-on-bg color for the toast component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-toast-color-primary`         | Sets the color-primary color for the toast component. Defaults to => var(--lf-color-primary)       |
-| `--lf-toast-color-surface`         | Sets the color-surface color for the toast component. Defaults to => var(--lf-color-surface)       |
 | `--lf-toast-font-family`           | Sets the primary font family for the toast component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-toast-font-size`             | Sets the font size for the toast component. Defaults to => var(--lf-font-size)                     |
 | `--lf-toast-icon-margin`           | Sets the margin for the toast icon. Defaults to => auto 0.5em                                      |

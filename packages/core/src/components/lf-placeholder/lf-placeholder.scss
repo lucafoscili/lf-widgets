@@ -2,35 +2,12 @@
 @use "mixins" as *;
 
 $comp: "placeholder";
+
 @include lf-comp-setup($comp, "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
   position: relative;
-}
-
-.placeholder {
-  & {
-    /**
-    * @prop --lf-#{$comp}-ver-alignment: Sets the vertical alignment for the #{$comp} component.
-    *                                    Defaults to => center
-    */
-    align-items: var(--lf-#{$comp}-ver-alignment, center);
-    display: flex;
-    height: var(--lf-#{$comp}-height, 100%);
-    /**
-    * @prop --lf-#{$comp}-hor-alignment: Sets the horizontal alignment for the #{$comp} component.
-    *                                    Defaults to => center
-    */
-    justify-content: var(--lf-#{$comp}-hor-alignment, center);
-    width: var(--lf-#{$comp}-width, 100%);
-  }
-
-  &__icon {
-    @include f-icon($comp);
-    @include lf-el-stretch;
-    animation: shine ease 2s infinite;
-  }
 }
 
 @keyframes shine {
@@ -44,3 +21,14 @@ $comp: "placeholder";
     opacity: 0.4;
   }
 }
+
+/**
+* IMPORTANT!
+* CSS Custom Properties are documented here to allow the Stencil auto-Docs
+* generator to pick them up, but their actual definitions are in the FC mixin.
+*
+* @prop --lf-#{$comp}-hor-alignment: Sets the horizontal alignment for the #{$comp} component.
+*                                    Defaults to => center
+* @prop --lf-#{$comp}-ver-alignment: Sets the vertical alignment for the #{$comp} component.
+*                                    Defaults to => center
+*/

@@ -88,8 +88,8 @@ Type: `Promise<void>`
 | `--lf-badge-border-radius`    | Sets the border radius for the badge component. Defaults to => 50%                                                                 |
 | `--lf-badge-box-shadow`       | Sets the box shadow for the badge component. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)                      |
 | `--lf-badge-color-on-primary` | Sets the text color for the badge label. Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))             |
-| `--lf-badge-font-family`      | Sets the font family for the badge component. Defaults to => var(--lf-font-family-button)                                          |
-| `--lf-badge-font-size`        | Sets the base font size for the badge component (scaled by --lf-fc-ui-size). Defaults to => var(--lf-font-size)                    |
+| `--lf-badge-font-family`      | Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)                                 |
+| `--lf-badge-font-size`        | Sets the font size for the badge component. Defaults to => var(--lf-font-size)                                                     |
 | `--lf-badge-font-weight`      | Sets the font weight for the badge component. Defaults to => var(--lf-font-weight-button)                                          |
 | `--lf-badge-height`           | Sets the height for the badge component. Defaults to => 1.5em                                                                      |
 | `--lf-badge-image-height`     | Sets the height for the badge image. Defaults to => 1em                                                                            |

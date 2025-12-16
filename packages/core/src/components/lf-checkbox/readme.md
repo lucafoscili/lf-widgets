@@ -114,10 +114,6 @@ Type: `Promise<void>`
 | `--lf-checkbox-animation-duration`     | Sets the animation duration for state changes. Defaults to => 90ms                                    |
 | `--lf-checkbox-border-radius`          | Sets the border radius for the checkbox background. Defaults to => var(--lf-ui-border-radius)         |
 | `--lf-checkbox-checkmark-stroke-width` | Sets the stroke width for the checkmark. Defaults to => 3.12px                                        |
-| `--lf-checkbox-color-on-bg`            | Sets the color-on-bg color for the checkbox component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-checkbox-color-on-primary`       | Sets the color-on-primary color for the checkbox component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-checkbox-color-on-surface`       | Sets the color-on-surface color for the checkbox component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-checkbox-color-primary`          | Sets the color-primary color for the checkbox component. Defaults to => var(--lf-color-primary)       |
 | `--lf-checkbox-font-family`            | Sets the primary font family for the checkbox component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-checkbox-font-size`              | Sets the font size for the checkbox component. Defaults to => var(--lf-font-size)                     |
 | `--lf-checkbox-form-padding`           | Sets the padding for the checkbox form field. Defaults to => 0.5em                                    |

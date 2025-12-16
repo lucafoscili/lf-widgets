@@ -1,54 +1,26 @@
-/**
-* @prop --lf-image-color-primary: Sets the primary color for the icon.
-*                                 Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
-* @prop --lf-image-margin: Sets the margin for the image component.
-*                          Defaults to => auto
-* @prop --lf-image-object-fit: Sets the object fit for the image element.
-*                              Defaults to => cover
-*/
 @use "variables" as *;
 @use "mixins" as *;
 
 $comp: "image";
+
 @include lf-comp-setup("image", "true", "false", "true", "false", "true");
 
 :host,
-#lf-component,
-.image {
+#lf-component {
   height: var(--lf_#{$comp}_height, 0);
   position: relative;
   width: var(--lf_#{$comp}_width, 0);
 }
 
-.image {
-  &__icon,
-  &__img {
-    display: block;
-    height: var(--lf_#{$comp}_height, 0);
-    /**
-    * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
-    *                             Defaults to => auto
-    */
-    margin: var(--lf-#{$comp}-margin, auto);
-    width: var(--lf_#{$comp}_width, 0);
-  }
-
-  &__icon {
-    @include lf-comp-color(
-      $comp,
-      "primary",
-      "text",
-      var(--lf-ui-alpha-glass-solid, 0.875),
-      "true"
-    );
-    @include lf-el-transition;
-  }
-
-  &__img {
-    /**
-      * @prop --lf-#{$comp}-object-fit: Sets the object fit for the image element.
-      *                                 Defaults to => cover
-      */
-    object-fit: var(--lf-#{$comp}-object-fit, cover);
-  }
-}
+/**
+* IMPORTANT!
+* CSS Custom Properties are documented here to allow the Stencil auto-Docs
+* generator to pick them up, but their actual definitions are in the FC mixin.
+*
+* @prop --lf-#{$comp}-color-primary: Sets the primary color for the icon.
+*                                    Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
+* @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+*                             Defaults to => auto
+* @prop --lf-#{$comp}-object-fit: Sets the object fit for the #{$comp} element.
+*                                 Defaults to => cover
+*/

@@ -614,11 +614,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-badge-font-family",
-        docs: "Sets the font family for the badge component. Defaults to => var(--lf-font-family-button)",
+        docs: "Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-badge-font-size",
-        docs: "Sets the base font size for the badge component (scaled by --lf-fc-ui-size). Defaults to => var(--lf-font-size)",
+        docs: "Sets the font size for the badge component. Defaults to => var(--lf-font-size)",
       },
       {
         name: "--lf-badge-font-weight",
@@ -983,11 +983,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-button-font-family",
-        docs: "Sets the font family for the button component. Defaults to => var(--lf-font-family-primary)",
+        docs: "Sets the primary font family for the button component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-button-font-size",
-        docs: "Sets the font size for the button component. Defaults to => var(--lf-font-size-primary)",
+        docs: "Sets the font size for the button component. Defaults to => var(--lf-font-size)",
       },
       {
         name: "--lf-button-font-weight",
@@ -1793,48 +1793,12 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the attachments padding for the chat component. Defaults to => 0 1em",
       },
       {
-        name: "--lf-chat-blockquote-border-opacity",
-        docs: "Sets the border opacity for blockquotes. Defaults to => 0.3",
-      },
-      {
-        name: "--lf-chat-blockquote-border-width",
-        docs: "Sets the border width for blockquotes. Defaults to => 3px",
-      },
-      {
-        name: "--lf-chat-blockquote-margin",
-        docs: "Sets the margin for blockquotes. Defaults to => 1em 0",
-      },
-      {
-        name: "--lf-chat-blockquote-padding",
-        docs: "Sets the padding for blockquotes. Defaults to => 0.5em 1em",
-      },
-      {
-        name: "--lf-chat-border-color",
-        docs: "Sets the border color for the chat component. Defaults to => var(--lf-color-border)",
-      },
-      {
         name: "--lf-chat-border-radius",
         docs: "Sets the border radius for the chat component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
         name: "--lf-chat-buttons-padding",
         docs: "Sets the padding for the buttons of the chat component. Defaults to => 1em 0",
-      },
-      {
-        name: "--lf-chat-color-bg",
-        docs: "Sets the color-bg color for the chat component. Defaults to => var(--lf-color-bg)",
-      },
-      {
-        name: "--lf-chat-color-on-bg",
-        docs: "Sets the color-on-bg color for the chat component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-chat-color-on-surface",
-        docs: "Sets the color-on-surface color for the chat component. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-chat-color-surface",
-        docs: "Sets the color-surface color for the chat component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-chat-font-family",
@@ -1845,64 +1809,8 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the chat component. Defaults to => var(--lf-font-size)",
       },
       {
-        name: "--lf-chat-grid-gap",
-        docs: "Sets the grid gap for the messages area. Defaults to => 0.75em",
-      },
-      {
-        name: "--lf-chat-heading-margin-bottom",
-        docs: "Sets the bottom margin for headings. Defaults to => 0.5em",
-      },
-      {
-        name: "--lf-chat-heading-margin-top",
-        docs: "Sets the top margin for headings. Defaults to => 1em",
-      },
-      {
-        name: "--lf-chat-hr-border-width",
-        docs: "Sets the border width for horizontal rules. Defaults to => 1px",
-      },
-      {
-        name: "--lf-chat-hr-margin",
-        docs: "Sets the margin for horizontal rules. Defaults to => 1em 0",
-      },
-      {
-        name: "--lf-chat-hr-opacity",
-        docs: "Sets the opacity for horizontal rules. Defaults to => 0.2",
-      },
-      {
-        name: "--lf-chat-inline-code-border-radius",
-        docs: "Sets the border radius for inline code. Defaults to => var(--lf-border-radius, 0.25em)",
-      },
-      {
-        name: "--lf-chat-inline-code-padding",
-        docs: "Sets the padding for inline code. Defaults to => 0.2em 0.4em",
-      },
-      {
         name: "--lf-chat-inner-padding",
-        docs: "Sets the inner padding for the messages area. Defaults to => 1em",
-      },
-      {
-        name: "--lf-chat-list-item-margin",
-        docs: "Sets the margin for list items. Defaults to => 0.25em 0",
-      },
-      {
-        name: "--lf-chat-list-margin",
-        docs: "Sets the margin for lists. Defaults to => 0.5em 0",
-      },
-      {
-        name: "--lf-chat-list-padding-left",
-        docs: "Sets the left padding for lists. Defaults to => 2em",
-      },
-      {
-        name: "--lf-chat-margin-bottom",
-        docs: "Sets the margin bottom for the messages area. Defaults to => 1em",
-      },
-      {
-        name: "--lf-chat-margin-top",
-        docs: "Sets the margin top for the messages area. Defaults to => 1em",
-      },
-      {
-        name: "--lf-chat-message-max-width",
-        docs: "Sets the max width for each message in the messages area. Defaults to => 75%",
+        docs: "Sets the inner padding for the chat component. Defaults to => 0 1em",
       },
       {
         name: "--lf-chat-outer-grid-gap",
@@ -2025,22 +1933,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-checkbox-checkmark-stroke-width",
         docs: "Sets the stroke width for the checkmark. Defaults to => 3.12px",
-      },
-      {
-        name: "--lf-checkbox-color-on-bg",
-        docs: "Sets the color-on-bg color for the checkbox component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-checkbox-color-on-primary",
-        docs: "Sets the color-on-primary color for the checkbox component. Defaults to => var(--lf-color-on-primary)",
-      },
-      {
-        name: "--lf-checkbox-color-on-surface",
-        docs: "Sets the color-on-surface color for the checkbox component. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-checkbox-color-primary",
-        docs: "Sets the color-primary color for the checkbox component. Defaults to => var(--lf-color-primary)",
       },
       {
         name: "--lf-checkbox-font-family",
@@ -2200,28 +2092,8 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the alignment for the wrapper. Defaults to => center",
       },
       {
-        name: "--lf-chip-border-radius",
-        docs: "Sets the border radius for the chip component. Defaults to => var(--lf-ui-border-radius)",
-      },
-      {
         name: "--lf-chip-color-on-bg",
         docs: "Sets the color for the filter layout checkmark. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-chip-color-on-primary",
-        docs: "Sets the color-on-primary color for the chip component. Defaults to => var(--lf-color-on-primary)",
-      },
-      {
-        name: "--lf-chip-color-on-surface",
-        docs: "Sets the color-on-surface color for the chip component. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-chip-color-primary",
-        docs: "Sets the color-primary color for the chip component. Defaults to => var(--lf-color-primary)",
-      },
-      {
-        name: "--lf-chip-color-surface",
-        docs: "Sets the color-surface color for the chip component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-chip-font-family",
@@ -3655,14 +3527,6 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-photoframe-color-bg",
-        docs: "Sets the color-bg color for the photoframe component. Defaults to => var(--lf-color-bg)",
-      },
-      {
-        name: "--lf-photoframe-color-on-bg",
-        docs: "Sets the color-on-bg color for the photoframe component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
         name: "--lf-photoframe-fade-out-time",
         docs: "Sets the fade out time for the placeholder of the photoframe component. Defaults to => 1750ms",
       },
@@ -4657,11 +4521,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-font-family",
-        docs: "Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-button)",
+        docs: "Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-slider-font-size",
-        docs: "Sets the font size for the slider component. Defaults to => var(--lf-font-size-button)",
+        docs: "Sets the font size for the slider component. Defaults to => var(--lf-font-size)",
       },
       {
         name: "--lf-slider-font-weight",
@@ -4713,7 +4577,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-slider-track-margin-top",
-        docs: "Sets the top margin for the slider track. Defaults to => 0.75em",
+        docs: "Sets the top margin for the slider component's track. Defaults to => 0.75em",
       },
     ],
   },
@@ -4970,32 +4834,12 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-spinner-color",
-        docs: "Primary spinner color (the animated element). Uses the state-aware color set by lf-fw-state-colors mixin.",
-      },
-      {
-        name: "--lf-spinner-color-bg",
-        docs: "Background color for spinner track/container. Defaults to transparent on-bg color.",
-      },
-      {
         name: "--lf-spinner-font-family",
         docs: "Sets the primary font family for the spinner component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-spinner-font-size",
         docs: "Sets the font size for the spinner component. Defaults to => var(--lf-font-size)",
-      },
-      {
-        name: "--lf-spinner-size",
-        docs: "Size of the spinner in em units. Scales automatically with lfUiSize (which adjusts font-size).",
-      },
-      {
-        name: "--lf-spinner-speed",
-        docs: "Animation duration.",
-      },
-      {
-        name: "--lf-spinner-stroke",
-        docs: "Stroke width for ring spinner (scales with em).",
       },
     ],
   },
@@ -5545,18 +5389,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-toast-border-radius",
         docs: "Sets the border radius for the toast component. Defaults to => var(--lf-ui-border-radius)",
-      },
-      {
-        name: "--lf-toast-color-on-bg",
-        docs: "Sets the color-on-bg color for the toast component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-toast-color-primary",
-        docs: "Sets the color-primary color for the toast component. Defaults to => var(--lf-color-primary)",
-      },
-      {
-        name: "--lf-toast-color-surface",
-        docs: "Sets the color-surface color for the toast component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-toast-font-family",

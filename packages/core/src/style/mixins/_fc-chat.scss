@@ -1,0 +1,679 @@
+// ============================================================================
+// FC-CHAT - Functional Component Chat Styles
+// ============================================================================
+// Chat-specific styles for the LfChatFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-chat-* CSS custom properties for theming
+//
+// Usage:
+//   <LfChatFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "chat";
+$primaryC: var(
+  --lf-#{$comp}-color-primary,
+  var(--lf-fc-color-primary, var(--lf-color-primary))
+);
+$surfaceC: var(
+  --lf-#{$comp}-color-surface,
+  var(--lf-fc-color-surface, var(--lf-color-surface))
+);
+$bgC: var(--lf-#{$comp}-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg)));
+$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
+$onSurfaceC: var(--lf-#{$comp}-color-on-surface, var(--lf-color-on-surface));
+
+// -----------------------------------------------------------------------------
+// Chat Container
+// -----------------------------------------------------------------------------
+.chat {
+  & {
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+    box-sizing: border-box;
+    display: grid;
+    height: 100%;
+    margin: auto;
+    /**
+     * @prop --lf-chat-padding: Sets the padding for the chat component.
+     *                          Defaults to => 1em
+     */
+    padding: var(--lf-#{$comp}-padding, 1em 0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Layout Modifiers
+  // ---------------------------------------------------------------------------
+  &--bottom {
+    align-content: center;
+    /**
+     * @prop --lf-chat-outer-grid-gap: Sets the outer grid gap for the chat component.
+     *                                 Defaults to => 0.75em
+     */
+    grid-gap: var(--lf-#{$comp}-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "messages"
+      "spinner"
+      "attachments"
+      "request";
+    grid-template-rows: 1fr repeat(3, auto);
+  }
+
+  &--top {
+    grid-gap: var(--lf-#{$comp}-outer-grid-gap, 0.75em);
+    grid-template-areas:
+      "request"
+      "attachments"
+      "messages"
+      "spinner";
+    grid-template-rows: repeat(2, auto) 1fr auto;
+  }
+
+  &--connecting,
+  &--offline {
+    grid-template-areas: none;
+    grid-template-rows: repeat(3, auto);
+  }
+
+  &--settings {
+    align-content: flex-start;
+  }
+
+  &--full {
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Attachments
+  // ---------------------------------------------------------------------------
+  &__attachments {
+    backdrop-filter: unset;
+    box-sizing: border-box;
+    grid-area: attachments;
+    height: auto;
+    min-height: 0;
+    /**
+     * @prop --lf-chat-attachments-padding: Sets the attachments padding for the chat component.
+     *                                      Defaults to => 0 1em
+     */
+    padding: var(--lf-#{$comp}-attachments-padding, 0);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Configuration & Retry
+  // ---------------------------------------------------------------------------
+  &__configuration,
+  &__retry {
+    backdrop-filter: unset;
+    justify-self: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Edit Container
+  // ---------------------------------------------------------------------------
+  &__edit-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  &__edit-buttons {
+    display: flex;
+    justify-content: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Error State
+  // ---------------------------------------------------------------------------
+  &__error {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    padding: 2em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    /**
+     * @prop --lf-chat-icon-color: Sets the color for the chat icon.
+     *                             Defaults to => var(--lf-color-bg)
+     */
+    color: var(--lf-#{$comp}-icon-color, rgba($bgC, 1));
+    /**
+     * @prop --lf-chat-icon-height: Sets the height for the chat icon.
+     *                              Defaults to => 4em
+     */
+    height: var(--lf-#{$comp}-icon-height, 4em);
+    justify-self: center;
+    margin-bottom: 0.75em;
+    opacity: 0.75;
+    /**
+     * @prop --lf-chat-icon-width: Sets the width for the chat icon.
+     *                             Defaults to => 4em
+     */
+    width: var(--lf-#{$comp}-icon-width, 4em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Spinner
+  // ---------------------------------------------------------------------------
+  &__spinner {
+    min-height: 3em;
+  }
+
+  &__spinner-bar {
+    bottom: 0;
+    grid-area: spinner;
+    height: 0.25em;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text Elements
+  // ---------------------------------------------------------------------------
+  &__text {
+    font-family: var(--lf-font-family-subtitle);
+    font-size: var(--lf-font-size-subtitle);
+    font-style: italic;
+    font-weight: var(--lf-font-weight-subtitle);
+    opacity: 0.6;
+    text-align: center;
+  }
+
+  &__title {
+    font-family: var(--lf-font-family-title);
+    font-size: var(--lf-font-size-title);
+    font-weight: var(--lf-font-weight-title);
+    text-align: center;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Commands
+// -----------------------------------------------------------------------------
+.commands {
+  & {
+    align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    /**
+     * @prop --lf-chat-buttons-padding: Sets the padding for the buttons of the chat component.
+     *                                  Defaults to => 1em 0
+     */
+    padding: var(--lf-#{$comp}-buttons-padding, 1em 0);
+  }
+
+  &__clear,
+  &__stt {
+    backdrop-filter: unset;
+  }
+
+  &__stt {
+    padding: 0 1em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Input
+// -----------------------------------------------------------------------------
+.input {
+  & {
+    display: grid;
+    grid-template-areas:
+      "image textarea configuration"
+      "image progressbar configuration"
+      "file progressbar fullscreen";
+    grid-template-columns: auto 1fr auto;
+  }
+
+  &__attach-file {
+    grid-area: file;
+  }
+
+  &__attach-image {
+    grid-area: image;
+  }
+
+  &__configuration {
+    grid-area: configuration;
+  }
+
+  &__full-screen {
+    grid-area: fullscreen;
+  }
+
+  &__progressbar {
+    grid-area: progressbar;
+  }
+
+  &__textarea {
+    grid-area: textarea;
+    overflow-x: hidden;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Request
+// -----------------------------------------------------------------------------
+.request {
+  box-sizing: border-box;
+  grid-area: request;
+  max-width: 100%;
+  /**
+   * @prop --lf-chat-inner-padding: Sets the inner padding for the chat component.
+   *                                Defaults to => 0 1em
+   */
+  padding: var(--lf-#{$comp}-inner-padding, 0 1em);
+  width: 100%;
+}
+
+// -----------------------------------------------------------------------------
+// Settings
+// -----------------------------------------------------------------------------
+.settings {
+  & {
+    display: grid;
+    grid-gap: 0.5em;
+    grid-template-areas:
+      "header"
+      "configuration";
+    grid-template-rows: auto 1fr;
+    height: 100%;
+  }
+
+  &__configuration {
+    grid-area: configuration;
+    overflow: auto;
+  }
+
+  &__header {
+    display: flex;
+    grid-area: header;
+    width: 100%;
+  }
+
+  &__textfield {
+    box-sizing: border-box;
+    padding-top: 0.75em;
+  }
+
+  &__textarea {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-top: 0.75em 0;
+  }
+
+  &__tools-container {
+    box-sizing: border-box;
+    margin-top: 0.75em;
+    padding: 0.5em;
+  }
+
+  &__tools-header {
+    align-items: center;
+    border-bottom: 1px solid var(--lf-color-border, rgba(0, 0, 0, 0.1));
+    display: flex;
+    font-weight: 600;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.25em;
+  }
+
+  &__tools-category {
+    margin-bottom: 0.5em;
+    padding-left: 0.5em;
+  }
+
+  &__tools {
+    display: block;
+    font-size: 0.875em;
+    font-weight: 500;
+    margin-bottom: 0.25em;
+    opacity: 0.8;
+  }
+
+  &__tools-item {
+    margin-left: 0.5em;
+    padding: 0.125em 0;
+  }
+
+  &__tools-checkbox {
+    font-size: 0.9em;
+  }
+
+  &__agent-container {
+    box-sizing: border-box;
+    margin-top: 0.75em;
+    padding: 0.5em;
+  }
+
+  &__agent-header {
+    align-items: center;
+    border-bottom: 1px solid var(--lf-color-border, rgba(0, 0, 0, 0.1));
+    display: flex;
+    font-weight: 600;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.25em;
+  }
+
+  &__accordion {
+    width: 100%;
+  }
+
+  &__slot-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.5em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Toolbar
+// -----------------------------------------------------------------------------
+.toolbar {
+  & {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-solid, 0.875));
+    /**
+     * @prop --lf-chat-border-radius: Sets the border radius for the chat component.
+     *                                Defaults to => var(--lf-ui-border-radius)
+     */
+    border-bottom-left-radius: var(
+      --lf-#{$comp}-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    border-bottom-right-radius: var(
+      --lf-#{$comp}-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-sizing: border-box;
+    justify-content: flex-end;
+    padding: 0.5em;
+    width: 100%;
+  }
+
+  &__button {
+    margin: 0 2px;
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 0.5em;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  &__message-attachments {
+    --lf-chip-padding: 0.25em 0.5em;
+
+    box-sizing: border-box;
+    margin-bottom: 0.5em;
+    padding: 0 0.5em;
+    width: 100%;
+  }
+
+  &__tool-execution {
+    justify-self: left;
+    overflow: auto;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Messages
+// -----------------------------------------------------------------------------
+.messages {
+  & {
+    --lf-article-padding: 0 0.75em 1em 0.75em;
+
+    align-content: start;
+    box-sizing: border-box;
+    display: grid;
+    grid-area: messages;
+    /**
+     * @prop --lf-chat-grid-gap: Sets the grid gap for the messages area.
+     *                           Defaults to => 0.75em
+     */
+    grid-gap: var(--lf-#{$comp}-grid-gap, 0.75em);
+    grid-template-columns: 1fr;
+    /**
+     * @prop --lf-chat-margin-bottom: Sets the margin bottom for the messages area.
+     *                                Defaults to => 1em
+     */
+    margin-bottom: var(--lf-#{$comp}-margin-bottom, 1em);
+    /**
+     * @prop --lf-chat-margin-top: Sets the margin top for the messages area.
+     *                             Defaults to => 1em
+     */
+    margin-top: var(--lf-#{$comp}-margin-top, 1em);
+    overflow: auto;
+    /**
+     * @prop --lf-chat-inner-padding: Sets the inner padding for the messages area.
+     *                                Defaults to => 1em
+     */
+    padding: var(--lf-#{$comp}-inner-padding, 0 1em);
+    width: 100%;
+    word-break: normal;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message Container
+  // ---------------------------------------------------------------------------
+  &__container {
+    & {
+      background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+      /**
+       * @prop --lf-chat-border-radius: Sets the border radius for message containers.
+       *                                Defaults to => var(--lf-ui-border-radius)
+       */
+      border-radius: var(
+        --lf-#{$comp}-border-radius,
+        var(--lf-ui-border-radius)
+      );
+      height: max-content;
+      /**
+       * @prop --lf-chat-message-max-width: Sets the max width for each message in the messages area.
+       *                                    Defaults to => 75%
+       */
+      max-width: var(--lf-#{$comp}-message-max-width, 75%);
+      position: relative;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    &:hover {
+      background-color: rgba($bgC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &--assistant {
+      --lf-typewriter-color-bg: none;
+      --lf-typewriter-padding: 0;
+
+      justify-self: start;
+    }
+
+    &--user {
+      justify-self: end;
+    }
+
+    &--textarea {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Empty State
+  // ---------------------------------------------------------------------------
+  &__empty {
+    font-style: italic;
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content
+  // ---------------------------------------------------------------------------
+  &__content {
+    font-family: var(--lf-font-family-body);
+    font-size: var(--lf-font-size-body);
+    font-weight: var(--lf-font-weight-body);
+    margin: 0;
+    max-width: 100%;
+    padding: 0.75em;
+    white-space: pre-line;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Code
+  // ---------------------------------------------------------------------------
+  &__code {
+    height: auto;
+    padding: 0.75em 0;
+  }
+
+  &__inline-code {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-hint, 0.125));
+    /**
+     * @prop --lf-chat-inline-code-border-radius: Sets the border radius for inline code.
+     *                                            Defaults to => var(--lf-border-radius, 0.25em)
+     */
+    border-radius: var(
+      --lf-#{$comp}-inline-code-border-radius,
+      var(--lf-border-radius, 0.25em)
+    );
+    font-family: var(--lf-font-family-code);
+    font-size: var(--lf-font-size-code);
+    font-weight: var(--lf-font-weight-code);
+    /**
+     * @prop --lf-chat-inline-code-padding: Sets the padding for inline code.
+     *                                      Defaults to => 0.2em 0.4em
+     */
+    padding: var(--lf-#{$comp}-inline-code-padding, 0.2em 0.4em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Headings
+  // ---------------------------------------------------------------------------
+  &__heading {
+    font-family: var(--lf-font-family-title);
+    font-size: var(--lf-font-size-title);
+    font-weight: var(--lf-font-weight-title);
+    /**
+     * @prop --lf-chat-heading-margin-top: Sets the top margin for headings.
+     *                                     Defaults to => 1em
+     */
+    margin-top: var(--lf-#{$comp}-heading-margin-top, 1em);
+    /**
+     * @prop --lf-chat-heading-margin-bottom: Sets the bottom margin for headings.
+     *                                        Defaults to => 0.5em
+     */
+    margin-bottom: var(--lf-#{$comp}-heading-margin-bottom, 0.5em);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Blockquote
+  // ---------------------------------------------------------------------------
+  &__blockquote {
+    /**
+     * @prop --lf-chat-blockquote-border-width: Sets the border width for blockquotes.
+     *                                          Defaults to => 3px
+     */
+    border-left-width: var(--lf-#{$comp}-blockquote-border-width, 3px);
+    border-left-style: solid;
+    /**
+     * @prop --lf-chat-blockquote-border-opacity: Sets the border opacity for blockquotes.
+     *                                            Defaults to => 0.3
+     */
+    border-left-color: rgba(
+      $surfaceC,
+      var(--lf-#{$comp}-blockquote-border-opacity, 0.3)
+    );
+    font-style: italic;
+    /**
+     * @prop --lf-chat-blockquote-margin: Sets the margin for blockquotes.
+     *                                    Defaults to => 1em 0
+     */
+    margin: var(--lf-#{$comp}-blockquote-margin, 1em 0);
+    /**
+     * @prop --lf-chat-blockquote-padding: Sets the padding for blockquotes.
+     *                                     Defaults to => 0.5em 1em
+     */
+    padding: var(--lf-#{$comp}-blockquote-padding, 0.5em 1em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lists
+  // ---------------------------------------------------------------------------
+  &__list {
+    /**
+     * @prop --lf-chat-list-margin: Sets the margin for lists.
+     *                              Defaults to => 0.5em 0
+     */
+    margin: var(--lf-#{$comp}-list-margin, 0.5em 0);
+    /**
+     * @prop --lf-chat-list-padding-left: Sets the left padding for lists.
+     *                                    Defaults to => 2em
+     */
+    padding-left: var(--lf-#{$comp}-list-padding-left, 2em);
+  }
+
+  &__list-item {
+    /**
+     * @prop --lf-chat-list-item-margin: Sets the margin for list items.
+     *                                   Defaults to => 0.25em 0
+     */
+    margin: var(--lf-#{$comp}-list-item-margin, 0.25em 0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Links
+  // ---------------------------------------------------------------------------
+  &__link {
+    color: var(--lf-#{$comp}-link-color, rgba($primaryC, 1));
+    text-decoration: underline;
+    transition: opacity 0.3s ease-in-out;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Horizontal Rule
+  // ---------------------------------------------------------------------------
+  &__hr {
+    border: none;
+    /**
+     * @prop --lf-chat-hr-border-width: Sets the border width for horizontal rules.
+     *                                  Defaults to => 1px
+     */
+    border-top-width: var(--lf-#{$comp}-hr-border-width, 1px);
+    border-top-style: solid;
+    border-top-color: rgba($surfaceC, 0.125);
+    /**
+     * @prop --lf-chat-hr-margin: Sets the margin for horizontal rules.
+     *                            Defaults to => 1em 0
+     */
+    margin: var(--lf-#{$comp}-hr-margin, 1em 0);
+    /**
+     * @prop --lf-chat-hr-opacity: Sets the opacity for horizontal rules.
+     *                             Defaults to => 0.2
+     */
+    opacity: var(--lf-#{$comp}-hr-opacity, 0.2);
+  }
+}

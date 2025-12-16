@@ -1,0 +1,264 @@
+// ============================================================================
+// FC-SNACKBAR - Functional Component Snackbar Styles
+// ============================================================================
+// Snackbar-specific styles for the LfSnackbarFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-snackbar-* CSS custom properties for theming
+//
+// Usage:
+//   <LfSnackbarFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "snackbar";
+$primaryC: var(
+  --lf-#{$comp}-color-primary,
+  var(--lf-fc-color-primary, var(--lf-color-primary))
+);
+$surfaceC: var(
+  --lf-#{$comp}-color-surface,
+  var(--lf-fc-color-surface, var(--lf-color-surface))
+);
+$onSurfaceC: var(--lf-#{$comp}-color-on-surface, var(--lf-color-on-surface));
+
+// -----------------------------------------------------------------------------
+// Snackbar Container
+// -----------------------------------------------------------------------------
+.snackbar {
+  & {
+    animation: lf-snackbar-slideUp 0.3s ease-out;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    /**
+     * @prop --lf-snackbar-border-radius: Sets the border radius for the snackbar.
+     *                                    Defaults to => var(--lf-ui-border-radius)
+     */
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
+    box-shadow: var(--lf-ui-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.3));
+    box-sizing: border-box;
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+    /**
+     * @prop --lf-snackbar-min-width: Sets the minimum width for the snackbar.
+     *                                Defaults to => 288px
+     */
+    min-width: var(--lf-#{$comp}-min-width, 288px);
+    /**
+     * @prop --lf-snackbar-max-width: Sets the maximum width for the snackbar.
+     *                                Defaults to => clamp(288px, 80vw, 568px)
+     */
+    max-width: var(--lf-#{$comp}-max-width, clamp(288px, 80vw, 568px));
+    overflow: hidden;
+    /**
+     * @prop --lf-snackbar-padding: Sets the padding for the snackbar.
+     *                              Defaults to => 0.875em 1em
+     */
+    padding: var(--lf-#{$comp}-padding, 0.875em 1em);
+    position: relative;
+
+    // Glass reflection effect - dual band highlight
+    &::before {
+      background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75)) 10%,
+        rgba($primaryC, var(--lf-ui-alpha-glass, 0.375)) 15%,
+        rgba($primaryC, var(--lf-ui-alpha-hint, 0.125)) 20%,
+        transparent 35%,
+        transparent 45%,
+        rgba($onSurfaceC, 0.08) 50%,
+        rgba($onSurfaceC, 0.15) 55%,
+        rgba($onSurfaceC, 0.08) 60%,
+        transparent 75%
+      );
+      content: "";
+      inset: 0;
+      /**
+       * @prop --lf-snackbar-glass-opacity: Opacity for the glass reflection effect.
+       *                                    Defaults to => var(--lf-ui-alpha-glass, 0.375)
+       */
+      opacity: var(
+        --lf-#{$comp}-glass-opacity,
+        var(--lf-ui-alpha-glass, 0.375)
+      );
+      pointer-events: none;
+      position: absolute;
+      z-index: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Position Modifiers
+  // ---------------------------------------------------------------------------
+  &--inline {
+    animation: none;
+    max-width: 100%;
+    min-width: unset;
+    width: 100%;
+  }
+
+  &--top-left,
+  &--top-center,
+  &--top-right {
+    animation-name: lf-snackbar-slideDown;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content
+  // ---------------------------------------------------------------------------
+  &__content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.75em;
+    position: relative;
+    z-index: 1;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    /**
+     * @prop --lf-snackbar-icon-color: Sets the color for the snackbar icon.
+     *                                 Defaults to => var(--lf-color-primary)
+     */
+    color: var(--lf-#{$comp}-icon-color, rgba($primaryC, 1));
+    flex-shrink: 0;
+    /**
+     * @prop --lf-snackbar-icon-height: Sets the height for the snackbar icon.
+     *                                  Defaults to => 1.5em
+     */
+    height: var(--lf-#{$comp}-icon-height, 1.5em);
+    /**
+     * @prop --lf-snackbar-icon-width: Sets the width for the snackbar icon.
+     *                                 Defaults to => 1.5em
+     */
+    width: var(--lf-#{$comp}-icon-width, 1.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message
+  // ---------------------------------------------------------------------------
+  &__message {
+    flex: 1;
+    /**
+     * @prop --lf-snackbar-message-font-size: Font size for the message.
+     *                                        Defaults to => 0.875em
+     */
+    font-size: var(--lf-#{$comp}-message-font-size, 0.875em);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Actions
+  // ---------------------------------------------------------------------------
+  &__actions {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5em;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__action-button {
+    & {
+      background: none;
+      border: none;
+      color: rgba($primaryC, 1);
+      cursor: pointer;
+      /**
+       * @prop --lf-snackbar-action-font-family: Font family for action button.
+       *                                         Defaults to => inherit
+       */
+      font-family: var(--lf-#{$comp}-action-font-family, inherit);
+      /**
+       * @prop --lf-snackbar-action-font-size: Font size for action button.
+       *                                       Defaults to => 0.875em
+       */
+      font-size: var(--lf-#{$comp}-action-font-size, 0.875em);
+      font-weight: 500;
+      padding: 0.25em 0.5em;
+      text-transform: uppercase;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 0.6;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Close Button
+  // ---------------------------------------------------------------------------
+  &__close-button {
+    & {
+      /**
+       * @prop --lf-snackbar-close-color: Sets the color for the close button.
+       *                                  Defaults to => var(--lf-color-surface)
+       */
+      color: var(--lf-#{$comp}-close-color, rgba($surfaceC, 1));
+      cursor: pointer;
+      flex-shrink: 0;
+      /**
+       * @prop --lf-snackbar-close-height: Sets the height for the close button.
+       *                                   Defaults to => 1.25em
+       */
+      height: var(--lf-#{$comp}-close-height, 1.25em);
+      transition: opacity 0.2s ease;
+      /**
+       * @prop --lf-snackbar-close-width: Sets the width for the close button.
+       *                                  Defaults to => 1.25em
+       */
+      width: var(--lf-#{$comp}-close-width, 1.25em);
+    }
+
+    &:hover {
+      opacity: 0.75;
+    }
+
+    &:active {
+      opacity: 0.5;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Keyframes
+// -----------------------------------------------------------------------------
+@keyframes lf-snackbar-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lf-snackbar-slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

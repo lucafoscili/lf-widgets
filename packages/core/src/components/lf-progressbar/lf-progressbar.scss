@@ -22,16 +22,8 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
   & {
     @include lf-comp-border($comp);
     box-sizing: border-box;
-    /**
-    * @prop --lf-progressbar-height: Sets the height for the #{$comp} component.
-    *                                Defaults to => 100%
-    */
     height: var(--lf-progressbar-height, 100%);
     overflow: hidden;
-    /**
-    * @prop --lf-progressbar-width: Sets the width for the #{$comp} component.
-    *                               Defaults to => 100%
-    */
     width: var(--lf-progressbar-width, 100%);
   }
 
@@ -69,10 +61,6 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
     @include lf-el-transition("bouncy");
     box-sizing: border-box;
     height: var(--lf-progressbar-height, 100%);
-    /**
-    * @prop --lf-progressbar-padding: Sets the padding for the #{$comp} component.
-    *                                 Defaults to => 1em 0em
-    */
     padding: var(--lf-#{$comp}-padding, 1em 0);
     position: relative;
     text-align: center;
@@ -235,3 +223,16 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
     background-position: 3em 3em;
   }
 }
+
+/**
+* IMPORTANT!
+* CSS Custom Properties are documented here to allow the Stencil auto-Docs
+* generator to pick them up, but their actual definitions are in the FC mixin.
+*
+* @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
+*                             Defaults to => 100%
+* @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
+*                              Defaults to => 1em 0em
+* @prop --lf-#{$comp}-width: Sets the width for the #{$comp} component.
+*                            Defaults to => 100%
+*/

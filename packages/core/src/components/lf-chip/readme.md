@@ -115,12 +115,7 @@ Type: `Promise<void>`
 | Name                             | Description                                                                                       |
 | -------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `--lf-chip-align-items`          | Sets the alignment for the wrapper. Defaults to => center                                         |
-| `--lf-chip-border-radius`        | Sets the border radius for the chip component. Defaults to => var(--lf-ui-border-radius)          |
 | `--lf-chip-color-on-bg`          | Sets the color for the filter layout checkmark. Defaults to => var(--lf-color-on-surface)         |
-| `--lf-chip-color-on-primary`     | Sets the color-on-primary color for the chip component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-chip-color-on-surface`     | Sets the color-on-surface color for the chip component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-chip-color-primary`        | Sets the color-primary color for the chip component. Defaults to => var(--lf-color-primary)       |
-| `--lf-chip-color-surface`        | Sets the color-surface color for the chip component. Defaults to => var(--lf-color-surface)       |
 | `--lf-chip-font-family`          | Sets the primary font family for the chip component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-chip-font-size`            | Sets the font size for the chip component. Defaults to => var(--lf-font-size)                     |
 | `--lf-chip-item-height`          | Sets the height for the items. Defaults to => 2em                                                 |

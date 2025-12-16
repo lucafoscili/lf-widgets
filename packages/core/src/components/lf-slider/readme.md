@@ -117,8 +117,8 @@ Type: `Promise<void>`
 | `--lf-slider-box-shadow`         | Sets the box-shadow for the slider component's track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2) |
 | `--lf-slider-color-on-bg`        | Sets the color-on-bg color for the slider component. Defaults to => var(--lf-color-on-bg)                            |
 | `--lf-slider-color-primary`      | Sets the color-primary color for the slider component. Defaults to => var(--lf-color-primary)                        |
-| `--lf-slider-font-family`        | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-button)                   |
-| `--lf-slider-font-size`          | Sets the font size for the slider component. Defaults to => var(--lf-font-size-button)                               |
+| `--lf-slider-font-family`        | Sets the primary font family for the slider component. Defaults to => var(--lf-font-family-primary)                  |
+| `--lf-slider-font-size`          | Sets the font size for the slider component. Defaults to => var(--lf-font-size)                                      |
 | `--lf-slider-font-weight`        | Sets the font weight for the slider component. Defaults to => var(--lf-font-weight-button)                           |
 | `--lf-slider-gap`                | Sets the gap between slider elements. Defaults to => 0.5em                                                           |
 | `--lf-slider-input-height`       | Sets the height for the slider component's input. Defaults to => 3em                                                 |
@@ -131,7 +131,7 @@ Type: `Promise<void>`
 | `--lf-slider-thumb-underlay-top` | Sets the top position for the slider component's thumb underlay. Defaults to => -0.6em                               |
 | `--lf-slider-thumb-width`        | Sets the width for the slider component's thumb. Defaults to => 1.5em                                                |
 | `--lf-slider-track-height`       | Sets the height for the slider component's track. Defaults to => 0.5em                                               |
-| `--lf-slider-track-margin-top`   | Sets the top margin for the slider track. Defaults to => 0.75em                                                      |
+| `--lf-slider-track-margin-top`   | Sets the top margin for the slider component's track. Defaults to => 0.75em                                          |
 
 
 ----------------------------------------------

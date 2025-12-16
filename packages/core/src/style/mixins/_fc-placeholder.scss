@@ -1,0 +1,95 @@
+// ============================================================================
+// FC-PLACEHOLDER - Functional Component Placeholder Styles
+// ============================================================================
+// Placeholder-specific styles for the LfPlaceholderFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-placeholder-* CSS custom properties for theming
+//
+// Usage:
+//   <LfPlaceholderFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "placeholder";
+$primaryC: var(
+  --lf-#{$comp}-color-primary,
+  var(--lf-fc-color-primary, var(--lf-color-primary))
+);
+
+// -----------------------------------------------------------------------------
+// Placeholder Container
+// -----------------------------------------------------------------------------
+.placeholder {
+  & {
+    /**
+     * @prop --lf-placeholder-ver-alignment: Sets the vertical alignment for the placeholder component.
+     *                                       Defaults to => center
+     */
+    align-items: var(--lf-#{$comp}-ver-alignment, center);
+    box-sizing: border-box;
+    display: flex;
+    /**
+     * @prop --lf-placeholder-height: Sets the height for the placeholder component.
+     *                                Defaults to => 100%
+     */
+    height: var(--lf-#{$comp}-height, 100%);
+    /**
+     * @prop --lf-placeholder-hor-alignment: Sets the horizontal alignment for the placeholder component.
+     *                                       Defaults to => center
+     */
+    justify-content: var(--lf-#{$comp}-hor-alignment, center);
+    /**
+     * @prop --lf-placeholder-width: Sets the width for the placeholder component.
+     *                               Defaults to => 100%
+     */
+    width: var(--lf-#{$comp}-width, 100%);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    animation: lf-placeholder-shine ease 2s infinite;
+    aspect-ratio: 1;
+    /**
+     * @prop --lf-placeholder-icon-color: Sets the color for the placeholder icon.
+     *                                    Defaults to => var(--lf-color-primary)
+     */
+    color: var(--lf-#{$comp}-icon-color, rgba($primaryC, 1));
+    /**
+     * @prop --lf-placeholder-icon-height: Sets the height for the placeholder icon.
+     *                                     Defaults to => 100%
+     */
+    height: var(--lf-#{$comp}-icon-height, 100%);
+    max-height: 100%;
+    max-width: 100%;
+    /**
+     * @prop --lf-placeholder-icon-width: Sets the width for the placeholder icon.
+     *                                    Defaults to => 100%
+     */
+    width: var(--lf-#{$comp}-icon-width, 100%);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Keyframes
+// -----------------------------------------------------------------------------
+@keyframes lf-placeholder-shine {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}

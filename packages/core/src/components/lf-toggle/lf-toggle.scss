@@ -1,36 +1,41 @@
 @use "variables" as *;
 @use "mixins" as *;
 
-/**
- * @prop --lf-toggle-border-radius: Sets the border radius for the toggle track.
- *                                  Defaults to => var(--lf-ui-border-radius, 1em)
- * @prop --lf-toggle-box-shadow: Sets the box shadow for the toggle track.
- *                               Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
- * @prop --lf-toggle-form-padding: Sets the padding for the toggle form field.
- *                                 Defaults to => 0.5em
- * @prop --lf-toggle-input-height: Sets the height for the toggle input.
- *                                 Defaults to => 3em
- * @prop --lf-toggle-label-min-width: Sets the min-width for the toggle label.
- *                                    Defaults to => max-content
- * @prop --lf-toggle-label-padding-left: Sets the left padding for the toggle label.
- *                                       Defaults to => 1em
- * @prop --lf-toggle-label-padding-right: Sets the right padding for the toggle label.
- *                                        Defaults to => 1em
- * @prop --lf-toggle-margin: Sets the margin for the toggle component.
- *                           Defaults to => 1em 0.5em
- * @prop --lf-toggle-min-width: Sets the min-width for the toggle component.
- *                              Defaults to => 4em
- * @prop --lf-toggle-thumb-size: Sets the size for the toggle thumb.
- *                               Defaults to => 1.5em
- * @prop --lf-toggle-track-height: Sets the height for the toggle track.
- *                                 Defaults to => 0.5em
- * @prop --lf-toggle-track-width: Sets the width for the toggle track.
- *                                Defaults to => 3em
- */
-
 $comp: "toggle";
+
 @include lf-comp-setup($comp, "true", "true", "false", "false", "true");
 
 :host {
   @include lf-el-stretch;
 }
+
+/**
+* IMPORTANT!
+* CSS Custom Properties are documented here to allow the Stencil auto-Docs
+* generator to pick them up, but their actual definitions are in the FC mixin.
+*
+* @prop --lf-toggle-border-radius: Sets the border radius for the toggle track.
+*                                  Defaults to => var(--lf-ui-border-radius, 1em)
+* @prop --lf-toggle-box-shadow: Sets the box shadow for the toggle track.
+*                               Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)
+* @prop --lf-toggle-form-padding: Sets the padding for the toggle form field.
+*                                 Defaults to => 0.5em
+* @prop --lf-toggle-input-height: Sets the height for the toggle input.
+*                                 Defaults to => 3em
+* @prop --lf-toggle-label-min-width: Sets the min-width for the toggle label.
+*                                    Defaults to => max-content
+* @prop --lf-toggle-label-padding-left: Sets the left padding for the toggle label.
+*                                       Defaults to => 1em
+* @prop --lf-toggle-label-padding-right: Sets the right padding for the toggle label.
+*                                        Defaults to => 1em
+* @prop --lf-toggle-margin: Sets the margin for the toggle component.
+*                           Defaults to => 1em 0.5em
+* @prop --lf-toggle-min-width: Sets the min-width for the toggle component.
+*                              Defaults to => 4em
+* @prop --lf-toggle-thumb-size: Sets the size for the toggle thumb.
+*                               Defaults to => 1.5em
+* @prop --lf-toggle-track-height: Sets the height for the toggle track.
+*                                 Defaults to => 0.5em
+* @prop --lf-toggle-track-width: Sets the width for the toggle track.
+*                                Defaults to => 3em
+*/

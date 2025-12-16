@@ -1,0 +1,196 @@
+// ============================================================================
+// FC-TOAST - Functional Component Toast Styles
+// ============================================================================
+// Toast-specific styles for the LfToastFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-toast-* CSS custom properties for theming
+//
+// Usage:
+//   <LfToastFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// CSS custom property definitions
+$comp: "toast";
+$primaryC: var(
+  --lf-#{$comp}-color-primary,
+  var(--lf-fc-color-primary, var(--lf-color-primary))
+);
+$surfaceC: var(
+  --lf-#{$comp}-color-surface,
+  var(--lf-fc-color-surface, var(--lf-color-surface))
+);
+$bgC: var(--lf-#{$comp}-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg)));
+$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
+
+// -----------------------------------------------------------------------------
+// Toast Container
+// -----------------------------------------------------------------------------
+.toast {
+  & {
+    animation: lf-toast-slideIn 250ms ease-out;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    /**
+     * @prop --lf-toast-border-radius: Sets the border radius for the toast.
+     *                                 Defaults to => var(--lf-ui-border-radius)
+     */
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
+    box-shadow: var(--lf-ui-box-shadow-modal);
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Accent Bar
+  // ---------------------------------------------------------------------------
+  &__accent {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      /**
+       * @prop --lf-toast-accent-height: Sets the height for the toast accent.
+       *                                 Defaults to => 0.25em
+       */
+      height: var(--lf-#{$comp}-accent-height, 0.25em);
+      width: 100%;
+    }
+
+    &--temporary {
+      animation: lf-toast-reduceWidth linear var(--lf_toast_timer, 5000ms)
+        forwards;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message Wrapper
+  // ---------------------------------------------------------------------------
+  &__message-wrapper {
+    /**
+     * @prop --lf-toast-message-align-content: Sets the align-content for the toast message wrapper.
+     *                                         Defaults to => center
+     */
+    align-content: var(--lf-#{$comp}-message-align-content, center);
+    box-sizing: border-box;
+    display: grid;
+    gap: 1em;
+    grid-template-columns: 1fr;
+    height: 100%;
+    overflow: auto;
+    /**
+     * @prop --lf-toast-padding: Sets the padding for the toast message wrapper.
+     *                           Defaults to => 0.75em
+     */
+    padding: var(--lf-#{$comp}-padding, 0.75em);
+
+    &--has-icon {
+      grid-template-columns: auto 1fr;
+    }
+
+    &--has-actions {
+      grid-template-columns: 1fr auto;
+    }
+
+    &--full {
+      grid-template-columns: auto 1fr auto;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    & {
+      /**
+       * @prop --lf-toast-icon-color: Sets the color for the toast icon.
+       *                              Defaults to => var(--lf-color-primary)
+       */
+      color: var(--lf-#{$comp}-icon-color, rgba($primaryC, 1));
+      /**
+       * @prop --lf-toast-icon-height: Sets the height for the toast icon.
+       *                               Defaults to => 1.5em
+       */
+      height: var(--lf-#{$comp}-icon-height, 1.5em);
+      /**
+       * @prop --lf-toast-icon-margin: Sets the margin for the toast icon.
+       *                               Defaults to => auto 0.5em
+       */
+      margin: var(--lf-#{$comp}-icon-margin, auto 0.5em);
+      /**
+       * @prop --lf-toast-icon-opacity: Sets the opacity for the toast icon.
+       *                                Defaults to => 1
+       */
+      opacity: var(--lf-#{$comp}-icon-opacity, 1);
+      /**
+       * @prop --lf-toast-icon-width: Sets the width for the toast icon.
+       *                              Defaults to => 1.5em
+       */
+      width: var(--lf-#{$comp}-icon-width, 1.5em);
+    }
+
+    &--has-actions {
+      & {
+        cursor: pointer;
+        margin: auto 0.5em auto auto;
+        position: relative;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Message
+  // ---------------------------------------------------------------------------
+  &__message {
+    color: rgba($bgC, 1);
+    overflow: auto;
+    /**
+     * @prop --lf-toast-message-padding: Sets the padding for the toast message.
+     *                                   Defaults to => 0.75em 0.75em 0.75em 0
+     */
+    padding: var(--lf-#{$comp}-message-padding, 0.75em 0.75em 0.75em 0);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Keyframes
+// -----------------------------------------------------------------------------
+@keyframes lf-toast-reduceWidth {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes lf-toast-slideIn {
+  0% {
+    transform: var(--lf-toast-slidein-from, translateX(100%));
+  }
+  100% {
+    transform: var(--lf-toast-slidein-to, translateX(0));
+  }
+}
+
+@keyframes lf-toast-slideUp {
+  0% {
+    transform: var(--lf-toast-slideup-from, translateY(100%));
+  }
+  100% {
+    transform: var(--lf-toast-slideup-to, translateY(0));
+  }
+}
