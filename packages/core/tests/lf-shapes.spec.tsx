@@ -5,7 +5,6 @@ import {
   CY_ATTRIBUTES,
   LfDataCell,
   LfDataShapes,
-  LfEvent,
   LfFrameworkInterface,
   LfShapePropsInterface,
 } from "@lf-widgets/foundations";
@@ -46,7 +45,7 @@ const createTestPage = async <S extends LfDataShapes>(
           framework={framework}
           shape={shapeProps.shape}
           index={shapeProps.index ?? 0}
-          cell={shapeProps.cell}
+          cell={shapeProps.cell as LfDataCell<S>}
           eventDispatcher={shapeProps.eventDispatcher ?? mockEventDispatcher}
           defaultCb={shapeProps.defaultCb}
           refCallback={shapeProps.refCallback}
@@ -375,13 +374,10 @@ describe("shape event dispatching", () => {
     const badge = page.root.querySelector("lf-badge");
     expect(badge).toBeTruthy();
 
-    // Simulate event emission by triggering the handler
-    const mockEvent = {
-      detail: { comp: {}, eventType: "click", id: "badge0" },
-    } as LfEvent;
-
-    // Access internal handler through event listener
     // Note: In real scenarios, the WC would emit events that trigger the handler
+    // The mockEvent would be used to simulate event emission, but Stencil test
+    // environment doesn't support triggering custom events on WC elements directly.
+    // We verify the handlers are set up but not called without actual user interaction.
     expect(mockDefaultCb).not.toHaveBeenCalled();
     expect(mockDispatcher).not.toHaveBeenCalled();
   });
@@ -504,7 +500,7 @@ describe("props transformation", () => {
 
       expect(result.id).toBe("explicit-id");
       // key still uses shape+index pattern
-      expect(result.key).toBe("badge5");
+      expect((result as any).key).toBe("badge5");
     });
   });
 
@@ -513,14 +509,14 @@ describe("props transformation", () => {
       const cell = { value: "test", shape: "badge" as const };
       const result = decorator("LfBadge", "badge", cell, 0);
 
-      expect(result.shape).toBeUndefined();
+      expect((result as any).shape).toBeUndefined();
     });
 
     it("removes shape property for text shapes", () => {
       const cell = { value: "hello", shape: "text" as const };
       const result = decorator(null, "text", cell, 0);
 
-      expect(result.shape).toBeUndefined();
+      expect((result as any).shape).toBeUndefined();
     });
   });
 
@@ -544,7 +540,7 @@ describe("props transformation", () => {
         shape: "progressbar" as const,
         customNumber: 100,
       } as any;
-      const result = decorator("LfProgressbar", "progressbar", cell, 0);
+      const result = decorator("LfProgressbar", "progressbar", cell, 0) as any;
 
       expect(result.customNumber).toBe(100);
     });
@@ -555,7 +551,7 @@ describe("props transformation", () => {
         shape: "toggle" as const,
         lfDisabled: true,
       } as any;
-      const result = decorator("LfToggle", "toggle", cell, 0);
+      const result = decorator("LfToggle", "toggle", cell, 0) as any;
 
       expect(result.lfDisabled).toBe(true);
     });
@@ -594,7 +590,7 @@ describe("props transformation", () => {
   describe("key generation", () => {
     it("generates key from shape name and index", () => {
       const cell = { value: "test", shape: "badge" as const };
-      const result = decorator("LfBadge", "badge", cell, 3);
+      const result = decorator("LfBadge", "badge", cell, 3) as any;
 
       expect(result.key).toBe("badge3");
     });
@@ -605,7 +601,7 @@ describe("props transformation", () => {
         shape: "badge" as const,
         htmlProps: { id: "custom-id" },
       };
-      const result = decorator("LfBadge", "badge", cell, 5);
+      const result = decorator("LfBadge", "badge", cell, 5) as any;
 
       expect(result.key).toBe("badge5");
       expect(result.id).toBe("custom-id");

@@ -32,8 +32,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepImageActions } from "./actions.image";
-import { prepImageComputed } from "./computed.image";
 import { createAdapter } from "./lf-image-adapter";
 
 /**
@@ -71,26 +69,23 @@ export class LfImage implements LfImageInterface {
 
   //#region States
   /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component (besides debugInfo). It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
+  /**
    * Debug information state property created through LfFramework debug utility.
    * Used to store and manage debug-related information for the image component.
    * @remarks This state property is initialized using the debug.info.create() method from the framework instance.
    */
   @State() debugInfo: LfDebugLifecycleInfo;
-  /**
-   * State variable that tracks if an error occurred during image loading.
-   * When true, indicates the image failed to load properly.
-   */
-  @State() error = false;
-  /**
-   * Indicates whether the image has been successfully loaded.
-   * This property is set to true once the image load event completes.
-   */
-  @State() isLoaded: boolean = false;
-  /**
-   * The resolved sprite name to be used for the image.
-   * This state property is set when the component successfully resolves the sprite name.
-   */
-  @State() resolvedSpriteName?: string;
   //#endregion
 
   //#region Props
@@ -190,8 +185,31 @@ export class LfImage implements LfImageInterface {
   #s = LF_STYLE_ID;
   #v = LF_IMAGE_CSS_VARS;
   #w = LF_WRAPPER_ID;
-  #img: HTMLImageElement | SVGElement = null;
-  #resolvedFor?: string;
+
+  /**
+   * Bridge getter to satisfy LfImageInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.error() internally
+   */
+  get error(): boolean {
+    return this.#adapter?.controller.get.error() ?? false;
+  }
+  /**
+   * Bridge getter to satisfy LfImageInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.isLoaded() internally
+   */
+  get isLoaded(): boolean {
+    return this.#adapter?.controller.get.isLoaded() ?? false;
+  }
+  /**
+   * Bridge getter to satisfy LfImageInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.resolvedSpriteName() internally
+   */
+  get resolvedSpriteName(): string | undefined {
+    return this.#adapter?.controller.get.resolvedSpriteName();
+  }
   //#endregion
 
   //#region Watchers
@@ -220,7 +238,7 @@ export class LfImage implements LfImageInterface {
    */
   @Method()
   async getImage(): Promise<HTMLImageElement | SVGElement | null> {
-    return this.#img;
+    return this.#adapter.controller.get.imageRef();
   }
   /**
    * Used to retrieve component's properties and descriptions.
@@ -281,11 +299,16 @@ export class LfImage implements LfImageInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + resolvedFor
-   * - controller.set: Simple setters (error, isLoaded, resolvedSpriteName, resolvedFor, imageRef)
+   * - controller.get: State reads (error, isLoaded, resolvedSpriteName, etc.) + base getters
+   * - controller.set: State writes → triggers onStateChange
    * - controller.computed: Derived predicates (isResourceUrl, resolvedSource)
    * - controller.actions: Complex operations (resolveSprite, resetState)
    * - elements: JSX factories + refs
@@ -298,40 +321,30 @@ export class LfImage implements LfImageInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility) + component-specific state reads
+      // Base getters (via utility) - does NOT include state getters
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Initial state values
       {
-        ...createBaseGetters({
-          blocks: () => this.#b,
-          compInstance: () => this,
-          framework: () => this.#framework,
-          ids: () => this.#ids,
-          parts: () => this.#p,
-        }),
-        resolvedFor: () => this.#resolvedFor,
+        error: false,
+        imageRef: null,
+        isLoaded: false,
+        resolvedFor: undefined,
+        resolvedSpriteName: undefined,
       },
-      // Setters - simple single-value assignments
-      {
-        error: (value: boolean) => {
-          this.error = value;
-        },
-        isLoaded: (value: boolean) => {
-          this.isLoaded = value;
-        },
-        resolvedSpriteName: (value: string | undefined) => {
-          this.resolvedSpriteName = value;
-        },
-        resolvedFor: (value: string | undefined) => {
-          this.#resolvedFor = value;
-        },
-        imageRef: (el: HTMLImageElement | SVGElement | null) => {
-          this.#img = el;
-        },
-      },
-      // Computed - derived predicates (from dedicated file)
-      prepImageComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepImageActions(getAdapter),
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -358,7 +371,7 @@ export class LfImage implements LfImageInterface {
 
     if (!isResourceUrl() && this.lfValue) {
       const { theme } = this.#framework;
-      this.isLoaded = true;
+      this.#adapter.controller.set.isLoaded(true);
       theme.get.sprite.ids();
     }
   }

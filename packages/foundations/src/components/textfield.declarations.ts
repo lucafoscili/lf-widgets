@@ -225,6 +225,10 @@ export interface LfTextfieldAdapterHandlers extends LfComponentAdapterHandlers {
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * "Adapter as Core" Architecture:
+ * - `value` and `status` are read from adapter's closure state
+ * - These getters are the ONLY way to read runtime state
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfTextfieldAdapterControllerGetters
@@ -234,6 +238,10 @@ export interface LfTextfieldAdapterControllerGetters
     typeof LF_TEXTFIELD_IDS,
     typeof LF_TEXTFIELD_PARTS
   > {
+  /** Current textfield value (from adapter closure) */
+  value: () => string;
+  /** Current status set (from adapter closure) */
+  status: () => Set<LfTextfieldModifiers>;
   /** Current textfield styling (normalized to lowercase) */
   styling: () => LfTextfieldStyling;
   /** Maximum length from HTML attributes */

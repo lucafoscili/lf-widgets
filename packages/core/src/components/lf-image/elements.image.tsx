@@ -5,10 +5,11 @@ import { LfImageFC } from "./lf-image-fc";
 /**
  * Prepares JSX factory functions for the image component.
  *
- * v4.0.0 Architecture - THIN WRAPPER PATTERN:
+ * "Adapter as Core" Architecture - THIN WRAPPER PATTERN:
  * - The FC (LfImageFC) contains ALL rendering logic
  * - This elements file is a THIN WRAPPER that maps adapter → FC props
  * - NO duplicate JSX logic - FC is the single source of truth
+ * - State is read from adapter's closure via controller.get.*
  *
  * Benefits:
  * - Single source of truth for rendering (the FC)
@@ -27,32 +28,24 @@ export const prepImageJsx = (
     image: () => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { compInstance, framework } = controller.get;
+      const { compInstance, error, framework, isLoaded, resolvedSpriteName } =
+        controller.get;
 
       const comp = compInstance();
       const mgr = framework();
       const { refs } = elements;
 
-      const {
-        error,
-        isLoaded,
-        lfHtmlAttributes,
-        lfSizeX,
-        lfSizeY,
-        lfUiState,
-        lfValue,
-        resolvedSpriteName,
-      } = comp;
+      const { lfHtmlAttributes, lfSizeX, lfSizeY, lfUiState, lfValue } = comp;
 
       // Map adapter state → FC props (thin wrapper pattern)
-      // Note: FC computes isResourceUrl internally from value
+      // State is read from adapter's closure via getters
       return (
         <LfImageFC
-          error={error}
+          error={error()}
           framework={mgr}
           htmlAttributes={lfHtmlAttributes}
-          icon={resolvedSpriteName}
-          isLoaded={isLoaded}
+          icon={resolvedSpriteName()}
+          isLoaded={isLoaded()}
           onClick={handlers.click}
           onContextMenu={handlers.contextmenu}
           onError={handlers.error}

@@ -133,6 +133,7 @@ export interface LfButtonAdapterHandlers extends LfComponentAdapterHandlers {
 }
 /**
  * Base getters extended with component-specific state reads.
+ * Getters read from adapter's internal state variables.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
@@ -146,13 +147,21 @@ export interface LfButtonAdapterControllerGetters
   > {
   /** Current button styling (normalized to lowercase) */
   styling: () => LfButtonStyling;
+  /** Read the current button state from adapter's internal state */
+  value: () => LfButtonState;
 }
 /**
  * Simple single-value setters.
- * Each setter performs exactly ONE state change.
+ * Each setter performs exactly ONE state change and triggers onStateChange.
+ *
+ * In "Adapter as Core" pattern, setters mutate adapter's internal state
+ * and call the onStateChange callback to signal the WC to re-render.
  */
 export interface LfButtonAdapterControllerSetters
-  extends LfComponentAdapterSetters {}
+  extends LfComponentAdapterSetters {
+  /** Set the button state and trigger re-render */
+  value: (state: LfButtonState) => void;
+}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.

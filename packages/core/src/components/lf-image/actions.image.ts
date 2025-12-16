@@ -8,10 +8,11 @@ import {
 /**
  * Factory to create action functions for lf-image.
  *
- * Actions are complex multi-step operations that may:
- * - Have side effects
- * - Trigger re-renders
- * - Batch multiple state changes
+ * "Adapter as Core" Architecture:
+ * - Actions read internal state via `controller.get.*`
+ * - Actions write via `controller.set.*` which triggers onStateChange
+ * - The actual state lives in the adapter factory's closure
+ * - This file maintains SoC by keeping action logic separate
  *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Actions object
@@ -24,6 +25,10 @@ export const prepImageActions = (
   /**
    * Resolves sprite icon from theme.
    * Handles CSS variable resolution and checks if icon exists in sprite.
+   *
+   * "Adapter as Core" Architecture:
+   * - Reads resolvedFor from adapter's closure via getter
+   * - Writes via setters which trigger onStateChange
    */
   resolveSprite: async (value?: LfThemeIconVariable) => {
     const adapter = getAdapter();
@@ -56,6 +61,9 @@ export const prepImageActions = (
   /**
    * Resets state when lfValue changes.
    * Called by the @Watch decorator on lfValue.
+   *
+   * "Adapter as Core" Architecture:
+   * - Writes via setters which trigger onStateChange
    */
   resetState: async (newVal?: string) => {
     const adapter = getAdapter();

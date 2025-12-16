@@ -27,15 +27,15 @@ export const prepSliderJsx = (
     slider: (): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { compInstance, framework } = controller.get;
+      const { compInstance, framework, value } = controller.get;
       const { isDisabled } = controller.computed;
 
       const comp = compInstance();
       const mgr = framework();
       const v = LF_SLIDER_CSS_VARIABLES;
+      const currentValue = value();
 
-      const { lfLabel, lfLeadingLabel, lfMax, lfMin, lfStep, lfStyle, value } =
-        comp;
+      const { lfLabel, lfLeadingLabel, lfMax, lfMin, lfStep, lfStyle } = comp;
 
       const { assignRef, theme } = mgr;
       const { setLfStyle } = theme;
@@ -70,7 +70,7 @@ export const prepSliderJsx = (
               trackRef={assignRef(refs, "track")}
               uiSize={comp.lfUiSize}
               uiState={comp.lfUiState}
-              value={value}
+              value={currentValue}
             />
           </div>
         </Host>

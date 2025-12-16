@@ -8,6 +8,7 @@ import {
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import {
   HTMLStencilElement,
@@ -75,12 +76,13 @@ export interface LfSliderAdapter
     LfSliderAdapterJsx,
     LfSliderAdapterRefs,
     LfSliderAdapterControllerGetters,
-    never,
+    LfSliderAdapterControllerSetters,
     LfSliderAdapterControllerComputed,
     LfSliderAdapterControllerActions
   > {
   controller: {
     get: LfSliderAdapterControllerGetters;
+    set: LfSliderAdapterControllerSetters;
     computed: LfSliderAdapterControllerComputed;
     actions: LfSliderAdapterControllerActions;
   };
@@ -122,6 +124,9 @@ export interface LfSliderAdapterHandlers extends LfComponentAdapterHandlers {
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * In "Adapter as Core" pattern, state lives in the adapter, not the WC.
+ * Getters read from adapter's internal state variables.
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfSliderAdapterControllerGetters
@@ -130,7 +135,22 @@ export interface LfSliderAdapterControllerGetters
     typeof LF_SLIDER_BLOCKS,
     typeof LF_SLIDER_IDS,
     typeof LF_SLIDER_PARTS
-  > {}
+  > {
+  /** Read the current slider value from adapter's internal state */
+  value: () => LfSliderValue;
+}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change and triggers onStateChange.
+ *
+ * In "Adapter as Core" pattern, setters mutate adapter's internal state
+ * and call the onStateChange callback to signal the WC to re-render.
+ */
+export interface LfSliderAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Set the slider value and trigger re-render */
+  value: (value: LfSliderValue) => void;
+}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.

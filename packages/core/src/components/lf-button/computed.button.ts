@@ -6,8 +6,10 @@ import {
 /**
  * Factory to create computed predicates for lf-button.
  *
- * Computed values are pure functions that derive state without side effects.
- * They're used in JSX/handlers to make rendering decisions.
+ * "Adapter as Core" Architecture:
+ * - Computed values read internal state via `controller.get.value()`
+ * - The actual state lives in the adapter factory's closure
+ * - This file maintains SoC by keeping computed logic separate
  *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
@@ -37,10 +39,10 @@ export const prepButtonComputed = (
 
   /**
    * Whether the button is in "on" state (for toggable buttons).
+   * Reads from adapter's internal state via the getter.
    * Controls icon display and aria-pressed attribute.
    */
   isOn: () => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().value === "on";
+    return getAdapter().controller.get.value() === "on";
   },
 });

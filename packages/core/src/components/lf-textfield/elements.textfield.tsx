@@ -29,8 +29,15 @@ export const prepTextfieldElements = (
     textfield: (): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { compInstance, formattingError, framework, maxLength, styling } =
-        controller.get;
+      const {
+        compInstance,
+        formattingError,
+        framework,
+        maxLength,
+        status: getStatus,
+        styling,
+        value: getValue,
+      } = controller.get;
       const { isDisabled } = controller.computed;
 
       const comp = compInstance();
@@ -61,13 +68,13 @@ export const prepTextfieldElements = (
               onIconClick={(e, iconType) => handlers.icon.onClick(e, iconType)}
               onInput={(_, e) => handlers.input.onInput(e)}
               onKeyDown={(e) => handlers.input.onKeyDown(e)}
-              status={comp.status}
+              status={getStatus()}
               styling={styling()}
               trailingIcon={comp.lfTrailingIcon}
               trailingIconAction={comp.lfTrailingIconAction}
               uiSize={comp.lfUiSize}
               uiState={comp.lfUiState}
-              value={comp.value}
+              value={getValue()}
             />
             {adapter.elements.jsx.helper()}
           </div>
@@ -79,15 +86,19 @@ export const prepTextfieldElements = (
     //#region Counter
     counter: (): VNode => {
       const adapter = getAdapter();
-      const { blocks, compInstance, framework, maxLength, parts } =
-        adapter.controller.get;
+      const {
+        blocks,
+        framework,
+        maxLength,
+        parts,
+        value: getValue,
+      } = adapter.controller.get;
 
       const max = maxLength();
       if (!max) {
         return null;
       }
 
-      const comp = compInstance();
       const mgr = framework();
       const b = blocks();
       const p = parts();
@@ -97,7 +108,7 @@ export const prepTextfieldElements = (
 
       return (
         <div class={bemClass(textfield._, textfield.counter)} part={p.counter}>
-          {`${(comp.value || "").length} / ${max}`}
+          {`${(getValue() || "").length} / ${max}`}
         </div>
       );
     },
@@ -106,7 +117,12 @@ export const prepTextfieldElements = (
     //#region Helper
     helper: (): VNode => {
       const adapter = getAdapter();
-      const { blocks, compInstance, framework } = adapter.controller.get;
+      const {
+        blocks,
+        compInstance,
+        framework,
+        status: getStatus,
+      } = adapter.controller.get;
       const { isTextarea } = adapter.controller.computed;
 
       const comp = compInstance();
@@ -116,11 +132,12 @@ export const prepTextfieldElements = (
 
       const mgr = framework();
       const b = blocks();
+      const currentStatus = getStatus();
 
       const { bemClass } = mgr.theme;
       const { textfield } = b;
       const shouldShow =
-        (comp.lfHelper.showWhenFocused && comp.status.has("focused")) ||
+        (comp.lfHelper.showWhenFocused && currentStatus.has("focused")) ||
         !comp.lfHelper.showWhenFocused;
 
       return (
@@ -207,8 +224,14 @@ export const prepTextfieldElements = (
     //#region Input
     input: (): VNode => {
       const adapter = getAdapter();
-      const { blocks, compInstance, cyAttributes, framework, parts } =
-        adapter.controller.get;
+      const {
+        blocks,
+        compInstance,
+        cyAttributes,
+        framework,
+        parts,
+        value: getValue,
+      } = adapter.controller.get;
       const { isDisabled, isOutlined } = adapter.controller.computed;
 
       const comp = compInstance();
@@ -237,7 +260,7 @@ export const prepTextfieldElements = (
           part={p.input}
           placeholder={(isOutlined() && comp.lfLabel) || ""}
           ref={assignRef(refs, "input")}
-          value={comp.value}
+          value={getValue()}
         ></input>
       );
     },
@@ -282,6 +305,7 @@ export const prepTextfieldElements = (
         formattingError,
         framework,
         parts,
+        value: getValue,
       } = adapter.controller.get;
       const { isOutlined } = adapter.controller.computed;
 
@@ -325,7 +349,7 @@ export const prepTextfieldElements = (
                 ? formattingError()
                 : ""
             }
-            value={comp.value}
+            value={getValue()}
           ></textarea>
         </span>
       );

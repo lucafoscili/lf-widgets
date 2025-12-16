@@ -36,8 +36,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepButtonActions } from "./actions.button";
-import { prepButtonComputed } from "./computed.button";
 import { createAdapter } from "./lf-button-adapter";
 
 /**
@@ -72,8 +70,28 @@ export class LfButton implements LfButtonInterface {
   @Element() rootElement: LfButtonElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component (besides debugInfo). It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value: LfButtonState = "off";
+
+  /**
+   * Bridge getter to satisfy LfButtonInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): LfButtonState {
+    return this.#adapter?.controller.get.value() ?? "off";
+  }
   //#endregion
 
   //#region Props
@@ -377,7 +395,7 @@ export class LfButton implements LfButtonInterface {
    */
   @Method()
   async getValue(): Promise<LfButtonState> {
-    return this.value;
+    return this.#adapter.controller.get.value();
   }
   /**
    * This method is used to trigger a new render of the component.
@@ -427,7 +445,7 @@ export class LfButton implements LfButtonInterface {
     if (typeof value === "boolean") {
       value = value ? "on" : "off";
     }
-    this.#updateState(value);
+    this.#adapter.controller.set.value(value);
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -436,9 +454,10 @@ export class LfButton implements LfButtonInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
+      const value = this.#adapter.controller.get.value();
       this.#adapter.dispatcher.emit("unmount", {
-        value: this.value,
-        valueAsBoolean: this.value === "on",
+        value,
+        valueAsBoolean: value === "on",
       });
       this.rootElement.remove();
     }, ms);
@@ -449,6 +468,14 @@ export class LfButton implements LfButtonInterface {
   /**
    * Creates the dispatcher for centralized event emission.
    * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   *
+   * Note: Reads value from adapter state, not WC state.
+   *
    * @see Section 5.5 of 4_0_0_REFACTORING.md
    */
   #createDispatcher = () => ({
@@ -462,24 +489,30 @@ export class LfButton implements LfButtonInterface {
         "informational",
       );
 
+      const value = this.#adapter.controller.get.value();
       this.lfEvent.emit({
         comp: this,
         eventType,
         id: this.rootElement.id,
         originalEvent: detail?.originalEvent,
-        value: this.value,
-        valueAsBoolean: this.value === "on",
+        value,
+        valueAsBoolean: value === "on",
       });
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + styling
-   * - controller.set: Simple setters (list)
+   * - controller.get: State reads (value) + base getters (blocks, compInstance, etc.) + styling
+   * - controller.set: State writes (value) → triggers onStateChange
    * - controller.computed: Derived predicates (isDisabled, isDropdown, isOn)
-   * - controller.actions: Complex operations (toggle)
+   * - controller.actions: Complex operations (toggle, list)
    * - elements: JSX factories + refs
    * - dispatcher: Centralized event emission
    * - handlers: Event callbacks
@@ -490,8 +523,16 @@ export class LfButton implements LfButtonInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value from prop
+    const initialValue: LfButtonState = this.lfValue ? "on" : "off";
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility) + component-specific state reads
+      // Base getters (via utility) - does NOT include value getter
       {
         ...createBaseGetters({
           blocks: () => this.#b,
@@ -502,12 +543,10 @@ export class LfButton implements LfButtonInterface {
         }),
         styling: () => this.#normalizedStyling(),
       },
-      // Setters - simple single-value assignments (empty, list moved to actions)
-      {},
-      // Computed - derived predicates (from dedicated file)
-      prepButtonComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepButtonActions(getAdapter),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -523,16 +562,6 @@ export class LfButton implements LfButtonInterface {
       ? (this.lfStyling.toLowerCase() as LfButtonStyling)
       : "raised";
   }
-  #updateState(value: LfButtonState) {
-    const { lfToggable } = this;
-
-    const isOff = value === "off";
-    const isOn = value === "on";
-
-    if (lfToggable && this.lfUiState !== "disabled" && (isOff || isOn)) {
-      this.value = value;
-    }
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -544,12 +573,10 @@ export class LfButton implements LfButtonInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
+    // Note: Initial value is now set in createAdapter via initialValue parameter
 
     const { data } = this.#framework;
 
-    if (this.lfValue) {
-      this.value = "on";
-    }
     const firstNode = this.lfDataset?.nodes?.[0];
     if (firstNode) {
       if (!this.lfIcon) {
@@ -575,9 +602,10 @@ export class LfButton implements LfButtonInterface {
     }
 
     // Emit ready event via dispatcher
+    const value = this.#adapter.controller.get.value();
     this.#adapter.dispatcher.emit("ready", {
-      value: this.value,
-      valueAsBoolean: this.value === "on",
+      value,
+      valueAsBoolean: value === "on",
     });
     debug.info.update(this, "did-load");
   }

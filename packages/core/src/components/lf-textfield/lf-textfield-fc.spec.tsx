@@ -3,6 +3,7 @@ import { newSpecPage, SpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import {
   LfFrameworkInterface,
+  LfIconType,
   LfTextfieldFCProps,
 } from "@lf-widgets/foundations";
 import { LfTextfieldFC } from "./lf-textfield-fc";
@@ -1070,7 +1071,7 @@ describe("LfTextfieldFC", () => {
     it("handles all styling modifiers together", async () => {
       const page = await createTestPage({
         disabled: true,
-        icon: "user",
+        icon: "user" as LfIconType,
         label: "Full Name",
         status: new Set(["filled", "focused"]),
         trailingIcon: true,

@@ -6,8 +6,10 @@ import {
 /**
  * Factory to create computed predicates for lf-slider.
  *
- * Computed values are pure functions that derive state without side effects.
- * They're used in JSX/handlers to make rendering decisions.
+ * "Adapter as Core" Architecture:
+ * - Computed values read internal state via `controller.get.value()`
+ * - The actual state lives in the adapter factory's closure
+ * - This file maintains SoC by keeping computed logic separate
  *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
@@ -29,12 +31,15 @@ export const prepSliderComputed = (
   /**
    * Calculates the percentage of current value within min/max range.
    * Used for CSS custom property to position the thumb.
+   * Reads from adapter's internal state via the getter.
    */
   valuePercentage: () => {
-    const { compInstance } = getAdapter().controller.get;
+    const adapter = getAdapter();
+    const { compInstance, value } = adapter.controller.get;
     const comp = compInstance();
-    const { lfMin, lfMax, value } = comp;
-    return ((value.display - lfMin) / (lfMax - lfMin)) * 100;
+    const { lfMin, lfMax } = comp;
+    const currentValue = value();
+    return ((currentValue.display - lfMin) / (lfMax - lfMin)) * 100;
   },
 
   /**

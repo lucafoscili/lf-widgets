@@ -58,6 +58,7 @@ Promise resolved with an object containing the component's properties.
 ### `getValue() => Promise<LfSliderValue>`
 
 Used to retrieve the component's current state.
+Returns the value from the adapter's internal state.
 
 #### Returns
 

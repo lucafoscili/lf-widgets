@@ -6,9 +6,10 @@ import {
 /**
  * Prepares event handlers for the textfield component.
  *
- * v4.0.0 Architecture:
+ * "Adapter as Core" Architecture:
+ * - Handlers read internal state via `controller.get.value()`
+ * - Handlers write via `controller.set.value()` which triggers onStateChange
  * - Uses `controller.actions` for complex operations (updateState, formatJSON)
- * - Uses `controller.set` for simple assignments (status, formattingError)
  * - Routes all events through dispatcher
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
@@ -56,7 +57,7 @@ export const prepTextfieldHandlers = (
     input: {
       onBlur: (e: FocusEvent) => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
+        const { compInstance, value: getValue } = adapter.controller.get;
         const { status } = adapter.controller.set;
         const { formatJSON } = adapter.controller.actions;
         const comp = compInstance();
@@ -72,7 +73,7 @@ export const prepTextfieldHandlers = (
         adapter.dispatcher.emit("blur", {
           originalEvent: e,
           inputValue: (e.target as HTMLInputElement)?.value,
-          value: comp.value,
+          value: getValue(),
           target: adapter.elements.refs.input,
         });
       },
@@ -95,42 +96,39 @@ export const prepTextfieldHandlers = (
 
       onClick: (e: MouseEvent) => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
-        const comp = compInstance();
+        const { value: getValue } = adapter.controller.get;
 
         adapter.dispatcher.emit("click", {
           originalEvent: e,
           inputValue: (e.target as HTMLInputElement)?.value,
-          value: comp.value,
+          value: getValue(),
           target: adapter.elements.refs.input,
         });
       },
 
       onFocus: (e: FocusEvent) => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
+        const { value: getValue } = adapter.controller.get;
         const { status } = adapter.controller.set;
-        const comp = compInstance();
 
         status("focused", true);
 
         adapter.dispatcher.emit("focus", {
           originalEvent: e,
           inputValue: (e.target as HTMLInputElement)?.value,
-          value: comp.value,
+          value: getValue(),
           target: adapter.elements.refs.input,
         });
       },
 
       onInput: (e: Event) => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
-        const comp = compInstance();
+        const { value: getValue } = adapter.controller.get;
 
         adapter.dispatcher.emit("input", {
           originalEvent: e,
           inputValue: (e.target as HTMLInputElement)?.value,
-          value: comp.value,
+          value: getValue(),
           target: adapter.elements.refs.input,
         });
 
@@ -139,8 +137,7 @@ export const prepTextfieldHandlers = (
 
       onKeyDown: (e: KeyboardEvent) => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
-        const comp = compInstance();
+        const { value: getValue } = adapter.controller.get;
 
         if (shouldCaptureShortcut(e)) {
           e.stopPropagation();
@@ -149,7 +146,7 @@ export const prepTextfieldHandlers = (
         adapter.dispatcher.emit("keydown", {
           originalEvent: e,
           inputValue: (e.target as HTMLInputElement)?.value,
-          value: comp.value,
+          value: getValue(),
           target: adapter.elements.refs.input,
         });
       },
@@ -158,13 +155,12 @@ export const prepTextfieldHandlers = (
     icon: {
       onClick: (e: MouseEvent, iconType: "regular" | "action") => {
         const adapter = getAdapter();
-        const { compInstance } = adapter.controller.get;
-        const comp = compInstance();
+        const { value: getValue } = adapter.controller.get;
 
         adapter.dispatcher.emit("click", {
           originalEvent: e,
           iconType,
-          value: comp.value,
+          value: getValue(),
           target:
             iconType === "action"
               ? adapter.elements.refs.iconAction

@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_BADGE_BLOCKS,
   LF_BADGE_IDS,
   LF_BADGE_PARTS,
@@ -9,6 +7,7 @@ import {
   LF_WRAPPER_ID,
   LfBadgeAdapter,
   LfBadgeElement,
+  LfBadgeEvent,
   LfBadgeEventPayload,
   LfBadgeInterface,
   LfBadgePositions,
@@ -31,6 +30,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { computeBadgeStyles } from "./elements.badge";
 import { createAdapter } from "./lf-badge-adapter";
@@ -69,6 +69,17 @@ export class LfBadge implements LfBadgeInterface {
   @Element() rootElement: LfBadgeElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component (besides debugInfo). It's a simple
+   * counter that gets incremented by the adapter's onStateChange callback to
+   * trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * Badge is stateless (display-only), so this is primarily for future-proofing
+   * and pattern consistency.
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
   //#endregion
 
@@ -158,9 +169,7 @@ export class LfBadge implements LfBadgeInterface {
   #framework: LfFrameworkInterface;
   #adapter: LfBadgeAdapter;
   #b = LF_BADGE_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #ids = LF_BADGE_IDS;
-  #lf = LF_ATTRIBUTES;
   #p = LF_BADGE_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
@@ -255,16 +264,18 @@ export class LfBadge implements LfBadgeInterface {
   render() {
     const { theme } = this.#framework;
     const { setLfStyle } = theme;
-    const { lfPosition, lfStyle } = this;
+    const { lfPosition, lfStyle, lfUiState } = this;
 
-    const { jsx } = this.#adapter.elements;
+    const { controller, elements } = this.#adapter;
+    const lfAttributes = controller.get.lfAttributes();
+    const { jsx } = elements;
 
     return (
       <Host>
         <style id={this.#s}>
           {computeBadgeStyles(lfPosition, lfStyle, setLfStyle, this)}
         </style>
-        <div id={this.#w} data-lf={this.#lf[this.lfUiState]}>
+        <div id={this.#w} data-lf={lfAttributes[lfUiState]}>
           {jsx.badge()}
         </div>
       </Host>
@@ -276,46 +287,79 @@ export class LfBadge implements LfBadgeInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   *
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (eventType: LfBadgeEvent, detail?: Partial<LfBadgeEventPayload>) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS any runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
+   *
+   * Note: Badge is stateless (display-only), so the adapter has no closure state.
+   * The pattern is still applied for consistency and future-proofing.
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (empty for badge)
+   * - controller.computed: Derived predicates (empty for badge)
+   * - controller.actions: Complex operations (empty for badge)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
-    const adapterParts = createAdapter(
-      // GET: Pure state reads (ALL must be functions)
-      {
-        // Base getters (v4.0.0 - ALL must be functions)
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    // Badge is stateless, but we include this for pattern consistency
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    const adapterWithoutDispatcher = createAdapter(
+      // Base getters (via utility)
+      createBaseGetters({
         blocks: () => this.#b,
         compInstance: () => this,
-        cyAttributes: () => this.#cy,
         framework: () => this.#framework,
         ids: () => this.#ids,
-        lfAttributes: () => this.#lf,
         parts: () => this.#p,
-      },
-      // SET: Simple single-value assignments (empty for badge)
-      {},
-      // COMPUTED: Derived values and predicates (empty for badge)
-      {},
-      // ACTIONS: Multi-step operations (empty for badge)
-      {},
-      () => this.#adapter,
+      }),
+      // onStateChange callback
+      onStateChange,
+      // Adapter accessor
+      getAdapter,
     );
 
-    // Add dispatcher for centralized event emission (v4.0.0)
+    // Combine adapter parts with dispatcher
     this.#adapter = {
-      ...adapterParts,
-      dispatcher: {
-        emit: (eventType, detail) => {
-          this.#framework?.debug?.logs.new(
-            this,
-            `Event: ${eventType}`,
-            "informational",
-          );
-          this.lfEvent.emit({
-            comp: this,
-            eventType,
-            id: this.rootElement.id,
-            originalEvent: detail?.originalEvent,
-          });
-        },
-      },
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
     };
   };
   //#endregion

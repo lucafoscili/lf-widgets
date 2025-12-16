@@ -27,8 +27,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepSliderActions } from "./actions.slider";
-import { prepSliderComputed } from "./computed.slider";
 import { createAdapter } from "./lf-slider-adapter";
 
 /**
@@ -57,8 +55,28 @@ export class LfSlider implements LfSliderInterface {
   @Element() rootElement: LfSliderElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value: LfSliderValue = { display: 0, real: 0 };
+
+  /**
+   * Bridge getter to satisfy LfSliderInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): LfSliderValue {
+    return this.#adapter?.controller.get.value() ?? { display: 0, real: 0 };
+  }
   //#endregion
 
   //#region Props
@@ -242,11 +260,12 @@ export class LfSlider implements LfSliderInterface {
   }
   /**
    * Used to retrieve the component's current state.
-   * @returns {Promise<LfSliderState>} Promise resolved with the current state of the component.
+   * Returns the value from the adapter's internal state.
+   * @returns {Promise<LfSliderValue>} Promise resolved with the current state of the component.
    */
   @Method()
   async getValue(): Promise<LfSliderValue> {
-    return this.value;
+    return this.#adapter.controller.get.value();
   }
   /**
    * This method is used to trigger a new render of the component.
@@ -262,7 +281,7 @@ export class LfSlider implements LfSliderInterface {
    */
   @Method()
   async setValue(value: number): Promise<void> {
-    this.value = { display: value, real: value };
+    this.#adapter.controller.set.value({ display: value, real: value });
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.
@@ -271,7 +290,8 @@ export class LfSlider implements LfSliderInterface {
   @Method()
   async unmount(ms: number = 0): Promise<void> {
     setTimeout(() => {
-      this.#adapter.dispatcher.emit("unmount", { value: this.value });
+      const value = this.#adapter.controller.get.value();
+      this.#adapter.dispatcher.emit("unmount", { value });
       this.rootElement.remove();
     }, ms);
   }
@@ -294,12 +314,13 @@ export class LfSlider implements LfSliderInterface {
         "informational",
       );
 
+      const value = this.#adapter.controller.get.value();
       this.lfEvent.emit({
         comp: this,
         eventType,
         id: this.rootElement.id,
         originalEvent: detail?.originalEvent,
-        value: this.value,
+        value,
       });
     },
   });
@@ -320,8 +341,19 @@ export class LfSlider implements LfSliderInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value from prop
+    const initialValue: LfSliderValue = {
+      display: this.lfValue,
+      real: this.lfValue,
+    };
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility)
+      // Base getters (via utility) - does NOT include value getter
       createBaseGetters({
         blocks: () => this.#b,
         compInstance: () => this,
@@ -329,10 +361,10 @@ export class LfSlider implements LfSliderInterface {
         ids: () => this.#ids,
         parts: () => this.#p,
       }),
-      // Computed - derived predicates (from dedicated file)
-      prepSliderComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepSliderActions(getAdapter),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -354,12 +386,7 @@ export class LfSlider implements LfSliderInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-
-    const { lfValue } = this;
-
-    if (lfValue) {
-      this.setValue(lfValue);
-    }
+    // Note: Initial value is now set in createAdapter via initialValue parameter
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
@@ -371,7 +398,8 @@ export class LfSlider implements LfSliderInterface {
     }
 
     // Emit ready event via dispatcher
-    this.#adapter.dispatcher.emit("ready", { value: this.value });
+    const value = this.#adapter.controller.get.value();
+    this.#adapter.dispatcher.emit("ready", { value });
     debug.info.update(this, "did-load");
   }
   componentWillRender() {

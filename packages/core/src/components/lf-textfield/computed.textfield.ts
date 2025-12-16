@@ -6,6 +6,11 @@ import {
 /**
  * Factory to create computed predicates for lf-textfield.
  *
+ * "Adapter as Core" Architecture:
+ * - Computed values read internal state via `controller.get.*`
+ * - The actual state lives in the adapter factory's closure
+ * - This file maintains SoC by keeping computed logic separate
+ *
  * Computed values are pure functions that derive state without side effects.
  * They're used in JSX/handlers to make rendering decisions.
  *

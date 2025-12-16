@@ -37,8 +37,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepTextfieldActions } from "./actions.textfield";
-import { prepTextfieldComputed } from "./computed.textfield";
 import { createAdapter } from "./lf-textfield-adapter";
 /**
  * The text field may include an icon, label, helper text, and a character counter.
@@ -68,9 +66,39 @@ export class LfTextfield implements LfTextfieldInterface {
   @Element() rootElement: LfTextfieldElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() status: Set<LfTextfieldModifiers> = new Set();
-  @State() value = "";
+  //#endregion
+
+  //#region Bridge getters (for interface compatibility)
+  /**
+   * Bridge getter to satisfy LfTextfieldInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): string {
+    return this.#adapter?.controller.get.value() ?? "";
+  }
+
+  /**
+   * Bridge getter to satisfy LfTextfieldInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.status() internally
+   */
+  get status(): Set<LfTextfieldModifiers> {
+    return this.#adapter?.controller.get.status() ?? new Set();
+  }
   //#endregion
 
   //#region Props
@@ -429,11 +457,16 @@ export class LfTextfield implements LfTextfieldInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts) + styling
-   * - controller.set: Simple setters (value, formattingError, status)
+   * - controller.get: State reads (value, status) + base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (value, status) → triggers onStateChange
    * - controller.computed: Derived predicates (isDisabled, isOutlined, isTextarea)
    * - controller.actions: Complex operations (focus, blur, updateState, formatJSON)
    * - elements: JSX factories + refs
@@ -446,8 +479,16 @@ export class LfTextfield implements LfTextfieldInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value from prop
+    const initialValue = this.lfValue ?? "";
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility) + component-specific state reads
+      // Base getters (via utility) + component-specific reads (non-state)
       {
         ...createBaseGetters({
           blocks: () => this.#b,
@@ -461,27 +502,10 @@ export class LfTextfield implements LfTextfieldInterface {
         formattingError: () => this.#formattingError,
         hasOutline: () => this.#hasOutline,
       },
-      // Setters - simple single-value assignments
-      {
-        value: (val: string) => {
-          this.value = val;
-        },
-        formattingError: (error: string) => {
-          this.#formattingError = error;
-        },
-        status: (modifier: LfTextfieldModifiers, add: boolean) => {
-          if (add) {
-            this.status.add(modifier);
-          } else {
-            this.status.delete(modifier);
-          }
-          this.status = new Set(this.status);
-        },
-      },
-      // Computed - derived predicates (from dedicated file)
-      prepTextfieldComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepTextfieldActions(getAdapter),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -499,11 +523,16 @@ export class LfTextfield implements LfTextfieldInterface {
   }
   #updateStatus = () => {
     const { isDisabled } = this.#adapter.controller.computed;
+    const { value, status: getStatus } = this.#adapter.controller.get;
+    const { status: setStatus } = this.#adapter.controller.set;
+    const currentStatus = getStatus();
+    const currentValue = value();
+
     const propertiesToUpdateStatus: {
       condition: () => boolean;
       status: LfTextfieldModifiers;
     }[] = [
-      { condition: () => Boolean(this.value), status: "filled" },
+      { condition: () => Boolean(currentValue), status: "filled" },
       { condition: () => isDisabled(), status: "disabled" },
       { condition: () => Boolean(this.lfStretchX), status: "full-width" },
       { condition: () => Boolean(this.lfIcon), status: "has-icon" },
@@ -511,10 +540,12 @@ export class LfTextfield implements LfTextfieldInterface {
     ];
 
     propertiesToUpdateStatus.forEach(({ condition, status }) => {
-      if (condition()) {
-        this.status.add(status);
-      } else {
-        this.status.delete(status);
+      const shouldHave = condition();
+      const has = currentStatus.has(status);
+      if (shouldHave && !has) {
+        setStatus(status, true);
+      } else if (!shouldHave && has) {
+        setStatus(status, false);
       }
     });
   };
@@ -530,12 +561,10 @@ export class LfTextfield implements LfTextfieldInterface {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
 
-    if (this.lfValue) {
-      this.status.add("filled");
-      this.value = this.lfValue;
-      if (this.lfFormatJSON) {
-        await this.formatJSON();
-      }
+    // Initial value is now set in createAdapter via initialValue parameter
+    // If there's a value, we need to format JSON if configured
+    if (this.lfValue && this.lfFormatJSON) {
+      await this.formatJSON();
     }
   }
   componentDidLoad() {

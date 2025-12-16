@@ -147,8 +147,16 @@ export interface LfImageAdapterControllerGetters
     typeof LF_IMAGE_IDS,
     typeof LF_IMAGE_PARTS
   > {
+  /** Whether an error occurred during image loading */
+  error: () => boolean;
+  /** The image element reference */
+  imageRef: () => HTMLImageElement | SVGElement | null;
+  /** Whether the image has been successfully loaded */
+  isLoaded: () => boolean;
   /** The resolved sprite name for tracking resolution state */
   resolvedFor: () => string | undefined;
+  /** The resolved sprite name to be used for the image */
+  resolvedSpriteName: () => string | undefined;
 }
 /**
  * Simple single-value setters.

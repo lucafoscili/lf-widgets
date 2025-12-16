@@ -4527,7 +4527,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "getValue",
-        docs: "Used to retrieve the component's current state.",
+        docs: "Used to retrieve the component's current state.\r\nReturns the value from the adapter's internal state.",
         returns: {
           type: "Promise<LfSliderValue>",
           docs: "Promise resolved with the current state of the component.",

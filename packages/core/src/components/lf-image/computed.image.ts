@@ -7,8 +7,10 @@ import {
 /**
  * Factory to create computed predicates for lf-image.
  *
- * Computed values are pure functions that derive state without side effects.
- * They're used in JSX/handlers to make rendering decisions.
+ * "Adapter as Core" Architecture:
+ * - Computed values read internal state via `controller.get.*`
+ * - The actual state lives in the adapter factory's closure
+ * - This file maintains SoC by keeping computed logic separate
  *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
@@ -40,14 +42,18 @@ export const prepImageComputed = (
    * Get the resolved source for the image/icon.
    * For URLs, returns the lfValue directly.
    * For sprite icons, resolves the CSS variable to the actual icon name.
+   *
+   * "Adapter as Core" Architecture:
+   * - Reads resolvedSpriteName from adapter's closure via getter
    */
   resolvedSource: () => {
     const adapter = getAdapter();
-    const { compInstance, framework } = adapter.controller.get;
+    const { compInstance, framework, resolvedSpriteName } =
+      adapter.controller.get;
     const { isResourceUrl } = adapter.controller.computed;
 
     const comp = compInstance();
-    const { lfValue, resolvedSpriteName } = comp;
+    const { lfValue } = comp;
 
     // If it's a URL, return it directly
     if (isResourceUrl()) {
@@ -62,16 +68,17 @@ export const prepImageComputed = (
     }
 
     // Use resolved sprite name if available, otherwise resolve CSS variable
-    if (resolvedSpriteName) {
-      return resolvedSpriteName;
+    const resolved = resolvedSpriteName();
+    if (resolved) {
+      return resolved;
     }
 
     // Resolve CSS variable to actual icon name
     if (lfValue.indexOf(CSS_VAR_PREFIX) > -1) {
       const { theme } = framework();
       const { variables } = theme.get.current();
-      const resolved = variables[lfValue as keyof typeof variables];
-      return resolved !== undefined ? String(resolved) : lfValue;
+      const varResolved = variables[lfValue as keyof typeof variables];
+      return varResolved !== undefined ? String(varResolved) : lfValue;
     }
 
     return lfValue;
