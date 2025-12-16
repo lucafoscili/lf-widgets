@@ -25,6 +25,7 @@ import {
   Prop,
   State,
 } from "@stencil/core";
+import { HeaderFC } from "./fc";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepHeaderActions } from "./actions.header";
@@ -224,14 +225,15 @@ export class LfHeader implements LfHeaderInterface {
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
-    const { header } = this.#adapter.elements.jsx;
 
     const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>{header()}</div>
+        <div id={this.#w}>
+          <HeaderFC adapter={this.#adapter} />
+        </div>
       </Host>
     );
   }

@@ -38,6 +38,7 @@ import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
 import { prepChipActions } from "./actions.chip";
 import { prepChipComputed } from "./computed.chip";
+import { ChipFC } from "./fc";
 import { createAdapter } from "./lf-chip-adapter";
 
 /**
@@ -685,8 +686,7 @@ export class LfChip implements LfChipInterface {
     debug.info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
-    const { isChoice, isFilter, isInput } = this.#adapter.controller.computed;
+    const { setLfStyle } = this.#framework.theme;
 
     const { lfStyle } = this;
 
@@ -696,18 +696,7 @@ export class LfChip implements LfChipInterface {
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(this.#b.chip._, null, {
-              choice: isChoice(),
-              filter: isFilter(),
-              flat: this.lfFlat,
-              input: isInput(),
-            })}
-            part={this.#p.chip}
-            role="grid"
-          >
-            {this.#prepItemSet()}
-          </div>
+          <ChipFC adapter={this.#adapter} />
         </div>
       </Host>
     );

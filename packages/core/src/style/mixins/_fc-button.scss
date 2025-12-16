@@ -28,23 +28,11 @@ $box-shadow-color: var(
 // -----------------------------------------------------------------------------
 .button {
   & {
-    /**
-     * @prop --lf-button-align-items: Sets the align items for the button component.
-     *                                Defaults to => center
-     */
     align-items: var(--lf-button-align-items, center);
     background-color: transparent;
     border: none;
-    /**
-     * @prop --lf-button-border-radius: Sets the border radius for the button component.
-     *                                  Defaults to => var(--lf-ui-border-radius)
-     */
     border-radius: var(--lf-button-border-radius, var(--lf-ui-border-radius));
     box-sizing: border-box;
-    /**
-     * @prop --lf-button-color-primary: Sets the primary color for the button component.
-     *                                  Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
-     */
     color: rgba(
       var(
         --lf-button-color-primary,
@@ -52,61 +40,21 @@ $box-shadow-color: var(
       ),
       1
     );
-    /**
-     * @prop --lf-button-cursor: Sets the cursor for the button component.
-     *                           Defaults to => pointer
-     */
     cursor: var(--lf-button-cursor, pointer);
     display: inline-flex;
-    /**
-     * @prop --lf-button-font-family: Sets the font family for the button component.
-     *                                Defaults to => var(--lf-font-family-primary)
-     */
     font-family: var(--lf-button-font-family, var(--lf-font-family-primary));
-    /**
-     * @prop --lf-button-font-size: Sets the base font size for the button component (scaled by --lf-fc-ui-size).
-     *                              Defaults to => 0.775em
-     */
     font-size: calc(
       var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1)
     );
-    /**
-     * @prop --lf-button-font-weight: Sets the font weight for the button component.
-     *                                Defaults to => var(--lf-font-weight-primary)
-     */
     font-weight: var(--lf-button-font-weight, var(--lf-font-weight-primary));
-    /**
-     * @prop --lf-button-height: Sets the height for the button component.
-     *                           Defaults to => 3em
-     */
     height: var(--lf-button-height, 3em);
-    /**
-     * @prop --lf-button-justify-content: Sets the justify content for the button component.
-     *                                    Defaults to => center
-     */
     justify-content: var(--lf-button-justify-content, center);
-    /**
-     * @prop --lf-button-min-width: Sets the min width for the button component.
-     *                              Defaults to => 4em
-     */
     min-width: var(--lf-button-min-width, 4em);
     outline: none;
     overflow: visible;
-    /**
-     * @prop --lf-button-padding: Sets the padding for the button component.
-     *                            Defaults to => 0 1.25em
-     */
     padding: var(--lf-button-padding, 0 1.25em);
     position: relative;
-    /**
-     * @prop --lf-button-text-decoration: Sets the text decoration for the button component.
-     *                                    Defaults to => none
-     */
     text-decoration: var(--lf-button-text-decoration, none);
-    /**
-     * @prop --lf-button-text-transform: Sets the text transform for the button component.
-     *                                   Defaults to => uppercase
-     */
     text-transform: var(--lf-button-text-transform, uppercase);
     transition:
       background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
@@ -470,18 +418,10 @@ $box-shadow-color: var(
     & {
       align-items: center;
       display: flex;
-      /**
-       * @prop --lf-button-icon-height: Sets the icon height for the button component.
-       *                                Defaults to => 1.5em
-       */
       height: var(--lf-button-icon-height, 1.5em);
       justify-content: center;
       margin-left: -0.25em;
       margin-right: 0.75em;
-      /**
-       * @prop --lf-button-icon-width: Sets the icon width for the button component.
-       *                               Defaults to => 1.5em
-       */
       width: var(--lf-button-icon-width, 1.5em);
     }
 
@@ -508,21 +448,5 @@ $box-shadow-color: var(
     &--hidden {
       visibility: hidden;
     }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Spinner Element
-  // ---------------------------------------------------------------------------
-  &__spinner {
-    /**
-     * @prop --lf-button-spinner-size: Sets the size for the button spinner.
-     *                                 Defaults to => 1.5em
-     */
-    height: var(--lf-button-spinner-size, 1.5em);
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: var(--lf-button-spinner-size, 1.5em);
   }
 }

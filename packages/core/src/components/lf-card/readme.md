@@ -141,9 +141,7 @@ Type: `Promise<void>`
 graph TD;
   lf-card --> lf-card
   lf-accordion --> lf-card
-  lf-badge --> lf-image
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-chat --> lf-chip

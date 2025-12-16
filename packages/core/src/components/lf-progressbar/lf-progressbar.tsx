@@ -33,6 +33,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepProgressbarActions } from "./actions.progressbar";
 import { prepProgressbarComputed } from "./computed.progressbar";
+import { ProgressbarFC } from "./fc";
 import { createAdapter } from "./lf-progressbar-adapter";
 
 /**
@@ -384,7 +385,6 @@ export class LfProgressbar implements LfProgressbarInterface {
     const { theme } = this.#framework;
 
     const { lfStyle, lfValue } = this;
-    const { progressbar } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -396,7 +396,9 @@ export class LfProgressbar implements LfProgressbarInterface {
                 }
                 ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
-        <div id={this.#w}>{progressbar()}</div>
+        <div id={this.#w}>
+          <ProgressbarFC adapter={this.#adapter} />
+        </div>
       </Host>
     );
   }

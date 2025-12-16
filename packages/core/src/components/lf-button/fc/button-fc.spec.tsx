@@ -2,21 +2,21 @@ import { h } from "@stencil/core";
 import { newSpecPage, SpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import { LfFrameworkInterface, LfButtonFCProps } from "@lf-widgets/foundations";
-import { LfButtonFC } from "./lf-button-fc";
+import { ButtonFC } from "./button-fc";
 
 /**
- * Unit tests for LfButtonFC (Functional Component)
+ * Unit tests for ButtonFC (Functional Component)
  *
  * These tests verify the stateless, presentational behavior of the FC.
  * The FC receives all state via props and communicates via callbacks.
  *
- * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ * @see Section 5.9 of 4_0_0_REFACTORING.md (Functional Components Architecture)
  */
 
 let framework: LfFrameworkInterface;
 
 /**
- * Creates a test page with the LfButtonFC rendered inside a wrapper div.
+ * Creates a test page with the ButtonFC rendered inside a wrapper div.
  * This simulates the FC being used inside a parent component's shadow DOM.
  */
 const createTestPage = async (
@@ -26,14 +26,14 @@ const createTestPage = async (
     components: [],
     template: () => (
       <div>
-        <LfButtonFC framework={framework} {...fcProps} />
+        <ButtonFC framework={framework} {...fcProps} />
       </div>
     ),
   });
   return page;
 };
 
-describe("LfButtonFC", () => {
+describe("ButtonFC", () => {
   beforeAll(() => {
     framework = getLfFramework();
   });

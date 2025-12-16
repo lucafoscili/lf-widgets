@@ -33,6 +33,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepCheckboxActions } from "./actions.checkbox";
 import { prepCheckboxComputed } from "./computed.checkbox";
+import { CheckboxFC } from "./fc";
 import { createAdapter } from "./lf-checkbox-adapter";
 
 /**
@@ -358,53 +359,13 @@ export class LfCheckbox implements LfCheckboxInterface {
 
   render() {
     const { theme } = this.#framework;
-    const { lfLabel, lfLeadingLabel, lfStyle, lfUiState } = this;
-    const { background, input, label } = this.#adapter.elements.jsx;
-    const { isChecked, isDisabled, isIndeterminate } =
-      this.#adapter.controller.computed;
-    const { lfAttributes } = this.#adapter.controller.get;
-    const { refs } = this.#adapter.elements;
-
-    const { bemClass } = theme;
-    const { formField, checkbox } = this.#b;
-    const lf = lfAttributes();
+    const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{theme.setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(formField._, null, {
-              leading: lfLeadingLabel,
-            })}
-            data-lf={lf[lfUiState]}
-          >
-            <div
-              class={bemClass(checkbox._)}
-              onClick={(e) => this.#adapter.handlers.checkbox.onChange(e)}
-              onPointerDown={(e) =>
-                this.#adapter.handlers.checkbox.onPointerDown(e)
-              }
-              ref={(el) => {
-                if (refs) {
-                  refs.surface = el;
-                }
-              }}
-            >
-              <div
-                class={bemClass(checkbox._, checkbox.surface, {
-                  checked: isChecked(),
-                  indeterminate: isIndeterminate(),
-                  disabled: isDisabled(),
-                })}
-                part={this.#p.checkbox}
-              >
-                {input()}
-                {background()}
-              </div>
-            </div>
-            {lfLabel && label()}
-          </div>
+          <CheckboxFC adapter={this.#adapter} />
         </div>
       </Host>
     );

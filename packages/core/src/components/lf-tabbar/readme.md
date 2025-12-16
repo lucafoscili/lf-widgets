@@ -138,7 +138,6 @@ Type: `Promise<void>`
 graph TD;
   lf-tabbar --> lf-button
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-messenger --> lf-tabbar
   style lf-tabbar fill:#f9f,stroke:#333,stroke-width:4px

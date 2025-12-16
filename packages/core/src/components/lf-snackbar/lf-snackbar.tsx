@@ -37,6 +37,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepSnackbarActions } from "./actions.snackbar";
 import { prepSnackbarComputed } from "./computed.snackbar";
+import { SnackbarFC } from "./fc";
 import { createAdapter } from "./lf-snackbar-adapter";
 
 /**
@@ -399,7 +400,6 @@ export class LfSnackbar implements LfSnackbarInterface {
     const { setLfStyle } = theme;
 
     const { lfDuration, lfStyle } = this;
-    const { snackbar } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -411,7 +411,7 @@ export class LfSnackbar implements LfSnackbarInterface {
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
         <div id={this.#w} data-lf={this.#lf.fadeIn}>
-          {snackbar()}
+          <SnackbarFC adapter={this.#adapter} />
         </div>
       </Host>
     );

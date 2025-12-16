@@ -92,13 +92,13 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                       | Description                                                                                        |
-| -------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--lf-image-color-primary` | Sets the color-primary color for the image component. Defaults to => var(--lf-color-primary)       |
-| `--lf-image-font-family`   | Sets the primary font family for the image component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-image-font-size`     | Sets the font size for the image component. Defaults to => var(--lf-font-size)                     |
-| `--lf-image-margin`        | Sets the margin for the image component. Defaults to => auto                                       |
-| `--lf-image-object-fit`    | Sets the object fit for the image element. Defaults to => cover                                    |
+| Name                       | Description                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--lf-image-color-primary` | Sets the primary color for the icon. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary)) |
+| `--lf-image-font-family`   | Sets the primary font family for the image component. Defaults to => var(--lf-font-family-primary)      |
+| `--lf-image-font-size`     | Sets the font size for the image component. Defaults to => var(--lf-font-size)                          |
+| `--lf-image-margin`        | Sets the margin for the image component. Defaults to => auto                                            |
+| `--lf-image-object-fit`    | Sets the object fit for the image element. Defaults to => cover                                         |
 
 
 ## Dependencies
@@ -107,7 +107,6 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
- - [lf-badge](../lf-badge)
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-canvas](../lf-canvas)
  - [lf-card](../lf-card)
@@ -123,7 +122,6 @@ Type: `Promise<void>`
 graph TD;
   lf-accordion --> lf-image
   lf-article --> lf-image
-  lf-badge --> lf-image
   lf-breadcrumbs --> lf-image
   lf-canvas --> lf-image
   lf-card --> lf-image

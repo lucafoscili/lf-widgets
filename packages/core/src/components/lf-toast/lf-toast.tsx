@@ -36,6 +36,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepToastActions } from "./actions.toast";
 import { prepToastComputed } from "./computed.toast";
+import { ToastFC } from "./fc";
 import { createAdapter } from "./lf-toast-adapter";
 
 /**
@@ -367,7 +368,6 @@ export class LfToast implements LfToastInterface {
     const { setLfStyle } = theme;
 
     const { lfStyle, lfTimer } = this;
-    const { toast } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -379,7 +379,7 @@ export class LfToast implements LfToastInterface {
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
         <div id={this.#w} data-lf={this.#lf.fadeIn}>
-          {toast()}
+          <ToastFC adapter={this.#adapter} />
         </div>
       </Host>
     );

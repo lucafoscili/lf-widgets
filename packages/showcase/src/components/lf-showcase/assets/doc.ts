@@ -597,20 +597,44 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-badge-background-color",
+        docs: "Sets the background color for the badge component. Defaults to => rgba(var(--lf-fc-color-primary, var(--lf-color-primary)), 0.875)",
+      },
+      {
         name: "--lf-badge-border-radius",
         docs: "Sets the border radius for the badge component. Defaults to => 50%",
       },
       {
+        name: "--lf-badge-box-shadow",
+        docs: "Sets the box shadow for the badge component. Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)",
+      },
+      {
+        name: "--lf-badge-color-on-primary",
+        docs: "Sets the text color for the badge label. Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))",
+      },
+      {
         name: "--lf-badge-font-family",
-        docs: "Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)",
+        docs: "Sets the font family for the badge component. Defaults to => var(--lf-font-family-button)",
       },
       {
         name: "--lf-badge-font-size",
-        docs: "Sets the font size for the badge component. Defaults to => var(--lf-font-size)",
+        docs: "Sets the base font size for the badge component (scaled by --lf-fc-ui-size). Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-badge-font-weight",
+        docs: "Sets the font weight for the badge component. Defaults to => var(--lf-font-weight-button)",
       },
       {
         name: "--lf-badge-height",
         docs: "Sets the height for the badge component. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-badge-image-height",
+        docs: "Sets the height for the badge image. Defaults to => 1em",
+      },
+      {
+        name: "--lf-badge-image-width",
+        docs: "Sets the width for the badge image. Defaults to => 1em",
       },
       {
         name: "--lf-badge-padding",
@@ -2814,7 +2838,7 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-image-color-primary",
-        docs: "Sets the color-primary color for the image component. Defaults to => var(--lf-color-primary)",
+        docs: "Sets the primary color for the icon. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-image-font-family",
@@ -5401,6 +5425,34 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-textfield-font-size",
         docs: "Sets the font size for the textfield component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-textfield-height",
+        docs: "Sets the height for the textfield component. Defaults to => 3.5em",
+      },
+      {
+        name: "--lf-textfield-icon-action-padding",
+        docs: "Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0",
+      },
+      {
+        name: "--lf-textfield-icon-padding",
+        docs: "Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em",
+      },
+      {
+        name: "--lf-textfield-icon-size",
+        docs: "Sets the size for the textfield icons. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-textfield-input-cursor",
+        docs: "Sets the cursor for the textfield input. Defaults to => text",
+      },
+      {
+        name: "--lf-textfield-padding",
+        docs: "Sets the padding for the textfield component. Defaults to => 0 1em",
+      },
+      {
+        name: "--lf-textfield-resizer-min-height",
+        docs: "Sets the minimum height for the textfield resizer. Defaults to => 3em",
       },
     ],
   },

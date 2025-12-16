@@ -348,14 +348,6 @@ export const GLOBAL_STYLES = {
   ".button__label--hidden": {
     "visibility": "hidden"
   },
-  ".button__spinner": {
-    "height": "var(--lf-button-spinner-size, 1.5em)",
-    "left": "50%",
-    "position": "absolute",
-    "top": "50%",
-    "transform": "translate(-50%, -50%)",
-    "width": "var(--lf-button-spinner-size, 1.5em)"
-  },
   ".image": {
     "height": "var(--lf_image_height, 0)",
     "position": "relative",

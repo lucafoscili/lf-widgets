@@ -35,6 +35,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepPlaceholderActions } from "./actions.placeholder";
 import { prepPlaceholderComputed } from "./computed.placeholder";
+import { PlaceholderFC } from "./fc";
 import { createAdapter } from "./lf-placeholder-adapter";
 
 /**
@@ -356,12 +357,13 @@ export class LfPlaceholder implements LfPlaceholderInterface {
     const { setLfStyle } = theme;
 
     const { lfStyle } = this;
-    const { placeholder } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>{placeholder()}</div>
+        <div id={this.#w}>
+          <PlaceholderFC adapter={this.#adapter} />
+        </div>
       </Host>
     );
   }

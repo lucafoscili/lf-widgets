@@ -1,45 +1,16 @@
-import {
-  LF_BADGE_CSS_VARS,
-  LfBadgeAdapter,
-  LfBadgeAdapterJsx,
-} from "@lf-widgets/foundations";
-import { h } from "@stencil/core";
+import { LF_BADGE_CSS_VARS, LfBadgeAdapterJsx } from "@lf-widgets/foundations";
 import { LfBadge } from "./lf-badge";
-import { LfBadgeFC } from "./lf-badge-fc";
 
-export const prepBadgeJsx = (
-  getAdapter: () => LfBadgeAdapter,
-): LfBadgeAdapterJsx => {
+/**
+ * Prepares JSX factories for the badge adapter.
+ * Note: The main badge rendering is now handled by BadgeFC (fc/badge-fc.tsx).
+ * This function is kept for adapter interface compliance.
+ */
+export const prepBadgeJsx = (): LfBadgeAdapterJsx => {
   return {
-    //#region Badge
-    badge: () => {
-      const adapter = getAdapter();
-      const { controller, dispatcher, elements } = adapter;
-      const { get } = controller;
-
-      // v4.0.0: ALL getters are functions
-      const compInstance = get.compInstance();
-      const framework = get.framework();
-
-      const { lfImageProps, lfLabel, lfPosition, lfUiSize, lfUiState } =
-        compInstance;
-      const { assignRef } = framework;
-      const { refs } = elements;
-
-      return (
-        <LfBadgeFC
-          badgeRef={assignRef(refs, "badge")}
-          framework={framework}
-          imageProps={lfImageProps}
-          label={lfLabel}
-          onClick={(e) => dispatcher.emit("click", { originalEvent: e })}
-          position={lfPosition}
-          uiSize={lfUiSize}
-          uiState={lfUiState}
-        />
-      );
-    },
-    //#endregion
+    // Badge rendering is handled by BadgeFC in render()
+    // This placeholder satisfies the adapter interface
+    badge: () => null,
   };
 };
 

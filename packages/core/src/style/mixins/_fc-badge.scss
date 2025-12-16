@@ -23,10 +23,6 @@
 .badge {
   & {
     align-items: center;
-    /**
-     * @prop --lf-badge-background-color: Sets the background color for the badge component.
-     *                                    Defaults to => rgba(var(--lf-fc-color-primary, var(--lf-color-primary)), 0.875)
-     */
     background-color: rgba(
       var(
         --lf-badge-color-primary,
@@ -34,47 +30,19 @@
       ),
       var(--lf-badge-background-alpha, var(--lf-ui-alpha-glass-solid, 0.875))
     );
-    /**
-     * @prop --lf-badge-border-radius: Sets the border radius for the badge component.
-     *                                 Defaults to => 50%
-     */
     border-radius: var(--lf-badge-border-radius, 50%);
-    /**
-     * @prop --lf-badge-box-shadow: Sets the box shadow for the badge component.
-     *                              Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
-     */
     box-shadow: var(
       --lf-badge-box-shadow,
       0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
     );
     display: inline-flex;
-    /**
-     * @prop --lf-badge-font-family: Sets the font family for the badge component.
-     *                               Defaults to => var(--lf-font-family-button)
-     */
     font-family: var(--lf-badge-font-family, var(--lf-font-family-button));
-    /**
-     * @prop --lf-badge-font-size: Sets the base font size for the badge component (scaled by --lf-fc-ui-size).
-     *                             Defaults to => var(--lf-font-size)
-     */
     font-size: calc(
       var(--lf-badge-font-size, var(--lf-font-size)) * var(--lf-fc-ui-size, 1)
     );
-    /**
-     * @prop --lf-badge-font-weight: Sets the font weight for the badge component.
-     *                               Defaults to => var(--lf-font-weight-button)
-     */
     font-weight: var(--lf-badge-font-weight, var(--lf-font-weight-button));
-    /**
-     * @prop --lf-badge-height: Sets the height for the badge component.
-     *                          Defaults to => 1.5em
-     */
     height: var(--lf-badge-height, 1.5em);
     justify-content: center;
-    /**
-     * @prop --lf-badge-padding: Sets the padding for the badge component.
-     *                           Defaults to => 0.25em
-     */
     padding: var(--lf-badge-padding, 0.25em);
     position: relative;
     text-align: center;
@@ -82,10 +50,6 @@
       background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
       box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
       transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /**
-     * @prop --lf-badge-width: Sets the width for the badge component.
-     *                         Defaults to => 1.5em
-     */
     width: var(--lf-badge-width, 1.5em);
   }
 
@@ -132,10 +96,6 @@
   // Label
   // -----------------------------------------------------------------------------
   &__label {
-    /**
-     * @prop --lf-badge-color-on-primary: Sets the text color for the badge label.
-     *                                    Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))
-     */
     color: rgb(
       var(
         --lf-badge-color-on-primary,
@@ -157,19 +117,11 @@
     );
 
     backdrop-filter: unset;
-    /**
-     * @prop --lf-badge-image-height: Sets the height for the badge image.
-     *                                Defaults to => 1em
-     */
     height: var(--lf-badge-image-height, 1em);
     left: 50%;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    /**
-     * @prop --lf-badge-image-width: Sets the width for the badge image.
-     *                               Defaults to => 1em
-     */
     width: var(--lf-badge-image-width, 1em);
   }
 }

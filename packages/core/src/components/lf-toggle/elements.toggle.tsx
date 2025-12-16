@@ -1,6 +1,6 @@
 import { LfToggleAdapter, LfToggleAdapterJsx } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
-import { LfToggleFC } from "./lf-toggle-fc";
+import { LfToggleFC } from "./fc";
 
 /**
  * Prepares JSX factory functions for the toggle component.

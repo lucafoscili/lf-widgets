@@ -6,16 +6,18 @@ import {
   LfIconType,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { FIcon } from "../../../utils/icon";
 
 /**
- * LfButtonFC - Functional Component for Button
+ * ButtonFC - Functional Component for Button
+ *
+ * Per Section 5.9 "Mirroring Rule" - encapsulates button UI.
  *
  * This is a stateless functional component that renders a button.
  * All state is managed by the parent component; this FC is purely presentational.
  *
  * Usage patterns:
- * 1. Inside lf-button Web Component (thin wrapper)
+ * 1. Inside lf-button Web Component (thin wrapper via elements.button.tsx)
  * 2. Inside other components like shapeeditor (composed usage)
  * 3. Via LfShape rendering (if button becomes a data shape)
  *
@@ -32,9 +34,9 @@ import { FIcon } from "../../utils/icon";
  * These are required for composed usage where CSS cascade doesn't work
  * (e.g., portaled content outside the DOM hierarchy).
  *
- * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ * @see Section 5.9 of 4_0_0_REFACTORING.md (Functional Components Architecture)
  */
-export const LfButtonFC: FunctionalComponent<LfButtonFCProps> = ({
+export const ButtonFC: FunctionalComponent<LfButtonFCProps> = ({
   className,
   disabled = false,
   framework,

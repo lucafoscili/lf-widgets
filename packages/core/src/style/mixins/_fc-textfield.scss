@@ -39,10 +39,6 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
     border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
     box-sizing: border-box;
     display: inline-flex;
-    /**
-     * @prop --lf-textfield-height: Sets the height for the textfield component.
-     *                              Defaults to => 3.5em
-     */
     height: var(--lf-#{$comp}-height, 3.5em);
     position: relative;
     transition:
@@ -207,10 +203,6 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
       align-self: center;
       color: $onBgC;
       cursor: pointer;
-      /**
-       * @prop --lf-textfield-icon-size: Sets the size for the textfield icons.
-       *                                 Defaults to => 1.5em
-       */
       height: var(--lf-#{$comp}-icon-size, 1.5em);
       outline: none;
       transition:
@@ -229,18 +221,10 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
   }
 
   &__icon {
-    /**
-     * @prop --lf-textfield-icon-padding: Sets the padding for the textfield icon.
-     *                                    Defaults to => 0 0 0 0.75em
-     */
     padding: var(--lf-#{$comp}-icon-padding, 0 0 0 0.75em);
   }
 
   &__icon-action {
-    /**
-     * @prop --lf-textfield-icon-action-padding: Sets the padding for the textfield action icon.
-     *                                           Defaults to => 0 0.75em 0 0
-     */
     padding: var(--lf-#{$comp}-icon-action-padding, 0 0.75em 0 0);
   }
 
@@ -257,10 +241,6 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
       box-sizing: border-box;
       caret-color: rgba($primaryC, 0.75);
       color: $onBgC;
-      /**
-       * @prop --lf-textfield-input-cursor: Sets the cursor for the textfield input.
-       *                                    Defaults to => text
-       */
       cursor: var(--lf-#{$comp}-input-cursor, text);
       flex: 1 1 auto;
       font-family: var(
@@ -277,10 +257,6 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
       margin: 0;
       min-width: 0;
       outline: none;
-      /**
-       * @prop --lf-textfield-padding: Sets the padding for the textfield component.
-       *                               Defaults to => 0 1em
-       */
       padding: var(--lf-#{$comp}-padding, 0 1em);
       text-decoration: inherit;
       text-transform: inherit;
@@ -371,10 +347,6 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
     flex-grow: 1;
     max-height: 100%;
     max-width: 100%;
-    /**
-     * @prop --lf-textfield-resizer-min-height: Sets the minimum height for the textfield resizer.
-     *                                          Defaults to => 3em
-     */
     min-height: var(--lf-#{$comp}-resizer-min-height, 3em);
     min-width: fit-content;
     min-width: -moz-available;

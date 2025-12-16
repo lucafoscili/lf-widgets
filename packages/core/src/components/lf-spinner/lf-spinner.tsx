@@ -1,11 +1,8 @@
 import {
-  LF_ATTRIBUTES,
   LF_SPINNER_BLOCKS,
   LF_SPINNER_IDS,
   LF_SPINNER_PARTS,
   LF_SPINNER_PROPS,
-  LF_STYLE_ID,
-  LF_WRAPPER_ID,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfSpinnerAdapter,
@@ -34,6 +31,7 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { SpinnerFC } from "./fc";
 import { createAdapter } from "./lf-spinner-adapter";
 
 /**
@@ -227,10 +225,7 @@ export class LfSpinner implements LfSpinnerInterface {
   #framework: LfFrameworkInterface;
   #b = LF_SPINNER_BLOCKS;
   #ids = LF_SPINNER_IDS;
-  #lf = LF_ATTRIBUTES;
   #p = LF_SPINNER_PARTS;
-  #s = LF_STYLE_ID;
-  #w = LF_WRAPPER_ID;
   #animationState = {
     progressAnimationFrame: null as number | null,
     faderTimer: null as ReturnType<typeof setTimeout> | null,
@@ -490,15 +485,9 @@ export class LfSpinner implements LfSpinnerInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { setLfStyle } = this.#framework.theme;
-    const { lfStyle } = this;
-
     return (
       <Host>
-        {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div data-lf={this.#lf[this.lfUiState]} id={this.#w}>
-          {this.#adapter.elements.jsx.spinner()}
-        </div>
+        <SpinnerFC adapter={this.#adapter} />
       </Host>
     );
   }

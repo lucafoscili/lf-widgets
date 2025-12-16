@@ -34,6 +34,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepDrawerActions } from "./actions.drawer";
 import { prepDrawerComputed } from "./computed.drawer";
+import { DrawerFC } from "./fc";
 import { createAdapter } from "./lf-drawer-adapter";
 
 /**
@@ -448,7 +449,7 @@ export class LfDrawer implements LfDrawerInterface {
             }
           }}
         >
-          {this.#adapter.elements.jsx.drawer()}
+          <DrawerFC adapter={this.#adapter} />
         </div>
       </Host>
     );

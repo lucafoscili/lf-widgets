@@ -32,6 +32,7 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
+import { ImageFC } from "./fc";
 import { createAdapter } from "./lf-image-adapter";
 
 /**
@@ -395,7 +396,6 @@ export class LfImage implements LfImageInterface {
     const { debug, theme } = this.#framework;
 
     const { lfSizeX, lfSizeY, lfStyle, lfValue } = this;
-    const { image } = this.#adapter.elements.jsx;
 
     if (!lfValue) {
       debug.logs.new(this, "Empty image.");
@@ -412,7 +412,9 @@ export class LfImage implements LfImageInterface {
           }
           ${(lfStyle && theme.setLfStyle(this)) || ""}`}
         </style>
-        <div id={this.#w}>{image()}</div>
+        <div id={this.#w}>
+          <ImageFC adapter={this.#adapter} />
+        </div>
       </Host>
     );
   }

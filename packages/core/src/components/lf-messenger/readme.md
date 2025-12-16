@@ -158,7 +158,6 @@ graph TD;
   lf-messenger --> lf-textfield
   lf-code --> lf-button
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-chat --> lf-chip
   lf-chat --> lf-button

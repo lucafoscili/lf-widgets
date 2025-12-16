@@ -34,10 +34,6 @@
   &__img {
     display: block;
     height: var(--lf_image_height, 0);
-    /**
-     * @prop --lf-image-margin: Sets the margin for the image component.
-     *                          Defaults to => auto
-     */
     margin: var(--lf-image-margin, auto);
     width: var(--lf_image_width, 0);
   }
@@ -46,10 +42,6 @@
   // Icon specific styles
   // -----------------------------------------------------------------------------
   &__icon {
-    /**
-     * @prop --lf-image-color-primary: Sets the primary color for the icon.
-     *                                 Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
-     */
     color: rgba(
       var(
         --lf-image-color-primary,
@@ -66,10 +58,6 @@
   // Img specific styles
   // -----------------------------------------------------------------------------
   &__img {
-    /**
-     * @prop --lf-image-object-fit: Sets the object fit for the image element.
-     *                              Defaults to => cover
-     */
     object-fit: var(--lf-image-object-fit, cover);
   }
 }

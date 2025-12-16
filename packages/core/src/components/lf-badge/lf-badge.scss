@@ -1,19 +1,34 @@
-@use "variables" as *;
-@use "mixins" as *;
-
-$comp: "badge";
-@include lf-comp-setup($comp, "true");
-
 /**
+ * @prop --lf-badge-color-on-primary: Sets the text color for the badge label.
+ *                                    Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))
+ * @prop --lf-badge-background-color: Sets the background color for the badge component.
+ *                                    Defaults to => rgba(var(--lf-fc-color-primary, var(--lf-color-primary)), 0.875)
  * @prop --lf-badge-border-radius: Sets the border radius for the badge component.
  *                                 Defaults to => 50%
+ * @prop --lf-badge-box-shadow: Sets the box shadow for the badge component.
+ *                              Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
+ * @prop --lf-badge-font-family: Sets the font family for the badge component.
+ *                               Defaults to => var(--lf-font-family-button)
+ * @prop --lf-badge-font-size: Sets the base font size for the badge component (scaled by --lf-fc-ui-size).
+ *                             Defaults to => var(--lf-font-size)
+ * @prop --lf-badge-font-weight: Sets the font weight for the badge component.
+ *                               Defaults to => var(--lf-font-weight-button)
  * @prop --lf-badge-height: Sets the height for the badge component.
  *                          Defaults to => 1.5em
+ * @prop --lf-badge-image-height: Sets the height for the badge image.
+ *                                Defaults to => 1em
+ * @prop --lf-badge-image-width: Sets the width for the badge image.
+ *                               Defaults to => 1em
  * @prop --lf-badge-padding: Sets the padding for the badge component.
  *                           Defaults to => 0.25em
  * @prop --lf-badge-width: Sets the width for the badge component.
  *                         Defaults to => 1.5em
  */
+@use "variables" as *;
+@use "mixins" as *;
+
+$comp: "badge";
+@include lf-comp-setup($comp, "true");
 
 :host {
   position: absolute;

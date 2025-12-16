@@ -152,10 +152,17 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                         | Description                                                                                            |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `--lf-textfield-font-family` | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-textfield-font-size`   | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
+| Name                                 | Description                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `--lf-textfield-font-family`         | Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-textfield-font-size`           | Sets the font size for the textfield component. Defaults to => var(--lf-font-size)                     |
+| `--lf-textfield-height`              | Sets the height for the textfield component. Defaults to => 3.5em                                      |
+| `--lf-textfield-icon-action-padding` | Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0                            |
+| `--lf-textfield-icon-padding`        | Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em                                   |
+| `--lf-textfield-icon-size`           | Sets the size for the textfield icons. Defaults to => 1.5em                                            |
+| `--lf-textfield-input-cursor`        | Sets the cursor for the textfield input. Defaults to => text                                           |
+| `--lf-textfield-padding`             | Sets the padding for the textfield component. Defaults to => 0 1em                                     |
+| `--lf-textfield-resizer-min-height`  | Sets the minimum height for the textfield resizer. Defaults to => 3em                                  |
 
 
 ## Dependencies

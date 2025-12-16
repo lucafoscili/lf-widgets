@@ -13,7 +13,7 @@ import { h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { LfSliderFC } from "../lf-slider/lf-slider-fc";
 import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
-import { LfToggleFC } from "../lf-toggle/lf-toggle-fc";
+import { LfToggleFC } from "../lf-toggle/fc";
 
 /**
  * Prepares the items sub-block JSX (accordion + individual control items).

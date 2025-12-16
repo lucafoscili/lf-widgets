@@ -178,13 +178,11 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-list](../lf-list)
-- [lf-spinner](../lf-spinner)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-accordion --> lf-button
   lf-article --> lf-button

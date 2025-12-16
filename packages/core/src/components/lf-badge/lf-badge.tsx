@@ -33,6 +33,7 @@ import {
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { computeBadgeStyles } from "./elements.badge";
+import { BadgeFC } from "./fc";
 import { createAdapter } from "./lf-badge-adapter";
 
 /**
@@ -266,9 +267,8 @@ export class LfBadge implements LfBadgeInterface {
     const { setLfStyle } = theme;
     const { lfPosition, lfStyle, lfUiState } = this;
 
-    const { controller, elements } = this.#adapter;
+    const { controller } = this.#adapter;
     const lfAttributes = controller.get.lfAttributes();
-    const { jsx } = elements;
 
     return (
       <Host>
@@ -276,7 +276,7 @@ export class LfBadge implements LfBadgeInterface {
           {computeBadgeStyles(lfPosition, lfStyle, setLfStyle, this)}
         </style>
         <div id={this.#w} data-lf={lfAttributes[lfUiState]}>
-          {jsx.badge()}
+          <BadgeFC adapter={this.#adapter} />
         </div>
       </Host>
     );

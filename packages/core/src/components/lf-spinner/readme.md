@@ -112,7 +112,6 @@ Type: `Promise<void>`
 ### Used by
 
  - [lf-autocomplete](../lf-autocomplete)
- - [lf-button](../lf-button)
  - [lf-chat](../lf-chat)
  - [lf-shapeeditor](../lf-shapeeditor)
 
@@ -120,7 +119,6 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-autocomplete --> lf-spinner
-  lf-button --> lf-spinner
   lf-chat --> lf-spinner
   lf-shapeeditor --> lf-spinner
   style lf-spinner fill:#f9f,stroke:#333,stroke-width:4px

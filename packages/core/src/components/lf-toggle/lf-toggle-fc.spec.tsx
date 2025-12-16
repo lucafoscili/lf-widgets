@@ -2,7 +2,7 @@ import { h } from "@stencil/core";
 import { newSpecPage, SpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import { LfFrameworkInterface, LfToggleFCProps } from "@lf-widgets/foundations";
-import { LfToggleFC } from "./lf-toggle-fc";
+import { LfToggleFC } from "./fc";
 
 /**
  * Unit tests for LfToggleFC (Functional Component)

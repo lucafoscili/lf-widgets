@@ -180,9 +180,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-accordion --> lf-accordion
-  lf-badge --> lf-image
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion

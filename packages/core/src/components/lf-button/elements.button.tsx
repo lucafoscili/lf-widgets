@@ -8,7 +8,7 @@ import {
 } from "@lf-widgets/foundations";
 import { Fragment, h, VNode } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
-import { LfButtonFC } from "./lf-button-fc";
+import { ButtonFC } from "./fc";
 
 /**
  * Prepares JSX factory functions for the button component.
@@ -18,7 +18,7 @@ import { LfButtonFC } from "./lf-button-fc";
  * - Uses `controller.computed` for derived predicates (isDisabled, isDropdown, isOn)
  * - Uses `controller.actions` for complex operations (toggle)
  * - Routes all events through dispatcher
- * - Wraps `LfButtonFC` functional component for actual rendering
+ * - Wraps `ButtonFC` functional component for actual rendering
  *
  * @see Section 2 & 5 of 4_0_0_REFACTORING.md
  */
@@ -51,7 +51,7 @@ export const prepButton = (
       const { refs } = elements;
 
       return (
-        <LfButtonFC
+        <ButtonFC
           disabled={isDisabled()}
           framework={mgr}
           icon={lfIcon}
@@ -168,7 +168,7 @@ export const prepButton = (
       const displayIcon = lfToggable && !isOn() ? iconOff : lfIcon;
 
       return (
-        <LfButtonFC
+        <ButtonFC
           disabled={isDisabled()}
           framework={mgr}
           icon={displayIcon}

@@ -33,6 +33,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepPhotoframeActions } from "./actions.photoframe";
 import { prepPhotoframeComputed } from "./computed.photoframe";
+import { PhotoframeFC } from "./fc";
 import { createAdapter } from "./lf-photoframe-adapter";
 
 /**
@@ -330,22 +331,21 @@ export class LfPhotoframe implements LfPhotoframeInterface {
   }
   render() {
     const { theme } = this.#framework;
-    const { setLfStyle, bemClass } = theme;
+    const { bemClass, setLfStyle } = theme;
 
-    const { lfStyle, imageOrientation } = this;
-    const { overlay, photoframe } = this.#adapter.elements.jsx;
+    const { imageOrientation, lfStyle } = this;
+    const { photoframe } = this.#b;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div
-          id={this.#w}
-          class={bemClass(this.#b.photoframe._, null, {
-            [imageOrientation]: imageOrientation && true,
+          class={bemClass(photoframe._, null, {
+            [imageOrientation]: Boolean(imageOrientation),
           })}
+          id={this.#w}
         >
-          {overlay()}
-          {photoframe()}
+          <PhotoframeFC adapter={this.#adapter} />
         </div>
       </Host>
     );

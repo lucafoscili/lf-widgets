@@ -79,7 +79,7 @@ export const createAdapter = (
       actions: createActions(getAdapter),
     },
     elements: {
-      jsx: createJsx(getAdapter),
+      jsx: createJsx(),
       refs: createRefs(),
     },
     handlers: createHandlers(),
@@ -98,10 +98,8 @@ export const createActions = (getAdapter: () => LfBadgeAdapter) => {
 //#endregion
 
 //#region Elements
-export const createJsx = (
-  getAdapter: () => LfBadgeAdapter,
-): LfBadgeAdapterJsx => {
-  return prepBadgeJsx(getAdapter);
+export const createJsx = (): LfBadgeAdapterJsx => {
+  return prepBadgeJsx();
 };
 //#endregion
 

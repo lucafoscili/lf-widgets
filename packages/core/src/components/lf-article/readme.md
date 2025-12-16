@@ -170,9 +170,7 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-badge --> lf-image
   lf-button --> lf-list
-  lf-button --> lf-spinner
   lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
