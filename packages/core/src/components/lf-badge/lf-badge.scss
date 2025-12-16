@@ -20,28 +20,30 @@ $comp: "badge";
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
-* @prop --lf-#{$comp}-color-on-primary: Sets the text color for the #{$comp} label.
-*                                       Defaults to => rgb(var(--lf-fc-color-on-primary, var(--lf-color-on-primary)))
-* @prop --lf-#{$comp}-background-color: Sets the background color for the #{$comp} component.
-*                                       Defaults to => rgba(var(--lf-fc-color-primary, var(--lf-color-primary)), 0.875)
-* @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
-*                                    Defaults to => 50%
-* @prop --lf-#{$comp}-box-shadow: Sets the box shadow for the #{$comp} component.
-*                                 Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
-* @prop --lf-#{$comp}-font-family: Sets the font family for the #{$comp} component.
-*                                  Defaults to => var(--lf-font-family-button)
-* @prop --lf-#{$comp}-font-size: Sets the base font size for the #{$comp} component (scaled by --lf-fc-ui-size).
-*                                Defaults to => var(--lf-font-size)
-* @prop --lf-#{$comp}-font-weight: Sets the font weight for the #{$comp} component.
-*                                  Defaults to => var(--lf-font-weight-button)
-* @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
-*                             Defaults to => 1.5em
-* @prop --lf-#{$comp}-image-height: Sets the height for the #{$comp} image.
-*                                   Defaults to => 1em
-* @prop --lf-#{$comp}-image-width: Sets the width for the #{$comp} image.
-*                                  Defaults to => 1em
-* @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
-*                              Defaults to => 0.25em
-* @prop --lf-#{$comp}-width: Sets the width for the #{$comp} component.
-*                            Defaults to => 1.5em
+* @prop --lf-badge-color-primary: Sets the primary/background color for the badge.
+*                                 Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-badge-color-on-primary: Sets the text color for the badge label.
+*                                    Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+* @prop --lf-badge-background-alpha: Sets the background alpha for the badge.
+*                                    Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)
+* @prop --lf-badge-border-radius: Sets the border radius for the badge.
+*                                 Defaults to => 50%
+* @prop --lf-badge-box-shadow: Sets the box shadow for the badge.
+*                              Defaults to => 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
+* @prop --lf-badge-font-family: Sets the font family for the badge.
+*                               Defaults to => var(--lf-font-family-button)
+* @prop --lf-badge-font-size: Sets the base font size for the badge (scaled by --lf-ui-size).
+*                             Defaults to => var(--lf-font-size)
+* @prop --lf-badge-font-weight: Sets the font weight for the badge.
+*                               Defaults to => var(--lf-font-weight-button)
+* @prop --lf-badge-height: Sets the height for the badge.
+*                          Defaults to => 1.5em
+* @prop --lf-badge-image-height: Sets the height for the badge image.
+*                                Defaults to => 1em
+* @prop --lf-badge-image-width: Sets the width for the badge image.
+*                               Defaults to => 1em
+* @prop --lf-badge-padding: Sets the padding for the badge.
+*                           Defaults to => 0.25em
+* @prop --lf-badge-width: Sets the width for the badge.
+*                         Defaults to => 1.5em
 */

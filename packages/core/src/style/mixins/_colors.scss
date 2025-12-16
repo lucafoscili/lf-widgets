@@ -1,0 +1,84 @@
+// =============================================================================
+// COLOR HELPERS - DRY Color Variable Access
+// =============================================================================
+// Provides canonical functions for accessing colors with proper fallback chains.
+// This eliminates the inline duplication antipattern (see SCSS_UNIFICATION.md §2.5.1).
+//
+// IMPORTANT: lf-color() returns a var() expression, NOT a color value.
+// This means it CANNOT be used directly with rgba() in older Sass versions.
+// Use the alpha tier variables instead: --lf-ui-alpha-glass-*, etc.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §3.4, 4_0_0_REFACTORING.md §2.6
+// =============================================================================
+
+@use "sass:map";
+
+// -----------------------------------------------------------------------------
+// Color Token Functions
+// -----------------------------------------------------------------------------
+
+/// Returns a CSS custom property with proper fallback chain for state-aware colors.
+/// The 3-level fallback chain ensures:
+/// 1. Component override: --lf-{comp}-color-{token}
+/// 2. State-based color: --lf-state-{token} (set via data-lf attribute)
+/// 3. Theme default: --lf-color-{token}
+///
+/// @param {String} $comp - Component name (e.g., "button")
+/// @param {String} $token - Color token (e.g., "primary", "surface", "on-bg")
+/// @return {String} - CSS var() with fallbacks
+/// @example
+///   color: lf-color("button", "primary");
+///   // Outputs: var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary)))
+@function lf-color($comp, $token: "primary") {
+  @return var(
+    --lf-#{$comp}-color-#{$token},
+    var(--lf-state-#{$token}, var(--lf-color-#{$token}))
+  );
+}
+
+/// Returns a CSS custom property for non-state colors (no --lf-state-* fallback).
+/// Use for colors that should NOT change based on data-lf attribute state.
+///
+/// @param {String} $comp - Component name
+/// @param {String} $token - Color token
+/// @return {String} - CSS var() with 2-level fallback
+/// @example
+///   border-color: lf-color-static("textfield", "border");
+///   // Outputs: var(--lf-textfield-color-border, var(--lf-color-border))
+@function lf-color-static($comp, $token) {
+  @return var(--lf-#{$comp}-color-#{$token}, var(--lf-color-#{$token}));
+}
+
+// -----------------------------------------------------------------------------
+// Color Variable Mixins
+// -----------------------------------------------------------------------------
+
+/// Generates standard color variables for a component.
+/// Call at the top of component SCSS to create $primaryC, $onPrimaryC, etc.
+/// These variables use the 3-level fallback chain via lf-color().
+///
+/// @param {String} $comp - Component name
+/// @example
+///   @include lf-color-vars("button");
+///   // Now use $primaryC, $onPrimaryC, $surfaceC, etc. in your styles
+@mixin lf-color-vars($comp) {
+  // State-aware colors (respond to data-lf attribute)
+  $primaryC: lf-color($comp, "primary") !global;
+  $onPrimaryC: lf-color($comp, "on-primary") !global;
+  $surfaceC: lf-color($comp, "surface") !global;
+  $onSurfaceC: lf-color($comp, "on-surface") !global;
+  $bgC: lf-color($comp, "bg") !global;
+  $onBgC: lf-color($comp, "on-bg") !global;
+
+  // Static colors (don't change with state)
+  $borderC: lf-color-static($comp, "border") !global;
+}
+
+/// Generates only the primary/on-primary color variables.
+/// Use for simple components that only need primary theming.
+///
+/// @param {String} $comp - Component name
+@mixin lf-color-vars-primary($comp) {
+  $primaryC: lf-color($comp, "primary") !global;
+  $onPrimaryC: lf-color($comp, "on-primary") !global;
+}

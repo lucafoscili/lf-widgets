@@ -1,0 +1,44 @@
+// =============================================================================
+// COMPONENT STYLES INDEX - Unified FC-First Styles
+// =============================================================================
+// This index file uses all component styles for the unified system.
+// Components are migrated from _fc-*.scss to components/_*.scss.
+//
+// IMPORTANT: We use @use instead of @forward here because each component
+// file defines its own $comp variable at the module level. @forward would
+// create conflicts between these identically-named variables.
+//
+// Migration Status:
+// ✅ badge - Migrated to unified system
+// ✅ button - Migrated to unified system
+// 🔄 Other components - Use legacy _fc-*.scss (will be migrated)
+//
+// Cross-Reference: SCSS_UNIFICATION.md §5
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Migrated Components (unified system)
+// -----------------------------------------------------------------------------
+// Using @use to include these files - variables are scoped to each file
+@use "badge";
+@use "button";
+
+// -----------------------------------------------------------------------------
+// Remaining Components (to be migrated)
+// -----------------------------------------------------------------------------
+// The following components still use the legacy _fc-*.scss files.
+// They will be migrated to this directory following the same pattern.
+//
+// - chat
+// - checkbox
+// - chip
+// - image
+// - photoframe
+// - placeholder
+// - progressbar
+// - slider
+// - snackbar
+// - spinner (OUTLIER - needs alignment, see SCSS_UNIFICATION.md §8.1)
+// - textfield
+// - toast
+// - toggle

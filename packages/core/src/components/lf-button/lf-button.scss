@@ -43,34 +43,36 @@ $comp: "button";
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
- * @prop --lf-#{$comp}-align-items: Sets the align items for the #{$comp} component.
- *                                  Defaults to => center
- * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
- *                                    Defaults to => var(--lf-ui-border-radius)
- * @prop --lf-#{$comp}-color-primary: Sets the primary color for the #{$comp} component.
- *                                    Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
- * @prop --lf-#{$comp}-cursor: Sets the cursor for the #{$comp} component.
- *                             Defaults to => pointer
- * @prop --lf-#{$comp}-font-family: Sets the font family for the #{$comp} component.
- *                                  Defaults to => var(--lf-font-family-primary)
- * @prop --lf-#{$comp}-font-size: Sets the font size for the #{$comp} component.
- *                                Defaults to => var(--lf-font-size-primary)
- * @prop --lf-#{$comp}-font-weight: Sets the font weight for the #{$comp} component.
- *                                  Defaults to => var(--lf-font-weight-primary)
- * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
- *                             Defaults to => 3em
- * @prop --lf-#{$comp}-icon-height: Sets the icon height for the #{$comp} component.
- *                                  Defaults to => 1.5em
- * @prop --lf-#{$comp}-icon-width: Sets the icon width for the #{$comp} component.
- *                                 Defaults to => 1.5em
- * @prop --lf-#{$comp}-justify-content: Sets the justify content for the #{$comp} component.
- *                                      Defaults to => center
- * @prop --lf-#{$comp}-min-width: Sets the min width for the #{$comp} component.
- *                                Defaults to => 4em
- * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
- *                              Defaults to => 0 1.25em
- * @prop --lf-#{$comp}-text-decoration: Sets the text decoration for the #{$comp} component.
- *                                      Defaults to => none
- * @prop --lf-#{$comp}-text-transform: Sets the text transform for the #{$comp} component.
- *                                     Defaults to => uppercase
- */
+* @prop --lf-button-align-items: Sets the align items for the button.
+*                                Defaults to => center
+* @prop --lf-button-border-radius: Sets the border radius for the button.
+*                                  Defaults to => var(--lf-ui-border-radius)
+* @prop --lf-button-color-primary: Sets the primary color for the button.
+*                                  Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-button-color-on-primary: Sets the on-primary color for the button (text on filled).
+*                                     Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+* @prop --lf-button-cursor: Sets the cursor for the button.
+*                           Defaults to => pointer
+* @prop --lf-button-font-family: Sets the font family for the button.
+*                                Defaults to => var(--lf-font-family-primary)
+* @prop --lf-button-font-size: Sets the font size for the button (scaled by --lf-ui-size).
+*                              Defaults to => 0.775em
+* @prop --lf-button-font-weight: Sets the font weight for the button.
+*                                Defaults to => var(--lf-font-weight-primary)
+* @prop --lf-button-height: Sets the height for the button.
+*                           Defaults to => 3em
+* @prop --lf-button-icon-height: Sets the icon height for the button.
+*                                Defaults to => 1.5em
+* @prop --lf-button-icon-width: Sets the icon width for the button.
+*                               Defaults to => 1.5em
+* @prop --lf-button-justify-content: Sets the justify content for the button.
+*                                    Defaults to => center
+* @prop --lf-button-min-width: Sets the min width for the button.
+*                              Defaults to => 4em
+* @prop --lf-button-padding: Sets the padding for the button.
+*                            Defaults to => 0 1.25em
+* @prop --lf-button-text-decoration: Sets the text decoration for the button.
+*                                    Defaults to => none
+* @prop --lf-button-text-transform: Sets the text transform for the button.
+*                                   Defaults to => uppercase
+*/

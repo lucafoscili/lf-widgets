@@ -1,0 +1,164 @@
+// =============================================================================
+// COMPONENT BASE - Unified Component Setup
+// =============================================================================
+// Replaces lf-comp-setup for the unified FC-first architecture.
+// Works for both WC (via adopted styles) and FC rendering.
+//
+// This mixin provides:
+// - Color variable generation via lf-color-vars()
+// - Font family and size with optional scaling
+// - Border radius
+// - Standard transitions
+// - Fade-in animation
+//
+// Cross-Reference: SCSS_UNIFICATION.md §3.5, 4_0_0_REFACTORING.md §2.6
+// =============================================================================
+
+@use "sass:map";
+@use "./colors" as *;
+@use "./transitions" as *;
+
+// -----------------------------------------------------------------------------
+// Component Setup Mixin
+// -----------------------------------------------------------------------------
+
+/// Base component setup with opt-in features.
+/// Call this at the root of your component's main BEM block.
+///
+/// @param {String} $comp - Component name (e.g., "button", "badge")
+/// @param {Map} $options - Feature flags (all default to false):
+///   - has-font: Include font-family and font-size
+///   - has-size-scaling: Include --lf-ui-size multiplier for font-size
+///   - has-border-radius: Include standard border-radius
+///   - has-fade-in: Include fade-in animation
+///   - has-transitions: Include standard transitions
+/// @content - Additional component-specific styles
+///
+/// @example
+///   .button {
+///     @include lf-component("button", (
+///       "has-font": true,
+///       "has-size-scaling": true,
+///       "has-border-radius": true,
+///       "has-transitions": true,
+///     ));
+///     // Button-specific styles...
+///   }
+@mixin lf-component($comp, $options: ()) {
+  // Generate color variables ($primaryC, $onPrimaryC, etc.)
+  @include lf-color-vars($comp);
+
+  // Font setup
+  @if map.get($options, "has-font") {
+    /**
+     * @prop --lf-#{$comp}-font-family: Sets the font family for the #{$comp} component.
+     *                                  Defaults to => var(--lf-font-family-primary)
+     */
+    font-family: var(--lf-#{$comp}-font-family, var(--lf-font-family-primary));
+
+    @if map.get($options, "has-size-scaling") {
+      /**
+       * @prop --lf-#{$comp}-font-size: Sets the base font size for the #{$comp} component.
+       *                                Scaled by --lf-ui-size (set via lfUiSize prop).
+       *                                Defaults to => var(--lf-font-size)
+       */
+      font-size: calc(
+        var(--lf-#{$comp}-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+      );
+    } @else {
+      /**
+       * @prop --lf-#{$comp}-font-size: Sets the font size for the #{$comp} component.
+       *                                Defaults to => var(--lf-font-size)
+       */
+      font-size: var(--lf-#{$comp}-font-size, var(--lf-font-size));
+    }
+  }
+
+  // Border radius
+  @if map.get($options, "has-border-radius") {
+    /**
+     * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} component.
+     *                                    Defaults to => var(--lf-ui-border-radius)
+     */
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-border-radius));
+  }
+
+  // Standard transitions
+  @if map.get($options, "has-transitions") {
+    @include lf-transitions;
+  }
+
+  // Fade-in animation
+  @if map.get($options, "has-fade-in") {
+    @include lf-fade-in;
+  }
+
+  // Allow component-specific content
+  @content;
+}
+
+/// Shorthand for components that need all standard features.
+/// Equivalent to calling lf-component with all flags set to true.
+///
+/// @param {String} $comp - Component name
+/// @content - Additional component-specific styles
+///
+/// @example
+///   .chip {
+///     @include lf-component-full("chip");
+///   }
+@mixin lf-component-full($comp) {
+  @include lf-component(
+    $comp,
+    (
+      "has-font": true,
+      "has-size-scaling": true,
+      "has-border-radius": true,
+      "has-transitions": true,
+    )
+  ) {
+    @content;
+  }
+}
+
+/// Minimal setup - only color variables.
+/// Use for components that handle their own font/radius/transitions.
+///
+/// @param {String} $comp - Component name
+/// @content - Additional component-specific styles
+@mixin lf-component-minimal($comp) {
+  @include lf-color-vars($comp);
+  @content;
+}
+
+// -----------------------------------------------------------------------------
+// Size Scaling Helpers
+// -----------------------------------------------------------------------------
+
+/// Applies size scaling to a specific property.
+/// Use when you need scaled sizing beyond just font-size.
+///
+/// @param {String} $property - CSS property to scale
+/// @param {Value} $base-value - Base value before scaling
+///
+/// @example
+///   @include lf-scaled-property(height, 2.5em);
+///   // Outputs: height: calc(2.5em * var(--lf-ui-size, 1));
+@mixin lf-scaled-property($property, $base-value) {
+  #{$property}: calc(#{$base-value} * var(--lf-ui-size, 1));
+}
+
+/// Applies size scaling to multiple properties.
+///
+/// @param {Map} $properties - Map of property: value pairs
+///
+/// @example
+///   @include lf-scaled-properties((
+///     height: 2.5em,
+///     padding: 0.5em 1em,
+///   ));
+@mixin lf-scaled-properties($properties) {
+  @each $property, $value in $properties {
+    @include lf-scaled-property($property, $value);
+  }
+}

@@ -1,0 +1,119 @@
+// =============================================================================
+// BADGE - Component Styles
+// =============================================================================
+// Badge-specific styles for the LfBadgeFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-badge.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "badge";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Badge Core
+// -----------------------------------------------------------------------------
+.badge {
+  & {
+    align-items: center;
+    background-color: rgba(
+      $primaryC,
+      var(--lf-badge-background-alpha, var(--lf-ui-alpha-glass-solid, 0.875))
+    );
+    border-radius: var(--lf-badge-border-radius, 50%);
+    box-shadow: var(
+      --lf-badge-box-shadow,
+      0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2)
+    );
+    display: inline-flex;
+    font-family: var(--lf-badge-font-family, var(--lf-font-family-button));
+    font-size: calc(
+      var(--lf-badge-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    font-weight: var(--lf-badge-font-weight, var(--lf-font-weight-button));
+    height: var(--lf-badge-height, 1.5em);
+    justify-content: center;
+    padding: var(--lf-badge-padding, 0.25em);
+    position: relative;
+    text-align: center;
+    @include lf-transitions((background-color, box-shadow, transform));
+    width: var(--lf-badge-width, 1.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Position Modifiers (for inline/absolute use cases)
+  // ---------------------------------------------------------------------------
+  &--inline {
+    position: static;
+    transform: none;
+  }
+
+  &--top-left,
+  &--top-right,
+  &--bottom-left,
+  &--bottom-right {
+    position: absolute;
+  }
+
+  &--top-left {
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  &--top-right {
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
+  }
+
+  &--bottom-left {
+    bottom: 0;
+    left: 0;
+    transform: translate(-50%, 50%);
+  }
+
+  &--bottom-right {
+    bottom: 0;
+    right: 0;
+    transform: translate(50%, 50%);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    color: rgb($onPrimaryC);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Image
+  // ---------------------------------------------------------------------------
+  &__image {
+    // Pass the on-primary color to nested image component
+    --lf-image-color-primary: #{$onPrimaryC};
+
+    backdrop-filter: unset;
+    height: var(--lf-badge-image-height, 1em);
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--lf-badge-image-width, 1em);
+  }
+}

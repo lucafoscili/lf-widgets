@@ -18,17 +18,19 @@
 // ============================================================================
 
 // CSS custom property definitions
+// FC state colors are provided by _fc-states.scss via data-lf attribute
 $comp: "spinner";
-$primaryC: var(
-  --lf-#{$comp}-color-primary,
+
+// Base spinner variables - use FC color system for state awareness
+// The fallback chain: --lf-spinner-* (override) → --lf-fc-color-* (state) → --lf-color-* (base)
+$spinnerColor: var(
+  --lf-#{$comp}-color,
   var(--lf-fc-color-primary, var(--lf-color-primary))
 );
-$bgC: var(--lf-#{$comp}-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg)));
-$onBgC: var(--lf-#{$comp}-color-on-bg, var(--lf-color-on-bg));
-
-// Base spinner variables (replicated from WC)
-$spinnerColor: var(--lf-#{$comp}-color, rgba($primaryC, 1));
-$spinnerColorBg: var(--lf-#{$comp}-color-bg, rgba($onBgC, 0.2));
+$spinnerColorBg: var(
+  --lf-#{$comp}-color-bg,
+  var(--lf-fc-color-on-bg, var(--lf-color-on-bg, rgba(128, 128, 128, 0.2)))
+);
 $spinnerSize: var(--lf-#{$comp}-size, 3em);
 $spinnerSpeed: var(--lf-#{$comp}-speed, 1s);
 $spinnerStroke: var(--lf-#{$comp}-stroke, 0.15em);
@@ -72,7 +74,10 @@ $spinnerStroke: var(--lf-#{$comp}-stroke, 0.15em);
   // ---------------------------------------------------------------------------
   &__fader {
     backdrop-filter: blur(4px);
-    background: rgba($bgC, 0.5);
+    background: var(
+      --lf-#{$comp}-fader-bg,
+      rgba(var(--lf-color-bg, 255, 255, 255), 0.5)
+    );
     inset: 0;
     opacity: 0;
     pointer-events: none;

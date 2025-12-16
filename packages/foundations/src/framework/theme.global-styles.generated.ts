@@ -5,6 +5,215 @@
  */
 
 export const GLOBAL_STYLES = {
+  "@keyframes lf-fade-in": [
+    {
+      "from": {
+        "visibility": "hidden",
+        "opacity": "0"
+      }
+    },
+    {
+      "to": {
+        "visibility": "visible",
+        "opacity": "1"
+      }
+    }
+  ],
+  "@keyframes lf-fade-in-scale": [
+    {
+      "from": {
+        "opacity": "0",
+        "transform": "scale(0.95)"
+      }
+    },
+    {
+      "to": {
+        "opacity": "1",
+        "transform": "scale(1)"
+      }
+    }
+  ],
+  "@keyframes lf-slide-in-right": [
+    {
+      "from": {
+        "transform": "translateX(100%)"
+      }
+    },
+    {
+      "to": {
+        "transform": "translateX(0)"
+      }
+    }
+  ],
+  "@keyframes lf-slide-in-left": [
+    {
+      "from": {
+        "transform": "translateX(-100%)"
+      }
+    },
+    {
+      "to": {
+        "transform": "translateX(0)"
+      }
+    }
+  ],
+  "@keyframes lf-slide-in-up": [
+    {
+      "from": {
+        "transform": "translateY(100%)"
+      }
+    },
+    {
+      "to": {
+        "transform": "translateY(0)"
+      }
+    }
+  ],
+  "@keyframes lf-slide-in-down": [
+    {
+      "from": {
+        "transform": "translateY(-100%)"
+      }
+    },
+    {
+      "to": {
+        "transform": "translateY(0)"
+      }
+    }
+  ],
+  "@keyframes lf-reduce-width": [
+    {
+      "from": {
+        "width": "100%"
+      }
+    },
+    {
+      "to": {
+        "width": "0"
+      }
+    }
+  ],
+  "@keyframes lf-pulse": [
+    {
+      "0%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "100%": {
+        "opacity": "1"
+      }
+    },
+    {
+      "50%": {
+        "opacity": "0.5"
+      }
+    }
+  ],
+  "@keyframes lf-spin": [
+    {
+      "from": {
+        "transform": "rotate(0deg)"
+      }
+    },
+    {
+      "to": {
+        "transform": "rotate(360deg)"
+      }
+    }
+  ],
+  "@keyframes lf-pop": [
+    {
+      "from": {
+        "opacity": "0",
+        "transform": "translate(-50%, -50%) scale(0.8)"
+      }
+    },
+    {
+      "to": {
+        "opacity": "1",
+        "transform": "translate(-50%, -50%) scale(1)"
+      }
+    }
+  ],
+  "[data-lf=danger]": {
+    "--lf-state-primary": "var(--lf-color-danger)",
+    "--lf-state-on-primary": "var(--lf-color-on-danger)",
+    "--lf-state-surface": "var(--lf-color-danger)",
+    "--lf-state-on-surface": "var(--lf-color-on-danger)",
+    "--lf-state-bg": "var(--lf-color-danger)",
+    "--lf-state-on-bg": "var(--lf-color-on-danger)",
+    "--lf-fc-color-primary": "var(--lf-color-danger)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-danger)"
+  },
+  "[data-lf=info]": {
+    "--lf-state-primary": "var(--lf-color-info)",
+    "--lf-state-on-primary": "var(--lf-color-on-info)",
+    "--lf-state-surface": "var(--lf-color-info)",
+    "--lf-state-on-surface": "var(--lf-color-on-info)",
+    "--lf-state-bg": "var(--lf-color-info)",
+    "--lf-state-on-bg": "var(--lf-color-on-info)",
+    "--lf-fc-color-primary": "var(--lf-color-info)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-info)"
+  },
+  "[data-lf=primary]": {
+    "--lf-state-primary": "var(--lf-color-primary)",
+    "--lf-state-on-primary": "var(--lf-color-on-primary)",
+    "--lf-state-surface": "var(--lf-color-surface)",
+    "--lf-state-on-surface": "var(--lf-color-on-surface)",
+    "--lf-state-bg": "var(--lf-color-bg)",
+    "--lf-state-on-bg": "var(--lf-color-on-bg)",
+    "--lf-fc-color-primary": "var(--lf-color-primary)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-primary)"
+  },
+  "[data-lf=secondary]": {
+    "--lf-state-primary": "var(--lf-color-secondary)",
+    "--lf-state-on-primary": "var(--lf-color-on-secondary)",
+    "--lf-state-surface": "var(--lf-color-secondary)",
+    "--lf-state-on-surface": "var(--lf-color-on-secondary)",
+    "--lf-state-bg": "var(--lf-color-secondary)",
+    "--lf-state-on-bg": "var(--lf-color-on-secondary)",
+    "--lf-fc-color-primary": "var(--lf-color-secondary)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-secondary)"
+  },
+  "[data-lf=success]": {
+    "--lf-state-primary": "var(--lf-color-success)",
+    "--lf-state-on-primary": "var(--lf-color-on-success)",
+    "--lf-state-surface": "var(--lf-color-success)",
+    "--lf-state-on-surface": "var(--lf-color-on-success)",
+    "--lf-state-bg": "var(--lf-color-success)",
+    "--lf-state-on-bg": "var(--lf-color-on-success)",
+    "--lf-fc-color-primary": "var(--lf-color-success)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-success)"
+  },
+  "[data-lf=warning]": {
+    "--lf-state-primary": "var(--lf-color-warning)",
+    "--lf-state-on-primary": "var(--lf-color-on-warning)",
+    "--lf-state-surface": "var(--lf-color-warning)",
+    "--lf-state-on-surface": "var(--lf-color-on-warning)",
+    "--lf-state-bg": "var(--lf-color-warning)",
+    "--lf-state-on-bg": "var(--lf-color-on-warning)",
+    "--lf-fc-color-primary": "var(--lf-color-warning)",
+    "--lf-fc-color-on-primary": "var(--lf-color-on-warning)"
+  },
+  "[data-lf=disabled]": {
+    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
+    "pointer-events": "none"
+  },
+  ".form-field": {
+    "font-size": "calc(var(--lf-form-font-size, var(--lf-font-size-label)) * var(--lf-fc-ui-size, 1))",
+    "align-items": "center",
+    "box-sizing": "border-box",
+    "color": "var(--lf-form-color-on-bg, var(--lf-color-on-bg))",
+    "display": "inline-flex",
+    "font-family": "var(--lf-form-font-family, var(--lf-font-family-label))",
+    "font-weight": "var(--lf-form-font-weight, var(--lf-font-weight-label))",
+    "gap": "var(--lf-form-gap, 0.5em)",
+    "height": "100%",
+    "padding": "var(--lf-form-padding, 2em 0.5em)",
+    "vertical-align": "middle",
+    "width": "100%"
+  },
   ".f-icon": {
     "display": "inline-flex",
     "align-items": "center",
@@ -16,19 +225,263 @@ export const GLOBAL_STYLES = {
     "height": "100%",
     "width": "100%"
   },
-  ".form-field": {
+  ".badge": {
     "align-items": "center",
-    "box-sizing": "border-box",
-    "color": "var(--lf-form-color-on-bg, var(--lf-color-on-bg))",
+    "background-color": "rgba(var(--lf-badge-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-comp-background-alpha, var(--lf-ui-alpha-glass-solid, 0.875)))",
+    "border-radius": "var(--lf-comp-border-radius, 50%)",
+    "box-shadow": "var(--lf-comp-box-shadow, 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2))",
     "display": "inline-flex",
-    "font-family": "var(--lf-form-font-family, var(--lf-font-family-label))",
-    "font-size": "calc(var(--lf-form-font-size, var(--lf-font-size-label)) * var(--lf-fc-ui-size, 1))",
-    "font-weight": "var(--lf-form-font-weight, var(--lf-font-weight-label))",
-    "gap": "var(--lf-form-gap, 0.5em)",
+    "font-family": "var(--lf-comp-font-family, var(--lf-font-family-button))",
+    "font-size": "calc(var(--lf-comp-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1))",
+    "font-weight": "var(--lf-comp-font-weight, var(--lf-font-weight-button))",
+    "height": "var(--lf-comp-height, 1.5em)",
+    "justify-content": "center",
+    "padding": "var(--lf-comp-padding, 0.25em)",
+    "position": "relative",
+    "text-align": "center",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "width": "var(--lf-comp-width, 1.5em)"
+  },
+  ".badge--inline": {
+    "position": "static",
+    "transform": "none"
+  },
+  ".badge--top-left": {
+    "position": "absolute",
+    "left": "0",
+    "top": "0",
+    "transform": "translate(-50%, -50%)"
+  },
+  ".badge--top-right": {
+    "position": "absolute",
+    "right": "0",
+    "top": "0",
+    "transform": "translate(50%, -50%)"
+  },
+  ".badge--bottom-left": {
+    "position": "absolute",
+    "bottom": "0",
+    "left": "0",
+    "transform": "translate(-50%, 50%)"
+  },
+  ".badge--bottom-right": {
+    "position": "absolute",
+    "bottom": "0",
+    "right": "0",
+    "transform": "translate(50%, 50%)"
+  },
+  ".badge__label": {
+    "color": "rgb(var(--lf-badge-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary))))",
+    "overflow": "hidden",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  },
+  ".badge__image": {
+    "--lf-image-color-primary": "var(--lf-badge-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary)))",
+    "backdrop-filter": "unset",
+    "height": "var(--lf-comp-image-height, 1em)",
+    "left": "50%",
+    "position": "absolute",
+    "top": "50%",
+    "transform": "translate(-50%, -50%)",
+    "width": "var(--lf-comp-image-width, 1em)"
+  },
+  ".button": {
+    "align-items": "var(--lf-comp-align-items, center)",
+    "background-color": "transparent",
+    "border": "none",
+    "border-radius": "var(--lf-comp-border-radius, var(--lf-ui-border-radius))",
+    "box-sizing": "border-box",
+    "color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 1)",
+    "cursor": "var(--lf-comp-cursor, pointer)",
+    "display": "inline-flex",
+    "font-family": "var(--lf-comp-font-family, var(--lf-font-family-primary))",
+    "font-size": "calc(var(--lf-comp-font-size, 0.775em) * var(--lf-ui-size, 1))",
+    "font-weight": "var(--lf-comp-font-weight, var(--lf-font-weight-primary))",
+    "height": "var(--lf-comp-height, 3em)",
+    "justify-content": "var(--lf-comp-justify-content, center)",
+    "min-width": "var(--lf-comp-min-width, 4em)",
+    "outline": "none",
+    "overflow": "visible",
+    "padding": "var(--lf-comp-padding, 0 1.25em)",
+    "position": "relative",
+    "text-decoration": "var(--lf-comp-text-decoration, none)",
+    "text-transform": "var(--lf-comp-text-transform, uppercase)",
+    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    "user-select": "none",
+    "vertical-align": "middle"
+  },
+  ".button:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".button:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".button--dropdown": {
+    "max-width": "max-content",
+    "min-width": "unset",
+    "padding": "0.5em",
+    "position": "relative"
+  },
+  ".button--dropdown:before": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.25)",
+    "content": "\"\"",
     "height": "100%",
-    "padding": "var(--lf-form-padding, 2em 0.5em)",
-    "vertical-align": "middle",
+    "left": "0",
+    "opacity": "0.75",
+    "position": "absolute",
+    "top": "0",
+    "width": "1px"
+  },
+  ".button--dropdown .button__icon": {
+    "margin": "0"
+  },
+  ".button--flat": {
+    "background-color": "transparent"
+  },
+  ".button--floating": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-radius": "1.5em",
+    "box-shadow": "0 0.215em 0.35em -1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.2), 0 0.43em 0.71em 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.14), 0 0.07em 1.285em 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.12)",
+    "font-weight": "500",
+    "font-size": "1em",
+    "height": "3.4em",
+    "width": "auto",
+    "padding": "0 1.5em"
+  },
+  ".button--floating.button--no-label": {
+    "border-radius": "50%",
+    "height": "4em",
+    "padding": "0",
+    "width": "4em"
+  },
+  ".button--floating:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--floating:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary))), 1)",
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--floating:active": {
+    "box-shadow": "0 7px 8px -4px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.2), 0 12px 17px 2px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.14), 0 5px 22px 4px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--no-label": {
+    "min-width": "unset",
+    "padding": "0 0.5em"
+  },
+  ".button--no-label .button__icon": {
+    "margin": "0"
+  },
+  ".button--icon": {
+    "background-color": "transparent",
+    "border": "none",
+    "border-radius": "50%",
+    "box-sizing": "border-box",
+    "cursor": "var(--lf-comp-cursor, pointer)",
+    "display": "inline-block",
+    "font-size": "calc(1em * var(--lf-ui-size, 1))",
+    "height": "unset",
+    "min-width": "unset",
+    "outline": "none",
+    "padding": "0.75em",
+    "position": "relative",
+    "text-decoration": "var(--lf-comp-text-decoration, none)",
+    "user-select": "none"
+  },
+  ".button--icon:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary))), 1)"
+  },
+  ".button--icon:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary))), 1)"
+  },
+  ".button--icon.button--has-spinner": {
+    "pointer-events": "none"
+  },
+  ".button--icon.button--has-spinner .button__icon": {
+    "opacity": "0"
+  },
+  ".button--icon.button--has-spinner .button__spinner": {
+    "font-size": "0.5em",
+    "height": "100%",
+    "left": "0",
+    "position": "absolute",
+    "top": "0",
     "width": "100%"
+  },
+  ".button--icon .button__icon": {
+    "display": "flex",
+    "height": "1.75em",
+    "margin": "auto",
+    "width": "1.75em"
+  },
+  ".button--icon .button__icon--active": {
+    "display": "none"
+  },
+  ".button--outlined": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "border-width": "1px",
+    "border-style": "solid"
+  },
+  ".button--outlined:not(.button--disabled)": {
+    "border-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 1)",
+    "background-color": "transparent"
+  },
+  ".button--outlined:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
+  },
+  ".button--outlined:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
+  },
+  ".button--raised": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
+    "box-shadow": "0 3px 1px -2px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.2), 0 2px 2px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.14), 0 1px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--raised:hover": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
+    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--raised:focus": {
+    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
+    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-state-on-primary, var(--lf-color-on-primary))), 1)",
+    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.15)"
+  },
+  ".button--raised:active": {
+    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.2), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.14), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-state-primary, var(--lf-color-primary))), 0.12)"
+  },
+  ".button--has-spinner": {
+    "pointer-events": "none"
+  },
+  ".button--disabled": {
+    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
+    "pointer-events": "none"
+  },
+  ".button__icon": {
+    "align-items": "center",
+    "display": "flex",
+    "height": "var(--lf-comp-icon-height, 1.5em)",
+    "justify-content": "center",
+    "margin-left": "-0.25em",
+    "margin-right": "0.75em",
+    "width": "var(--lf-comp-icon-width, 1.5em)"
+  },
+  ".button__icon--hidden": {
+    "visibility": "hidden"
+  },
+  ".button__label": {
+    "overflow": "hidden",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  },
+  ".button__label + .button__icon": {
+    "margin-left": "0.75em",
+    "margin-right": "-0.25em"
+  },
+  ".button__label--hidden": {
+    "visibility": "hidden"
   },
   ".form-field__label": {
     "min-width": "var(--lf-form-label-min-width, max-content)",
@@ -61,292 +514,6 @@ export const GLOBAL_STYLES = {
   ".form-field--large": {
     "font-size": "var(--lf-form-font-size-large, 1.125em)",
     "padding": "var(--lf-form-padding-large, 2.5em 0.625em)"
-  },
-  "[data-lf=danger]": {
-    "--lf-fc-color-primary": "var(--lf-color-danger)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-danger)"
-  },
-  "[data-lf=info]": {
-    "--lf-fc-color-primary": "var(--lf-color-info)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-info)"
-  },
-  "[data-lf=primary]": {
-    "--lf-fc-color-primary": "var(--lf-color-primary)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-primary)"
-  },
-  "[data-lf=secondary]": {
-    "--lf-fc-color-primary": "var(--lf-color-secondary)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-secondary)"
-  },
-  "[data-lf=success]": {
-    "--lf-fc-color-primary": "var(--lf-color-success)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-success)"
-  },
-  "[data-lf=warning]": {
-    "--lf-fc-color-primary": "var(--lf-color-warning)",
-    "--lf-fc-color-on-primary": "var(--lf-color-on-warning)"
-  },
-  "[data-lf=disabled]": {
-    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
-    "pointer-events": "none"
-  },
-  ".badge": {
-    "align-items": "center",
-    "background-color": "rgba(var(--lf-badge-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-badge-background-alpha, var(--lf-ui-alpha-glass-solid, 0.875)))",
-    "border-radius": "var(--lf-badge-border-radius, 50%)",
-    "box-shadow": "var(--lf-badge-box-shadow, 0 0.125em 0.25em rgba(var(--lf-color-on-bg), 0.2))",
-    "display": "inline-flex",
-    "font-family": "var(--lf-badge-font-family, var(--lf-font-family-button))",
-    "font-size": "calc(var(--lf-badge-font-size, var(--lf-font-size)) * var(--lf-fc-ui-size, 1))",
-    "font-weight": "var(--lf-badge-font-weight, var(--lf-font-weight-button))",
-    "height": "var(--lf-badge-height, 1.5em)",
-    "justify-content": "center",
-    "padding": "var(--lf-badge-padding, 0.25em)",
-    "position": "relative",
-    "text-align": "center",
-    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    "width": "var(--lf-badge-width, 1.5em)"
-  },
-  ".badge--inline": {
-    "position": "static",
-    "transform": "none"
-  },
-  ".badge--top-left": {
-    "position": "absolute",
-    "left": "0",
-    "top": "0",
-    "transform": "translate(-50%, -50%)"
-  },
-  ".badge--top-right": {
-    "position": "absolute",
-    "right": "0",
-    "top": "0",
-    "transform": "translate(50%, -50%)"
-  },
-  ".badge--bottom-left": {
-    "position": "absolute",
-    "bottom": "0",
-    "left": "0",
-    "transform": "translate(-50%, 50%)"
-  },
-  ".badge--bottom-right": {
-    "position": "absolute",
-    "bottom": "0",
-    "right": "0",
-    "transform": "translate(50%, 50%)"
-  },
-  ".badge__label": {
-    "color": "rgb(var(--lf-badge-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))))",
-    "overflow": "hidden",
-    "text-overflow": "ellipsis",
-    "white-space": "nowrap"
-  },
-  ".badge__image": {
-    "--lf-image-color-primary": "var(\n    --lf-badge-color-on-primary,\n    var(--lf-fc-color-on-primary, var(--lf-color-on-primary))\n  )",
-    "backdrop-filter": "unset",
-    "height": "var(--lf-badge-image-height, 1em)",
-    "left": "50%",
-    "position": "absolute",
-    "top": "50%",
-    "transform": "translate(-50%, -50%)",
-    "width": "var(--lf-badge-image-width, 1em)"
-  },
-  ".button": {
-    "align-items": "var(--lf-button-align-items, center)",
-    "background-color": "transparent",
-    "border": "none",
-    "border-radius": "var(--lf-button-border-radius, var(--lf-ui-border-radius))",
-    "box-sizing": "border-box",
-    "color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)",
-    "cursor": "var(--lf-button-cursor, pointer)",
-    "display": "inline-flex",
-    "font-family": "var(--lf-button-font-family, var(--lf-font-family-primary))",
-    "font-size": "calc(var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1))",
-    "font-weight": "var(--lf-button-font-weight, var(--lf-font-weight-primary))",
-    "height": "var(--lf-button-height, 3em)",
-    "justify-content": "var(--lf-button-justify-content, center)",
-    "min-width": "var(--lf-button-min-width, 4em)",
-    "outline": "none",
-    "overflow": "visible",
-    "padding": "var(--lf-button-padding, 0 1.25em)",
-    "position": "relative",
-    "text-decoration": "var(--lf-button-text-decoration, none)",
-    "text-transform": "var(--lf-button-text-transform, uppercase)",
-    "transition": "background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    "user-select": "none",
-    "vertical-align": "middle"
-  },
-  ".button:hover": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
-  },
-  ".button:focus": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
-  },
-  ".button--dropdown": {
-    "max-width": "max-content",
-    "min-width": "unset",
-    "padding": "0.5em",
-    "position": "relative"
-  },
-  ".button--dropdown:before": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25)",
-    "content": "\"\"",
-    "height": "100%",
-    "left": "0",
-    "opacity": "0.75",
-    "position": "absolute",
-    "top": "0",
-    "width": "1px"
-  },
-  ".button--dropdown .button__icon": {
-    "margin": "0"
-  },
-  ".button--flat": {
-    "background-color": "transparent"
-  },
-  ".button--floating": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
-    "border-radius": "1.5em",
-    "box-shadow": "0 0.215em 0.35em -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 0.43em 0.71em 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 0.07em 1.285em 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)",
-    "font-weight": "500",
-    "font-size": "1em",
-    "height": "3.4em",
-    "width": "auto",
-    "padding": "0 1.5em"
-  },
-  ".button--floating.button--no-label": {
-    "border-radius": "50%",
-    "height": "4em",
-    "padding": "0",
-    "width": "4em"
-  },
-  ".button--floating:hover": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
-    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
-  },
-  ".button--floating:focus": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
-    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)",
-    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
-  },
-  ".button--floating:active": {
-    "box-shadow": "0 7px 8px -4px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 12px 17px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 5px 22px 4px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
-  },
-  ".button--no-label": {
-    "min-width": "unset",
-    "padding": "0 0.5em"
-  },
-  ".button--no-label .button__icon": {
-    "margin": "0"
-  },
-  ".button--icon": {
-    "background-color": "transparent",
-    "border": "none",
-    "border-radius": "50%",
-    "box-sizing": "border-box",
-    "cursor": "var(--lf-button-cursor, pointer)",
-    "display": "inline-block",
-    "font-size": "calc(1em * var(--lf-fc-ui-size, 1))",
-    "height": "unset",
-    "min-width": "unset",
-    "outline": "none",
-    "padding": "0.75em",
-    "position": "relative",
-    "text-decoration": "var(--lf-button-text-decoration, none)",
-    "user-select": "none"
-  },
-  ".button--icon:hover": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
-    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)"
-  },
-  ".button--icon:focus": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
-    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)"
-  },
-  ".button--icon.button--has-spinner": {
-    "pointer-events": "none"
-  },
-  ".button--icon.button--has-spinner .button__icon": {
-    "opacity": "0"
-  },
-  ".button--icon.button--has-spinner .button__spinner": {
-    "font-size": "0.5em",
-    "height": "100%",
-    "left": "0",
-    "position": "absolute",
-    "top": "0",
-    "width": "100%"
-  },
-  ".button--icon .button__icon": {
-    "display": "flex",
-    "height": "1.75em",
-    "margin": "auto",
-    "width": "1.75em"
-  },
-  ".button--icon .button__icon--active": {
-    "display": "none"
-  },
-  ".button--outlined": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
-    "border-width": "1px",
-    "border-style": "solid"
-  },
-  ".button--outlined:not(.button--disabled)": {
-    "border-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1)",
-    "background-color": "transparent"
-  },
-  ".button--outlined:hover": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))"
-  },
-  ".button--outlined:focus": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))"
-  },
-  ".button--raised": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-hint, 0.125))",
-    "box-shadow": "0 3px 1px -2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 2px 2px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 1px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
-  },
-  ".button--raised:hover": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass, 0.375))",
-    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
-  },
-  ".button--raised:focus": {
-    "background-color": "rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), var(--lf-ui-alpha-glass-solid, 0.875))",
-    "color": "rgba(var(--lf-button-color-on-primary, var(--lf-fc-color-on-primary, var(--lf-color-on-primary))), 1)",
-    "box-shadow": "0 2px 4px -1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.25), 0 4px 5px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.18), 0 1px 10px 0 rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.15)"
-  },
-  ".button--raised:active": {
-    "box-shadow": "0 5px 5px -3px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.2), 0 8px 10px 1px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.14), 0 3px 14px 2px rgba(var(--lf-button-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 0.12)"
-  },
-  ".button--has-spinner": {
-    "pointer-events": "none"
-  },
-  ".button--disabled": {
-    "opacity": "var(--lf-ui-opacity-disabled, 0.6)",
-    "pointer-events": "none"
-  },
-  ".button__icon": {
-    "align-items": "center",
-    "display": "flex",
-    "height": "var(--lf-button-icon-height, 1.5em)",
-    "justify-content": "center",
-    "margin-left": "-0.25em",
-    "margin-right": "0.75em",
-    "width": "var(--lf-button-icon-width, 1.5em)"
-  },
-  ".button__icon--hidden": {
-    "visibility": "hidden"
-  },
-  ".button__label": {
-    "overflow": "hidden",
-    "text-overflow": "ellipsis",
-    "white-space": "nowrap"
-  },
-  ".button__label + .button__icon": {
-    "margin-left": "0.75em",
-    "margin-right": "-0.25em"
-  },
-  ".button__label--hidden": {
-    "visibility": "hidden"
   },
   ".chat": {
     "background-color": "rgba(var(--lf-chat-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg))), var(--lf-ui-alpha-glass-hint, 0.125))",
@@ -1523,7 +1690,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner__fader": {
     "backdrop-filter": "blur(4px)",
-    "background": "rgba(var(--lf-spinner-color-bg, var(--lf-fc-color-bg, var(--lf-color-bg))), 0.5)",
+    "background": "var(--lf-spinner-fader-bg, rgba(var(--lf-color-bg, 255, 255, 255), 0.5))",
     "inset": "0",
     "opacity": "0",
     "pointer-events": "none",
@@ -1536,7 +1703,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner__icon": {
     "align-items": "center",
-    "color": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "color": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "display": "flex",
     "height": "100%",
     "justify-content": "center",
@@ -1553,7 +1720,7 @@ export const GLOBAL_STYLES = {
     "width": "100%"
   },
   ".spinner__bar": {
-    "background": "var(--lf-spinner-color-bg, rgba(var(--lf-spinner-color-on-bg, var(--lf-color-on-bg)), 0.2))",
+    "background": "var(--lf-spinner-color-bg, var(--lf-fc-color-on-bg, var(--lf-color-on-bg, rgba(128, 128, 128, 0.2))))",
     "border-radius": "calc(var(--lf-spinner-size, 3em) / 2)",
     "height": "var(--lf-spinner-size, 3em)",
     "overflow": "hidden",
@@ -1561,7 +1728,7 @@ export const GLOBAL_STYLES = {
     "width": "100%"
   },
   ".spinner__bar-fill": {
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "inherit",
     "height": "100%",
     "position": "relative",
@@ -1576,9 +1743,9 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--ring .spinner__content::after": {
     "animation": "lf-spinner-spin var(--lf-spinner-speed, 1s) linear infinite",
-    "border": "var(--lf-spinner-stroke, 0.15em) solid var(--lf-spinner-color-bg, rgba(var(--lf-spinner-color-on-bg, var(--lf-color-on-bg)), 0.2))",
+    "border": "var(--lf-spinner-stroke, 0.15em) solid var(--lf-spinner-color-bg, var(--lf-fc-color-on-bg, var(--lf-color-on-bg, rgba(128, 128, 128, 0.2))))",
     "border-radius": "50%",
-    "border-top-color": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "border-top-color": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "box-sizing": "border-box",
     "content": "\"\"",
     "inset": "0",
@@ -1592,7 +1759,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--dots .spinner__content::before": {
     "animation": "lf-spinner-bounce var(--lf-spinner-speed, 1s) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "content": "\"\"",
     "height": "calc(var(--lf-spinner-size, 3em) * 0.2)",
@@ -1601,7 +1768,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--dots .spinner__content::after": {
     "animation": "lf-spinner-bounce var(--lf-spinner-speed, 1s) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "content": "\"\"",
     "height": "calc(var(--lf-spinner-size, 3em) * 0.2)",
@@ -1610,7 +1777,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--dots .spinner__content span": {
     "animation": "lf-spinner-bounce var(--lf-spinner-speed, 1s) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "content": "\"\"",
     "height": "calc(var(--lf-spinner-size, 3em) * 0.2)",
@@ -1625,7 +1792,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--bars .bar": {
     "animation": "lf-spinner-equalizer var(--lf-spinner-speed, 1s) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "calc(var(--lf-spinner-size, 3em) * 0.03)",
     "width": "calc(var(--lf-spinner-size, 3em) * 0.12)"
   },
@@ -1654,7 +1821,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--spinner .dot": {
     "animation": "lf-spinner-chase calc(var(--lf-spinner-speed, 1s) * 2) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "height": "calc(var(--lf-spinner-size, 3em) * 0.2)",
     "position": "absolute",
@@ -1715,7 +1882,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--grid .cell": {
     "animation": "lf-spinner-pulse calc(var(--lf-spinner-speed, 1s) * 1.3) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "calc(var(--lf-spinner-size, 3em) * 0.04)"
   },
   ".spinner--grid .cell:nth-child(1)": {
@@ -1752,7 +1919,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--pulse .spinner__content::before": {
     "animation": "lf-spinner-pulse-scale calc(var(--lf-spinner-speed, 1s) * 1.5) ease-out infinite",
-    "border": "calc(var(--lf-spinner-size, 3em) * 0.08) solid var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "border": "calc(var(--lf-spinner-size, 3em) * 0.08) solid var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "content": "\"\"",
     "inset": "0",
@@ -1760,7 +1927,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--pulse .spinner__content::after": {
     "animation": "lf-spinner-pulse-scale calc(var(--lf-spinner-speed, 1s) * 1.5) ease-out infinite",
-    "border": "calc(var(--lf-spinner-size, 3em) * 0.08) solid var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "border": "calc(var(--lf-spinner-size, 3em) * 0.08) solid var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "50%",
     "content": "\"\"",
     "inset": "0",
@@ -1775,7 +1942,7 @@ export const GLOBAL_STYLES = {
   },
   ".spinner--wave .wave-bar": {
     "animation": "lf-spinner-wave calc(var(--lf-spinner-speed, 1s) * 0.8) ease-in-out infinite",
-    "background": "var(--lf-spinner-color, rgba(var(--lf-spinner-color-primary, var(--lf-fc-color-primary, var(--lf-color-primary))), 1))",
+    "background": "var(--lf-spinner-color, var(--lf-fc-color-primary, var(--lf-color-primary)))",
     "border-radius": "calc(var(--lf-spinner-size, 3em) * 0.05)",
     "height": "calc(var(--lf-spinner-size, 3em) * 0.5)",
     "transform-origin": "center",
@@ -3035,20 +3202,6 @@ export const GLOBAL_STYLES = {
     "width": "100vw",
     "z-index": "var(--lf-ui-zindex-backdrop, 899)"
   },
-  "@keyframes lf-fade-in": [
-    {
-      "from": {
-        "visibility": "hidden",
-        "opacity": "0"
-      }
-    },
-    {
-      "to": {
-        "visibility": "visible",
-        "opacity": "1"
-      }
-    }
-  ],
   ".lf-effects [data-lf=lightbox]": {
     "transition": "all 200ms cubic-bezier(0.4, 0, 0.6, 1)",
     "height": "90dvh",
@@ -3069,20 +3222,6 @@ export const GLOBAL_STYLES = {
     "outline": "none",
     "z-index": "calc(var(--lf-ui-zindex-lightbox, 900) + 1)"
   },
-  "@keyframes lf-pop": [
-    {
-      "from": {
-        "opacity": "0",
-        "transform": "translate(-50%, -50%) scale(0.8)"
-      }
-    },
-    {
-      "to": {
-        "opacity": "1",
-        "transform": "translate(-50%, -50%) scale(1)"
-      }
-    }
-  ],
   ".lf-portal [data-lf=portal]": {
     "display": "block",
     "height": "auto",

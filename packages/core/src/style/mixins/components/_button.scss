@@ -1,0 +1,338 @@
+// =============================================================================
+// BUTTON - Component Styles
+// =============================================================================
+// Button-specific styles for the LfButtonFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-button.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "button";
+@include lf-color-vars($comp);
+
+// Helper for box shadow - uses the generated $primaryC variable
+$box-shadow-color: $primaryC;
+
+// -----------------------------------------------------------------------------
+// Button Core
+// -----------------------------------------------------------------------------
+.button {
+  & {
+    align-items: var(--lf-button-align-items, center);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--lf-button-border-radius, var(--lf-ui-border-radius));
+    box-sizing: border-box;
+    color: rgba($primaryC, 1);
+    cursor: var(--lf-button-cursor, pointer);
+    display: inline-flex;
+    font-family: var(--lf-button-font-family, var(--lf-font-family-primary));
+    font-size: calc(var(--lf-button-font-size, 0.775em) * var(--lf-ui-size, 1));
+    font-weight: var(--lf-button-font-weight, var(--lf-font-weight-primary));
+    height: var(--lf-button-height, 3em);
+    justify-content: var(--lf-button-justify-content, center);
+    min-width: var(--lf-button-min-width, 4em);
+    outline: none;
+    overflow: visible;
+    padding: var(--lf-button-padding, 0 1.25em);
+    position: relative;
+    text-decoration: var(--lf-button-text-decoration, none);
+    text-transform: var(--lf-button-text-transform, uppercase);
+    @include lf-transitions;
+    user-select: none;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+  }
+
+  &:focus {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dropdown Styling
+  // ---------------------------------------------------------------------------
+  &--dropdown {
+    & {
+      max-width: max-content;
+      min-width: unset;
+      padding: 0.5em;
+      position: relative;
+    }
+
+    &:before {
+      background-color: rgba($primaryC, 0.25);
+      content: "";
+      height: 100%;
+      left: 0;
+      opacity: 0.75;
+      position: absolute;
+      top: 0;
+      width: 1px;
+    }
+
+    .button__icon {
+      margin: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Flat Styling (default - transparent background)
+  // ---------------------------------------------------------------------------
+  &--flat {
+    background-color: transparent;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Floating Styling (FAB-like)
+  // ---------------------------------------------------------------------------
+  &--floating {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+      border-radius: 1.5em;
+      box-shadow:
+        0 0.215em 0.35em -1px rgba($box-shadow-color, 0.2),
+        0 0.43em 0.71em 0 rgba($box-shadow-color, 0.14),
+        0 0.07em 1.285em 0 rgba($box-shadow-color, 0.12);
+      font-weight: 500;
+      font-size: 1em;
+      height: 3.4em;
+      width: auto;
+      padding: 0 1.5em;
+    }
+
+    &.button--no-label {
+      border-radius: 50%;
+      height: 4em;
+      padding: 0;
+      width: 4em;
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+      box-shadow:
+        0 5px 5px -3px rgba($box-shadow-color, 0.25),
+        0 8px 10px 1px rgba($box-shadow-color, 0.18),
+        0 3px 14px 2px rgba($box-shadow-color, 0.15);
+    }
+
+    &:focus {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+      color: rgba($onPrimaryC, 1);
+      box-shadow:
+        0 5px 5px -3px rgba($box-shadow-color, 0.25),
+        0 8px 10px 1px rgba($box-shadow-color, 0.18),
+        0 3px 14px 2px rgba($box-shadow-color, 0.15);
+    }
+
+    &:active {
+      box-shadow:
+        0 7px 8px -4px rgba($box-shadow-color, 0.2),
+        0 12px 17px 2px rgba($box-shadow-color, 0.14),
+        0 5px 22px 4px rgba($box-shadow-color, 0.12);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // No Label Modifier
+  // ---------------------------------------------------------------------------
+  &--no-label {
+    & {
+      min-width: unset;
+      padding: 0 0.5em;
+    }
+
+    .button__icon {
+      margin: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon Styling (circular icon-only button)
+  // ---------------------------------------------------------------------------
+  &--icon {
+    & {
+      background-color: transparent;
+      border: none;
+      border-radius: 50%;
+      box-sizing: border-box;
+      cursor: var(--lf-button-cursor, pointer);
+      display: inline-block;
+      font-size: calc(1em * var(--lf-ui-size, 1));
+      height: unset;
+      min-width: unset;
+      outline: none;
+      padding: 0.75em;
+      position: relative;
+      text-decoration: var(--lf-button-text-decoration, none);
+      user-select: none;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+      color: rgba($onPrimaryC, 1);
+    }
+
+    &.button--has-spinner {
+      & {
+        pointer-events: none;
+      }
+
+      .button__icon {
+        opacity: 0;
+      }
+
+      .button__spinner {
+        font-size: 0.5em;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+    }
+
+    & .button__icon {
+      & {
+        display: flex;
+        height: 1.75em;
+        margin: auto;
+        width: 1.75em;
+      }
+
+      &--active {
+        display: none;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Outlined Styling (border, transparent background)
+  // ---------------------------------------------------------------------------
+  &--outlined {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    &:not(.button--disabled) {
+      border-color: rgba($primaryC, 1);
+      background-color: transparent;
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &:focus {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Raised Styling (elevated with shadow)
+  // ---------------------------------------------------------------------------
+  &--raised {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+      box-shadow:
+        0 3px 1px -2px rgba($box-shadow-color, 0.2),
+        0 2px 2px 0 rgba($box-shadow-color, 0.14),
+        0 1px 5px 0 rgba($box-shadow-color, 0.12);
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+      box-shadow:
+        0 2px 4px -1px rgba($box-shadow-color, 0.25),
+        0 4px 5px 0 rgba($box-shadow-color, 0.18),
+        0 1px 10px 0 rgba($box-shadow-color, 0.15);
+    }
+
+    &:focus {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+      color: rgba($onPrimaryC, 1);
+      box-shadow:
+        0 2px 4px -1px rgba($box-shadow-color, 0.25),
+        0 4px 5px 0 rgba($box-shadow-color, 0.18),
+        0 1px 10px 0 rgba($box-shadow-color, 0.15);
+    }
+
+    &:active {
+      box-shadow:
+        0 5px 5px -3px rgba($box-shadow-color, 0.2),
+        0 8px 10px 1px rgba($box-shadow-color, 0.14),
+        0 3px 14px 2px rgba($box-shadow-color, 0.12);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Has Spinner Modifier
+  // ---------------------------------------------------------------------------
+  &--has-spinner {
+    pointer-events: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled State
+  // ---------------------------------------------------------------------------
+  &--disabled {
+    opacity: var(--lf-ui-opacity-disabled, 0.6);
+    pointer-events: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon Element
+  // ---------------------------------------------------------------------------
+  &__icon {
+    & {
+      align-items: center;
+      display: flex;
+      height: var(--lf-button-icon-height, 1.5em);
+      justify-content: center;
+      margin-left: -0.25em;
+      margin-right: 0.75em;
+      width: var(--lf-button-icon-width, 1.5em);
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label Element
+  // ---------------------------------------------------------------------------
+  &__label {
+    & {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & + .button__icon {
+      margin-left: 0.75em;
+      margin-right: -0.25em;
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+}

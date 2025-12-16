@@ -1,0 +1,121 @@
+// =============================================================================
+// STATE COLORS - Unified State Theming
+// =============================================================================
+// Sets --lf-state-* variables based on data-lf attribute.
+// Used by ALL components (WC and FC) via the fallback chain:
+//   var(--lf-{comp}-color-*, var(--lf-state-*, var(--lf-color-*)))
+//
+// IMPORTANT: This replaces the old --lf-fc-color-* naming.
+// The --lf-state-* variables are set automatically when data-lf attribute
+// is applied to an element (via lfUiState prop in components).
+//
+// Why explicit props over CSS cascade?
+// - Portals break DOM hierarchy (CSS cascade doesn't work)
+// - Shadow boundaries can interfere with inheritance
+// - Explicit props = predictable, type-safe state propagation
+//
+// Cross-Reference: SCSS_UNIFICATION.md §3.3, 4_0_0_REFACTORING.md §2.10.4
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// State Colors
+// -----------------------------------------------------------------------------
+// These rules set --lf-state-* variables based on data-lf attribute.
+// Components use the 3-level fallback chain:
+//   var(--lf-{comp}-color-primary, var(--lf-state-primary, var(--lf-color-primary)))
+//
+// This allows:
+// 1. Per-component overrides via --lf-{comp}-color-*
+// 2. State-based theming via data-lf attribute
+// 3. Global theme defaults via --lf-color-*
+// -----------------------------------------------------------------------------
+
+// Danger state (errors, destructive actions)
+[data-lf="danger"] {
+  --lf-state-primary: var(--lf-color-danger);
+  --lf-state-on-primary: var(--lf-color-on-danger);
+  --lf-state-surface: var(--lf-color-danger);
+  --lf-state-on-surface: var(--lf-color-on-danger);
+  --lf-state-bg: var(--lf-color-danger);
+  --lf-state-on-bg: var(--lf-color-on-danger);
+}
+
+// Info state (informational messages)
+[data-lf="info"] {
+  --lf-state-primary: var(--lf-color-info);
+  --lf-state-on-primary: var(--lf-color-on-info);
+  --lf-state-surface: var(--lf-color-info);
+  --lf-state-on-surface: var(--lf-color-on-info);
+  --lf-state-bg: var(--lf-color-info);
+  --lf-state-on-bg: var(--lf-color-on-info);
+}
+
+// Primary state (default, interactive elements)
+// This is the default - included for completeness and explicit overrides
+[data-lf="primary"] {
+  --lf-state-primary: var(--lf-color-primary);
+  --lf-state-on-primary: var(--lf-color-on-primary);
+  --lf-state-surface: var(--lf-color-surface);
+  --lf-state-on-surface: var(--lf-color-on-surface);
+  --lf-state-bg: var(--lf-color-bg);
+  --lf-state-on-bg: var(--lf-color-on-bg);
+}
+
+// Secondary state (less prominent actions)
+[data-lf="secondary"] {
+  --lf-state-primary: var(--lf-color-secondary);
+  --lf-state-on-primary: var(--lf-color-on-secondary);
+  --lf-state-surface: var(--lf-color-secondary);
+  --lf-state-on-surface: var(--lf-color-on-secondary);
+  --lf-state-bg: var(--lf-color-secondary);
+  --lf-state-on-bg: var(--lf-color-on-secondary);
+}
+
+// Success state (confirmations, positive feedback)
+[data-lf="success"] {
+  --lf-state-primary: var(--lf-color-success);
+  --lf-state-on-primary: var(--lf-color-on-success);
+  --lf-state-surface: var(--lf-color-success);
+  --lf-state-on-surface: var(--lf-color-on-success);
+  --lf-state-bg: var(--lf-color-success);
+  --lf-state-on-bg: var(--lf-color-on-success);
+}
+
+// Warning state (cautions, non-critical alerts)
+[data-lf="warning"] {
+  --lf-state-primary: var(--lf-color-warning);
+  --lf-state-on-primary: var(--lf-color-on-warning);
+  --lf-state-surface: var(--lf-color-warning);
+  --lf-state-on-surface: var(--lf-color-on-warning);
+  --lf-state-bg: var(--lf-color-warning);
+  --lf-state-on-bg: var(--lf-color-on-warning);
+}
+
+// Disabled state (non-interactive elements)
+// Note: This doesn't set colors, only reduces opacity and disables interaction
+[data-lf="disabled"] {
+  opacity: var(--lf-ui-opacity-disabled, 0.6);
+  pointer-events: none;
+}
+
+// -----------------------------------------------------------------------------
+// Size Scaling
+// -----------------------------------------------------------------------------
+// FCs set --lf-ui-size on their root element via inline style.
+// This scales font-size which cascades to children.
+// Default is 1 (medium).
+//
+// The value is set by the component based on lfUiSize prop:
+// - "small": 0.875
+// - "medium": 1 (default)
+// - "large": 1.125
+//
+// Example inline style: style={{ '--lf-ui-size': LF_UI_SIZES[lfUiSize] }}
+// -----------------------------------------------------------------------------
+
+// Form field scaling (shared across textfield, select, autocomplete, etc.)
+.form-field {
+  font-size: calc(
+    var(--lf-form-font-size, var(--lf-font-size-label)) * var(--lf-ui-size, 1)
+  );
+}

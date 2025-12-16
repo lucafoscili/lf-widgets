@@ -1,7 +1,34 @@
+// =============================================================================
+// MIXINS INDEX - Entry Point for All SCSS Mixins
+// =============================================================================
+// This file forwards all mixins for use throughout the library.
+//
+// Architecture Notes:
+// - Unified system files (_colors, _transitions, _component-base, _states)
+//   provide the foundation for the FC-first styling approach
+// - Legacy files (_components, _framework) are deprecated but still used
+//   by WC SCSS files until full migration is complete
+// - Component styles are loaded via global.scss (not forwarded here due to
+//   variable scoping)
+//
+// Cross-Reference: SCSS_UNIFICATION.md
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Unified System (NEW - FC-First)
+// -----------------------------------------------------------------------------
+@forward "colors"; // Color helper functions (lf-color, lf-color-vars)
+@forward "transitions"; // Animation and transition utilities
+@forward "component-base"; // Base component mixin (replaces lf-comp-setup)
+@forward "states"; // Unified state colors (--lf-state-*)
+
+// -----------------------------------------------------------------------------
+// Legacy/Shared Utilities
+// -----------------------------------------------------------------------------
 @forward "app";
-@forward "components";
+@forward "components"; // DEPRECATED: lf-comp-setup (use component-base)
 @forward "elements";
 @forward "fcomponents";
-@forward "framework";
+@forward "framework"; // DEPRECATED: lf-fw-state-colors (use states)
 @forward "helpers";
 @forward "media";

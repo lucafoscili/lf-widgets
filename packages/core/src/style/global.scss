@@ -15,20 +15,39 @@
 // - ONE CSSStyleSheet instance shared across all shadow roots
 // - No duplication of ripple/keyframes/effects in each component's CSS
 // - Automatic adoption/release in component lifecycle
+//
+// MIGRATION STATUS:
+// - badge, button: Using unified system (components/_*.scss)
+// - Other components: Using legacy system (_fc-*.scss)
+// - Cross-Reference: SCSS_UNIFICATION.md
 // ============================================================================
 
 // -----------------------------------------------------------------------------
-// Functional Component Styles (FIcon, FCs)
+// Unified State Colors (NEW - replaces _fc-states.scss)
 // -----------------------------------------------------------------------------
-// Base styles for functional components - source in _fcomponents.scss
-// Shared form styles in _fc-form-field.scss (used by slider, textfield, etc.)
-// FC state colors and sizing in _fc-states.scss (data-lf attributes, --lf-fc-ui-size)
-// Component-specific FC styles in _fc-<component>.scss files
+// Sets --lf-state-* variables based on data-lf attribute.
+// Used by ALL components via the fallback chain:
+//   var(--lf-{comp}-color-*, var(--lf-state-*, var(--lf-color-*)))
+@use "./mixins/states";
+
+// -----------------------------------------------------------------------------
+// Migrated Component Styles (NEW - unified system)
+// -----------------------------------------------------------------------------
+// These components use the new unified color/transition helpers.
+// Each file is included directly to avoid variable scoping issues.
+@use "./mixins/components/badge";
+@use "./mixins/components/button";
+
+// -----------------------------------------------------------------------------
+// Legacy Functional Component Styles (MIGRATION IN PROGRESS)
+// -----------------------------------------------------------------------------
+// These will be migrated to mixins/components/ following the unified pattern.
+// Once migrated, remove from here and add to the migrated section above.
 @use "./mixins/fcomponents";
 @use "./mixins/fc-form-field";
-@use "./mixins/fc-states";
-@use "./mixins/fc-badge";
-@use "./mixins/fc-button";
+@use "./mixins/fc-states"; // DEPRECATED: Use ./mixins/states instead (kept for backward compat)
+// @use "./mixins/fc-badge";   // MIGRATED to ./mixins/components/badge
+// @use "./mixins/fc-button";  // MIGRATED to ./mixins/components/button
 @use "./mixins/fc-chat";
 @use "./mixins/fc-checkbox";
 @use "./mixins/fc-chip";

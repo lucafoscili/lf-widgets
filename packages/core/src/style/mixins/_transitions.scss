@@ -1,0 +1,229 @@
+// =============================================================================
+// TRANSITIONS - Standard Animation Patterns
+// =============================================================================
+// Centralizes common keyframes and transition patterns.
+// Eliminates duplicate @keyframes definitions across components.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §3.6, §2.5.6
+// =============================================================================
+
+@use "sass:list";
+@use "sass:map";
+
+// -----------------------------------------------------------------------------
+// Easing Functions
+// -----------------------------------------------------------------------------
+
+/// Standard easing for interactive elements with subtle bounce.
+/// Good for buttons, chips, and other clickable elements.
+$lf-easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+/// Smooth easing without bounce.
+/// Good for transitions where bounce would feel inappropriate.
+$lf-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+/// Linear easing for consistent speed animations.
+$lf-easing-linear: linear;
+
+/// Sharp easing for quick snaps.
+$lf-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+
+// -----------------------------------------------------------------------------
+// Transition Mixins
+// -----------------------------------------------------------------------------
+
+/// Standard transition for interactive elements.
+/// Applies consistent timing and easing to common properties.
+///
+/// @param {List} $props - CSS properties to transition (default: interactive set)
+/// @param {Time} $duration - Transition duration (default: 0.3s)
+/// @param {String} $easing - Easing function variable (default: $lf-easing-bounce)
+/// @example
+///   @include lf-transitions;
+///   @include lf-transitions((transform, opacity), 0.2s);
+@mixin lf-transitions(
+  $props: (
+    background-color,
+    border-color,
+    box-shadow,
+    color,
+    opacity,
+    transform,
+  ),
+  $duration: 0.3s,
+  $easing: $lf-easing-bounce
+) {
+  $transitions: ();
+  @each $prop in $props {
+    $transitions: list.append($transitions, $prop $duration $easing, comma);
+  }
+  transition: $transitions;
+}
+
+/// Quick transition for micro-interactions.
+/// Uses faster duration and smooth easing.
+///
+/// @param {List} $props - CSS properties to transition
+@mixin lf-transitions-quick(
+  $props: (
+    opacity,
+    transform,
+  )
+) {
+  @include lf-transitions($props, 0.15s, $lf-easing-smooth);
+}
+
+// -----------------------------------------------------------------------------
+// Animation Mixins
+// -----------------------------------------------------------------------------
+
+/// Fade-in animation on load.
+/// Animates from transparent and slightly offset to opaque and positioned.
+///
+/// @param {Time} $duration - Animation duration (default: 0.3s)
+/// @param {String} $easing - Easing function (default: ease-out)
+@mixin lf-fade-in($duration: 0.3s, $easing: ease-out) {
+  animation: lf-fade-in $duration $easing;
+}
+
+/// Fade-in animation with custom transform.
+/// Use when the default translateY offset isn't appropriate.
+///
+/// @param {String} $name - Custom animation name
+/// @param {Transform} $from-transform - Starting transform
+/// @param {Transform} $to-transform - Ending transform
+@mixin lf-fade-in-custom(
+  $name,
+  $from-transform: translateY(-0.5em),
+  $to-transform: translateY(0)
+) {
+  animation: #{$name} 0.3s ease-out;
+
+  @keyframes #{$name} {
+    from {
+      opacity: 0;
+      transform: $from-transform;
+    }
+    to {
+      opacity: 1;
+      transform: $to-transform;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Centralized Keyframes
+// -----------------------------------------------------------------------------
+// These are generated once and shared across all components via GLOBAL_STYLES.
+// Components should use the animation names directly without redefining keyframes.
+// -----------------------------------------------------------------------------
+
+/// Standard fade-in: opacity + upward motion
+@keyframes lf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/// Fade-in with scale (good for modals, popovers)
+@keyframes lf-fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/// Slide in from right (drawers, panels)
+@keyframes lf-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/// Slide in from left
+@keyframes lf-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/// Slide in from bottom (sheets, toasts)
+@keyframes lf-slide-in-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/// Slide in from top
+@keyframes lf-slide-in-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/// Width reduction (progress bars, timers)
+@keyframes lf-reduce-width {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}
+
+/// Pulse animation (loading states, attention)
+@keyframes lf-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/// Spin animation (spinners, loading indicators)
+@keyframes lf-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/// Pop animation (badges, notifications)
+@keyframes lf-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
