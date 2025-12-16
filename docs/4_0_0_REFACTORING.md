@@ -2,13 +2,16 @@
 
 > **Status**: PHASE 0 + PHASE 1 (Adapter-Everywhere) COMPLETE ✅  
 > **Status**: PHASE 2 (Functional Components) IN PROGRESS 🚧  
+> **Status**: SECTION 5.9 (Adapter as Core) COMPLETE ✅  
 > **Branch**: Already has 200+ files edited  
 > **Timeline**: Phase 0+1 (Adapter Architecture) completed December 2024  
+> **Timeline**: Section 5.9 (Adapter as Core for all FC components) completed December 16, 2025  
 > **Philosophy**: "This might be the last chance for an architectural overhaul"
 >
 > **🎉 MILESTONE**: All 39 components now have v4.0.0 compliant adapters!
+> **🎉 MILESTONE**: All 6 FC components now use "Adapter as Core" pattern!
 >
-> - 1332/1332 unit tests passing
+> - 1689/1689 unit tests passing
 > - Full build passing
 >
 > **🏆 GOLDEN STANDARD**: `lf-shapeeditor` is the reference implementation for complex components.
@@ -1782,9 +1785,21 @@ export const createAdapter = (
 
 ### 5.9 "Adapter as Core" Pattern (State Ownership)
 
-> **Status**: REFERENCE COMPLETE ✅ - `lf-toggle` is the canonical implementation
+> **Status**: ALL FC COMPONENTS MIGRATED ✅ (December 16, 2025)
+> **Reference Implementation**: `lf-toggle` (canonical pattern)
 > **Reference**: `packages/core/src/components/lf-toggle/`
 > **Files**: `lf-toggle.tsx`, `lf-toggle-adapter.ts`, `lf-toggle-fc.tsx`, `computed.toggle.ts`, `actions.toggle.ts`
+>
+> **Migration Status (6/6 Complete)**:
+>
+> | Component | State Moved to Closure | Status |
+> |-----------|----------------------|--------|
+> | `lf-toggle` | `_value` (LfToggleState) | ✅ Reference impl |
+> | `lf-badge` | Stateless (pattern applied for consistency) | ✅ Complete |
+> | `lf-button` | `_value` (string) | ✅ Complete |
+> | `lf-slider` | `_value` (LfSliderValue) | ✅ Complete |
+> | `lf-textfield` | `_value` (string), `_modifiers` (Set) | ✅ Complete |
+> | `lf-image` | `_error`, `_loading`, `_spinner`, `_resolvedFor`, `_img` | ✅ Complete |
 
 **Problem**: Stencil's `@State` mechanism leads to:
 
@@ -2027,7 +2042,19 @@ When converting a component to "Adapter as Core":
 
 **Files Affected**: All FC-converted components
 **Complexity**: Medium
-**Priority**: P1 (Architectural - enables predictable renders)
+**Priority**: ~~P1~~ ✅ COMPLETE (December 16, 2025)
+
+#### 5.9.2 Pattern Benefits Realized
+
+With all 6 FC components now using "Adapter as Core":
+
+| Benefit | Evidence |
+|---------|----------|
+| **Predictable Renders** | Single `@State _renderTick` across all FCs |
+| **Testable** | 1689/1689 unit tests passing |
+| **Consistent** | Same pattern in toggle, badge, button, slider, textfield, image |
+| **Batch-Friendly** | Actions can make N changes → 1 render |
+| **SoC Maintained** | All components have separate `computed.*.ts` and `actions.*.ts` files |
 
 ---
 

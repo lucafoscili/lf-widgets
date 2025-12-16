@@ -288,6 +288,8 @@ export interface LfChatAdapterControllerGetters
   currentTokens: () => LfChatCurrentTokens;
   /** Current tool execution dataset for chip display */
   currentToolExecution: () => LfDataDataset | null;
+  /** Whether chat is in fullscreen mode */
+  fullScreen: () => boolean;
   /** Full chat history */
   history: () => LfChatHistory;
   /** Get last message by role */
@@ -311,6 +313,7 @@ export interface LfChatAdapterControllerSetters
   currentPrompt: (value: LfLLMChoiceMessage | null) => void;
   currentTokens: (value: LfChatCurrentTokens) => void;
   currentToolExecution: (value: LfDataDataset | null) => void;
+  fullScreen: (value: boolean) => void;
   history: (cb: () => unknown) => Promise<void>;
   status: (status: LfChatStatus) => void;
   view: (view: LfChatView) => void;
@@ -343,6 +346,11 @@ export interface LfChatAdapterControllerActions {
    * Moved from `controller.get.newPrompt` as it's not a pure state read.
    */
   preparePrompt: () => Promise<LfLLMChoiceMessage | null>;
+  /**
+   * Recalculate current token count based on history.
+   * Used when lfConfig changes (e.g., context window size).
+   */
+  recalculateTokens: () => Promise<void>;
 }
 //#endregion
 

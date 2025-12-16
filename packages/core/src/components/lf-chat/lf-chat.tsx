@@ -9,17 +9,13 @@ import {
   LF_WRAPPER_ID,
   LfChatAdapter,
   LfChatAdapterDispatcher,
-  LfChatAgentState,
   LfChatConfig,
-  LfChatCurrentTokens,
   LfChatElement,
   LfChatEvent,
   LfChatEventPayload,
   LfChatHistory,
   LfChatInterface,
   LfChatPropsInterface,
-  LfChatStatus,
-  LfChatView,
   LfDataDataset,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
@@ -46,14 +42,11 @@ import {
 } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
 import { awaitFramework } from "../../utils/setup";
-import { prepChatActions } from "./actions.chat";
-import { prepChatComputed } from "./computed.chat";
 import { handleFile, handleImage, handleRemove } from "./helpers.attachments";
 import { getEffectiveConfig } from "./helpers.config";
 import { exportH, setH } from "./helpers.history";
-import { calcTokens } from "./helpers.messages";
 import { parseMessageContent } from "./helpers.parsing";
-import { createAdapter } from "./lf-chat-adapter";
+import { createAdapter, LfChatInitialState } from "./lf-chat-adapter";
 
 /**
  * Represents the properties of the `lf-chat` component. The properties include
@@ -98,18 +91,97 @@ export class LfChat implements LfChatInterface {
   @Element() rootElement: LfChatElement;
 
   //#region States
-  @State() agentState: LfChatAgentState | null = null;
-  @State() currentAbortStreaming: AbortController | null = null;
-  @State() currentAttachments: LfLLMAttachment[] = [];
-  @State() currentEditingId: string | null = null;
-  @State() currentPrompt: LfLLMChoiceMessage;
-  @State() currentTokens: LfChatCurrentTokens = { current: 0, percentage: 0 };
-  @State() currentToolExecution: LfDataDataset | null = null; // LfDataDataset for tool execution chip
+  /**
+   * Single render-tick state per "Adapter as Core" pattern (v4.0.0 Section 5.9).
+   * All component state lives in adapter closure; this just triggers re-renders.
+   */
+  @State() _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() fullScreen: boolean = false;
-  @State() history: LfChatHistory = [];
-  @State() status: LfChatStatus = "connecting";
-  @State() view: LfChatView = "main";
+  //#endregion
+
+  //#region State Accessors (delegate to adapter closure)
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get agentState() {
+    return this.#adapter?.controller.get.agentState();
+  }
+  set agentState(value) {
+    this.#adapter?.controller.set.agentState(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentAbortStreaming() {
+    return this.#adapter?.controller.get.currentAbortStreaming();
+  }
+  set currentAbortStreaming(value) {
+    this.#adapter?.controller.set.currentAbortStreaming(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentAttachments() {
+    return this.#adapter?.controller.get.currentAttachments();
+  }
+  set currentAttachments(value) {
+    this.#adapter?.controller.set.currentAttachments(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentEditingId() {
+    return this.#adapter?.controller.get.currentEditingId();
+  }
+  set currentEditingId(value) {
+    this.#adapter?.controller.set.currentEditingId(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentPrompt() {
+    return this.#adapter?.controller.get.currentPrompt();
+  }
+  set currentPrompt(value) {
+    this.#adapter?.controller.set.currentPrompt(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentTokens() {
+    return this.#adapter?.controller.get.currentTokens();
+  }
+  set currentTokens(value) {
+    this.#adapter?.controller.set.currentTokens(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentToolExecution() {
+    return this.#adapter?.controller.get.currentToolExecution();
+  }
+  set currentToolExecution(value) {
+    this.#adapter?.controller.set.currentToolExecution(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get fullScreen() {
+    return this.#adapter?.controller.get.fullScreen() ?? false;
+  }
+  set fullScreen(value) {
+    this.#adapter?.controller.set.fullScreen(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get history() {
+    return this.#adapter?.controller.get.history() ?? [];
+  }
+  set history(value) {
+    // Use history setter with callback pattern for proper token calculation
+    this.#adapter?.controller.set.history(() => {
+      const h = this.#adapter.controller.get.history();
+      h.length = 0;
+      h.push(...value);
+    });
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get status() {
+    return this.#adapter?.controller.get.status() ?? "connecting";
+  }
+  set status(value) {
+    this.#adapter?.controller.set.status(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get view() {
+    return this.#adapter?.controller.get.view() ?? "main";
+  }
+  set view(value) {
+    this.#adapter?.controller.set.view(value);
+  }
   //#endregion
 
   //#region Props
@@ -243,13 +315,14 @@ export class LfChat implements LfChatInterface {
   })
   lfEvent: EventEmitter<LfChatEventPayload>;
   onLfEvent(e: Event | CustomEvent, eventType: LfChatEvent) {
+    const { get } = this.#adapter.controller;
     this.lfEvent.emit({
       comp: this,
       eventType,
       id: this.rootElement.id,
       originalEvent: e,
-      history: JSON.stringify(this.history) || "",
-      status: this.status,
+      history: JSON.stringify(get.history()) || "",
+      status: get.status(),
     });
   }
   //#endregion
@@ -260,8 +333,9 @@ export class LfChat implements LfChatInterface {
     if (!this.#framework || !this.#adapter) {
       return;
     }
-
-    this.currentTokens = await calcTokens(this.#adapter);
+    // Recalculate tokens through adapter action
+    const { recalculateTokens } = this.#adapter.controller.actions;
+    await recalculateTokens();
   }
   //#endregion
 
@@ -271,8 +345,10 @@ export class LfChat implements LfChatInterface {
    */
   @Method()
   async abortStreaming(): Promise<void> {
-    if (this.currentAbortStreaming) {
-      this.currentAbortStreaming.abort();
+    const abortController =
+      this.#adapter.controller.get.currentAbortStreaming();
+    if (abortController) {
+      abortController.abort();
     }
   }
   /**
@@ -297,7 +373,7 @@ export class LfChat implements LfChatInterface {
   @Method()
   async getHistory(): Promise<string> {
     try {
-      return JSON.stringify(this.history);
+      return JSON.stringify(this.#adapter.controller.get.history());
     } catch {
       return "";
     }
@@ -308,7 +384,8 @@ export class LfChat implements LfChatInterface {
    */
   @Method()
   async getLastMessage(): Promise<string> {
-    return this.history?.slice(-1)?.[0]?.content ?? "";
+    const history = this.#adapter.controller.get.history();
+    return history?.slice(-1)?.[0]?.content ?? "";
   }
   /**
    * Used to retrieve component's properties and descriptions.
@@ -436,76 +513,60 @@ export class LfChat implements LfChatInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Initialize adapter using "Adapter as Core" pattern (v4.0.0 Section 5.9).
+   * State lives in adapter closure; WC is a thin shell with single `_renderTick`.
+   */
   #initAdapter = () => {
+    // Base getters - read from WC instance (non-state values)
+    const baseGetters = {
+      blocks: () => this.#b,
+      compInstance: () => this,
+      cyAttributes: () => this.#cy,
+      framework: () => this.#framework,
+      ids: () => LF_CHAT_IDS,
+      lfAttributes: () => this.#lf,
+      parts: () => this.#p,
+    };
+
+    // Initial state for closure variables
+    const initialState: LfChatInitialState = {
+      agentState: null,
+      currentAbortStreaming: null,
+      currentAttachments: [],
+      currentEditingId: null,
+      currentPrompt: null,
+      currentTokens: { current: 0, percentage: 0 },
+      currentToolExecution: null,
+      fullScreen: false,
+      history: [],
+      status: "connecting",
+      view: "main",
+    };
+
+    // State change callback - increments _renderTick to trigger re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
     // Create adapter without dispatcher first (circular reference)
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - ALL must be functions () => T per v4.0.0
-      {
-        agentState: () => this.agentState,
-        blocks: () => this.#b,
-        compInstance: () => this,
-        currentAbortStreaming: () => this.currentAbortStreaming,
-        currentAttachments: () => this.currentAttachments,
-        currentEditingId: () => this.currentEditingId,
-        currentPrompt: () => this.currentPrompt,
-        currentTokens: () => this.currentTokens,
-        currentToolExecution: () => this.currentToolExecution,
-        cyAttributes: () => this.#cy,
-        framework: () => this.#framework,
-        history: () => this.history,
-        ids: () => LF_CHAT_IDS,
-        lastMessage: (role = "user") => {
-          return this.history
-            .slice()
-            .reverse()
-            .find((m) => m.role === role);
-        },
-        lfAttributes: () => this.#lf,
-        parts: () => this.#p,
-        status: () => this.status,
-        view: () => this.view,
-      },
-      // Setters - simple single-value assignments
-      {
-        agentState: (value: LfChatAgentState | null) =>
-          (this.agentState = value),
-        currentAbortStreaming: (value: AbortController | null) =>
-          (this.currentAbortStreaming = value),
-        currentAttachments: (value: LfLLMAttachment[]) =>
-          (this.currentAttachments = value),
-        currentEditingId: (value: string | null) =>
-          (this.currentEditingId = value),
-        currentPrompt: (value: LfLLMChoiceMessage | null) =>
-          (this.currentPrompt = value),
-        currentTokens: (value: LfChatCurrentTokens) =>
-          (this.currentTokens = value),
-        currentToolExecution: (value: LfDataDataset | null) =>
-          (this.currentToolExecution = value),
-        history: async (cb: () => unknown) => {
-          cb();
-          this.currentTokens = await calcTokens(this.#adapter);
-          this.onLfEvent(new CustomEvent("update"), "update");
-        },
-        status: (status: LfChatStatus) => (this.status = status),
-        view: (view: LfChatView) => (this.view = view),
-      },
-      // Computed - derived values, predicates
-      prepChatComputed(() => this.#adapter),
-      // Actions - multi-step operations, async ops
-      prepChatActions(() => this.#adapter),
-      // getAdapter factory
+      baseGetters,
+      initialState,
+      onStateChange,
       () => this.#adapter,
     );
 
     // Create inline dispatcher per v4.0.0 Section 5.5
     const dispatcher: LfChatAdapterDispatcher = {
       emit: (eventType, detail) => {
+        const { get } = this.#adapter.controller;
         const payload: LfChatEventPayload = {
           comp: this,
           eventType,
           id: this.rootElement.id,
-          history: JSON.stringify(this.history) || "",
-          status: this.status,
+          history: JSON.stringify(get.history()) || "",
+          status: get.status(),
           originalEvent: (detail as LfChatEventPayload)?.originalEvent,
         };
         this.lfEvent.emit(payload);
@@ -519,7 +580,9 @@ export class LfChat implements LfChatInterface {
     } as LfChatAdapter;
   };
   async #checkLLMStatus() {
-    if (this.view === "settings") {
+    const { get, set } = this.#adapter.controller;
+
+    if (get.view() === "settings") {
       return;
     }
 
@@ -529,8 +592,8 @@ export class LfChat implements LfChatInterface {
     const effectiveConfig = getEffectiveConfig(this.#adapter);
     const endpointUrl = effectiveConfig.llm.endpointUrl;
 
-    if (this.status === "offline") {
-      this.status = "connecting";
+    if (get.status() === "offline") {
+      set.status("connecting");
     }
     try {
       const response = await llm.poll(endpointUrl);
@@ -540,25 +603,26 @@ export class LfChat implements LfChatInterface {
       }
 
       if (!response.ok) {
-        this.status = "offline";
+        set.status("offline");
       } else {
-        if (this.status !== "ready") {
+        if (get.status() !== "ready") {
           requestAnimationFrame(() => {
             this.scrollToBottom(true);
           });
         }
-        this.status = "ready";
+        set.status("ready");
       }
     } catch (error) {
       if (currentVersion !== this.#pollVersion) {
         return;
       }
-      this.status = "offline";
+      set.status("offline");
     }
     this.onLfEvent(new CustomEvent("polling"), "polling");
   }
   #prepChat = (): VNode => {
     const { bemClass } = this.#framework.theme;
+    const { get } = this.#adapter.controller;
     const effectiveConfig = getEffectiveConfig(this.#adapter);
     const emptyMessage = effectiveConfig.ui.emptyMessage;
 
@@ -573,7 +637,8 @@ export class LfChat implements LfChatInterface {
       progressbar,
       textarea,
     } = this.#adapter.elements.jsx.input;
-    const { history } = this;
+    const history = get.history();
+    const currentEditingId = get.currentEditingId();
 
     return (
       <Fragment>
@@ -607,8 +672,7 @@ export class LfChat implements LfChatInterface {
               })
               .map((m, index) => {
                 const isEditing =
-                  Boolean(this.currentEditingId) &&
-                  m.id === this.currentEditingId;
+                  Boolean(currentEditingId) && m.id === currentEditingId;
                 return (
                   <div
                     class={bemClass(messages._, messages.container, {
@@ -853,7 +917,7 @@ export class LfChat implements LfChatInterface {
     this.#initAdapter();
 
     const { debug } = this.#framework;
-    const { set } = this.#adapter.controller;
+    const { get, set } = this.#adapter.controller;
 
     if (this.lfValue) {
       try {
@@ -861,7 +925,12 @@ export class LfChat implements LfChatInterface {
           typeof this.lfValue === "string"
             ? JSON.parse(this.lfValue)
             : this.lfValue;
-        set.history(() => (this.history = parsedValue));
+        // Set history in closure (uses callback pattern for token calculation)
+        const history = get.history();
+        set.history(() => {
+          history.length = 0;
+          history.push(...parsedValue);
+        });
       } catch (error) {
         debug.logs.new(this, "Couldn't set value for chat history", "warning");
       }
@@ -891,11 +960,15 @@ export class LfChat implements LfChatInterface {
   }
   render() {
     const { bemClass, setLfStyle } = this.#framework.theme;
+    const { get } = this.#adapter.controller;
     const effectiveConfig = getEffectiveConfig(this.#adapter);
     const layout = effectiveConfig.ui.layout;
 
     const { chat } = this.#b;
-    const { lfStyle, status, view } = this;
+    const { lfStyle } = this;
+    const status = get.status();
+    const view = get.view();
+    const fullScreen = get.fullScreen();
 
     return (
       <Host>
@@ -906,15 +979,15 @@ export class LfChat implements LfChatInterface {
               [view]: true,
               [layout]: true,
               [status]: true,
-              full: this.fullScreen,
+              full: fullScreen,
             })}
             part={this.#p.chat}
           >
-            {this.view === "settings"
+            {view === "settings"
               ? this.#prepSettings()
-              : this.status === "ready"
+              : status === "ready"
                 ? this.#prepChat()
-                : this.status === "connecting"
+                : status === "connecting"
                   ? this.#prepConnecting()
                   : this.#prepOffline()}
           </div>

@@ -3,6 +3,7 @@ import {
   LfChatAdapterControllerActions,
 } from "@lf-widgets/foundations";
 import { ensureMessageId } from "./helpers.message-id";
+import { calcTokens } from "./helpers.messages";
 
 /**
  * Creates action methods for the chat adapter.
@@ -22,14 +23,13 @@ export const prepChatActions = (
    */
   toggleFullScreen: () => {
     const adapter = getAdapter();
-    const { get } = adapter.controller;
+    const { get, set } = adapter.controller;
     const comp = get.compInstance();
     const framework = get.framework();
     const { portal } = framework;
 
-    // Access component state and root element
-    const isFullscreen = (comp as unknown as { fullScreen: boolean })
-      .fullScreen;
+    // Access component state via adapter getter
+    const isFullscreen = get.fullScreen();
     const rootElement = (comp as unknown as { rootElement: HTMLElement })
       .rootElement;
 
@@ -53,8 +53,8 @@ export const prepChatActions = (
       portal.close(rootElement);
     }
 
-    // Toggle internal state for component awareness
-    (comp as unknown as { fullScreen: boolean }).fullScreen = !isFullscreen;
+    // Toggle internal state via adapter setter
+    set.fullScreen(!isFullscreen);
   },
 
   /**
@@ -86,5 +86,16 @@ export const prepChatActions = (
       return newMessage;
     }
     return null;
+  },
+
+  /**
+   * Recalculate current token count based on history.
+   * Used when lfConfig changes (e.g., context window size).
+   */
+  recalculateTokens: async () => {
+    const adapter = getAdapter();
+    const { set } = adapter.controller;
+    const tokens = await calcTokens(adapter);
+    set.currentTokens(tokens);
   },
 });
