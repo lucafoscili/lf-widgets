@@ -836,6 +836,38 @@ background-color: rgba(
 
 **Lesson**: CSS cascade is unreliable for composed FCs. Always use explicit props for state/size propagation. This is actually a benefit: predictable, type-safe, works with portals.
 
+#### 2.10.5 Size Multiplier Pattern (Critical!)
+
+**Problem**: The `--lf-ui-size-*` variables are **multipliers** (0.65 to 1.35), not font sizes. Using them directly as font-size produces tiny text.
+
+**Wrong**:
+```scss
+font-size: var(--lf-fc-ui-size, var(--lf-font-size));  // 0.75 ≠ 0.75em!
+```
+
+**Correct**: Multiply base font-size by the multiplier:
+```scss
+font-size: calc(var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1));
+```
+
+**See**: WC_FC_MIGRATION_GUIDE.md Section 7.7 for full details.
+
+#### 2.10.6 Ripple on Covered Elements
+
+**Problem**: Native inputs covering ripple hosts (for accessibility) intercept `pointerdown` events.
+
+**Solution**: Use `framework.effects.trigger.ripple(element, event)` to manually trigger ripple from the input's handler.
+
+**See**: WC_FC_MIGRATION_GUIDE.md Section 7.8 for implementation details.
+
+#### 2.10.7 Ripple Host Position Override
+
+**Problem**: `[data-lf-ripple-host] { position: relative }` can override `position: absolute` on thumb underlays.
+
+**Solution**: Use higher specificity: `&[data-lf-ripple-host] { position: absolute; }`
+
+**See**: WC_FC_MIGRATION_GUIDE.md Section 7.9 for details.
+
 ### 2.11 Proof of Concept Priority
 
 Start with these components (good FC candidates):
