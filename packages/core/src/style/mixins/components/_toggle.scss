@@ -1,0 +1,193 @@
+// =============================================================================
+// TOGGLE - Component Styles
+// =============================================================================
+// Toggle-specific styles for the LfToggleFC functional component.
+// Works in conjunction with _fc-form-field.scss for the wrapper.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-toggle.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "toggle";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Toggle Core
+// -----------------------------------------------------------------------------
+.toggle {
+  & {
+    cursor: pointer;
+    display: inline-flex;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    position: relative;
+    user-select: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Native Control (Hidden input)
+  // ---------------------------------------------------------------------------
+  &__native-control {
+    appearance: none;
+    cursor: inherit;
+    height: 100%;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+
+    &:checked {
+      ~ .toggle__track {
+        background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+
+        .toggle__thumb {
+          background-color: rgba($primaryC, 1);
+          transform: translateX(var(--lf-toggle-thumb-offset, 1.25em));
+        }
+      }
+
+      ~ .toggle__underlay {
+        left: auto;
+        right: 0;
+        transform: translateX(calc(var(--lf-toggle-thumb-offset, 1.25em) / 2));
+      }
+    }
+
+    &:focus-visible {
+      ~ .toggle__underlay {
+        box-shadow: 0 0 0 0.25em
+          rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+      }
+    }
+
+    &:disabled {
+      cursor: default;
+
+      ~ .toggle__track {
+        opacity: 0.38;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track
+  // ---------------------------------------------------------------------------
+  &__track {
+    background-color: rgba($surfaceC, 1);
+    border-radius: var(--lf-toggle-track-border-radius, 1em);
+    box-sizing: border-box;
+    height: var(--lf-toggle-track-height, 1.5em);
+    position: relative;
+    @include lf-transitions((background-color));
+    width: var(--lf-toggle-track-width, 2.75em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Thumb
+  // ---------------------------------------------------------------------------
+  &__thumb {
+    background-color: rgba($onSurfaceC, 1);
+    border-radius: var(--lf-toggle-thumb-border-radius, 50%);
+    box-shadow: var(--lf-toggle-thumb-shadow, 0 2px 4px rgba(0, 0, 0, 0.2));
+    height: var(--lf-toggle-thumb-size, 1.25em);
+    left: var(--lf-toggle-thumb-inset, 0.125em);
+    position: absolute;
+    top: var(--lf-toggle-thumb-inset, 0.125em);
+    @include lf-transitions((background-color, transform));
+    width: var(--lf-toggle-thumb-size, 1.25em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Underlay (Focus ring)
+  // ---------------------------------------------------------------------------
+  &__underlay {
+    border-radius: 50%;
+    height: var(--lf-toggle-underlay-size, 2.5em);
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    @include lf-transitions(
+      (background-color, box-shadow, left, right, transform)
+    );
+    width: var(--lf-toggle-underlay-size, 2.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Hover State
+  // ---------------------------------------------------------------------------
+  &:hover {
+    .toggle__underlay {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+  }
+}
+
+// =============================================================================
+// TOGGLE WITH LABEL
+// =============================================================================
+.toggle--with-label {
+  align-items: center;
+  gap: 0.75em;
+}
+
+.toggle__label {
+  color: rgba($onBgC, 1);
+  font-size: 1em;
+}
+
+// =============================================================================
+// TOGGLE ICONS (On/Off indicators)
+// =============================================================================
+.toggle--with-icons {
+  .toggle__track {
+    &::before,
+    &::after {
+      font-size: 0.625em;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &::before {
+      color: rgba($onPrimaryC, 0.7);
+      content: var(--lf-toggle-icon-on, "✓");
+      left: 0.375em;
+      opacity: 0;
+      @include lf-transitions((opacity));
+    }
+
+    &::after {
+      color: rgba($onSurfaceC, 0.7);
+      content: var(--lf-toggle-icon-off, "✕");
+      opacity: 1;
+      right: 0.375em;
+      @include lf-transitions((opacity));
+    }
+  }
+
+  .toggle__native-control:checked ~ .toggle__track {
+    &::before {
+      opacity: 1;
+    }
+
+    &::after {
+      opacity: 0;
+    }
+  }
+}

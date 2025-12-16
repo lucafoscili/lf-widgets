@@ -92,13 +92,20 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                       | Description                                                                                             |
-| -------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--lf-image-color-primary` | Sets the primary color for the icon. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary)) |
-| `--lf-image-font-family`   | Sets the primary font family for the image component. Defaults to => var(--lf-font-family-primary)      |
-| `--lf-image-font-size`     | Sets the font size for the image component. Defaults to => var(--lf-font-size)                          |
-| `--lf-image-margin`        | Sets the margin for the image component. Defaults to => auto                                            |
-| `--lf-image-object-fit`    | Sets the object fit for the image element. Defaults to => cover                                         |
+| Name                       | Description                                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `--lf-image-border-radius` | Sets the border radius for the image. Defaults to => var(--lf-ui-border-radius)                                                    |
+| `--lf-image-color-on-bg`   | Color for icon content. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                                                |
+| `--lf-image-color-surface` | Surface background color for placeholder. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) Layout/sizing variables: |
+| `--lf-image-fit`           | Sets the object fit for the image element. Defaults to => cover                                                                    |
+| `--lf-image-font-family`   | Sets the primary font family for the image component. Defaults to => var(--lf-font-family-primary)                                 |
+| `--lf-image-font-size`     | Sets the font size for the image component. Defaults to => var(--lf-font-size)                                                     |
+| `--lf-image-height`        | Sets the height for the image component. Defaults to => auto                                                                       |
+| `--lf-image-icon-size`     | Sets the size for the icon fallback. Defaults to => 3em                                                                            |
+| `--lf-image-margin`        | Sets the margin for the image component. Defaults to => auto                                                                       |
+| `--lf-image-object-fit`    | Sets the object fit for the image element. Defaults to => cover                                                                    |
+| `--lf-image-position`      | Sets the object position for the image. Defaults to => center                                                                      |
+| `--lf-image-width`         | Sets the width for the image component. Defaults to => auto                                                                        |
 
 
 ## Dependencies

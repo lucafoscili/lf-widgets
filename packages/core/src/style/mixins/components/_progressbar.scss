@@ -1,0 +1,199 @@
+// =============================================================================
+// PROGRESSBAR - Component Styles
+// =============================================================================
+// Progressbar-specific styles for the LfProgressbarFC functional component.
+// Includes linear and radial (circular) variants.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-progressbar.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "progressbar";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Progressbar Core (Linear)
+// -----------------------------------------------------------------------------
+.progressbar {
+  & {
+    box-sizing: border-box;
+    display: block;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: var(--lf-progressbar-height, 0.5em);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track (Background)
+  // ---------------------------------------------------------------------------
+  &__track {
+    background-color: rgba($surfaceC, 1);
+    border-radius: var(--lf-progressbar-border-radius, 0.25em);
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bar (Progress indicator)
+  // ---------------------------------------------------------------------------
+  &__bar {
+    background-color: rgba($primaryC, 1);
+    border-radius: var(--lf-progressbar-border-radius, 0.25em);
+    height: 100%;
+    @include lf-transitions((width, transform));
+    transform-origin: left center;
+    width: 0%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Indeterminate Animation
+  // ---------------------------------------------------------------------------
+  &--indeterminate {
+    .progressbar__bar {
+      animation: lf-progressbar-indeterminate 2s linear infinite;
+      width: 50%;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    color: rgba($onBgC, 1);
+    font-size: 0.75em;
+    margin-bottom: 0.5em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Value Text
+  // ---------------------------------------------------------------------------
+  &__value {
+    color: rgba($onBgC, 0.7);
+    font-size: 0.75em;
+    margin-top: 0.25em;
+    text-align: right;
+  }
+}
+
+// =============================================================================
+// RADIAL PROGRESSBAR (Circular)
+// =============================================================================
+.progressbar--radial {
+  align-items: center;
+  display: inline-flex;
+  height: var(--lf-progressbar-radial-size, 4em);
+  justify-content: center;
+  overflow: visible;
+  position: relative;
+  width: var(--lf-progressbar-radial-size, 4em);
+
+  .progressbar__track {
+    background: transparent;
+    border-radius: 50%;
+    height: 100%;
+    overflow: visible;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // SVG Container
+  // ---------------------------------------------------------------------------
+  .progressbar__svg {
+    height: 100%;
+    transform: rotate(-90deg);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track Circle
+  // ---------------------------------------------------------------------------
+  .progressbar__track-circle {
+    fill: none;
+    stroke: rgba($surfaceC, 1);
+    stroke-width: var(--lf-progressbar-radial-thickness, 0.375em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Progress Circle
+  // ---------------------------------------------------------------------------
+  .progressbar__bar-circle {
+    fill: none;
+    stroke: rgba($primaryC, 1);
+    stroke-linecap: round;
+    stroke-width: var(--lf-progressbar-radial-thickness, 0.375em);
+    @include lf-transitions((stroke-dashoffset));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Center Value
+  // ---------------------------------------------------------------------------
+  .progressbar__center-value {
+    color: rgba($onBgC, 1);
+    font-size: var(--lf-progressbar-radial-value-size, 1em);
+    font-weight: 500;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Radial Indeterminate
+  // ---------------------------------------------------------------------------
+  &.progressbar--indeterminate {
+    .progressbar__svg {
+      animation: lf-spin 1.4s linear infinite;
+    }
+
+    .progressbar__bar-circle {
+      animation: lf-progressbar-radial-indeterminate 1.4s ease-in-out infinite;
+      stroke-dasharray: 80, 200;
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+// =============================================================================
+// KEYFRAMES
+// =============================================================================
+@keyframes lf-progressbar-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes lf-progressbar-radial-indeterminate {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -125;
+  }
+}

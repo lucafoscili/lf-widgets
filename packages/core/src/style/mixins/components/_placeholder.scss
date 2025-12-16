@@ -1,0 +1,68 @@
+// =============================================================================
+// PLACEHOLDER - Component Styles
+// =============================================================================
+// Placeholder-specific styles for the LfPlaceholderFC functional component.
+// Simple loading indicator with an animated icon.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-placeholder.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "placeholder";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Placeholder Core
+// -----------------------------------------------------------------------------
+.placeholder {
+  & {
+    align-items: center;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(
+      --lf-placeholder-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-sizing: border-box;
+    color: rgba($primaryC, 1);
+    display: inline-flex;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: var(--lf-placeholder-height, 100%);
+    justify-content: center;
+    min-height: var(--lf-placeholder-min-height, 3em);
+    min-width: var(--lf-placeholder-min-width, 3em);
+    padding: var(--lf-placeholder-padding, 1em);
+    position: relative;
+    width: var(--lf-placeholder-width, 100%);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon Container
+  // ---------------------------------------------------------------------------
+  &__icon {
+    animation: lf-pulse 1.5s ease-in-out infinite;
+    fill: currentColor;
+    height: var(--lf-placeholder-icon-size, 3em);
+    width: var(--lf-placeholder-icon-size, 3em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text (Optional)
+  // ---------------------------------------------------------------------------
+  &__text {
+    color: rgba($onSurfaceC, 0.7);
+    font-size: 0.875em;
+    margin-top: 0.75em;
+  }
+}

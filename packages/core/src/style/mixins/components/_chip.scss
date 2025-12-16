@@ -1,0 +1,253 @@
+// =============================================================================
+// CHIP - Component Styles
+// =============================================================================
+// Chip-specific styles for the LfChipFC functional component.
+// Includes standard chips and variants: choice, filter, flat, input.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-chip.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "chip";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Chip Core
+// -----------------------------------------------------------------------------
+.chip {
+  & {
+    align-items: center;
+    background-color: rgba($primaryC, 1);
+    border-radius: var(--lf-chip-border-radius, 1em);
+    box-sizing: border-box;
+    color: rgba($onPrimaryC, 1);
+    display: inline-flex;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: var(--lf-chip-height, 2em);
+    max-width: 100%;
+    overflow: hidden;
+    padding: var(--lf-chip-padding, 0 0.75em);
+    position: relative;
+    @include lf-transitions(
+      (background-color, border-color, box-shadow, color)
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    fill: currentColor;
+    flex-shrink: 0;
+    height: 1.25em;
+    margin-left: -0.25em;
+    margin-right: 0.5em;
+    width: 1.25em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Primary Text
+  // ---------------------------------------------------------------------------
+  &__primary-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Trailing Action (Clear button, etc.)
+  // ---------------------------------------------------------------------------
+  &__trailing-action {
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    height: 1.5em;
+    justify-content: center;
+    margin-left: 0.25em;
+    margin-right: -0.375em;
+    opacity: 0.7;
+    outline: none;
+    padding: 0;
+    @include lf-transitions((opacity, background-color));
+    width: 1.5em;
+
+    &:hover {
+      background-color: rgba($surfaceC, 0.2);
+      opacity: 1;
+    }
+
+    &:focus {
+      opacity: 1;
+    }
+
+    svg {
+      fill: currentColor;
+      height: 1em;
+      width: 1em;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Ripple
+  // ---------------------------------------------------------------------------
+  &__ripple {
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 0;
+  }
+}
+
+// =============================================================================
+// CHIP SET - Container for multiple chips
+// =============================================================================
+.chip-set {
+  & {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lf-chip-set-gap, 0.5em);
+    padding: var(--lf-chip-set-padding, 0.25em);
+  }
+
+  // Flat styling: all chips in set get flat appearance
+  &--flat {
+    .chip {
+      background-color: transparent;
+      border: 1px solid rgba($borderC, 1);
+      color: rgba($onBgC, 1);
+
+      &:hover {
+        background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+      }
+    }
+
+    .chip--selected {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+      border-color: rgba($primaryC, 1);
+      color: rgba($onPrimaryC, 1);
+    }
+  }
+}
+
+// =============================================================================
+// CHOICE CHIP - Single selection chips
+// =============================================================================
+.chip--choice {
+  background-color: transparent;
+  border: 1px solid rgba($borderC, 1);
+  color: rgba($onBgC, 1);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+  }
+
+  &.chip--selected {
+    background-color: rgba($primaryC, 1);
+    border-color: transparent;
+    color: rgba($onPrimaryC, 1);
+  }
+}
+
+// =============================================================================
+// FILTER CHIP - Multi-selection with checkmark
+// =============================================================================
+.chip--filter {
+  background-color: transparent;
+  border: 1px solid rgba($borderC, 1);
+  color: rgba($onBgC, 1);
+  cursor: pointer;
+  padding-left: 0.5em;
+
+  &:hover {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+  }
+
+  &.chip--selected {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    border-color: rgba($primaryC, 1);
+
+    .chip__checkmark {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .chip__checkmark {
+    flex-shrink: 0;
+    height: 1.25em;
+    margin-right: 0.25em;
+    opacity: 0;
+    transform: scale(0);
+    @include lf-transitions((opacity, transform));
+    width: 1.25em;
+
+    svg {
+      fill: rgba($primaryC, 1);
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// INPUT CHIP - With editable content
+// =============================================================================
+.chip--input {
+  background-color: rgba($surfaceC, 1);
+  border: 1px solid rgba($borderC, 1);
+  color: rgba($onSurfaceC, 1);
+  padding-right: 0.375em;
+
+  &:hover {
+    border-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+  }
+
+  &:focus-within {
+    border-color: rgba($primaryC, 1);
+    box-shadow: 0 0 0 2px rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+  }
+}
+
+// =============================================================================
+// SELECTED STATE (general)
+// =============================================================================
+.chip--selected {
+  .chip__icon {
+    animation: lf-fade-in 150ms ease-out;
+  }
+}
+
+// =============================================================================
+// DISABLED STATE
+// =============================================================================
+.chip--disabled {
+  cursor: default;
+  opacity: 0.38;
+  pointer-events: none;
+
+  .chip__trailing-action {
+    pointer-events: none;
+  }
+}

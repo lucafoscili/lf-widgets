@@ -1,0 +1,161 @@
+// =============================================================================
+// PHOTOFRAME - Component Styles
+// =============================================================================
+// Photoframe-specific styles for the LfPhotoframeFC functional component.
+// Displays an image with an overlay for additional content.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+//
+// NOTE: @prop JSDoc comments for CSS custom properties are documented in the
+// WC SCSS file (lf-photoframe.scss) for Stencil docs generation, NOT here.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// Generate color variables using the unified system
+$comp: "photoframe";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Photoframe Core
+// -----------------------------------------------------------------------------
+.photoframe {
+  & {
+    aspect-ratio: var(--lf-photoframe-aspect-ratio, auto);
+    border-radius: var(
+      --lf-photoframe-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: var(--lf-photoframe-height, auto);
+    overflow: hidden;
+    position: relative;
+    width: var(--lf-photoframe-width, auto);
+
+    &:hover {
+      .photoframe__overlay {
+        opacity: var(--lf-photoframe-overlay-opacity-hover, 1);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Image Container
+  // ---------------------------------------------------------------------------
+  &__image {
+    display: block;
+    height: 100%;
+    width: 100%;
+
+    img {
+      display: block;
+      height: 100%;
+      object-fit: var(--lf-photoframe-fit, cover);
+      object-position: var(--lf-photoframe-position, center);
+      width: 100%;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Overlay
+  // ---------------------------------------------------------------------------
+  &__overlay {
+    align-items: var(--lf-photoframe-overlay-align, flex-end);
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    bottom: 0;
+    box-sizing: border-box;
+    color: rgba($onBgC, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: var(--lf-photoframe-overlay-justify, flex-end);
+    left: 0;
+    opacity: var(--lf-photoframe-overlay-opacity, 0);
+    padding: var(--lf-photoframe-overlay-padding, 1em);
+    position: absolute;
+    right: 0;
+    top: 0;
+    @include lf-transitions((opacity));
+
+    &--visible {
+      opacity: var(--lf-photoframe-overlay-opacity, 1);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Title
+  // ---------------------------------------------------------------------------
+  &__title {
+    font-size: var(--lf-photoframe-title-size, 1.125em);
+    font-weight: var(--lf-photoframe-title-weight, 600);
+    margin: 0 0 0.25em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Description
+  // ---------------------------------------------------------------------------
+  &__description {
+    font-size: var(--lf-photoframe-description-size, 0.875em);
+    line-height: 1.4;
+    margin: 0;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Actions
+  // ---------------------------------------------------------------------------
+  &__actions {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 0.75em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon Fallback
+  // ---------------------------------------------------------------------------
+  &__icon {
+    align-items: center;
+    background-color: rgba($surfaceC, 1);
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+
+    svg {
+      fill: rgba($onSurfaceC, 0.5);
+      height: 3em;
+      width: 3em;
+    }
+  }
+}
+
+// =============================================================================
+// PLACEMENT VARIANTS
+// =============================================================================
+.photoframe--overlay-top {
+  .photoframe__overlay {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}
+
+.photoframe--overlay-center {
+  .photoframe__overlay {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}

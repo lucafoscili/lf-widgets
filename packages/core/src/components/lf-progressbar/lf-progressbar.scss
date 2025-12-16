@@ -229,10 +229,27 @@ $borderC: 0.1em solid rgba(var(--lf-color-surface), 0.375);
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
+* State-aware color variables (set via data-lf attribute):
+* @prop --lf-#{$comp}-color-primary: Primary color for the progress bar.
+*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-#{$comp}-color-surface: Surface color for the track background.
+*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+* @prop --lf-#{$comp}-color-on-bg: Color for label text.
+*                                  Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+*
+* Layout/sizing variables:
+* @prop --lf-#{$comp}-border-radius: Sets the border radius for the progress bar.
+*                                    Defaults to => 0.25em
 * @prop --lf-#{$comp}-height: Sets the height for the #{$comp} component.
-*                             Defaults to => 100%
+*                             Defaults to => 0.5em
 * @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
 *                              Defaults to => 1em 0em
+* @prop --lf-#{$comp}-radial-size: Sets the size for radial progress bar.
+*                                  Defaults to => 4em
+* @prop --lf-#{$comp}-radial-thickness: Sets the stroke width for radial progress bar.
+*                                       Defaults to => 0.375em
+* @prop --lf-#{$comp}-radial-value-size: Sets the font size for center value.
+*                                        Defaults to => 1em
 * @prop --lf-#{$comp}-width: Sets the width for the #{$comp} component.
 *                            Defaults to => 100%
 */

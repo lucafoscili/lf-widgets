@@ -14,10 +14,27 @@ $comp: "chip";
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
+* State-aware color variables (set via data-lf attribute):
+* @prop --lf-#{$comp}-color-primary: Primary color for selected/active states.
+*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-#{$comp}-color-on-primary: Color for content on primary backgrounds.
+*                                       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+* @prop --lf-#{$comp}-color-surface: Surface background color.
+*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+* @prop --lf-#{$comp}-color-on-surface: Color for content on surface backgrounds.
+*                                       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+* @prop --lf-#{$comp}-color-border: Border color for chips.
+*                                   Defaults to => var(--lf-state-border, var(--lf-color-border))
+* @prop --lf-#{$comp}-color-on-bg: Color for text on background.
+*                                  Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+*
+* Layout/sizing variables:
 * @prop --lf-#{$comp}-align-items: Sets the alignment for the wrapper.
 *                                  Defaults to => center
-* @prop --lf-#{$comp}-color-on-bg: Sets the color for the filter layout checkmark.
-*                                  Defaults to => var(--lf-color-on-surface)
+* @prop --lf-#{$comp}-border-radius: Sets the border radius for chips.
+*                                    Defaults to => 1em
+* @prop --lf-#{$comp}-height: Sets the height for chip items.
+*                             Defaults to => 2em
 * @prop --lf-#{$comp}-item-height: Sets the height for the items.
 *                                  Defaults to => 2em
 * @prop --lf-#{$comp}-item-margin: Sets the margin for the items.
@@ -34,4 +51,10 @@ $comp: "chip";
 *                             Defaults to => 0.25em
 * @prop --lf-#{$comp}-item-text-decoration: Sets the text-decoration for the items.
 *                                           Defaults to => inherit
+* @prop --lf-#{$comp}-padding: Sets the padding for chips.
+*                              Defaults to => 0 0.75em
+* @prop --lf-#{$comp}-set-gap: Sets the gap for chip sets.
+*                              Defaults to => 0.5em
+* @prop --lf-#{$comp}-set-padding: Sets the padding for chip sets.
+*                                  Defaults to => 0.25em
 */

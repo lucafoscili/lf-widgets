@@ -11,6 +11,14 @@
 // Migration Status:
 // ✅ badge - Migrated to unified system
 // ✅ button - Migrated to unified system
+// ✅ checkbox - Migrated to unified system
+// ✅ chip - Migrated to unified system
+// ✅ image - Migrated to unified system
+// ✅ photoframe - Migrated to unified system
+// ✅ placeholder - Migrated to unified system
+// ✅ progressbar - Migrated to unified system
+// ✅ spinner - Migrated to unified system (was OUTLIER, now aligned)
+// ✅ toggle - Migrated to unified system
 // 🔄 Other components - Use legacy _fc-*.scss (will be migrated)
 //
 // Cross-Reference: SCSS_UNIFICATION.md §5
@@ -22,6 +30,14 @@
 // Using @use to include these files - variables are scoped to each file
 @use "badge";
 @use "button";
+@use "checkbox";
+@use "chip";
+@use "image";
+@use "photoframe";
+@use "placeholder";
+@use "progressbar";
+@use "spinner";
+@use "toggle";
 
 // -----------------------------------------------------------------------------
 // Remaining Components (to be migrated)
@@ -30,15 +46,7 @@
 // They will be migrated to this directory following the same pattern.
 //
 // - chat
-// - checkbox
-// - chip
-// - image
-// - photoframe
-// - placeholder
-// - progressbar
 // - slider
 // - snackbar
-// - spinner (OUTLIER - needs alignment, see SCSS_UNIFICATION.md §8.1)
 // - textfield
 // - toast
-// - toggle

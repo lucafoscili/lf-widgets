@@ -25,19 +25,24 @@ $comp: "spinner";
   cursor: wait;
 }
 
-/*
+/**
 * IMPORTANT!
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
-* @prop --lf-#{comp}-color: Primary #{comp} color (the animated element).
-*                           Uses the state-aware color set by lf-fw-state-colors mixin.
-* @prop --lf-#{comp}-color-bg: Background color for #{comp} track/container.
-*                              Defaults to transparent on-bg color.
-* @prop --lf-#{comp}-size: Size of the #{comp} in em units.
-*                          Scales automatically with lfUiSize (which adjusts font-size).
-* @prop --lf-#{comp}-speed: Animation duration.
- *                          Defaults to 1s.
-* @prop --lf-#{comp}-stroke: Stroke width for ring #{comp} (scales with em).
-*                            Defaults to 0.15em.
+* State-aware color variables (set via data-lf attribute):
+* @prop --lf-#{$comp}-color-primary: Primary color for the spinner element.
+*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-#{$comp}-color-bg: Background color for layout container.
+*                               Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+* @prop --lf-#{$comp}-color-on-bg: Color for label text.
+*                                  Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+*
+* Layout/sizing variables:
+* @prop --lf-#{$comp}-size: Size of the spinner in em units.
+*                           Defaults to => 7em. Scales with lfUiSize (font-size).
+* @prop --lf-#{$comp}-border-radius: Border radius for layout container.
+*                                    Defaults to => 0.5em
+* @prop --lf-#{$comp}-ring-thickness: Stroke width for ring spinner variants.
+*                                     Defaults to => 0.35em
 */

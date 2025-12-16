@@ -13,6 +13,15 @@ $comp: "checkbox";
 * CSS Custom Properties are documented here to allow the Stencil auto-Docs
 * generator to pick them up, but their actual definitions are in the FC mixin.
 *
+* State-aware color variables (set via data-lf attribute):
+* @prop --lf-#{$comp}-color-primary: Primary color for checked/active states.
+*                                    Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+* @prop --lf-#{$comp}-color-on-primary: Color for content on primary backgrounds.
+*                                       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+* @prop --lf-#{$comp}-color-surface: Surface/track background color.
+*                                    Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+*
+* Layout/sizing variables:
 * @prop --lf-#{$comp}-animation-duration: Sets the animation duration for state changes.
 *                                         Defaults to => 90ms
 * @prop --lf-#{$comp}-border-radius: Sets the border radius for the #{$comp} background.
