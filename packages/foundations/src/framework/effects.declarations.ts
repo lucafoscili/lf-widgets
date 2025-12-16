@@ -451,6 +451,17 @@ export interface LfEffectsInterface {
     /** Overrides timeout durations (lightbox fade, ripple cleanup, etc.). */
     timeout: (key: keyof LfEffectsTimeouts, value: number) => void;
   };
+  /** Manually triggers effects on elements. */
+  trigger: {
+    /**
+     * Manually triggers a ripple effect on an element.
+     * Useful when the ripple host can't receive pointer events directly
+     * (e.g., when covered by a transparent input for accessibility).
+     * @param element - The host element (must be registered for ripple)
+     * @param e - The pointer event to use for ripple positioning
+     */
+    ripple: (element: HTMLElement, e: PointerEvent) => void;
+  };
   /** Removes registered effects from elements. */
   unregister: {
     /** Removes neon glow effect from the element. */

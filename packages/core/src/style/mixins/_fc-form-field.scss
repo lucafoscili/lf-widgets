@@ -50,7 +50,7 @@
   &__label {
     min-width: var(--lf-form-label-min-width, max-content);
     overflow: hidden;
-    padding-left: var(--lf-form-label-padding, 1.5em);
+    padding-left: var(--lf-form-label-padding, 0);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

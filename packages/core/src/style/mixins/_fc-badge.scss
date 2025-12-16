@@ -54,12 +54,11 @@
      */
     font-family: var(--lf-badge-font-family, var(--lf-font-family-button));
     /**
-     * @prop --lf-badge-font-size: Sets the font size for the badge component.
-     *                             Defaults to => var(--lf-fc-ui-size, var(--lf-font-size-button))
+     * @prop --lf-badge-font-size: Sets the base font size for the badge component (scaled by --lf-fc-ui-size).
+     *                             Defaults to => var(--lf-font-size)
      */
-    font-size: var(
-      --lf-badge-font-size,
-      var(--lf-fc-ui-size, var(--lf-font-size-button))
+    font-size: calc(
+      var(--lf-badge-font-size, var(--lf-font-size)) * var(--lf-fc-ui-size, 1)
     );
     /**
      * @prop --lf-badge-font-weight: Sets the font weight for the badge component.

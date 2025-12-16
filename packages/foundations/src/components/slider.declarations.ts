@@ -99,6 +99,7 @@ export interface LfSliderAdapter
 export interface LfSliderAdapterRefs extends LfComponentAdapterRefs {
   input: HTMLInputElement | null;
   thumb: HTMLElement | null;
+  thumbUnderlay: HTMLDivElement | null;
   track: HTMLElement | null;
 }
 /**
@@ -268,8 +269,10 @@ export interface LfSliderFCProps {
   step?: number;
   /** Custom CSS styles to apply (object format for Stencil JSX) */
   style?: { [key: string]: string };
-  /** Reference callback for the thumb element (for ripple effects) */
+  /** Reference callback for the thumb element */
   thumbRef?: (el: HTMLElement | null) => void;
+  /** Reference callback for the thumb underlay element (ripple container) */
+  thumbUnderlayRef?: (el: HTMLElement | null) => void;
   /** Reference callback for the track element */
   trackRef?: (el: HTMLElement | null) => void;
   /**

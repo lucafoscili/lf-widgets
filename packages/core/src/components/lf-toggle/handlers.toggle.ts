@@ -9,6 +9,7 @@ import {
  * v4.0.0 Architecture:
  * - Uses `controller.actions` for complex operations (toggle)
  * - Routes all events through dispatcher
+ * - Manually triggers ripple on pointerdown (input covers the ripple host)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
@@ -34,7 +35,18 @@ export const prepToggleHandlers = (
         dispatcher.emit("focus", { originalEvent: e });
       },
       onPointerDown: (e: PointerEvent) => {
-        const { dispatcher } = getAdapter();
+        const adapter = getAdapter();
+        const { controller, dispatcher, elements } = adapter;
+        const { get } = controller;
+        const { refs } = elements;
+
+        // Manually trigger ripple on the underlay (native input covers it)
+        const framework = get.framework();
+        const thumbUnderlay = refs.thumbUnderlay;
+        if (framework && thumbUnderlay) {
+          framework.effects.trigger.ripple(thumbUnderlay, e);
+        }
+
         dispatcher.emit("pointerdown", { originalEvent: e });
       },
     },

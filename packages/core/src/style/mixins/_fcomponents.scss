@@ -26,11 +26,14 @@
 // FIcon - Inline SVG sprite icon
 // =====================================================
 // Base styles for the `.f-icon` class (hardwired in FIcon component).
-// These ensure the SVG fills the wrapper and inherits color properly.
+// The wrapper class (e.g., .button__icon, .textfield__icon) sets dimensions.
+// This class just ensures the SVG fills the wrapper and inherits color.
 // Included in global.scss → GLOBAL_STYLES → auto-adopted into shadow roots.
 .f-icon {
-  height: 100%;
-  width: 100%;
+  // Display inline-flex to contain the SVG properly
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   // SVG styling - fill with currentColor for theme inheritance
   > svg {

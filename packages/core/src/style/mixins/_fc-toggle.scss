@@ -28,6 +28,7 @@
   & {
     align-items: center;
     display: inline-flex;
+    justify-content: center;
     /**
      * @prop --lf-toggle-margin: Sets the margin for the toggle component.
      *                           Defaults to => 1em 0.5em
@@ -44,31 +45,6 @@
   }
 
   // -----------------------------------------------------------------------------
-  // Hover Effect (background highlight)
-  // -----------------------------------------------------------------------------
-  &:hover::before {
-    background-color: rgba(
-      var(
-        --lf-toggle-color-surface,
-        var(--lf-fc-color-surface, var(--lf-color-bg))
-      ),
-      var(--lf-ui-alpha-glass-hint, 0.125)
-    );
-    border-radius: 50%;
-    content: "";
-    height: 2.5em;
-    left: calc(50% - 0.5em);
-    padding: 0.5em;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    transition:
-      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-      opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: 2.5em;
-  }
-
-  // -----------------------------------------------------------------------------
   // Active State (toggle is ON)
   // -----------------------------------------------------------------------------
   &--active {
@@ -82,6 +58,12 @@
       );
     }
 
+    // Move the entire thumbUnderlay (which contains the thumb) when active
+    .toggle__thumb-underlay {
+      // translateX(100%) moves to the right, -50% centers vertically
+      transform: translate(calc(100% - 0.25em), -50%);
+    }
+
     .toggle__thumb {
       background-color: rgba(
         var(
@@ -90,7 +72,6 @@
         ),
         var(--lf-ui-alpha-glass-solid, 0.875)
       );
-      transform: translateX(100%) translateY(-50%);
     }
   }
 
@@ -144,72 +125,101 @@
   }
 
   // -----------------------------------------------------------------------------
-  // Thumb Underlay (positioning container)
+  // Thumb Underlay (ripple container - Material Design state layer)
   // -----------------------------------------------------------------------------
   &__thumb-underlay {
-    display: flex;
-    justify-content: center;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    & {
+      // Ripple container with semi-transparent hover effect
+      background-color: transparent;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      left: 0;
+      /**
+     * @prop --lf-toggle-state-layer-size: Sets the size for the toggle state layer (ripple area).
+     *                                     Defaults to => 2.5em
+     */
+      height: var(--lf-toggle-state-layer-size, 2.5em);
+      // Allow ripple to show (will be set as ripple host)
+      overflow: hidden;
+      position: absolute;
+      top: 50%;
+      transform: translate(-25%, -50%);
+      transition:
+        background-color 0.2s ease,
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: var(--lf-toggle-state-layer-size, 2.5em);
+    }
+
+    // Override [data-lf-ripple-host] { position: relative } with higher specificity
+    &[data-lf-ripple-host] {
+      position: absolute;
+    }
+  }
+
+  // Hover state for the underlay (state layer effect)
+  &:hover &__thumb-underlay {
+    background-color: rgba(
+      var(
+        --lf-toggle-color-on-bg,
+        var(--lf-fc-color-on-bg, var(--lf-color-on-bg))
+      ),
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
+  }
+
+  // Active state uses primary color
+  &--active:hover &__thumb-underlay {
+    background-color: rgba(
+      var(
+        --lf-toggle-color-primary,
+        var(--lf-fc-color-primary, var(--lf-color-primary))
+      ),
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
   }
 
   // -----------------------------------------------------------------------------
   // Thumb
   // -----------------------------------------------------------------------------
   &__thumb {
-    background-color: rgba(
-      var(
-        --lf-toggle-color-surface,
-        var(--lf-fc-color-surface, var(--lf-color-bg))
-      ),
-      var(--lf-ui-alpha-glass, 0.375)
-    );
-    border-radius: 50%;
-    cursor: pointer;
-    /**
+    & {
+      background-color: rgba(
+        var(
+          --lf-toggle-color-on-bg,
+          var(--lf-fc-color-on-bg, var(--lf-color-on-bg))
+        ),
+        var(--lf-ui-alpha-glass, 0.375)
+      );
+      border-radius: 50%;
+      cursor: pointer;
+      // Flex-shrink prevents thumb from shrinking inside the underlay
+      flex-shrink: 0;
+      /**
      * @prop --lf-toggle-thumb-size: Sets the size for the toggle thumb.
      *                               Defaults to => 1.5em
      */
-    height: var(--lf-toggle-thumb-size, 1.5em);
-    left: 0;
-    overflow: hidden;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    transition:
-      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-      transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: var(--lf-toggle-thumb-size, 1.5em);
-
-    &:hover {
-      background-color: rgba(
-        var(
-          --lf-toggle-color-surface,
-          var(--lf-fc-color-surface, var(--lf-color-bg))
-        ),
-        var(--lf-ui-alpha-glass-solid, 0.875)
-      );
+      height: var(--lf-toggle-thumb-size, 1.5em);
+      // No position: absolute - thumb is centered in the underlay
+      transition: background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: var(--lf-toggle-thumb-size, 1.5em);
     }
   }
 
   // -----------------------------------------------------------------------------
   // Native Input (hidden, for accessibility)
+  // Positioned to cover the entire toggle track area
   // -----------------------------------------------------------------------------
   &__native-control {
     cursor: pointer;
-    /**
-     * @prop --lf-toggle-input-height: Sets the height for the toggle input.
-     *                                 Defaults to => 3em
-     */
-    height: var(--lf-toggle-input-height, 3em);
-    left: -0.5em;
+    height: 2.5em;
+    left: 0;
+    margin: 0;
     opacity: 0;
     position: absolute;
-    top: -1.25em;
-    width: 4em;
-    z-index: 1;
+    top: -1em;
+    width: 120%;
+    z-index: 2;
   }
 }

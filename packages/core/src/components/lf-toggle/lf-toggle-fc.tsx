@@ -48,6 +48,7 @@ export const LfToggleFC: FunctionalComponent<LfToggleFCProps> = ({
   onPointerDown,
   style,
   thumbRef,
+  thumbUnderlayRef,
   trackRef,
   uiSize = "medium",
   uiState = "primary",
@@ -88,32 +89,35 @@ export const LfToggleFC: FunctionalComponent<LfToggleFCProps> = ({
           part={parts.track}
           ref={trackRef}
         ></div>
-        <div class={bemClass(toggle._, toggle.thumbUnderlay)}>
+        <div
+          class={bemClass(toggle._, toggle.thumbUnderlay)}
+          ref={thumbUnderlayRef}
+        >
           <div
             class={bemClass(toggle._, toggle.thumb)}
             part={parts.thumb}
             ref={thumbRef}
           ></div>
-          <input
-            aria-label={accessibleLabel}
-            checked={value}
-            class={bemClass(toggle._, toggle.nativeControl)}
-            data-cy={CY_ATTRIBUTES.input}
-            disabled={disabled}
-            onBlur={(e) => onBlur?.(e)}
-            onChange={(e) => {
-              const target = e.target as HTMLInputElement;
-              onChange?.(target.checked, e);
-            }}
-            onFocus={(e) => onFocus?.(e)}
-            onPointerDown={(e) => onPointerDown?.(e)}
-            part={parts.nativeControl}
-            ref={inputRef}
-            role="switch"
-            type="checkbox"
-            value={value ? "on" : "off"}
-          ></input>
         </div>
+        <input
+          aria-label={accessibleLabel}
+          checked={value}
+          class={bemClass(toggle._, toggle.nativeControl)}
+          data-cy={CY_ATTRIBUTES.input}
+          disabled={disabled}
+          onBlur={(e) => onBlur?.(e)}
+          onChange={(e) => {
+            const target = e.target as HTMLInputElement;
+            onChange?.(target.checked, e);
+          }}
+          onFocus={(e) => onFocus?.(e)}
+          onPointerDown={(e) => onPointerDown?.(e)}
+          part={parts.nativeControl}
+          ref={inputRef}
+          role="switch"
+          type="checkbox"
+          value={value ? "on" : "off"}
+        ></input>
       </div>
       <label
         class={bemClass(formField._, formField.label)}

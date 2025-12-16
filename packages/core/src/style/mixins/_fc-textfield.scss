@@ -207,10 +207,16 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
       align-self: center;
       color: $onBgC;
       cursor: pointer;
+      /**
+       * @prop --lf-textfield-icon-size: Sets the size for the textfield icons.
+       *                                 Defaults to => 1.5em
+       */
+      height: var(--lf-#{$comp}-icon-size, 1.5em);
       outline: none;
       transition:
         opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: var(--lf-#{$comp}-icon-size, 1.5em);
     }
 
     &:hover {
@@ -325,8 +331,12 @@ $surfaceC: var(--lf-#{$comp}-color-surface, var(--lf-color-surface));
   // ---------------------------------------------------------------------------
   &__underline {
     & {
+      bottom: 0;
+      height: 2px;
       max-width: 100%;
       overflow: hidden;
+      position: absolute;
+      width: 100%;
     }
 
     &:before,

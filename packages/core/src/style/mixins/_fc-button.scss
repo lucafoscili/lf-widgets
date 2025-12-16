@@ -64,12 +64,11 @@ $box-shadow-color: var(
      */
     font-family: var(--lf-button-font-family, var(--lf-font-family-primary));
     /**
-     * @prop --lf-button-font-size: Sets the font size for the button component.
-     *                              Defaults to => var(--lf-font-size-primary)
+     * @prop --lf-button-font-size: Sets the base font size for the button component (scaled by --lf-fc-ui-size).
+     *                              Defaults to => 0.775em
      */
     font-size: calc(
-      var(--lf-button-font-size, var(--lf-font-size-primary)) *
-        var(--lf-fc-ui-size, 1)
+      var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1)
     );
     /**
      * @prop --lf-button-font-weight: Sets the font weight for the button component.
@@ -481,9 +480,16 @@ $box-shadow-color: var(
   // Spinner Element
   // ---------------------------------------------------------------------------
   &__spinner {
-    width: 100%;
-    left: 0;
+    /**
+     * @prop --lf-button-spinner-size: Sets the size for the button spinner.
+     *                                 Defaults to => 1.5em
+     */
+    height: var(--lf-button-spinner-size, 1.5em);
+    left: 50%;
     position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--lf-button-spinner-size, 1.5em);
   }
 
   // ---------------------------------------------------------------------------

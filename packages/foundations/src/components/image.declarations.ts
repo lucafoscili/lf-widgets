@@ -17,7 +17,10 @@ import {
   LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
-import { LfFrameworkAllowedKeysMap } from "../framework/framework.declarations";
+import {
+  LfFrameworkAllowedKeysMap,
+  LfFrameworkInterface,
+} from "../framework/framework.declarations";
 import {
   LF_IMAGE_BLOCKS,
   LF_IMAGE_EVENTS,
@@ -25,8 +28,9 @@ import {
   LF_IMAGE_PARTS,
 } from "./image.constants";
 import {
-  LfThemeUIState,
   LfThemeIconVariable,
+  LfThemeUISize,
+  LfThemeUIState,
 } from "../framework/theme.declarations";
 
 //#region Class
@@ -236,5 +240,65 @@ export interface LfImagePropsInterface {
   lfStyle?: string;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
+}
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfImageFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfImageFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Whether an error occurred during image loading */
+  error?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** HTML attributes to apply to the img element */
+  htmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
+  /** Icon name to display when value is not a URL */
+  icon?: string;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Reference callback for the img element */
+  imageRef?: (el: HTMLImageElement | null) => void;
+  /** Whether the image has been successfully loaded */
+  isLoaded?: boolean;
+  /** Callback fired on click event */
+  onClick?: (e: MouseEvent) => void;
+  /** Callback fired on context menu event */
+  onContextMenu?: (e: MouseEvent) => void;
+  /** Callback fired when image fails to load */
+  onError?: (e: Event) => void;
+  /** Callback fired when image loads successfully */
+  onLoad?: (e: Event) => void;
+  /** Width of the image component */
+  sizeX?: string;
+  /** Height of the image component */
+  sizeY?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** Source URL or icon name for the image */
+  value?: string;
 }
 //#endregion

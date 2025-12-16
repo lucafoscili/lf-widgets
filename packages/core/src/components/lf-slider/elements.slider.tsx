@@ -66,6 +66,7 @@ export const prepSliderJsx = (
               onPointerDown={(e) => handlers.pointerdown(e)}
               step={lfStep}
               thumbRef={assignRef(refs, "thumb")}
+              thumbUnderlayRef={assignRef(refs, "thumbUnderlay")}
               trackRef={assignRef(refs, "track")}
               uiSize={comp.lfUiSize}
               uiState={comp.lfUiState}

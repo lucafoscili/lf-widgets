@@ -301,6 +301,23 @@ export class LfEffects implements LfEffectsInterface {
     },
   };
 
+  trigger = {
+    /**
+     * Manually triggers a ripple effect on an element.
+     * Useful when the ripple host can't receive pointer events directly
+     * (e.g., when covered by a transparent input for accessibility).
+     *
+     * @param element - The host element (must be registered for ripple)
+     * @param e - The pointer event to use for ripple positioning
+     */
+    ripple: (element: HTMLElement, e: PointerEvent) => {
+      if (!this.isRegistered(element, "ripple")) {
+        return;
+      }
+      rippleEffect.trigger(element, e);
+    },
+  };
+
   unregister = {
     neonGlow: (element: HTMLElement) => {
       if (!this.isRegistered(element, "neon-glow")) {

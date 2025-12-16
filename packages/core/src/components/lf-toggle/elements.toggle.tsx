@@ -48,6 +48,7 @@ export const prepToggle = (
           onLabelClick={(e) => handlers.label.onClick(e)}
           onPointerDown={(e) => handlers.toggle.onPointerDown(e)}
           thumbRef={assignRef(refs, "thumb")}
+          thumbUnderlayRef={assignRef(refs, "thumbUnderlay")}
           trackRef={assignRef(refs, "track")}
           uiSize={lfUiSize}
           uiState={lfUiState}

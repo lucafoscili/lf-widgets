@@ -601,14 +601,6 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the border radius for the badge component. Defaults to => 50%",
       },
       {
-        name: "--lf-badge-color-on-primary",
-        docs: "Sets the color-on-primary color for the badge component. Defaults to => var(--lf-color-on-primary)",
-      },
-      {
-        name: "--lf-badge-color-primary",
-        docs: "Sets the color-primary color for the badge component. Defaults to => var(--lf-color-primary)",
-      },
-      {
         name: "--lf-badge-font-family",
         docs: "Sets the primary font family for the badge component. Defaults to => var(--lf-font-family-primary)",
       },
@@ -623,10 +615,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-badge-padding",
         docs: "Sets the padding for the badge component. Defaults to => 0.25em",
-      },
-      {
-        name: "--lf-badge-place-content",
-        docs: "Sets the place content for the badge component. Defaults to => center",
       },
       {
         name: "--lf-badge-width",
@@ -962,16 +950,8 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the border radius for the button component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
-        name: "--lf-button-color-border",
-        docs: "Sets the color-border color for the button component. Defaults to => var(--lf-color-border)",
-      },
-      {
-        name: "--lf-button-color-on-primary",
-        docs: "Sets the color-on-primary color for the button component. Defaults to => var(--lf-color-on-primary)",
-      },
-      {
         name: "--lf-button-color-primary",
-        docs: "Sets the color-primary color for the button component. Defaults to => var(--lf-color-primary)",
+        docs: "Sets the primary color for the button component. Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-button-cursor",
@@ -979,11 +959,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-button-font-family",
-        docs: "Sets the primary font family for the button component. Defaults to => var(--lf-font-family-primary)",
+        docs: "Sets the font family for the button component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-button-font-size",
-        docs: "Sets the font size for the button component. Defaults to => var(--lf-font-size)",
+        docs: "Sets the font size for the button component. Defaults to => var(--lf-font-size-primary)",
       },
       {
         name: "--lf-button-font-weight",
@@ -992,6 +972,14 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-button-height",
         docs: "Sets the height for the button component. Defaults to => 3em",
+      },
+      {
+        name: "--lf-button-icon-height",
+        docs: "Sets the icon height for the button component. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-button-icon-width",
+        docs: "Sets the icon width for the button component. Defaults to => 1.5em",
       },
       {
         name: "--lf-button-justify-content",
@@ -5407,52 +5395,12 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-textfield-border-color",
-        docs: "Sets the border color for the textfield component. Defaults to => var(--lf-color-border)",
-      },
-      {
-        name: "--lf-textfield-border-radius",
-        docs: "Sets the border radius for the textfield component. Defaults to => var(--lf-ui-border-radius)",
-      },
-      {
-        name: "--lf-textfield-color-on-bg",
-        docs: "Sets the color-on-bg color for the textfield component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-textfield-color-primary",
-        docs: "Sets the color-primary color for the textfield component. Defaults to => var(--lf-color-primary)",
-      },
-      {
-        name: "--lf-textfield-color-surface",
-        docs: "Sets the color-surface color for the textfield component. Defaults to => var(--lf-color-surface)",
-      },
-      {
         name: "--lf-textfield-font-family",
         docs: "Sets the primary font family for the textfield component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-textfield-font-size",
         docs: "Sets the font size for the textfield component. Defaults to => var(--lf-font-size)",
-      },
-      {
-        name: "--lf-textfield-height",
-        docs: "Sets the height for the textfield component. Defaults to => 3.5em",
-      },
-      {
-        name: "--lf-textfield-icon-action-padding",
-        docs: "Sets the padding for the textfield action icon. Defaults to => 0 0.75em 0 0",
-      },
-      {
-        name: "--lf-textfield-icon-padding",
-        docs: "Sets the padding for the textfield icon. Defaults to => 0 0 0 0.75em",
-      },
-      {
-        name: "--lf-textfield-input-cursor",
-        docs: "Sets the cursor for the textfield input. Defaults to => text",
-      },
-      {
-        name: "--lf-textfield-padding",
-        docs: "Sets the padding for the textfield component. Defaults to => 0 1em",
       },
     ],
   },
@@ -5690,23 +5638,11 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-toggle-border-radius",
-        docs: "Sets the border radius for the toggle component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Sets the border radius for the toggle track. Defaults to => var(--lf-ui-border-radius, 1em)",
       },
       {
-        name: "--lf-toggle-color-on-bg",
-        docs: "Sets the color-on-bg color for the toggle component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-toggle-color-on-surface",
-        docs: "Sets the color-on-surface color for the toggle component. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-toggle-color-primary",
-        docs: "Sets the color-primary color for the toggle component. Defaults to => var(--lf-color-primary)",
-      },
-      {
-        name: "--lf-toggle-color-surface",
-        docs: "Sets the color-surface color for the toggle component. Defaults to => var(--lf-color-surface)",
+        name: "--lf-toggle-box-shadow",
+        docs: "Sets the box shadow for the toggle track. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.2)",
       },
       {
         name: "--lf-toggle-font-family",
@@ -5722,7 +5658,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-toggle-input-height",
-        docs: "Sets the height for the toggle component's input. Defaults to => 3em",
+        docs: "Sets the height for the toggle input. Defaults to => 3em",
       },
       {
         name: "--lf-toggle-label-min-width",
@@ -5746,15 +5682,15 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-toggle-thumb-size",
-        docs: "Sets the size for the toggle component's thumb. Defaults to => 1.5em",
+        docs: "Sets the size for the toggle thumb. Defaults to => 1.5em",
       },
       {
         name: "--lf-toggle-track-height",
-        docs: "Sets the height for the toggle component's track. Defaults to => 0.5em",
+        docs: "Sets the height for the toggle track. Defaults to => 0.5em",
       },
       {
         name: "--lf-toggle-track-width",
-        docs: "Sets the width for the toggle component's track. Defaults to => 3em",
+        docs: "Sets the width for the toggle track. Defaults to => 3em",
       },
     ],
   },

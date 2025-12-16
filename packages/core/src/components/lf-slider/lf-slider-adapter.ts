@@ -67,6 +67,7 @@ export const createRefs = (): LfSliderAdapterRefs => {
   return {
     input: null,
     thumb: null,
+    thumbUnderlay: null,
     track: null,
   };
 };

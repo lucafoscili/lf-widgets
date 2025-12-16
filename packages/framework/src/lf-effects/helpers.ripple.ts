@@ -147,6 +147,21 @@ export const rippleEffect = {
   },
 
   /**
+   * Manually triggers a ripple effect on an element.
+   * Useful when the ripple host can't receive pointer events directly
+   * (e.g., when covered by a transparent input for accessibility).
+   *
+   * @param element - The host element (must be registered for ripple)
+   * @param e - The pointer event to use for ripple positioning
+   */
+  trigger: (element: HTMLElement, e: PointerEvent): void => {
+    const data = elementData.get(element);
+    if (data) {
+      data.handler(e);
+    }
+  },
+
+  /**
    * Unregisters ripple effect from an element.
    * Removes the surface layer and event listener.
    *

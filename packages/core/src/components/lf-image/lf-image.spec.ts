@@ -496,11 +496,11 @@ describe("LfImage", () => {
       expect(img).toBeTruthy();
     });
 
-    it("has data-lf fade-in attribute on wrapper", async () => {
+    it("has data-lf attribute with uiState on wrapper", async () => {
       const page = await createPage(
-        `<lf-image lf-value="test-icon"></lf-image>`,
+        `<lf-image lf-value="test-icon" lf-ui-state="success"></lf-image>`,
       );
-      const wrapper = page.root.shadowRoot.querySelector("[data-lf='fade-in']");
+      const wrapper = page.root.shadowRoot.querySelector("[data-lf='success']");
 
       expect(wrapper).toBeTruthy();
     });

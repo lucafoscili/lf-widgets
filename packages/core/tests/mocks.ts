@@ -137,6 +137,9 @@ export function createMockFramework(): jest.Mocked<LfFrameworkInterface> {
         intensity: jest.fn(),
         timeout: jest.fn(),
       },
+      trigger: {
+        ripple: jest.fn(),
+      },
       unregister: {
         neonGlow: jest.fn(),
         ripple: jest.fn(),

@@ -1,12 +1,11 @@
 import {
   LfToggleAdapter,
-  LfToggleAdapterControllerActions,
-  LfToggleAdapterControllerComputed,
   LfToggleAdapterControllerGetters,
   LfToggleAdapterControllerSetters,
   LfToggleAdapterHandlers,
   LfToggleAdapterJsx,
   LfToggleAdapterRefs,
+  LfToggleState,
 } from "@lf-widgets/foundations";
 import { prepToggle } from "./elements.toggle";
 import { prepToggleHandlers } from "./handlers.toggle";
@@ -14,25 +13,87 @@ import { prepToggleHandlers } from "./handlers.toggle";
 /**
  * Creates the canonical adapter for lf-toggle.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.set: Simple setters
- * - controller.computed: Derived predicates (isDisabled, isOn)
- * - controller.actions: Complex operations (toggle)
- * - elements: JSX factories + refs
- * - dispatcher: Centralized event emission (passed from component)
- * - handlers: Event callbacks
+ * "Adapter as Core" Architecture:
+ * - Adapter OWNS the runtime state (not the WC)
+ * - State is stored in closure variables (e.g., `_value`)
+ * - `controller.get.*` reads from closure state
+ * - `controller.set.*` writes to closure state AND calls `onStateChange()`
+ * - `onStateChange` signals WC to increment its single `@State _renderTick`
+ * - WC becomes a thin shell: lifecycle + HTML attribute interface + single render trigger
+ *
+ * Benefits:
+ * - Predictable renders (explicit via onStateChange)
+ * - Testable (adapter can be tested without DOM)
+ * - Portable (adapter works with any renderer)
+ * - Batch-friendly (actions can make multiple changes before calling onStateChange once)
+ *
+ * @param baseGetters - Base getters from createBaseGetters utility
+ * @param initialValue - Initial toggle state
+ * @param onStateChange - Callback to trigger WC re-render (increments _renderTick)
+ * @param getAdapter - Accessor function to get the current adapter instance
+ * @returns Complete adapter (without dispatcher - added by WC)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
-//#region Adapter
+//#region Adapter Factory
 export const createAdapter = (
-  getters: LfToggleAdapterControllerGetters,
-  setters: LfToggleAdapterControllerSetters,
-  computed: LfToggleAdapterControllerComputed,
-  actions: LfToggleAdapterControllerActions,
+  baseGetters: Omit<LfToggleAdapterControllerGetters, "value">,
+  initialValue: LfToggleState,
+  onStateChange: () => void,
   getAdapter: () => LfToggleAdapter,
 ): Omit<LfToggleAdapter, "dispatcher"> => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTERNAL STATE (replaces @State in WC)
+  // This closure variable IS the single source of truth for toggle state
+  // ═══════════════════════════════════════════════════════════════════════════
+  let _value: LfToggleState = initialValue;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE GETTERS - Read from closure
+  // ═══════════════════════════════════════════════════════════════════════════
+  const getters: LfToggleAdapterControllerGetters = {
+    ...baseGetters,
+    value: () => _value,
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE SETTERS - Write to closure + trigger render
+  // ═══════════════════════════════════════════════════════════════════════════
+  const setters: LfToggleAdapterControllerSetters = {
+    value: (state: LfToggleState) => {
+      const comp = baseGetters.compInstance();
+      const isDisabled = comp.lfUiState === "disabled";
+      const isValid = state === "on" || state === "off";
+
+      if (!isDisabled && isValid && _value !== state) {
+        _value = state;
+        onStateChange(); // Signal WC to re-render
+      }
+    },
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPUTED - Derive from closure state (no side effects)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const computed = {
+    isDisabled: () => baseGetters.compInstance().lfUiState === "disabled",
+    isOn: () => _value === "on",
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ACTIONS - Complex operations (may batch multiple state changes)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const actions = {
+    /**
+     * Toggle between "on" and "off".
+     * Uses setters.value() which handles disabled check and triggers render.
+     */
+    toggle: () => {
+      const newValue: LfToggleState = _value === "on" ? "off" : "on";
+      setters.value(newValue);
+    },
+  };
+
   return {
     controller: {
       get: getters,
@@ -75,6 +136,7 @@ export const createRefs = (): LfToggleAdapterRefs => {
     input: null,
     label: null,
     thumb: null,
+    thumbUnderlay: null,
     track: null,
   };
 };

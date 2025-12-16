@@ -30,6 +30,10 @@ import {
 //#region Class
 /**
  * Primary interface implemented by the `lf-toggle` component. It merges the shared component contract with the component-specific props.
+ *
+ * In "Adapter as Core" pattern:
+ * - WC implements this interface but delegates state to adapter
+ * - `value` and `setValue` are bridge methods to adapter's internal state
  */
 export interface LfToggleInterface
   extends LfComponent<"LfToggle">,
@@ -43,6 +47,7 @@ export interface LfToggleInterface
   };
   /**
    * Internal runtime state mirrored by the component implementation.
+   * @deprecated In "Adapter as Core" pattern, use adapter.controller.get.value() instead
    */
   value: LfToggleState;
   setValue: (value: LfToggleState | boolean) => Promise<void>;
@@ -104,6 +109,7 @@ export interface LfToggleAdapterRefs extends LfComponentAdapterRefs {
   input: HTMLInputElement | null;
   label: HTMLLabelElement | null;
   thumb: HTMLDivElement | null;
+  thumbUnderlay: HTMLDivElement | null;
   track: HTMLDivElement | null;
 }
 /**
@@ -130,6 +136,9 @@ export interface LfToggleAdapterHandlers extends LfComponentAdapterHandlers {
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * In "Adapter as Core" pattern, state lives in the adapter, not the WC.
+ * Getters read from adapter's internal state variables.
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfToggleAdapterControllerGetters
@@ -138,13 +147,22 @@ export interface LfToggleAdapterControllerGetters
     typeof LF_TOGGLE_BLOCKS,
     typeof LF_TOGGLE_IDS,
     typeof LF_TOGGLE_PARTS
-  > {}
+  > {
+  /** Read the current toggle state from adapter's internal state */
+  value: () => LfToggleState;
+}
 /**
  * Simple single-value setters.
- * Each setter performs exactly ONE state change.
+ * Each setter performs exactly ONE state change and triggers onStateChange.
+ *
+ * In "Adapter as Core" pattern, setters mutate adapter's internal state
+ * and call the onStateChange callback to signal the WC to re-render.
  */
 export interface LfToggleAdapterControllerSetters
-  extends LfComponentAdapterSetters {}
+  extends LfComponentAdapterSetters {
+  /** Set the toggle state and trigger re-render */
+  value: (state: LfToggleState) => void;
+}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
@@ -267,8 +285,10 @@ export interface LfToggleFCProps {
   onPointerDown?: (e: PointerEvent) => void;
   /** Custom CSS styles to apply (object format for Stencil JSX) */
   style?: { [key: string]: string };
-  /** Reference callback for the thumb element (for ripple effects) */
+  /** Reference callback for the thumb element */
   thumbRef?: (el: HTMLElement | null) => void;
+  /** Reference callback for the thumb underlay element (ripple container) */
+  thumbUnderlayRef?: (el: HTMLElement | null) => void;
   /** Reference callback for the track element */
   trackRef?: (el: HTMLElement | null) => void;
   /**

@@ -119,18 +119,41 @@
   }
 
   // -----------------------------------------------------------------------------
-  // Thumb Underlay (positioning container)
+  // Thumb Underlay (ripple container / state layer)
+  // Material Design pattern: ripple on surrounding element, not the thumb
   // -----------------------------------------------------------------------------
   &__thumb-underlay {
+    align-items: center;
+    background-color: transparent;
     border-radius: 50%;
     display: flex;
+    height: 2.5em;
     justify-content: center;
     left: var(--lf_slider_value);
-    pointer-events: none;
+    overflow: hidden;
     position: absolute;
-    top: var(--lf-slider-thumb-underlay-top, -0.6em);
+    top: var(--lf-slider-thumb-underlay-top, -1em);
     transform: translateX(-50%);
-    transition: left 0.1s ease-out;
+    transition:
+      left 0.1s ease-out,
+      background-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 2.5em;
+
+    // Override [data-lf-ripple-host] { position: relative } with higher specificity
+    &[data-lf-ripple-host] {
+      position: absolute;
+    }
+  }
+
+  // Hover state for the underlay (state layer effect) - triggered by parent hover
+  &:hover &__thumb-underlay {
+    background-color: rgba(
+      var(
+        --lf-slider-color-primary,
+        var(--lf-fc-color-primary, var(--lf-color-primary))
+      ),
+      var(--lf-ui-alpha-glass-hint, 0.125)
+    );
   }
 
   // -----------------------------------------------------------------------------

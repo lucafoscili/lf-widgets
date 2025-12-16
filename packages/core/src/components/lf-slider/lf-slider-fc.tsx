@@ -50,6 +50,7 @@ export const LfSliderFC: FunctionalComponent<LfSliderFCProps> = ({
   step = 1,
   style,
   thumbRef,
+  thumbUnderlayRef,
   trackRef,
   uiSize = "medium",
   uiState = "primary",
@@ -107,7 +108,10 @@ export const LfSliderFC: FunctionalComponent<LfSliderFCProps> = ({
           value={value.real}
         />
         <div class={bemClass(slider._, slider.track)} ref={trackRef}>
-          <div class={bemClass(slider._, slider.thumbUnderlay)}>
+          <div
+            class={bemClass(slider._, slider.thumbUnderlay)}
+            ref={thumbUnderlayRef}
+          >
             <div
               class={bemClass(slider._, slider.thumb)}
               part={parts.thumb}

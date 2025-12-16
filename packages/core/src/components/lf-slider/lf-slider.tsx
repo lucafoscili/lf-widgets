@@ -363,11 +363,11 @@ export class LfSlider implements LfSliderInterface {
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;
-    const { thumb } = this.#adapter.elements.refs;
+    const { thumbUnderlay } = this.#adapter.elements.refs;
 
     const hasThemeRipple = theme.get.current().hasEffect("ripple");
-    if (this.lfRipple && hasThemeRipple && thumb) {
-      effects.register.ripple(thumb);
+    if (this.lfRipple && hasThemeRipple && thumbUnderlay) {
+      effects.register.ripple(thumbUnderlay);
     }
 
     // Emit ready event via dispatcher
@@ -393,11 +393,11 @@ export class LfSlider implements LfSliderInterface {
     const { effects, theme } = this.#framework ?? {};
 
     if (this.#adapter) {
-      const { thumb } = this.#adapter.elements.refs;
+      const { thumbUnderlay } = this.#adapter.elements.refs;
 
       const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-      if (effects && this.lfRipple && hasThemeRipple && thumb) {
-        effects.unregister.ripple(thumb);
+      if (effects && this.lfRipple && hasThemeRipple && thumbUnderlay) {
+        effects.unregister.ripple(thumbUnderlay);
       }
     }
 

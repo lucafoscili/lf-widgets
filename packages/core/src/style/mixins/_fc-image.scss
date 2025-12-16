@@ -1,0 +1,75 @@
+// ============================================================================
+// FC-IMAGE - Functional Component Image Styles
+// ============================================================================
+// Image-specific styles for the LfImageFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-image-* CSS custom properties for theming
+//
+// Usage:
+//   <LfImageFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// Image Core
+// -----------------------------------------------------------------------------
+.image {
+  & {
+    height: var(--lf_image_height, 0);
+    position: relative;
+    width: var(--lf_image_width, 0);
+  }
+
+  // -----------------------------------------------------------------------------
+  // Image and Icon shared styles
+  // -----------------------------------------------------------------------------
+  &__icon,
+  &__img {
+    display: block;
+    height: var(--lf_image_height, 0);
+    /**
+     * @prop --lf-image-margin: Sets the margin for the image component.
+     *                          Defaults to => auto
+     */
+    margin: var(--lf-image-margin, auto);
+    width: var(--lf_image_width, 0);
+  }
+
+  // -----------------------------------------------------------------------------
+  // Icon specific styles
+  // -----------------------------------------------------------------------------
+  &__icon {
+    /**
+     * @prop --lf-image-color-primary: Sets the primary color for the icon.
+     *                                 Defaults to => var(--lf-fc-color-primary, var(--lf-color-primary))
+     */
+    color: rgba(
+      var(
+        --lf-image-color-primary,
+        var(--lf-fc-color-primary, var(--lf-color-primary))
+      ),
+      var(--lf-ui-alpha-glass-solid, 0.875)
+    );
+    transition:
+      color 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  // -----------------------------------------------------------------------------
+  // Img specific styles
+  // -----------------------------------------------------------------------------
+  &__img {
+    /**
+     * @prop --lf-image-object-fit: Sets the object fit for the image element.
+     *                              Defaults to => cover
+     */
+    object-fit: var(--lf-image-object-fit, cover);
+  }
+}

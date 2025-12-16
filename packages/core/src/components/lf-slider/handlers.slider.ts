@@ -9,6 +9,7 @@ import {
  * v4.0.0 Architecture:
  * - Uses `controller.actions` for complex operations (setValue, setDisplayValue)
  * - Routes all events through dispatcher
+ * - Manually triggers ripple on pointerdown (input covers the ripple host)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
@@ -54,7 +55,16 @@ export const prepSliderHandlers = (
 
     pointerdown: (e: PointerEvent) => {
       const adapter = getAdapter();
-      const { dispatcher } = adapter;
+      const { controller, dispatcher, elements } = adapter;
+      const { get } = controller;
+      const { thumbUnderlay } = elements.refs;
+
+      // Manually trigger ripple on the underlay (native input covers it)
+      const framework = get.framework();
+      if (framework && thumbUnderlay) {
+        framework.effects.trigger.ripple(thumbUnderlay, e);
+      }
+
       dispatcher.emit("pointerdown", { originalEvent: e });
     },
   };
