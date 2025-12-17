@@ -38,6 +38,7 @@ import {
 import { awaitFramework } from "../../utils/setup";
 import { prepMultiInputActions } from "./actions.multiinput";
 import { prepMultiInputComputed } from "./computed.multiinput";
+import { renderMultiinputFC } from "./elements.multiinput";
 import {
   historyDiffers,
   historyValues,
@@ -713,27 +714,13 @@ export class LfMultiInput implements LfMultiInputInterface {
     await this.#syncChipSelection();
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div
-            class={bemClass(this.#b.multiinput._)}
-            data-lf={this.#lf[this.lfUiState]}
-            part={this.#p.multiinput}
-          >
-            {this.#adapter.elements.jsx.textfield()}
-            <div
-              class={bemClass(this.#b.multiinput._, this.#b.multiinput.history)}
-              part={this.#p.history}
-            >
-              {this.#adapter.elements.jsx.chips()}
-            </div>
-          </div>
-        </div>
+        <div id={this.#w}>{renderMultiinputFC(this.#adapter)}</div>
       </Host>
     );
   }

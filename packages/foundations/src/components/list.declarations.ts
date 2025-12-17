@@ -122,6 +122,16 @@ export interface LfListAdapterJsx extends LfComponentAdapterJsx {
   deleteIcon: (node: LfDataNode) => VNode | null;
   filter: () => VNode | null;
   icon: (node: LfDataNode) => VNode;
+  /**
+   * FC-first list rendering factory.
+   * Renders the complete list using LfListFC functional component.
+   * @param items - Array of visible nodes to render
+   * @param onItemRef - Optional callback to capture list item refs
+   */
+  list: (
+    items: LfDataNode[],
+    onItemRef?: (el: HTMLLIElement | null, index: number) => void,
+  ) => VNode;
   node: (node: LfDataNode, index: number, isSelected: boolean) => VNode;
   subtitle: (node: LfDataNode) => VNode;
   title: (node: LfDataNode) => VNode;

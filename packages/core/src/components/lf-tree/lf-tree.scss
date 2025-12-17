@@ -1,8 +1,12 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/tree" as tree-fc;
 
 $comp: "tree";
 @include lf-comp-setup($comp, "false", "true", "false", "false", "true");
+
+// Import documentation from FC mixin (single source of truth)
+@include tree-fc.lf-tree-docs($comp);
 
 :host {
   @include lf-el-stretch;

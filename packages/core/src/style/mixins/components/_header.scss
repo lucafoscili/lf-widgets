@@ -1,0 +1,71 @@
+// =============================================================================
+// HEADER - Component Styles
+// =============================================================================
+// Header-specific styles for the LfHeaderFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-header-docs() mixin for WC SCSS files to import
+//
+// Note: Header is a display-only component that provides a top-level
+// container for navigation, branding, and toolbar elements via slots.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/header" as header-fc;
+//   @include header-fc.lf-header-docs("header");
+// =============================================================================
+@mixin lf-header-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-justify: Sets the justify-content for the header section.
+   *       Defaults to => space-between
+   * @prop --lf-#{$comp}-padding: Sets the padding for the header section.
+   *       Defaults to => 0.5em 0.75em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "header";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Header Core
+// -----------------------------------------------------------------------------
+.header {
+  & {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Section (main content area with slot)
+  // ---------------------------------------------------------------------------
+  &__section {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1;
+    gap: 0.5em;
+    height: 100%;
+    justify-content: var(--lf-header-justify, space-between);
+    padding: var(--lf-header-padding, 0.5em 0.75em);
+    width: 100%;
+  }
+}

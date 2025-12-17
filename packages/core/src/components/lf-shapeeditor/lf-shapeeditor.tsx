@@ -44,9 +44,9 @@ import {
   Method,
   Prop,
   State,
-  VNode,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
+import { ShapeeditorFC } from "./fc";
 import {
   clearHistory,
   clearSelection,
@@ -726,64 +726,6 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
     return null;
   }
-  #prepShapeeditor(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { navigation, preview, settings } = this.#b;
-    const { explorer, jump, masonry } = this.#adapter.elements.jsx.navigation;
-    const { history, shape, spinner } = this.#adapter.elements.jsx.preview;
-    const { actions, controls, progressbar, tree } =
-      this.#adapter.elements.jsx.settings;
-    const { currentShape, history: historyState } =
-      this.#adapter.controller.get;
-
-    const hasNav = Boolean(this.lfNavigation?.treeProps?.lfDataset);
-    const shouldShowLoad = Boolean(this.lfLoadCallback);
-    const shouldShowExpander =
-      hasNav && Boolean(this.lfNavigation?.treeProps?.lfDataset);
-    const shouldShowTree = shouldShowExpander && this.isNavigationTreeOpen;
-    const shouldShowHistory = historyState.isPopupOpen();
-
-    return (
-      <div
-        class={bemClass(this.#b._, this.#b.grid, {
-          selected: !!currentShape(),
-        })}
-      >
-        {/* Navigation Panel */}
-        <div
-          class={bemClass(navigation._, undefined, {
-            "has-drawer": shouldShowTree,
-            "has-header": shouldShowLoad,
-            "has-nav": shouldShowExpander,
-          })}
-          part={this.#p.navigation._}
-        >
-          {shouldShowExpander && explorer()}
-          {shouldShowLoad && jump()}
-          {masonry()}
-        </div>
-        {/* Preview Panel */}
-        <div
-          class={bemClass(preview._, undefined, {
-            "has-history": shouldShowHistory,
-          })}
-          part={this.#p.preview._}
-        >
-          {shouldShowHistory && history()}
-          {shape()}
-          {spinner()}
-        </div>
-        {/* Settings Panel */}
-        <div class={bemClass(settings._)} part={this.#p.settings._}>
-          {actions()}
-          {progressbar()}
-          {tree()}
-          {controls()}
-        </div>
-      </div>
-    );
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -857,7 +799,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           <div class={bemClass(this.#b._)} part={this.#p._}>
-            {this.#prepShapeeditor()}
+            <ShapeeditorFC adapter={this.#adapter} />
           </div>
         </div>
       </Host>

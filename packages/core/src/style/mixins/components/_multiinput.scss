@@ -1,0 +1,91 @@
+// =============================================================================
+// MULTIINPUT - Component Styles
+// =============================================================================
+// Multiinput-specific styles for the LfMultiinputFC functional component.
+// Combines a textfield with chip-based history/tags selection.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - Supports "history" and "tags" modes
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-multiinput-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-multiinput-docs($comp) {
+  /**
+   * State-aware color variables (set via data-lf attribute):
+   * @prop --lf-#{$comp}-color-primary: Primary color for focus states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Color for content on primary backgrounds.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface background color.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Color for content on surface backgrounds.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-border: Border color for the component.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-color-on-bg: Color for text on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   *
+   * Layout variables:
+   * @prop --lf-#{$comp}-gap: Gap between textfield and history area.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-history-gap: Gap between chips in the history area.
+   *       Defaults to => 0.5em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "multiinput";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Multiinput Core
+// -----------------------------------------------------------------------------
+.multiinput {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    gap: var(--lf-multiinput-gap, 0.5em);
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Chips Container
+  // ---------------------------------------------------------------------------
+  &__chips {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // History Section
+  // ---------------------------------------------------------------------------
+  &__history {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lf-multiinput-history-gap, 0.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Textfield Container
+  // ---------------------------------------------------------------------------
+  &__textfield {
+    height: 100%;
+    width: 100%;
+  }
+}

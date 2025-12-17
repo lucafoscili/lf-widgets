@@ -118,11 +118,19 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                        | Description                                                                                         |
-| --------------------------- | --------------------------------------------------------------------------------------------------- |
-| `--lf-select-color-primary` | Sets the color-primary color for the select component. Defaults to => var(--lf-color-primary)       |
-| `--lf-select-font-family`   | Sets the primary font family for the select component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-select-font-size`     | Sets the font size for the select component. Defaults to => var(--lf-font-size)                     |
+| Name                              | Description                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--lf-select-color-bg`            | Background color for the select. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                 |
+| `--lf-select-color-border`        | Border color for the select. Defaults to => var(--lf-color-border)                                     |
+| `--lf-select-color-on-bg`         | Text/icon color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))             |
+| `--lf-select-color-on-primary`    | Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))  |
+| `--lf-select-color-on-surface`    | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))           |
+| `--lf-select-color-primary`       | Primary color for focus/hover states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))  |
+| `--lf-select-color-surface`       | Surface color for dropdown background. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) |
+| `--lf-select-font-family`         | Sets the primary font family for the select component. Defaults to => var(--lf-font-family-primary)    |
+| `--lf-select-font-size`           | Sets the font size for the select component. Defaults to => var(--lf-font-size)                        |
+| `--lf-select-input-cursor`        | Cursor style for the input. Defaults to => pointer                                                     |
+| `--lf-select-transition-duration` | Transition duration for hover/focus. Defaults to => 0.2s                                               |
 
 
 ## Dependencies

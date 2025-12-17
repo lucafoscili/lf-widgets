@@ -1,0 +1,222 @@
+// =============================================================================
+// COMPARE - Component Styles
+// =============================================================================
+// Compare-specific styles for the LfCompareFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-compare-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/compare" as compare-fc;
+//   @include compare-fc.lf-compare-docs("compare");
+// =============================================================================
+@mixin lf-compare-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for the compare component.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-border-color: Border color for panels.
+   *       Defaults to => var(--lf-color-border)
+   * @prop --lf-#{$comp}-border-radius: Border radius for panels.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-grid-template: Sets the grid template for the compare component.
+   *       Defaults to => 1fr auto
+   * @prop --lf-#{$comp}-toolbar-justify: Sets the justify for the toolbar.
+   *       Defaults to => space-between
+   * @prop --lf-#{$comp}-toolbar-padding: Padding for the toolbar.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-toolbar-width: Width for the toolbar.
+   *       Defaults to => 100%
+   * @prop --lf-#{$comp}-panel-height: Sets the height for the panel.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-panel-max-height: Sets the max height for the panel.
+   *       Defaults to => 50%
+   * @prop --lf-#{$comp}-panel-width: Sets the width for the panel.
+   *       Defaults to => 50%
+   * @prop --lf-#{$comp}-panel-z-index: Sets the z index for the panel.
+   *       Defaults to => var(--lf-ui-zindex-portal)
+   * @prop --lf-#{$comp}-slider-thickness: Sets the thickness for the slider.
+   *       Defaults to => 3px
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "compare";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Compare Core
+// -----------------------------------------------------------------------------
+.compare {
+  & {
+    height: 100%;
+    width: 100%;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-rows: var(--lf-compare-grid-template, 1fr auto);
+    height: 100%;
+    position: relative;
+    user-select: none;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Toolbar
+// -----------------------------------------------------------------------------
+.toolbar {
+  & {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-solid, 0.875));
+    border-radius: var(--lf-compare-border-radius, var(--lf-ui-border-radius));
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: var(--lf-compare-toolbar-justify, space-between);
+    padding: var(--lf-compare-toolbar-padding, 0.5em);
+    width: var(--lf-compare-toolbar-width, 100%);
+  }
+
+  &__panel {
+    & {
+      background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+      border: 1px solid var(--lf-compare-border-color, var(--lf-color-border));
+      border-radius: var(
+        --lf-compare-border-radius,
+        var(--lf-ui-border-radius)
+      );
+      bottom: 0;
+      height: var(--lf-compare-panel-height, auto);
+      max-height: var(--lf-compare-panel-max-height, 50%);
+      overflow: auto;
+      position: absolute;
+      width: var(--lf-compare-panel-width, 50%);
+      z-index: var(--lf-compare-panel-z-index, var(--lf-ui-zindex-portal));
+    }
+
+    &--left {
+      left: 0;
+    }
+
+    &--right {
+      right: 0;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// View
+// -----------------------------------------------------------------------------
+.view {
+  & {
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  &--main {
+    & > :first-child {
+      height: 100%;
+      position: relative;
+      width: 100%;
+    }
+
+    & > :last-child {
+      & {
+        clip-path: inset(0 var(--lf_compare_overlay_width, 50%) 0 0);
+        height: 100%;
+        left: 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+
+      &:after {
+        background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+        content: "";
+        height: 100%;
+        pointer-events: none;
+        position: absolute;
+        right: var(--lf_compare_overlay_width, 50%);
+        top: 0;
+        width: var(--lf-compare-slider-thickness, 3px);
+      }
+    }
+  }
+
+  &--split {
+    & {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      overflow: hidden;
+    }
+  }
+
+  &__left,
+  &__right {
+    height: 100%;
+    width: 100%;
+  }
+
+  &__slider {
+    & {
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      touch-action: pan-y;
+      width: 100%;
+      z-index: 2;
+    }
+  }
+
+  &__input {
+    & {
+      appearance: none;
+      background: transparent;
+      cursor: grab;
+      height: 100%;
+      margin: 0;
+      pointer-events: all;
+      width: 100%;
+      z-index: 1;
+    }
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      background-color: rgba($surfaceC, 1);
+      cursor: ew-resize;
+      height: 100%;
+      margin: 0;
+      width: 10px;
+    }
+
+    &::-moz-slider-thumb {
+      appearance: none;
+      background-color: rgba($surfaceC, 1);
+      cursor: ew-resize;
+      height: 100%;
+      margin: 0;
+      width: 10px;
+    }
+  }
+}

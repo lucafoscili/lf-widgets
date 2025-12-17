@@ -1,0 +1,253 @@
+// =============================================================================
+// ACCORDION - Component Styles
+// =============================================================================
+// Accordion-specific styles for the LfAccordionFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-accordion-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/accordion" as accordion-fc;
+//   @include accordion-fc.lf-accordion-docs("accordion");
+// =============================================================================
+@mixin lf-accordion-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-border-color: Border color for accordion items.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-border-radius: Border radius for accordion items.
+   *       Defaults to => var(--lf-ui-border-radius, 0.375em)
+   * @prop --lf-#{$comp}-border-width: Border width for accordion items.
+   *       Defaults to => var(--lf-ui-border-width, 1px)
+   * @prop --lf-#{$comp}-color-bg: Background color for accordion headers.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on background surface.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for selections.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for accordion items.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-cursor: Cursor for accordion headers.
+   *       Defaults to => pointer
+   * @prop --lf-#{$comp}-expand-margin: Margin for the expand icon.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-flex-direction: Flex direction for accordion container.
+   *       Defaults to => column
+   * @prop --lf-#{$comp}-flex-wrap: Flex wrap for accordion container.
+   *       Defaults to => nowrap
+   * @prop --lf-#{$comp}-font-family: Font family for accordion text.
+   *       Defaults to => var(--lf-font-family-title)
+   * @prop --lf-#{$comp}-font-size: Base font size (scaled by --lf-ui-size).
+   *       Defaults to => var(--lf-font-size)
+   * @prop --lf-#{$comp}-font-weight: Font weight for accordion headers.
+   *       Defaults to => var(--lf-font-weight-title)
+   * @prop --lf-#{$comp}-gap: Gap between header elements.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-icon-margin: Margin for item icons.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-icon-size: Size for icons.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-line-height: Line height for accordion headers.
+   *       Defaults to => 1.75em
+   * @prop --lf-#{$comp}-padding: Padding for accordion headers.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-text-align: Text alignment for headers.
+   *       Defaults to => left
+   * @prop --lf-#{$comp}-text-margin: Margin for header text.
+   *       Defaults to => 0
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "accordion";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Accordion Container
+// -----------------------------------------------------------------------------
+.accordion {
+  & {
+    border: var(--lf-accordion-border-width, var(--lf-ui-border-width, 1px))
+      solid $borderC;
+    border-left: 0;
+    border-radius: var(
+      --lf-accordion-border-radius,
+      var(--lf-ui-border-radius, 0.375em)
+    );
+    border-right: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: var(--lf-accordion-flex-direction, column);
+    flex-wrap: var(--lf-accordion-flex-wrap, nowrap);
+    font-size: calc(
+      var(--lf-accordion-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    height: 100%;
+    @include lf-transitions((background-color, border-color, box-shadow));
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Accordion Node (Item)
+// -----------------------------------------------------------------------------
+.node {
+  & {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+    border: var(--lf-accordion-border-width, var(--lf-ui-border-width, 1px))
+      solid $borderC;
+    border-bottom: 0;
+    border-radius: var(
+      --lf-accordion-border-radius,
+      var(--lf-ui-border-radius, 0.375em)
+    );
+    border-top: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  &:not(:first-of-type) {
+    border-top: var(--lf-accordion-border-width, var(--lf-ui-border-width, 1px))
+      solid $borderC;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header
+  // ---------------------------------------------------------------------------
+  &__header {
+    & {
+      align-items: center;
+      background-color: rgba($bgC, 0.95);
+      border: none;
+      border-radius: var(
+        --lf-accordion-border-radius,
+        var(--lf-ui-border-radius, 0.375em)
+      );
+      box-sizing: border-box;
+      color: rgb($onBgC);
+      cursor: var(--lf-accordion-cursor, pointer);
+      display: flex;
+      flex-wrap: nowrap;
+      gap: var(--lf-accordion-gap, 0.5em);
+      line-height: var(--lf-accordion-line-height, 1.75em);
+      outline: none;
+      padding: var(--lf-accordion-padding, 1em);
+      position: relative;
+      text-align: var(--lf-accordion-text-align, left);
+      @include lf-transitions(
+        (background-color, border-color, box-shadow, color)
+      );
+      width: 100%;
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &--expanded {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &--selected {
+      & {
+        background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+      }
+
+      &:hover {
+        background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+        color: rgb($onPrimaryC);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content
+  // ---------------------------------------------------------------------------
+  &__content {
+    & {
+      border-radius: var(
+        --lf-accordion-border-radius,
+        var(--lf-ui-border-radius, 0.375em)
+      );
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    &--selected {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text
+  // ---------------------------------------------------------------------------
+  &__text {
+    & {
+      flex: 1;
+      font-family: var(--lf-accordion-font-family, var(--lf-font-family-title));
+      font-weight: var(--lf-accordion-font-weight, var(--lf-font-weight-title));
+      height: 100%;
+      margin: var(--lf-accordion-text-margin, 0);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    &--highlighted {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icons (node icon and expand icon)
+  // ---------------------------------------------------------------------------
+  &__icon,
+  &__expand {
+    align-items: center;
+    color: rgb($onBgC);
+    display: flex;
+    font-size: var(--lf-accordion-icon-size, 1.25em);
+    justify-content: center;
+    margin: 0;
+  }
+
+  &__icon {
+    margin: var(--lf-accordion-icon-margin, 0);
+  }
+
+  &__expand {
+    & {
+      margin: var(--lf-accordion-expand-margin, 0);
+      @include lf-transitions((transform));
+    }
+
+    &--expanded {
+      transform: rotate(-180deg);
+    }
+
+    &--placeholder {
+      visibility: hidden;
+    }
+  }
+}

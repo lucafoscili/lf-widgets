@@ -1,0 +1,292 @@
+// =============================================================================
+// RADIO - Component Styles
+// =============================================================================
+// Radio-specific styles for the LfRadioFC functional component.
+// Works in conjunction with _fc-form-field.scss for the wrapper.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-radio-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-radio-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for selected/active states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-bg: Text color for labels.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-group-gap: Gap between radio items in the group.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-group-horizontal-gap: Gap between items in horizontal orientation.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-item-gap: Gap between radio control and label.
+   *       Defaults to => var(--lf-space-03)
+   * @prop --lf-#{$comp}-item-selected-color: Color for selected radio items.
+   *       Defaults to => rgba(var(--lf-color-primary), 1)
+   * @prop --lf-#{$comp}-label-color: Label text color.
+   *       Defaults to => rgba(var(--lf-color-on-bg), 0.87)
+   * @prop --lf-#{$comp}-label-font-size: Label font size.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-label-font-weight: Label font weight.
+   *       Defaults to => 500
+   * @prop --lf-#{$comp}-label-line-height: Label line height.
+   *       Defaults to => 1.5
+   * @prop --lf-#{$comp}-label-padding: Label padding.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-label-padding-leading: Label padding in leading position.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-label-selected-color: Label color when selected.
+   *       Defaults to => rgba(var(--lf-color-primary), 1)
+   * @prop --lf-#{$comp}-label-selected-font-weight: Label font weight when selected.
+   *       Defaults to => 600
+   * @prop --lf-#{$comp}-control-size: Size of the radio control.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-circle-border-width: Border width of the radio circle.
+   *       Defaults to => 2px
+   * @prop --lf-#{$comp}-circle-border-color: Border color of the radio circle.
+   *       Defaults to => rgba(var(--lf-color-on-bg), 0.6)
+   * @prop --lf-#{$comp}-circle-hover-border-color: Border color on hover.
+   *       Defaults to => rgba(var(--lf-color-primary), 0.875)
+   * @prop --lf-#{$comp}-circle-selected-border-color: Border color when selected.
+   *       Defaults to => rgba(var(--lf-color-primary), 1)
+   * @prop --lf-#{$comp}-dot-background-color: Background color of selected dot.
+   *       Defaults to => rgba(var(--lf-color-primary), 1)
+   * @prop --lf-#{$comp}-dot-border-width: Border width of the dot.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-hover-border-color: Control border color on hover.
+   *       Defaults to => rgba(var(--lf-color-primary), 0.5)
+   * @prop --lf-#{$comp}-ripple-size: Size of the ripple effect.
+   *       Defaults to => 2.5em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "radio";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Radio Group Container
+// -----------------------------------------------------------------------------
+.radio {
+  & {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lf-radio-group-gap, 1em);
+  }
+
+  &--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--lf-radio-group-horizontal-gap, 1.25em);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Radio Item
+// -----------------------------------------------------------------------------
+.item {
+  & {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    gap: var(--lf-radio-item-gap, var(--lf-space-03));
+    position: relative;
+  }
+
+  &--leading {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  &--selected {
+    color: var(--lf-radio-item-selected-color, rgba($primaryC, 1));
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Item Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    & {
+      color: var(--lf-radio-label-color, rgba($onBgC, 0.87));
+      cursor: pointer;
+      font-size: var(--lf-radio-label-font-size, 1em);
+      font-weight: var(--lf-radio-label-font-weight, 500);
+      line-height: var(--lf-radio-label-line-height, 1.5);
+      padding-left: var(--lf-radio-label-padding, 0.75em);
+      transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .item--leading & {
+      padding-left: 0;
+      padding-right: var(--lf-radio-label-padding-leading, 0.75em);
+    }
+
+    .item--selected & {
+      color: var(--lf-radio-label-selected-color, rgba($primaryC, 1));
+      font-weight: var(--lf-radio-label-selected-font-weight, 600);
+    }
+
+    .item--disabled & {
+      cursor: not-allowed;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Radio Control
+// -----------------------------------------------------------------------------
+.control {
+  & {
+    border: 1px solid transparent;
+    border-radius: 50%;
+    box-sizing: content-box;
+    cursor: pointer;
+    display: inline-block;
+    flex: 0 0 auto;
+    height: var(--lf-radio-control-size, 1.25em);
+    overflow: visible;
+    position: relative;
+    transition: border-color 120ms cubic-bezier(0, 0, 0.2, 1);
+    width: var(--lf-radio-control-size, 1.25em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Circle (Outer ring)
+  // ---------------------------------------------------------------------------
+  &__circle {
+    & {
+      border: var(--lf-radio-circle-border-width, 2px) solid
+        var(--lf-radio-circle-border-color, rgba($onBgC, 0.6));
+      border-radius: 50%;
+      box-sizing: border-box;
+      height: 100%;
+      left: 0;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      transition:
+        border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+    }
+
+    .item:hover & {
+      border-color: var(
+        --lf-radio-circle-hover-border-color,
+        rgba($primaryC, 0.875)
+      );
+    }
+
+    .item--selected & {
+      border-color: var(
+        --lf-radio-circle-selected-border-color,
+        rgba($primaryC, 1)
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dot (Inner filled circle)
+  // ---------------------------------------------------------------------------
+  &__dot {
+    & {
+      border-color: var(--lf-radio-dot-background-color, rgba($primaryC, 1));
+      border-radius: 50%;
+      border-style: solid;
+      border-width: 0;
+      box-sizing: border-box;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      transform: scale(0);
+      transition:
+        transform 120ms cubic-bezier(0, 0, 0.2, 1),
+        border-color 120ms cubic-bezier(0, 0, 0.2, 1);
+      width: 100%;
+    }
+
+    .item:hover &,
+    .item--selected &,
+    .item--selected:hover & {
+      border-width: var(--lf-radio-dot-border-width, 0.5em);
+    }
+
+    .item:hover & {
+      transform: scale(0.25);
+    }
+
+    .item--selected & {
+      transform: scale(0.5);
+    }
+
+    .item--selected:hover & {
+      transform: scale(0.75);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Native Control (Hidden input)
+  // ---------------------------------------------------------------------------
+  &__input {
+    & {
+      cursor: inherit;
+      height: 100%;
+      left: 0;
+      margin: 0;
+      opacity: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Ripple
+  // ---------------------------------------------------------------------------
+  &__ripple {
+    border-radius: 50%;
+    height: var(--lf-radio-ripple-size, 2.5em);
+    left: 50%;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--lf-radio-ripple-size, 2.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Hover State
+  // ---------------------------------------------------------------------------
+  .item:hover & {
+    border-color: var(--lf-radio-hover-border-color, rgba($primaryC, 0.5));
+  }
+}

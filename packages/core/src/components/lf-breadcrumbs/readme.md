@@ -121,20 +121,22 @@ Type: `Promise<void>`
 
 | Name                                | Description                                                                                              |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `--lf-breadcrumbs-border-radius`    | Sets the border radius for the breadcrumbs component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-breadcrumbs-color-on-primary` | Sets the color-on-primary color for the breadcrumbs component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-breadcrumbs-color-on-surface` | Sets the color-on-surface color for the breadcrumbs component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-breadcrumbs-color-primary`    | Sets the color-primary color for the breadcrumbs component. Defaults to => var(--lf-color-primary)       |
-| `--lf-breadcrumbs-color-surface`    | Sets the color-surface color for the breadcrumbs component. Defaults to => var(--lf-color-surface)       |
-| `--lf-breadcrumbs-dot-gap`          | Sets the gap between dots. Defaults to => 0.05em                                                         |
-| `--lf-breadcrumbs-dot-gap-hover`    | Sets the gap between dots on hover. Defaults to => 0.2em                                                 |
+| `--lf-breadcrumbs-border-radius`    | Border radius for breadcrumb items. Defaults to => var(--lf-ui-radius)                                   |
+| `--lf-breadcrumbs-color-on-primary` | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))     |
+| `--lf-breadcrumbs-color-on-surface` | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))             |
+| `--lf-breadcrumbs-color-primary`    | Primary color for the breadcrumbs. Defaults to => var(--lf-state-primary, var(--lf-color-primary))       |
+| `--lf-breadcrumbs-color-surface`    | Surface color for breadcrumb items. Defaults to => var(--lf-state-surface, var(--lf-color-surface))      |
+| `--lf-breadcrumbs-dot-gap`          | Gap between dots in truncation indicator. Defaults to => 0.05em                                          |
+| `--lf-breadcrumbs-dot-gap-hover`    | Gap between dots on hover. Defaults to => 0.2em                                                          |
+| `--lf-breadcrumbs-empty-color`      | Color for empty state message. Defaults to => rgba(var(--lf-color-on-surface), 0.6)                      |
 | `--lf-breadcrumbs-font-family`      | Sets the primary font family for the breadcrumbs component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-breadcrumbs-font-size`        | Sets the font size for the breadcrumbs component. Defaults to => var(--lf-font-size)                     |
-| `--lf-breadcrumbs-gap`              | Sets the gap between breadcrumb items. Defaults to => 0.5em                                              |
-| `--lf-breadcrumbs-item-height`      | Sets the height for the items. Defaults to => 2em                                                        |
-| `--lf-breadcrumbs-item-padding`     | Sets the padding for the items. Defaults to => 0 0.75em                                                  |
-| `--lf-breadcrumbs-padding`          | Sets the padding for the breadcrumbs container. Defaults to => 0.5em                                     |
-| `--lf-breadcrumbs-separator-margin` | Sets the horizontal margin around separators. Defaults to => 0.25em                                      |
+| `--lf-breadcrumbs-gap`              | Gap between breadcrumb items. Defaults to => 0.5em                                                       |
+| `--lf-breadcrumbs-item-height`      | Height for breadcrumb items. Defaults to => 2em                                                          |
+| `--lf-breadcrumbs-item-padding`     | Padding for breadcrumb items. Defaults to => 0 0.75em                                                    |
+| `--lf-breadcrumbs-padding`          | Padding for the breadcrumbs container. Defaults to => 0.5em                                              |
+| `--lf-breadcrumbs-separator-color`  | Color for separators. Defaults to => rgba(var(--lf-color-on-surface), 0.5)                               |
+| `--lf-breadcrumbs-separator-margin` | Horizontal margin around separators. Defaults to => 0.25em                                               |
 
 
 ## Dependencies

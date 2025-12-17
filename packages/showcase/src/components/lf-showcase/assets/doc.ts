@@ -101,47 +101,55 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-accordion-border-color",
-        docs: "Sets the border color for the accordion component. Defaults to => var(--lf-color-border)",
+        docs: "Border color for accordion items. Defaults to => var(--lf-state-border, var(--lf-color-border))",
       },
       {
         name: "--lf-accordion-border-radius",
-        docs: "Sets the border radius for the accordion component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for accordion items. Defaults to => var(--lf-ui-border-radius, 0.375em)",
+      },
+      {
+        name: "--lf-accordion-border-width",
+        docs: "Border width for accordion items. Defaults to => var(--lf-ui-border-width, 1px)",
+      },
+      {
+        name: "--lf-accordion-color-bg",
+        docs: "Background color for accordion headers. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-accordion-color-on-bg",
-        docs: "Sets the color-on-bg color for the accordion component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-accordion-color-on-primary",
-        docs: "Sets the color-on-primary color for the accordion component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-accordion-color-on-surface",
-        docs: "Sets the color-on-surface color for the accordion component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
         name: "--lf-accordion-color-primary",
-        docs: "Sets the color-primary color for the accordion component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary/accent color for selections. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-accordion-color-surface",
-        docs: "Sets the color-surface color for the accordion component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for accordion items. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-accordion-cursor",
-        docs: "Sets the cursor for the accordion header. Defaults to => pointer",
+        docs: "Cursor for accordion headers. Defaults to => pointer",
       },
       {
         name: "--lf-accordion-expand-margin",
-        docs: "Sets the margin of the accordion expand icon. Defaults to => 0",
+        docs: "Margin for the expand icon. Defaults to => 0",
       },
       {
         name: "--lf-accordion-flex-direction",
-        docs: "Sets the flex direction for the accordion component. Defaults to => column",
+        docs: "Flex direction for accordion container. Defaults to => column",
       },
       {
         name: "--lf-accordion-flex-wrap",
-        docs: "Sets the flex wrap for the accordion component. Defaults to => nowrap",
+        docs: "Flex wrap for accordion container. Defaults to => nowrap",
       },
       {
         name: "--lf-accordion-font-family",
@@ -152,28 +160,36 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the accordion component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-accordion-font-weight",
+        docs: "Font weight for accordion headers. Defaults to => var(--lf-font-weight-title)",
+      },
+      {
         name: "--lf-accordion-gap",
-        docs: "Sets the gap of the accordion header. Defaults to => 0.5em",
+        docs: "Gap between header elements. Defaults to => 0.5em",
       },
       {
         name: "--lf-accordion-icon-margin",
-        docs: "Sets the margin of the accordion icon. Defaults to => 0",
+        docs: "Margin for item icons. Defaults to => 0",
+      },
+      {
+        name: "--lf-accordion-icon-size",
+        docs: "Size for icons. Defaults to => 1.25em",
       },
       {
         name: "--lf-accordion-line-height",
-        docs: "Sets the line height of the accordion header. Defaults to => 1.75em",
+        docs: "Line height for accordion headers. Defaults to => 1.75em",
       },
       {
         name: "--lf-accordion-padding",
-        docs: "Sets the padding of the accordion header. Defaults to => 1em",
+        docs: "Padding for accordion headers. Defaults to => 1em",
       },
       {
         name: "--lf-accordion-text-align",
-        docs: "Sets the text alignment of the accordion header. Defaults to => left",
+        docs: "Text alignment for headers. Defaults to => left",
       },
       {
         name: "--lf-accordion-text-margin",
-        docs: "Sets the margin of the accordion text. Defaults to => 0",
+        docs: "Margin for header text. Defaults to => 0",
       },
     ],
   },
@@ -270,14 +286,6 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-article-color-on-bg",
         docs: "Sets the color-on-bg color for the article component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-article-color-on-surface",
-        docs: "Sets the color-on-surface color for the article component. Defaults to => var(--lf-color-on-surface)",
-      },
-      {
-        name: "--lf-article-color-surface",
-        docs: "Sets the color-surface color for the article component. Defaults to => var(--lf-color-surface)",
       },
       {
         name: "--lf-article-font-family",
@@ -515,12 +523,48 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-autocomplete-border-radius",
+        docs: "Border radius for dropdown. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-autocomplete-color-border",
+        docs: "Border color for dropdown. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
+        name: "--lf-autocomplete-color-on-bg",
+        docs: "Text and icon color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-autocomplete-color-primary",
+        docs: "Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-autocomplete-color-surface",
+        docs: "Surface color for dropdown background. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
+        name: "--lf-autocomplete-dropdown-background-alpha",
+        docs: "Background alpha for dropdown. Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)",
+      },
+      {
+        name: "--lf-autocomplete-dropdown-box-shadow",
+        docs: "Box shadow for dropdown. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.15)",
+      },
+      {
+        name: "--lf-autocomplete-dropdown-margin-top",
+        docs: "Margin top for dropdown list. Defaults to => 0.25em",
+      },
+      {
         name: "--lf-autocomplete-font-family",
         docs: "Sets the primary font family for the autocomplete component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-autocomplete-font-size",
         docs: "Sets the font size for the autocomplete component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-autocomplete-spinner-min-height",
+        docs: "Min height for spinner area. Defaults to => 0.25em",
       },
     ],
   },
@@ -758,31 +802,35 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-breadcrumbs-border-radius",
-        docs: "Sets the border radius for the breadcrumbs component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for breadcrumb items. Defaults to => var(--lf-ui-radius)",
       },
       {
         name: "--lf-breadcrumbs-color-on-primary",
-        docs: "Sets the color-on-primary color for the breadcrumbs component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-breadcrumbs-color-on-surface",
-        docs: "Sets the color-on-surface color for the breadcrumbs component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
         name: "--lf-breadcrumbs-color-primary",
-        docs: "Sets the color-primary color for the breadcrumbs component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary color for the breadcrumbs. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-breadcrumbs-color-surface",
-        docs: "Sets the color-surface color for the breadcrumbs component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for breadcrumb items. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-breadcrumbs-dot-gap",
-        docs: "Sets the gap between dots. Defaults to => 0.05em",
+        docs: "Gap between dots in truncation indicator. Defaults to => 0.05em",
       },
       {
         name: "--lf-breadcrumbs-dot-gap-hover",
-        docs: "Sets the gap between dots on hover. Defaults to => 0.2em",
+        docs: "Gap between dots on hover. Defaults to => 0.2em",
+      },
+      {
+        name: "--lf-breadcrumbs-empty-color",
+        docs: "Color for empty state message. Defaults to => rgba(var(--lf-color-on-surface), 0.6)",
       },
       {
         name: "--lf-breadcrumbs-font-family",
@@ -794,23 +842,27 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-breadcrumbs-gap",
-        docs: "Sets the gap between breadcrumb items. Defaults to => 0.5em",
+        docs: "Gap between breadcrumb items. Defaults to => 0.5em",
       },
       {
         name: "--lf-breadcrumbs-item-height",
-        docs: "Sets the height for the items. Defaults to => 2em",
+        docs: "Height for breadcrumb items. Defaults to => 2em",
       },
       {
         name: "--lf-breadcrumbs-item-padding",
-        docs: "Sets the padding for the items. Defaults to => 0 0.75em",
+        docs: "Padding for breadcrumb items. Defaults to => 0 0.75em",
       },
       {
         name: "--lf-breadcrumbs-padding",
-        docs: "Sets the padding for the breadcrumbs container. Defaults to => 0.5em",
+        docs: "Padding for the breadcrumbs container. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-breadcrumbs-separator-color",
+        docs: "Color for separators. Defaults to => rgba(var(--lf-color-on-surface), 0.5)",
       },
       {
         name: "--lf-breadcrumbs-separator-margin",
-        docs: "Sets the horizontal margin around separators. Defaults to => 0.25em",
+        docs: "Horizontal margin around separators. Defaults to => 0.25em",
       },
     ],
   },
@@ -1350,6 +1402,10 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the color-on-bg color for the card component. Defaults to => var(--lf-color-on-bg)",
       },
       {
+        name: "--lf-card-color-on-primary",
+        docs: "Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
         name: "--lf-card-color-primary",
         docs: "Sets the color-primary color for the card component. Defaults to => var(--lf-color-primary)",
       },
@@ -1469,15 +1525,23 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-carousel-border-radius",
-        docs: "Sets the border radius for the carousel component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the carousel container. Defaults to => var(--lf-ui-border-radius, 0.25em)",
+      },
+      {
+        name: "--lf-carousel-color-on-primary",
+        docs: "Text/icon color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-carousel-color-on-surface",
-        docs: "Sets the color-on-surface color for the carousel component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text/icon color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-carousel-color-primary",
+        docs: "Primary color for carousel navigation elements. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-carousel-color-surface",
-        docs: "Sets the color-surface color for the carousel component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for the slide bar. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-carousel-font-family",
@@ -1489,15 +1553,19 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-carousel-slide-bar-height",
-        docs: "Sets the height for the slide bar of the carousel component. Defaults to => 0.75em",
+        docs: "Height of the slide indicator bar. Defaults to => 0.75em",
       },
       {
         name: "--lf-carousel-slide-bar-opacity",
-        docs: "Sets the opacity for the slide bar of the carousel component. Defaults to => 0.75",
+        docs: "Opacity of the slide bar at rest. Defaults to => 0.75",
       },
       {
         name: "--lf-carousel-slide-bar-opacity-hover",
-        docs: "Sets the opacity for the slide bar of the carousel component when hovered. Defaults to => 1",
+        docs: "Opacity of the slide bar on hover. Defaults to => 1",
+      },
+      {
+        name: "--lf-carousel-transition-duration",
+        docs: "Duration for slide transitions. Defaults to => 0.5s",
       },
     ],
   },
@@ -1608,12 +1676,16 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-chart-background-alpha",
+        docs: "Background alpha for the chart. Defaults to => var(--lf-ui-alpha-glass-hint, 0.125)",
+      },
+      {
         name: "--lf-chart-color-bg",
-        docs: "Sets the color-bg color for the chart component. Defaults to => var(--lf-color-bg)",
+        docs: "Background color for the chart container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-chart-color-on-bg",
-        docs: "Sets the color-on-bg color for the chart component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text/element color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-chart-font-family",
@@ -1625,11 +1697,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-chart-min-height",
-        docs: "Sets the minimum height for the chart component. Defaults to => var(--lf_chart_height, 100%)",
+        docs: "Minimum height for the chart container. Defaults to => var(--lf_chart_height, 100%)",
       },
       {
         name: "--lf-chart-min-width",
-        docs: "Sets the minimum width for the chart component. Defaults to => var(--lf_chart_width, 100%)",
+        docs: "Minimum width for the chart container. Defaults to => var(--lf_chart_width, 100%)",
       },
     ],
   },
@@ -2311,40 +2383,32 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
-        name: "--lf-code-border-color",
-        docs: "Sets the border color for the code component. Defaults to => var(--lf-color-border)",
-      },
-      {
         name: "--lf-code-border-radius",
-        docs: "Sets the border radius for the code component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the code component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
         name: "--lf-code-border-right",
-        docs: "Sets the border right for the code component. Defaults to => 1px solid var(--lf-color-border)",
+        docs: "Sets the border right for the header. Defaults to => 1px solid var(--lf-color-border)",
       },
       {
         name: "--lf-code-border-top",
-        docs: "Sets the border top for the code component. Defaults to => 1px solid var(--lf-color-border)",
-      },
-      {
-        name: "--lf-code-color-on-bg",
-        docs: "Sets the color-on-bg color for the code component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Sets the border top for the header. Defaults to => 1px solid var(--lf-color-border)",
       },
       {
         name: "--lf-code-color-on-primary",
-        docs: "Sets the color-on-primary color for the code component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-code-color-on-surface",
-        docs: "Sets the color-on-surface color for the code component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
         name: "--lf-code-color-primary",
-        docs: "Sets the color-primary color for the code component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary/accent color for the code component. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-code-color-surface",
-        docs: "Sets the color-surface color for the code component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface/background color for code body. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-code-font-family",
@@ -2352,15 +2416,27 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-code-font-family-monospace",
-        docs: "Sets the monospace font family for the code component. Defaults to => var(--lf-font-family-monospace)",
+        docs: "Sets the monospace font family. Defaults to => var(--lf-font-family-monospace)",
       },
       {
         name: "--lf-code-font-size",
         docs: "Sets the font size for the code component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-code-header-height",
+        docs: "Sets the height for the header. Defaults to => 2.25em",
+      },
+      {
+        name: "--lf-code-header-justify",
+        docs: "Sets the justify-content for the header. Defaults to => space-between",
+      },
+      {
+        name: "--lf-code-header-padding",
+        docs: "Sets the padding for the header. Defaults to => 0.25em 0.75em",
+      },
+      {
         name: "--lf-code-header-position",
-        docs: "Sets the position for the header. Defaults to => sticky",
+        docs: "Sets the position for the sticky header. Defaults to => sticky",
       },
       {
         name: "--lf-code-height",
@@ -2432,19 +2508,19 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-compare-border-color",
-        docs: "Sets the border color for the compare component. Defaults to => var(--lf-color-border)",
+        docs: "Border color for panels. Defaults to => var(--lf-color-border)",
       },
       {
         name: "--lf-compare-border-radius",
-        docs: "Sets the border radius for the compare component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for panels. Defaults to => var(--lf-ui-border-radius)",
       },
       {
-        name: "--lf-compare-color-on-surface",
-        docs: "Sets the color-on-surface color for the compare component. Defaults to => var(--lf-color-on-surface)",
+        name: "--lf-compare-color-on-primary",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
-        name: "--lf-compare-color-surface",
-        docs: "Sets the color-surface color for the compare component. Defaults to => var(--lf-color-surface)",
+        name: "--lf-compare-color-primary",
+        docs: "Primary color for the compare component. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-compare-font-family",
@@ -2456,31 +2532,39 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-compare-grid-template",
-        docs: "Sets the grid template for the compare component. Defaults to => 0.75em",
+        docs: "Sets the grid template for the compare component. Defaults to => 1fr auto",
       },
       {
         name: "--lf-compare-panel-height",
-        docs: "Sets the height for the panel of the compare component. Defaults to => max-content",
+        docs: "Sets the height for the panel. Defaults to => auto",
       },
       {
         name: "--lf-compare-panel-max-height",
-        docs: "Sets the max height for the panel of the compare component. Defaults to => 50%",
+        docs: "Sets the max height for the panel. Defaults to => 50%",
       },
       {
         name: "--lf-compare-panel-width",
-        docs: "Sets the width for the panel of the compare component. Defaults to => 50%",
+        docs: "Sets the width for the panel. Defaults to => 50%",
       },
       {
         name: "--lf-compare-panel-z-index",
-        docs: "Sets the z index for the panel of the compare component. Defaults to => var(--lf-ui-zindex-portal)",
+        docs: "Sets the z index for the panel. Defaults to => var(--lf-ui-zindex-portal)",
       },
       {
         name: "--lf-compare-slider-thickness",
-        docs: "Sets the thickness for the slider of the compare component. Defaults to => 3px",
+        docs: "Sets the thickness for the slider. Defaults to => 3px",
       },
       {
         name: "--lf-compare-toolbar-justify",
-        docs: "Sets the justify for the toolbar of the compare component. Defaults to => space-between",
+        docs: "Sets the justify for the toolbar. Defaults to => space-between",
+      },
+      {
+        name: "--lf-compare-toolbar-padding",
+        docs: "Padding for the toolbar. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-compare-toolbar-width",
+        docs: "Width for the toolbar. Defaults to => 100%",
       },
     ],
   },
@@ -2589,19 +2673,35 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-drawer-border",
-        docs: "Sets the border for the drawer component. Defaults to => 1px solid 1px solid rgba(var(--lf-color-border), 0.75)",
+        docs: "Sets the border for the drawer component. Defaults to => 1px solid rgba(var(--lf-color-border), 0.75)",
       },
       {
         name: "--lf-drawer-border-radius",
         docs: "Sets the border radius for the drawer component. Defaults to => var(--lf-ui-border-radius)",
       },
       {
+        name: "--lf-drawer-color-bg",
+        docs: "Background color for the drawer. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
         name: "--lf-drawer-color-drawer",
         docs: "Sets the color-drawer color for the drawer component. Defaults to => var(--lf-color-drawer)",
       },
       {
+        name: "--lf-drawer-color-on-bg",
+        docs: "Text color for the drawer. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
         name: "--lf-drawer-color-on-drawer",
         docs: "Sets the color-on-drawer color for the drawer component. Defaults to => var(--lf-color-on-drawer)",
+      },
+      {
+        name: "--lf-drawer-color-on-primary",
+        docs: "Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-drawer-color-primary",
+        docs: "Primary/accent color for the drawer. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-drawer-font-family",
@@ -2613,11 +2713,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-drawer-left-box-shadow",
-        docs: "Sets the box-shadow for the left side of the drawer component. Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), 8px 0 16px 2px rgba(var(--lf-color-on-drawer), 0.14), 2px 0 20px 5px rgba(var(--lf-color-on-drawer), 0.14)",
+        docs: "Box shadow for the left-positioned drawer. Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ...",
       },
       {
         name: "--lf-drawer-right-box-shadow",
-        docs: "Sets the box-shadow for the right side of the drawer component. Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), -8px 0 16px 2px rgba(var(--lf-color-on-drawer), 0.14), -2px 0 20px 5px rgba(var(--lf-color-on-drawer), 0.14)",
+        docs: "Box shadow for the right-positioned drawer. Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ...",
       },
     ],
   },
@@ -2690,11 +2790,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-header-justify",
-        docs: "Sets the justify for the header component. Defaults to => space-between",
+        docs: "Sets the justify-content for the header section. Defaults to => space-between",
       },
       {
         name: "--lf-header-padding",
-        docs: "Sets the padding for the header component. Defaults to => 0.5em 0.75em",
+        docs: "Sets the padding for the header section. Defaults to => 0.5em 0.75em",
       },
     ],
   },
@@ -2988,63 +3088,59 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-list-border-color",
-        docs: "Sets the border color for the list component. Defaults to => var(--lf-color-border)",
+        docs: "Border color for the list. Defaults to => var(--lf-color-border)",
       },
       {
         name: "--lf-list-border-radius",
-        docs: "Sets the border radius for the list component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the list. Defaults to => var(--lf-ui-radius)",
+      },
+      {
+        name: "--lf-list-border-width",
+        docs: "Border width for the list. Defaults to => 1px",
       },
       {
         name: "--lf-list-color-bg",
-        docs: "Sets the color-bg color for the list component. Defaults to => var(--lf-color-bg)",
-      },
-      {
-        name: "--lf-list-color-danger",
-        docs: "Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)",
+        docs: "Background color for the list. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-list-color-on-bg",
-        docs: "Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)",
-      },
-      {
-        name: "--lf-list-color-on-danger",
-        docs: "Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)",
+        docs: "Text color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-list-color-on-primary",
-        docs: "Sets the color-on-primary color for the list component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-list-color-on-surface",
-        docs: "Sets the color-on-surface color for the list component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
         name: "--lf-list-color-primary",
-        docs: "Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary/accent color for selected items. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-list-color-surface",
-        docs: "Sets the color-surface color for the list component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for filter area. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-list-font-family",
-        docs: "Sets the primary font family for the list component. Defaults to => var(--lf-font-family-primary)",
+        docs: "Font family for the list. Defaults to => var(--lf-font-family)",
       },
       {
         name: "--lf-list-font-size",
-        docs: "Sets the font size for the list component. Defaults to => var(--lf-font-size)",
+        docs: "Base font size (scaled by --lf-ui-size). Defaults to => var(--lf-font-size)",
       },
       {
         name: "--lf-list-item-height",
-        docs: "Sets the height for the item of the list component. Defaults to => 2.5em",
+        docs: "Height for list items. Defaults to => 2.5em",
       },
       {
         name: "--lf-list-item-padding",
-        docs: "Sets the padding for the item of the list component. Defaults to => 0 0.75em",
+        docs: "Padding for list items. Defaults to => 0 0.75em",
       },
       {
         name: "--lf-list-item-with-description-height",
-        docs: "Sets the height for the item with description of the list component. Defaults to => 3.6em",
+        docs: "Height for items with description. Defaults to => 3.6em",
       },
     ],
   },
@@ -3343,39 +3439,43 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-messenger-active-options-name-padding",
-        docs: "Sets the padding for the name of the active options of the messenger component. Defaults to => 0.5em",
+        docs: "Padding for active option names. Defaults to => 0.5em",
       },
       {
         name: "--lf-messenger-avatar-name-padding",
-        docs: "Sets the padding for the name of the character. Defaults to => 0.5em",
+        docs: "Padding for the avatar name area. Defaults to => 0.5em",
       },
       {
-        name: "--lf-messenger-color-danger",
-        docs: "Sets the color-danger color for the messenger component. Defaults to => var(--lf-color-danger)",
+        name: "--lf-messenger-color-bg",
+        docs: "Background color for messenger container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
-        name: "--lf-messenger-color-on-danger",
-        docs: "Sets the color-on-danger color for the messenger component. Defaults to => var(--lf-color-on-danger)",
+        name: "--lf-messenger-color-border",
+        docs: "Border color for elements. Defaults to => var(--lf-state-border, var(--lf-color-border))",
       },
       {
-        name: "--lf-messenger-color-on-success",
-        docs: "Sets the color-on-success color for the messenger component. Defaults to => var(--lf-color-on-success)",
+        name: "--lf-messenger-color-on-bg",
+        docs: "Text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-messenger-color-on-primary",
+        docs: "Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-messenger-color-on-surface",
-        docs: "Sets the color-on-surface color for the messenger component. Defaults to => var(--lf-color-on-surface)",
+        docs: "Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
-        name: "--lf-messenger-color-success",
-        docs: "Sets the color-success color for the messenger component. Defaults to => var(--lf-color-success)",
+        name: "--lf-messenger-color-primary",
+        docs: "Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-messenger-color-surface",
-        docs: "Sets the color-surface color for the messenger component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for panels and elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-messenger-customization-title-padding",
-        docs: "Sets the padding for the title of the customization panel. Defaults to => 0.5em",
+        docs: "Padding for customization titles. Defaults to => 0.5em",
       },
       {
         name: "--lf-messenger-font-family",
@@ -3387,15 +3487,15 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-messenger-name-background-color",
-        docs: "Sets the background color for the name of the messenger component's option. Defaults to => rgb(var(--lf-color-surface))",
+        docs: "Background color for name areas. Defaults to => rgb(var(--lf-color-surface))",
       },
       {
         name: "--lf-messenger-name-height",
-        docs: "Sets the height for the name of the character. Defaults to => 3em",
+        docs: "Height for character name area. Defaults to => 3em",
       },
       {
         name: "--lf-messenger-portrait-foredrop-color",
-        docs: "Sets the color for the foredrop of the portrait. Defaults to => rgba(var(--lf-color-bg), 0.275)",
+        docs: "Color for portrait foredrop effect. Defaults to => rgba(var(--lf-color-bg), 0.275)",
       },
     ],
   },
@@ -3546,12 +3646,44 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-multiinput-color-border",
+        docs: "Border color for the component. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
+        name: "--lf-multiinput-color-on-bg",
+        docs: "Color for text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Layout variables:",
+      },
+      {
+        name: "--lf-multiinput-color-on-primary",
+        docs: "Color for content on primary backgrounds. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-multiinput-color-on-surface",
+        docs: "Color for content on surface backgrounds. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-multiinput-color-primary",
+        docs: "Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-multiinput-color-surface",
+        docs: "Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
+      },
+      {
         name: "--lf-multiinput-font-family",
         docs: "Sets the primary font family for the multiinput component. Defaults to => var(--lf-font-family-primary)",
       },
       {
         name: "--lf-multiinput-font-size",
         docs: "Sets the font size for the multiinput component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-multiinput-gap",
+        docs: "Gap between textfield and history area. Defaults to => 0.5em",
+      },
+      {
+        name: "--lf-multiinput-history-gap",
+        docs: "Gap between chips in the history area. Defaults to => 0.5em",
       },
     ],
   },
@@ -4101,31 +4233,39 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-radio-circle-border-color",
-        docs: "Sets the border color of the radio circle. Defaults to => rgba(var(--lf-color-on-bg), 0.6)",
+        docs: "Border color of the radio circle. Defaults to => rgba(var(--lf-color-on-bg), 0.6)",
       },
       {
         name: "--lf-radio-circle-border-width",
-        docs: "Sets the border width of the radio circle. Defaults to => 2px",
+        docs: "Border width of the radio circle. Defaults to => 2px",
       },
       {
         name: "--lf-radio-circle-hover-border-color",
-        docs: "Sets the border color of the radio circle on hover. Defaults to => rgba(var(--lf-color-primary), 0.875)",
+        docs: "Border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.875)",
       },
       {
         name: "--lf-radio-circle-selected-border-color",
-        docs: "Sets the border color of the radio circle when selected. Defaults to => rgba(var(--lf-color-primary), 1)",
+        docs: "Border color when selected. Defaults to => rgba(var(--lf-color-primary), 1)",
+      },
+      {
+        name: "--lf-radio-color-on-bg",
+        docs: "Text color for labels. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-radio-color-primary",
+        docs: "Primary color for selected/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-radio-control-size",
-        docs: "Sets the size of the radio control. Defaults to => 1.25em",
+        docs: "Size of the radio control. Defaults to => 1.25em",
       },
       {
         name: "--lf-radio-dot-background-color",
-        docs: "Sets the background color of the selected radio dot. Defaults to => rgba(var(--lf-color-primary), 1)",
+        docs: "Background color of selected dot. Defaults to => rgba(var(--lf-color-primary), 1)",
       },
       {
         name: "--lf-radio-dot-border-width",
-        docs: "Sets the border width of the selected radio dot. Defaults to => 10px (creates a filled circle)",
+        docs: "Border width of the dot. Defaults to => 0.5em",
       },
       {
         name: "--lf-radio-font-family",
@@ -4137,59 +4277,59 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-radio-group-gap",
-        docs: "Sets the gap between radio items in the group. Defaults to => var(--lf-space-03)",
+        docs: "Gap between radio items in the group. Defaults to => 1em",
       },
       {
         name: "--lf-radio-group-horizontal-gap",
-        docs: "Sets the gap between radio items in horizontal orientation. Defaults to => var(--lf-space-05)",
+        docs: "Gap between items in horizontal orientation. Defaults to => 1.25em",
       },
       {
         name: "--lf-radio-hover-border-color",
-        docs: "Sets the border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.5)",
+        docs: "Control border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.5)",
       },
       {
         name: "--lf-radio-item-gap",
-        docs: "Sets the gap between the radio control and label. Defaults to => var(--lf-space-03)",
+        docs: "Gap between radio control and label. Defaults to => var(--lf-space-03)",
       },
       {
         name: "--lf-radio-item-selected-color",
-        docs: "Sets the color for selected radio items. Defaults to => rgba(var(--lf-color-primary), 1)",
+        docs: "Color for selected radio items. Defaults to => rgba(var(--lf-color-primary), 1)",
       },
       {
         name: "--lf-radio-label-color",
-        docs: "Sets the color of the radio label. Defaults to => rgba(var(--lf-color-on-bg), 0.87)",
+        docs: "Label text color. Defaults to => rgba(var(--lf-color-on-bg), 0.87)",
       },
       {
         name: "--lf-radio-label-font-size",
-        docs: "Sets the font size of the radio label. Defaults to => 1em",
+        docs: "Label font size. Defaults to => 1em",
       },
       {
         name: "--lf-radio-label-font-weight",
-        docs: "Sets the font weight of the label. Defaults to => 500",
+        docs: "Label font weight. Defaults to => 500",
       },
       {
         name: "--lf-radio-label-line-height",
-        docs: "Sets the line height of the radio label. Defaults to => 1.5",
+        docs: "Label line height. Defaults to => 1.5",
       },
       {
         name: "--lf-radio-label-padding",
-        docs: "Sets the padding for the label. Defaults to => 0.75em",
+        docs: "Label padding. Defaults to => 0.75em",
       },
       {
         name: "--lf-radio-label-padding-leading",
-        docs: "Sets the padding for the label in leading position. Defaults to => 0.75em",
+        docs: "Label padding in leading position. Defaults to => 0.75em",
       },
       {
         name: "--lf-radio-label-selected-color",
-        docs: "Sets the color of the label when selected. Defaults to => rgba(var(--lf-color-primary), 1)",
+        docs: "Label color when selected. Defaults to => rgba(var(--lf-color-primary), 1)",
       },
       {
         name: "--lf-radio-label-selected-font-weight",
-        docs: "Sets the font weight of the label when selected. Defaults to => 500",
+        docs: "Label font weight when selected. Defaults to => 600",
       },
       {
         name: "--lf-radio-ripple-size",
-        docs: "Sets the size of the ripple effect. Defaults to => 2.5em",
+        docs: "Size of the ripple effect. Defaults to => 2.5em",
       },
     ],
   },
@@ -4303,8 +4443,32 @@ export const LF_DOC: LfShowcaseDoc = {
     ],
     styles: [
       {
+        name: "--lf-select-color-bg",
+        docs: "Background color for the select. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
+      },
+      {
+        name: "--lf-select-color-border",
+        docs: "Border color for the select. Defaults to => var(--lf-color-border)",
+      },
+      {
+        name: "--lf-select-color-on-bg",
+        docs: "Text/icon color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-select-color-on-primary",
+        docs: "Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-select-color-on-surface",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
         name: "--lf-select-color-primary",
-        docs: "Sets the color-primary color for the select component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary color for focus/hover states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-select-color-surface",
+        docs: "Surface color for dropdown background. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-select-font-family",
@@ -4313,6 +4477,14 @@ export const LF_DOC: LfShowcaseDoc = {
       {
         name: "--lf-select-font-size",
         docs: "Sets the font size for the select component. Defaults to => var(--lf-font-size)",
+      },
+      {
+        name: "--lf-select-input-cursor",
+        docs: "Cursor style for the input. Defaults to => pointer",
+      },
+      {
+        name: "--lf-select-transition-duration",
+        docs: "Transition duration for hover/focus. Defaults to => 0.2s",
       },
     ],
   },
@@ -4536,20 +4708,36 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the padding for the actions area. Defaults to => 0",
       },
       {
-        name: "--lf-shapeeditor-border-color",
-        docs: "Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)",
-      },
-      {
-        name: "--lf-shapeeditor-border-radius",
-        docs: "Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)",
+        name: "--lf-shapeeditor-chart-min-height",
+        docs: "Sets the minimum height for chart previews. Defaults to => 150px",
       },
       {
         name: "--lf-shapeeditor-color-bg",
         docs: "Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)",
       },
       {
+        name: "--lf-shapeeditor-color-border",
+        docs: "Border color for panels and elements. Defaults to => var(--lf-state-border, var(--lf-color-border))",
+      },
+      {
         name: "--lf-shapeeditor-color-on-bg",
         docs: "Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)",
+      },
+      {
+        name: "--lf-shapeeditor-color-on-primary",
+        docs: "Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-shapeeditor-color-on-surface",
+        docs: "Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
+      },
+      {
+        name: "--lf-shapeeditor-color-primary",
+        docs: "Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-shapeeditor-color-surface",
+        docs: "Surface color for panels. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-shapeeditor-control-actions-padding",
@@ -5121,11 +5309,11 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-splash-color-bg",
-        docs: "Sets the color-bg color for the splash component. Defaults to => var(--lf-color-bg)",
+        docs: "Background color for the splash component. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-splash-color-on-bg",
-        docs: "Sets the color-on-bg color for the splash component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-splash-font-family",
@@ -5141,7 +5329,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-splash-left",
-        docs: "Sets the left for the splash component. Defaults to => 0",
+        docs: "Sets the left position for the splash component. Defaults to => 0",
       },
       {
         name: "--lf-splash-position",
@@ -5149,7 +5337,7 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-splash-top",
-        docs: "Sets the top for the splash component. Defaults to => 0",
+        docs: "Sets the top position for the splash component. Defaults to => 0",
       },
       {
         name: "--lf-splash-widget-height",
@@ -5271,27 +5459,27 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-tabbar-border-radius",
-        docs: "Sets the border radius for the tabbar component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for tabs. Defaults to => var(--lf-ui-border-radius, 0.25em)",
       },
       {
         name: "--lf-tabbar-color-bg",
-        docs: "Sets the color-bg color for the tabbar component. Defaults to => var(--lf-color-bg)",
+        docs: "Background color for the tabbar. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-tabbar-color-indicator",
-        docs: "Sets the color for the tabbar component's indicator. Defaults to => var(--lf-tabbar-color-primary)",
+        docs: "Color for the active tab indicator. Defaults to => var(--lf-tabbar-color-primary)",
       },
       {
         name: "--lf-tabbar-color-on-bg",
-        docs: "Sets the color-on-bg color for the tabbar component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-tabbar-color-on-primary",
-        docs: "Sets the color-on-primary color for the tabbar component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-tabbar-color-primary",
-        docs: "Sets the color-primary color for the tabbar component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary/accent color for active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-tabbar-font-family",
@@ -5302,16 +5490,20 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the tabbar component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-tabbar-font-weight",
+        docs: "Font weight for tab labels. Defaults to => var(--lf-font-weight-button)",
+      },
+      {
         name: "--lf-tabbar-height",
-        docs: "Sets the height for the tabbar component. Defaults to => 2.25em",
+        docs: "Height for the tabbar. Defaults to => 2.25em",
       },
       {
         name: "--lf-tabbar-min-width",
-        docs: "Sets the min-width for the tabbar component. Defaults to => 5em",
+        docs: "Minimum width for each tab. Defaults to => 5em",
       },
       {
-        name: "--lf-tabbar-padding",
-        docs: "Sets the padding for the tabbar component. Defaults to => 0 1.25em",
+        name: "--lf-tabbar-tab-padding",
+        docs: "Padding for each tab. Defaults to => 0 1.25em",
       },
     ],
   },
@@ -6010,23 +6202,23 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-tree-accordion-node-height",
-        docs: "Sets the height for the tree accordion node. Defaults to => 4em",
+        docs: "Height for accordion-style nodes (depth 0). Defaults to => 4em",
       },
       {
         name: "--lf-tree-border-radius",
-        docs: "Sets the border radius for the tree component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the tree container. Defaults to => var(--lf-ui-border-radius)",
       },
       {
         name: "--lf-tree-color-bg",
-        docs: "Sets the color-bg color for the tree component. Defaults to => var(--lf-color-bg)",
+        docs: "Background color for the tree. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-tree-color-on-bg",
-        docs: "Sets the color-on-bg color for the tree component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text color on the tree background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
       },
       {
         name: "--lf-tree-color-on-primary",
-        docs: "Sets the color-on-primary color for the tree component. Defaults to => var(--lf-color-on-primary)",
+        docs: "Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
       },
       {
         name: "--lf-tree-color-on-surface",
@@ -6034,11 +6226,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-tree-color-primary",
-        docs: "Sets the color-primary color for the tree component. Defaults to => var(--lf-color-primary)",
+        docs: "Primary/accent color for selected/highlighted nodes. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
       },
       {
         name: "--lf-tree-color-surface",
-        docs: "Sets the color-surface color for the tree component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface color for tree elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-tree-font-family",
@@ -6049,16 +6241,20 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the tree component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-tree-icon-size",
+        docs: "Size for icons in tree nodes. Defaults to => 1.5em",
+      },
+      {
         name: "--lf-tree-node-height",
-        docs: "Sets the height for the tree node. Defaults to => 2em",
+        docs: "Height for tree nodes. Defaults to => 2em",
       },
       {
         name: "--lf-tree-node-padding",
-        docs: "Sets the padding for the tree node. Defaults to => 0 1em",
+        docs: "Padding for tree nodes. Defaults to => 0 1em",
       },
       {
         name: "--lf-tree-padding",
-        docs: "Sets the padding for the tree component. Defaults to => 0",
+        docs: "Padding for the tree container. Defaults to => 0",
       },
     ],
   },
@@ -6156,27 +6352,39 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-typewriter-color-bg",
-        docs: "Sets the color-bg color for the typewriter component. Defaults to => var(--lf-color-bg)",
+        docs: "Background color for the typewriter container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))",
       },
       {
         name: "--lf-typewriter-color-on-bg",
-        docs: "Sets the color-on-bg color for the typewriter component. Defaults to => var(--lf-color-on-bg)",
+        docs: "Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))",
+      },
+      {
+        name: "--lf-typewriter-color-on-primary",
+        docs: "Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))",
+      },
+      {
+        name: "--lf-typewriter-color-primary",
+        docs: "Primary/background color for the typewriter. Defaults to => var(--lf-state-primary, var(--lf-color-primary))",
+      },
+      {
+        name: "--lf-typewriter-cursor-blink-duration",
+        docs: "Duration for the cursor blink animation. Defaults to => 800ms",
       },
       {
         name: "--lf-typewriter-cursor-height",
-        docs: "Sets the height for the typewriter cursor. Defaults to => 1.25em",
+        docs: "Height for the blinking cursor. Defaults to => 1.25em",
       },
       {
         name: "--lf-typewriter-cursor-margin-left",
-        docs: "Sets the left margin for the typewriter cursor. Defaults to => 0.15em",
+        docs: "Left margin for the cursor. Defaults to => 0.15em",
       },
       {
         name: "--lf-typewriter-cursor-vertical-align",
-        docs: "Sets the vertical-align for the typewriter cursor. Defaults to => top",
+        docs: "Vertical alignment for the cursor. Defaults to => top",
       },
       {
         name: "--lf-typewriter-cursor-width",
-        docs: "Sets the width for the typewriter cursor. Defaults to => 0.125em",
+        docs: "Width for the blinking cursor. Defaults to => 0.125em",
       },
       {
         name: "--lf-typewriter-font-family",
@@ -6188,11 +6396,11 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "--lf-typewriter-margin",
-        docs: "Sets the margin for the typewriter text. Defaults to => 0",
+        docs: "Margin for the typewriter text element. Defaults to => 0",
       },
       {
         name: "--lf-typewriter-padding",
-        docs: "Sets the padding for the typewriter component. Defaults to => 1em",
+        docs: "Padding for the typewriter container. Defaults to => 1em",
       },
     ],
   },
@@ -6274,19 +6482,27 @@ export const LF_DOC: LfShowcaseDoc = {
     styles: [
       {
         name: "--lf-upload-border-color",
-        docs: "Sets the border color for the upload component. Defaults to => var(--lf-color-border)",
+        docs: "Border color for the upload component. Defaults to => var(--lf-color-border)",
       },
       {
         name: "--lf-upload-border-radius",
-        docs: "Sets the border radius for the upload component. Defaults to => var(--lf-ui-border-radius)",
+        docs: "Border radius for the upload component. Defaults to => var(--lf-ui-border-radius)",
+      },
+      {
+        name: "--lf-upload-border-width",
+        docs: "Border width for the upload component. Defaults to => 1px",
       },
       {
         name: "--lf-upload-button-height",
-        docs: "Sets the height for the upload button. Defaults to => 2.75em",
+        docs: "Height for the upload button area. Defaults to => 2.75em",
+      },
+      {
+        name: "--lf-upload-color-on-surface",
+        docs: "Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))",
       },
       {
         name: "--lf-upload-color-surface",
-        docs: "Sets the color-surface color for the upload component. Defaults to => var(--lf-color-surface)",
+        docs: "Surface/background color for the upload. Defaults to => var(--lf-state-surface, var(--lf-color-surface))",
       },
       {
         name: "--lf-upload-font-family",
@@ -6297,20 +6513,36 @@ export const LF_DOC: LfShowcaseDoc = {
         docs: "Sets the font size for the upload component. Defaults to => var(--lf-font-size)",
       },
       {
+        name: "--lf-upload-font-weight",
+        docs: "Font weight for the upload label. Defaults to => var(--lf-font-weight-button)",
+      },
+      {
         name: "--lf-upload-grid-gap",
-        docs: "Sets the grid-gap for the upload component. Defaults to => 1.25em",
+        docs: "Grid gap when files are selected. Defaults to => 1.25em",
+      },
+      {
+        name: "--lf-upload-icon-color",
+        docs: "Icon color in file items. Defaults to => var(--lf-color-on-surface)",
+      },
+      {
+        name: "--lf-upload-icon-size",
+        docs: "Icon size in file items. Defaults to => 1.5em",
+      },
+      {
+        name: "--lf-upload-info-height",
+        docs: "Max height for the file info area. Defaults to => minmax(auto, 25vh)",
       },
       {
         name: "--lf-upload-item-padding",
-        docs: "Sets the padding for the upload item. Defaults to => 0.75em",
+        docs: "Padding for file items. Defaults to => 0.75em",
       },
       {
         name: "--lf-upload-min-height",
-        docs: "Sets the min-height for the upload component. Defaults to => 8em",
+        docs: "Minimum height for the upload component. Defaults to => 8em",
       },
       {
         name: "--lf-upload-padding",
-        docs: "Sets the padding for the upload component. Defaults to => 1em",
+        docs: "Padding for the upload component. Defaults to => 1em",
       },
     ],
   },

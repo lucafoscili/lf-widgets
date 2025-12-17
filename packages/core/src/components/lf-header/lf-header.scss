@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/header" as header-fc;
 
 $comp: "header";
 
@@ -29,13 +30,4 @@ $comp: "header";
   z-index: var(--lf-ui-zindex-#{$comp});
 }
 
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-#{$comp}-justify: Sets the justify for the #{$comp} component.
-*                              Defaults to => space-between
-* @prop --lf-#{$comp}-padding: Sets the padding for the #{$comp} component.
-*                              Defaults to => 0.5em 0.75em
-*/
+@include header-fc.lf-header-docs("header");

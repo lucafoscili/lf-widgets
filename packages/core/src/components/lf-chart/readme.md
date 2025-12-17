@@ -98,14 +98,15 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                     | Description                                                                                        |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
-| `--lf-chart-color-bg`    | Sets the color-bg color for the chart component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-chart-color-on-bg` | Sets the color-on-bg color for the chart component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-chart-font-family` | Sets the primary font family for the chart component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-chart-font-size`   | Sets the font size for the chart component. Defaults to => var(--lf-font-size)                     |
-| `--lf-chart-min-height`  | Sets the minimum height for the chart component. Defaults to => var(--lf_chart_height, 100%)       |
-| `--lf-chart-min-width`   | Sets the minimum width for the chart component. Defaults to => var(--lf_chart_width, 100%)         |
+| Name                          | Description                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `--lf-chart-background-alpha` | Background alpha for the chart. Defaults to => var(--lf-ui-alpha-glass-hint, 0.125)                |
+| `--lf-chart-color-bg`         | Background color for the chart container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))    |
+| `--lf-chart-color-on-bg`      | Text/element color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))      |
+| `--lf-chart-font-family`      | Sets the primary font family for the chart component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-chart-font-size`        | Sets the font size for the chart component. Defaults to => var(--lf-font-size)                     |
+| `--lf-chart-min-height`       | Minimum height for the chart container. Defaults to => var(--lf_chart_height, 100%)                |
+| `--lf-chart-min-width`        | Minimum width for the chart container. Defaults to => var(--lf_chart_width, 100%)                  |
 
 
 ## Dependencies
@@ -117,7 +118,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -130,7 +130,6 @@ graph TD;
   lf-breadcrumbs --> lf-chart
   lf-card --> lf-chart
   lf-carousel --> lf-chart
-  lf-compare --> lf-chart
   lf-masonry --> lf-chart
   lf-shapeeditor --> lf-chart
   lf-tree --> lf-chart

@@ -14,6 +14,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_SPLASH_BLOCKS,
   LF_SPLASH_EVENTS,
@@ -185,5 +186,33 @@ export type LfSplashStates = (typeof LF_SPLASH_STATES)[number];
 export interface LfSplashPropsInterface {
   lfLabel?: string;
   lfStyle?: string;
+}
+//#endregion
+
+//#region FC
+/**
+ * Props for LfSplashFC - the pure presentational functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfSplashFCProps {
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Whether the splash is in unmounting state (shows "Ready!" text) */
+  isUnmounting?: boolean;
+  /** Text label displayed inside the splash */
+  label?: string;
+  /** Reference callback for the content element */
+  contentRef?: (el: HTMLDivElement | null) => void;
+  /** Reference callback for the label element */
+  labelRef?: (el: HTMLDivElement | null) => void;
+  /** Reference callback for the splash element */
+  splashRef?: (el: HTMLDivElement | null) => void;
+  /** Reference callback for the widget element */
+  widgetRef?: (el: HTMLDivElement | null) => void;
 }
 //#endregion

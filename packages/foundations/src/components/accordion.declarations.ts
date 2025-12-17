@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_ACCORDION_BLOCKS,
@@ -215,5 +216,57 @@ export interface LfAccordionPropsInterface {
   lfStyle?: string;
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props for the LfAccordionFC functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfAccordionFCProps {
+  /** Reference callback for the accordion container element */
+  accordionRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Set of expanded node IDs */
+  expandedIds?: Set<string>;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Array of accordion items (nodes) to render */
+  items?: LfDataNode[];
+  /** Callback fired when a nested LfShape emits an event */
+  onLfEvent?: (e: LfEvent) => void;
+  /** Callback fired on pointer down event */
+  onPointerDown?: (e: PointerEvent) => void;
+  /** Callback fired when a node is toggled (expand/collapse or select) */
+  onToggle?: (node: LfDataNode, e?: Event) => void;
+  /** References object for DOM element refs */
+  refs?: LfAccordionAdapterRefs;
+  /** Set of selected node IDs */
+  selectedIds?: Set<string>;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

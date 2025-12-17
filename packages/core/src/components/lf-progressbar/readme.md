@@ -111,7 +111,6 @@ Type: `Promise<void>`
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -125,7 +124,6 @@ graph TD;
   lf-card --> lf-progressbar
   lf-carousel --> lf-progressbar
   lf-chat --> lf-progressbar
-  lf-compare --> lf-progressbar
   lf-masonry --> lf-progressbar
   lf-shapeeditor --> lf-progressbar
   lf-tree --> lf-progressbar

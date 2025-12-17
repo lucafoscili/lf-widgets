@@ -1,219 +1,28 @@
-@use "variables" as *;
-@use "mixins" as *;
+// =============================================================================
+// LF-LIST - Web Component SCSS
+// =============================================================================
+// This file contains ONLY :host rules and imports the FC partial for
+// component-specific styles and documentation.
+//
+// Architecture:
+// - FC partial (_list.scss): Contains all BEM styles for the functional component
+// - WC SCSS (this file): Contains :host rules and imports FC partial
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
 
-$comp: "list";
-@include lf-comp-setup($comp, "true", "true", "false", "false", "true");
+@use "../../style/mixins/components/list" as list-fc;
 
+// Import docs mixin for CSS custom property documentation
+@include list-fc.lf-list-docs("list");
+
+// =============================================================================
+// HOST RULES
+// =============================================================================
 :host {
-  @include lf-el-stretch;
-  outline: none;
-}
-
-.list {
-  & {
-    @include lf-comp-border($comp);
-    @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
-    @include lf-el-stretch;
-    box-sizing: border-box;
-    list-style-type: none;
-    margin: 0;
-    overflow: auto;
-    padding: 0.5em 0;
-  }
-
-  &--empty {
-    padding: 0;
-  }
-
-  &--selectable {
-    .list__item {
-      cursor: pointer;
-      user-select: none;
-    }
-  }
-
-  &:not(&.list--selectable) {
-    .list__item {
-      cursor: default;
-      pointer-events: none;
-    }
-  }
-
-  &__filter {
-    @include lf-comp-glassmorphize($comp, "surface", "all", 0.875, 15px);
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-
-  &__item {
-    & {
-      @include lf-el-transition;
-      display: flex;
-      /**
-      * @prop --lf-#{$comp}-item-height: Sets the height for the item of the #{$comp} component.
-      *                                  Defaults to => 2.5em
-      */
-      height: var(--lf-#{$comp}-item-height, 2.5em);
-      width: 100%;
-    }
-
-    &:hover {
-      & {
-        @include lf-comp-color(
-          $comp,
-          "primary",
-          "bg",
-          var(--lf-ui-alpha-glass-hint, 0.125)
-        );
-      }
-
-      .delete {
-        width: 1.5em;
-      }
-    }
-
-    &--has-description {
-      /**
-      * @prop --lf-#{$comp}-item-with-description-height: Sets the height for the item with description of the #{$comp} component.
-      *                                                   Defaults to => 3.6em
-      */
-      height: var(--lf-#{$comp}-item-with-description-height, 3.6em);
-    }
-
-    &--focused {
-      @include lf-comp-color(
-        $comp,
-        "primary",
-        "bg",
-        var(--lf-ui-alpha-glass, 0.375)
-      );
-    }
-
-    &--selected {
-      & {
-        @include lf-comp-color(
-          $comp,
-          "primary",
-          "all",
-          var(--lf-ui-alpha-glass-heavy, 0.75)
-        );
-      }
-
-      &:hover {
-        @include lf-comp-color(
-          $comp,
-          "primary",
-          "all",
-          var(--lf-ui-alpha-glass-solid, 0.875)
-        );
-      }
-    }
-  }
-}
-
-.delete {
-  & {
-    @include lf-comp-color(
-      $comp,
-      "danger",
-      "bg",
-      var(--lf-ui-alpha-glass-heavy, 0.75)
-    );
-    @include lf-el-transition;
-    align-content: center;
-    box-sizing: border-box;
-    opacity: 0.75;
-    overflow: hidden;
-    width: 0;
-  }
-
-  &:hover {
-    & {
-      opacity: 1;
-    }
-  }
-
-  &__icon {
-    @include f-icon($comp, "danger");
-    margin: 0;
-  }
-}
-
-.node {
-  & {
-    @include lf-el-transition;
-    align-items: center;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: flex-start;
-    /**
-    * @prop --lf-#{$comp}-item-padding: Sets the padding for the item of the #{$comp} component.
-    *                                   Defaults to => 0 0.75em
-    */
-    padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
-    position: relative;
-    outline: none;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  &__title {
-    & {
-      @include lf-el-ellipsis;
-      @include lf-el-text("list");
-      display: block;
-      margin-bottom: -1.5em;
-      margin-left: 0;
-      margin-top: 0;
-    }
-
-    &:before {
-      content: "";
-      display: inline-block;
-      height: 1.5em;
-      vertical-align: 0;
-      width: 0;
-    }
-
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 0;
-      height: 2em;
-      vertical-align: -2em;
-    }
-  }
-
-  &__subtitle {
-    @include lf-el-ellipsis;
-    @include lf-el-text("subtitle");
-    display: block;
-    margin-top: 0;
-    opacity: 0.75;
-    padding-bottom: 0.5em;
-  }
-
-  &__icon {
-    & {
-      @include f-icon($comp);
-      margin: 0 0.75em 0 0;
-    }
-  }
-
-  &__text {
-    overflow: hidden;
-    width: 100%;
-  }
-}
-
-.empty-data {
-  @include lf-comp-border($comp);
-  @include lf-comp-color($comp, "bg", "all", var(--lf-ui-alpha-glass, 0.375));
-  @include lf-el-stretch;
-  @include lf-el-text("body");
-  align-items: center;
-  box-sizing: border-box;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  outline: none;
+  width: 100%;
 }

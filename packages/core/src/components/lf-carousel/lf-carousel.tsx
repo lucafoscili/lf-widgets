@@ -13,7 +13,6 @@ import {
   LfCarouselEventPayload,
   LfCarouselInterface,
   LfCarouselPropsInterface,
-  LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
@@ -27,17 +26,15 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  Fragment,
   h,
   Host,
   Method,
   Prop,
   State,
-  VNode,
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
+import { CarouselFC } from "./fc/carousel-fc";
 import {
   createActions,
   createAdapter,
@@ -179,7 +176,6 @@ export class LfCarousel implements LfCarouselInterface {
   #p = LF_CAROUSEL_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
-  #carousel: HTMLDivElement;
   #interval: NodeJS.Timeout;
   #adapter: LfCarouselAdapter;
   //#endregion
@@ -336,6 +332,7 @@ export class LfCarousel implements LfCarouselInterface {
         // Component-specific getters
         currentIndex: () => this.currentIndex,
         interval: () => this.#interval,
+        shapes: () => this.shapes,
         totalSlides: () => this.#getTotalSlides(),
       },
       // SET: Simple single-value assignments
@@ -373,108 +370,6 @@ export class LfCarousel implements LfCarouselInterface {
   #getTotalSlides() {
     return this.shapes?.[this.lfShape]?.length || 0;
   }
-  #hasShapes() {
-    return !!this.shapes?.[this.lfShape];
-  }
-  #prepCarousel(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const carousel = this.#b;
-    const { elements } = this.#adapter;
-    const { jsx } = elements;
-    const { back, forward } = jsx;
-
-    if (this.#hasShapes()) {
-      const shapes = this.shapes[this.lfShape];
-      if (shapes?.length) {
-        return (
-          <Fragment>
-            <div
-              aria-live="polite"
-              class={bemClass(carousel._, carousel.track)}
-              part={this.#p.track}
-              role="region"
-            >
-              {this.#prepSlide()}
-              {this.lfNavigation && back()}
-              {this.lfNavigation && forward()}
-            </div>
-            {this.#prepIndicators()}
-          </Fragment>
-        );
-      }
-    }
-
-    return null;
-  }
-  #prepIndicators(): VNode[] {
-    const { bemClass } = this.#framework.theme;
-
-    const { slideBar } = LF_CAROUSEL_BLOCKS;
-    const totalSlides = this.#getTotalSlides();
-
-    const segments = [];
-
-    for (let index = 0; index < totalSlides; index++) {
-      const label = `Jump to slide ${index + 1}`;
-      segments.push(
-        <div
-          aria-label={label}
-          class={bemClass(slideBar._, slideBar.segment, {
-            active: index === this.currentIndex,
-          })}
-          data-cy={this.#cy.button}
-          data-index={index}
-          onClick={async () => this.goToSlide(index)}
-          part={this.#p.segment}
-          role="button"
-          tabIndex={0}
-          title={label}
-        ></div>,
-      );
-    }
-
-    return (
-      <div class={bemClass(slideBar._)} part={this.#p.slideBar}>
-        {segments}
-      </div>
-    );
-  }
-  #prepSlide(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { currentIndex, lfShape } = this;
-
-    const carousel = this.#b;
-
-    const props: Partial<LfDataCell<LfDataShapes>>[] = this.shapes[lfShape].map(
-      () => ({
-        htmlProps: {
-          dataset: {
-            lf: this.#lf.fadeIn,
-          },
-        },
-      }),
-    );
-
-    const cell = this.shapes[lfShape][currentIndex];
-    const defaultCell = props[currentIndex];
-
-    return (
-      <div
-        class={bemClass(carousel._, carousel.slide)}
-        data-index={currentIndex}
-      >
-        <LfShape
-          cell={Object.assign(defaultCell, cell)}
-          index={currentIndex}
-          shape={lfShape}
-          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
-          framework={this.#framework}
-        ></LfShape>
-      </div>
-    );
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -496,19 +391,22 @@ export class LfCarousel implements LfCarouselInterface {
     const { info } = this.#framework.debug;
     const { register } = this.#framework.drag;
     const { next, prev } = this.#adapter.controller.actions.navigation;
+    const carouselRef = this.#adapter.elements.refs.carousel;
 
-    register.swipe(this.#carousel, {
-      onEnd: (_e, session) => {
-        if (session.swipeData?.direction) {
-          const { direction } = session.swipeData;
-          if (direction === "left") {
-            next();
-          } else if (direction === "right") {
-            prev();
+    if (carouselRef) {
+      register.swipe(carouselRef, {
+        onEnd: (_e, session) => {
+          if (session.swipeData?.direction) {
+            const { direction } = session.swipeData;
+            if (direction === "left") {
+              next();
+            } else if (direction === "right") {
+              prev();
+            }
           }
-        }
-      },
-    });
+        },
+      });
+    }
 
     this.onLfEvent(new CustomEvent("ready"), "ready");
     info.update(this, "did-load");
@@ -524,35 +422,23 @@ export class LfCarousel implements LfCarouselInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
 
     const { lfStyle } = this;
-
-    const carousel = this.#b;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(carousel._)}
-            part={this.#p.carousel}
-            ref={(el) => {
-              if (el) {
-                this.#carousel = el;
-              }
-            }}
-            role="region"
-          >
-            {this.#prepCarousel()}
-          </div>
+          <CarouselFC adapter={this.#adapter} />
         </div>
       </Host>
     );
   }
 
   disconnectedCallback() {
-    this.#framework?.drag.unregister.swipe(this.#carousel);
+    const carouselRef = this.#adapter?.elements.refs.carousel;
+    this.#framework?.drag.unregister.swipe(carouselRef);
     this.#framework?.theme.unregister(this);
     this.#adapter?.controller.actions.autoplay.stop();
   }

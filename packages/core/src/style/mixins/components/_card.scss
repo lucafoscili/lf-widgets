@@ -1,0 +1,284 @@
+// =============================================================================
+// CARD - Component Styles
+// =============================================================================
+// Card-specific styles for the LfCardFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-card-docs() mixin for WC SCSS files to import
+//
+// Note: Card is a container component with multiple layout variants.
+// Each layout (material, debug, keywords, upload, weather) has its own
+// styling that is imported separately in the WC SCSS file.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/card" as card-fc;
+//   @include card-fc.lf-card-docs("card");
+// =============================================================================
+@mixin lf-card-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-border-radius: Border radius for the card.
+   *       Defaults to => var(--lf-ui-border-radius, 4px)
+   * @prop --lf-#{$comp}-color-bg: Background color for the card.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color for the card.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for the card.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "card";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Card Core (wrapper container)
+// -----------------------------------------------------------------------------
+// Note: The card wrapper (#lf-component) styling is minimal since most
+// visual styling is handled by the individual layout variants.
+// This base class ensures proper sizing and positioning.
+// -----------------------------------------------------------------------------
+.card {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Text Content Block (shared across layouts)
+// -----------------------------------------------------------------------------
+.text-content {
+  &__title {
+    font-size: 1.25em;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__subtitle {
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.4;
+    opacity: 0.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__description {
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.5;
+    opacity: 0.6;
+    padding-top: 0.75em;
+    white-space: pre-wrap;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Material Layout
+// -----------------------------------------------------------------------------
+.material-layout {
+  $box-shadow-color: $primaryC;
+
+  & {
+    @include lf-transitions((background-color, box-shadow, transform));
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(
+      --lf-card-border-radius,
+      var(--lf-ui-border-radius, 4px)
+    );
+    box-shadow:
+      0 2px 1px -1px rgba($box-shadow-color, 0.1),
+      0 1px 1px 0 rgba($box-shadow-color, 0.1),
+      0 1px 3px 0 rgba($box-shadow-color, 0.6);
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+  }
+
+  &:focus,
+  &:hover {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    box-shadow:
+      0 2px 4px -1px rgba($box-shadow-color, 0.1),
+      0 4px 5px 0 rgba($box-shadow-color, 0.1),
+      0 1px 10px 0 rgba($box-shadow-color, 0.6);
+  }
+
+  lf-button {
+    margin-right: 0;
+  }
+
+  img {
+    object-fit: cover;
+  }
+
+  &--has-actions {
+    padding-bottom: 52px;
+
+    .text-content__description {
+      padding-bottom: 0;
+    }
+  }
+
+  &__cover-section {
+    height: 60%;
+    width: 100%;
+  }
+
+  &__text-section {
+    box-sizing: border-box;
+    height: 40%;
+    overflow: auto;
+    padding: 0.75em 1em;
+    width: 100%;
+  }
+
+  &__actions-section {
+    align-items: center;
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    height: 52px;
+    justify-content: flex-end;
+    left: 0;
+    padding: 0 0.5em;
+    position: absolute;
+    text-align: right;
+    width: 100%;
+
+    lf-button {
+      margin-left: 0.25em;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Debug Layout
+// -----------------------------------------------------------------------------
+.debug-layout {
+  & {
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(
+      --lf-card-border-radius,
+      var(--lf-ui-border-radius, 4px)
+    );
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__section-1 {
+    display: flex;
+    justify-content: center;
+    padding: 1em;
+  }
+
+  &__section-2 {
+    overflow: auto;
+  }
+
+  &__section-3,
+  &__section-4 {
+    padding: 0.5em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Keywords Layout
+// -----------------------------------------------------------------------------
+.keywords-layout {
+  & {
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(
+      --lf-card-border-radius,
+      var(--lf-ui-border-radius, 4px)
+    );
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__section-1 {
+    overflow: auto;
+    padding: 1em;
+  }
+
+  &__section-2 {
+    padding: 0.5em 1em;
+  }
+
+  &__section-3 {
+    padding: 0.5em 1em 1em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Upload Layout
+// -----------------------------------------------------------------------------
+.upload-layout {
+  & {
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass, 0.375));
+    border-radius: var(
+      --lf-card-border-radius,
+      var(--lf-ui-border-radius, 4px)
+    );
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__section-1 {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    padding: 1em;
+  }
+
+  &__section-2 {
+    padding: 1em;
+  }
+}

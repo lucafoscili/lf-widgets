@@ -31,6 +31,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepUploadActions } from "./actions.upload";
 import { prepUploadComputed } from "./computed.upload";
+import { UploadFC } from "./fc/upload-fc";
 import { createAdapter } from "./lf-upload-adapter";
 
 /**
@@ -322,25 +323,15 @@ export class LfUpload implements LfUploadInterface {
   }
   render() {
     const { theme } = this.#framework;
-    const { bemClass, setLfStyle } = theme;
+    const { setLfStyle } = theme;
 
-    const { upload } = this.#b;
     const { lfStyle } = this;
-    const { upload: uploadJsx, fileInfo } = this.#adapter.elements.jsx;
-    const { hasSelectedFiles } = this.#adapter.controller.computed;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(upload._, null, {
-              "has-description": hasSelectedFiles(),
-            })}
-          >
-            {uploadJsx()}
-            {fileInfo()}
-          </div>
+          <UploadFC adapter={this.#adapter} />
         </div>
       </Host>
     );

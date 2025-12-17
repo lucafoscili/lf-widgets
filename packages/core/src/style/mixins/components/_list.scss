@@ -1,0 +1,308 @@
+// =============================================================================
+// LIST - Component Styles
+// =============================================================================
+// List-specific styles for the LfListFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-list-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/list" as list-fc;
+//   @include list-fc.lf-list-docs("list");
+// =============================================================================
+@mixin lf-list-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for selected items.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-bg: Background color for the list.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface color for filter area.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-border-color: Border color for the list.
+   *       Defaults to => var(--lf-color-border)
+   * @prop --lf-#{$comp}-border-radius: Border radius for the list.
+   *       Defaults to => var(--lf-ui-radius)
+   * @prop --lf-#{$comp}-border-width: Border width for the list.
+   *       Defaults to => 1px
+   * @prop --lf-#{$comp}-item-height: Height for list items.
+   *       Defaults to => 2.5em
+   * @prop --lf-#{$comp}-item-with-description-height: Height for items with description.
+   *       Defaults to => 3.6em
+   * @prop --lf-#{$comp}-item-padding: Padding for list items.
+   *       Defaults to => 0 0.75em
+   * @prop --lf-#{$comp}-font-family: Font family for the list.
+   *       Defaults to => var(--lf-font-family)
+   * @prop --lf-#{$comp}-font-size: Base font size (scaled by --lf-ui-size).
+   *       Defaults to => var(--lf-font-size)
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "list";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// List Container
+// -----------------------------------------------------------------------------
+.list {
+  & {
+    background-color: rgba(
+      $bgC,
+      var(--lf-list-background-alpha, var(--lf-ui-alpha-glass, 0.375))
+    );
+    border: var(--lf-list-border-width, 1px) solid $borderC;
+    border-radius: var(--lf-list-border-radius, var(--lf-ui-radius));
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--lf-list-font-family, var(--lf-font-family));
+    font-size: calc(
+      var(--lf-list-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    height: 100%;
+    list-style-type: none;
+    margin: 0;
+    overflow: auto;
+    padding: 0.5em 0;
+    width: 100%;
+    @include lf-transitions((background-color, border-color, color));
+  }
+
+  &--empty {
+    padding: 0;
+  }
+
+  &--selectable {
+    .list__item {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+
+  &:not(.list--selectable) {
+    .list__item {
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Filter
+  // ---------------------------------------------------------------------------
+  &__filter {
+    background-color: rgba($surfaceC, 0.875);
+    backdrop-filter: blur(15px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  // ---------------------------------------------------------------------------
+  // List Item
+  // ---------------------------------------------------------------------------
+  &__item {
+    & {
+      display: flex;
+      height: var(--lf-list-item-height, 2.5em);
+      width: 100%;
+      @include lf-transitions((background-color, color));
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &--has-description {
+      height: var(--lf-list-item-with-description-height, 3.6em);
+    }
+
+    &--focused {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+    }
+
+    &--selected {
+      & {
+        background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+        color: rgb($onPrimaryC);
+      }
+
+      &:hover {
+        background-color: rgba(
+          $primaryC,
+          var(--lf-ui-alpha-glass-solid, 0.875)
+        );
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Delete Button
+// -----------------------------------------------------------------------------
+.delete {
+  & {
+    align-content: center;
+    background-color: rgba(
+      lf-color($comp, "danger"),
+      var(--lf-ui-alpha-glass-heavy, 0.75)
+    );
+    box-sizing: border-box;
+    color: rgb(lf-color($comp, "on-danger"));
+    opacity: 0.75;
+    overflow: hidden;
+    width: 0;
+    @include lf-transitions((opacity, width));
+  }
+
+  .list__item:hover & {
+    width: 1.5em;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &__icon {
+    align-items: center;
+    display: flex;
+    height: 1em;
+    justify-content: center;
+    margin: 0;
+    width: 1em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Node (Item Content)
+// -----------------------------------------------------------------------------
+.node {
+  & {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    outline: none;
+    overflow: hidden;
+    padding: var(--lf-list-item-padding, 0 0.75em);
+    position: relative;
+    width: 100%;
+    @include lf-transitions((background-color, color));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Title
+  // ---------------------------------------------------------------------------
+  &__title {
+    display: block;
+    margin-bottom: -1.5em;
+    margin-left: 0;
+    margin-top: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      height: 1.5em;
+      vertical-align: 0;
+      width: 0;
+    }
+
+    &::after {
+      content: "";
+      display: inline-block;
+      height: 2em;
+      vertical-align: -2em;
+      width: 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Subtitle
+  // ---------------------------------------------------------------------------
+  &__subtitle {
+    display: block;
+    font-size: 0.875em;
+    margin-top: 0;
+    opacity: 0.75;
+    overflow: hidden;
+    padding-bottom: 0.5em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    align-items: center;
+    display: flex;
+    height: 1.25em;
+    justify-content: center;
+    margin: 0 0.75em 0 0;
+    width: 1.25em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text Container
+  // ---------------------------------------------------------------------------
+  &__text {
+    overflow: hidden;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Empty Data State
+// -----------------------------------------------------------------------------
+.empty-data {
+  & {
+    align-items: center;
+    background-color: rgba(
+      $bgC,
+      var(--lf-list-background-alpha, var(--lf-ui-alpha-glass, 0.375))
+    );
+    border: var(--lf-list-border-width, 1px) solid $borderC;
+    border-radius: var(--lf-list-border-radius, var(--lf-ui-radius));
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    display: flex;
+    font-family: var(--lf-list-font-family, var(--lf-font-family));
+    font-size: calc(
+      var(--lf-list-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__text {
+    opacity: 0.75;
+    padding: 1em;
+    text-align: center;
+  }
+}

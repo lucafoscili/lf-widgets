@@ -1,30 +1,15 @@
 @use "variables" as *;
 @use "mixins" as *;
-@use "./style.node" as sn with (
-  $comp: "accordion"
-);
+@use "../../style/mixins/components/accordion" as accordion-fc;
 
 $comp: "accordion";
 @include lf-comp-setup($comp, "true", "true", "true", "false", "true");
 
-.accordion {
-  @include lf-comp-border($comp);
-  border-left: 0;
-  border-right: 0;
-  @include lf-el-stretch;
-  box-sizing: border-box;
-  display: flex;
-  /**
-  * @prop --lf-#{$comp}-flex-direction: Sets the flex direction for the #{$comp} component.
-  * Defaults to => column
-  */
-  flex-direction: var(--lf-#{$comp}-flex-direction, column);
-  /**
-  * @prop --lf-#{$comp}-flex-wrap: Sets the flex wrap for the #{$comp} component.
-  * Defaults to => nowrap
-  */
-  flex-wrap: var(--lf-#{$comp}-flex-wrap, nowrap);
+// Import documentation from FC mixin (single source of truth)
+@include accordion-fc.lf-accordion-docs($comp);
+
+:host {
+  display: block;
+  height: 100%;
   width: 100%;
 }
-
-/* local partial loaded above */

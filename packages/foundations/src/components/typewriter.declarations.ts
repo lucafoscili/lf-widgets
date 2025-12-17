@@ -15,7 +15,8 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfThemeUISize } from "../framework/theme.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
+import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_TYPEWRITER_BLOCKS,
   LF_TYPEWRITER_CURSORS,
@@ -216,4 +217,56 @@ export type LfTypewriterTag = (typeof LF_TYPEWRITER_TAGS)[number];
  * Utility type used by the `lf-typewriter` component.
  */
 export type LfTypewriterValue = string | string[];
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfTypewriterFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfTypewriterFCProps {
+  /** BEM block structure for styling */
+  blocks?: typeof LF_TYPEWRITER_BLOCKS;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Reference callback for the cursor element */
+  cursorRef?: (el: HTMLSpanElement | null) => void;
+  /** The text currently being displayed */
+  displayedText?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Shadow parts for styling */
+  parts?: typeof LF_TYPEWRITER_PARTS;
+  /** Whether to show the blinking cursor */
+  shouldShowCursor?: boolean;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** HTML tag to wrap the text content */
+  tag?: LfTypewriterTag;
+  /** Reference callback for the text element */
+  textRef?: (el: HTMLElement | null) => void;
+  /** Reference callback for the typewriter container */
+  typewriterRef?: (el: HTMLDivElement | null) => void;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+}
 //#endregion

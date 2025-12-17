@@ -1,27 +1,7 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/autocomplete" as autocomplete-fc;
 
 $comp: "autocomplete";
 @include lf-comp-setup($comp, "true", "true", "true", "true");
-
-.autocomplete {
-  & {
-    @include lf-el-stretch;
-  }
-
-  &__textfield {
-    & {
-      @include lf-el-stretch;
-    }
-  }
-}
-
-.dropdown {
-  &__spinner {
-    min-height: 0.25em;
-  }
-
-  &__list {
-    margin-top: 0.25em;
-  }
-}
+@include autocomplete-fc.lf-autocomplete-docs("autocomplete");

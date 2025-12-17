@@ -80,65 +80,55 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                            | Description                                                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `--lf-compare-border-color`     | Sets the border color for the compare component. Defaults to => var(--lf-color-border)               |
-| `--lf-compare-border-radius`    | Sets the border radius for the compare component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-compare-color-on-surface` | Sets the color-on-surface color for the compare component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-compare-color-surface`    | Sets the color-surface color for the compare component. Defaults to => var(--lf-color-surface)       |
-| `--lf-compare-font-family`      | Sets the primary font family for the compare component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-compare-font-size`        | Sets the font size for the compare component. Defaults to => var(--lf-font-size)                     |
-| `--lf-compare-grid-template`    | Sets the grid template for the compare component. Defaults to => 0.75em                              |
-| `--lf-compare-panel-height`     | Sets the height for the panel of the compare component. Defaults to => max-content                   |
-| `--lf-compare-panel-max-height` | Sets the max height for the panel of the compare component. Defaults to => 50%                       |
-| `--lf-compare-panel-width`      | Sets the width for the panel of the compare component. Defaults to => 50%                            |
-| `--lf-compare-panel-z-index`    | Sets the z index for the panel of the compare component. Defaults to => var(--lf-ui-zindex-portal)   |
-| `--lf-compare-slider-thickness` | Sets the thickness for the slider of the compare component. Defaults to => 3px                       |
-| `--lf-compare-toolbar-justify`  | Sets the justify for the toolbar of the compare component. Defaults to => space-between              |
+| Name                            | Description                                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-compare-border-color`     | Border color for panels. Defaults to => var(--lf-color-border)                                           |
+| `--lf-compare-border-radius`    | Border radius for panels. Defaults to => var(--lf-ui-border-radius)                                      |
+| `--lf-compare-color-on-primary` | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))     |
+| `--lf-compare-color-primary`    | Primary color for the compare component. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-compare-font-family`      | Sets the primary font family for the compare component. Defaults to => var(--lf-font-family-primary)     |
+| `--lf-compare-font-size`        | Sets the font size for the compare component. Defaults to => var(--lf-font-size)                         |
+| `--lf-compare-grid-template`    | Sets the grid template for the compare component. Defaults to => 1fr auto                                |
+| `--lf-compare-panel-height`     | Sets the height for the panel. Defaults to => auto                                                       |
+| `--lf-compare-panel-max-height` | Sets the max height for the panel. Defaults to => 50%                                                    |
+| `--lf-compare-panel-width`      | Sets the width for the panel. Defaults to => 50%                                                         |
+| `--lf-compare-panel-z-index`    | Sets the z index for the panel. Defaults to => var(--lf-ui-zindex-portal)                                |
+| `--lf-compare-slider-thickness` | Sets the thickness for the slider. Defaults to => 3px                                                    |
+| `--lf-compare-toolbar-justify`  | Sets the justify for the toolbar. Defaults to => space-between                                           |
+| `--lf-compare-toolbar-padding`  | Padding for the toolbar. Defaults to => 0.5em                                                            |
+| `--lf-compare-toolbar-width`    | Width for the toolbar. Defaults to => 100%                                                               |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [lf-accordion](../lf-accordion)
-- [lf-badge](../lf-badge)
 - [lf-button](../lf-button)
-- [lf-canvas](../lf-canvas)
-- [lf-card](../lf-card)
-- [lf-chart](../lf-chart)
-- [lf-chat](../lf-chat)
-- [lf-chip](../lf-chip)
-- [lf-code](../lf-code)
-- [lf-image](../lf-image)
-- [lf-photoframe](../lf-photoframe)
-- [lf-progressbar](../lf-progressbar)
-- [lf-textfield](../lf-textfield)
-- [lf-toggle](../lf-toggle)
-- [lf-typewriter](../lf-typewriter)
-- [lf-upload](../lf-upload)
 - [lf-tree](../lf-tree)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-compare --> lf-accordion
-  lf-compare --> lf-badge
   lf-compare --> lf-button
-  lf-compare --> lf-canvas
-  lf-compare --> lf-card
-  lf-compare --> lf-chart
-  lf-compare --> lf-chat
-  lf-compare --> lf-chip
-  lf-compare --> lf-code
-  lf-compare --> lf-image
-  lf-compare --> lf-photoframe
-  lf-compare --> lf-progressbar
-  lf-compare --> lf-textfield
-  lf-compare --> lf-toggle
-  lf-compare --> lf-typewriter
-  lf-compare --> lf-upload
   lf-compare --> lf-tree
+  lf-button --> lf-list
+  lf-list --> lf-textfield
+  lf-tree --> lf-textfield
+  lf-tree --> lf-accordion
+  lf-tree --> lf-badge
+  lf-tree --> lf-button
+  lf-tree --> lf-canvas
+  lf-tree --> lf-card
+  lf-tree --> lf-chart
+  lf-tree --> lf-chat
+  lf-tree --> lf-chip
+  lf-tree --> lf-code
+  lf-tree --> lf-image
+  lf-tree --> lf-photoframe
+  lf-tree --> lf-progressbar
+  lf-tree --> lf-toggle
+  lf-tree --> lf-typewriter
+  lf-tree --> lf-upload
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -155,8 +145,6 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge
@@ -183,22 +171,6 @@ graph TD;
   lf-chat --> lf-checkbox
   lf-code --> lf-button
   lf-photoframe --> lf-image
-  lf-tree --> lf-textfield
-  lf-tree --> lf-accordion
-  lf-tree --> lf-badge
-  lf-tree --> lf-button
-  lf-tree --> lf-canvas
-  lf-tree --> lf-card
-  lf-tree --> lf-chart
-  lf-tree --> lf-chat
-  lf-tree --> lf-chip
-  lf-tree --> lf-code
-  lf-tree --> lf-image
-  lf-tree --> lf-photoframe
-  lf-tree --> lf-progressbar
-  lf-tree --> lf-toggle
-  lf-tree --> lf-typewriter
-  lf-tree --> lf-upload
   style lf-compare fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

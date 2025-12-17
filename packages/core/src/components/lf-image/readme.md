@@ -116,7 +116,6 @@ Type: `Promise<void>`
  - [lf-canvas](../lf-canvas)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-photoframe](../lf-photoframe)
  - [lf-shapeeditor](../lf-shapeeditor)
@@ -131,7 +130,6 @@ graph TD;
   lf-canvas --> lf-image
   lf-card --> lf-image
   lf-carousel --> lf-image
-  lf-compare --> lf-image
   lf-masonry --> lf-image
   lf-photoframe --> lf-image
   lf-shapeeditor --> lf-image

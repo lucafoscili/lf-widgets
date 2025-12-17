@@ -89,18 +89,24 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                        | Description                                                                                         |
-| --------------------------- | --------------------------------------------------------------------------------------------------- |
-| `--lf-upload-border-color`  | Sets the border color for the upload component. Defaults to => var(--lf-color-border)               |
-| `--lf-upload-border-radius` | Sets the border radius for the upload component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-upload-button-height` | Sets the height for the upload button. Defaults to => 2.75em                                        |
-| `--lf-upload-color-surface` | Sets the color-surface color for the upload component. Defaults to => var(--lf-color-surface)       |
-| `--lf-upload-font-family`   | Sets the primary font family for the upload component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-upload-font-size`     | Sets the font size for the upload component. Defaults to => var(--lf-font-size)                     |
-| `--lf-upload-grid-gap`      | Sets the grid-gap for the upload component. Defaults to => 1.25em                                   |
-| `--lf-upload-item-padding`  | Sets the padding for the upload item. Defaults to => 0.75em                                         |
-| `--lf-upload-min-height`    | Sets the min-height for the upload component. Defaults to => 8em                                    |
-| `--lf-upload-padding`       | Sets the padding for the upload component. Defaults to => 1em                                       |
+| Name                           | Description                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `--lf-upload-border-color`     | Border color for the upload component. Defaults to => var(--lf-color-border)                             |
+| `--lf-upload-border-radius`    | Border radius for the upload component. Defaults to => var(--lf-ui-border-radius)                        |
+| `--lf-upload-border-width`     | Border width for the upload component. Defaults to => 1px                                                |
+| `--lf-upload-button-height`    | Height for the upload button area. Defaults to => 2.75em                                                 |
+| `--lf-upload-color-on-surface` | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))             |
+| `--lf-upload-color-surface`    | Surface/background color for the upload. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) |
+| `--lf-upload-font-family`      | Sets the primary font family for the upload component. Defaults to => var(--lf-font-family-primary)      |
+| `--lf-upload-font-size`        | Sets the font size for the upload component. Defaults to => var(--lf-font-size)                          |
+| `--lf-upload-font-weight`      | Font weight for the upload label. Defaults to => var(--lf-font-weight-button)                            |
+| `--lf-upload-grid-gap`         | Grid gap when files are selected. Defaults to => 1.25em                                                  |
+| `--lf-upload-icon-color`       | Icon color in file items. Defaults to => var(--lf-color-on-surface)                                      |
+| `--lf-upload-icon-size`        | Icon size in file items. Defaults to => 1.5em                                                            |
+| `--lf-upload-info-height`      | Max height for the file info area. Defaults to => minmax(auto, 25vh)                                     |
+| `--lf-upload-item-padding`     | Padding for file items. Defaults to => 0.75em                                                            |
+| `--lf-upload-min-height`       | Minimum height for the upload component. Defaults to => 8em                                              |
+| `--lf-upload-padding`          | Padding for the upload component. Defaults to => 1em                                                     |
 
 
 ## Dependencies
@@ -112,7 +118,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -125,7 +130,6 @@ graph TD;
   lf-breadcrumbs --> lf-upload
   lf-card --> lf-upload
   lf-carousel --> lf-upload
-  lf-compare --> lf-upload
   lf-masonry --> lf-upload
   lf-shapeeditor --> lf-upload
   lf-tree --> lf-upload

@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/card" as card-fc;
 @use "./style.debug" as sd with (
   $comp: "card"
 );
@@ -17,7 +18,19 @@
 );
 
 $comp: "card";
+
+// Include FC docs for CSS custom property documentation
+@include card-fc.lf-card-docs($comp);
+
+// Component setup with standard options
 @include lf-comp-setup($comp, "true", "true", "true", "false", "true", 4px);
+
+// =============================================================================
+// HOST STYLES ONLY
+// =============================================================================
+// Per FC-first architecture, only :host rules belong here.
+// All BEM class styles are in the FC partial.
+// =============================================================================
 
 :host {
   @include lf-comp-color($comp, "bg", "text");

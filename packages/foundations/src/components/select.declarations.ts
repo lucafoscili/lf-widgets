@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LfListElement,
@@ -114,6 +115,7 @@ export interface LfSelectAdapterRefs extends LfComponentAdapterRefs {
  */
 export interface LfSelectAdapterJsx extends LfComponentAdapterJsx {
   list: () => VNode | null;
+  select: () => VNode;
   textfield: () => VNode;
 }
 /**
@@ -217,5 +219,69 @@ export interface LfSelectPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: string | number;
+}
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfSelectFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfSelectFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Cypress test attribute */
+  cyAttribute?: string;
+  /** Dataset containing the selectable options */
+  dataset?: LfDataDataset;
+  /** Whether the select is disabled */
+  disabled?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** LF attribute for state theming */
+  lfAttribute?: string;
+  /** Props to pass to the internal lf-list component */
+  listProps?: Partial<LfListInterface>;
+  /** Reference callback for the list element */
+  listRef?: (el: LfListElement | null) => void;
+  /** Callback fired on list item click */
+  onListEvent?: (event: CustomEvent) => void;
+  /** Callback fired on textfield events */
+  onTextfieldEvent?: (event: CustomEvent) => void;
+  /** Part attribute for external styling */
+  part?: string;
+  /** Currently selected index */
+  selectedIndex?: number;
+  /** Currently selected node */
+  selectedNode?: LfDataNode | null;
+  /** Reference callback for the select container */
+  selectRef?: (el: HTMLDivElement | null) => void;
+  /** Custom CSS styles to apply */
+  style?: { [key: string]: string };
+  /** Props to pass to the internal lf-textfield component */
+  textfieldProps?: Partial<LfTextfieldInterface>;
+  /** Reference callback for the textfield element */
+  textfieldRef?: (el: LfTextfieldElement | null) => void;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

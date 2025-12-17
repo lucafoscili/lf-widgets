@@ -184,23 +184,22 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                     | Description                                                                                       |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-list-border-color`                 | Sets the border color for the list component. Defaults to => var(--lf-color-border)               |
-| `--lf-list-border-radius`                | Sets the border radius for the list component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-list-color-bg`                     | Sets the color-bg color for the list component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-list-color-danger`                 | Sets the color-danger color for the list component. Defaults to => var(--lf-color-danger)         |
-| `--lf-list-color-on-bg`                  | Sets the color-on-bg color for the list component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-list-color-on-danger`              | Sets the color-on-danger color for the list component. Defaults to => var(--lf-color-on-danger)   |
-| `--lf-list-color-on-primary`             | Sets the color-on-primary color for the list component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-list-color-on-surface`             | Sets the color-on-surface color for the list component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-list-color-primary`                | Sets the color-primary color for the list component. Defaults to => var(--lf-color-primary)       |
-| `--lf-list-color-surface`                | Sets the color-surface color for the list component. Defaults to => var(--lf-color-surface)       |
-| `--lf-list-font-family`                  | Sets the primary font family for the list component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-list-font-size`                    | Sets the font size for the list component. Defaults to => var(--lf-font-size)                     |
-| `--lf-list-item-height`                  | Sets the height for the item of the list component. Defaults to => 2.5em                          |
-| `--lf-list-item-padding`                 | Sets the padding for the item of the list component. Defaults to => 0 0.75em                      |
-| `--lf-list-item-with-description-height` | Sets the height for the item with description of the list component. Defaults to => 3.6em         |
+| Name                                     | Description                                                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `--lf-list-border-color`                 | Border color for the list. Defaults to => var(--lf-color-border)                                         |
+| `--lf-list-border-radius`                | Border radius for the list. Defaults to => var(--lf-ui-radius)                                           |
+| `--lf-list-border-width`                 | Border width for the list. Defaults to => 1px                                                            |
+| `--lf-list-color-bg`                     | Background color for the list. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                     |
+| `--lf-list-color-on-bg`                  | Text color on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                    |
+| `--lf-list-color-on-primary`             | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))     |
+| `--lf-list-color-on-surface`             | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))             |
+| `--lf-list-color-primary`                | Primary/accent color for selected items. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-list-color-surface`                | Surface color for filter area. Defaults to => var(--lf-state-surface, var(--lf-color-surface))           |
+| `--lf-list-font-family`                  | Font family for the list. Defaults to => var(--lf-font-family)                                           |
+| `--lf-list-font-size`                    | Base font size (scaled by --lf-ui-size). Defaults to => var(--lf-font-size)                              |
+| `--lf-list-item-height`                  | Height for list items. Defaults to => 2.5em                                                              |
+| `--lf-list-item-padding`                 | Padding for list items. Defaults to => 0 0.75em                                                          |
+| `--lf-list-item-with-description-height` | Height for items with description. Defaults to => 3.6em                                                  |
 
 
 ## Dependencies

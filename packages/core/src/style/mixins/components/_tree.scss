@@ -1,0 +1,370 @@
+// =============================================================================
+// TREE - Component Styles
+// =============================================================================
+// Tree-specific styles for the LfTreeFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-tree-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/tree" as tree-fc;
+//   @include tree-fc.lf-tree-docs("tree");
+// =============================================================================
+@mixin lf-tree-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-bg: Background color for the tree.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on the tree background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for selected/highlighted nodes.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for tree elements.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-border-radius: Border radius for the tree container.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-padding: Padding for the tree container.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-node-height: Height for tree nodes.
+   *       Defaults to => 2em
+   * @prop --lf-#{$comp}-node-padding: Padding for tree nodes.
+   *       Defaults to => 0 1em
+   * @prop --lf-#{$comp}-accordion-node-height: Height for accordion-style nodes (depth 0).
+   *       Defaults to => 4em
+   * @prop --lf-#{$comp}-icon-size: Size for icons in tree nodes.
+   *       Defaults to => 1.5em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "tree";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Tree Core
+// -----------------------------------------------------------------------------
+.tree {
+  & {
+    border-radius: var(--lf-tree-border-radius, var(--lf-ui-border-radius));
+    background-color: rgba(
+      $bgC,
+      var(--lf-tree-background-alpha, var(--lf-ui-alpha-glass, 0.375))
+    );
+    padding: var(--lf-tree-padding, 0);
+  }
+
+  &__filter {
+    border-radius: var(--lf-tree-border-radius, var(--lf-ui-border-radius));
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: rgba($surfaceC, var(--lf-tree-filter-alpha, 0.875));
+    backdrop-filter: blur(15px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  &__nodes-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &--grid {
+    align-content: start;
+    display: grid;
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Header (Grid Mode)
+// -----------------------------------------------------------------------------
+.header {
+  & {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--lf-tree-color-bg, rgba(0, 0, 0, 0.3));
+    backdrop-filter: blur(10px);
+    font-size: 0.85em;
+    line-height: 1.2;
+  }
+
+  &__row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(120px, auto);
+    column-gap: 0.5em;
+    padding: 0.5em 1em 0.25em 3.25em;
+    box-sizing: border-box;
+  }
+
+  &__cell {
+    font-family: var(--lf-font-family-button);
+    font-size: calc(var(--lf-font-size) * 0.85);
+    font-weight: 600;
+    text-transform: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Node
+// -----------------------------------------------------------------------------
+.node {
+  & {
+    color: rgb($onBgC);
+    @include lf-transitions((background-color, opacity));
+    box-sizing: border-box;
+    height: var(--lf-tree-node-height, 2em);
+    padding: var(--lf-tree-node-padding, 0 1em);
+    position: relative;
+  }
+
+  // Accordion layout styling is applied via data-depth="0" attribute
+  // combined with :host([lf-accordion-layout]) in the WC SCSS.
+  // For FC standalone usage, consumers can apply similar styles
+  // targeting [data-depth="0"].
+
+  &--selectable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(
+        $primaryC,
+        var(--lf-tree-hover-alpha, var(--lf-ui-alpha-glass-hint, 0.125))
+      );
+    }
+  }
+
+  &--selected {
+    background-color: rgba(
+      $primaryC,
+      var(--lf-tree-selected-alpha, var(--lf-ui-alpha-glass, 0.375))
+    );
+
+    &:hover {
+      background-color: rgba(
+        $primaryC,
+        var(
+          --lf-tree-selected-hover-alpha,
+          var(--lf-ui-alpha-glass-heavy, 0.75)
+        )
+      );
+    }
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__dropdown,
+  &__expand,
+  &__icon {
+    cursor: pointer;
+    margin: 0;
+  }
+
+  &__dropdown,
+  &__expand {
+    @include lf-transitions((opacity, transform));
+    overflow: hidden;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+  &__dropdown {
+    color: rgb($onBgC);
+    font-size: var(--lf-tree-icon-size, 1.5em);
+    height: var(--lf-tree-icon-size, 1.5em);
+    width: var(--lf-tree-icon-size, 1.5em);
+
+    &--expanded {
+      transform: rotate(180deg);
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__expand {
+    color: rgb($onBgC);
+    font-size: var(--lf-tree-icon-size, 1.5em);
+    height: var(--lf-tree-icon-size, 1.5em);
+    width: var(--lf-tree-icon-size, 1.5em);
+
+    &--expanded {
+      color: rgb($onBgC);
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__icon {
+    color: rgb($onBgC);
+    font-size: var(--lf-tree-icon-size, 1.5em);
+    height: var(--lf-tree-icon-size, 1.5em);
+    width: var(--lf-tree-icon-size, 1.5em);
+  }
+
+  &__padding {
+    height: 100%;
+    width: calc(1.75em * var(--lf_tree_padding_multiplier));
+  }
+
+  &__value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--lf-font-family-label);
+    font-size: var(--lf-font-size);
+    margin: 0 0 0 0.5em;
+    width: 100%;
+
+    &--grid {
+      .node__grid {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(120px, auto);
+        column-gap: 0.5em;
+        align-items: center;
+        padding: 0 1em 0 0;
+        box-sizing: border-box;
+        min-height: 100%;
+      }
+
+      .node__grid-cell {
+        font-family: var(--lf-font-family-label);
+        font-size: var(--lf-font-size);
+        display: flex;
+        align-items: center;
+        min-height: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .node__grid-cell--value {
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(120px, auto);
+    column-gap: 0.5em;
+    align-items: center;
+    padding: 0 1em 0 0;
+    box-sizing: border-box;
+    min-height: 100%;
+  }
+
+  &__grid-cell {
+    font-family: var(--lf-font-family-label);
+    font-size: var(--lf-font-size);
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--value {
+      font-weight: 500;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// No Matches (Filter Results)
+// -----------------------------------------------------------------------------
+.no-matches {
+  & {
+    color: rgb($onBgC);
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    padding: 1em;
+    width: 100%;
+  }
+
+  &__icon {
+    color: rgb($onBgC);
+    font-size: var(--lf-tree-icon-size, 1.5em);
+    height: var(--lf-tree-icon-size, 1.5em);
+    width: var(--lf-tree-icon-size, 1.5em);
+    margin-right: 0.375em;
+  }
+
+  &__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--lf-font-family-caption);
+    font-size: calc(var(--lf-font-size) * 0.85);
+  }
+
+  &__filter {
+    color: rgb($primaryC);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Empty Data
+// -----------------------------------------------------------------------------
+.empty-data {
+  & {
+    color: rgb($onBgC);
+    font-family: var(--lf-font-family-body);
+    font-size: var(--lf-font-size);
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    margin: 1em 0;
+    width: 100%;
+  }
+
+  &__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -125,16 +125,20 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                           | Description                                                                                                                                                                                                                                        |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--lf-drawer-border`           | Sets the border for the drawer component. Defaults to => 1px solid 1px solid rgba(var(--lf-color-border), 0.75)                                                                                                                                    |
-| `--lf-drawer-border-radius`    | Sets the border radius for the drawer component. Defaults to => var(--lf-ui-border-radius)                                                                                                                                                         |
-| `--lf-drawer-color-drawer`     | Sets the color-drawer color for the drawer component. Defaults to => var(--lf-color-drawer)                                                                                                                                                        |
-| `--lf-drawer-color-on-drawer`  | Sets the color-on-drawer color for the drawer component. Defaults to => var(--lf-color-on-drawer)                                                                                                                                                  |
-| `--lf-drawer-font-family`      | Sets the primary font family for the drawer component. Defaults to => var(--lf-font-family-primary)                                                                                                                                                |
-| `--lf-drawer-font-size`        | Sets the font size for the drawer component. Defaults to => var(--lf-font-size)                                                                                                                                                                    |
-| `--lf-drawer-left-box-shadow`  | Sets the box-shadow for the left side of the drawer component. Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), 8px 0 16px 2px rgba(var(--lf-color-on-drawer), 0.14), 2px 0 20px 5px rgba(var(--lf-color-on-drawer), 0.14)     |
-| `--lf-drawer-right-box-shadow` | Sets the box-shadow for the right side of the drawer component. Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), -8px 0 16px 2px rgba(var(--lf-color-on-drawer), 0.14), -2px 0 20px 5px rgba(var(--lf-color-on-drawer), 0.14) |
+| Name                           | Description                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `--lf-drawer-border`           | Sets the border for the drawer component. Defaults to => 1px solid rgba(var(--lf-color-border), 0.75)                 |
+| `--lf-drawer-border-radius`    | Sets the border radius for the drawer component. Defaults to => var(--lf-ui-border-radius)                            |
+| `--lf-drawer-color-bg`         | Background color for the drawer. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                                |
+| `--lf-drawer-color-drawer`     | Sets the color-drawer color for the drawer component. Defaults to => var(--lf-color-drawer)                           |
+| `--lf-drawer-color-on-bg`      | Text color for the drawer. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                                |
+| `--lf-drawer-color-on-drawer`  | Sets the color-on-drawer color for the drawer component. Defaults to => var(--lf-color-on-drawer)                     |
+| `--lf-drawer-color-on-primary` | Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))                 |
+| `--lf-drawer-color-primary`    | Primary/accent color for the drawer. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                  |
+| `--lf-drawer-font-family`      | Sets the primary font family for the drawer component. Defaults to => var(--lf-font-family-primary)                   |
+| `--lf-drawer-font-size`        | Sets the font size for the drawer component. Defaults to => var(--lf-font-size)                                       |
+| `--lf-drawer-left-box-shadow`  | Box shadow for the left-positioned drawer. Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ...   |
+| `--lf-drawer-right-box-shadow` | Box shadow for the right-positioned drawer. Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ... |
 
 
 ----------------------------------------------

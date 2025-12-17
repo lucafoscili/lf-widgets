@@ -1,4 +1,7 @@
 import {
+  CY_ATTRIBUTES,
+  LF_AUTOCOMPLETE_BLOCKS,
+  LF_AUTOCOMPLETE_PARTS,
   LF_THEME_ICONS,
   LfAutocompleteAdapter,
   LfAutocompleteAdapterJsx,
@@ -13,20 +16,16 @@ export const prepAutocompleteJsx = (
     dropdown: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const {
-        blocks,
-        compInstance,
-        cyAttributes,
-        lfAttributes,
-        framework,
-        parts,
-      } = controller.get;
+      const { compInstance, framework } = controller.get;
       const { computed } = controller;
       const { assignRef, sanitizeProps, theme } = framework();
       const { bemClass } = theme;
       const { list } = handlers;
       const comp = compInstance();
       const lfDataset = comp.lfDataset;
+
+      const blocks = LF_AUTOCOMPLETE_BLOCKS;
+      const parts = LF_AUTOCOMPLETE_PARTS;
 
       const listProps = comp.lfListProps || {};
       const dropdownId = `${comp.rootElement?.id || "autocomplete"}-dropdown`;
@@ -38,11 +37,11 @@ export const prepAutocompleteJsx = (
 
       return (
         <div
-          class={bemClass(blocks().dropdown._)}
-          data-cy={cyAttributes().dropdownMenu}
-          data-lf={lfAttributes().portal}
+          class={bemClass(blocks.dropdown._)}
+          data-cy={CY_ATTRIBUTES.dropdownMenu}
+          data-lf="portal"
           id={dropdownId}
-          part={parts().dropdown}
+          part={parts.dropdown}
           ref={assignRef(refs, "dropdown")}
           role="listbox"
         >
@@ -51,10 +50,10 @@ export const prepAutocompleteJsx = (
             lfBarVariant={true}
             lfUiSize="xsmall"
             {...sanitizeProps(comp.lfSpinnerProps || {}, "LfSpinner")}
-            class={bemClass(blocks().dropdown._, blocks().dropdown.spinner)}
-            data-cy={cyAttributes().spinner}
-            data-lf={lfAttributes().fadeIn}
-            part={parts().spinner}
+            class={bemClass(blocks.dropdown._, blocks.dropdown.spinner)}
+            data-cy={CY_ATTRIBUTES.spinner}
+            data-lf="fade-in"
+            part={parts.spinner}
             ref={assignRef(refs, "spinner")}
           />
           {showList && (
@@ -63,12 +62,12 @@ export const prepAutocompleteJsx = (
               lfUiSize={comp.lfUiSize}
               lfUiState={comp.lfUiState}
               {...sanitizeProps(listProps, "LfList")}
-              class={bemClass(blocks().dropdown._, blocks().dropdown.list)}
+              class={bemClass(blocks.dropdown._, blocks.dropdown.list)}
               lfDataset={lfDataset}
               lfSelectable={true}
               lfValue={computed.highlightedIndex()}
               onLf-list-event={list}
-              part={parts().list}
+              part={parts.list}
               ref={assignRef(refs, "list")}
             />
           )}
@@ -81,12 +80,15 @@ export const prepAutocompleteJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, compInstance, framework, parts } = controller.get;
+      const { compInstance, framework } = controller.get;
       const { computed } = controller;
       const { assignRef, sanitizeProps, theme } = framework();
       const { bemClass } = theme;
       const { textfield } = handlers;
       const comp = compInstance();
+
+      const blocks = LF_AUTOCOMPLETE_BLOCKS;
+      const parts = LF_AUTOCOMPLETE_PARTS;
 
       const textfieldProps = comp.lfTextfieldProps || {};
       const htmlAttrs = textfieldProps?.lfHtmlAttributes || {};
@@ -106,17 +108,14 @@ export const prepAutocompleteJsx = (
           lfUiSize={comp.lfUiSize}
           lfUiState={comp.lfUiState}
           {...sanitizeProps(textfieldProps, "LfTextfield")}
-          class={bemClass(
-            blocks().autocomplete._,
-            blocks().autocomplete.textfield,
-          )}
+          class={bemClass(blocks.autocomplete._, blocks.autocomplete.textfield)}
           lfHtmlAttributes={htmlSanitized}
           lfTrailingIconAction={
             computed.hasCache() ? LF_THEME_ICONS.dropdown : null
           }
           lfValue={comp.lfValue}
           onLf-textfield-event={textfield}
-          part={parts().textfield}
+          part={parts.textfield}
           ref={assignRef(refs, "textfield")}
         />
       );

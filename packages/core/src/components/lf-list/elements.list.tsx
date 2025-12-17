@@ -1,10 +1,12 @@
 import {
   LF_THEME_ICONS,
+  LfDataNode,
   LfListAdapter,
   LfListAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 import { FIcon } from "../../utils/icon";
+import { LfListFC } from "./lf-list-fc";
 
 /**
  * Prepares JSX factory functions for the list component.
@@ -14,6 +16,11 @@ import { FIcon } from "../../utils/icon";
  * - Uses `controller.computed` for derived predicates (isDisabled, isEmpty, isFilteredEmpty)
  * - Uses `controller.actions` for complex operations
  * - Routes all events through handlers (which use dispatcher)
+ *
+ * FC-First Pattern:
+ * - The `list` JSX factory renders the LfListFC functional component
+ * - Individual factories (deleteIcon, filter, icon, node, subtitle, title)
+ *   are kept for backward compatibility and composed usage
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
@@ -115,6 +122,85 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
         >
           <FIcon framework={mgr} icon={node.icon} />
         </div>
+      );
+    },
+    //#endregion
+
+    //#region List (FC-First)
+    /**
+     * Renders the list using the LfListFC functional component.
+     * This is the FC-first entry point for rendering the list items.
+     *
+     * @param items - Array of visible nodes to render
+     * @param onItemRef - Optional callback to capture list item refs
+     * @returns VNode for the list
+     */
+    list: (
+      items: LfDataNode[],
+      onItemRef?: (el: HTMLLIElement | null, index: number) => void,
+    ) => {
+      const { controller, handlers } = getAdapter();
+      const { get, computed } = controller;
+
+      const compInstance = get.compInstance();
+      const framework = get.framework();
+
+      const {
+        lfEmpty,
+        lfEnableDeletions,
+        lfSelectable,
+        lfUiSize,
+        lfUiState,
+        lfDataset,
+      } = compInstance;
+
+      const selected = get.selected();
+      const focused = get.focused();
+      const isFilteredEmpty = computed.isFilteredEmpty();
+
+      // Determine the empty message
+      const emptyMessage = isFilteredEmpty
+        ? "No items match your filter."
+        : lfEmpty;
+
+      // Find the visible index that corresponds to the selected original index
+      const selectedVisibleIndex =
+        selected !== null && selected !== undefined
+          ? items.findIndex(
+              (node: LfDataNode) =>
+                lfDataset?.nodes?.findIndex((n) => n.id === node.id) ===
+                selected,
+            )
+          : undefined;
+
+      return (
+        <LfListFC
+          emptyMessage={emptyMessage}
+          enableDeletions={lfEnableDeletions}
+          focusedIndex={focused}
+          framework={framework}
+          items={items}
+          onDeleteClick={(e, node, _index) => {
+            handlers.deleteIcon(e, node);
+          }}
+          onItemBlur={(e, node, index) => {
+            handlers.node.blur(e, node, index);
+          }}
+          onItemClick={(e, node, index) => {
+            handlers.node.click(e, node, index);
+          }}
+          onItemFocus={(e, node, index) => {
+            handlers.node.focus(e, node, index);
+          }}
+          onItemPointerDown={(e, node, index) => {
+            handlers.node.pointerdown(e, node, index);
+          }}
+          onItemRef={onItemRef}
+          selectable={lfSelectable}
+          selectedIndex={selectedVisibleIndex}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion

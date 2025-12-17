@@ -17,7 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfThemeUIState } from "../framework";
+import { LfFrameworkInterface, LfThemeUIState } from "../framework";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import {
@@ -255,5 +255,75 @@ export interface LfBreadcrumbsPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
+}
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfBreadcrumbsFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfBreadcrumbsFCProps {
+  /** Reference callback for the breadcrumbs element */
+  breadcrumbsRef?: (el: HTMLElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Cypress attributes for testing */
+  cyAttributes: ReturnType<
+    LfBreadcrumbsAdapterControllerGetters["cyAttributes"]
+  >;
+  /** Message displayed when the dataset is empty */
+  empty: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether the view is expanded (showing all items) */
+  isExpanded: boolean;
+  /** Whether breadcrumb items are interactive */
+  isInteractive: boolean;
+  /** Maximum number of items to show before truncation */
+  maxItems?: number;
+  /** Callback fired when a breadcrumb item is clicked */
+  onItemClick?: (e: MouseEvent, node: LfDataNode, index: number) => void;
+  /** Callback fired on item keydown */
+  onItemKeydown?: (e: KeyboardEvent, node: LfDataNode, index: number) => void;
+  /** Callback fired on item pointerdown */
+  onItemPointerdown?: (
+    e: PointerEvent,
+    node: LfDataNode,
+    index: number,
+  ) => void;
+  /** Callback fired when truncation indicator is clicked */
+  onTruncationClick?: (e: MouseEvent) => void;
+  /** Callback fired on truncation keydown */
+  onTruncationKeydown?: (e: KeyboardEvent) => void;
+  /** Current breadcrumb path nodes */
+  path: LfDataNode[];
+  /** Reference callback for individual items */
+  refItems: Map<string, HTMLElement | null>;
+  /** Separator string between items */
+  separator: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

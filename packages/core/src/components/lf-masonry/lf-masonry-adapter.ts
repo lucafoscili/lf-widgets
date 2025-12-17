@@ -69,8 +69,9 @@ export const createHandlers = (
 export const createRefs = (): LfMasonryAdapterRefs => {
   return {
     addColumn: null,
-    removeColumn: null,
     changeView: null,
+    masonry: null,
+    removeColumn: null,
     shapes: new Map<string, HTMLElement>(),
   };
 };

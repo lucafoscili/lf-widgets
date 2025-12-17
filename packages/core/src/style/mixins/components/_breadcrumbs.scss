@@ -1,0 +1,214 @@
+// =============================================================================
+// BREADCRUMBS - Component Styles
+// =============================================================================
+// Breadcrumbs-specific styles for the LfBreadcrumbsFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-breadcrumbs-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/breadcrumbs" as breadcrumbs-fc;
+//   @include breadcrumbs-fc.lf-breadcrumbs-docs("breadcrumbs");
+// =============================================================================
+@mixin lf-breadcrumbs-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for the breadcrumbs.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for breadcrumb items.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-border-radius: Border radius for breadcrumb items.
+   *       Defaults to => var(--lf-ui-radius)
+   * @prop --lf-#{$comp}-gap: Gap between breadcrumb items.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-padding: Padding for the breadcrumbs container.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-item-height: Height for breadcrumb items.
+   *       Defaults to => 2em
+   * @prop --lf-#{$comp}-item-padding: Padding for breadcrumb items.
+   *       Defaults to => 0 0.75em
+   * @prop --lf-#{$comp}-separator-color: Color for separators.
+   *       Defaults to => rgba(var(--lf-color-on-surface), 0.5)
+   * @prop --lf-#{$comp}-separator-margin: Horizontal margin around separators.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-empty-color: Color for empty state message.
+   *       Defaults to => rgba(var(--lf-color-on-surface), 0.6)
+   * @prop --lf-#{$comp}-dot-gap: Gap between dots in truncation indicator.
+   *       Defaults to => 0.05em
+   * @prop --lf-#{$comp}-dot-gap-hover: Gap between dots on hover.
+   *       Defaults to => 0.2em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "breadcrumbs";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Breadcrumbs Core
+// -----------------------------------------------------------------------------
+.breadcrumbs {
+  & {
+    align-items: center;
+    color: var(--lf-#{$comp}-color, var(--lf-color-text));
+    display: inline-flex;
+    gap: var(--lf-#{$comp}-gap, 0.5em);
+    padding: var(--lf-#{$comp}-padding, 0.5em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // List
+  // ---------------------------------------------------------------------------
+  &__list {
+    align-items: center;
+    display: inline-flex;
+    gap: var(--lf-#{$comp}-gap, 0.5em);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Item
+  // ---------------------------------------------------------------------------
+  &__item {
+    & {
+      align-items: center;
+      background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-radius));
+      box-shadow:
+        1px 1px 2px 0px rgba(var(--lf-color-on-surface), 0.25),
+        0 0 1px 0 rgba(var(--lf-color-on-surface), 0.375);
+      box-sizing: border-box;
+      color: rgb($onSurfaceC);
+      cursor: pointer;
+      display: inline-flex;
+      height: var(--lf-#{$comp}-item-height, 2em);
+      padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
+      position: relative;
+      text-decoration: none;
+      @include lf-transitions((background-color, box-shadow, transform));
+    }
+
+    &:hover:not([data-disabled="true"]) {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &[data-disabled="true"] {
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lf-color-focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-current="page"] {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+      color: rgb($onPrimaryC);
+      cursor: default;
+      font-weight: 600;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Separator
+  // ---------------------------------------------------------------------------
+  &__separator {
+    color: var(
+      --lf-#{$comp}-separator-color,
+      rgba(var(--lf-color-on-surface), 0.5)
+    );
+    margin: 0 var(--lf-#{$comp}-separator-margin, 0.25em);
+    user-select: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Empty State
+  // ---------------------------------------------------------------------------
+  &__empty {
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-radius));
+    color: var(
+      --lf-#{$comp}-empty-color,
+      rgba(var(--lf-color-on-surface), 0.6)
+    );
+    font-style: italic;
+    padding: 0.5em 1em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.35em;
+    position: relative;
+    z-index: 1;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    --lf-image-color-primary: #{$onSurfaceC};
+
+    display: inline-flex;
+    font-size: 1.25em;
+    margin-left: -0.25em;
+    margin-right: 0.1em;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Truncation
+  // ---------------------------------------------------------------------------
+  &__truncation {
+    & {
+      align-items: center;
+      background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      border-radius: var(--lf-#{$comp}-border-radius, var(--lf-ui-radius));
+      box-sizing: border-box;
+      cursor: pointer;
+      display: inline-flex;
+      height: var(--lf-#{$comp}-item-height, 2em);
+      padding: var(--lf-#{$comp}-item-padding, 0 0.75em);
+    }
+
+    &:hover .breadcrumbs__dot {
+      margin: 0 var(--lf-#{$comp}-dot-gap-hover, 0.2em);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--lf-color-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dot (inside truncation)
+  // ---------------------------------------------------------------------------
+  &__dot {
+    @include lf-transitions((margin), 0.2s, $lf-easing-bounce);
+    margin: 0 var(--lf-#{$comp}-dot-gap, 0.05em);
+  }
+}

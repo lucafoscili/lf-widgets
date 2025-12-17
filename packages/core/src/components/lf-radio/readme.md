@@ -131,31 +131,33 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                      | Description                                                                                              |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `--lf-radio-circle-border-color`          | Sets the border color of the radio circle. Defaults to => rgba(var(--lf-color-on-bg), 0.6)               |
-| `--lf-radio-circle-border-width`          | Sets the border width of the radio circle. Defaults to => 2px                                            |
-| `--lf-radio-circle-hover-border-color`    | Sets the border color of the radio circle on hover. Defaults to => rgba(var(--lf-color-primary), 0.875)  |
-| `--lf-radio-circle-selected-border-color` | Sets the border color of the radio circle when selected. Defaults to => rgba(var(--lf-color-primary), 1) |
-| `--lf-radio-control-size`                 | Sets the size of the radio control. Defaults to => 1.25em                                                |
-| `--lf-radio-dot-background-color`         | Sets the background color of the selected radio dot. Defaults to => rgba(var(--lf-color-primary), 1)     |
-| `--lf-radio-dot-border-width`             | Sets the border width of the selected radio dot. Defaults to => 10px (creates a filled circle)           |
-| `--lf-radio-font-family`                  | Sets the primary font family for the radio component. Defaults to => var(--lf-font-family-primary)       |
-| `--lf-radio-font-size`                    | Sets the font size for the radio component. Defaults to => var(--lf-font-size)                           |
-| `--lf-radio-group-gap`                    | Sets the gap between radio items in the group. Defaults to => var(--lf-space-03)                         |
-| `--lf-radio-group-horizontal-gap`         | Sets the gap between radio items in horizontal orientation. Defaults to => var(--lf-space-05)            |
-| `--lf-radio-hover-border-color`           | Sets the border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.5)                        |
-| `--lf-radio-item-gap`                     | Sets the gap between the radio control and label. Defaults to => var(--lf-space-03)                      |
-| `--lf-radio-item-selected-color`          | Sets the color for selected radio items. Defaults to => rgba(var(--lf-color-primary), 1)                 |
-| `--lf-radio-label-color`                  | Sets the color of the radio label. Defaults to => rgba(var(--lf-color-on-bg), 0.87)                      |
-| `--lf-radio-label-font-size`              | Sets the font size of the radio label. Defaults to => 1em                                                |
-| `--lf-radio-label-font-weight`            | Sets the font weight of the label. Defaults to => 500                                                    |
-| `--lf-radio-label-line-height`            | Sets the line height of the radio label. Defaults to => 1.5                                              |
-| `--lf-radio-label-padding`                | Sets the padding for the label. Defaults to => 0.75em                                                    |
-| `--lf-radio-label-padding-leading`        | Sets the padding for the label in leading position. Defaults to => 0.75em                                |
-| `--lf-radio-label-selected-color`         | Sets the color of the label when selected. Defaults to => rgba(var(--lf-color-primary), 1)               |
-| `--lf-radio-label-selected-font-weight`   | Sets the font weight of the label when selected. Defaults to => 500                                      |
-| `--lf-radio-ripple-size`                  | Sets the size of the ripple effect. Defaults to => 2.5em                                                 |
+| Name                                      | Description                                                                                               |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--lf-radio-circle-border-color`          | Border color of the radio circle. Defaults to => rgba(var(--lf-color-on-bg), 0.6)                         |
+| `--lf-radio-circle-border-width`          | Border width of the radio circle. Defaults to => 2px                                                      |
+| `--lf-radio-circle-hover-border-color`    | Border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.875)                                |
+| `--lf-radio-circle-selected-border-color` | Border color when selected. Defaults to => rgba(var(--lf-color-primary), 1)                               |
+| `--lf-radio-color-on-bg`                  | Text color for labels. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                        |
+| `--lf-radio-color-primary`                | Primary color for selected/active states. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-radio-control-size`                 | Size of the radio control. Defaults to => 1.25em                                                          |
+| `--lf-radio-dot-background-color`         | Background color of selected dot. Defaults to => rgba(var(--lf-color-primary), 1)                         |
+| `--lf-radio-dot-border-width`             | Border width of the dot. Defaults to => 0.5em                                                             |
+| `--lf-radio-font-family`                  | Sets the primary font family for the radio component. Defaults to => var(--lf-font-family-primary)        |
+| `--lf-radio-font-size`                    | Sets the font size for the radio component. Defaults to => var(--lf-font-size)                            |
+| `--lf-radio-group-gap`                    | Gap between radio items in the group. Defaults to => 1em                                                  |
+| `--lf-radio-group-horizontal-gap`         | Gap between items in horizontal orientation. Defaults to => 1.25em                                        |
+| `--lf-radio-hover-border-color`           | Control border color on hover. Defaults to => rgba(var(--lf-color-primary), 0.5)                          |
+| `--lf-radio-item-gap`                     | Gap between radio control and label. Defaults to => var(--lf-space-03)                                    |
+| `--lf-radio-item-selected-color`          | Color for selected radio items. Defaults to => rgba(var(--lf-color-primary), 1)                           |
+| `--lf-radio-label-color`                  | Label text color. Defaults to => rgba(var(--lf-color-on-bg), 0.87)                                        |
+| `--lf-radio-label-font-size`              | Label font size. Defaults to => 1em                                                                       |
+| `--lf-radio-label-font-weight`            | Label font weight. Defaults to => 500                                                                     |
+| `--lf-radio-label-line-height`            | Label line height. Defaults to => 1.5                                                                     |
+| `--lf-radio-label-padding`                | Label padding. Defaults to => 0.75em                                                                      |
+| `--lf-radio-label-padding-leading`        | Label padding in leading position. Defaults to => 0.75em                                                  |
+| `--lf-radio-label-selected-color`         | Label color when selected. Defaults to => rgba(var(--lf-color-primary), 1)                                |
+| `--lf-radio-label-selected-font-weight`   | Label font weight when selected. Defaults to => 600                                                       |
+| `--lf-radio-ripple-size`                  | Size of the ripple effect. Defaults to => 2.5em                                                           |
 
 
 ----------------------------------------------

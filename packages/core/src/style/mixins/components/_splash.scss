@@ -1,0 +1,108 @@
+// =============================================================================
+// SPLASH - Component Styles
+// =============================================================================
+// Splash-specific styles for the LfSplashFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-splash-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/splash" as splash-fc;
+//   @include splash-fc.lf-splash-docs("splash");
+// =============================================================================
+@mixin lf-splash-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-bg: Background color for the splash component.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on background surface.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-height: Sets the height for the splash component.
+   *       Defaults to => 100dvh
+   * @prop --lf-#{$comp}-left: Sets the left position for the splash component.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-position: Sets the position for the splash component.
+   *       Defaults to => fixed
+   * @prop --lf-#{$comp}-top: Sets the top position for the splash component.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-width: Sets the width for the splash component.
+   *       Defaults to => 100dvw
+   * @prop --lf-#{$comp}-widget-height: Sets the height for the splash widget.
+   *       Defaults to => 10em
+   * @prop --lf-#{$comp}-widget-margin: Sets the margin for the splash widget.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-widget-width: Sets the width for the splash widget.
+   *       Defaults to => 10em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "splash";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Splash Core
+// -----------------------------------------------------------------------------
+.splash {
+  & {
+    background-color: rgb($bgC);
+    color: rgb($onBgC);
+    display: flex;
+    height: var(--lf-splash-height, 100dvh);
+    left: var(--lf-splash-left, 0);
+    opacity: 1;
+    position: var(--lf-splash-position, fixed);
+    top: var(--lf-splash-top, 0);
+    width: var(--lf-splash-width, 100dvw);
+    z-index: var(--lf-ui-zindex-splash, 999);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Active State (unmounting with fade-out)
+  // ---------------------------------------------------------------------------
+  &--active {
+    @include lf-transitions((opacity), 0.3s, $lf-easing-smooth);
+    opacity: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content Container
+  // ---------------------------------------------------------------------------
+  &__content {
+    margin: auto;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Widget Container (for spinner/logo slot)
+  // ---------------------------------------------------------------------------
+  &__widget {
+    height: var(--lf-splash-widget-height, 10em);
+    margin: var(--lf-splash-widget-margin, auto);
+    width: var(--lf-splash-widget-width, 10em);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    font-family: var(--lf-font-family-primary);
+    font-size: var(--lf-font-size-subtitle);
+    font-weight: var(--lf-font-weight-subtitle);
+    line-height: var(--lf-line-height-subtitle);
+    text-align: center;
+  }
+}

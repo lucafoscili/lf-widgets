@@ -1,0 +1,133 @@
+// =============================================================================
+// ARTICLE - Component Styles
+// =============================================================================
+// Article-specific styles for the LfArticleFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-article-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/article" as article-fc;
+//   @include article-fc.lf-article-docs("article");
+// =============================================================================
+@mixin lf-article-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-margin: Sets the margin for the article component.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-max-width: Sets the max width for the article component.
+   *       Defaults to => 1200px
+   * @prop --lf-#{$comp}-padding: Sets the padding for the article component.
+   *       Defaults to => 2.5em
+   * @prop --lf-#{$comp}-font-family-body: Sets the body font family for the article component.
+   *       Defaults to => var(--lf-font-family-primary)
+   * @prop --lf-#{$comp}-font-size-body: Sets the body font size for the article component.
+   *       Defaults to => var(--lf-font-size)
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "article";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Article Core
+// -----------------------------------------------------------------------------
+.article {
+  & {
+    background-color: rgba(
+      $surfaceC,
+      var(--lf-article-background-alpha, var(--lf-ui-alpha-glass, 0.375))
+    );
+    border-color: rgb($borderC);
+    color: rgb($onSurfaceC);
+    font-size: calc(
+      var(--lf-article-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    margin: var(--lf-article-margin, auto);
+    max-width: var(--lf-article-max-width, 1200px);
+    padding: var(--lf-article-padding, 2.5em);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Section
+// -----------------------------------------------------------------------------
+.section {
+  & {
+    display: block;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Paragraph
+// -----------------------------------------------------------------------------
+.paragraph {
+  & {
+    display: block;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Content
+// -----------------------------------------------------------------------------
+.content {
+  & {
+    display: block;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Body element (text content leaf nodes)
+  // ---------------------------------------------------------------------------
+  &__body {
+    font-family: var(
+      --lf-article-font-family-body,
+      var(--lf-font-family-primary)
+    );
+    font-size: var(--lf-article-font-size-body, var(--lf-font-size));
+    line-height: 1.6;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Empty Data State
+// -----------------------------------------------------------------------------
+.empty-data {
+  & {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__text {
+    color: rgb($onSurfaceC);
+    font-family: var(--lf-font-family-primary);
+    font-size: var(--lf-font-size);
+    opacity: 0.7;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// LfCode Component Override
+// -----------------------------------------------------------------------------
+[data-component="LfCode"] {
+  margin: 1.75em auto;
+  max-width: max-content;
+}

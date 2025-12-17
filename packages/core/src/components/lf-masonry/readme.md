@@ -154,9 +154,9 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [lf-button](../lf-button)
 - [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
-- [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
 - [lf-chart](../lf-chart)
@@ -174,9 +174,9 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  lf-masonry --> lf-button
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
-  lf-masonry --> lf-button
   lf-masonry --> lf-canvas
   lf-masonry --> lf-card
   lf-masonry --> lf-chart
@@ -190,6 +190,8 @@ graph TD;
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
+  lf-button --> lf-list
+  lf-list --> lf-textfield
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -206,8 +208,6 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge

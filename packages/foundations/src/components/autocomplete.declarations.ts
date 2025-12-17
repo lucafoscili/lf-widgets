@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_AUTOCOMPLETE_BLOCKS,
@@ -303,4 +304,83 @@ export type LfAutocompleteCacheEntry = {
   dataset: LfDataDataset;
   timestamp: number;
 };
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the LfAutocompleteFC functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfAutocompleteFCProps {
+  /** Reference callback for the autocomplete container element */
+  autocompleteRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Dataset containing autocomplete suggestions */
+  dataset?: LfDataDataset | null;
+  /** ID for the dropdown element (for ARIA) */
+  dropdownId?: string;
+  /** Reference callback for the dropdown element */
+  dropdownRef?: (el: HTMLElement | null) => void;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Whether the autocomplete has cache enabled and populated */
+  hasCache?: boolean;
+  /** Currently highlighted index for keyboard navigation */
+  highlightedIndex?: number;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether the dropdown is currently expanded */
+  isExpanded?: boolean;
+  /** Whether the autocomplete is currently loading results */
+  isLoading?: boolean;
+  /** Props for the internal list component */
+  listProps?: Partial<LfListInterface>;
+  /** Reference callback for the list element */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  listRef?: (el: any) => void;
+  /** Minimum characters required before triggering a request */
+  minChars?: number;
+  /** Callback fired when list event occurs */
+  onListEvent?: (event: LfEvent<LfListEventPayload>) => void;
+  /** Callback fired when textfield event occurs */
+  onTextfieldEvent?: (event: LfEvent<LfTextfieldEventPayload>) => void;
+  /** Whether to show the empty state message */
+  showEmpty?: boolean;
+  /** Whether to show the list */
+  showList?: boolean;
+  /** Props for the internal spinner component */
+  spinnerProps?: Partial<LfSpinnerInterface>;
+  /** Reference callback for the spinner element */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  spinnerRef?: (el: any) => void;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Props for the internal textfield component */
+  textfieldProps?: Partial<LfTextfieldInterface>;
+  /** Reference callback for the textfield element */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  textfieldRef?: (el: any) => void;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** Current value of the input field */
+  value?: string;
+}
 //#endregion

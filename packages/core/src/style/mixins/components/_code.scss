@@ -1,0 +1,279 @@
+// =============================================================================
+// CODE - Component Styles
+// =============================================================================
+// Code-specific styles for the LfCodeFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-code-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/code" as code-fc;
+//   @include code-fc.lf-code-docs("code");
+// =============================================================================
+@mixin lf-code-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-height: Sets the height for the code component.
+   *       Defaults to => 100%
+   * @prop --lf-#{$comp}-border-radius: Border radius for the code component.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-border-right: Sets the border right for the header.
+   *       Defaults to => 1px solid var(--lf-color-border)
+   * @prop --lf-#{$comp}-border-top: Sets the border top for the header.
+   *       Defaults to => 1px solid var(--lf-color-border)
+   * @prop --lf-#{$comp}-header-height: Sets the height for the header.
+   *       Defaults to => 2.25em
+   * @prop --lf-#{$comp}-header-justify: Sets the justify-content for the header.
+   *       Defaults to => space-between
+   * @prop --lf-#{$comp}-header-padding: Sets the padding for the header.
+   *       Defaults to => 0.25em 0.75em
+   * @prop --lf-#{$comp}-header-position: Sets the position for the sticky header.
+   *       Defaults to => sticky
+   * @prop --lf-#{$comp}-font-family-monospace: Sets the monospace font family.
+   *       Defaults to => var(--lf-font-family-monospace)
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for the code component.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface/background color for code body.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "code";
+@include lf-color-vars($comp);
+
+// Border color helper
+$borderC: 1px solid rgb(var(--lf-color-border));
+
+// -----------------------------------------------------------------------------
+// Code Core Container
+// -----------------------------------------------------------------------------
+.code {
+  & {
+    display: grid;
+    grid-template-rows: 1fr;
+    height: var(--lf-code-height, 100%);
+  }
+
+  &--has-header {
+    grid-template-rows: auto 1fr;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Header
+// -----------------------------------------------------------------------------
+.header {
+  & {
+    align-items: center;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-solid, 0.875));
+    border-left-color: rgb($primaryC);
+    border-left-style: outset;
+    border-left-width: 0.25em;
+    border-radius: var(--lf-code-border-radius, var(--lf-ui-border-radius));
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: var(--lf-code-border-right, $borderC);
+    border-top: var(--lf-code-border-top, $borderC);
+    box-sizing: border-box;
+    color: rgb($onSurfaceC);
+    display: flex;
+    height: var(--lf-code-header-height, 2.25em);
+    justify-content: var(--lf-code-header-justify, space-between);
+    padding: var(--lf-code-header-padding, 0.25em 0.75em);
+  }
+
+  &--sticky {
+    position: var(--lf-code-header-position, sticky);
+    top: 0;
+    z-index: 1;
+  }
+
+  &__copy {
+    backdrop-filter: unset;
+  }
+
+  &__title {
+    font-size: 0.75em;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    padding: 0.5em;
+    text-transform: uppercase;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Body (non-pre container)
+// -----------------------------------------------------------------------------
+.body {
+  background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+  border: $borderC;
+  border-radius: var(--lf-code-border-radius, var(--lf-ui-border-radius));
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-sizing: border-box;
+  color: rgb($onSurfaceC);
+  font-family: var(--lf-font-family-body);
+  font-size: var(--lf-font-size);
+  line-height: 1.6;
+  margin-bottom: 0;
+  overflow: auto;
+  padding: 1em;
+  white-space: pre-line;
+}
+
+// -----------------------------------------------------------------------------
+// Pre & Code Elements
+// -----------------------------------------------------------------------------
+pre,
+:not(pre) > code {
+  background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+  border: $borderC;
+  border-radius: var(--lf-code-border-radius, var(--lf-ui-border-radius));
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-sizing: border-box;
+  color: rgb($onSurfaceC);
+  overflow: auto;
+}
+
+pre {
+  box-sizing: border-box;
+  font-family: var(
+    --lf-code-font-family-monospace,
+    var(--lf-font-family-monospace)
+  );
+  font-size: 0.875em;
+  line-height: 1.6;
+  margin: 0;
+  min-height: calc(100% - 2.25em);
+  overflow: auto;
+  padding: 1.75em 1em;
+  white-space: pre-wrap;
+}
+
+:not(pre) > code {
+  font-family: var(
+    --lf-code-font-family-monospace,
+    var(--lf-font-family-monospace)
+  );
+  font-size: 0.875em;
+  line-height: 1.6;
+  padding: 0.1em;
+  white-space: normal;
+}
+
+// -----------------------------------------------------------------------------
+// Code Snippet
+// -----------------------------------------------------------------------------
+.code-snippet {
+  display: initial;
+}
+
+// -----------------------------------------------------------------------------
+// Text Selection
+// -----------------------------------------------------------------------------
+code ::-moz-selection,
+code::-moz-selection,
+pre ::-moz-selection,
+pre::-moz-selection,
+code ::selection,
+code::selection,
+pre ::selection,
+pre::selection {
+  background-color: rgba($primaryC, var(--lf-ui-alpha-glass, 0.375));
+  color: rgb($onPrimaryC);
+  text-shadow: none;
+}
+
+// -----------------------------------------------------------------------------
+// Token Styles (Prism.js syntax highlighting)
+// -----------------------------------------------------------------------------
+.token.code {
+  display: inline-block;
+  font-family: var(
+    --lf-code-font-family-monospace,
+    var(--lf-font-family-monospace)
+  );
+  height: var(--lf-code-token-height, auto);
+}
+
+.token.cdata,
+.token.comment,
+.token.doctype,
+.token.prolog {
+  color: rgba($onBgC, var(--lf-ui-alpha-glass-heavy, 0.75));
+}
+
+.token.punctuation {
+  color: rgba($onBgC, var(--lf-ui-alpha-glass-solid, 0.875));
+}
+
+.token.bold,
+.token.important {
+  font-weight: 700;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.boolean,
+.token.constant,
+.token.deleted,
+.token.number,
+.token.property,
+.token.symbol,
+.token.tag {
+  color: rgb(var(--lf-color-data-1));
+}
+
+.token.attr-name,
+.token.builtin,
+.token.char,
+.token.inserted,
+.token.selector,
+.token.string {
+  color: rgb(var(--lf-color-data-2));
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: rgb(var(--lf-color-data-3));
+}
+
+.token.class-name,
+.token.function {
+  color: rgb(var(--lf-color-data-4));
+}
+
+.token.important,
+.token.regex,
+.token.variable {
+  color: rgb(var(--lf-color-data-5));
+}

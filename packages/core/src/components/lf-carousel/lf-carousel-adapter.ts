@@ -69,7 +69,7 @@ export const createHandlers = (
 
 //#region Refs
 export const createRefs = (): LfCarouselAdapterRefs => {
-  return { back: null, forward: null };
+  return { back: null, carousel: null, forward: null };
 };
 //#endregion
 

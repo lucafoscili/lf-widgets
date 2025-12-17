@@ -108,7 +108,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -121,7 +120,6 @@ graph TD;
   lf-breadcrumbs --> lf-badge
   lf-card --> lf-badge
   lf-carousel --> lf-badge
-  lf-compare --> lf-badge
   lf-masonry --> lf-badge
   lf-shapeeditor --> lf-badge
   lf-tree --> lf-badge

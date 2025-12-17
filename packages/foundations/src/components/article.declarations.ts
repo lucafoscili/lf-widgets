@@ -18,6 +18,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEvent, LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
 import {
   LF_ARTICLE_BLOCKS,
@@ -244,5 +245,35 @@ export interface LfArticlePropsInterface {
    * The size of the component.
    */
   lfUiSize?: LfThemeUISize;
+}
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfArticleFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfArticleFCProps {
+  /** Adapter instance for handlers and refs */
+  adapter: LfArticleAdapter;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** The dataset containing article nodes */
+  dataset?: LfArticleDataset;
+  /** Empty text displayed when there is no data */
+  empty?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Computed predicate to check if dataset has nodes */
+  hasNodes: () => boolean;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
 }
 //#endregion

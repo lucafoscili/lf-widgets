@@ -1,0 +1,202 @@
+// =============================================================================
+// UPLOAD - Component Styles
+// =============================================================================
+// Upload-specific styles for the LfUploadFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-upload-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/upload" as upload-fc;
+//   @include upload-fc.lf-upload-docs("upload");
+// =============================================================================
+@mixin lf-upload-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-border-color: Border color for the upload component.
+   *       Defaults to => var(--lf-color-border)
+   * @prop --lf-#{$comp}-border-radius: Border radius for the upload component.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-border-width: Border width for the upload component.
+   *       Defaults to => 1px
+   * @prop --lf-#{$comp}-color-surface: Surface/background color for the upload.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-min-height: Minimum height for the upload component.
+   *       Defaults to => 8em
+   * @prop --lf-#{$comp}-padding: Padding for the upload component.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-grid-gap: Grid gap when files are selected.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-button-height: Height for the upload button area.
+   *       Defaults to => 2.75em
+   * @prop --lf-#{$comp}-info-height: Max height for the file info area.
+   *       Defaults to => minmax(auto, 25vh)
+   * @prop --lf-#{$comp}-item-padding: Padding for file items.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-font-family: Font family for the upload label.
+   *       Defaults to => var(--lf-font-family-button)
+   * @prop --lf-#{$comp}-font-size: Font size for the upload label.
+   *       Defaults to => var(--lf-font-size-button)
+   * @prop --lf-#{$comp}-font-weight: Font weight for the upload label.
+   *       Defaults to => var(--lf-font-weight-button)
+   * @prop --lf-#{$comp}-icon-color: Icon color in file items.
+   *       Defaults to => var(--lf-color-on-surface)
+   * @prop --lf-#{$comp}-icon-size: Icon size in file items.
+   *       Defaults to => 1.5em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "upload";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Upload Container
+// -----------------------------------------------------------------------------
+.upload {
+  & {
+    background-color: rgba(
+      $surfaceC,
+      var(--lf-upload-background-alpha, var(--lf-ui-alpha-glass-hint, 0.125))
+    );
+    border: var(--lf-upload-border-width, 1px) solid $borderC;
+    border-radius: var(--lf-upload-border-radius, var(--lf-ui-border-radius));
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 1fr;
+    height: 100%;
+    min-height: var(--lf-upload-min-height, 8em);
+    padding: var(--lf-upload-padding, 1em);
+    width: 100%;
+  }
+
+  // Modifier when files are selected
+  &--has-description {
+    grid-gap: var(--lf-upload-grid-gap, 1.25em);
+    grid-template-rows: var(--lf-upload-button-height, 2.75em) var(
+        --lf-upload-info-height,
+        minmax(auto, 25vh)
+      );
+
+    .file-info {
+      padding: var(--lf-upload-item-padding, 0.75em);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// File Upload (Dropzone/Button Area)
+// -----------------------------------------------------------------------------
+.file-upload {
+  & {
+    background-color: rgba(
+      $surfaceC,
+      var(--lf-upload-background-alpha, var(--lf-ui-alpha-glass-hint, 0.125))
+    );
+    border: var(--lf-upload-border-width, 1px) solid $borderC;
+    border-radius: var(--lf-upload-border-radius, var(--lf-ui-border-radius));
+    display: flex;
+    position: relative;
+    @include lf-transitions((box-shadow));
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    align-content: center;
+    color: rgb($onSurfaceC);
+    cursor: pointer;
+    display: block;
+    font-family: var(--lf-upload-font-family, var(--lf-font-family-button));
+    font-size: var(--lf-upload-font-size, var(--lf-font-size-button));
+    font-weight: var(--lf-upload-font-weight, var(--lf-font-weight-button));
+    height: 100%;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+  }
+
+  &__text {
+    padding: 0.5em;
+  }
+
+  &:hover {
+    box-shadow:
+      0 5px 5px -3px rgba(var(--lf-color-on-bg), 0.25),
+      0 8px 10px 1px rgba(var(--lf-color-on-bg), 0.18),
+      0 3px 14px 2px rgba(var(--lf-color-on-bg), 0.15);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// File Info (List of Selected Files)
+// -----------------------------------------------------------------------------
+.file-info {
+  & {
+    max-height: 25dvh;
+    overflow: auto;
+    @include lf-transitions((box-shadow));
+  }
+
+  &__icon {
+    color: var(--lf-upload-icon-color, rgb($onSurfaceC));
+    font-size: var(--lf-upload-icon-size, 1.5em);
+    line-height: 1;
+
+    &--has-actions {
+      cursor: pointer;
+      @include lf-transitions((opacity));
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+
+  &__item {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__name,
+  &__size {
+    color: rgb($onSurfaceC);
+    font-family: var(--lf-font-family-caption);
+    font-size: var(--lf-font-size-caption);
+    font-weight: var(--lf-font-weight-caption);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__name {
+    flex-grow: 1;
+    padding: 0 0.5em;
+    width: 100%;
+  }
+
+  &__size {
+    min-width: max-content;
+    padding: 0 0.5em;
+  }
+}

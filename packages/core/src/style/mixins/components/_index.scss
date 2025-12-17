@@ -9,21 +9,34 @@
 // create conflicts between these identically-named variables.
 //
 // Migration Status:
+// ✅ accordion - Migrated to unified system
+// ✅ autocomplete - Migrated to unified system
 // ✅ badge - Migrated to unified system
+// ✅ breadcrumbs - Migrated to unified system
 // ✅ button - Migrated to unified system
+// ✅ canvas - Migrated to unified system
+// ✅ card - Migrated to unified system
 // ✅ chat - Migrated to unified system
 // ✅ checkbox - Migrated to unified system
 // ✅ chip - Migrated to unified system
+// ✅ code - Migrated to unified system
+// ✅ compare - Migrated to unified system
 // ✅ image - Migrated to unified system
+// ✅ list - Migrated to unified system
+// ✅ masonry - Migrated to unified system
 // ✅ photoframe - Migrated to unified system
 // ✅ placeholder - Migrated to unified system
 // ✅ progressbar - Migrated to unified system
 // ✅ slider - Migrated to unified system
 // ✅ snackbar - Migrated to unified system
 // ✅ spinner - Migrated to unified system (was OUTLIER, now aligned)
+// ✅ tabbar - Migrated to unified system
 // ✅ textfield - Migrated to unified system
 // ✅ toast - Migrated to unified system
 // ✅ toggle - Migrated to unified system
+// ✅ tree - Migrated to unified system
+// ✅ typewriter - Migrated to unified system
+// ✅ upload - Migrated to unified system
 //
 // All FC components have been migrated to the unified system!
 //
@@ -34,18 +47,42 @@
 // Migrated Components (unified system)
 // -----------------------------------------------------------------------------
 // Using @use to include these files - variables are scoped to each file
+@use "accordion";
+@use "article";
+@use "autocomplete";
 @use "badge";
+@use "breadcrumbs";
 @use "button";
+@use "canvas";
+@use "card";
+@use "carousel";
+@use "chart";
 @use "chat";
 @use "checkbox";
 @use "chip";
+@use "code";
+@use "compare";
+@use "drawer";
+@use "header";
 @use "image";
+@use "list";
+@use "masonry";
+@use "messenger";
+@use "multiinput";
 @use "photoframe";
 @use "placeholder";
 @use "progressbar";
+@use "radio";
+@use "select";
+@use "shapeeditor";
 @use "slider";
 @use "snackbar";
 @use "spinner";
+@use "splash";
+@use "tabbar";
 @use "textfield";
 @use "toast";
 @use "toggle";
+@use "tree";
+@use "typewriter";
+@use "upload";

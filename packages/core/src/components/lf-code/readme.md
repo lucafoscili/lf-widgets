@@ -86,22 +86,23 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                              | Description                                                                                           |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `--lf-code-border-color`          | Sets the border color for the code component. Defaults to => var(--lf-color-border)                   |
-| `--lf-code-border-radius`         | Sets the border radius for the code component. Defaults to => var(--lf-ui-border-radius)              |
-| `--lf-code-border-right`          | Sets the border right for the code component. Defaults to => 1px solid var(--lf-color-border)         |
-| `--lf-code-border-top`            | Sets the border top for the code component. Defaults to => 1px solid var(--lf-color-border)           |
-| `--lf-code-color-on-bg`           | Sets the color-on-bg color for the code component. Defaults to => var(--lf-color-on-bg)               |
-| `--lf-code-color-on-primary`      | Sets the color-on-primary color for the code component. Defaults to => var(--lf-color-on-primary)     |
-| `--lf-code-color-on-surface`      | Sets the color-on-surface color for the code component. Defaults to => var(--lf-color-on-surface)     |
-| `--lf-code-color-primary`         | Sets the color-primary color for the code component. Defaults to => var(--lf-color-primary)           |
-| `--lf-code-color-surface`         | Sets the color-surface color for the code component. Defaults to => var(--lf-color-surface)           |
-| `--lf-code-font-family`           | Sets the primary font family for the code component. Defaults to => var(--lf-font-family-primary)     |
-| `--lf-code-font-family-monospace` | Sets the monospace font family for the code component. Defaults to => var(--lf-font-family-monospace) |
-| `--lf-code-font-size`             | Sets the font size for the code component. Defaults to => var(--lf-font-size)                         |
-| `--lf-code-header-position`       | Sets the position for the header. Defaults to => sticky                                               |
-| `--lf-code-height`                | Sets the height for the code component. Defaults to => 100%                                           |
+| Name                              | Description                                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `--lf-code-border-radius`         | Border radius for the code component. Defaults to => var(--lf-ui-border-radius)                              |
+| `--lf-code-border-right`          | Sets the border right for the header. Defaults to => 1px solid var(--lf-color-border)                        |
+| `--lf-code-border-top`            | Sets the border top for the header. Defaults to => 1px solid var(--lf-color-border)                          |
+| `--lf-code-color-on-primary`      | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))         |
+| `--lf-code-color-on-surface`      | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))                 |
+| `--lf-code-color-primary`         | Primary/accent color for the code component. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-code-color-surface`         | Surface/background color for code body. Defaults to => var(--lf-state-surface, var(--lf-color-surface))      |
+| `--lf-code-font-family`           | Sets the primary font family for the code component. Defaults to => var(--lf-font-family-primary)            |
+| `--lf-code-font-family-monospace` | Sets the monospace font family. Defaults to => var(--lf-font-family-monospace)                               |
+| `--lf-code-font-size`             | Sets the font size for the code component. Defaults to => var(--lf-font-size)                                |
+| `--lf-code-header-height`         | Sets the height for the header. Defaults to => 2.25em                                                        |
+| `--lf-code-header-justify`        | Sets the justify-content for the header. Defaults to => space-between                                        |
+| `--lf-code-header-padding`        | Sets the padding for the header. Defaults to => 0.25em 0.75em                                                |
+| `--lf-code-header-position`       | Sets the position for the sticky header. Defaults to => sticky                                               |
+| `--lf-code-height`                | Sets the height for the code component. Defaults to => 100%                                                  |
 
 
 ## Dependencies
@@ -114,7 +115,6 @@ Type: `Promise<void>`
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-shapeeditor](../lf-shapeeditor)
@@ -136,7 +136,6 @@ graph TD;
   lf-card --> lf-code
   lf-carousel --> lf-code
   lf-chat --> lf-code
-  lf-compare --> lf-code
   lf-masonry --> lf-code
   lf-messenger --> lf-code
   lf-shapeeditor --> lf-code

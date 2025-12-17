@@ -1,0 +1,126 @@
+// =============================================================================
+// AUTOCOMPLETE - Component Styles
+// =============================================================================
+// Autocomplete-specific styles for the LfAutocompleteFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-autocomplete-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/autocomplete" as autocomplete-fc;
+//   @include autocomplete-fc.lf-autocomplete-docs("autocomplete");
+// =============================================================================
+@mixin lf-autocomplete-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for focus states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for dropdown background.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-bg: Text and icon color.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-border: Border color for dropdown.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-border-radius: Border radius for dropdown.
+   *       Defaults to => var(--lf-ui-border-radius)
+   * @prop --lf-#{$comp}-dropdown-background-alpha: Background alpha for dropdown.
+   *       Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)
+   * @prop --lf-#{$comp}-dropdown-box-shadow: Box shadow for dropdown.
+   *       Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.15)
+   * @prop --lf-#{$comp}-dropdown-margin-top: Margin top for dropdown list.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-font-size: Font size for the component.
+   *       Defaults to => var(--lf-font-size-primary)
+   * @prop --lf-#{$comp}-spinner-min-height: Min height for spinner area.
+   *       Defaults to => 0.25em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "autocomplete";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Autocomplete Core
+// -----------------------------------------------------------------------------
+.autocomplete {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    position: relative;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Textfield Element
+  // ---------------------------------------------------------------------------
+  &__textfield {
+    & {
+      display: flex;
+      width: 100%;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Dropdown (Portaled Content)
+// -----------------------------------------------------------------------------
+.dropdown {
+  & {
+    background-color: rgba(
+      $surfaceC,
+      var(
+        --lf-autocomplete-dropdown-background-alpha,
+        var(--lf-ui-alpha-glass-solid, 0.875)
+      )
+    );
+    border-radius: var(
+      --lf-autocomplete-border-radius,
+      var(--lf-ui-border-radius)
+    );
+    box-shadow: var(
+      --lf-autocomplete-dropdown-box-shadow,
+      0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.15)
+    );
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    @include lf-transitions((opacity, transform));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Spinner Element
+  // ---------------------------------------------------------------------------
+  &__spinner {
+    & {
+      min-height: var(--lf-autocomplete-spinner-min-height, 0.25em);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // List Element
+  // ---------------------------------------------------------------------------
+  &__list {
+    & {
+      margin-top: var(--lf-autocomplete-dropdown-margin-top, 0.25em);
+    }
+  }
+}

@@ -83,8 +83,8 @@ Type: `Promise<void>`
 | `--lf-header-color-on-header` | Sets the color-on-header color for the header component. Defaults to => var(--lf-color-on-header)   |
 | `--lf-header-font-family`     | Sets the primary font family for the header component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-header-font-size`       | Sets the font size for the header component. Defaults to => var(--lf-font-size)                     |
-| `--lf-header-justify`         | Sets the justify for the header component. Defaults to => space-between                             |
-| `--lf-header-padding`         | Sets the padding for the header component. Defaults to => 0.5em 0.75em                              |
+| `--lf-header-justify`         | Sets the justify-content for the header section. Defaults to => space-between                       |
+| `--lf-header-padding`         | Sets the padding for the header section. Defaults to => 0.5em 0.75em                                |
 
 
 ----------------------------------------------

@@ -1,0 +1,114 @@
+// =============================================================================
+// SELECT - Component Styles
+// =============================================================================
+// Select-specific styles for the LfSelectFC functional component.
+// The select component combines a textfield for display with a list dropdown.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-select-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/select" as select-fc;
+//   @include select-fc.lf-select-docs("select");
+// =============================================================================
+@mixin lf-select-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for focus/hover states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for dropdown background.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-bg: Background color for the select.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text/icon color on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-border: Border color for the select.
+   *       Defaults to => var(--lf-color-border)
+   * @prop --lf-#{$comp}-input-cursor: Cursor style for the input.
+   *       Defaults to => pointer
+   * @prop --lf-#{$comp}-transition-duration: Transition duration for hover/focus.
+   *       Defaults to => 0.2s
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "select";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Select Core
+// -----------------------------------------------------------------------------
+.select {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Textfield Element
+  // ---------------------------------------------------------------------------
+  &__textfield {
+    & {
+      --lf-textfield-input-cursor: var(--lf-select-input-cursor, pointer);
+
+      background-color: rgba($bgC, 0);
+      cursor: var(--lf-select-input-cursor, pointer);
+      height: 100%;
+      @include lf-transitions((background-color));
+      width: 100%;
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // List Element (Dropdown)
+  // ---------------------------------------------------------------------------
+  &__list {
+    & {
+      background-color: rgba($surfaceC, 1);
+      border: 1px solid rgba($borderC, 0.775);
+      border-radius: var(--lf-ui-border-radius, 0.25em);
+      box-shadow: 0 0.25em 0.5em rgba($onBgC, 0.15);
+      box-sizing: border-box;
+      max-height: 15em;
+      overflow-y: auto;
+      width: 100%;
+      z-index: 1000;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled State
+  // ---------------------------------------------------------------------------
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

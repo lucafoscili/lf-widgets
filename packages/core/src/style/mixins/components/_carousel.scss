@@ -1,0 +1,187 @@
+// =============================================================================
+// CAROUSEL - Component Styles
+// =============================================================================
+// Carousel-specific styles for the LfCarouselFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-carousel-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/carousel" as carousel-fc;
+//   @include carousel-fc.lf-carousel-docs("carousel");
+// =============================================================================
+@mixin lf-carousel-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary color for carousel navigation elements.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text/icon color on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-surface: Surface color for the slide bar.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text/icon color on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-border-radius: Border radius for the carousel container.
+   *       Defaults to => var(--lf-ui-border-radius, 0.25em)
+   * @prop --lf-#{$comp}-slide-bar-height: Height of the slide indicator bar.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-slide-bar-opacity: Opacity of the slide bar at rest.
+   *       Defaults to => 0.75
+   * @prop --lf-#{$comp}-slide-bar-opacity-hover: Opacity of the slide bar on hover.
+   *       Defaults to => 1
+   * @prop --lf-#{$comp}-transition-duration: Duration for slide transitions.
+   *       Defaults to => 0.5s
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "carousel";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Carousel Core
+// -----------------------------------------------------------------------------
+.carousel {
+  & {
+    border-radius: var(
+      --lf-carousel-border-radius,
+      var(--lf-ui-border-radius, 0.25em)
+    );
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  &:hover {
+    .slide-bar {
+      opacity: 1;
+    }
+
+    .carousel__back,
+    .carousel__forward {
+      opacity: 1;
+    }
+
+    .carousel__back {
+      left: 0.5em;
+    }
+
+    .carousel__forward {
+      right: 0.5em;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Navigation Buttons
+  // ---------------------------------------------------------------------------
+  &__back,
+  &__forward {
+    @include lf-transitions((opacity, left, right), 0.3s, $lf-easing-bounce);
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  &__back {
+    left: 0;
+  }
+
+  &__forward {
+    right: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track (container for slides)
+  // ---------------------------------------------------------------------------
+  &__track {
+    @include lf-transitions(
+      (transform),
+      var(--lf-carousel-transition-duration, 0.5s),
+      $lf-easing-bounce
+    );
+    display: flex;
+    height: 100%;
+    width: 100%;
+    will-change: transform;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Individual Slide
+  // ---------------------------------------------------------------------------
+  &__slide {
+    align-items: center;
+    flex-shrink: 0;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Slide Bar (indicator dots/segments)
+// -----------------------------------------------------------------------------
+.slide-bar {
+  & {
+    align-items: center;
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: nowrap;
+    height: var(--lf-carousel-slide-bar-height, 0.75em);
+    left: 0;
+    opacity: var(--lf-carousel-slide-bar-opacity, 0.75);
+    position: absolute;
+    @include lf-transitions((opacity), 0.3s, $lf-easing-smooth);
+    width: 100%;
+    z-index: 1;
+  }
+
+  &:hover {
+    opacity: var(--lf-carousel-slide-bar-opacity-hover, 1);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Segment (clickable indicator for each slide)
+  // ---------------------------------------------------------------------------
+  &__segment {
+    & {
+      background-color: rgba($surfaceC, 0.5);
+      cursor: pointer;
+      flex: 1 1 auto;
+      height: 100%;
+      @include lf-transitions(
+        (background-color, opacity),
+        0.2s,
+        $lf-easing-smooth
+      );
+    }
+
+    &:not(&--active):hover {
+      background-color: rgba($surfaceC, 0.75);
+    }
+
+    &--active {
+      background-color: rgb($onSurfaceC);
+    }
+  }
+}

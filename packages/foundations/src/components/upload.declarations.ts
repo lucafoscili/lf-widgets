@@ -16,7 +16,8 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfFrameworkAllowedKeysMap } from "../framework";
+import { LfFrameworkAllowedKeysMap, LfFrameworkInterface } from "../framework";
+import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_UPLOAD_BLOCKS,
   LF_UPLOAD_EVENTS,
@@ -207,5 +208,57 @@ export interface LfUploadPropsInterface {
   lfRipple?: boolean;
   lfStyle?: string;
   lfValue?: File[];
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the pure presentational LfUploadFC.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfUploadFCProps {
+  /** Reference callback for the upload container element */
+  uploadRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Selected files to display */
+  files?: File[];
+  /** Format file size callback */
+  formatFileSize?: (size: number) => string;
+  /** Get file icon callback */
+  getFileIcon?: (file: File) => string;
+  /** Allows customization of the input element */
+  htmlAttributes?: Partial<LfFrameworkAllowedKeysMap>;
+  /** Sets the button's label */
+  label?: string;
+  /** Callback fired when file input changes */
+  onFileChange?: (e: Event) => void;
+  /** Callback fired on delete button click */
+  onFileDelete?: (e: Event, file: File) => void;
+  /** Callback fired on label pointerdown */
+  onPointerDown?: (e: PointerEvent) => void;
+  /** Custom CSS styles to apply */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling.
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme.
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

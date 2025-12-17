@@ -162,10 +162,18 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                          | Description                                                                                             |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--lf-multiinput-font-family` | Sets the primary font family for the multiinput component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-multiinput-font-size`   | Sets the font size for the multiinput component. Defaults to => var(--lf-font-size)                     |
+| Name                               | Description                                                                                                     |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--lf-multiinput-color-border`     | Border color for the component. Defaults to => var(--lf-state-border, var(--lf-color-border))                   |
+| `--lf-multiinput-color-on-bg`      | Color for text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg)) Layout variables:     |
+| `--lf-multiinput-color-on-primary` | Color for content on primary backgrounds. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary)) |
+| `--lf-multiinput-color-on-surface` | Color for content on surface backgrounds. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface)) |
+| `--lf-multiinput-color-primary`    | Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                 |
+| `--lf-multiinput-color-surface`    | Surface background color. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                       |
+| `--lf-multiinput-font-family`      | Sets the primary font family for the multiinput component. Defaults to => var(--lf-font-family-primary)         |
+| `--lf-multiinput-font-size`        | Sets the font size for the multiinput component. Defaults to => var(--lf-font-size)                             |
+| `--lf-multiinput-gap`              | Gap between textfield and history area. Defaults to => 0.5em                                                    |
+| `--lf-multiinput-history-gap`      | Gap between chips in the history area. Defaults to => 0.5em                                                     |
 
 
 ## Dependencies

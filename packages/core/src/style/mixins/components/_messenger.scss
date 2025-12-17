@@ -1,0 +1,578 @@
+// =============================================================================
+// MESSENGER - Component Styles
+// =============================================================================
+// Messenger-specific styles for the LfMessengerFC functional component.
+// Complex messaging interface with character selection, chat, customization,
+// and options panels.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-messenger-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-messenger-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary accent color.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-bg: Background color for messenger container.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface color for panels and elements.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-border: Border color for elements.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-name-height: Height for character name area.
+   *       Defaults to => 3em
+   * @prop --lf-#{$comp}-avatar-name-padding: Padding for the avatar name area.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-name-background-color: Background color for name areas.
+   *       Defaults to => rgb(var(--lf-color-surface))
+   * @prop --lf-#{$comp}-active-options-name-padding: Padding for active option names.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-customization-title-padding: Padding for customization titles.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-portrait-foredrop-color: Color for portrait foredrop effect.
+   *       Defaults to => rgba(var(--lf-color-bg), 0.275)
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "messenger";
+@include lf-color-vars($comp);
+
+// =============================================================================
+// MESSENGER ROOT CONTAINER
+// =============================================================================
+.messenger {
+  & {
+    display: grid;
+    font-size: calc(1em * var(--lf-ui-size, 1));
+    grid-template-columns: 1fr 3fr 1fr;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  &:has(.character--collapsed) {
+    grid-template-columns: 0 4fr 1fr;
+  }
+
+  &:has(.extra-context--collapsed) {
+    grid-template-columns: 1fr 4fr 0;
+  }
+
+  &:has(.character--collapsed):has(.extra-context--collapsed) {
+    grid-template-columns: 0 1fr 0;
+  }
+}
+
+// =============================================================================
+// CHARACTER PANEL
+// =============================================================================
+.character {
+  & {
+    display: grid;
+    grid-template-rows: minmax(auto, 40%) minmax(auto, 1fr);
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    @include lf-transitions((width, opacity), 0.3s, $lf-easing-smooth);
+  }
+
+  &--collapsed {
+    overflow: hidden;
+    width: 0;
+  }
+
+  &__avatar {
+    position: relative;
+  }
+
+  &__image {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  &__name {
+    align-items: center;
+    color: rgba($onSurfaceC, 1);
+    display: flex;
+  }
+
+  &__save-button {
+    backdrop-filter: unset;
+  }
+
+  &__status {
+    & {
+      border-radius: 50%;
+      height: 1em;
+      margin-right: 0.5em;
+      width: 1em;
+    }
+
+    &--offline {
+      background-color: rgba(
+        var(--lf-color-danger),
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
+    }
+
+    &--online {
+      background-color: rgba(
+        var(--lf-color-success),
+        var(--lf-ui-alpha-glass-heavy, 0.75)
+      );
+    }
+  }
+
+  &__name-wrapper {
+    align-items: center;
+    backdrop-filter: blur(5px);
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    box-sizing: border-box;
+    display: flex;
+    height: var(--lf-#{$comp}-name-height, 3em);
+    justify-content: space-between;
+    left: 0;
+    overflow: hidden;
+    padding-left: var(--lf-#{$comp}-avatar-name-padding, 0.5em);
+    position: absolute;
+    text-overflow: ellipsis;
+    top: 0;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  &__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__biography {
+    overflow: auto;
+  }
+}
+
+// =============================================================================
+// CHAT PANEL
+// =============================================================================
+.chat {
+  & {
+    display: grid;
+    grid-template-areas:
+      "nav nav nav"
+      "expander-l chat expander-r";
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &__expander {
+    &--left {
+      grid-area: expander-l;
+    }
+
+    &--right {
+      grid-area: expander-r;
+    }
+  }
+
+  &__navigation {
+    grid-area: nav;
+  }
+
+  &__chat {
+    grid-area: chat;
+    overflow: auto;
+  }
+}
+
+// =============================================================================
+// COVERS (Image Selection Grid)
+// =============================================================================
+.covers {
+  & {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+  }
+
+  &__title {
+    align-items: center;
+    backdrop-filter: blur(5px);
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    color: rgba($onSurfaceC, 1);
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    position: sticky;
+    text-overflow: ellipsis;
+    top: 0;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  &__label {
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    overflow: hidden;
+    padding: var(--lf-#{$comp}-customization-title-padding, 0.5em);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow: auto;
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// EXTRA CONTEXT PANEL (Right Sidebar)
+// =============================================================================
+.extra-context {
+  & {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    overflow: auto;
+    @include lf-transitions((width, opacity), 0.3s, $lf-easing-smooth);
+  }
+
+  &--collapsed {
+    overflow: hidden;
+    width: 0;
+  }
+
+  &--input {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(2, 50%);
+  }
+
+  &__list {
+    display: grid;
+    overflow: auto;
+  }
+}
+
+// =============================================================================
+// FORM (Create/Edit Options)
+// =============================================================================
+.form {
+  &__button {
+    margin: 0 0.25em;
+    padding: 1em 0;
+  }
+
+  &__confirm {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__field {
+    margin: 0.5em 0;
+  }
+
+  &__label {
+    backdrop-filter: blur(5px);
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+    color: rgba($onSurfaceC, 1);
+    display: flex;
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--lf-#{$comp}-customization-title-padding, 0.5em);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// =============================================================================
+// LIST (Image Selection Items)
+// =============================================================================
+.list {
+  & {
+    position: relative;
+  }
+
+  &:after {
+    box-shadow: none;
+    content: "";
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    @include lf-transitions((box-shadow), 0.3s, $lf-easing-smooth);
+  }
+
+  &:hover:not(&--selected):after {
+    box-shadow: inset 0 0 5px 3px rgba($primaryC, 1);
+    pointer-events: none;
+  }
+
+  &--selected:after {
+    align-content: center;
+    backdrop-filter: blur(5px);
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-solid, 0.875));
+    color: rgba($onSurfaceC, 1);
+    content: "Current";
+    cursor: default;
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    height: 100%;
+    left: 0;
+    letter-spacing: 0.25em;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    text-overflow: ellipsis;
+    top: 0;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  &__actions {
+    backdrop-filter: blur(5px);
+    background-color: rgba($surfaceC, var(--lf-ui-alpha-glass-heavy, 0.75));
+    bottom: 0;
+    display: flex;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+  }
+
+  &__image {
+    cursor: pointer;
+    display: block;
+    height: 100%;
+    min-height: 16em;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// OPTIONS (Active Configuration Display)
+// =============================================================================
+.options {
+  &__wrapper {
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__cover {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  &__placeholder {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 20% 20% 40% 20%;
+    width: 100%;
+  }
+
+  &__placeholder-icon {
+    color: rgba($surfaceC, 0.375);
+    height: 100%;
+    width: 100%;
+  }
+
+  &__blocker {
+    & {
+      align-content: center;
+      backdrop-filter: blur(5px);
+      background-color: rgba($surfaceC, var(--lf-ui-alpha-glass, 0.375));
+      box-sizing: border-box;
+      cursor: pointer;
+      display: grid;
+      grid-template-rows: 50% 1fr;
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      padding: 20% 20% 40% 20%;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      @include lf-transitions((opacity), 0.3s, $lf-easing-smooth);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &--active {
+      opacity: 0.875;
+    }
+  }
+
+  &__blocker-icon {
+    color: rgba($surfaceC, 0.75);
+    height: 100%;
+    width: 100%;
+  }
+
+  &__blocker-label {
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    overflow: hidden;
+    padding-top: 0.75em;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__label {
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    margin-left: 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__info {
+    color: rgba($surfaceC, 0.75);
+    height: 1em;
+    margin-left: 0.275em;
+    width: 1em;
+  }
+
+  &__name {
+    align-items: center;
+    background: var(
+      --lf-#{$comp}-name-background-color,
+      rgb(var(--lf-color-surface))
+    );
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    left: 0;
+    overflow: hidden;
+    padding: var(--lf-#{$comp}-active-options-name-padding, 0.5em);
+    position: absolute;
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// ROSTER (Character Selection Grid)
+// =============================================================================
+.roster {
+  & {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+
+  &__image {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  &__portrait {
+    & {
+      --lf-#{$comp}-name-background-color: rgba(var(--lf-color-bg), 0.375);
+      --lf-#{$comp}-portrait-foredrop-color: rgba(var(--lf-color-bg), 0.275);
+
+      cursor: pointer;
+      overflow: auto;
+      position: relative;
+    }
+
+    &:hover {
+      --lf-#{$comp}-name-background-color: rgba(var(--lf-color-bg), 0.775);
+      --lf-#{$comp}-portrait-foredrop-color: rgba(var(--lf-color-bg), 0);
+    }
+
+    &:after {
+      background: var(--lf-#{$comp}-portrait-foredrop-color);
+      content: "";
+      height: 100%;
+      left: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      @include lf-transitions((background), 0.3s, $lf-easing-smooth);
+    }
+  }
+
+  &__name {
+    & {
+      align-items: center;
+      backdrop-filter: blur(5px);
+      background-color: var(--lf-#{$comp}-name-background-color);
+      bottom: 0;
+      display: flex;
+      height: var(--lf-#{$comp}-name-height, 2.5em);
+      left: 0;
+      position: absolute;
+      width: 100%;
+      @include lf-transitions((background-color), 0.3s, $lf-easing-smooth);
+    }
+  }
+
+  &__label {
+    font-family: var(--lf-font-family-button);
+    font-size: var(--lf-font-size-button);
+    font-weight: var(--lf-font-weight-button);
+    letter-spacing: 0.225em;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  &__empty-data {
+    color: rgba($onBgC, 0.5);
+    font-style: italic;
+    grid-column: 1 / -1;
+    padding: 2em;
+    text-align: center;
+  }
+}

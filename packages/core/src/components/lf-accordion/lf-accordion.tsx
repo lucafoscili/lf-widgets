@@ -391,23 +391,18 @@ export class LfAccordion implements LfAccordionInterface {
     debug.info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
 
     // Clear refs before render
     this.#adapter.elements.refs.headers.clear();
 
-    const { accordion } = this.#b;
     const { accordion: accordionJsx } = this.#adapter.elements.jsx;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w}>
-          <div class={bemClass(accordion._)} part={this.#p.accordion}>
-            {accordionJsx()}
-          </div>
-        </div>
+        <div id={this.#w}>{accordionJsx()}</div>
       </Host>
     );
   }

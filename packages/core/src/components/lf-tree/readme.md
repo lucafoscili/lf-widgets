@@ -155,21 +155,22 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                              | Description                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-tree-accordion-node-height` | Sets the height for the tree accordion node. Defaults to => 4em                                   |
-| `--lf-tree-border-radius`         | Sets the border radius for the tree component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-tree-color-bg`              | Sets the color-bg color for the tree component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-tree-color-on-bg`           | Sets the color-on-bg color for the tree component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-tree-color-on-primary`      | Sets the color-on-primary color for the tree component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-tree-color-on-surface`      | Sets the color-on-surface color for the tree component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-tree-color-primary`         | Sets the color-primary color for the tree component. Defaults to => var(--lf-color-primary)       |
-| `--lf-tree-color-surface`         | Sets the color-surface color for the tree component. Defaults to => var(--lf-color-surface)       |
-| `--lf-tree-font-family`           | Sets the primary font family for the tree component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-tree-font-size`             | Sets the font size for the tree component. Defaults to => var(--lf-font-size)                     |
-| `--lf-tree-node-height`           | Sets the height for the tree node. Defaults to => 2em                                             |
-| `--lf-tree-node-padding`          | Sets the padding for the tree node. Defaults to => 0 1em                                          |
-| `--lf-tree-padding`               | Sets the padding for the tree component. Defaults to => 0                                         |
+| Name                              | Description                                                                                                          |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `--lf-tree-accordion-node-height` | Height for accordion-style nodes (depth 0). Defaults to => 4em                                                       |
+| `--lf-tree-border-radius`         | Border radius for the tree container. Defaults to => var(--lf-ui-border-radius)                                      |
+| `--lf-tree-color-bg`              | Background color for the tree. Defaults to => var(--lf-state-bg, var(--lf-color-bg))                                 |
+| `--lf-tree-color-on-bg`           | Text color on the tree background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                       |
+| `--lf-tree-color-on-primary`      | Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))                |
+| `--lf-tree-color-on-surface`      | Sets the color-on-surface color for the tree component. Defaults to => var(--lf-color-on-surface)                    |
+| `--lf-tree-color-primary`         | Primary/accent color for selected/highlighted nodes. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-tree-color-surface`         | Surface color for tree elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                     |
+| `--lf-tree-font-family`           | Sets the primary font family for the tree component. Defaults to => var(--lf-font-family-primary)                    |
+| `--lf-tree-font-size`             | Sets the font size for the tree component. Defaults to => var(--lf-font-size)                                        |
+| `--lf-tree-icon-size`             | Size for icons in tree nodes. Defaults to => 1.5em                                                                   |
+| `--lf-tree-node-height`           | Height for tree nodes. Defaults to => 2em                                                                            |
+| `--lf-tree-node-padding`          | Padding for tree nodes. Defaults to => 0 1em                                                                         |
+| `--lf-tree-padding`               | Padding for the tree container. Defaults to => 0                                                                     |
 
 
 ## Dependencies

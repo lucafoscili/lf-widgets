@@ -1,0 +1,231 @@
+// =============================================================================
+// TABBAR - Component Styles
+// =============================================================================
+// Tabbar-specific styles for the LfTabbarFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-tabbar-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/tabbar" as tabbar-fc;
+//   @include tabbar-fc.lf-tabbar-docs("tabbar");
+// =============================================================================
+@mixin lf-tabbar-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-border-radius: Border radius for tabs.
+   *       Defaults to => var(--lf-ui-border-radius, 0.25em)
+   * @prop --lf-#{$comp}-color-bg: Background color for the tabbar.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-indicator: Color for the active tab indicator.
+   *       Defaults to => var(--lf-#{$comp}-color-primary)
+   * @prop --lf-#{$comp}-color-on-bg: Text color on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for active states.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-font-family: Font family for tab labels.
+   *       Defaults to => var(--lf-font-family-button)
+   * @prop --lf-#{$comp}-font-size: Base font size (scaled by --lf-ui-size).
+   *       Defaults to => var(--lf-font-size)
+   * @prop --lf-#{$comp}-font-weight: Font weight for tab labels.
+   *       Defaults to => var(--lf-font-weight-button)
+   * @prop --lf-#{$comp}-height: Height for the tabbar.
+   *       Defaults to => 2.25em
+   * @prop --lf-#{$comp}-min-width: Minimum width for each tab.
+   *       Defaults to => 5em
+   * @prop --lf-#{$comp}-tab-padding: Padding for each tab.
+   *       Defaults to => 0 1.25em
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "tabbar";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Tabbar Container
+// -----------------------------------------------------------------------------
+.tabbar {
+  & {
+    display: flex;
+    font-size: calc(
+      var(--lf-tabbar-font-size, var(--lf-font-size)) * var(--lf-ui-size, 1)
+    );
+    height: var(--lf-tabbar-height, 2.25em);
+    width: 100%;
+  }
+
+  &__scroll {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Tab
+// -----------------------------------------------------------------------------
+.tab {
+  & {
+    appearance: none;
+    background-color: rgba($bgC, var(--lf-ui-alpha-glass, 0.375));
+    border: none;
+    box-sizing: border-box;
+    color: rgb($onBgC);
+    cursor: pointer;
+    display: flex;
+    flex: 1 0 auto;
+    font-family: var(--lf-tabbar-font-family, var(--lf-font-family-button));
+    font-size: inherit;
+    font-weight: var(--lf-tabbar-font-weight, var(--lf-font-weight-button));
+    height: 100%;
+    justify-content: center;
+    margin: 0;
+    min-width: var(--lf-tabbar-min-width, 5em);
+    outline: none;
+    padding: var(--lf-tabbar-tab-padding, 0 1.25em);
+    position: relative;
+    text-align: center;
+    @include lf-transitions((background-color, color, box-shadow));
+  }
+
+  &:first-child {
+    border-radius: var(
+      --lf-tabbar-border-radius,
+      var(--lf-ui-border-radius, 0.25em)
+    );
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  &:last-child {
+    border-radius: var(
+      --lf-tabbar-border-radius,
+      var(--lf-ui-border-radius, 0.25em)
+    );
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+  }
+
+  &:hover {
+    background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Active State Modifier
+  // ---------------------------------------------------------------------------
+  &--active {
+    & {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-heavy, 0.75));
+      color: rgb($onPrimaryC);
+    }
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-solid, 0.875));
+    }
+
+    .tab__label {
+      font-weight: 600;
+      opacity: 1;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tab Content
+  // ---------------------------------------------------------------------------
+  &__content {
+    align-items: center;
+    display: flex;
+    height: inherit;
+    justify-content: center;
+    pointer-events: none;
+    position: relative;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tab Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    align-items: center;
+    display: inline-flex;
+    height: 1.5em;
+    justify-content: center;
+    width: 1.5em;
+    @include lf-transitions((color, opacity));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tab Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__icon + &__label {
+    padding-left: 0.5em;
+    padding-right: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tab Indicator
+  // ---------------------------------------------------------------------------
+  &__indicator {
+    & {
+      bottom: 0;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      left: 0;
+      pointer-events: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      @include lf-transitions((opacity));
+    }
+
+    &--active {
+      .tab__indicator-content {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__indicator-content {
+    & {
+      opacity: 0;
+      transform-origin: left center;
+      @include lf-transitions((opacity, transform), 0.4s, $lf-easing-bounce);
+    }
+
+    &--active {
+      align-self: flex-end;
+      border-color: rgb(var(--lf-tabbar-color-indicator, $primaryC));
+      border-top-style: solid;
+      border-top-width: 2px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  }
+}

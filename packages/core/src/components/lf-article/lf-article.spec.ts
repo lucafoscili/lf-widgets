@@ -507,13 +507,13 @@ describe("lf-article component", () => {
   });
 
   describe("Data Attributes and Parts", () => {
-    it("renders article with data-cy attribute", async () => {
+    it("renders article element", async () => {
       const page = await createPage(`<lf-article></lf-article>`);
       page.rootInstance.lfDataset = {
         nodes: [{ value: "Article" }],
       };
       await page.waitForChanges();
-      const article = page.root.shadowRoot.querySelector("article[data-cy]");
+      const article = page.root.shadowRoot.querySelector("article");
       expect(article).not.toBeNull();
     });
 

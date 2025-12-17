@@ -9,7 +9,6 @@ import {
   LF_MASONRY_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDataShapesMap,
@@ -31,20 +30,18 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  Fragment,
   h,
   Host,
   Method,
   Prop,
   State,
-  VNode,
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
 import { createActions } from "./actions.masonry";
 import { createComputed } from "./computed.masonry";
 import { createAdapter } from "./lf-masonry-adapter";
+import { LfMasonryFC } from "./lf-masonry-fc";
 
 /**
  * A masonry component that displays a collection of shapes in a grid layout.
@@ -502,135 +499,9 @@ export class LfMasonry implements LfMasonryInterface {
 
     return 1;
   }
-  #divideShapesIntoColumns = (): VNode[][] => {
-    const { refs } = this.#adapter.elements;
-    const { lfSelectable, lfShape, selectedShape, shapes } = this;
-    const { bemClass } = this.#framework.theme;
-    const { grid } = this.#b;
-
-    const props: Partial<LfDataCell<LfDataShapes>>[] = shapes[this.lfShape].map(
-      () => ({
-        htmlProps: {
-          dataset: { lf: this.#lf.fadeIn, selected: "" },
-        },
-      }),
-    );
-    if (selectedShape.index !== undefined) {
-      props[selectedShape.index] = {
-        htmlProps: {
-          dataset: { lf: this.#lf.fadeIn, selected: "true" },
-        },
-      };
-    }
-    const columns: VNode[][] = Array.from(
-      { length: this.#currentColumns },
-      (): VNode[] => [],
-      [],
-    );
-
-    for (let index = 0; index < shapes[lfShape].length; index++) {
-      const cell = shapes[lfShape][index];
-      const defaultCell = props[index];
-      const refKey = `${lfShape}-${index}`;
-
-      const shapeElement = (
-        <LfShape
-          cell={Object.assign(defaultCell, cell)}
-          eventDispatcher={async (e) => this.onLfEvent(e, "lf-event", refKey)}
-          framework={this.#framework}
-          index={index}
-          refCallback={(r) => refs.shapes.set(refKey, r)}
-          shape={lfShape}
-        ></LfShape>
-      );
-
-      if (lfSelectable) {
-        columns[index % this.#currentColumns].push(
-          <div
-            class={bemClass(grid._, grid.capture)}
-            onClick={async (e) => {
-              e.stopPropagation();
-              this.onLfEvent(e, "click", refKey);
-            }}
-            onPointerDown={async (e) => {
-              e.stopPropagation();
-            }}
-            ref={(el) => {
-              if (el && !this.#captureElements.includes(el)) {
-                this.#captureElements.push(el);
-              }
-            }}
-          >
-            {shapeElement}
-          </div>,
-        );
-      } else {
-        columns[index % this.#currentColumns].push(shapeElement);
-      }
-    }
-
-    return columns;
-  };
   #handleResize = this.#debounce(() => {
     this.viewportWidth = window.innerWidth;
   }, 200);
-  #prepActions = (): VNode => {
-    const { bemClass } = this.#framework.theme;
-
-    const { grid } = this.#b;
-    const { addColumn, changeView, removeColumn } = this.#adapter.elements.jsx;
-
-    return (
-      <div class={bemClass(grid._, grid.actions)} data-lf={this.#lf.fadeIn}>
-        {this.#isMasonry() && (
-          <div class={bemClass(grid._, grid.sub)}>
-            {addColumn()}
-            {removeColumn()}
-          </div>
-        )}
-        {changeView()}
-      </div>
-    );
-  };
-  #prepView = (): VNode[] => {
-    const { bemClass } = this.#framework.theme;
-
-    const { grid } = this.#b;
-
-    const nodes = this.#divideShapesIntoColumns();
-    return nodes.map((column, index) => (
-      <div key={index} class={bemClass(grid._, grid.column)}>
-        {column.map((element) => (
-          <Fragment>{element}</Fragment>
-        ))}
-      </div>
-    ));
-  };
-  #prepMasonry = (): VNode => {
-    const { bemClass } = this.#framework.theme;
-
-    const { grid } = this.#b;
-    const { lfActions, lfShape, lfView, shapes } = this;
-
-    if (this.#hasShapes()) {
-      if (shapes[lfShape]?.length) {
-        return (
-          <Fragment>
-            <div
-              class={bemClass(grid._, null, {
-                [lfView]: true,
-              })}
-            >
-              {this.#prepView()}
-            </div>
-            {lfActions && this.#prepActions()}
-          </Fragment>
-        );
-      }
-    }
-
-    return null;
-  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -672,9 +543,8 @@ export class LfMasonry implements LfMasonryInterface {
     debug.info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
 
-    const { masonry } = this.#b;
     const { lfStyle } = this;
 
     const style = {
@@ -687,7 +557,32 @@ export class LfMasonry implements LfMasonryInterface {
       <Host style={style}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div class={bemClass(masonry._)}>{this.#prepMasonry()}</div>
+          <LfMasonryFC
+            actions={this.lfActions}
+            adapter={this.#adapter}
+            captureRef={(el: HTMLDivElement) => {
+              if (el && !this.#captureElements.includes(el)) {
+                this.#captureElements.push(el);
+              }
+            }}
+            columns={this.#currentColumns}
+            framework={this.#framework}
+            onItemClick={(
+              e: MouseEvent | PointerEvent,
+              _index: number,
+              refKey: string,
+            ) => {
+              this.onLfEvent(e, "click", refKey);
+            }}
+            onShapeEvent={(e: CustomEvent, refKey: string) => {
+              this.onLfEvent(e, "lf-event", refKey);
+            }}
+            selectable={this.lfSelectable}
+            selectedShape={this.selectedShape}
+            shape={this.lfShape}
+            shapes={this.shapes}
+            view={this.lfView}
+          />
         </div>
       </Host>
     );

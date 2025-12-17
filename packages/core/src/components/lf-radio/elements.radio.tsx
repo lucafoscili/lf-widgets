@@ -4,6 +4,7 @@ import {
   LfRadioAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { LfRadioFC } from "./lf-radio-fc";
 
 export const prepRadio = (
   getAdapter: () => LfRadioAdapter,
@@ -13,25 +14,23 @@ export const prepRadio = (
     control: (node: LfDataNode): VNode => {
       const adapter = getAdapter();
       const { controller, elements, handlers } = adapter;
-      const { blocks, compInstance, cyAttributes, framework, parts } =
-        controller.get;
+      const { blocks, cyAttributes, framework, parts } = controller.get;
       const { computed } = controller;
       const { blur, change, focus } = handlers;
       const { theme } = framework();
       const { bemClass } = theme;
 
       const isSelected = computed.isSelected(node.id);
-      const inputName = `${compInstance().rootElement.id || "lf-radio"}-group`;
 
       return (
-        <div class={bemClass(blocks().control._)}>
+        <div class={bemClass(blocks().control._)} part={parts().control}>
           <input
             checked={isSelected}
             class={bemClass(blocks().control._, blocks().control.input)}
             data-cy={cyAttributes().input}
             disabled={node.isDisabled}
             id={node.id}
-            name={inputName}
+            name="lf-radio-group"
             onBlur={(e) => blur(e, node)}
             onChange={(e) => {
               change(e, node);
@@ -47,7 +46,7 @@ export const prepRadio = (
             }}
             title={node.description}
             type="radio"
-            value={node.value}
+            value={node.value as string}
           />
           <div
             class={bemClass(blocks().control._, blocks().control.circle)}
@@ -85,6 +84,7 @@ export const prepRadio = (
             selected: isSelected,
             disabled: isDisabled,
           })}
+          data-lf="ripple"
           onClick={(e) => click(e, node)}
           onPointerDown={(e) => handlers.pointerDown(e, node)}
           part={parts().item}
@@ -95,7 +95,8 @@ export const prepRadio = (
           {control(node)}
           <label
             class={bemClass(blocks().item._, blocks().item.label)}
-            htmlFor={`${get.compInstance().rootElement.id || "lf-radio"}-group-${node.id}`}
+            htmlFor={node.id}
+            part={parts().label}
           >
             {labelText}
           </label>
@@ -125,25 +126,23 @@ export const prepRadio = (
 
     //#region Radio
     radio: (nodes: LfDataNode[]) => {
-      const { controller, elements, handlers } = getAdapter();
+      const adapter = getAdapter();
+      const { controller, elements, handlers } = adapter;
       const { get, computed } = controller;
       const { blocks, compInstance, lfAttributes, framework, parts } = get;
-      const { item } = elements.jsx;
-      const { bemClass } = framework().theme;
-
-      const isHorizontal = computed.isHorizontal();
 
       return (
-        <div
-          class={bemClass(blocks()._, undefined, {
-            horizontal: isHorizontal,
-          })}
-          data-lf={lfAttributes()[compInstance().lfUiState]}
-          onKeyDown={handlers.keyDown}
-          part={parts().radio}
-        >
-          {nodes.map((node, index) => item(node, index))}
-        </div>
+        <LfRadioFC
+          blocks={blocks()}
+          computed={computed}
+          framework={framework()}
+          handlers={handlers}
+          lfAttributes={lfAttributes()}
+          nodes={nodes}
+          parts={parts()}
+          refs={elements.refs}
+          uiState={compInstance().lfUiState}
+        />
       );
     },
     //#endregion

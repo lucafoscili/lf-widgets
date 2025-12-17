@@ -22,6 +22,7 @@ import {
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
@@ -105,6 +106,7 @@ export interface LfMasonryAdapterJsx extends LfComponentAdapterJsx {
 export interface LfMasonryAdapterRefs extends LfComponentAdapterRefs {
   addColumn: LfButtonElement;
   changeView: LfButtonElement;
+  masonry: HTMLDivElement;
   removeColumn: LfButtonElement;
   shapes: Map<string, HTMLElement>;
 }
@@ -259,4 +261,54 @@ export type LfMasonryColumns = number[] | number;
  * Utility type used by the `lf-masonry` component.
  */
 export type LfMasonryView = (typeof LF_MASONRY_VIEWS)[number];
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfMasonryFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfMasonryFCProps {
+  /** Whether to display floating action buttons */
+  actions?: boolean;
+  /** Adapter for accessing handlers and JSX elements */
+  adapter: LfMasonryAdapter;
+  /** Callback to capture elements for ripple effect registration */
+  captureRef?: (el: HTMLDivElement) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Number of columns for the masonry layout */
+  columns: number;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Reference callback for the masonry element */
+  masonryRef?: (el: HTMLDivElement | null) => void;
+  /** Callback fired when an item is clicked */
+  onItemClick?: (
+    e: MouseEvent | PointerEvent,
+    index: number,
+    refKey: string,
+  ) => void;
+  /** Callback fired when shape emits an event */
+  onShapeEvent?: (e: CustomEvent, refKey: string) => void;
+  /** Whether items are selectable */
+  selectable?: boolean;
+  /** Currently selected shape */
+  selectedShape?: LfMasonrySelectedShape;
+  /** Shape type to render */
+  shape: LfDataShapes;
+  /** All shapes data */
+  shapes: LfDataShapesMap;
+  /** Custom CSS styles to apply */
+  style?: { [key: string]: string };
+  /** Current view mode */
+  view: LfMasonryView;
+}
 //#endregion

@@ -14,12 +14,15 @@ import {
   LfComponentAdapterDispatchDetail,
   LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
+  LfComponentAdapterJsx,
+  LfComponentAdapterRefs,
   LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import {
   HTMLStencilElement,
   LfComponent,
   LfComponentClassProperties,
+  VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import {
@@ -27,6 +30,7 @@ import {
   LfDataDataset,
   LfDataNode,
 } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_CHART_AXES_TYPES,
   LF_CHART_BLOCKS,
@@ -70,8 +74,8 @@ export interface LfChartAdapter
     LfChartInterface,
     LfChartEventPayload,
     LfChartAdapterHandlers,
-    never,
-    never,
+    LfChartAdapterJsx,
+    LfChartAdapterRefs,
     LfChartAdapterControllerGetters,
     LfChartAdapterControllerSetters,
     LfChartAdapterControllerComputed,
@@ -83,8 +87,24 @@ export interface LfChartAdapter
     computed: LfChartAdapterControllerComputed;
     actions: LfChartAdapterControllerActions;
   };
+  elements: {
+    jsx: LfChartAdapterJsx;
+    refs: LfChartAdapterRefs;
+  };
   dispatcher: LfChartAdapterDispatcher;
   handlers: LfChartAdapterHandlers;
+}
+/**
+ * Strongly typed DOM references captured by the component adapter.
+ */
+export interface LfChartAdapterRefs extends LfComponentAdapterRefs {
+  chart: HTMLDivElement;
+}
+/**
+ * Factory helpers returning Stencil `VNode` fragments for the adapter.
+ */
+export interface LfChartAdapterJsx extends LfComponentAdapterJsx {
+  chart: () => VNode;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
@@ -391,5 +411,36 @@ export interface LfChartSeriesData {
   data: number[];
   axisIndex: number;
   type: LfChartType;
+}
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfChartFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * Note: Chart is a wrapper around ECharts. The FC provides the container
+ * div that ECharts will render into via the chartRef callback.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfChartFCProps {
+  /** Reference callback for the chart container element */
+  chartRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Chart width - passed to ECharts for proper sizing */
+  sizeX?: string;
+  /** Chart height - passed to ECharts for proper sizing */
+  sizeY?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
 }
 //#endregion

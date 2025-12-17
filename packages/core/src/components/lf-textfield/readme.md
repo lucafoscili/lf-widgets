@@ -183,7 +183,6 @@ Type: `Promise<void>`
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
- - [lf-compare](../lf-compare)
  - [lf-list](../lf-list)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
@@ -202,7 +201,6 @@ graph TD;
   lf-card --> lf-textfield
   lf-carousel --> lf-textfield
   lf-chat --> lf-textfield
-  lf-compare --> lf-textfield
   lf-list --> lf-textfield
   lf-masonry --> lf-textfield
   lf-messenger --> lf-textfield

@@ -46,6 +46,7 @@ import {
   getImageDimensions,
 } from "./helpers.utils";
 import { createAdapter } from "./lf-canvas-adapter";
+import { LfCanvasFC } from "./lf-canvas-fc";
 
 /**
  * The canvas component allows users to draw on a canvas element using a brush tool.
@@ -796,34 +797,31 @@ export class LfCanvas implements LfCanvasInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
     const { isCursorPreview, shouldRenderPreview } =
       this.#adapter.controller.computed;
 
     const { board, image, preview } = this.#adapter.elements.jsx;
     const { lfStyle } = this;
 
-    const { canvas } = this.#b;
-
     return (
       <Host data-orientation={this.orientation} data-boxing={this.boxing}>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div
-            class={bemClass(canvas._, null, {
-              hidden: isCursorPreview(),
-            })}
-            part={this.#p.canvas}
-            ref={(el) => {
+          <LfCanvasFC
+            boardElement={board()}
+            canvasRef={(el) => {
               if (el) {
                 this.#container = el;
+                this.#adapter.elements.refs.canvas = el;
               }
             }}
-          >
-            {image()}
-            {board()}
-            {shouldRenderPreview() && preview()}
-          </div>
+            framework={this.#framework}
+            imageElement={image()}
+            isCursorPreview={isCursorPreview()}
+            previewElement={preview()}
+            showPreview={shouldRenderPreview()}
+          />
         </div>
       </Host>
     );

@@ -15,6 +15,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_CANVAS_BLOCKS,
   LF_CANVAS_BRUSH,
@@ -243,6 +244,7 @@ export interface LfCanvasAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfCanvasAdapterRefs extends LfComponentAdapterRefs {
   board: HTMLCanvasElement;
+  canvas: HTMLDivElement;
   image: LfImageElement;
   preview: HTMLCanvasElement;
 }
@@ -382,4 +384,38 @@ export type LfCanvasCursor = (typeof LF_CANVAS_CURSOR)[number];
  * Union of type identifiers defined in `LF_CANVAS_TYPES`.
  */
 export type LfCanvasType = (typeof LF_CANVAS_TYPES)[number];
+//#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfCanvasFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfCanvasFCProps {
+  /** Pre-rendered board canvas element */
+  boardElement?: VNode;
+  /** Reference callback for the canvas container element */
+  canvasRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Pre-rendered image element */
+  imageElement?: VNode;
+  /** Whether the cursor is in preview mode (hides cursor) */
+  isCursorPreview?: boolean;
+  /** Pre-rendered preview canvas element */
+  previewElement?: VNode;
+  /** Whether to show the preview layer */
+  showPreview?: boolean;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+}
 //#endregion

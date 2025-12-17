@@ -17,6 +17,7 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUIState } from "../framework/theme.declarations";
 import { LfAccordionEventPayload } from "./accordion.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
@@ -865,5 +866,61 @@ export type LfShapeeditorLoadCallback = (
 export interface LfShapeeditorNavigation {
   isTreeOpen?: boolean;
   treeProps?: Partial<LfTreePropsInterface>;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the LfShapeeditorFC pure presentational component.
+ *
+ * This is the FC-first version of shapeeditor props designed for:
+ * - Direct use in the thin WC wrapper via ShapeeditorFC
+ * - Composed usage within other components
+ *
+ * All state is owned by the parent; the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfShapeeditorFCProps {
+  /** BEM block definitions */
+  blocks?: (typeof LF_SHAPEEDITOR_BLOCKS)["shapeeditor"];
+  /** Framework instance for theme utilities */
+  framework: LfFrameworkInterface;
+  /** Whether a shape is currently selected */
+  hasSelection?: boolean;
+  /** Part definitions for shadow parts */
+  parts?: (typeof LF_SHAPEEDITOR_PARTS)["shapeeditor"];
+  /** Whether to show the history sidebar */
+  shouldShowHistory?: boolean;
+  /** Whether to show the load/jump section */
+  shouldShowLoad?: boolean;
+  /** Whether to show the navigation tree */
+  shouldShowTree?: boolean;
+
+  // Navigation panel JSX factories
+  /** Explorer sub-block JSX factory */
+  explorerJsx?: () => VNode;
+  /** Jump sub-block JSX factory */
+  jumpJsx?: () => VNode;
+  /** Masonry JSX factory */
+  masonryJsx: () => VNode;
+
+  // Preview panel JSX factories
+  /** History sub-block JSX factory */
+  historyJsx?: () => VNode;
+  /** Shape preview JSX factory */
+  shapeJsx: () => VNode;
+  /** Spinner overlay JSX factory */
+  spinnerJsx: () => VNode;
+
+  // Settings panel JSX factories
+  /** Actions sub-block JSX factory */
+  actionsJsx: () => VNode;
+  /** Controls sub-block JSX factory */
+  controlsJsx: () => VNode;
+  /** Progressbar JSX factory */
+  progressbarJsx: () => VNode;
+  /** Settings tree JSX factory */
+  treeJsx: () => VNode;
 }
 //#endregion

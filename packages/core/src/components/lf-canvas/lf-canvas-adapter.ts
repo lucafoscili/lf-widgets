@@ -90,6 +90,7 @@ export const createHandlers = (
 export const createRefs = (): LfCanvasAdapterRefs => {
   return {
     board: null,
+    canvas: null,
     image: null,
     preview: null,
   };

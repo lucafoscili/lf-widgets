@@ -1,7 +1,5 @@
 import {
-  LF_CHART_BLOCKS,
   LF_CHART_CSS_VARS,
-  LF_CHART_PARTS,
   LF_CHART_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
@@ -36,6 +34,7 @@ import {
 } from "@stencil/core";
 import { dispose, ECharts, init } from "echarts";
 import { awaitFramework } from "../../utils/setup";
+import { ChartFC } from "./fc";
 import {
   createAdapter,
   createGetters,
@@ -240,18 +239,20 @@ export class LfChart implements LfChartInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
-  #b = LF_CHART_BLOCKS;
-  #p = LF_CHART_PARTS;
   #s = LF_STYLE_ID;
   #v = LF_CHART_CSS_VARS;
   #w = LF_WRAPPER_ID;
-  #container: HTMLDivElement;
   #resizeObserver: ResizeObserver;
   #resizeTimeout: NodeJS.Timeout;
   #chart: ECharts;
   #axesData: { id: string; data: string[] }[] = [];
   #seriesData: LfChartSeriesData[] = [];
   #adapter: LfChartAdapter;
+
+  /** Helper to get the chart container from adapter refs */
+  get #container(): HTMLDivElement | null {
+    return this.#adapter?.elements?.refs?.chart ?? null;
+  }
   //#endregion
 
   //#region Events
@@ -639,7 +640,7 @@ export class LfChart implements LfChartInterface {
     debug.info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
 
     const { lfSizeX, lfSizeY, lfStyle } = this;
 
@@ -655,11 +656,7 @@ export class LfChart implements LfChartInterface {
           `}
         </style>
         <div id={this.#w}>
-          <div
-            class={bemClass(this.#b.chart._)}
-            part={this.#p.chart._}
-            ref={(chartContainer) => (this.#container = chartContainer)}
-          ></div>
+          <ChartFC adapter={this.#adapter} />
         </div>
       </Host>
     );

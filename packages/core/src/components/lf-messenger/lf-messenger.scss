@@ -1,57 +1,14 @@
 @use "variables" as *;
 @use "mixins" as *;
-@use "./style.character" as schar with (
-  $comp: "messenger"
-);
-@use "./style.chat" as scha with (
-  $comp: "messenger"
-);
-@use "./style.covers" as scov with (
-  $comp: "messenger"
-);
-@use "./style.extra-context" as sextra with (
-  $comp: "messenger"
-);
-@use "./style.form" as sform with (
-  $comp: "messenger"
-);
-@use "./style.list" as slist with (
-  $comp: "messenger"
-);
-@use "./style.options" as sopt with (
-  $comp: "messenger"
-);
-@use "./style.roster" as srost with (
-  $comp: "messenger"
-);
+@use "../../style/mixins/components/messenger" as messenger-fc;
 
 $comp: "messenger";
 @include lf-comp-setup($comp, "false", "false", "true", "false", "true");
+
+// Import documentation from FC mixin (single source of truth)
+@include messenger-fc.lf-messenger-docs($comp);
 
 :host {
   @include lf-el-stretch;
   box-sizing: border-box;
 }
-
-.messenger {
-  & {
-    @include lf-el-stretch;
-    display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
-    position: relative;
-  }
-
-  &:has(.character--collapsed) {
-    grid-template-columns: 0 4fr 1fr;
-  }
-
-  &:has(.extra-context--collapsed) {
-    grid-template-columns: 1fr 4fr 0;
-  }
-
-  &:has(.character--collapsed):has(.extra-context--collapsed) {
-    grid-template-columns: 0 1fr 0;
-  }
-}
-
-/* local partials loaded above */

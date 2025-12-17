@@ -281,7 +281,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -299,7 +298,6 @@ graph TD;
   lf-breadcrumbs --> lf-canvas
   lf-card --> lf-canvas
   lf-carousel --> lf-canvas
-  lf-compare --> lf-canvas
   lf-masonry --> lf-canvas
   lf-shapeeditor --> lf-canvas
   lf-tree --> lf-canvas

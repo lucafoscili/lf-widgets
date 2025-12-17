@@ -4,6 +4,7 @@ import {
   LfSelectAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { SelectFC } from "./fc/select-fc";
 
 export const prepSelectJsx = (
   getAdapter: () => LfSelectAdapter,
@@ -48,6 +49,13 @@ export const prepSelectJsx = (
           ref={assignRef(refs, "list")}
         />
       );
+    },
+    //#endregion
+
+    //#region Select (FC-based)
+    select: () => {
+      const adapter = getAdapter();
+      return <SelectFC adapter={adapter} />;
     },
     //#endregion
 

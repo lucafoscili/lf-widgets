@@ -290,10 +290,14 @@ Type: `Promise<void>`
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | `--lf-shapeeditor-actions-gap`             | Sets the gap between action items. Defaults to => 0                                                      |
 | `--lf-shapeeditor-actions-padding`         | Sets the padding for the actions area. Defaults to => 0                                                  |
-| `--lf-shapeeditor-border-color`            | Sets the border color for the shapeeditor component. Defaults to => var(--lf-color-border)               |
-| `--lf-shapeeditor-border-radius`           | Sets the border radius for the shapeeditor component. Defaults to => var(--lf-ui-border-radius)          |
+| `--lf-shapeeditor-chart-min-height`        | Sets the minimum height for chart previews. Defaults to => 150px                                         |
 | `--lf-shapeeditor-color-bg`                | Sets the color-bg color for the shapeeditor component. Defaults to => var(--lf-color-bg)                 |
+| `--lf-shapeeditor-color-border`            | Border color for panels and elements. Defaults to => var(--lf-state-border, var(--lf-color-border))      |
 | `--lf-shapeeditor-color-on-bg`             | Sets the color-on-bg color for the shapeeditor component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-shapeeditor-color-on-primary`        | Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))          |
+| `--lf-shapeeditor-color-on-surface`        | Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))                   |
+| `--lf-shapeeditor-color-primary`           | Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                    |
+| `--lf-shapeeditor-color-surface`           | Surface color for panels. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                |
 | `--lf-shapeeditor-control-actions-padding` | Sets the padding for the control actions area. Defaults to => 0                                          |
 | `--lf-shapeeditor-font-family`             | Sets the primary font family for the shapeeditor component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-shapeeditor-font-size`               | Sets the font size for the shapeeditor component. Defaults to => var(--lf-font-size)                     |
@@ -359,9 +363,9 @@ graph TD;
   lf-shapeeditor --> lf-checkbox
   lf-shapeeditor --> lf-multiinput
   lf-shapeeditor --> lf-select
+  lf-masonry --> lf-button
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
-  lf-masonry --> lf-button
   lf-masonry --> lf-canvas
   lf-masonry --> lf-card
   lf-masonry --> lf-chart
@@ -375,6 +379,8 @@ graph TD;
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
+  lf-button --> lf-list
+  lf-list --> lf-textfield
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -391,8 +397,6 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge

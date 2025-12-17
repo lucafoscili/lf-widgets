@@ -1,0 +1,63 @@
+// =============================================================================
+// CHART - Component Styles
+// =============================================================================
+// Chart-specific styles for the LfChartFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-chart-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/chart" as chart-fc;
+//   @include chart-fc.lf-chart-docs("chart");
+// =============================================================================
+@mixin lf-chart-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-bg: Background color for the chart container.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text/element color on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-background-alpha: Background alpha for the chart.
+   *       Defaults to => var(--lf-ui-alpha-glass-hint, 0.125)
+   * @prop --lf-#{$comp}-min-height: Minimum height for the chart container.
+   *       Defaults to => var(--lf_chart_height, 100%)
+   * @prop --lf-#{$comp}-min-width: Minimum width for the chart container.
+   *       Defaults to => var(--lf_chart_width, 100%)
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "chart";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Chart Core
+// -----------------------------------------------------------------------------
+.chart {
+  & {
+    background-color: rgba(
+      $bgC,
+      var(--lf-chart-background-alpha, var(--lf-ui-alpha-glass-hint, 0.125))
+    );
+    box-sizing: border-box;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}

@@ -9,12 +9,15 @@ import {
   LfChartAdapterControllerGetters,
   LfChartAdapterControllerSetters,
   LfChartAdapterHandlers,
+  LfChartAdapterJsx,
+  LfChartAdapterRefs,
   LfChartAdapterThemeStyle,
   LfChartInterface,
   LfChartSeriesData,
 } from "@lf-widgets/foundations";
 import { prepChartActions } from "./actions.chart";
 import { prepChartComputed } from "./computed.chart";
+import { prepChartJsx } from "./elements.chart";
 import { prepChartHandlers } from "./handlers.chart";
 
 /**
@@ -50,6 +53,10 @@ export const createAdapter = (
         getThemeValues,
       ),
       actions: createActions(getAdapter),
+    },
+    elements: {
+      jsx: createJsx(),
+      refs: createRefs(),
     },
     handlers: createHandlers(getAdapter),
   };
@@ -119,5 +126,19 @@ export const createHandlers = (
   getAdapter: () => LfChartAdapter,
 ): LfChartAdapterHandlers => {
   return prepChartHandlers(getAdapter);
+};
+//#endregion
+
+//#region Elements
+export const createJsx = (): LfChartAdapterJsx => {
+  return prepChartJsx();
+};
+//#endregion
+
+//#region Refs
+export const createRefs = (): LfChartAdapterRefs => {
+  return {
+    chart: null,
+  };
 };
 //#endregion

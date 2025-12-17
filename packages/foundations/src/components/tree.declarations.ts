@@ -587,3 +587,68 @@ export interface LfTreePropsInterface {
   lfUiSize?: LfThemeUISize;
 }
 //#endregion
+
+//#region Functional Component
+/**
+ * Props interface for the `LfTreeFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfTreeFCProps {
+  /** Whether accordion layout is enabled for depth 0 nodes */
+  accordionLayout?: boolean;
+  /** Block class names for BEM styling */
+  blocks: typeof LF_TREE_BLOCKS;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Dataset columns for grid mode */
+  columns: NonNullable<LfDataDataset["columns"]>;
+  /** Computed predicates from the adapter */
+  computed: LfTreeAdapterControllerComputed;
+  /** The tree dataset */
+  dataset?: LfDataDataset;
+  /** Elements (JSX factories and refs) from the adapter */
+  elements: {
+    jsx: LfTreeAdapterJsx;
+    refs: LfTreeAdapterRefs;
+  };
+  /** Text displayed when tree is empty */
+  emptyText?: string;
+  /** Current filter value */
+  filterValue?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Whether grid mode is enabled */
+  grid?: boolean;
+  /** Event handlers for tree interactions */
+  handlers?: LfTreeAdapterHandlers;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether the dataset is empty */
+  isEmpty?: boolean;
+  /** Parts for shadow DOM styling */
+  parts: typeof LF_TREE_PARTS;
+  /** Reference callbacks */
+  refs?: {
+    tree?: (el: HTMLDivElement | null) => void;
+    filterField?: (el: HTMLElement | null) => void;
+    nodeElements?: Record<string, HTMLElement | null>;
+  };
+  /** Whether selection is enabled */
+  selectable?: boolean;
+  /** Whether to show the filter input */
+  showFilter?: boolean;
+  /** Custom CSS styles to apply */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling.
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+}
+//#endregion

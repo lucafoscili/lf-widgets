@@ -78,14 +78,14 @@ Type: `Promise<void>`
 
 | Name                        | Description                                                                                         |
 | --------------------------- | --------------------------------------------------------------------------------------------------- |
-| `--lf-splash-color-bg`      | Sets the color-bg color for the splash component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-splash-color-on-bg`   | Sets the color-on-bg color for the splash component. Defaults to => var(--lf-color-on-bg)           |
+| `--lf-splash-color-bg`      | Background color for the splash component. Defaults to => var(--lf-state-bg, var(--lf-color-bg))    |
+| `--lf-splash-color-on-bg`   | Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))       |
 | `--lf-splash-font-family`   | Sets the primary font family for the splash component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-splash-font-size`     | Sets the font size for the splash component. Defaults to => var(--lf-font-size)                     |
 | `--lf-splash-height`        | Sets the height for the splash component. Defaults to => 100dvh                                     |
-| `--lf-splash-left`          | Sets the left for the splash component. Defaults to => 0                                            |
+| `--lf-splash-left`          | Sets the left position for the splash component. Defaults to => 0                                   |
 | `--lf-splash-position`      | Sets the position for the splash component. Defaults to => fixed                                    |
-| `--lf-splash-top`           | Sets the top for the splash component. Defaults to => 0                                             |
+| `--lf-splash-top`           | Sets the top position for the splash component. Defaults to => 0                                    |
 | `--lf-splash-widget-height` | Sets the height for the splash widget. Defaults to => 10em                                          |
 | `--lf-splash-widget-margin` | Sets the margin for the splash widget. Defaults to => auto                                          |
 | `--lf-splash-widget-width`  | Sets the width for the splash widget. Defaults to => 10em                                           |

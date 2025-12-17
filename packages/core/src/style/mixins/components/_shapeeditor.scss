@@ -1,0 +1,388 @@
+// =============================================================================
+// SHAPEEDITOR - Component Styles
+// =============================================================================
+// Shapeeditor-specific styles for the LfShapeeditorFC functional component.
+// Universal 3-panel interactive explorer for any LfShape type.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-shapeeditor-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+@mixin lf-shapeeditor-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary accent color.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-bg: Background color for shapeeditor container.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text on background.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-surface: Surface color for panels.
+   *       Defaults to => var(--lf-state-surface, var(--lf-color-surface))
+   * @prop --lf-#{$comp}-color-on-surface: Text on surface.
+   *       Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))
+   * @prop --lf-#{$comp}-color-border: Border color for panels and elements.
+   *       Defaults to => var(--lf-state-border, var(--lf-color-border))
+   * @prop --lf-#{$comp}-nav-ratio: Sets the navigation column width ratio.
+   *       Defaults to => 0.3 (30%)
+   * @prop --lf-#{$comp}-nav-width: Sets the width for the navigation tree panel.
+   *       Defaults to => 200px
+   * @prop --lf-#{$comp}-history-padding: Sets the padding for the history panel.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-history-width: Sets the width for the history panel.
+   *       Defaults to => 180px
+   * @prop --lf-#{$comp}-actions-gap: Sets the gap between action items.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-actions-padding: Sets the padding for the actions area.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-control-actions-padding: Sets the padding for the control actions area.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-chart-min-height: Sets the minimum height for chart previews.
+   *       Defaults to => 150px
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "shapeeditor";
+@include lf-color-vars($comp);
+
+// Border color shorthand
+$borderC-line: 1px solid rgba($borderC, 1);
+
+// -----------------------------------------------------------------------------
+// Root Container
+// -----------------------------------------------------------------------------
+.shapeeditor {
+  & {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: inherit;
+    min-height: 0;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Grid Layout
+  // ---------------------------------------------------------------------------
+  &__grid {
+    & {
+      border: $borderC-line;
+      box-sizing: border-box;
+      display: grid;
+      flex: 1;
+      grid-template-areas:
+        "navigation preview"
+        "navigation settings";
+      grid-template-columns: 100% 0;
+      grid-template-rows: 1fr 1fr;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    &--selected {
+      grid-template-columns:
+        minmax(200px, var(--lf-#{$comp}-nav-ratio, 0.3fr))
+        1fr;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Navigation Panel
+// -----------------------------------------------------------------------------
+.navigation {
+  & {
+    box-sizing: border-box;
+    display: grid;
+    grid-area: navigation;
+    grid-template-areas: "masonry";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &--has-nav {
+    grid-template-areas: "explorer masonry";
+    grid-template-columns: auto 1fr;
+
+    .explorer {
+      display: grid;
+    }
+  }
+
+  &--has-drawer {
+    grid-template-columns: var(--lf-#{$comp}-nav-width, 200px) 1fr;
+  }
+
+  &--has-header {
+    grid-template-areas:
+      "jump"
+      "masonry";
+    grid-template-rows: auto 1fr;
+
+    &.navigation--has-nav {
+      grid-template-areas:
+        "explorer jump"
+        "explorer masonry";
+    }
+  }
+
+  &__masonry {
+    grid-area: masonry;
+    min-height: 0;
+    overflow: auto;
+    position: relative;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Explorer Sub-block
+// -----------------------------------------------------------------------------
+.explorer {
+  & {
+    border-right: $borderC-line;
+    box-sizing: border-box;
+    grid-area: explorer;
+    grid-template-columns: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &--has-drawer {
+    grid-template-columns: 1fr auto;
+  }
+
+  &__tree {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  &__expander {
+    border-left: $borderC-line;
+    box-sizing: border-box;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Jump Sub-block
+// -----------------------------------------------------------------------------
+.jump {
+  & {
+    display: grid;
+    grid-area: jump;
+    grid-template-areas:
+      "textfield"
+      "load";
+    grid-template-rows: auto auto;
+    padding: 0;
+  }
+
+  &__textfield {
+    grid-area: textfield;
+    padding: 0;
+  }
+
+  &__load {
+    grid-area: load;
+    padding-bottom: 0.75em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Preview Panel
+// -----------------------------------------------------------------------------
+.preview {
+  & {
+    --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
+
+    border-bottom: $borderC-line;
+    box-sizing: border-box;
+    display: grid;
+    grid-area: preview;
+    grid-template-areas: "shape";
+    grid-template-columns: 1fr;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &--has-history {
+    grid-template-areas: "history shape";
+    grid-template-columns: auto 1fr;
+  }
+
+  &__shape {
+    align-content: center;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  &__spinner {
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// History Sub-block
+// -----------------------------------------------------------------------------
+.history {
+  & {
+    border-right: $borderC-line;
+    box-sizing: border-box;
+    display: grid;
+    grid-area: history;
+    min-height: 0;
+    overflow: auto;
+    padding: var(--lf-#{$comp}-history-padding, 0);
+    width: var(--lf-#{$comp}-history-width, 180px);
+  }
+
+  &__list {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Settings Panel
+// -----------------------------------------------------------------------------
+.settings {
+  & {
+    @include lf-transitions((opacity, transform));
+    box-sizing: border-box;
+    display: grid;
+    grid-area: settings;
+    grid-template-areas:
+      "actions actions"
+      "progressbar progressbar"
+      "tree controls";
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto 1fr;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__progressbar {
+    @include lf-transitions((opacity));
+    grid-area: progressbar;
+    height: 1em;
+    left: 0;
+    opacity: 1;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    z-index: 30;
+
+    &--hidden {
+      opacity: 0;
+    }
+  }
+
+  &__tree {
+    border-right: $borderC-line;
+    box-sizing: border-box;
+    grid-area: tree;
+    min-height: 0;
+    overflow: auto;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Actions Sub-block
+// -----------------------------------------------------------------------------
+.actions {
+  & {
+    border-bottom: $borderC-line;
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--lf-#{$comp}-actions-gap, 0);
+    grid-area: actions;
+    padding: var(--lf-#{$comp}-actions-padding, 0);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Controls Sub-block
+// -----------------------------------------------------------------------------
+.controls {
+  & {
+    box-sizing: border-box;
+    display: grid;
+    grid-area: controls;
+    grid-template-areas:
+      "snackbar"
+      "items"
+      "control-actions";
+    grid-template-rows: auto 1fr auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__snackbar {
+    border-bottom: $borderC-line;
+    grid-area: snackbar;
+    max-width: 100%;
+    width: 100%;
+    z-index: 20;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Items Sub-block
+// -----------------------------------------------------------------------------
+.items {
+  & {
+    grid-area: items;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  &__item {
+    align-items: center;
+    display: flex;
+    padding: 0.5em 1em;
+  }
+
+  &__info {
+    height: 1.5em;
+    width: 1.5em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Control Actions Sub-block
+// -----------------------------------------------------------------------------
+.control-actions {
+  & {
+    border-top: $borderC-line;
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.5em;
+    grid-area: control-actions;
+    justify-content: flex-end;
+    padding: var(--lf-#{$comp}-control-actions-padding, 0);
+  }
+}

@@ -1,10 +1,12 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "../../style/mixins/components/drawer" as drawer-fc;
 
 $comp: "drawer";
 $borderC: 1px solid rgba(var(--lf-color-border), 0.75);
 
 @include lf-comp-setup($comp, "false", "false", "true", "false", "true", 12px);
+@include drawer-fc.lf-drawer-docs("drawer");
 
 :host {
   @include lf-comp-border($comp, "radius");
@@ -77,16 +79,3 @@ $borderC: 1px solid rgba(var(--lf-color-border), 0.75);
     -2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
   );
 }
-
-/**
-* IMPORTANT!
-* CSS Custom Properties are documented here to allow the Stencil auto-Docs
-* generator to pick them up, but their actual definitions are in the FC mixin.
-*
-* @prop --lf-#{$comp}-border: Sets the border for the #{$comp} component.
-*                             Defaults to => 1px solid #{$borderC}
-* @prop --lf-#{$comp}-left-box-shadow: Sets the box-shadow for the left side of the #{$comp} component.
-*                                      Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2), 8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14), 2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
-* @prop --lf-#{$comp}-right-box-shadow: Sets the box-shadow for the right side of the #{$comp} component.
-*                                       Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-#{$comp}), 0.2), -8px 0 16px 2px rgba(var(--lf-color-on-#{$comp}), 0.14), -2px 0 20px 5px rgba(var(--lf-color-on-#{$comp}), 0.14)
-*/

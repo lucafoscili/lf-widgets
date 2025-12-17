@@ -90,8 +90,6 @@ Type: `Promise<void>`
 | `--lf-article-color-h5`         | Sets the h5 color for the article component. Defaults to => var(--lf-color-on-bg)                    |
 | `--lf-article-color-h6`         | Sets the h6 color for the article component. Defaults to => var(--lf-color-on-bg)                    |
 | `--lf-article-color-on-bg`      | Sets the color-on-bg color for the article component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-article-color-on-surface` | Sets the color-on-surface color for the article component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-article-color-surface`    | Sets the color-surface color for the article component. Defaults to => var(--lf-color-surface)       |
 | `--lf-article-font-family`      | Sets the primary font family for the article component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-article-font-family-body` | Sets the body font family for the article component. Defaults to => var(--lf-font-family-primary)    |
 | `--lf-article-font-family-h1`   | Sets the h1 font family for the article component. Defaults to => var(--lf-font-family-primary)      |

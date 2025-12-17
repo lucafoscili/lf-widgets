@@ -15,7 +15,12 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
-import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
+import {
+  LfDataDataset,
+  LfDataShapes,
+  LfDataShapesMap,
+} from "../framework/data.declarations";
 import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CAROUSEL_BLOCKS,
@@ -91,6 +96,7 @@ export interface LfCarouselAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfCarouselAdapterRefs extends LfComponentAdapterRefs {
   back: LfButtonElement;
+  carousel: HTMLDivElement;
   forward: LfButtonElement;
 }
 /**
@@ -117,6 +123,8 @@ export interface LfCarouselAdapterControllerGetters
   currentIndex: () => number;
   /** Autoplay interval timer */
   interval: () => NodeJS.Timeout;
+  /** Shapes map with slide data */
+  shapes: () => LfDataShapesMap;
   /** Total number of slides */
   totalSlides: () => number;
 }
@@ -216,5 +224,49 @@ export interface LfCarouselPropsInterface {
   lfNavigation?: boolean;
   lfShape?: LfDataShapes;
   lfStyle?: string;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the LfCarouselFC functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfCarouselFCProps {
+  /** Reference callback for the carousel container element */
+  carouselRef?: (el: HTMLDivElement | null) => void;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Current slide index being displayed */
+  currentIndex: number;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether lightbox mode is enabled (adds pointer cursor) */
+  lightbox?: boolean;
+  /** Whether navigation buttons are visible */
+  navigation?: boolean;
+  /** Callback fired when back button is clicked */
+  onBack?: () => void;
+  /** Callback fired when forward button is clicked */
+  onForward?: () => void;
+  /** Callback fired when a segment (indicator) is clicked */
+  onSegmentClick?: (index: number) => void;
+  /** Callback fired on LfShape event dispatch */
+  onShapeEvent?: (e: CustomEvent) => void;
+  /** Shape type for rendering slides */
+  shape: LfDataShapes;
+  /** Shapes map containing slide data */
+  shapes: LfDataShapesMap;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Total number of slides */
+  totalSlides: number;
 }
 //#endregion

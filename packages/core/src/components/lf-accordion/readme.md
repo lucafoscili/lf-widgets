@@ -122,25 +122,29 @@ Type: `Promise<void>`
 
 | Name                              | Description                                                                                            |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `--lf-accordion-border-color`     | Sets the border color for the accordion component. Defaults to => var(--lf-color-border)               |
-| `--lf-accordion-border-radius`    | Sets the border radius for the accordion component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-accordion-color-on-bg`      | Sets the color-on-bg color for the accordion component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-accordion-color-on-primary` | Sets the color-on-primary color for the accordion component. Defaults to => var(--lf-color-on-primary) |
-| `--lf-accordion-color-on-surface` | Sets the color-on-surface color for the accordion component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-accordion-color-primary`    | Sets the color-primary color for the accordion component. Defaults to => var(--lf-color-primary)       |
-| `--lf-accordion-color-surface`    | Sets the color-surface color for the accordion component. Defaults to => var(--lf-color-surface)       |
-| `--lf-accordion-cursor`           | Sets the cursor for the accordion header. Defaults to => pointer                                       |
-| `--lf-accordion-expand-margin`    | Sets the margin of the accordion expand icon. Defaults to => 0                                         |
-| `--lf-accordion-flex-direction`   | Sets the flex direction for the accordion component. Defaults to => column                             |
-| `--lf-accordion-flex-wrap`        | Sets the flex wrap for the accordion component. Defaults to => nowrap                                  |
+| `--lf-accordion-border-color`     | Border color for accordion items. Defaults to => var(--lf-state-border, var(--lf-color-border))        |
+| `--lf-accordion-border-radius`    | Border radius for accordion items. Defaults to => var(--lf-ui-border-radius, 0.375em)                  |
+| `--lf-accordion-border-width`     | Border width for accordion items. Defaults to => var(--lf-ui-border-width, 1px)                        |
+| `--lf-accordion-color-bg`         | Background color for accordion headers. Defaults to => var(--lf-state-bg, var(--lf-color-bg))          |
+| `--lf-accordion-color-on-bg`      | Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))          |
+| `--lf-accordion-color-on-primary` | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))   |
+| `--lf-accordion-color-on-surface` | Text color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))           |
+| `--lf-accordion-color-primary`    | Primary/accent color for selections. Defaults to => var(--lf-state-primary, var(--lf-color-primary))   |
+| `--lf-accordion-color-surface`    | Surface color for accordion items. Defaults to => var(--lf-state-surface, var(--lf-color-surface))     |
+| `--lf-accordion-cursor`           | Cursor for accordion headers. Defaults to => pointer                                                   |
+| `--lf-accordion-expand-margin`    | Margin for the expand icon. Defaults to => 0                                                           |
+| `--lf-accordion-flex-direction`   | Flex direction for accordion container. Defaults to => column                                          |
+| `--lf-accordion-flex-wrap`        | Flex wrap for accordion container. Defaults to => nowrap                                               |
 | `--lf-accordion-font-family`      | Sets the primary font family for the accordion component. Defaults to => var(--lf-font-family-primary) |
 | `--lf-accordion-font-size`        | Sets the font size for the accordion component. Defaults to => var(--lf-font-size)                     |
-| `--lf-accordion-gap`              | Sets the gap of the accordion header. Defaults to => 0.5em                                             |
-| `--lf-accordion-icon-margin`      | Sets the margin of the accordion icon. Defaults to => 0                                                |
-| `--lf-accordion-line-height`      | Sets the line height of the accordion header. Defaults to => 1.75em                                    |
-| `--lf-accordion-padding`          | Sets the padding of the accordion header. Defaults to => 1em                                           |
-| `--lf-accordion-text-align`       | Sets the text alignment of the accordion header. Defaults to => left                                   |
-| `--lf-accordion-text-margin`      | Sets the margin of the accordion text. Defaults to => 0                                                |
+| `--lf-accordion-font-weight`      | Font weight for accordion headers. Defaults to => var(--lf-font-weight-title)                          |
+| `--lf-accordion-gap`              | Gap between header elements. Defaults to => 0.5em                                                      |
+| `--lf-accordion-icon-margin`      | Margin for item icons. Defaults to => 0                                                                |
+| `--lf-accordion-icon-size`        | Size for icons. Defaults to => 1.25em                                                                  |
+| `--lf-accordion-line-height`      | Line height for accordion headers. Defaults to => 1.75em                                               |
+| `--lf-accordion-padding`          | Padding for accordion headers. Defaults to => 1em                                                      |
+| `--lf-accordion-text-align`       | Text alignment for headers. Defaults to => left                                                        |
+| `--lf-accordion-text-margin`      | Margin for header text. Defaults to => 0                                                               |
 
 
 ## Dependencies
@@ -152,7 +156,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -196,7 +199,6 @@ graph TD;
   lf-article --> lf-accordion
   lf-breadcrumbs --> lf-accordion
   lf-carousel --> lf-accordion
-  lf-compare --> lf-accordion
   lf-masonry --> lf-accordion
   lf-shapeeditor --> lf-accordion
   lf-tree --> lf-accordion

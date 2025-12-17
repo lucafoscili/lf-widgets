@@ -248,7 +248,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-shapeeditor](../lf-shapeeditor)
@@ -282,7 +281,6 @@ graph TD;
   lf-breadcrumbs --> lf-chat
   lf-card --> lf-chat
   lf-carousel --> lf-chat
-  lf-compare --> lf-chat
   lf-masonry --> lf-chat
   lf-messenger --> lf-chat
   lf-shapeeditor --> lf-chat

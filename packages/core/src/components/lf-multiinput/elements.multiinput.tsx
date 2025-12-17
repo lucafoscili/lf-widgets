@@ -2,8 +2,15 @@ import {
   LfMultiInputAdapter,
   LfMultiInputAdapterJsx,
 } from "@lf-widgets/foundations";
-import { h } from "@stencil/core";
+import { h, VNode } from "@stencil/core";
+import { MultiinputFC } from "./fc/multiinput-fc";
 
+/**
+ * Prepares the JSX factories for lf-multiinput adapter.
+ *
+ * This factory creates JSX rendering functions that are used by both
+ * the Web Component render method and the MultiinputFC adapter wrapper.
+ */
 export const prepMultiInputJsx = (
   getAdapter: () => LfMultiInputAdapter,
 ): LfMultiInputAdapterJsx => {
@@ -77,4 +84,17 @@ export const prepMultiInputJsx = (
     },
     //#endregion
   };
+};
+
+/**
+ * Renders the multiinput using the FC-first pattern.
+ *
+ * This function creates a VNode tree using the MultiinputFC adapter wrapper,
+ * which in turn uses the pure presentational LfMultiinputFC component.
+ *
+ * @param adapter - The multiinput adapter containing all state and handlers
+ * @returns VNode tree for the multiinput component
+ */
+export const renderMultiinputFC = (adapter: LfMultiInputAdapter): VNode => {
+  return <MultiinputFC adapter={adapter} />;
 };

@@ -1,0 +1,92 @@
+// =============================================================================
+// CANVAS - Component Styles
+// =============================================================================
+// Canvas-specific styles for the LfCanvasFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-canvas-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/canvas" as canvas-fc;
+//   @include canvas-fc.lf-canvas-docs("canvas");
+// =============================================================================
+@mixin lf-canvas-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-margin: Sets the margin for the #{$comp} component.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-max-height: Sets the max height for the #{$comp} component.
+   *       Defaults to => max-content
+   * @prop --lf-#{$comp}-max-width: Sets the max width for the #{$comp} component.
+   *       Defaults to => max-content
+   * @prop --lf-#{$comp}-position: Sets the position for the #{$comp} component.
+   *       Defaults to => relative
+   * @prop --lf-#{$comp}-object-fit: Sets the object fit for the lf-image subcomponent.
+   *       Defaults to => contain
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "canvas";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Canvas Core
+// -----------------------------------------------------------------------------
+.canvas {
+  & {
+    height: 100%;
+    margin: var(--lf-canvas-margin, auto);
+    max-height: var(--lf-canvas-max-height, max-content);
+    max-width: var(--lf-canvas-max-width, max-content);
+    position: var(--lf-canvas-position, relative);
+    touch-action: none;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Hidden Modifier (for cursor preview mode)
+  // ---------------------------------------------------------------------------
+  &--hidden {
+    cursor: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Image
+  // ---------------------------------------------------------------------------
+  &__image {
+    --lf-image-object-fit: var(--lf-canvas-object-fit, contain);
+
+    pointer-events: none;
+    user-select: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Board & Preview (canvas layers)
+  // ---------------------------------------------------------------------------
+  &__board,
+  &__preview {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  &__preview {
+    pointer-events: none;
+  }
+}

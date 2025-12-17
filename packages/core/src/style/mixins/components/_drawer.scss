@@ -1,0 +1,166 @@
+// =============================================================================
+// DRAWER - Component Styles
+// =============================================================================
+// Drawer-specific styles for the LfDrawerFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-drawer-docs() mixin for WC SCSS files to import
+//
+// Note: Drawer is a panel component that slides in from left/right.
+// It supports dock and slide display modes with backdrop overlay.
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/drawer" as drawer-fc;
+//   @include drawer-fc.lf-drawer-docs("drawer");
+// =============================================================================
+@mixin lf-drawer-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-border: Sets the border for the drawer component.
+   *       Defaults to => 1px solid rgba(var(--lf-color-border), 0.75)
+   * @prop --lf-#{$comp}-color-bg: Background color for the drawer.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color for the drawer.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-color-primary: Primary/accent color for the drawer.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surfaces.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-left-box-shadow: Box shadow for the left-positioned drawer.
+   *       Defaults to => 4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ...
+   * @prop --lf-#{$comp}-right-box-shadow: Box shadow for the right-positioned drawer.
+   *       Defaults to => -4px 0 10px -2px rgba(var(--lf-color-on-drawer), 0.2), ...
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "drawer";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Drawer Core
+// -----------------------------------------------------------------------------
+.drawer {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Content Area
+  // ---------------------------------------------------------------------------
+  &__content {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: auto;
+    padding: 1em;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header Section
+  // ---------------------------------------------------------------------------
+  &__header {
+    align-items: center;
+    border-bottom: 1px solid rgba($borderC, 0.5);
+    box-sizing: border-box;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: space-between;
+    padding: 0.75em 1em;
+    width: 100%;
+  }
+
+  &__title {
+    color: rgb($onBgC);
+    font-size: 1.125em;
+    font-weight: 500;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__close {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: rgb($onBgC);
+    cursor: pointer;
+    display: flex;
+    height: 2em;
+    justify-content: center;
+    padding: 0;
+    @include lf-transitions((background-color, color, transform));
+    width: 2em;
+
+    &:hover {
+      background-color: rgba($primaryC, var(--lf-ui-alpha-glass-hint, 0.125));
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Footer Section
+  // ---------------------------------------------------------------------------
+  &__footer {
+    align-items: center;
+    border-top: 1px solid rgba($borderC, 0.5);
+    box-sizing: border-box;
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5em;
+    justify-content: flex-end;
+    padding: 0.75em 1em;
+    width: 100%;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Backdrop Overlay
+// -----------------------------------------------------------------------------
+.drawer-backdrop {
+  & {
+    background-color: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    @include lf-transitions((opacity));
+    z-index: calc(var(--lf-ui-zindex-drawer, 1000) - 1);
+  }
+
+  &--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

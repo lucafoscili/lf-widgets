@@ -28,17 +28,15 @@ import {
   Event,
   EventEmitter,
   forceUpdate,
-  Fragment,
   h,
   Host,
   Method,
   Prop,
   State,
-  VNode,
   Watch,
 } from "@stencil/core";
 import { awaitFramework } from "../../utils/setup";
-import { LfShape } from "../../utils/shapes";
+import { CompareFC } from "./fc";
 import { createAdapter } from "./lf-compare-adapter";
 
 /**
@@ -334,122 +332,6 @@ export class LfCompare implements LfCompareInterface {
   #hasShapes() {
     return !!this.shapes?.[this.lfShape];
   }
-  #prepCompare(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { compare } = this.#b;
-
-    if (this.#hasShapes()) {
-      const shapes = this.shapes[this.lfShape];
-      if (shapes?.length > 1) {
-        return (
-          <div class={bemClass(compare._, compare.grid)}>
-            {this.#prepView()}
-            {this.#prepToolbar()}
-          </div>
-        );
-      }
-    }
-
-    return null;
-  }
-  #prepToolbar(): VNode {
-    const { bemClass } = this.#framework.theme;
-
-    const { toolbar } = this.#b;
-    const { changeView, leftButton, rightButton } = this.#adapter.elements.jsx;
-
-    return (
-      <div class={bemClass(toolbar._)}>
-        {leftButton()}
-        {changeView()}
-        {rightButton()}
-      </div>
-    );
-  }
-  #prepView(): VNode {
-    const { sanitizeProps, theme } = this.#framework;
-    const { bemClass } = theme;
-
-    const { view } = this.#b;
-    const { left, right } = this.#adapter.controller.get.defaults();
-    const { leftTree, rightTree } = this.#adapter.elements.jsx;
-    const {
-      isLeftPanelOpened,
-      isRightPanelOpened,
-      lfShape,
-      lfView,
-      leftShape,
-      rightShape,
-    } = this;
-
-    const leftShapes = left?.[lfShape]?.() || [];
-    const leftSanitized: LfDataCell[] = [];
-    for (let index = 0; index < leftShapes.length; index++) {
-      const s = leftShapes[index];
-      leftSanitized.push(sanitizeProps(s));
-    }
-    const rightShapes = right?.[lfShape]?.() || [];
-    const rightSanitized: LfDataCell[] = [];
-    for (let index = 0; index < rightShapes.length; index++) {
-      const s = rightShapes[index];
-      rightSanitized.push(sanitizeProps(s));
-    }
-
-    return (
-      <Fragment>
-        <div
-          class={bemClass(view._, null, {
-            [lfView]: true,
-          })}
-        >
-          <div class={bemClass(view._, view.left)}>
-            <LfShape
-              cell={Object.assign(leftSanitized, leftShape)}
-              index={0}
-              shape={lfShape}
-              eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
-              framework={this.#framework}
-            ></LfShape>
-          </div>
-          {isLeftPanelOpened && leftTree()}
-          {isRightPanelOpened && rightTree()}
-          {this.#adapter.controller.computed.isOverlay() && (
-            <div
-              class={bemClass(view._, view.slider)}
-              onChange={this.#updateOverlayInput}
-              onInput={this.#updateOverlayInput}
-            >
-              <input
-                class={bemClass(view._, view.input)}
-                data-cy={this.#cy.input}
-                min="0"
-                max="100"
-                type="range"
-                value="50"
-              />
-            </div>
-          )}
-          <div class={bemClass(view._, view.right)}>
-            <LfShape
-              cell={Object.assign(rightSanitized, rightShape)}
-              index={1}
-              shape={lfShape}
-              eventDispatcher={async (e) => this.onLfEvent(e, "lf-event")}
-              framework={this.#framework}
-            ></LfShape>
-          </div>
-        </div>
-      </Fragment>
-    );
-  }
-  #updateOverlayInput = (event: InputEvent) => {
-    const { target } = event;
-    if (target instanceof HTMLInputElement) {
-      const sliderValue = parseInt(target.value);
-      this.#adapter.controller.actions.setPositionWithBounds(sliderValue);
-    }
-  };
   //#endregion
 
   //#region Lifecycle hooks
@@ -480,18 +362,14 @@ export class LfCompare implements LfCompareInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
-
-    const { compare } = this.#b;
+    const { setLfStyle } = this.#framework.theme;
     const { lfStyle } = this;
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <div class={bemClass(compare._)} part={this.#p.compare}>
-            {this.#prepCompare()}
-          </div>
+          <CompareFC adapter={this.#adapter} />
         </div>
       </Host>
     );

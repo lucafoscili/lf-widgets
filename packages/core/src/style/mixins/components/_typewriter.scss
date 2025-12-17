@@ -1,0 +1,124 @@
+// =============================================================================
+// TYPEWRITER - Component Styles
+// =============================================================================
+// Typewriter-specific styles for the LfTypewriterFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - Supports size scaling via --lf-ui-size
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-typewriter-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/typewriter" as typewriter-fc;
+//   @include typewriter-fc.lf-typewriter-docs("typewriter");
+// =============================================================================
+@mixin lf-typewriter-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-color-primary: Primary/background color for the typewriter.
+   *       Defaults to => var(--lf-state-primary, var(--lf-color-primary))
+   * @prop --lf-#{$comp}-color-on-primary: Text color on primary surface.
+   *       Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))
+   * @prop --lf-#{$comp}-color-bg: Background color for the typewriter container.
+   *       Defaults to => var(--lf-state-bg, var(--lf-color-bg))
+   * @prop --lf-#{$comp}-color-on-bg: Text color on background surface.
+   *       Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))
+   * @prop --lf-#{$comp}-padding: Padding for the typewriter container.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-margin: Margin for the typewriter text element.
+   *       Defaults to => 0
+   * @prop --lf-#{$comp}-cursor-height: Height for the blinking cursor.
+   *       Defaults to => 1.25em
+   * @prop --lf-#{$comp}-cursor-margin-left: Left margin for the cursor.
+   *       Defaults to => 0.15em
+   * @prop --lf-#{$comp}-cursor-vertical-align: Vertical alignment for the cursor.
+   *       Defaults to => top
+   * @prop --lf-#{$comp}-cursor-width: Width for the blinking cursor.
+   *       Defaults to => 0.125em
+   * @prop --lf-#{$comp}-cursor-blink-duration: Duration for the cursor blink animation.
+   *       Defaults to => 800ms
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "typewriter";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Blink Animation
+// -----------------------------------------------------------------------------
+@keyframes lf-typewriter-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Typewriter Core
+// -----------------------------------------------------------------------------
+.typewriter {
+  & {
+    background-color: rgba(
+      $bgC,
+      var(
+        --lf-typewriter-background-alpha,
+        var(--lf-ui-alpha-glass-hint, 0.125)
+      )
+    );
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: calc(
+      var(--lf-typewriter-font-size, var(--lf-font-size)) *
+        var(--lf-fc-ui-size, var(--lf-ui-size, 1))
+    );
+    height: 100%;
+    padding: var(--lf-typewriter-padding, 1em);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Text Element
+  // ---------------------------------------------------------------------------
+  &__text {
+    color: rgb($onBgC);
+    display: inline-block;
+    height: 100%;
+    margin: var(--lf-typewriter-margin, 0);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Cursor
+  // ---------------------------------------------------------------------------
+  &__cursor {
+    animation: lf-typewriter-blink
+      var(--lf-typewriter-cursor-blink-duration, 800ms) infinite;
+    background-color: rgba(
+      $primaryC,
+      var(--lf-typewriter-cursor-alpha, var(--lf-ui-alpha-glass-heavy, 0.75))
+    );
+    display: inline-block;
+    height: var(--lf-typewriter-cursor-height, 1.25em);
+    margin-left: var(--lf-typewriter-cursor-margin-left, 0.15em);
+    vertical-align: var(--lf-typewriter-cursor-vertical-align, top);
+    width: var(--lf-typewriter-cursor-width, 0.125em);
+  }
+}

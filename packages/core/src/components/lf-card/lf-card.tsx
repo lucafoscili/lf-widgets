@@ -8,7 +8,6 @@ import {
   LF_WRAPPER_ID,
   LfCardAdapter,
   LfCardAdapterDefaults,
-  LfCardAdapterJsx,
   LfCardElement,
   LfCardEvent,
   LfCardEventPayload,
@@ -39,6 +38,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepCardActions } from "./actions.card";
 import { prepCardComputed } from "./computed.card";
+import { CardFC } from "./fc";
 import { createAdapter } from "./lf-card-adapter";
 
 /**
@@ -374,20 +374,13 @@ export class LfCard implements LfCardInterface {
   render() {
     const { theme } = this.#framework;
     const { setLfStyle } = theme;
-    const { lfAttributes } = this.#adapter.controller.get;
     const { shouldRender } = this.#adapter.controller.computed;
 
-    const { lfLayout, lfSizeX, lfSizeY, lfStyle } = this;
+    const { lfSizeX, lfSizeY, lfStyle } = this;
 
     if (!shouldRender()) {
       return;
     }
-
-    const { layouts } = this.#adapter.elements.jsx;
-    const layout =
-      layouts[lfLayout.toLowerCase() as keyof LfCardAdapterJsx["layouts"]];
-
-    const lf = lfAttributes();
 
     return (
       <Host>
@@ -399,21 +392,8 @@ export class LfCard implements LfCardInterface {
         }
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
-        <div
-          id={this.#w}
-          data-lf={lf.fadeIn}
-          onClick={(e) =>
-            this.#adapter.dispatcher.emit("click", { originalEvent: e })
-          }
-          onContextMenu={(e) =>
-            this.#adapter.dispatcher.emit("contextmenu", { originalEvent: e })
-          }
-          onPointerDown={(e) =>
-            this.#adapter.dispatcher.emit("pointerdown", { originalEvent: e })
-          }
-          part={this.#p.card}
-        >
-          {layout()}
+        <div id={this.#w} part={this.#p.card}>
+          <CardFC adapter={this.#adapter} />
         </div>
       </Host>
     );

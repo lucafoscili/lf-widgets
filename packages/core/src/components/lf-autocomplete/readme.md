@@ -135,10 +135,19 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                            | Description                                                                                               |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `--lf-autocomplete-font-family` | Sets the primary font family for the autocomplete component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-autocomplete-font-size`   | Sets the font size for the autocomplete component. Defaults to => var(--lf-font-size)                     |
+| Name                                          | Description                                                                                               |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--lf-autocomplete-border-radius`             | Border radius for dropdown. Defaults to => var(--lf-ui-border-radius)                                     |
+| `--lf-autocomplete-color-border`              | Border color for dropdown. Defaults to => var(--lf-state-border, var(--lf-color-border))                  |
+| `--lf-autocomplete-color-on-bg`               | Text and icon color. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                          |
+| `--lf-autocomplete-color-primary`             | Primary color for focus states. Defaults to => var(--lf-state-primary, var(--lf-color-primary))           |
+| `--lf-autocomplete-color-surface`             | Surface color for dropdown background. Defaults to => var(--lf-state-surface, var(--lf-color-surface))    |
+| `--lf-autocomplete-dropdown-background-alpha` | Background alpha for dropdown. Defaults to => var(--lf-ui-alpha-glass-solid, 0.875)                       |
+| `--lf-autocomplete-dropdown-box-shadow`       | Box shadow for dropdown. Defaults to => 0 0.25em 0.5em rgba(var(--lf-color-on-bg), 0.15)                  |
+| `--lf-autocomplete-dropdown-margin-top`       | Margin top for dropdown list. Defaults to => 0.25em                                                       |
+| `--lf-autocomplete-font-family`               | Sets the primary font family for the autocomplete component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-autocomplete-font-size`                 | Sets the font size for the autocomplete component. Defaults to => var(--lf-font-size)                     |
+| `--lf-autocomplete-spinner-min-height`        | Min height for spinner area. Defaults to => 0.25em                                                        |
 
 
 ## Dependencies

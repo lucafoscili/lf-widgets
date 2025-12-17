@@ -84,18 +84,21 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                    | Description                                                                                             |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--lf-typewriter-color-bg`              | Sets the color-bg color for the typewriter component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-typewriter-color-on-bg`           | Sets the color-on-bg color for the typewriter component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-typewriter-cursor-height`         | Sets the height for the typewriter cursor. Defaults to => 1.25em                                        |
-| `--lf-typewriter-cursor-margin-left`    | Sets the left margin for the typewriter cursor. Defaults to => 0.15em                                   |
-| `--lf-typewriter-cursor-vertical-align` | Sets the vertical-align for the typewriter cursor. Defaults to => top                                   |
-| `--lf-typewriter-cursor-width`          | Sets the width for the typewriter cursor. Defaults to => 0.125em                                        |
-| `--lf-typewriter-font-family`           | Sets the primary font family for the typewriter component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-typewriter-font-size`             | Sets the font size for the typewriter component. Defaults to => var(--lf-font-size)                     |
-| `--lf-typewriter-margin`                | Sets the margin for the typewriter text. Defaults to => 0                                               |
-| `--lf-typewriter-padding`               | Sets the padding for the typewriter component. Defaults to => 1em                                       |
+| Name                                    | Description                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `--lf-typewriter-color-bg`              | Background color for the typewriter container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))         |
+| `--lf-typewriter-color-on-bg`           | Text color on background surface. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                |
+| `--lf-typewriter-color-on-primary`      | Text color on primary surface. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))         |
+| `--lf-typewriter-color-primary`         | Primary/background color for the typewriter. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-typewriter-cursor-blink-duration` | Duration for the cursor blink animation. Defaults to => 800ms                                                |
+| `--lf-typewriter-cursor-height`         | Height for the blinking cursor. Defaults to => 1.25em                                                        |
+| `--lf-typewriter-cursor-margin-left`    | Left margin for the cursor. Defaults to => 0.15em                                                            |
+| `--lf-typewriter-cursor-vertical-align` | Vertical alignment for the cursor. Defaults to => top                                                        |
+| `--lf-typewriter-cursor-width`          | Width for the blinking cursor. Defaults to => 0.125em                                                        |
+| `--lf-typewriter-font-family`           | Sets the primary font family for the typewriter component. Defaults to => var(--lf-font-family-primary)      |
+| `--lf-typewriter-font-size`             | Sets the font size for the typewriter component. Defaults to => var(--lf-font-size)                          |
+| `--lf-typewriter-margin`                | Margin for the typewriter text element. Defaults to => 0                                                     |
+| `--lf-typewriter-padding`               | Padding for the typewriter container. Defaults to => 1em                                                     |
 
 
 ## Dependencies
@@ -107,7 +110,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -120,7 +122,6 @@ graph TD;
   lf-breadcrumbs --> lf-typewriter
   lf-card --> lf-typewriter
   lf-carousel --> lf-typewriter
-  lf-compare --> lf-typewriter
   lf-masonry --> lf-typewriter
   lf-shapeeditor --> lf-typewriter
   lf-tree --> lf-typewriter

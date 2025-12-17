@@ -93,14 +93,15 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                      | Description                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--lf-card-border-radius` | Sets the border radius for the card component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-card-color-bg`      | Sets the color-bg color for the card component. Defaults to => var(--lf-color-bg)                 |
-| `--lf-card-color-on-bg`   | Sets the color-on-bg color for the card component. Defaults to => var(--lf-color-on-bg)           |
-| `--lf-card-color-primary` | Sets the color-primary color for the card component. Defaults to => var(--lf-color-primary)       |
-| `--lf-card-font-family`   | Sets the primary font family for the card component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-card-font-size`     | Sets the font size for the card component. Defaults to => var(--lf-font-size)                     |
+| Name                         | Description                                                                                           |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--lf-card-border-radius`    | Sets the border radius for the card component. Defaults to => var(--lf-ui-border-radius)              |
+| `--lf-card-color-bg`         | Sets the color-bg color for the card component. Defaults to => var(--lf-color-bg)                     |
+| `--lf-card-color-on-bg`      | Sets the color-on-bg color for the card component. Defaults to => var(--lf-color-on-bg)               |
+| `--lf-card-color-on-primary` | Text color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary)) |
+| `--lf-card-color-primary`    | Sets the color-primary color for the card component. Defaults to => var(--lf-color-primary)           |
+| `--lf-card-font-family`      | Sets the primary font family for the card component. Defaults to => var(--lf-font-family-primary)     |
+| `--lf-card-font-size`        | Sets the font size for the card component. Defaults to => var(--lf-font-size)                         |
 
 
 ## Dependencies
@@ -112,7 +113,6 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](.)
  - [lf-carousel](../lf-carousel)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
@@ -156,7 +156,6 @@ graph TD;
   lf-article --> lf-card
   lf-breadcrumbs --> lf-card
   lf-carousel --> lf-card
-  lf-compare --> lf-card
   lf-masonry --> lf-card
   lf-shapeeditor --> lf-card
   lf-tree --> lf-card

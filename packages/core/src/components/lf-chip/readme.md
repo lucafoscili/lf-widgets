@@ -149,7 +149,6 @@ Type: `Promise<void>`
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
  - [lf-messenger](../lf-messenger)
  - [lf-multiinput](../lf-multiinput)
@@ -165,7 +164,6 @@ graph TD;
   lf-card --> lf-chip
   lf-carousel --> lf-chip
   lf-chat --> lf-chip
-  lf-compare --> lf-chip
   lf-masonry --> lf-chip
   lf-messenger --> lf-chip
   lf-multiinput --> lf-chip

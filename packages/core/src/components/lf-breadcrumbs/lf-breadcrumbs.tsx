@@ -33,6 +33,7 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepBreadcrumbsActions } from "./actions.breadcrumbs";
 import { prepBreadcrumbsComputed } from "./computed.breadcrumbs";
+import { BreadcrumbsFC } from "./fc";
 import { buildBreadcrumbPath } from "./helpers.path";
 import { createAdapter } from "./lf-breadcrumbs-adapter";
 
@@ -447,17 +448,15 @@ export class LfBreadcrumbs implements LfBreadcrumbsInterface {
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
-    const { lfAttributes, parts } = this.#adapter.controller.get;
-    const { jsx } = this.#adapter.elements;
+    const { lfAttributes } = this.#adapter.controller.get;
 
     const lf = lfAttributes();
-    const p = parts();
 
     return (
       <Host>
         {this.lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
-        <div id={this.#w} data-lf={lf[this.lfUiState]} part={p.breadcrumbs}>
-          {jsx.items()}
+        <div id={this.#w} data-lf={lf[this.lfUiState]}>
+          <BreadcrumbsFC adapter={this.#adapter} />
         </div>
       </Host>
     );

@@ -120,25 +120,28 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                    | Description                                                                                           |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `--lf-carousel-border-radius`           | Sets the border radius for the carousel component. Defaults to => var(--lf-ui-border-radius)          |
-| `--lf-carousel-color-on-surface`        | Sets the color-on-surface color for the carousel component. Defaults to => var(--lf-color-on-surface) |
-| `--lf-carousel-color-surface`           | Sets the color-surface color for the carousel component. Defaults to => var(--lf-color-surface)       |
-| `--lf-carousel-font-family`             | Sets the primary font family for the carousel component. Defaults to => var(--lf-font-family-primary) |
-| `--lf-carousel-font-size`               | Sets the font size for the carousel component. Defaults to => var(--lf-font-size)                     |
-| `--lf-carousel-slide-bar-height`        | Sets the height for the slide bar of the carousel component. Defaults to => 0.75em                    |
-| `--lf-carousel-slide-bar-opacity`       | Sets the opacity for the slide bar of the carousel component. Defaults to => 0.75                     |
-| `--lf-carousel-slide-bar-opacity-hover` | Sets the opacity for the slide bar of the carousel component when hovered. Defaults to => 1           |
+| Name                                    | Description                                                                                                     |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--lf-carousel-border-radius`           | Border radius for the carousel container. Defaults to => var(--lf-ui-border-radius, 0.25em)                     |
+| `--lf-carousel-color-on-primary`        | Text/icon color on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))      |
+| `--lf-carousel-color-on-surface`        | Text/icon color on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))               |
+| `--lf-carousel-color-primary`           | Primary color for carousel navigation elements. Defaults to => var(--lf-state-primary, var(--lf-color-primary)) |
+| `--lf-carousel-color-surface`           | Surface color for the slide bar. Defaults to => var(--lf-state-surface, var(--lf-color-surface))                |
+| `--lf-carousel-font-family`             | Sets the primary font family for the carousel component. Defaults to => var(--lf-font-family-primary)           |
+| `--lf-carousel-font-size`               | Sets the font size for the carousel component. Defaults to => var(--lf-font-size)                               |
+| `--lf-carousel-slide-bar-height`        | Height of the slide indicator bar. Defaults to => 0.75em                                                        |
+| `--lf-carousel-slide-bar-opacity`       | Opacity of the slide bar at rest. Defaults to => 0.75                                                           |
+| `--lf-carousel-slide-bar-opacity-hover` | Opacity of the slide bar on hover. Defaults to => 1                                                             |
+| `--lf-carousel-transition-duration`     | Duration for slide transitions. Defaults to => 0.5s                                                             |
 
 
 ## Dependencies
 
 ### Depends on
 
+- [lf-button](../lf-button)
 - [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
-- [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
 - [lf-chart](../lf-chart)
@@ -156,9 +159,9 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  lf-carousel --> lf-button
   lf-carousel --> lf-accordion
   lf-carousel --> lf-badge
-  lf-carousel --> lf-button
   lf-carousel --> lf-canvas
   lf-carousel --> lf-card
   lf-carousel --> lf-chart
@@ -172,6 +175,8 @@ graph TD;
   lf-carousel --> lf-toggle
   lf-carousel --> lf-typewriter
   lf-carousel --> lf-upload
+  lf-button --> lf-list
+  lf-list --> lf-textfield
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -188,8 +193,6 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge

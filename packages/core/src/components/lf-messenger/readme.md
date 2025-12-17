@@ -118,22 +118,23 @@ Type: `Promise<void>`
 
 ## CSS Custom Properties
 
-| Name                                         | Description                                                                                                             |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `--lf-messenger-active-options-name-padding` | Sets the padding for the name of the active options of the messenger component. Defaults to => 0.5em                    |
-| `--lf-messenger-avatar-name-padding`         | Sets the padding for the name of the character. Defaults to => 0.5em                                                    |
-| `--lf-messenger-color-danger`                | Sets the color-danger color for the messenger component. Defaults to => var(--lf-color-danger)                          |
-| `--lf-messenger-color-on-danger`             | Sets the color-on-danger color for the messenger component. Defaults to => var(--lf-color-on-danger)                    |
-| `--lf-messenger-color-on-success`            | Sets the color-on-success color for the messenger component. Defaults to => var(--lf-color-on-success)                  |
-| `--lf-messenger-color-on-surface`            | Sets the color-on-surface color for the messenger component. Defaults to => var(--lf-color-on-surface)                  |
-| `--lf-messenger-color-success`               | Sets the color-success color for the messenger component. Defaults to => var(--lf-color-success)                        |
-| `--lf-messenger-color-surface`               | Sets the color-surface color for the messenger component. Defaults to => var(--lf-color-surface)                        |
-| `--lf-messenger-customization-title-padding` | Sets the padding for the title of the customization panel. Defaults to => 0.5em                                         |
-| `--lf-messenger-font-family`                 | Sets the primary font family for the messenger component. Defaults to => var(--lf-font-family-primary)                  |
-| `--lf-messenger-font-size`                   | Sets the font size for the messenger component. Defaults to => var(--lf-font-size)                                      |
-| `--lf-messenger-name-background-color`       | Sets the background color for the name of the messenger component's option. Defaults to => rgb(var(--lf-color-surface)) |
-| `--lf-messenger-name-height`                 | Sets the height for the name of the character. Defaults to => 3em                                                       |
-| `--lf-messenger-portrait-foredrop-color`     | Sets the color for the foredrop of the portrait. Defaults to => rgba(var(--lf-color-bg), 0.275)                         |
+| Name                                         | Description                                                                                            |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--lf-messenger-active-options-name-padding` | Padding for active option names. Defaults to => 0.5em                                                  |
+| `--lf-messenger-avatar-name-padding`         | Padding for the avatar name area. Defaults to => 0.5em                                                 |
+| `--lf-messenger-color-bg`                    | Background color for messenger container. Defaults to => var(--lf-state-bg, var(--lf-color-bg))        |
+| `--lf-messenger-color-border`                | Border color for elements. Defaults to => var(--lf-state-border, var(--lf-color-border))               |
+| `--lf-messenger-color-on-bg`                 | Text on background. Defaults to => var(--lf-state-on-bg, var(--lf-color-on-bg))                        |
+| `--lf-messenger-color-on-primary`            | Text on primary surfaces. Defaults to => var(--lf-state-on-primary, var(--lf-color-on-primary))        |
+| `--lf-messenger-color-on-surface`            | Text on surface. Defaults to => var(--lf-state-on-surface, var(--lf-color-on-surface))                 |
+| `--lf-messenger-color-primary`               | Primary accent color. Defaults to => var(--lf-state-primary, var(--lf-color-primary))                  |
+| `--lf-messenger-color-surface`               | Surface color for panels and elements. Defaults to => var(--lf-state-surface, var(--lf-color-surface)) |
+| `--lf-messenger-customization-title-padding` | Padding for customization titles. Defaults to => 0.5em                                                 |
+| `--lf-messenger-font-family`                 | Sets the primary font family for the messenger component. Defaults to => var(--lf-font-family-primary) |
+| `--lf-messenger-font-size`                   | Sets the font size for the messenger component. Defaults to => var(--lf-font-size)                     |
+| `--lf-messenger-name-background-color`       | Background color for name areas. Defaults to => rgb(var(--lf-color-surface))                           |
+| `--lf-messenger-name-height`                 | Height for character name area. Defaults to => 3em                                                     |
+| `--lf-messenger-portrait-foredrop-color`     | Color for portrait foredrop effect. Defaults to => rgba(var(--lf-color-bg), 0.275)                     |
 
 
 ## Dependencies

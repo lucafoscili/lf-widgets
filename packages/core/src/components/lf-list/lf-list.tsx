@@ -643,69 +643,34 @@ export class LfList implements LfListInterface {
     info.update(this, "did-render");
   }
   render() {
-    const { bemClass, setLfStyle } = this.#framework.theme;
+    const { setLfStyle } = this.#framework.theme;
 
     const { controller, elements } = this.#adapter;
-    const { get, computed } = controller;
+    const { computed } = controller;
     const { jsx } = elements;
-    const { lfAttributes } = get;
     const { isEmpty, isFilteredEmpty } = computed;
-    const { emptyData, list } = this.#b;
-    const { lfDataset, lfEmpty, lfFilter, lfSelectable, lfStyle } = this;
+    const { lfDataset, lfFilter, lfStyle } = this;
 
-    const lf = lfAttributes();
     this.#listItems = [];
 
     const visibleNodes =
       lfDataset?.nodes?.filter((node) => !this.#hiddenNodes.has(node)) || [];
 
-    const getIndex = (id: string) => get.indexById(id);
+    // Callback to capture list item refs for ripple effect
+    const onItemRef = (el: HTMLLIElement | null, _index: number) => {
+      if (el && !this.#listItems.includes(el)) {
+        this.#listItems.push(el);
+      }
+    };
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{setLfStyle(this)}</style>}
         <div id={this.#w}>
           {lfFilter && jsx.filter()}
-          {isEmpty() || isFilteredEmpty() ? (
-            <div class={bemClass(emptyData._)} part={this.#p.emptyData}>
-              <div class={bemClass(emptyData._, emptyData.text)}>
-                {isFilteredEmpty() ? "No items match your filter." : lfEmpty}
-              </div>
-            </div>
-          ) : (
-            <ul
-              aria-multiselectable={"false"}
-              class={bemClass(list._, null, {
-                empty: isEmpty(),
-                selectable: lfSelectable,
-              })}
-              part={this.#p.list}
-              role={"listbox"}
-            >
-              {visibleNodes.map((node, index) => {
-                const isSelected = getIndex(node.id) === this.selected;
-
-                return (
-                  <li
-                    class={bemClass(list._, list.item, {
-                      focused: index === this.focused,
-                      "has-description": !!node.description,
-                      selected: isSelected,
-                    })}
-                    data-lf={lf[this.lfUiState]}
-                    key={node.id}
-                    ref={(el) => {
-                      if (el && !this.#listItems.includes(el)) {
-                        this.#listItems.push(el);
-                      }
-                    }}
-                  >
-                    {this.lfEnableDeletions && jsx.deleteIcon(node)}
-                    {jsx.node(node, index, isSelected)}
-                  </li>
-                );
-              })}
-            </ul>
+          {jsx.list(
+            isEmpty() || isFilteredEmpty() ? [] : visibleNodes,
+            onItemRef,
           )}
         </div>
       </Host>

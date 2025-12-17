@@ -1,0 +1,259 @@
+// =============================================================================
+// MASONRY - Component Styles
+// =============================================================================
+// Masonry-specific styles for the LfMasonryFC functional component.
+//
+// Key features:
+// - Uses unified color system via lf-color() helpers
+// - Supports state theming via data-lf attribute
+// - All selectors are plain BEM classes (no :host)
+// - Exports lf-masonry-docs() mixin for WC SCSS files to import
+//
+// Cross-Reference: SCSS_UNIFICATION.md §4.1
+// =============================================================================
+
+@use "../colors" as *;
+@use "../transitions" as *;
+
+// =============================================================================
+// DOCUMENTATION MIXIN (for WC SCSS files)
+// =============================================================================
+// This mixin outputs @prop JSDoc comments for Stencil docs generation.
+// Import this in the WC SCSS file and @include it to document CSS custom props.
+//
+// Usage in WC file:
+//   @use "../../style/mixins/components/masonry" as masonry-fc;
+//   @include masonry-fc.lf-masonry-docs("masonry");
+// =============================================================================
+@mixin lf-masonry-docs($comp) {
+  /**
+   * @prop --lf-#{$comp}-grid-gap: Sets the gap for the grid of the #{$comp} component.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-padding: Sets the padding for the grid of the #{$comp} component.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-grid-items-alignment: Sets the items alignment for the grid of the #{$comp} component.
+   *       Defaults to => start
+   * @prop --lf-#{$comp}-grid-overflow: Sets the overflow for the grid of the #{$comp} component.
+   *       Defaults to => auto
+   * @prop --lf-#{$comp}-column-size: Sets the column size for the grid of the #{$comp} component.
+   *       Defaults to => minmax(0px, 1fr)
+   * @prop --lf-#{$comp}-actions-backdrop: Sets the backdrop filter for the actions of the #{$comp} component.
+   *       Defaults to => blur(10px)
+   * @prop --lf-#{$comp}-actions-background: Sets the background for the actions of the #{$comp} component.
+   *       Defaults to => rgba(var(--lf-color-surface), 0.75)
+   * @prop --lf-#{$comp}-actions-border-radius: Sets the border radius for the actions of the #{$comp} component.
+   *       Defaults to => 50px
+   * @prop --lf-#{$comp}-button-bottom: Sets the bottom for the button of the #{$comp} component.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-grid-gap-actions: Sets the gap for the actions of the #{$comp} component.
+   *       Defaults to => 0.5em
+   * @prop --lf-#{$comp}-actions-margin: Sets the margin for the actions of the #{$comp} component.
+   *       Defaults to => 0 0.5em 0.5em 0
+   * @prop --lf-#{$comp}-actions-padding: Sets the padding for the actions of the #{$comp} component.
+   *       Defaults to => 0.75em
+   * @prop --lf-#{$comp}-button-right: Sets the right for the button of the #{$comp} component.
+   *       Defaults to => 1em
+   * @prop --lf-#{$comp}-actions-z-index: Sets the z index for the actions of the #{$comp} component.
+   *       Defaults to => 2
+   * @prop --lf-#{$comp}-grid-gap-actions-sub: Sets the gap for the actions sub of the #{$comp} component.
+   *       Defaults to => 0.25em
+   * @prop --lf-#{$comp}-capture-border-radius: Sets the border radius for the capture overlay.
+   *       Defaults to => 4px
+   * @prop --lf-#{$comp}-chart-min-height: Sets the minimum height for the chart inside the capture.
+   *       Defaults to => 150px
+   * @prop --lf-#{$comp}-capture-selected-filter: Sets the filter for the selected capture item.
+   *       Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+   * @prop --lf-#{$comp}-capture-selected-border: Sets the border for the selected capture item.
+   *       Defaults to => 2px solid rgba(var(--lf-color-secondary), 0.875)
+   * @prop --lf-#{$comp}-selected-filter: Sets the filter for the selected image of the #{$comp} component.
+   *       Defaults to => brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+   * @prop --lf-#{$comp}-selected-border: Sets the border for the selected image of the #{$comp} component.
+   *       Defaults to => 1px solid rgba(var(--lf-color-secondary, 0.875))
+   */
+}
+
+// Generate color variables using the unified system
+$comp: "masonry";
+@include lf-color-vars($comp);
+
+// -----------------------------------------------------------------------------
+// Masonry Core
+// -----------------------------------------------------------------------------
+.masonry {
+  & {
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    height: 100%;
+    overflow: auto;
+    padding: var(--lf-#{$comp}-padding, 0.75em);
+    position: relative;
+    width: 100%;
+  }
+
+  &:not(:hover) {
+    .grid__actions {
+      display: none;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Grid
+// -----------------------------------------------------------------------------
+.grid {
+  & {
+    align-items: var(--lf-#{$comp}-grid-items-alignment, start);
+    column-gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    display: grid;
+    height: 100%;
+    overflow: var(--lf-#{$comp}-grid-overflow, auto);
+    width: 100%;
+  }
+
+  &--horizontal {
+    & {
+      grid-template-rows: 1fr;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .grid__column {
+      flex-direction: row;
+      height: 100%;
+      min-height: max-content;
+      width: auto;
+    }
+  }
+
+  &--main {
+    & {
+      grid-template-columns: repeat(
+        var(--lf_#{$comp}_columns),
+        var(--lf-#{$comp}-column-size, minmax(0px, 1fr))
+      );
+    }
+
+    .grid__column {
+      flex-direction: column;
+    }
+  }
+
+  &--vertical {
+    & {
+      grid-template-columns: 1fr;
+    }
+
+    .grid__column {
+      flex-direction: column;
+    }
+  }
+
+  &__column {
+    display: flex;
+    flex: 1;
+    gap: var(--lf-#{$comp}-grid-gap, 0.5em);
+    width: 100%;
+  }
+
+  &__actions {
+    backdrop-filter: var(--lf-#{$comp}-actions-backdrop, blur(10px));
+    background-color: var(
+      --lf-#{$comp}-actions-background,
+      rgba(var(--lf-color-surface), 0.75)
+    );
+    border-radius: var(--lf-#{$comp}-actions-border-radius, 50px);
+    bottom: var(--lf-#{$comp}-button-bottom, 1em);
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: var(--lf-#{$comp}-grid-gap-actions, 0.5em);
+    justify-items: center;
+    margin: var(--lf-#{$comp}-actions-margin, 0 0.5em 0.5em 0);
+    padding: var(--lf-#{$comp}-actions-padding, 0.75em);
+    position: absolute;
+    right: var(--lf-#{$comp}-button-right, 1em);
+    z-index: var(--lf-#{$comp}-actions-z-index, 2);
+  }
+
+  &__remove-column,
+  &__change-view,
+  &__add-column {
+    & {
+      backdrop-filter: unset;
+    }
+  }
+
+  &__sub {
+    display: grid;
+    grid-gap: var(--lf-#{$comp}-grid-gap-actions-sub, 0.25em);
+  }
+
+  &__capture {
+    & {
+      border-radius: var(--lf-#{$comp}-capture-border-radius, 4px);
+      box-sizing: border-box;
+    }
+
+    &::after {
+      content: "";
+      inset: 0;
+      position: absolute;
+      z-index: 1;
+    }
+
+    > * {
+      height: 100%;
+      pointer-events: none;
+      width: 100%;
+    }
+
+    &:has([data-component="LfChart"]) {
+      --lf-chart-min-height: var(--lf-#{$comp}-chart-min-height, 150px);
+      height: var(--lf-#{$comp}-chart-min-height, 150px);
+    }
+
+    &:hover,
+    &:has([data-selected="true"]) {
+      filter: var(
+        --lf-#{$comp}-capture-selected-filter,
+        brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      );
+    }
+
+    &:has([data-selected="true"]) {
+      border: var(
+        --lf-#{$comp}-capture-selected-border,
+        2px solid rgba(var(--lf-color-secondary), 0.875)
+      );
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Selectable State (applied via data attribute or class)
+// -----------------------------------------------------------------------------
+.masonry--selectable {
+  [data-component] {
+    & {
+      @include lf-transitions((opacity, filter, border));
+      box-sizing: border-box;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    &:hover,
+    &[data-selected="true"] {
+      filter: var(
+        --lf-#{$comp}-selected-filter,
+        brightness(110%) drop-shadow(0 0 0.5em rgb(var(--lf-color-secondary)))
+      );
+    }
+
+    &[data-selected="true"] {
+      border: var(
+        --lf-#{$comp}-selected-border,
+        1px solid rgba(var(--lf-color-secondary, 0.875))
+      );
+    }
+  }
+}
