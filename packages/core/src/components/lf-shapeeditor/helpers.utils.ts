@@ -146,7 +146,8 @@ export const load = async (adapter: LfShapeeditorAdapter) => {
   const { lfLoadCallback } = comp;
 
   try {
-    await lfLoadCallback(comp, await textfield.getValue());
+    // Use native input value property since textfield is now HTMLInputElement
+    await lfLoadCallback(comp, textfield.value);
     clearHistory(adapter);
   } catch (error) {
     console.error("Load operation failed:", error);

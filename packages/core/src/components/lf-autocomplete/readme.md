@@ -156,15 +156,12 @@ Type: `Promise<void>`
 
 - [lf-spinner](../lf-spinner)
 - [lf-list](../lf-list)
-- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-autocomplete --> lf-spinner
   lf-autocomplete --> lf-list
-  lf-autocomplete --> lf-textfield
-  lf-list --> lf-textfield
   style lf-autocomplete fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

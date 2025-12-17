@@ -132,7 +132,7 @@ export const prepCanvasHandlers = (
         const { get, set } = controller;
         const { compInstance } = get;
 
-        const image = await e.detail.comp.getImage();
+        const image = e.target as HTMLImageElement;
         if (image) {
           const orientation = calcOrientation(image);
           set.orientation(orientation);

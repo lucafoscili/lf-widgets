@@ -178,16 +178,10 @@ Type: `Promise<void>`
 
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
- - [lf-autocomplete](../lf-autocomplete)
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-chat](../lf-chat)
- - [lf-list](../lf-list)
  - [lf-masonry](../lf-masonry)
- - [lf-messenger](../lf-messenger)
- - [lf-multiinput](../lf-multiinput)
- - [lf-select](../lf-select)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
@@ -196,16 +190,10 @@ Type: `Promise<void>`
 graph TD;
   lf-accordion --> lf-textfield
   lf-article --> lf-textfield
-  lf-autocomplete --> lf-textfield
   lf-breadcrumbs --> lf-textfield
   lf-card --> lf-textfield
   lf-carousel --> lf-textfield
-  lf-chat --> lf-textfield
-  lf-list --> lf-textfield
   lf-masonry --> lf-textfield
-  lf-messenger --> lf-textfield
-  lf-multiinput --> lf-textfield
-  lf-select --> lf-textfield
   lf-shapeeditor --> lf-textfield
   lf-tree --> lf-textfield
   style lf-textfield fill:#f9f,stroke:#333,stroke-width:4px

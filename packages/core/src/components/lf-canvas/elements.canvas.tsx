@@ -1,9 +1,10 @@
 import {
   LfCanvasAdapter,
   LfCanvasAdapterJsx,
-  LfImageEventPayload,
+  LF_IMAGE_BLOCKS,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfImageFC } from "../lf-image/lf-image-fc";
 
 export const prepCanvasJsx = (
   getAdapter: () => LfCanvasAdapter,
@@ -37,31 +38,34 @@ export const prepCanvasJsx = (
     //#region Image
     image: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, cyAttributes, framework, parts } =
-        controller.get;
+      const { blocks, compInstance, framework } = controller.get;
       const { refs } = elements;
       const { onLoad } = handlers.image;
-      const onImageEvent = (event: CustomEvent<LfImageEventPayload>) => {
-        const { eventType } = event.detail;
-
-        switch (eventType) {
-          case "load":
-            void onLoad(event);
-            break;
-        }
-      };
-      const { assignRef, sanitizeProps, theme } = framework();
+      const { assignRef, theme } = framework();
       const { bemClass } = theme;
 
+      const imageBlocks = LF_IMAGE_BLOCKS;
+      const imageProps = compInstance().lfImageProps ?? {};
+
       return (
-        <lf-image
-          {...sanitizeProps(compInstance().lfImageProps, "LfImage")}
-          class={bemClass(blocks()._, blocks().image)}
-          data-cy={cyAttributes().image}
-          onLf-image-event={onImageEvent}
-          part={parts().image}
-          ref={assignRef(refs, "image")}
-        ></lf-image>
+        <LfImageFC
+          className={bemClass(blocks()._, blocks().image)}
+          framework={framework()}
+          imageRef={(el) => {
+            if (el) {
+              assignRef(refs, "image")(el);
+            }
+          }}
+          onLoad={(e) => void onLoad(e)}
+          sizeX={imageProps.lfSizeX}
+          sizeY={imageProps.lfSizeY}
+          style={{
+            ["--" + imageBlocks.image._.replace("lf-", "lf_") + "_object_fit"]:
+              "var(--lf-canvas-object-fit, contain)",
+          }}
+          uiState={imageProps.lfUiState}
+          value={imageProps.lfValue}
+        />
       );
     },
     //#endregion

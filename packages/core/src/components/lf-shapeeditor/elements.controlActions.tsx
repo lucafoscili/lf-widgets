@@ -1,5 +1,6 @@
 import { LfShapeeditorAdapter } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 /**
  * Prepares the controlActions sub-block JSX (apply + reset buttons).
@@ -47,40 +48,44 @@ export const prepControlActions = (
       >
         {/* Reset */}
         {showReset && (
-          <lf-button
-            class={bemClass(
+          <ButtonFC
+            className={bemClass(
               b.settings.controls.controlActions._,
               b.settings.controls.controlActions.reset,
             )}
-            data-cy={cy.button}
+            dataCy={cy.button}
+            framework={mgr}
+            icon={"--lf-icon-refresh"}
             id={i.settings.controls.controlActions.reset}
-            lfIcon={"--lf-icon-refresh"}
-            lfLabel="Reset"
-            lfStretchX={true}
-            lfStyling="flat"
-            lfUiState="warning"
-            onLf-button-event={controlActionsButton}
-            ref={assignRef(settings.controls.controlActions, "reset")}
-          ></lf-button>
+            label="Reset"
+            onClick={(e) =>
+              controlActionsButton(e, i.settings.controls.controlActions.reset)
+            }
+            buttonRef={assignRef(settings.controls.controlActions, "reset")}
+            styling="flat"
+            uiState="warning"
+          />
         )}
 
         {/* Apply */}
         {showApply && (
-          <lf-button
-            class={bemClass(
+          <ButtonFC
+            className={bemClass(
               b.settings.controls.controlActions._,
               b.settings.controls.controlActions.apply,
             )}
-            data-cy={cy.button}
+            dataCy={cy.button}
+            framework={mgr}
+            icon={"--lf-icon-success"}
             id={i.settings.controls.controlActions.apply}
-            lfIcon={"--lf-icon-success"}
-            lfLabel="Apply"
-            lfStretchX={true}
-            lfStyling="flat"
-            lfUiState="success"
-            onLf-button-event={controlActionsButton}
-            ref={assignRef(settings.controls.controlActions, "apply")}
-          ></lf-button>
+            label="Apply"
+            onClick={(e) =>
+              controlActionsButton(e, i.settings.controls.controlActions.apply)
+            }
+            buttonRef={assignRef(settings.controls.controlActions, "apply")}
+            styling="flat"
+            uiState="success"
+          />
         )}
       </div>
     );

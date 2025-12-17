@@ -1,5 +1,7 @@
 import { IDS, LfShapeeditorAdapter } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 
 /**
  * Prepares the jump sub-block JSX (textfield + load button).
@@ -28,34 +30,29 @@ export const prepJump = (
     return (
       <div class={bemClass(jumpBlock._)} part={jumpParts.jump}>
         {/* Directory Textfield */}
-        <lf-textfield
-          class={bemClass(jumpBlock._, jumpBlock.textfield)}
-          data-cy={cy.input}
+        <LfTextfieldFC
+          className={bemClass(jumpBlock._, jumpBlock.textfield)}
+          dataCy={cy.input}
+          framework={mgr}
+          icon="folder"
           id={IDS.navigation.jump.textfield}
-          lfIcon="folder"
-          lfLabel="Directory"
-          lfStretchX={true}
-          lfStyling="flat"
-          onLf-textfield-event={textfield}
-          ref={assignRef(navigation.jump, "textfield")}
-        ></lf-textfield>
+          inputRef={assignRef(navigation.jump, "textfield")}
+          label="Directory"
+          onInput={(e, val) => textfield(e, val)}
+          styling="flat"
+        />
 
         {/* Load Button */}
-        <lf-button
-          class={bemClass(jumpBlock._, jumpBlock.load)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(jumpBlock._, jumpBlock.load)}
+          dataCy={cy.button}
+          framework={mgr}
           id={IDS.navigation.jump.load}
-          lfLabel="Load"
-          lfStretchX={true}
-          onLf-button-event={load}
-          ref={assignRef(navigation.jump, "load")}
-        >
-          <lf-spinner
-            lfActive={true}
-            lfLayout="ring"
-            slot="spinner"
-          ></lf-spinner>
-        </lf-button>
+          label="Load"
+          onClick={(e) => load(e)}
+          buttonRef={assignRef(navigation.jump, "load")}
+          showSpinner={false}
+        />
       </div>
     );
   };

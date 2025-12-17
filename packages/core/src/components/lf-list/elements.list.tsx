@@ -1,10 +1,12 @@
 import {
   LF_THEME_ICONS,
   LfDataNode,
+  LfIconType,
   LfListAdapter,
   LfListAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { FIcon } from "../../utils/icon";
 import { LfListFC } from "./lf-list-fc";
 
@@ -66,14 +68,10 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
     //#region Filter
     filter: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { blocks, compInstance, framework, lfAttributes, parts } =
-        controller.get;
+      const { blocks, compInstance, framework } = controller.get;
       const { refs } = elements;
-      const { filter } = handlers;
 
       const b = blocks();
-      const lf = lfAttributes();
-      const p = parts();
       const comp = compInstance();
       const mgr = framework();
 
@@ -81,22 +79,23 @@ export const prepList = (getAdapter: () => LfListAdapter): LfListAdapterJsx => {
       const { assignRef, theme } = mgr;
       const { bemClass } = theme;
 
-      const iconSearch = theme.get.current().variables["--lf-icon-search"];
+      const iconSearch = theme.get.current().variables[
+        "--lf-icon-search"
+      ] as LfIconType;
 
       return (
-        <lf-textfield
-          class={bemClass(b.list._, b.list.filter)}
-          data-lf={lf[lfUiState]}
-          lfIcon={iconSearch}
-          lfLabel="Search..."
-          lfStretchX={true}
-          lfStyling="flat"
-          lfUiSize={lfUiSize}
-          lfUiState={lfUiState}
-          onLf-textfield-event={filter}
-          part={p.filter}
-          ref={assignRef(refs, "filter")}
-        ></lf-textfield>
+        <LfTextfieldFC
+          className={bemClass(b.list._, b.list.filter)}
+          framework={mgr}
+          icon={iconSearch}
+          inputRef={(el) => assignRef(refs, "filter")(el)}
+          label="Search..."
+          onInput={(value, e) => handlers.filterInput(e, value)}
+          styling="flat"
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+          value=""
+        />
       );
     },
     //#endregion

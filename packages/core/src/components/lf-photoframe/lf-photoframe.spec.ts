@@ -368,8 +368,8 @@ describe("LfPhotoframe", () => {
       };
       await page.waitForChanges();
 
-      // The icon is rendered as lf-image component
-      const iconEl = page.root.shadowRoot.querySelector("lf-image");
+      // The icon is rendered as img element (LfImageFC functional component)
+      const iconEl = page.root.shadowRoot.querySelector('[data-cy="image"]');
       expect(iconEl).toBeTruthy();
     });
 
@@ -717,8 +717,10 @@ describe("LfPhotoframe", () => {
       expect(
         page.root.shadowRoot.querySelector('[part="description"]'),
       ).toBeTruthy();
-      // Icon is rendered as lf-image, so check for that
-      expect(page.root.shadowRoot.querySelector("lf-image")).toBeTruthy();
+      // Icon is rendered as img element (LfImageFC functional component)
+      expect(
+        page.root.shadowRoot.querySelector('[data-cy="image"]'),
+      ).toBeTruthy();
     });
   });
 

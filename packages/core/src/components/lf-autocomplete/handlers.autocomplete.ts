@@ -44,7 +44,7 @@ export const prepAutocompleteHandlers = (
           comp.inputValue = inputValue;
           const { textfield } = elements.refs;
           if (textfield) {
-            await textfield.setValue(inputValue);
+            textfield.value = inputValue;
           }
 
           // Clear existing debounce
@@ -123,6 +123,134 @@ export const prepAutocompleteHandlers = (
           break;
         }
       }
+    },
+    //#endregion
+
+    //#region FC-compatible handlers
+    /**
+     * FC-compatible blur handler for textfield.
+     * Called directly by LfTextfieldFC's onBlur callback.
+     */
+    textfieldBlur: (e: FocusEvent) => {
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
+
+      controller.set.blurTimeout.new(() => {
+        if (!controller.computed.isLoading()) {
+          controller.actions.list("close");
+          controller.set.highlight(-1);
+        }
+      });
+      dispatcher.emit("lf-event", {
+        originalEvent: e as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible click handler for textfield.
+     * Called directly by LfTextfieldFC's onClick callback.
+     */
+    textfieldClick: (e: MouseEvent) => {
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
+
+      controller.actions.list();
+      dispatcher.emit("lf-event", {
+        originalEvent: e as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible icon click handler for textfield.
+     * Called directly by LfTextfieldFC's onIconClick callback.
+     */
+    textfieldIconClick: (e: MouseEvent, _iconType: "regular" | "action") => {
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
+
+      controller.actions.list();
+      dispatcher.emit("lf-event", {
+        originalEvent: e as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible input handler for textfield.
+     * Called directly by LfTextfieldFC's onInput callback.
+     */
+    textfieldInput: (e: Event, value: string) => {
+      const adapter = getAdapter();
+      const { controller, dispatcher } = adapter;
+      const comp = controller.get.compInstance();
+
+      // Update input value
+      comp.inputValue = value;
+
+      // Clear existing debounce
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+
+      // Check minimum characters
+      if (value.length < comp.lfMinChars) {
+        controller.actions.list("close");
+        comp.loading = false;
+        dispatcher.emit("input", {
+          query: value,
+          originalEvent: e as unknown as CustomEvent,
+        });
+        return;
+      }
+
+      controller.actions.list("open");
+      controller.set.highlight(-1);
+
+      // Normalize and check cache
+      const cache = controller.get.cache();
+      const normalized = value.trim().toLowerCase();
+      if (comp.lfCache && cache.has(normalized)) {
+        const entry = cache.get(normalized);
+        if (Date.now() - entry.timestamp > comp.lfCacheTTL) {
+          cache.delete(normalized);
+        } else {
+          comp.lfDataset = entry.dataset;
+          comp.lfListProps = { ...comp.lfListProps, lfFilter: false };
+          comp.loading = false;
+          dispatcher.emit("input", {
+            query: value,
+            originalEvent: e as unknown as CustomEvent,
+          });
+          return;
+        }
+      }
+
+      // No cache hit - trigger request after debounce
+      comp.lfDataset = null;
+      comp.loading = true;
+
+      debounceTimer = setTimeout(() => {
+        comp.lastRequestedQuery = value;
+        dispatcher.emit("request", { query: value });
+      }, comp.lfDebounceMs);
+
+      dispatcher.emit("input", {
+        query: value,
+        originalEvent: e as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible keydown handler for textfield.
+     * Called directly by LfTextfieldFC's onKeyDown callback.
+     */
+    textfieldKeydown: async (e: KeyboardEvent) => {
+      const adapter = getAdapter();
+      const { controller, dispatcher, elements } = adapter;
+
+      await keydownHandler(e, controller, elements.refs);
+      dispatcher.emit("lf-event", {
+        originalEvent: e as unknown as CustomEvent,
+      });
     },
     //#endregion
   };

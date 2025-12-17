@@ -9,25 +9,19 @@ export const prepToolbarHandlers = (
 ): LfCompareAdapterHandlers => {
   return {
     //#region Button
-    button: (e) => {
-      const { eventType, id, valueAsBoolean } = e.detail;
-
+    button: (_e: MouseEvent, id: string, value?: boolean) => {
       const { actions, set } = getAdapter().controller;
       const { leftButton, changeView, rightButton } = LF_COMPARE_IDS;
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case leftButton:
-              actions.toggleLeftPanel();
-              break;
-            case changeView:
-              set.splitView(valueAsBoolean);
-              break;
-            case rightButton:
-              actions.toggleRightPanel();
-              break;
-          }
+      switch (id) {
+        case leftButton:
+          actions.toggleLeftPanel();
+          break;
+        case changeView:
+          set.splitView(value);
+          break;
+        case rightButton:
+          actions.toggleRightPanel();
           break;
       }
     },

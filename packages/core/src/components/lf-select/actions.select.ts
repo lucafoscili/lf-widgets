@@ -70,8 +70,9 @@ export const prepSelectActions = (
       if (list) {
         await list.selectNodeById(selected?.id || null);
       }
+      // Use native input API since textfield is now an HTMLInputElement
       if (textfield) {
-        await textfield.setValue(String(selected?.value || ""));
+        textfield.value = String(selected?.value || "");
       }
 
       dispatcher.emit("change", {

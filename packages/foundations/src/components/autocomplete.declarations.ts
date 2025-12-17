@@ -33,7 +33,6 @@ import {
 } from "./list.declarations";
 import { LfSpinnerElement, LfSpinnerInterface } from "./spinner.declarations";
 import {
-  LfTextfieldElement,
   LfTextfieldEventPayload,
   LfTextfieldInterface,
 } from "./textfield.declarations";
@@ -132,7 +131,7 @@ export interface LfAutocompleteAdapterRefs extends LfComponentAdapterRefs {
   dropdown: HTMLElement | null;
   list: LfListElement | null;
   spinner: LfSpinnerElement | null;
-  textfield: LfTextfieldElement | null;
+  textfield: HTMLInputElement | HTMLTextAreaElement | null;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -148,6 +147,16 @@ export interface LfAutocompleteAdapterHandlers
   extends LfComponentAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
+  /** FC-compatible blur handler for textfield */
+  textfieldBlur: (e: FocusEvent) => void;
+  /** FC-compatible click handler for textfield */
+  textfieldClick: (e: MouseEvent) => void;
+  /** FC-compatible icon click handler for textfield */
+  textfieldIconClick: (e: MouseEvent, iconType: "regular" | "action") => void;
+  /** FC-compatible input handler for textfield */
+  textfieldInput: (e: Event, value: string) => void;
+  /** FC-compatible keydown handler for textfield */
+  textfieldKeydown: (e: KeyboardEvent) => void;
 }
 /**
  * Base getters extended with component-specific state reads.

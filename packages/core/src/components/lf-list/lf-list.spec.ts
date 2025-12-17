@@ -102,13 +102,17 @@ describe("lf-list component", () => {
   describe("filter functionality", () => {
     it("renders filter input when lfFilter is true", async () => {
       const page = await createPage(`<lf-list lf-filter="true"></lf-list>`);
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
+      // LfTextfieldFC renders a native input with data-cy="input"
+      const filterElement =
+        page.root.shadowRoot.querySelector('[data-cy="input"]');
       expect(filterElement).not.toBeNull();
     });
 
     it("does not render filter input when lfFilter is false", async () => {
       const page = await createPage(`<lf-list lf-filter="false"></lf-list>`);
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
+      // LfTextfieldFC renders a native input with data-cy="input"
+      const filterElement =
+        page.root.shadowRoot.querySelector('[data-cy="input"]');
       expect(filterElement).toBeNull();
     });
 
@@ -283,7 +287,9 @@ describe("lf-list component", () => {
       expect(items.length).toBe(3);
 
       // Filter input should be hidden
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
+      // LfTextfieldFC renders a native input with data-cy="input"
+      const filterElement =
+        page.root.shadowRoot.querySelector('[data-cy="input"]');
       expect(filterElement).toBeNull();
     });
 
@@ -293,21 +299,15 @@ describe("lf-list component", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      // Get the textfield element
-      const filterElement = page.root.shadowRoot.querySelector("lf-textfield");
+      // Get the native input element (LfTextfieldFC renders native input)
+      const filterElement = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
       expect(filterElement).not.toBeNull();
 
-      // Simulate typing into the textfield by triggering the input event
-      // Use different values for inputValue vs value to test the bug
-      const inputEvent = new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "input",
-          inputValue: "Item 1", // Current input value
-          target: filterElement,
-          value: "old value", // Stored component value (different!)
-        },
-      });
-
+      // Simulate typing into the native input by changing value and firing input event
+      filterElement.value = "Item 1";
+      const inputEvent = new Event("input", { bubbles: true });
       filterElement.dispatchEvent(inputEvent);
 
       // Wait for debounce timeout

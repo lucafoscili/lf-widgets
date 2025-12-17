@@ -6,6 +6,8 @@ import {
   LfMessengerUnionChildIds,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 
 export const prepCustomization = (
   getAdapter: () => LfMessengerAdapter,
@@ -48,13 +50,13 @@ export const prepCustomization = (
         const { "--lf-icon-edit": icon } = theme.get.current().variables;
 
         return (
-          <lf-button
-            lfIcon={icon}
-            lfStretchX={true}
-            onLf-button-event={(e) => button(e, type, "edit", node)}
-            title="Edit this option."
-            ref={assignRef(customization.list, "edit")}
-          ></lf-button>
+          <ButtonFC
+            framework={fw}
+            icon={icon}
+            onClick={(e) => button(e, type, "edit", node)}
+            buttonRef={assignRef(customization.list, "edit")}
+            style={{ width: "100%" }}
+          />
         );
       },
       remove: (type, node) => {
@@ -67,14 +69,14 @@ export const prepCustomization = (
         const { "--lf-icon-delete": icon } = theme.get.current().variables;
 
         return (
-          <lf-button
-            lfIcon={icon}
-            lfStretchX={true}
-            lfUiState={"danger"}
-            onLf-button-event={(e) => button(e, type, "delete", node)}
-            title="Delete this option."
-            ref={assignRef(customization.list, "remove")}
-          ></lf-button>
+          <ButtonFC
+            framework={fw}
+            icon={icon}
+            uiState={"danger"}
+            onClick={(e) => button(e, type, "delete", node)}
+            buttonRef={assignRef(customization.list, "remove")}
+            style={{ width: "100%" }}
+          />
         );
       },
     },
@@ -102,17 +104,17 @@ const prepForms = (
           const { "--lf-icon-add": icon } = theme.get.current().variables;
 
           return (
-            <lf-button
-              class={bemClass(blocks().covers._, blocks().covers.add)}
-              data-cy={cyAttributes().button}
-              lfIcon={icon}
-              lfLabel="New"
-              lfStretchY={true}
-              lfStyling="flat"
-              lfUiSize="small"
-              onLf-button-event={(e) => button(e, type, "add", null)}
-              ref={assignRef(form[type], "add")}
-            ></lf-button>
+            <ButtonFC
+              className={bemClass(blocks().covers._, blocks().covers.add)}
+              framework={fw}
+              icon={icon}
+              label="New"
+              styling="flat"
+              uiSize="small"
+              onClick={(e) => button(e, type, "add", null)}
+              buttonRef={assignRef(form[type], "add")}
+              style={{ height: "100%" }}
+            />
           );
         },
         cancel: () => {
@@ -128,15 +130,15 @@ const prepForms = (
           const { "--lf-icon-clear": icon } = theme.get.current().variables;
 
           return (
-            <lf-button
-              class={bemClass(blocks().form._, blocks().form.button)}
-              data-cy={cyAttributes().button}
-              lfIcon={icon}
-              lfLabel="Cancel"
-              lfStyling="flat"
-              onLf-button-event={(e) => button(e, type, "cancel", null)}
-              ref={assignRef(form[type], "cancel")}
-            ></lf-button>
+            <ButtonFC
+              className={bemClass(blocks().form._, blocks().form.button)}
+              framework={fw}
+              icon={icon}
+              label="Cancel"
+              styling="flat"
+              onClick={(e) => button(e, type, "cancel", null)}
+              buttonRef={assignRef(form[type], "cancel")}
+            />
           );
         },
         confirm: () => {
@@ -152,15 +154,15 @@ const prepForms = (
           const { "--lf-icon-success": icon } = theme.get.current().variables;
 
           return (
-            <lf-button
-              class={bemClass(blocks().form._, blocks().form.button)}
-              data-cy={cyAttributes().button}
-              lfIcon={icon}
-              lfLabel="Confirm"
-              lfStyling="outlined"
-              onLf-button-event={(e) => button(e, type, "confirm", null)}
-              ref={assignRef(form[type], "confirm")}
-            ></lf-button>
+            <ButtonFC
+              className={bemClass(blocks().form._, blocks().form.button)}
+              framework={fw}
+              icon={icon}
+              label="Confirm"
+              styling="outlined"
+              onClick={(e) => button(e, type, "confirm", null)}
+              buttonRef={assignRef(form[type], "confirm")}
+            />
           );
         },
         description: (node?) => {
@@ -173,16 +175,15 @@ const prepForms = (
           const { bemClass, get } = theme;
 
           return (
-            <lf-textfield
-              class={bemClass(blocks().form._, blocks().form.field)}
-              data-cy={cyAttributes().input}
-              lfStretchX={true}
-              lfIcon={get.icon("id")}
-              lfLabel="Description"
-              lfValue={node && node.description}
-              ref={assignRef(form[type], "description")}
-              title="A more accurate description to give extra context to the LLM."
-            ></lf-textfield>
+            <LfTextfieldFC
+              className={bemClass(blocks().form._, blocks().form.field)}
+              framework={fw}
+              icon={get.icon("id")}
+              label="Description"
+              value={node && node.description}
+              inputRef={assignRef(form[type], "description")}
+              style={{ width: "100%" }}
+            />
           );
         },
         id: (id: LfMessengerUnionChildIds) => {
@@ -195,17 +196,16 @@ const prepForms = (
           const { bemClass, get } = theme;
 
           return (
-            <lf-textfield
-              class={bemClass(blocks().form._, blocks().form.field)}
-              data-cy={cyAttributes().input}
-              key={`id-edit-${id}`}
-              lfStretchX={true}
-              lfIcon={get.icon("key")}
-              lfLabel="ID"
-              lfValue={id}
-              ref={assignRef(form[type], "id")}
-              title="The cover image displayed in the selection panel."
-            ></lf-textfield>
+            <LfTextfieldFC
+              className={bemClass(blocks().form._, blocks().form.field)}
+              framework={fw}
+              id={`id-edit-${id}`}
+              icon={get.icon("key")}
+              label="ID"
+              value={id}
+              inputRef={assignRef(form[type], "id")}
+              style={{ width: "100%" }}
+            />
           );
         },
         imageUrl: (node?) => {
@@ -218,16 +218,15 @@ const prepForms = (
           const { bemClass, get } = theme;
 
           return (
-            <lf-textfield
-              class={bemClass(blocks().form._, blocks().form.field)}
-              data-cy={cyAttributes().input}
-              lfStretchX={true}
-              lfIcon={get.icon("photo")}
-              lfLabel="Image URL"
-              lfValue={node && node.cells.lfImage.value}
-              ref={assignRef(form[type], "imageUrl")}
-              title="The cover image displayed in the selection panel."
-            ></lf-textfield>
+            <LfTextfieldFC
+              className={bemClass(blocks().form._, blocks().form.field)}
+              framework={fw}
+              icon={get.icon("photo")}
+              label="Image URL"
+              value={node && node.cells.lfImage.value}
+              inputRef={assignRef(form[type], "imageUrl")}
+              style={{ width: "100%" }}
+            />
           );
         },
         title: (node?) => {
@@ -240,16 +239,15 @@ const prepForms = (
           const { bemClass, get } = theme;
 
           return (
-            <lf-textfield
-              class={bemClass(blocks().form._, blocks().form.field)}
-              data-cy={cyAttributes().input}
-              lfStretchX={true}
-              lfIcon={get.icon("forms")}
-              lfLabel="Title"
-              lfValue={node && node.value}
-              ref={assignRef(form[type], "title")}
-              title="The overall theme of this option."
-            ></lf-textfield>
+            <LfTextfieldFC
+              className={bemClass(blocks().form._, blocks().form.field)}
+              framework={fw}
+              icon={get.icon("forms")}
+              label="Title"
+              value={node && node.value}
+              inputRef={assignRef(form[type], "title")}
+              style={{ width: "100%" }}
+            />
           );
         },
       };

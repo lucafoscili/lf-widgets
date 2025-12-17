@@ -8,21 +8,16 @@ export const prepSideButtonHandlers = (
   getAdapter: () => LfCarouselAdapter,
 ): LfCarouselAdapterHandlers => {
   return {
-    button: (e) => {
-      const { eventType, id } = e.detail;
-
+    button: (_e: MouseEvent, id: string) => {
       const { prev, next } = getAdapter().controller.actions.navigation;
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case LF_CAROUSEL_IDS.carousel.back:
-              prev();
-              break;
-            case LF_CAROUSEL_IDS.carousel.forward:
-              next();
-              break;
-          }
+      switch (id) {
+        case LF_CAROUSEL_IDS.carousel.back:
+          prev();
+          break;
+        case LF_CAROUSEL_IDS.carousel.forward:
+          next();
+          break;
       }
     },
   };

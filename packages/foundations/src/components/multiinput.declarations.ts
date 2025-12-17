@@ -28,7 +28,6 @@ import {
   LF_MULTIINPUT_PARTS,
 } from "./multiinput.constants";
 import {
-  LfTextfieldElement,
   LfTextfieldEventPayload,
   LfTextfieldInterface,
 } from "./textfield.declarations";
@@ -168,12 +167,31 @@ export interface LfMultiInputAdapterJsx extends LfComponentAdapterJsx {
 }
 export interface LfMultiInputAdapterRefs extends LfComponentAdapterRefs {
   chips: LfChipElement;
-  textfield: LfTextfieldElement;
+  /** FC usage: input element from LfTextfieldFC */
+  textfield: HTMLInputElement | HTMLTextAreaElement | null;
 }
 export interface LfMultiInputAdapterHandlers
   extends LfComponentAdapterHandlers {
   chips: (event: LfEvent<LfChipEventPayload>) => Promise<void>;
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
+  /**
+   * FC-compatible textfield input handler.
+   * Called directly by LfTextfieldFC's onInput callback.
+   */
+  textfieldInput: (event: Event, value: string) => void;
+  /**
+   * FC-compatible textfield keydown handler.
+   * Called directly by LfTextfieldFC's onKeyDown callback.
+   */
+  textfieldKeyDown: (event: KeyboardEvent) => void;
+  /**
+   * FC-compatible textfield action icon click handler.
+   * Called directly by LfTextfieldFC's onIconClick callback.
+   */
+  textfieldIconClick: (
+    event: MouseEvent,
+    iconType: "regular" | "action",
+  ) => void;
 }
 //#endregion
 

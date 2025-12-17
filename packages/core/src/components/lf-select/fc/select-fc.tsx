@@ -29,6 +29,15 @@ export const SelectFC: FunctionalComponent<SelectFCProps> = ({ adapter }) => {
   const selectedN = selectedNode();
   const selectedIndex = selectedN ? indexById(selectedN.id) : -1;
 
+  // Extract FC handlers with proper types
+  const textfieldClick = handlers.textfieldClick as (e: MouseEvent) => void;
+  const textfieldKeydown = handlers.textfieldKeydown as (
+    e: KeyboardEvent,
+  ) => void;
+  const textfieldIconClick = handlers.textfieldIconClick as (
+    e: MouseEvent,
+  ) => void;
+
   return (
     <LfSelectFC
       cyAttribute={cyAttributes().node}
@@ -39,13 +48,15 @@ export const SelectFC: FunctionalComponent<SelectFCProps> = ({ adapter }) => {
       listProps={lfListProps}
       listRef={assignRef(refs, "list")}
       onListEvent={handlers.list}
-      onTextfieldEvent={handlers.textfield}
+      onTextfieldClick={(e) => textfieldClick(e)}
+      onTextfieldKeydown={(e) => textfieldKeydown(e)}
+      onTextfieldIconClick={(e) => textfieldIconClick(e)}
       part={parts().select}
       selectedIndex={selectedIndex}
       selectedNode={selectedN}
       selectRef={assignRef(refs, "select")}
       textfieldProps={lfTextfieldProps}
-      textfieldRef={assignRef(refs, "textfield")}
+      textfieldRef={(el) => assignRef(refs, "textfield")(el)}
       uiSize={lfUiSize}
       uiState={lfUiState}
     />

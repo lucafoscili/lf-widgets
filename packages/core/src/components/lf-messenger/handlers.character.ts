@@ -10,23 +10,13 @@ export const prepCharacterHandlers = (
 ): LfMessengerAdapterHandlers["character"] => {
   return {
     //#region Button
-    button: async (e) => {
-      const { eventType, originalEvent } = e.detail;
-
-      const { controller, handlers } = getAdapter();
+    button: async () => {
+      const { controller } = getAdapter();
       const { get, set } = controller;
-      const { list } = handlers.character;
       const { inProgress } = get.status.save;
 
-      switch (eventType) {
-        case "click":
-          if (!inProgress()) {
-            set.data();
-          }
-          break;
-        case "lf-event":
-          list(originalEvent as CustomEvent<LfListEventPayload>);
-          break;
+      if (!inProgress()) {
+        set.data();
       }
     },
     //#endregion

@@ -34,26 +34,20 @@ export const prepSettingsHandlers = (
 ): LfChatAdapterHandlers["settings"] => {
   return {
     //#region Button
-    button: async (e) => {
-      const { eventType, id } = e.detail;
-
+    button: async (e: MouseEvent, id: string) => {
       const { get, set } = getAdapter().controller;
       const comp = get.compInstance() as LfChat;
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case LF_CHAT_IDS.options.back:
-              comp.onLfEvent(e, "config");
-              set.view("main");
-              break;
-            case LF_CHAT_IDS.options.exportHistory:
-              await comp.exportHistory();
-              break;
-            case LF_CHAT_IDS.options.importHistory:
-              await comp.setHistory("", true);
-              break;
-          }
+      switch (id) {
+        case LF_CHAT_IDS.options.back:
+          set.view("main");
+          break;
+        case LF_CHAT_IDS.options.exportHistory:
+          await comp.exportHistory();
+          break;
+        case LF_CHAT_IDS.options.importHistory:
+          await comp.setHistory("", true);
+          break;
       }
     },
     //#endregion
@@ -111,54 +105,48 @@ export const prepSettingsHandlers = (
     //#endregion
 
     //#region Textfield
-    textfield: (e) => {
-      const { eventType, id, value } = e.detail;
-
+    textfield: (e: Event, id: string, value: string) => {
       const { get } = getAdapter().controller;
       const comp = get.compInstance() as LfChat;
 
-      switch (eventType) {
-        case "change":
-          switch (id) {
-            // Agent settings
-            case LF_CHAT_IDS.options.agentMaxIterations:
-              updateConfig(comp, "agent", "maxIterations", parseInt(value));
-              break;
-            case LF_CHAT_IDS.options.agentSystemPromptSuffix:
-              updateConfig(comp, "agent", "systemPromptSuffix", value);
-              break;
-            // LLM settings
-            case LF_CHAT_IDS.options.contextWindow:
-              updateConfig(comp, "llm", "contextWindow", parseInt(value));
-              break;
-            case LF_CHAT_IDS.options.seed:
-              updateConfig(comp, "llm", "seed", parseInt(value));
-              break;
-            case LF_CHAT_IDS.options.topP:
-              updateConfig(comp, "llm", "topP", parseFloat(value));
-              break;
-            case LF_CHAT_IDS.options.frequencyPenalty:
-              updateConfig(comp, "llm", "frequencyPenalty", parseFloat(value));
-              break;
-            case LF_CHAT_IDS.options.presencePenalty:
-              updateConfig(comp, "llm", "presencePenalty", parseFloat(value));
-              break;
-            case LF_CHAT_IDS.options.endpointUrl:
-              updateConfig(comp, "llm", "endpointUrl", value);
-              break;
-            case LF_CHAT_IDS.options.maxTokens:
-              updateConfig(comp, "llm", "maxTokens", parseInt(value));
-              break;
-            case LF_CHAT_IDS.options.polling:
-              updateConfig(comp, "llm", "pollingInterval", parseInt(value));
-              break;
-            case LF_CHAT_IDS.options.system:
-              updateConfig(comp, "llm", "systemPrompt", value);
-              break;
-            case LF_CHAT_IDS.options.temperature:
-              updateConfig(comp, "llm", "temperature", parseFloat(value));
-              break;
-          }
+      switch (id) {
+        // Agent settings
+        case LF_CHAT_IDS.options.agentMaxIterations:
+          updateConfig(comp, "agent", "maxIterations", parseInt(value));
+          break;
+        case LF_CHAT_IDS.options.agentSystemPromptSuffix:
+          updateConfig(comp, "agent", "systemPromptSuffix", value);
+          break;
+        // LLM settings
+        case LF_CHAT_IDS.options.contextWindow:
+          updateConfig(comp, "llm", "contextWindow", parseInt(value));
+          break;
+        case LF_CHAT_IDS.options.seed:
+          updateConfig(comp, "llm", "seed", parseInt(value));
+          break;
+        case LF_CHAT_IDS.options.topP:
+          updateConfig(comp, "llm", "topP", parseFloat(value));
+          break;
+        case LF_CHAT_IDS.options.frequencyPenalty:
+          updateConfig(comp, "llm", "frequencyPenalty", parseFloat(value));
+          break;
+        case LF_CHAT_IDS.options.presencePenalty:
+          updateConfig(comp, "llm", "presencePenalty", parseFloat(value));
+          break;
+        case LF_CHAT_IDS.options.endpointUrl:
+          updateConfig(comp, "llm", "endpointUrl", value);
+          break;
+        case LF_CHAT_IDS.options.maxTokens:
+          updateConfig(comp, "llm", "maxTokens", parseInt(value));
+          break;
+        case LF_CHAT_IDS.options.polling:
+          updateConfig(comp, "llm", "pollingInterval", parseInt(value));
+          break;
+        case LF_CHAT_IDS.options.system:
+          updateConfig(comp, "llm", "systemPrompt", value);
+          break;
+        case LF_CHAT_IDS.options.temperature:
+          updateConfig(comp, "llm", "temperature", parseFloat(value));
           break;
       }
     },

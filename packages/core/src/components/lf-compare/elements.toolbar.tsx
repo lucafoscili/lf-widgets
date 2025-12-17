@@ -4,6 +4,7 @@ import {
   LfCompareAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 import { prepTreeDataset } from "./helpers.utils";
 import { LfCompare } from "./lf-compare";
 
@@ -24,23 +25,21 @@ export const prepToolbarJsx = (
       const { columns2, squareToggle } = theme.get.icons();
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          dataCy={cyAttributes().button}
+          framework={framework()}
+          icon={isOverlay() ? squareToggle : columns2}
           id={LF_COMPARE_IDS.changeView}
-          lfIcon={squareToggle}
-          lfIconOff={columns2}
-          lfStyling="icon"
-          lfToggable={true}
-          lfValue={!isOverlay()}
-          onLf-button-event={button}
+          onClick={(e) => button(e, LF_COMPARE_IDS.changeView, !isOverlay())}
           part={parts().changeView}
-          ref={assignRef(refs, "changeView")}
+          buttonRef={assignRef(refs, "changeView")}
+          styling="icon"
           title={
             isOverlay()
               ? "Click for split screen comparison."
               : "Click for overlay comparison"
           }
-        ></lf-button>
+        />
       );
     },
     //#endregion
@@ -58,22 +57,21 @@ export const prepToolbarJsx = (
       const { "--lf-icon-clear": clear } = theme.get.current().variables;
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          dataCy={cyAttributes().button}
+          framework={framework()}
+          icon={isOverlay() ? clear : imageInPicture}
           id={LF_COMPARE_IDS.leftButton}
-          lfIcon={clear}
-          lfIconOff={imageInPicture}
-          lfStyling={"icon"}
-          lfToggable={true}
-          onLf-button-event={button}
+          onClick={(e) => button(e, LF_COMPARE_IDS.leftButton)}
           part={parts().leftButton}
-          ref={assignRef(refs, "leftButton")}
+          buttonRef={assignRef(refs, "leftButton")}
+          styling="icon"
           title={
             isOverlay()
               ? "Click to open the left panel."
               : "Click to close the left panel."
           }
-        ></lf-button>
+        />
       );
     },
     //#endregion
@@ -121,22 +119,21 @@ export const prepToolbarJsx = (
       const { "--lf-icon-clear": clear } = theme.get.current().variables;
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          dataCy={cyAttributes().button}
+          framework={framework()}
+          icon={isOverlay() ? clear : imageInPicture}
           id={LF_COMPARE_IDS.rightButton}
-          lfIcon={clear}
-          lfIconOff={imageInPicture}
-          lfStyling={"icon"}
-          lfToggable={true}
-          onLf-button-event={button}
+          onClick={(e) => button(e, LF_COMPARE_IDS.rightButton)}
           part={parts().rightButton}
-          ref={assignRef(refs, "rightButton")}
+          buttonRef={assignRef(refs, "rightButton")}
+          styling="icon"
           title={
             isOverlay()
               ? "Click to open the right panel."
               : "Click to close the right panel."
           }
-        ></lf-button>
+        />
       );
     },
     //#endregion

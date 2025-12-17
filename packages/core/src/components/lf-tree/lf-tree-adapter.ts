@@ -84,7 +84,7 @@ export const createHandlersFactory = (
 export const createRefs = (): LfTreeAdapterRefs => {
   return {
     nodeElements: {},
-    filterField: null,
+    filter: null,
   };
 };
 //#endregion

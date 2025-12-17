@@ -627,7 +627,8 @@ export class LfMultiInput implements LfMultiInputInterface {
   async #syncTextfieldValue(value: string) {
     const textfield = this.#adapter?.elements.refs.textfield;
     if (textfield) {
-      await textfield.setValue(value ?? "");
+      // FC usage: use native input API instead of WC setValue()
+      textfield.value = value ?? "";
     }
   }
   async #syncChipSelection() {

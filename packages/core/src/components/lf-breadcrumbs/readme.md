@@ -196,8 +196,6 @@ graph TD;
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
   lf-button --> lf-list
-  lf-list --> lf-textfield
-  lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -215,14 +213,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   style lf-breadcrumbs fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

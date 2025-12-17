@@ -8,11 +8,12 @@ import {
   LfDataNode,
   LfDataShapes,
   LfFrameworkInterface,
-  LfTextfieldEventPayload,
+  LfIconType,
   LfTreeFCProps,
   VNode,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { FIcon } from "../../utils/icon";
 import { LfShape } from "../../utils/shapes";
 
@@ -264,18 +265,22 @@ export const LfTreeFC: FunctionalComponent<LfTreeFCProps> = ({
       return elements.jsx.filter();
     }
 
+    const iconSearch = framework.theme.get.current().variables[
+      "--lf-icon-search"
+    ] as LfIconType;
+
     return (
-      <lf-textfield
-        class={bemClass(tree._, tree.filter)}
-        lfStretchX={true}
-        lfIcon={framework.theme.get.current().variables["--lf-icon-search"]}
-        lfLabel={"Search..."}
-        lfStyling="flat"
-        onLf-textfield-event={(e: CustomEvent<LfTextfieldEventPayload>) =>
-          handlers?.filter?.input(e)
-        }
-        ref={(el) => refs?.filterField?.(el)}
-      ></lf-textfield>
+      <LfTextfieldFC
+        className={bemClass(tree._, tree.filter)}
+        framework={framework}
+        icon={iconSearch}
+        inputRef={(el) => refs?.filter?.(el)}
+        label="Search..."
+        onInput={(value, e) => handlers?.filter?.input(e, value)}
+        stretchX={true}
+        styling="flat"
+        value=""
+      />
     );
   };
   //#endregion

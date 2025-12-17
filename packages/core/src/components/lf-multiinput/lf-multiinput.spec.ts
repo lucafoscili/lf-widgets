@@ -1,4 +1,4 @@
-import { LfDataDataset, LfTextfieldElement } from "@lf-widgets/foundations";
+import { LfDataDataset } from "@lf-widgets/foundations";
 import { newSpecPage } from "@stencil/core/testing";
 import { getLfFramework } from "@lf-widgets/framework";
 import { LfChip } from "../lf-chip/lf-chip";
@@ -71,12 +71,11 @@ describe("lf-multiinput", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: { eventType: "input", inputValue: "hello" },
-      }),
-    );
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "hello";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
     await page.waitForChanges();
 
     expect(spy).toHaveBeenCalledWith(
@@ -96,17 +95,12 @@ describe("lf-multiinput", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
-    const textfield = page.root.shadowRoot.querySelector(
-      "lf-textfield",
-    ) as unknown as LfTextfieldElement;
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "keydown",
-          inputValue: "committed",
-          originalEvent: { key: "Enter" },
-        },
-      }),
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "committed";
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     );
     await page.waitForChanges();
 
@@ -121,7 +115,8 @@ describe("lf-multiinput", () => {
 
     expect(await component.getHistory()).toEqual(["committed"]);
     expect(await component.getValue()).toBe("committed");
-    expect(await textfield.getValue()).toBe("");
+    // Input should be cleared after commit
+    expect(input.value).toBe("");
   });
 
   it("should emit select-history when a chip is clicked", async () => {
@@ -201,16 +196,10 @@ describe("lf-multiinput", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "click",
-          iconType: "action",
-          inputValue: "",
-        },
-      }),
+    const actionIcon = page.root.shadowRoot.querySelector(
+      ".textfield__icon-action",
     );
+    actionIcon.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await page.waitForChanges();
 
     expect(spy).toHaveBeenCalledWith(
@@ -230,15 +219,12 @@ describe("lf-multiinput", () => {
     component.lfDataset = sampleDataset;
     await page.waitForChanges();
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "keydown",
-          inputValue: "unknown",
-          originalEvent: { key: "Enter" },
-        },
-      }),
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "unknown";
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     );
     await page.waitForChanges();
 
@@ -252,15 +238,12 @@ describe("lf-multiinput", () => {
     component.lfMode = "tags";
     await page.waitForChanges();
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "keydown",
-          inputValue: "tag1, tag2, tag1",
-          originalEvent: { key: "Enter" },
-        },
-      }),
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "tag1, tag2, tag1";
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     );
     await page.waitForChanges();
 
@@ -276,15 +259,12 @@ describe("lf-multiinput", () => {
     component.lfDataset = sampleDataset;
     await page.waitForChanges();
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: {
-          eventType: "keydown",
-          inputValue: "First, Unknown",
-          originalEvent: { key: "Enter" },
-        },
-      }),
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "First, Unknown";
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     );
     await page.waitForChanges();
 
@@ -299,12 +279,11 @@ describe("lf-multiinput", () => {
     const spy = jest.fn();
     page.root.addEventListener("lf-multiinput-event", spy);
 
-    const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-    textfield.dispatchEvent(
-      new CustomEvent("lf-textfield-event", {
-        detail: { eventType: "input", inputValue: "try" },
-      }),
-    );
+    const input = page.root.shadowRoot.querySelector(
+      '[data-cy="input"]',
+    ) as HTMLInputElement;
+    input.value = "try";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
     await page.waitForChanges();
 
     expect(

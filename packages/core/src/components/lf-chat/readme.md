@@ -256,8 +256,6 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-chip](../lf-chip)
-- [lf-button](../lf-button)
-- [lf-textfield](../lf-textfield)
 - [lf-spinner](../lf-spinner)
 - [lf-code](../lf-code)
 - [lf-progressbar](../lf-progressbar)
@@ -267,15 +265,12 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-code --> lf-button
+  lf-button --> lf-list
   lf-accordion --> lf-chat
   lf-article --> lf-chat
   lf-breadcrumbs --> lf-chat

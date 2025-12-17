@@ -5,6 +5,8 @@ import {
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 
 export const prepChat = (
   getAdapter: () => LfChatAdapter,
@@ -70,19 +72,18 @@ export const prepChat = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.commands._, blocks.commands.clear)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.commands._, blocks.commands.clear)}
+          framework={get.framework()}
+          icon="--lf-icon-clear"
           id={LF_CHAT_IDS.chat.clear}
-          lfIcon={"--lf-icon-clear"}
-          lfLabel="Clear"
-          lfStyling={"flat"}
-          lfUiState={get.currentPrompt() ? "disabled" : "danger"}
-          onLf-button-event={button}
-          part={parts.clear}
-          ref={assignRef(chat, "clear")}
-          title="Clear the textarea."
-        ></lf-button>
+          label="Clear"
+          disabled={Boolean(get.currentPrompt())}
+          onClick={(e) => button(e, LF_CHAT_IDS.chat.clear)}
+          buttonRef={assignRef(chat, "clear")}
+          styling="flat"
+          uiState={get.currentPrompt() ? "disabled" : "danger"}
+        />
       );
     },
     //#endregion
@@ -101,18 +102,16 @@ export const prepChat = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.chat._, blocks.chat.configuration)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.chat._, blocks.chat.configuration)}
+          framework={get.framework()}
+          icon="--lf-icon-settings"
           id={LF_CHAT_IDS.chat.configuration}
-          key={LF_CHAT_IDS.chat.configuration}
-          lfIcon={"--lf-icon-settings"}
-          lfLabel="Configuration"
-          lfStyling="outlined"
-          onLf-button-event={button}
-          part={parts.configuration}
-          ref={assignRef(chat, "configuration")}
-        ></lf-button>
+          label="Configuration"
+          onClick={(e) => button(e, LF_CHAT_IDS.chat.configuration)}
+          buttonRef={assignRef(chat, "configuration")}
+          styling="outlined"
+        />
       );
     },
     //#endregion
@@ -131,43 +130,43 @@ export const prepChat = (
 
       return (
         <div class={bemClass(blocks.chat._, blocks.chat.editContainer)}>
-          <lf-textfield
-            class={bemClass(blocks.chat._, blocks.chat.editTextarea)}
-            data-cy={cyAttributes.input}
+          <LfTextfieldFC
+            className={bemClass(blocks.chat._, blocks.chat.editTextarea)}
+            framework={get.framework()}
             id={LF_CHAT_IDS.chat.editTextarea}
-            lfStretchX={true}
-            lfStyling="textarea"
-            lfUiState="primary"
-            lfValue={m.content}
-            ref={assignRef(chat, "editTextarea")}
-          ></lf-textfield>
+            styling="textarea"
+            uiState="primary"
+            value={m.content}
+            inputRef={assignRef(chat, "editTextarea")}
+            style={{ width: "100%" }}
+          />
           <div class={bemClass(blocks.chat._, blocks.chat.editButtons)}>
-            <lf-button
-              data-cy={cyAttributes.button}
+            <ButtonFC
+              framework={get.framework()}
+              icon="--lf-icon-clear"
               id={LF_CHAT_IDS.chat.editCancel}
-              lfIcon="--lf-icon-clear"
-              lfLabel="Cancel"
-              lfStretchX={true}
-              lfStyling="flat"
-              lfUiState="danger"
-              onLf-button-event={handlers.chat.button}
-              part={parts.editCancel}
-              ref={assignRef(chat, "editCancel")}
-              title="Cancel editing message."
-            ></lf-button>
-            <lf-button
-              data-cy={cyAttributes.button}
+              label="Cancel"
+              onClick={(e) =>
+                handlers.chat.button(e, LF_CHAT_IDS.chat.editCancel)
+              }
+              buttonRef={assignRef(chat, "editCancel")}
+              styling="flat"
+              uiState="danger"
+              style={{ width: "100%" }}
+            />
+            <ButtonFC
+              framework={get.framework()}
+              icon="--lf-icon-success"
               id={LF_CHAT_IDS.chat.editConfirm}
-              lfIcon="--lf-icon-success"
-              lfLabel="Confirm"
-              lfStretchX={true}
-              lfStyling="flat"
-              lfUiState="success"
-              onLf-button-event={handlers.chat.button}
-              part={parts.editConfirm}
-              ref={assignRef(chat, "editConfirm")}
-              title="Confirm editing message."
-            ></lf-button>
+              label="Confirm"
+              onClick={(e) =>
+                handlers.chat.button(e, LF_CHAT_IDS.chat.editConfirm)
+              }
+              buttonRef={assignRef(chat, "editConfirm")}
+              styling="flat"
+              uiState="success"
+              style={{ width: "100%" }}
+            />
           </div>
         </div>
       );
@@ -204,18 +203,15 @@ export const prepChat = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          lfAriaLabel="Retry connection"
-          class={bemClass(blocks.chat._, blocks.chat.retry)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.chat._, blocks.chat.retry)}
+          framework={get.framework()}
+          icon="--lf-icon-refresh"
           id={LF_CHAT_IDS.chat.retry}
-          lfIcon={"--lf-icon-refresh"}
-          lfStyling={"icon"}
-          onLf-button-event={button}
-          part={parts.retry}
-          ref={assignRef(chat, "retry")}
-          title="Retry connection to the server."
-        ></lf-button>
+          onClick={(e) => button(e, LF_CHAT_IDS.chat.retry)}
+          buttonRef={assignRef(chat, "retry")}
+          styling="icon"
+        />
       );
     },
     //#endregion
@@ -239,19 +235,17 @@ export const prepChat = (
       const status: LfThemeUIState = isStreaming ? "danger" : "primary";
 
       return (
-        <lf-button
-          class={bemClass(blocks.chat._, blocks.chat.send)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.chat._, blocks.chat.send)}
+          framework={get.framework()}
+          icon={isStreaming ? "off-send" : "send"}
           id={LF_CHAT_IDS.chat.send}
-          lfIcon={isStreaming ? "off-send" : "send"}
-          lfLabel={label}
-          lfShowSpinner={showSpinner}
-          lfUiState={status}
-          onLf-button-event={button}
-          part={parts.send}
-          ref={assignRef(chat, "send")}
-          title="Send your prompt (CTRL + Enter)."
-        ></lf-button>
+          label={label}
+          showSpinner={showSpinner}
+          onClick={(e) => button(e, LF_CHAT_IDS.chat.send)}
+          buttonRef={assignRef(chat, "send")}
+          uiState={status}
+        />
       );
     },
     //#endregion
@@ -290,17 +284,15 @@ export const prepChat = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.commands._, blocks.commands.stt)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.commands._, blocks.commands.stt)}
+          framework={get.framework()}
+          icon="microphone"
           id={LF_CHAT_IDS.chat.stt}
-          lfIcon={"microphone"}
-          lfStyling="icon"
-          onLf-button-event={button}
-          part={parts.stt}
-          ref={assignRef(chat, "stt")}
-          title="Activate Speech To Text with your browser's API (if supported)."
-        ></lf-button>
+          onClick={(e) => button(e, LF_CHAT_IDS.chat.stt)}
+          buttonRef={assignRef(chat, "stt")}
+          styling="icon"
+        />
       );
     },
     //#endregion

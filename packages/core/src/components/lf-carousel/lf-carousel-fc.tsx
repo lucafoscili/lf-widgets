@@ -10,6 +10,7 @@ import {
 } from "@lf-widgets/foundations";
 import { Fragment, FunctionalComponent, h, VNode } from "@stencil/core";
 import { LfShape } from "../../utils/shapes";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 //#region FC Props Interface
 /**
@@ -138,26 +139,30 @@ export const LfCarouselFC: FunctionalComponent<LfCarouselFCProps> = ({
     if (!navigation) return null;
 
     return [
-      <lf-button
-        class={bemClass(carousel._, carousel.back)}
+      <ButtonFC
+        className={bemClass(carousel._, carousel.back)}
+        framework={framework}
+        icon={prevIcon}
         id={ids.carousel.back}
-        lfIcon={prevIcon}
-        lfStyling="icon"
-        lfUiSize="large"
-        onLf-button-event={() => onBack?.()}
+        key={ids.carousel.back}
+        onClick={() => onBack?.()}
         part={parts.back}
+        styling="icon"
         title="Previous slide."
-      ></lf-button>,
-      <lf-button
-        class={bemClass(carousel._, carousel.forward)}
+        uiSize="large"
+      />,
+      <ButtonFC
+        className={bemClass(carousel._, carousel.forward)}
+        framework={framework}
+        icon={nextIcon}
         id={ids.carousel.forward}
-        lfIcon={nextIcon}
-        lfStyling="icon"
-        lfUiSize="large"
-        onLf-button-event={() => onForward?.()}
+        key={ids.carousel.forward}
+        onClick={() => onForward?.()}
         part={parts.forward}
+        styling="icon"
         title="Next slide."
-      ></lf-button>,
+        uiSize="large"
+      />,
     ];
   };
   //#endregion

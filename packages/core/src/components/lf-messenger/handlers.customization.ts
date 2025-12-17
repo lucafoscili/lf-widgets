@@ -12,46 +12,36 @@ export const prepCustomizationHandlers = (
 ): LfMessengerAdapterHandlers["customization"] => {
   return {
     //#region Button
-    button: async (e, type, action, node = null) => {
-      const { eventType } = e.detail;
-
+    button: async (e: MouseEvent, type, action, node = null) => {
       const adapter = getAdapter();
       const { get, set } = adapter.controller;
       const { compInstance } = get;
 
       const comp = compInstance() as LfMessenger;
 
-      if (eventType === "click") {
-        switch (action) {
-          case "add":
-            set.ui.setFormState(true, type);
-            break;
-          case "cancel":
-            set.ui.setFormState(false, type);
-            break;
-          case "confirm": {
-            const { title } = adapter.elements.refs.customization.form[type];
+      switch (action) {
+        case "add":
+          set.ui.setFormState(true, type);
+          break;
+        case "cancel":
+          set.ui.setFormState(false, type);
+          break;
+        case "confirm": {
+          const { title } = adapter.elements.refs.customization.form[type];
 
-            const value = await title.getValue();
-            if (value) {
-              await createNode(adapter, type);
-              set.ui.setFormState(false, type);
-              title.lfUiState = "primary";
-            } else {
-              title.lfHelper = {
-                value: "This field is mandatory",
-              };
-              title.lfUiState = "danger";
-            }
-            break;
+          const value = title?.value;
+          if (value) {
+            await createNode(adapter, type);
+            set.ui.setFormState(false, type);
           }
-          case "delete":
-            comp.deleteOption(node, type);
-            break;
-          case "edit":
-            set.ui.setFormState(true, type, node);
-            break;
+          break;
         }
+        case "delete":
+          comp.deleteOption(node, type);
+          break;
+        case "edit":
+          set.ui.setFormState(true, type, node);
+          break;
       }
     },
     //#endregion

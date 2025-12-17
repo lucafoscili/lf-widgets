@@ -116,14 +116,9 @@ Type: `Promise<void>`
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
-### Depends on
-
-- [lf-image](../lf-image)
-
 ### Graph
 ```mermaid
 graph TD;
-  lf-photoframe --> lf-image
   lf-accordion --> lf-photoframe
   lf-article --> lf-photoframe
   lf-breadcrumbs --> lf-photoframe

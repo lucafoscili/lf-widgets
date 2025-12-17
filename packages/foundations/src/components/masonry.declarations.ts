@@ -24,7 +24,6 @@ import {
 } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_MASONRY_BLOCKS,
   LF_MASONRY_EVENTS,
@@ -104,17 +103,17 @@ export interface LfMasonryAdapterJsx extends LfComponentAdapterJsx {
  * Strongly typed DOM references captured by the component adapter.
  */
 export interface LfMasonryAdapterRefs extends LfComponentAdapterRefs {
-  addColumn: LfButtonElement;
-  changeView: LfButtonElement;
+  addColumn: HTMLButtonElement;
+  changeView: HTMLButtonElement;
   masonry: HTMLDivElement;
-  removeColumn: LfButtonElement;
+  removeColumn: HTMLButtonElement;
   shapes: Map<string, HTMLElement>;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
  */
 export interface LfMasonryAdapterHandlers extends LfComponentAdapterHandlers {
-  button: (e: CustomEvent<LfButtonEventPayload>) => void;
+  button: (e: MouseEvent, id: string) => void;
 }
 /**
  * Read-only controller surface exposed by the adapter for integration code.

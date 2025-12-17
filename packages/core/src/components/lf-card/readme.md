@@ -142,17 +142,12 @@ graph TD;
   lf-card --> lf-card
   lf-accordion --> lf-card
   lf-button --> lf-list
-  lf-list --> lf-textfield
-  lf-canvas --> lf-image
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   lf-article --> lf-card
   lf-breadcrumbs --> lf-card
   lf-carousel --> lf-card

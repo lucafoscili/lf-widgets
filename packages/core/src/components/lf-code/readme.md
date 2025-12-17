@@ -129,7 +129,6 @@ Type: `Promise<void>`
 graph TD;
   lf-code --> lf-button
   lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-accordion --> lf-code
   lf-article --> lf-code
   lf-breadcrumbs --> lf-code

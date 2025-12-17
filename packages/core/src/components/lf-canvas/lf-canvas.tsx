@@ -24,7 +24,6 @@ import {
   LfCanvasType,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
-  LfImageElement,
   LfImagePropsInterface,
 } from "@lf-widgets/foundations";
 import {
@@ -447,12 +446,12 @@ export class LfCanvas implements LfCanvasInterface {
     return this.debugInfo;
   }
   /**
-   * Retrieves the HTMLLfImageElement from the canvas.
-   * @returns A promise that resolves with the HTMLLfImageElement instance
+   * Retrieves the HTMLImageElement from the canvas.
+   * @returns A promise that resolves with the HTMLImageElement instance
    * representing the image element in the canvas.
    */
   @Method()
-  async getImage(): Promise<LfImageElement> {
+  async getImage(): Promise<HTMLImageElement> {
     const { image } = this.#adapter.elements.refs;
 
     return image;

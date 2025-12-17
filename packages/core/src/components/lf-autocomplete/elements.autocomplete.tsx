@@ -7,6 +7,7 @@ import {
   LfAutocompleteAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 
 export const prepAutocompleteJsx = (
   getAdapter: () => LfAutocompleteAdapter,
@@ -82,9 +83,16 @@ export const prepAutocompleteJsx = (
       const { refs } = elements;
       const { compInstance, framework } = controller.get;
       const { computed } = controller;
-      const { assignRef, sanitizeProps, theme } = framework();
+      const mgr = framework();
+      const { assignRef, sanitizeProps, theme } = mgr;
       const { bemClass } = theme;
-      const { textfield } = handlers;
+      const {
+        textfieldBlur,
+        textfieldClick,
+        textfieldIconClick,
+        textfieldInput,
+        textfieldKeydown,
+      } = handlers;
       const comp = compInstance();
 
       const blocks = LF_AUTOCOMPLETE_BLOCKS;
@@ -104,19 +112,28 @@ export const prepAutocompleteJsx = (
       const htmlSanitized = sanitizeProps({ ...htmlAttrs, ...ariaAttrs });
 
       return (
-        <lf-textfield
-          lfUiSize={comp.lfUiSize}
-          lfUiState={comp.lfUiState}
-          {...sanitizeProps(textfieldProps, "LfTextfield")}
-          class={bemClass(blocks.autocomplete._, blocks.autocomplete.textfield)}
-          lfHtmlAttributes={htmlSanitized}
-          lfTrailingIconAction={
+        <LfTextfieldFC
+          className={bemClass(
+            blocks.autocomplete._,
+            blocks.autocomplete.textfield,
+          )}
+          framework={mgr}
+          htmlAttributes={htmlSanitized}
+          icon={textfieldProps.lfIcon || null}
+          inputRef={(el) => assignRef(refs, "textfield")(el)}
+          label={textfieldProps.lfLabel}
+          onBlur={textfieldBlur}
+          onClick={textfieldClick}
+          onIconClick={textfieldIconClick}
+          onInput={(value, e) => textfieldInput(e, value)}
+          onKeyDown={textfieldKeydown}
+          styling={textfieldProps.lfStyling || "flat"}
+          trailingIconAction={
             computed.hasCache() ? LF_THEME_ICONS.dropdown : null
           }
-          lfValue={comp.lfValue}
-          onLf-textfield-event={textfield}
-          part={parts.textfield}
-          ref={assignRef(refs, "textfield")}
+          uiSize={comp.lfUiSize}
+          uiState={comp.lfUiState}
+          value={comp.inputValue || comp.lfValue || ""}
         />
       );
     },

@@ -22,7 +22,6 @@ import {
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_COMPARE_BLOCKS,
   LF_COMPARE_EVENTS,
@@ -174,10 +173,10 @@ export interface LfCompareAdapterJsx extends LfComponentAdapterJsx {
  * Strongly typed DOM references captured by the component adapter.
  */
 export interface LfCompareAdapterRefs extends LfComponentAdapterRefs {
-  changeView: LfButtonElement;
-  leftButton: LfButtonElement;
+  changeView: HTMLButtonElement;
+  leftButton: HTMLButtonElement;
   leftTree: LfTreeElement;
-  rightButton: LfButtonElement;
+  rightButton: HTMLButtonElement;
   rightTree: LfTreeElement;
   slider: HTMLDivElement;
 }
@@ -185,7 +184,7 @@ export interface LfCompareAdapterRefs extends LfComponentAdapterRefs {
  * Handler map consumed by the adapter to react to framework events.
  */
 export interface LfCompareAdapterHandlers extends LfComponentAdapterHandlers {
-  button: (e: CustomEvent<LfButtonEventPayload>) => void;
+  button: (e: MouseEvent, id: string, value?: boolean) => void;
   tree: (e: CustomEvent<LfTreeEventPayload>) => void;
 }
 /**

@@ -3,8 +3,10 @@ import {
   LfChatAdapter,
   LfChatAdapterJsx,
   LfChipElement,
+  LfLLMChoiceMessage,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 export const prepToolbar = (
   getAdapter: () => LfChatAdapter,
@@ -25,17 +27,17 @@ export const prepToolbar = (
       const isDisabled = Boolean(get.currentPrompt());
 
       return (
-        <lf-button
-          class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+        <ButtonFC
+          className={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+          framework={get.framework()}
+          icon={themeGet.current().variables["--lf-icon-copy"]}
           id={LF_CHAT_IDS.toolbar.copyContent}
-          lfIcon={themeGet.current().variables["--lf-icon-copy"]}
-          lfStyling="flat"
-          lfUiState={isDisabled ? "disabled" : "primary"}
-          onLf-button-event={(e) => button(e, m)}
-          part={parts.copyContent}
-          ref={assignRef(toolbar, "copyContent")}
-          title="Copy text to clipboard."
-        ></lf-button>
+          disabled={isDisabled}
+          onClick={(e) => button(e, LF_CHAT_IDS.toolbar.copyContent, m)}
+          buttonRef={assignRef(toolbar, "copyContent")}
+          styling="flat"
+          uiState={isDisabled ? "disabled" : "primary"}
+        />
       );
     },
     //#endregion
@@ -54,17 +56,17 @@ export const prepToolbar = (
       const isDisabled = Boolean(get.currentPrompt());
 
       return (
-        <lf-button
-          class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+        <ButtonFC
+          className={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+          framework={get.framework()}
+          icon={themeGet.current().variables["--lf-icon-edit"]}
           id={LF_CHAT_IDS.toolbar.editMessage}
-          lfIcon={themeGet.current().variables["--lf-icon-edit"]}
-          lfStyling="flat"
-          lfUiState={isDisabled ? "disabled" : "primary"}
-          onLf-button-event={(e) => button(e, m)}
-          part={parts.regenerate}
-          ref={assignRef(toolbar, "editMessage")}
-          title="Edit this message"
-        ></lf-button>
+          disabled={isDisabled}
+          onClick={(e) => button(e, LF_CHAT_IDS.toolbar.editMessage, m)}
+          buttonRef={assignRef(toolbar, "editMessage")}
+          styling="flat"
+          uiState={isDisabled ? "disabled" : "primary"}
+        />
       );
     },
     //#endregion
@@ -84,17 +86,17 @@ export const prepToolbar = (
       const isDisabled = Boolean(get.currentPrompt());
 
       return (
-        <lf-button
-          class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+        <ButtonFC
+          className={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+          framework={get.framework()}
+          icon={themeGet.current().variables["--lf-icon-delete"]}
           id={LF_CHAT_IDS.toolbar.deleteMessage}
-          lfIcon={themeGet.current().variables["--lf-icon-delete"]}
-          lfStyling="flat"
-          lfUiState={isDisabled ? "disabled" : "danger"}
-          onLf-button-event={(e) => button(e, m)}
-          part={parts.deleteMessage}
-          ref={assignRef(toolbar, "deleteMessage")}
-          title="Delete this message from the chat history."
-        ></lf-button>
+          disabled={isDisabled}
+          onClick={(e) => button(e, LF_CHAT_IDS.toolbar.deleteMessage, m)}
+          buttonRef={assignRef(toolbar, "deleteMessage")}
+          styling="flat"
+          uiState={isDisabled ? "disabled" : "danger"}
+        />
       );
     },
     //#endregion
@@ -114,17 +116,17 @@ export const prepToolbar = (
       const isDisabled = Boolean(get.currentPrompt());
 
       return (
-        <lf-button
-          class={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+        <ButtonFC
+          className={bemClass(blocks.toolbar._, blocks.toolbar.button)}
+          framework={get.framework()}
+          icon={themeGet.current().variables["--lf-icon-refresh"]}
           id={LF_CHAT_IDS.toolbar.regenerate}
-          lfIcon={themeGet.current().variables["--lf-icon-refresh"]}
-          lfStyling="flat"
-          lfUiState={isDisabled ? "disabled" : "primary"}
-          onLf-button-event={(e) => button(e, m)}
-          part={parts.regenerate}
-          ref={assignRef(toolbar, "regenerate")}
-          title="Regenerate the response to this request."
-        ></lf-button>
+          disabled={isDisabled}
+          onClick={(e) => button(e, LF_CHAT_IDS.toolbar.regenerate, m)}
+          buttonRef={assignRef(toolbar, "regenerate")}
+          styling="flat"
+          uiState={isDisabled ? "disabled" : "primary"}
+        />
       );
     },
     //#endregion

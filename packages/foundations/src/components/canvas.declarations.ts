@@ -25,11 +25,7 @@ import {
   LF_CANVAS_PARTS,
   LF_CANVAS_TYPES,
 } from "./canvas.constants";
-import {
-  LfImageElement,
-  LfImageEventPayload,
-  LfImagePropsInterface,
-} from "./image.declarations";
+import { LfImagePropsInterface } from "./image.declarations";
 
 //#region Class
 /**
@@ -99,7 +95,7 @@ export interface LfCanvasInterface
     options?: LfCanvasTextOptions,
   ) => Promise<void>;
   getCanvas: () => Promise<HTMLCanvasElement>;
-  getImage: () => Promise<LfImageElement>;
+  getImage: () => Promise<HTMLImageElement>;
   resizeCanvas: () => Promise<void>;
   setCanvasHeight: (value?: number) => Promise<void>;
   setCanvasWidth: (value?: number) => Promise<void>;
@@ -166,7 +162,7 @@ export interface LfCanvasAdapterHandlers extends LfComponentAdapterHandlers {
     onPointerUp: (e: PointerEvent) => void;
   };
   image: {
-    onLoad: (e: CustomEvent<LfImageEventPayload>) => Promise<void>;
+    onLoad: (e: Event) => Promise<void>;
   };
 }
 /**
@@ -245,7 +241,7 @@ export interface LfCanvasAdapterJsx extends LfComponentAdapterJsx {
 export interface LfCanvasAdapterRefs extends LfComponentAdapterRefs {
   board: HTMLCanvasElement;
   canvas: HTMLDivElement;
-  image: LfImageElement;
+  image: HTMLImageElement;
   preview: HTMLCanvasElement;
 }
 /**

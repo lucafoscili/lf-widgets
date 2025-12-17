@@ -353,9 +353,9 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      // Check that textfield is rendered
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-      expect(textfield).toBeTruthy();
+      // Check that input is rendered (FC renders input directly in shadow root)
+      const input = page.root.shadowRoot.querySelector('[data-cy="input"]');
+      expect(input).toBeTruthy();
     });
 
     it("should synchronize textfield value with selection", async () => {
@@ -364,36 +364,24 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
+      const input = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
-      expect(textfield).toBeTruthy();
+      expect(input).toBeTruthy();
 
-      // Wait for textfield to render
+      // Wait for input to render
       await page.waitForChanges();
 
-      if (textfield && textfield.shadowRoot) {
-        const input = textfield.shadowRoot.querySelector(
-          "input",
-        ) as HTMLInputElement;
+      // Initially input should be empty
+      expect(input.value).toBe("");
 
-        // Initially textfield should be empty
-        expect(input.value).toBe("");
+      // Set value programmatically
+      await component.setValue("test-id");
+      await page.waitForChanges();
 
-        // Set value programmatically
-        await component.setValue("test-id");
-        await page.waitForChanges();
-
-        // Textfield should now show the selected value
-        expect(input.value).toBe("Test Option");
-      } else {
-        // Fallback: check the textfield's lfValue attribute
-        expect(textfield.getAttribute("lfvalue")).toBe("");
-
-        await component.setValue("test-id");
-        await page.waitForChanges();
-
-        expect(textfield.getAttribute("lfvalue")).toBe("Test Option");
-      }
+      // Input should now show the selected value
+      expect(input.value).toBe("Test Option");
     });
   });
 
@@ -459,9 +447,8 @@ describe("lf-select", () => {
       // Get initial width
       const initialWidth = selectElement!.getBoundingClientRect().width;
 
-      // Open portal
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const actionIcon = textfield?.shadowRoot?.querySelector(
+      // Open portal by clicking the action icon
+      const actionIcon = page.root.shadowRoot?.querySelector(
         ".textfield__icon-action",
       );
       const clickEvent = new MouseEvent("click");
@@ -489,8 +476,7 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const actionIcon = textfield?.shadowRoot?.querySelector(
+      const actionIcon = page.root.shadowRoot?.querySelector(
         ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
@@ -511,8 +497,7 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const actionIcon = textfield?.shadowRoot?.querySelector(
+      const actionIcon = page.root.shadowRoot?.querySelector(
         ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
@@ -568,9 +553,8 @@ describe("lf-select", () => {
 
       expect(list).toBeTruthy();
 
-      // First open portal
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const actionIcon = textfield?.shadowRoot?.querySelector(
+      // First open portal by clicking the action icon
+      const actionIcon = page.root.shadowRoot?.querySelector(
         ".textfield__icon-action",
       );
       const clickEvent = new MouseEvent("click");
@@ -599,17 +583,17 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      expect(textfield).toBeTruthy();
+      const input = page.root.shadowRoot?.querySelector('[data-cy="input"]');
+      expect(input).toBeTruthy();
 
       // First click should open portal
       let clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      input!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Second click should close portal (toggle)
       clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      input!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Component should handle toggle without issues
@@ -623,8 +607,7 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const actionIcon = textfield?.shadowRoot?.querySelector(
+      const actionIcon = page.root.shadowRoot?.querySelector(
         ".textfield__icon-action",
       );
       expect(actionIcon).toBeTruthy();
@@ -678,8 +661,7 @@ describe("lf-select", () => {
           });
         }
 
-        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-        const actionIcon = textfield?.shadowRoot?.querySelector(
+        const actionIcon = page.root.shadowRoot?.querySelector(
           ".textfield__icon-action",
         );
 
@@ -740,8 +722,7 @@ describe("lf-select", () => {
           });
         }
 
-        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-        const actionIcon = textfield?.shadowRoot?.querySelector(
+        const actionIcon = page.root.shadowRoot?.querySelector(
           ".textfield__icon-action",
         );
 
@@ -809,8 +790,7 @@ describe("lf-select", () => {
         page.root.lfDataset = sampleDataset;
         await page.waitForChanges();
 
-        const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-        const actionIcon = textfield?.shadowRoot?.querySelector(
+        const actionIcon = page.root.shadowRoot?.querySelector(
           ".textfield__icon-action",
         );
 
@@ -842,8 +822,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -882,8 +863,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -917,8 +899,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -944,8 +927,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -971,8 +955,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Change navigation to true
       page.root.lfNavigation = true;
@@ -997,12 +982,13 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Open the dropdown by clicking
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      input!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Component should handle click without issues
@@ -1022,12 +1008,13 @@ describe("lf-select", () => {
       page.root.lfDataset = sampleDataset;
       await page.waitForChanges();
 
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Open the dropdown by clicking
       const clickEvent = new MouseEvent("click");
-      textfield!.dispatchEvent(clickEvent);
+      input!.dispatchEvent(clickEvent);
       await page.waitForChanges();
 
       // Component should handle click without issues
@@ -1050,8 +1037,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -1076,8 +1064,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();
@@ -1105,8 +1094,9 @@ describe("lf-select", () => {
       await page.waitForChanges();
 
       const component = page.rootInstance as LfSelect;
-      const textfield = page.root.shadowRoot?.querySelector("lf-textfield");
-      const input = textfield?.shadowRoot?.querySelector("input");
+      const input = page.root.shadowRoot?.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
 
       // Focus the input
       input?.focus();

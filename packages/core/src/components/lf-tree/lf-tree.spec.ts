@@ -278,22 +278,22 @@ describe("lf-tree component", () => {
         events.push(e),
       );
 
-      // Find the filter textfield
-      const filterField = page.root.shadowRoot.querySelector("lf-textfield");
-      expect(filterField).not.toBeNull();
+      // Find the filter input using data-cy selector (FC renders input directly)
+      const filterInput = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
+      expect(filterInput).not.toBeNull();
 
-      // Create and dispatch textfield event - test that handler can receive the event
+      // Set the input value and dispatch native input event
       // We don't wait for debounce to avoid timer leak issues
-      const inputEvent = new CustomEvent("lf-textfield-event", {
-        detail: { inputValue: "app", eventType: "input" },
-        bubbles: true,
-      });
-      filterField.dispatchEvent(inputEvent);
+      filterInput.value = "app";
+      const inputEvent = new Event("input", { bubbles: true });
+      filterInput.dispatchEvent(inputEvent);
       await page.waitForChanges();
 
-      // Verify the filter textfield is present and can receive events
+      // Verify the filter input is present and can receive events
       // The actual filtering happens asynchronously with a debounce timer
-      expect(filterField).toBeTruthy();
+      expect(filterInput).toBeTruthy();
     });
 
     it("handles node pointerdown event", async () => {

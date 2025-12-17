@@ -142,14 +142,11 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-list](../lf-list)
-- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-select --> lf-list
-  lf-select --> lf-textfield
-  lf-list --> lf-textfield
   lf-shapeeditor --> lf-select
   style lf-select fill:#f9f,stroke:#333,stroke-width:4px
 ```

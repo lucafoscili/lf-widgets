@@ -4,6 +4,7 @@ import {
   LfMessengerAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 export const prepOptions = (
   getAdapter: () => LfMessengerAdapter,
@@ -21,15 +22,15 @@ export const prepOptions = (
       const icon = theme.get.icon("arrowBack");
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          framework={fw}
           id={LF_MESSENGER_IDS.messenger.options.back}
-          lfIcon={icon}
-          lfLabel="Back"
-          lfStretchX={true}
-          onLf-button-event={button}
-          ref={assignRef(options, "back")}
-        ></lf-button>
+          icon={icon}
+          label="Back"
+          onClick={(e) => button(e, LF_MESSENGER_IDS.messenger.options.back)}
+          buttonRef={assignRef(options, "back")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion
@@ -46,15 +47,17 @@ export const prepOptions = (
       const icon = theme.get.icon("wand");
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          framework={fw}
           id={LF_MESSENGER_IDS.messenger.options.customize}
-          lfIcon={icon}
-          lfLabel="Customize"
-          lfStretchX={true}
-          onLf-button-event={button}
-          ref={assignRef(options, "customize")}
-        ></lf-button>
+          icon={icon}
+          label="Customize"
+          onClick={(e) =>
+            button(e, LF_MESSENGER_IDS.messenger.options.customize)
+          }
+          buttonRef={assignRef(options, "customize")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion

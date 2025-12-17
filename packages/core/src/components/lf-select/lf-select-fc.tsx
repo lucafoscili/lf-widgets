@@ -11,6 +11,7 @@ import {
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 
 //#region Props
 /**
@@ -41,8 +42,12 @@ export interface LfSelectFCProps {
   listProps?: Partial<LfListInterface>;
   /** Callback fired on list item click */
   onListEvent?: (event: CustomEvent) => void;
-  /** Callback fired on textfield events */
-  onTextfieldEvent?: (event: CustomEvent) => void;
+  /** Callback fired on textfield click */
+  onTextfieldClick?: (event: MouseEvent) => void;
+  /** Callback fired on textfield keydown */
+  onTextfieldKeydown?: (event: KeyboardEvent) => void;
+  /** Callback fired on textfield icon click */
+  onTextfieldIconClick?: (event: MouseEvent) => void;
   /** Part attribute for external styling */
   part?: string;
   /** Reference callback for the list element */
@@ -57,8 +62,8 @@ export interface LfSelectFCProps {
   style?: { [key: string]: string };
   /** Props to pass to the internal lf-textfield component */
   textfieldProps?: Partial<LfTextfieldInterface>;
-  /** Reference callback for the textfield element */
-  textfieldRef?: (el: HTMLLfTextfieldElement | null) => void;
+  /** Reference callback for the textfield input element */
+  textfieldRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
   /**
    * UI size multiplier for the component.
    * Controls font-size scaling. Required for composed usage where
@@ -112,7 +117,9 @@ export const LfSelectFC: FunctionalComponent<LfSelectFCProps> = ({
   listProps,
   listRef,
   onListEvent,
-  onTextfieldEvent,
+  onTextfieldClick,
+  onTextfieldKeydown,
+  onTextfieldIconClick,
   part,
   selectedIndex = -1,
   selectedNode,
@@ -151,20 +158,30 @@ export const LfSelectFC: FunctionalComponent<LfSelectFCProps> = ({
     role: "combobox",
   });
 
-  // Render the textfield element
+  // Render the textfield element using LfTextfieldFC
   const renderTextfield = () => {
+    // Map lfTextfieldProps to FC props
+    const icon = textfieldProps?.lfIcon;
+    const label = textfieldProps?.lfLabel;
+    const styling = textfieldProps?.lfStyling || "flat";
+
     return (
-      <lf-textfield
-        lfUiSize={uiSize}
-        lfUiState={uiState}
-        {...sanitizeProps(textfieldProps, "LfTextfield")}
-        class={bemClass(select._, select.textfield)}
-        lfHtmlAttributes={sanitizedTextfieldHtmlAttrs}
-        lfTrailingIconAction={LF_THEME_ICONS.dropdown}
-        lfValue={String(selectedNode?.value || "")}
-        onLf-textfield-event={onTextfieldEvent}
-        part={parts.textfield}
-        ref={textfieldRef}
+      <LfTextfieldFC
+        className={bemClass(select._, select.textfield)}
+        framework={framework}
+        htmlAttributes={sanitizedTextfieldHtmlAttrs}
+        icon={icon}
+        inputRef={textfieldRef}
+        label={label}
+        onClick={onTextfieldClick}
+        onIconClick={onTextfieldIconClick}
+        onKeyDown={onTextfieldKeydown}
+        styling={styling}
+        trailingIcon={false}
+        trailingIconAction={LF_THEME_ICONS.dropdown}
+        uiSize={uiSize}
+        uiState={uiState}
+        value={String(selectedNode?.value || "")}
       />
     );
   };

@@ -10,26 +10,29 @@ export const prepChatHandlers = (
 ): LfMessengerAdapterHandlers["chat"] => {
   return {
     //#region Button
-    button: async (e) => {
-      const { comp, eventType, id } = e.detail;
-
-      const { get, set } = getAdapter().controller;
+    button: async (e: MouseEvent, id: string) => {
+      const { controller, elements } = getAdapter();
+      const { get, set } = controller;
+      const { refs } = elements;
       const { "--lf-icon-previous": left, "--lf-icon-next": right } = get
         .framework()
         .theme.get.current().variables;
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case LF_MESSENGER_IDS.messenger.chat.leftExpander:
-              const newLeft = set.ui.panel("left");
-              comp.lfIcon = newLeft ? right : left;
-              break;
-            case LF_MESSENGER_IDS.messenger.chat.rightExpander:
-              const newRight = set.ui.panel("right");
-              comp.lfIcon = newRight ? left : right;
-              break;
+      switch (id) {
+        case LF_MESSENGER_IDS.messenger.chat.leftExpander:
+          const newLeft = set.ui.panel("left");
+          const leftBtn = refs.chat.leftExpander;
+          if (leftBtn) {
+            leftBtn.dataset.icon = newLeft ? right : left;
           }
+          break;
+        case LF_MESSENGER_IDS.messenger.chat.rightExpander:
+          const newRight = set.ui.panel("right");
+          const rightBtn = refs.chat.rightExpander;
+          if (rightBtn) {
+            rightBtn.dataset.icon = newRight ? left : right;
+          }
+          break;
       }
     },
     //#endregion

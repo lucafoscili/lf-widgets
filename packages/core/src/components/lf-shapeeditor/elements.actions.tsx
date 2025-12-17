@@ -1,5 +1,6 @@
 import { LfShapeeditorAdapter } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 /**
  * Prepares the actions sub-block JSX (delete, badge, clear, redo, undo, commit).
@@ -64,89 +65,93 @@ export const prepActions = (
     return (
       <div class={bemClass(actionsBlock._)} part={settingsParts.actions}>
         {/* Delete Shape */}
-        <lf-button
-          class={bemClass(actionsBlock._, actionsBlock.delete)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(actionsBlock._, actionsBlock.delete)}
+          dataCy={cy.button}
+          framework={mgr}
+          icon={deleteIcon}
           id={ids().settings.actions.delete}
-          lfIcon={deleteIcon}
-          lfLabel="Delete"
-          lfStretchX={true}
-          lfUiState="danger"
-          onLf-button-event={actionsButton}
-          ref={assignRef(settings.actions, "delete")}
-        ></lf-button>
+          label="Delete"
+          onClick={(e) => actionsButton(e, ids().settings.actions.delete)}
+          buttonRef={assignRef(settings.actions, "delete")}
+          uiState="danger"
+        />
 
         {/* History Toggle Button */}
         {hasHistory && (
-          <lf-button
-            class={bemClass(actionsBlock._, actionsBlock.badge)}
-            data-cy={cy.toggle}
+          <ButtonFC
+            className={bemClass(actionsBlock._, actionsBlock.badge)}
+            dataCy={cy.toggle}
+            framework={mgr}
+            icon={historyIcon}
             id={ids().settings.actions.badge}
-            lfIcon={historyIcon}
-            lfLabel={`History: ${currentIndex + 1}/${total}`}
-            lfStretchY={true}
-            lfStyling={isHistoryOpen ? "raised" : "flat"}
-            lfUiSize="small"
-            lfUiState={isHistoryOpen ? "secondary" : "primary"}
-            onLf-button-event={actionsButton}
-            ref={assignRef(settings.actions, "badge")}
-          ></lf-button>
+            label={`History: ${currentIndex + 1}/${total}`}
+            onClick={(e) => actionsButton(e, ids().settings.actions.badge)}
+            buttonRef={assignRef(settings.actions, "badge")}
+            styling={isHistoryOpen ? "raised" : "flat"}
+            uiSize="small"
+            uiState={isHistoryOpen ? "secondary" : "primary"}
+          />
         )}
 
         {/* Clear History */}
-        <lf-button
-          class={bemClass(actionsBlock._, actionsBlock.clear)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(actionsBlock._, actionsBlock.clear)}
+          dataCy={cy.button}
+          disabled={isClearHistoryDisabled}
+          framework={mgr}
+          icon={clearHistoryIcon}
           id={ids().settings.actions.clear}
-          lfIcon={clearHistoryIcon}
-          lfLabel="Clear history"
-          lfStretchX={true}
-          lfStyling="flat"
-          lfUiState={isClearHistoryDisabled ? "disabled" : "danger"}
-          onLf-button-event={actionsButton}
-          ref={assignRef(settings.actions, "clear")}
-        ></lf-button>
+          label="Clear history"
+          onClick={(e) => actionsButton(e, ids().settings.actions.clear)}
+          buttonRef={assignRef(settings.actions, "clear")}
+          styling="flat"
+          uiState={isClearHistoryDisabled ? "disabled" : "danger"}
+        />
 
         {/* Undo */}
-        <lf-button
-          class={bemClass(actionsBlock._, actionsBlock.undo)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(actionsBlock._, actionsBlock.undo)}
+          dataCy={cy.button}
+          disabled={isUndoDisabled}
+          framework={mgr}
+          icon={undoIcon}
           id={ids().settings.actions.undo}
-          lfIcon={undoIcon}
-          lfLabel="Undo"
-          lfStretchX={true}
-          lfStyling="flat"
-          lfUiState={isUndoDisabled ? "disabled" : "primary"}
-          onLf-button-event={actionsButton}
-          ref={assignRef(settings.actions, "undo")}
-        ></lf-button>
+          label="Undo"
+          onClick={(e) => actionsButton(e, ids().settings.actions.undo)}
+          buttonRef={assignRef(settings.actions, "undo")}
+          styling="flat"
+          uiState={isUndoDisabled ? "disabled" : "primary"}
+        />
 
         {/* Redo */}
-        <lf-button
-          class={bemClass(actionsBlock._, actionsBlock.redo)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(actionsBlock._, actionsBlock.redo)}
+          dataCy={cy.button}
+          disabled={isRedoDisabled}
+          framework={mgr}
+          icon={redoIcon}
           id={ids().settings.actions.redo}
-          lfIcon={redoIcon}
-          lfLabel="Redo"
-          lfStretchX={true}
-          lfStyling="flat"
-          lfUiState={isRedoDisabled ? "disabled" : "primary"}
-          onLf-button-event={actionsButton}
-          ref={assignRef(settings.actions, "redo")}
-        ></lf-button>
+          label="Redo"
+          onClick={(e) => actionsButton(e, ids().settings.actions.redo)}
+          buttonRef={assignRef(settings.actions, "redo")}
+          styling="flat"
+          uiState={isRedoDisabled ? "disabled" : "primary"}
+        />
 
         {/* Commit/Save Snapshot */}
-        <lf-button
-          class={bemClass(actionsBlock._, actionsBlock.commit)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(actionsBlock._, actionsBlock.commit)}
+          dataCy={cy.button}
+          disabled={isSaveDisabled}
+          framework={mgr}
+          icon={saveIcon}
           id={ids().settings.actions.commit}
-          lfIcon={saveIcon}
-          lfLabel="Save snapshot"
-          lfStretchX={true}
-          lfUiState={isSaveDisabled ? "disabled" : "success"}
-          onLf-button-event={actionsButton}
-          ref={assignRef(settings.actions, "commit")}
-        ></lf-button>
+          label="Save snapshot"
+          onClick={(e) => actionsButton(e, ids().settings.actions.commit)}
+          buttonRef={assignRef(settings.actions, "commit")}
+          uiState={isSaveDisabled ? "disabled" : "success"}
+        />
       </div>
     );
   };

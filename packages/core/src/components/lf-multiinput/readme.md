@@ -185,13 +185,11 @@ Type: `Promise<void>`
 ### Depends on
 
 - [lf-chip](../lf-chip)
-- [lf-textfield](../lf-textfield)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-multiinput --> lf-chip
-  lf-multiinput --> lf-textfield
   lf-shapeeditor --> lf-multiinput
   style lf-multiinput fill:#f9f,stroke:#333,stroke-width:4px
 ```

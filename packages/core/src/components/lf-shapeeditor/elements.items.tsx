@@ -261,20 +261,32 @@ const createControl = (
         </div>
       );
 
-    case "colorpicker":
+    case "colorpicker": {
+      // FC handler - calls controlChange directly without CustomEvent
+      const { controlChange } = adapter.handlers.settings;
+      const handleChange = (val: string) => {
+        controlChange(null, config.id, val, "change");
+      };
+      const handleInput = (val: string) => {
+        controlChange(null, config.id, val, "input");
+      };
+
       return (
         <div key={controlKey} class={bemClass(items._, items.item)}>
-          <lf-textfield
-            lfHtmlAttributes={{
+          <LfTextfieldFC
+            framework={mgr}
+            htmlAttributes={{
               type: "color",
             }}
-            lfLabel={config.label}
-            lfValue={String(value)}
-            onLf-textfield-event={(e) => controls.colorpicker(e, config.id)}
-          ></lf-textfield>
+            label={config.label}
+            value={String(value)}
+            onChange={handleChange}
+            onInput={handleInput}
+          />
           {infoIcon}
         </div>
       );
+    }
 
     case "multiinput":
       return (
@@ -293,23 +305,35 @@ const createControl = (
         </div>
       );
 
-    case "number":
+    case "number": {
+      // FC handler - calls controlChange directly without CustomEvent
+      const { controlChange } = adapter.handlers.settings;
+      const handleChange = (val: string) => {
+        controlChange(null, config.id, parseFloat(val) || 0, "change");
+      };
+      const handleInput = (val: string) => {
+        controlChange(null, config.id, parseFloat(val) || 0, "input");
+      };
+
       return (
         <div key={controlKey} class={bemClass(items._, items.item)}>
-          <lf-textfield
-            lfHtmlAttributes={{
+          <LfTextfieldFC
+            framework={mgr}
+            htmlAttributes={{
               max: config.max,
               min: config.min,
               step: config.step,
               type: "number",
             }}
-            lfLabel={config.label}
-            lfValue={String(value)}
-            onLf-textfield-event={(e) => controls.number(e, config.id)}
-          ></lf-textfield>
+            label={config.label}
+            value={String(value)}
+            onChange={handleChange}
+            onInput={handleInput}
+          />
           {infoIcon}
         </div>
       );
+    }
 
     case "select":
       return (

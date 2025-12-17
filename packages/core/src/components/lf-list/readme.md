@@ -211,14 +211,9 @@ Type: `Promise<void>`
  - [lf-select](../lf-select)
  - [lf-shapeeditor](../lf-shapeeditor)
 
-### Depends on
-
-- [lf-textfield](../lf-textfield)
-
 ### Graph
 ```mermaid
 graph TD;
-  lf-list --> lf-textfield
   lf-autocomplete --> lf-list
   lf-button --> lf-list
   lf-select --> lf-list

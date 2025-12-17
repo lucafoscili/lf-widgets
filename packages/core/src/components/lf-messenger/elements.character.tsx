@@ -1,9 +1,9 @@
 import {
-  LF_MESSENGER_MENU,
   LfMessengerAdapter,
   LfMessengerAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 import { statusIconOptions } from "./helpers.utils";
 
 export const prepCharacter = (
@@ -70,18 +70,19 @@ export const prepCharacter = (
       const isSaving = inProgress();
 
       return (
-        <lf-button
-          class={bemClass(blocks().character._, blocks().character.saveButton)}
-          data-cy={cyAttributes().button}
-          lfDataset={LF_MESSENGER_MENU(fw.theme)}
-          lfLabel={"Save"}
-          lfShowSpinner={isSaving}
-          lfStretchY={true}
-          lfStyling="flat"
-          onLf-button-event={button}
-          ref={assignRef(character, "save")}
-          title="Update the dataset with current settings."
-        ></lf-button>
+        <ButtonFC
+          className={bemClass(
+            blocks().character._,
+            blocks().character.saveButton,
+          )}
+          framework={fw}
+          label={"Save"}
+          showSpinner={isSaving}
+          styling="flat"
+          onClick={() => button()}
+          buttonRef={assignRef(character, "save")}
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion

@@ -25,10 +25,7 @@ import {
   LF_LIST_IDS,
   LF_LIST_PARTS,
 } from "./list.constants";
-import {
-  LfTextfieldElement,
-  LfTextfieldEventPayload,
-} from "./textfield.declarations";
+import { LfTextfieldEventPayload } from "./textfield.declarations";
 
 //#region Class
 export interface LfListInterface
@@ -109,7 +106,8 @@ export interface LfListAdapter
  */
 export interface LfListAdapterRefs extends LfComponentAdapterRefs {
   deleteIcon: HTMLElement | null;
-  filter: LfTextfieldElement | null;
+  /** FC usage: input element from LfTextfieldFC */
+  filter: HTMLInputElement | HTMLTextAreaElement | null;
   icon: HTMLElement | null;
   node: HTMLElement | null;
   subtitle: HTMLElement | null;
@@ -141,7 +139,10 @@ export interface LfListAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfListAdapterHandlers extends LfComponentAdapterHandlers {
   deleteIcon: (event: MouseEvent, node: LfDataNode) => Promise<void>;
+  /** @deprecated Use filterInput for FC usage */
   filter: (event: CustomEvent<LfTextfieldEventPayload>) => Promise<void>;
+  /** FC-compatible filter input handler (event first per base type contract) */
+  filterInput: (event: Event, value: string) => void;
   node: {
     blur: (event: FocusEvent, node: LfDataNode, index: number) => Promise<void>;
     click: (

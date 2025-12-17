@@ -313,11 +313,10 @@ Type: `Promise<void>`
 
 - [lf-masonry](../lf-masonry)
 - [lf-tree](../lf-tree)
-- [lf-button](../lf-button)
-- [lf-textfield](../lf-textfield)
 - [lf-spinner](../lf-spinner)
 - [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
 - [lf-chart](../lf-chart)
@@ -327,6 +326,7 @@ Type: `Promise<void>`
 - [lf-image](../lf-image)
 - [lf-photoframe](../lf-photoframe)
 - [lf-progressbar](../lf-progressbar)
+- [lf-textfield](../lf-textfield)
 - [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
@@ -341,11 +341,10 @@ Type: `Promise<void>`
 graph TD;
   lf-shapeeditor --> lf-masonry
   lf-shapeeditor --> lf-tree
-  lf-shapeeditor --> lf-button
-  lf-shapeeditor --> lf-textfield
   lf-shapeeditor --> lf-spinner
   lf-shapeeditor --> lf-accordion
   lf-shapeeditor --> lf-badge
+  lf-shapeeditor --> lf-button
   lf-shapeeditor --> lf-canvas
   lf-shapeeditor --> lf-card
   lf-shapeeditor --> lf-chart
@@ -355,6 +354,7 @@ graph TD;
   lf-shapeeditor --> lf-image
   lf-shapeeditor --> lf-photoframe
   lf-shapeeditor --> lf-progressbar
+  lf-shapeeditor --> lf-textfield
   lf-shapeeditor --> lf-toggle
   lf-shapeeditor --> lf-typewriter
   lf-shapeeditor --> lf-upload
@@ -363,9 +363,10 @@ graph TD;
   lf-shapeeditor --> lf-checkbox
   lf-shapeeditor --> lf-multiinput
   lf-shapeeditor --> lf-select
-  lf-masonry --> lf-button
+  lf-masonry --> lf-spinner
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
+  lf-masonry --> lf-button
   lf-masonry --> lf-canvas
   lf-masonry --> lf-card
   lf-masonry --> lf-chart
@@ -379,8 +380,6 @@ graph TD;
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -397,7 +396,7 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-canvas --> lf-image
+  lf-button --> lf-list
   lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -415,15 +414,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
-  lf-tree --> lf-textfield
   lf-tree --> lf-accordion
   lf-tree --> lf-badge
   lf-tree --> lf-button
@@ -436,13 +431,12 @@ graph TD;
   lf-tree --> lf-image
   lf-tree --> lf-photoframe
   lf-tree --> lf-progressbar
+  lf-tree --> lf-textfield
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
   lf-multiinput --> lf-chip
-  lf-multiinput --> lf-textfield
   lf-select --> lf-list
-  lf-select --> lf-textfield
   style lf-shapeeditor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

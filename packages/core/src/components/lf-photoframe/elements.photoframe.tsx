@@ -4,6 +4,7 @@ import {
   LfPhotoframeAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { LfImageFC } from "../lf-image/lf-image-fc";
 
 /**
  * Prepares JSX factory functions for the photoframe component.
@@ -53,13 +54,13 @@ export const prepPhotoframeJsx = (
         >
           <div class={bemClass(overlay._, overlay.content)}>
             {icon && (
-              <lf-image
-                class={bemClass(overlay._, overlay.icon)}
-                lfSizeX="3em"
-                lfSizeY="3em"
-                lfValue={icon}
-                part={p.icon}
-              ></lf-image>
+              <LfImageFC
+                className={bemClass(overlay._, overlay.icon)}
+                framework={mgr}
+                sizeX="3em"
+                sizeY="3em"
+                value={icon}
+              />
             )}
             {title && (
               <div class={bemClass(overlay._, overlay.title)} part={p.title}>

@@ -167,11 +167,8 @@ Type: `Promise<void>`
  - [lf-breadcrumbs](../lf-breadcrumbs)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
- - [lf-chat](../lf-chat)
  - [lf-code](../lf-code)
- - [lf-compare](../lf-compare)
  - [lf-masonry](../lf-masonry)
- - [lf-messenger](../lf-messenger)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tabbar](../lf-tabbar)
  - [lf-tree](../lf-tree)
@@ -184,17 +181,13 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-accordion --> lf-button
   lf-article --> lf-button
   lf-breadcrumbs --> lf-button
   lf-card --> lf-button
   lf-carousel --> lf-button
-  lf-chat --> lf-button
   lf-code --> lf-button
-  lf-compare --> lf-button
   lf-masonry --> lf-button
-  lf-messenger --> lf-button
   lf-shapeeditor --> lf-button
   lf-tabbar --> lf-button
   lf-tree --> lf-button

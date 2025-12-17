@@ -24,7 +24,6 @@ import {
   LfLLMToolHandlers,
 } from "../framework/llm.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LF_CHAT_BLOCKS,
   LF_CHAT_EVENTS,
@@ -41,10 +40,6 @@ import {
 import { LfChipElement, LfChipEventPayload } from "./chip.declarations";
 import { LfProgressbarElement } from "./progressbar.declarations";
 import { LfSpinnerElement } from "./spinner.declarations";
-import {
-  LfTextfieldElement,
-  LfTextfieldEventPayload,
-} from "./textfield.declarations";
 
 //#region Class
 /**
@@ -189,52 +184,84 @@ export interface LfChatAdapterJsx extends LfComponentAdapterJsx {
 export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
   chat: {
     attachments: LfChipElement | null;
-    clear: LfButtonElement | null;
-    configuration: LfButtonElement | null;
-    editCancel: LfButtonElement | null;
-    editConfirm: LfButtonElement | null;
-    editTextarea: LfTextfieldElement | null;
+    /** FC usage: HTMLButtonElement */
+    clear: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    configuration: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    editCancel: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    editConfirm: HTMLButtonElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    editTextarea: HTMLInputElement | HTMLTextAreaElement | null;
     fileInput: HTMLInputElement | null;
     imageInput: HTMLInputElement | null;
-    retry: LfButtonElement | null;
-    send: LfButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    retry: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    send: HTMLButtonElement | null;
     spinner: LfSpinnerElement | null;
-    stt: LfButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    stt: HTMLButtonElement | null;
   };
   input: {
-    attachFile: LfButtonElement | null;
-    attachImage: LfButtonElement | null;
-    configuration: LfButtonElement | null;
-    fullScreen: LfButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    attachFile: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    attachImage: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    configuration: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    fullScreen: HTMLButtonElement | null;
     progressbar: LfProgressbarElement | null;
-    textarea: LfTextfieldElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    textarea: HTMLInputElement | HTMLTextAreaElement | null;
   };
   settings: {
     agentEnabled: LfCheckboxElement | null;
-    agentMaxIterations: LfTextfieldElement | null;
-    agentSystemPromptSuffix: LfTextfieldElement | null;
-    back: LfButtonElement | null;
-    contextWindow: LfTextfieldElement | null;
-    endpoint: LfTextfieldElement | null;
-    exportHistory: LfButtonElement | null;
-    frequencyPenalty: LfTextfieldElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    agentMaxIterations: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    agentSystemPromptSuffix: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLButtonElement */
+    back: HTMLButtonElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    contextWindow: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    endpoint: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLButtonElement */
+    exportHistory: HTMLButtonElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    frequencyPenalty: HTMLInputElement | HTMLTextAreaElement | null;
     historyInput: HTMLInputElement | null;
-    importHistory: LfButtonElement | null;
-    maxTokens: LfTextfieldElement | null;
-    polling: LfTextfieldElement | null;
-    presencePenalty: LfTextfieldElement | null;
-    system: LfTextfieldElement | null;
-    seed: LfTextfieldElement | null;
-    temperature: LfTextfieldElement | null;
+    /** FC usage: HTMLButtonElement */
+    importHistory: HTMLButtonElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    maxTokens: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    polling: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    presencePenalty: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    system: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    seed: HTMLInputElement | HTMLTextAreaElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    temperature: HTMLInputElement | HTMLTextAreaElement | null;
     tools: Map<string, LfCheckboxElement>;
-    topP: LfTextfieldElement | null;
+    /** FC usage: HTMLInputElement | HTMLTextAreaElement */
+    topP: HTMLInputElement | HTMLTextAreaElement | null;
   };
   toolbar: {
-    copyContent: LfButtonElement | null;
-    deleteMessage: LfButtonElement | null;
-    editMessage: LfButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    copyContent: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    deleteMessage: HTMLButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    editMessage: HTMLButtonElement | null;
     messageAttachments: Map<string, LfChipElement>;
-    regenerate: LfButtonElement | null;
+    /** FC usage: HTMLButtonElement */
+    regenerate: HTMLButtonElement | null;
     toolExecution: LfChipElement | null;
   };
 }
@@ -243,20 +270,22 @@ export interface LfChatAdapterRefs extends LfComponentAdapterRefs {
  */
 export interface LfChatAdapterHandlers extends LfComponentAdapterHandlers {
   chat: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => void;
+    /** FC: Direct callback receiving button id */
+    button: (e: MouseEvent, id: string) => void;
     chip: (e: CustomEvent<LfChipEventPayload>) => void;
-    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** FC: Direct callback receiving keydown event */
+    textfield: (e: KeyboardEvent) => void;
   };
   settings: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => void;
+    /** FC: Direct callback receiving button id */
+    button: (e: MouseEvent, id: string) => void;
     checkbox: (e: CustomEvent<LfCheckboxEventPayload>) => void;
-    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** FC: Direct callback receiving textfield id and value */
+    textfield: (e: Event, id: string, value: string) => void;
   };
   toolbar: {
-    button: (
-      e: CustomEvent<LfButtonEventPayload>,
-      m: LfLLMChoiceMessage,
-    ) => void;
+    /** FC: Direct callback receiving button id and message */
+    button: (e: MouseEvent, id: string, m: LfLLMChoiceMessage) => void;
     chip: (e: CustomEvent<LfChipEventPayload>, m: LfLLMChoiceMessage) => void;
   };
 }

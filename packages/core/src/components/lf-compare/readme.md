@@ -103,17 +103,14 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [lf-button](../lf-button)
 - [lf-tree](../lf-tree)
+- [lf-spinner](../lf-spinner)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-compare --> lf-button
   lf-compare --> lf-tree
-  lf-button --> lf-list
-  lf-list --> lf-textfield
-  lf-tree --> lf-textfield
+  lf-compare --> lf-spinner
   lf-tree --> lf-accordion
   lf-tree --> lf-badge
   lf-tree --> lf-button
@@ -126,6 +123,7 @@ graph TD;
   lf-tree --> lf-image
   lf-tree --> lf-photoframe
   lf-tree --> lf-progressbar
+  lf-tree --> lf-textfield
   lf-tree --> lf-toggle
   lf-tree --> lf-typewriter
   lf-tree --> lf-upload
@@ -145,7 +143,7 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-canvas --> lf-image
+  lf-button --> lf-list
   lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -163,14 +161,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   style lf-compare fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

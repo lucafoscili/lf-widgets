@@ -423,7 +423,10 @@ export class LfList implements LfListInterface {
     const { refs } = this.#adapter.elements;
 
     this.#applyFilter(value);
-    await refs.filter.setValue(value);
+    // With FC, refs.filter is the HTMLInputElement directly
+    if (refs.filter) {
+      refs.filter.value = value;
+    }
   }
   /**
    * Initiates the unmount sequence, which removes the component from the DOM after a delay.

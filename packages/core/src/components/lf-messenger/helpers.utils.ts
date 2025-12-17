@@ -66,20 +66,19 @@ export const createNode = async <
 
   const images = byType(type);
 
-  const nodeId =
-    (await id.getValue()) as LfMessengerChildIds<LfMessengerUnionChildIds>;
+  const nodeId = id?.value as LfMessengerChildIds<LfMessengerUnionChildIds>;
 
   const existingImage = images?.find((i) => i.id === nodeId);
   if (existingImage) {
-    existingImage.description = await description.getValue();
-    existingImage.cells.lfImage.value = await imageUrl.getValue();
-    existingImage.value = await title.getValue();
+    existingImage.description = description?.value || "";
+    existingImage.cells.lfImage.value = imageUrl?.value || "";
+    existingImage.value = title?.value || "";
   } else {
     const node: LfMessengerBaseChildNode<LfMessengerUnionChildIds> = {
-      cells: { lfImage: { shape: "image", value: await imageUrl.getValue() } },
+      cells: { lfImage: { shape: "image", value: imageUrl?.value || "" } },
       id: nodeId,
-      description: await description.getValue(),
-      value: await title.getValue(),
+      description: description?.value || "",
+      value: title?.value || "",
     };
 
     images.push(node);

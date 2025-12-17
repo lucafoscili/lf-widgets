@@ -58,9 +58,12 @@ export const calcTokens = async (
 export const clearTextarea = async (adapter: LfChatAdapter) => {
   const { textarea } = adapter.elements.refs.input;
 
-  requestAnimationFrame(async () => {
-    await textarea.setValue("");
-    await textarea.setFocus();
+  requestAnimationFrame(() => {
+    // FC: Use native element APIs
+    if (textarea) {
+      textarea.value = "";
+      textarea.focus();
+    }
   });
 };
 //#endregion

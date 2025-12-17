@@ -1,6 +1,5 @@
 import {
   LfDataNode,
-  LfTextfieldEventPayload,
   LfTreeAdapter,
   LfTreeAdapterHandlers,
 } from "@lf-widgets/foundations";
@@ -10,20 +9,26 @@ export const createHandlers = (
 ): LfTreeAdapterHandlers => ({
   //#region filter
   filter: {
-    input: (e: CustomEvent<LfTextfieldEventPayload>) => {
+    /**
+     * FC-compatible filter input handler.
+     * Called directly by LfTextfieldFC's onInput callback.
+     */
+    input: (e: Event, value: string) => {
       const adapter = getAdapter();
       const { controller, dispatcher } = adapter;
       const comp = controller.get.compInstance();
-      const value = e.detail.inputValue?.toLowerCase() || "";
+      const filterValue = value?.toLowerCase() || "";
 
       clearTimeout(comp._filterTimeout);
 
       comp._filterTimeout = setTimeout(() => {
-        controller.set.filter.setValue(value);
-        controller.set.filter.apply(value);
+        controller.set.filter.setValue(filterValue);
+        controller.set.filter.apply(filterValue);
       }, 300);
 
-      dispatcher.emit("lf-event", { originalEvent: e });
+      dispatcher.emit("lf-event", {
+        originalEvent: e as unknown as CustomEvent,
+      });
     },
   },
   //#endregion

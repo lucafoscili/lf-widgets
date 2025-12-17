@@ -3,6 +3,7 @@ import {
   LfMultiInputAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { MultiinputFC } from "./fc/multiinput-fc";
 
 /**
@@ -66,19 +67,29 @@ export const prepMultiInputJsx = (
 
       const { assignRef, sanitizeProps, theme } = framework;
       const { bemClass } = theme;
-      const { textfield } = handlers;
+
+      // Extract sanitized textfield props
+      const sanitizedProps = sanitizeProps(
+        compInstance.lfTextfieldProps,
+        "LfTextfield",
+      );
 
       return (
-        <lf-textfield
-          class={bemClass(blocks._, blocks.textfield)}
-          lfUiSize={compInstance.lfUiSize}
-          lfUiState={compInstance.lfUiState}
-          {...sanitizeProps(compInstance.lfTextfieldProps, "LfTextfield")}
-          lfTrailingIconAction="--lf-icon-clear"
-          lfValue={compInstance.lfValue}
-          onLf-textfield-event={textfield}
-          part={parts.textfield}
-          ref={assignRef(refs, "textfield")}
+        <LfTextfieldFC
+          className={bemClass(blocks._, blocks.textfield)}
+          disabled={compInstance.lfUiState === "disabled"}
+          framework={framework}
+          icon={sanitizedProps?.lfIcon}
+          inputRef={(el) => assignRef(refs, "textfield")(el)}
+          label={sanitizedProps?.lfLabel}
+          onIconClick={handlers.textfieldIconClick}
+          onInput={(value, e) => handlers.textfieldInput(e, value)}
+          onKeyDown={handlers.textfieldKeyDown}
+          styling={sanitizedProps?.lfStyling || "flat"}
+          trailingIconAction="--lf-icon-clear"
+          uiSize={compInstance.lfUiSize}
+          uiState={compInstance.lfUiState}
+          value={compInstance.lfValue || ""}
         />
       );
     },

@@ -1,9 +1,11 @@
 import {
   LF_THEME_ICONS,
+  LfIconType,
   LfSelectAdapter,
   LfSelectAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { SelectFC } from "./fc/select-fc";
 
 export const prepSelectJsx = (
@@ -65,29 +67,45 @@ export const prepSelectJsx = (
       const { refs } = elements;
       const { blocks, compInstance, framework, parts, selectedNode } =
         controller.get;
-      const { assignRef, sanitizeProps, theme } = framework();
+      const mgr = framework();
+      const { assignRef, sanitizeProps, theme } = mgr;
       const { bemClass } = theme;
-      const { textfield } = handlers;
+      const { textfieldClick, textfieldKeydown, textfieldIconClick } = handlers;
       const comp = compInstance();
 
-      const htmlAttrs = comp.lfTextfieldProps?.lfHtmlAttributes || {};
-      htmlAttrs.autocomplete = "off";
-      htmlAttrs.readonly = true;
-      htmlAttrs.role = "combobox";
-      const htmlSanitized = sanitizeProps(htmlAttrs);
+      // Map lfTextfieldProps to FC props
+      const textfieldProps = comp.lfTextfieldProps || {};
+      const icon = textfieldProps.lfIcon;
+      const label = textfieldProps.lfLabel;
+      const styling = textfieldProps.lfStyling || "flat";
+
+      // Get dropdown icon from theme
+      const { variables } = theme.get.current();
+      const trailingIconAction = variables[
+        LF_THEME_ICONS.dropdown
+      ] as LfIconType;
 
       return (
-        <lf-textfield
-          lfUiSize={comp.lfUiSize}
-          lfUiState={comp.lfUiState}
-          {...sanitizeProps(comp.lfTextfieldProps, "LfTextfield")}
-          class={bemClass(blocks().select._, blocks().select.textfield)}
-          lfHtmlAttributes={htmlSanitized}
-          lfTrailingIconAction={LF_THEME_ICONS.dropdown}
-          lfValue={String(selectedNode()?.value || "")}
-          onLf-textfield-event={textfield}
-          part={parts().textfield}
-          ref={assignRef(refs, "textfield")}
+        <LfTextfieldFC
+          className={bemClass(blocks().select._, blocks().select.textfield)}
+          framework={mgr}
+          htmlAttributes={{
+            autocomplete: "off",
+            readonly: true,
+            role: "combobox",
+          }}
+          icon={icon}
+          inputRef={(el) => assignRef(refs, "textfield")(el)}
+          label={label}
+          onClick={(e) => textfieldClick(e)}
+          onIconClick={(e) => textfieldIconClick(e)}
+          onKeyDown={(e) => textfieldKeydown(e)}
+          styling={styling}
+          trailingIcon={false}
+          trailingIconAction={LF_THEME_ICONS.dropdown}
+          uiSize={comp.lfUiSize}
+          uiState={comp.lfUiState}
+          value={String(selectedNode()?.value || "")}
         />
       );
     },

@@ -76,8 +76,9 @@ export const prepChatActions = (
   preparePrompt: async () => {
     const { textarea } = getAdapter().elements.refs.input;
 
-    await textarea.setBlur();
-    const message = await textarea.getValue();
+    // FC: Use native element APIs
+    textarea?.blur();
+    const message = textarea?.value || "";
     if (message) {
       const newMessage = ensureMessageId({
         role: "user",

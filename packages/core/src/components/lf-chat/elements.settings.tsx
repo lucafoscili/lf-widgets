@@ -6,6 +6,8 @@ import {
   LfLLMToolDefinition,
 } from "@lf-widgets/foundations";
 import { Fragment, h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { getEffectiveConfig } from "./helpers.config";
 
 export const prepSettings = (
@@ -28,17 +30,16 @@ export const prepSettings = (
       const icon = themeGet.current().variables["--lf-icon-previous"];
 
       return (
-        <lf-button
-          class={bemClass(blocks.settings._, blocks.settings.back)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.settings._, blocks.settings.back)}
+          framework={get.framework()}
+          icon={icon}
           id={LF_CHAT_IDS.options.back}
-          lfIcon={icon}
-          lfLabel="Back"
-          lfStretchX={true}
-          onLf-button-event={button}
-          part={parts.back}
-          ref={assignRef(settings, "back")}
-        ></lf-button>
+          label="Back"
+          onClick={(e) => button(e, LF_CHAT_IDS.options.back)}
+          buttonRef={assignRef(settings, "back")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion
@@ -75,35 +76,35 @@ export const prepSettings = (
             ref={assignRef(settings, "agentEnabled")}
             title="When enabled, the assistant can autonomously execute multiple tool calls to complete a task."
           ></lf-checkbox>
-          <lf-textfield
-            class={bemClass(blocks.settings._, blocks.settings.textfield)}
-            data-cy={cyAttributes.input}
-            id={LF_CHAT_IDS.options.agentMaxIterations}
-            lfHtmlAttributes={{
+          <LfTextfieldFC
+            className={bemClass(blocks.settings._, blocks.settings.textfield)}
+            framework={get.framework()}
+            htmlAttributes={{
               min: 1,
               max: 50,
               type: "number",
             }}
-            lfIcon={themeGet.icon("refresh")}
-            lfLabel="Max Iterations"
-            lfValue={stringify(maxIterations)}
-            onLf-textfield-event={textfield}
-            part={parts.agentMaxIterations}
-            ref={assignRef(settings, "agentMaxIterations")}
-            title="Maximum number of tool call iterations the agent can perform in a single request."
-          ></lf-textfield>
-          <lf-textfield
-            class={bemClass(blocks.settings._, blocks.settings.textarea)}
-            data-cy={cyAttributes.input}
+            icon={themeGet.icon("refresh")}
+            id={LF_CHAT_IDS.options.agentMaxIterations}
+            label="Max Iterations"
+            value={stringify(maxIterations)}
+            onChange={(e, value) =>
+              textfield(e, LF_CHAT_IDS.options.agentMaxIterations, value)
+            }
+            inputRef={assignRef(settings, "agentMaxIterations")}
+          />
+          <LfTextfieldFC
+            className={bemClass(blocks.settings._, blocks.settings.textarea)}
+            framework={get.framework()}
             id={LF_CHAT_IDS.options.agentSystemPromptSuffix}
-            lfLabel="Agent System Prompt Suffix"
-            lfStyling="textarea"
-            lfValue={systemPromptSuffix}
-            onLf-textfield-event={textfield}
-            part={parts.agentSystemPromptSuffix}
-            ref={assignRef(settings, "agentSystemPromptSuffix")}
-            title="Additional instructions appended to the system prompt when agent mode is active."
-          ></lf-textfield>
+            label="Agent System Prompt Suffix"
+            styling="textarea"
+            value={systemPromptSuffix}
+            onChange={(e, value) =>
+              textfield(e, LF_CHAT_IDS.options.agentSystemPromptSuffix, value)
+            }
+            inputRef={assignRef(settings, "agentSystemPromptSuffix")}
+          />
         </Fragment>
       );
     },
@@ -126,21 +127,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.contextWindow}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             min: 1024,
             type: "number",
           }}
-          lfIcon={themeGet.icon("arrowAutofitContent")}
-          lfLabel="Context Window Size"
-          lfValue={stringify(effectiveConfig.llm.contextWindow)}
-          onLf-textfield-event={textfield}
-          part={parts.contextWindow}
-          ref={assignRef(settings, "contextWindow")}
-        ></lf-textfield>
+          icon={themeGet.icon("arrowAutofitContent")}
+          id={LF_CHAT_IDS.options.contextWindow}
+          label="Context Window Size"
+          value={stringify(effectiveConfig.llm.contextWindow)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.contextWindow, value)
+          }
+          inputRef={assignRef(settings, "contextWindow")}
+        />
       );
     },
     //#endregion
@@ -161,17 +163,18 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          icon={themeGet.icon("network")}
           id={LF_CHAT_IDS.options.endpointUrl}
-          lfIcon={themeGet.icon("network")}
-          lfLabel="Endpoint URL"
-          lfValue={effectiveConfig.llm.endpointUrl}
-          onLf-textfield-event={textfield}
-          part={parts.endpointUrl}
-          ref={assignRef(settings, "endpoint")}
-        ></lf-textfield>
+          label="Endpoint URL"
+          value={effectiveConfig.llm.endpointUrl}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.endpointUrl, value)
+          }
+          inputRef={assignRef(settings, "endpoint")}
+        />
       );
     },
     //#endregion
@@ -190,17 +193,16 @@ export const prepSettings = (
       const { bemClass, get: themeGet } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.settings._, blocks.settings.exportHistory)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.settings._, blocks.settings.exportHistory)}
+          framework={get.framework()}
+          icon={themeGet.icon("download")}
           id={LF_CHAT_IDS.options.exportHistory}
-          lfIcon={themeGet.icon("download")}
-          lfLabel="Export history"
-          lfStretchX={true}
-          onLf-button-event={button}
-          part={parts.exportHistory}
-          ref={assignRef(settings, "exportHistory")}
-        ></lf-button>
+          label="Export history"
+          onClick={(e) => button(e, LF_CHAT_IDS.options.exportHistory)}
+          buttonRef={assignRef(settings, "exportHistory")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion
@@ -222,21 +224,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.frequencyPenalty}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             min: 0,
             type: "number",
           }}
-          lfIcon={themeGet.icon("codeCircle2")}
-          lfLabel="Frequency Penalty"
-          lfValue={stringify(effectiveConfig.llm.frequencyPenalty)}
-          onLf-textfield-event={textfield}
-          part={parts.frequencyPenalty}
-          ref={assignRef(settings, "frequencyPenalty")}
-        ></lf-textfield>
+          icon={themeGet.icon("codeCircle2")}
+          id={LF_CHAT_IDS.options.frequencyPenalty}
+          label="Frequency Penalty"
+          value={stringify(effectiveConfig.llm.frequencyPenalty)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.frequencyPenalty, value)
+          }
+          inputRef={assignRef(settings, "frequencyPenalty")}
+        />
       );
     },
     //#endregion
@@ -255,17 +258,16 @@ export const prepSettings = (
       const { bemClass, get: themeGet } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.settings._, blocks.settings.importHistory)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.settings._, blocks.settings.importHistory)}
+          framework={get.framework()}
+          icon={themeGet.icon("upload")}
           id={LF_CHAT_IDS.options.importHistory}
-          lfIcon={themeGet.icon("upload")}
-          lfLabel="Import history"
-          lfStretchX={true}
-          onLf-button-event={button}
-          part={parts.importHistory}
-          ref={assignRef(settings, "importHistory")}
-        ></lf-button>
+          label="Import history"
+          onClick={(e) => button(e, LF_CHAT_IDS.options.importHistory)}
+          buttonRef={assignRef(settings, "importHistory")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion
@@ -287,21 +289,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.maxTokens}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             min: 10,
             type: "number",
           }}
-          lfIcon={themeGet.icon("numbers")}
-          lfLabel="Max tokens count"
-          lfValue={stringify(effectiveConfig.llm.maxTokens)}
-          onLf-textfield-event={textfield}
-          part={parts.maxTokens}
-          ref={assignRef(settings, "maxTokens")}
-        ></lf-textfield>
+          icon={themeGet.icon("numbers")}
+          id={LF_CHAT_IDS.options.maxTokens}
+          label="Max tokens count"
+          value={stringify(effectiveConfig.llm.maxTokens)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.maxTokens, value)
+          }
+          inputRef={assignRef(settings, "maxTokens")}
+        />
       );
     },
     //#endregion
@@ -323,21 +326,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.polling}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             min: 10,
             type: "number",
           }}
-          lfIcon={themeGet.icon("hourglassLow")}
-          lfLabel="Polling interval"
-          lfValue={stringify(effectiveConfig.llm.pollingInterval)}
-          onLf-textfield-event={textfield}
-          part={parts.polling}
-          ref={assignRef(settings, "polling")}
-        ></lf-textfield>
+          icon={themeGet.icon("hourglassLow")}
+          id={LF_CHAT_IDS.options.polling}
+          label="Polling interval"
+          value={stringify(effectiveConfig.llm.pollingInterval)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.polling, value)
+          }
+          inputRef={assignRef(settings, "polling")}
+        />
       );
     },
     //#endregion
@@ -359,21 +363,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.presencePenalty}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             min: -2,
             type: "number",
           }}
-          lfIcon={themeGet.icon("schema")}
-          lfLabel="Presence penalty"
-          lfValue={stringify(effectiveConfig.llm.presencePenalty)}
-          onLf-textfield-event={textfield}
-          part={parts.presencePenalty}
-          ref={assignRef(settings, "presencePenalty")}
-        ></lf-textfield>
+          icon={themeGet.icon("schema")}
+          id={LF_CHAT_IDS.options.presencePenalty}
+          label="Presence penalty"
+          value={stringify(effectiveConfig.llm.presencePenalty)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.presencePenalty, value)
+          }
+          inputRef={assignRef(settings, "presencePenalty")}
+        />
       );
     },
     //#endregion
@@ -395,20 +400,19 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.seed}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             type: "number",
           }}
-          lfIcon={themeGet.icon("ikosaedr")}
-          lfLabel="Random Seed (-1 for random)"
-          lfValue={stringify(effectiveConfig.llm.seed)}
-          onLf-textfield-event={textfield}
-          part={parts.seed}
-          ref={assignRef(settings, "seed")}
-        ></lf-textfield>
+          icon={themeGet.icon("ikosaedr")}
+          id={LF_CHAT_IDS.options.seed}
+          label="Random Seed (-1 for random)"
+          value={stringify(effectiveConfig.llm.seed)}
+          onChange={(e, value) => textfield(e, LF_CHAT_IDS.options.seed, value)}
+          inputRef={assignRef(settings, "seed")}
+        />
       );
     },
     //#endregion
@@ -429,18 +433,18 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textarea)}
-          data-cy={cyAttributes.input}
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textarea)}
+          framework={get.framework()}
           id={LF_CHAT_IDS.options.system}
-          lfLabel="System prompt"
-          lfStyling="textarea"
-          lfValue={effectiveConfig.llm.systemPrompt}
-          onLf-textfield-event={textfield}
-          part={parts.system}
-          ref={assignRef(settings, "system")}
-          title="The system prompt is used to generate the first response in the conversation."
-        ></lf-textfield>
+          label="System prompt"
+          styling="textarea"
+          value={effectiveConfig.llm.systemPrompt}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.system, value)
+          }
+          inputRef={assignRef(settings, "system")}
+        />
       );
     },
     //#endregion
@@ -462,22 +466,23 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.temperature}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             max: 1,
             min: 0.1,
             type: "number",
           }}
-          lfIcon={themeGet.icon("temperature")}
-          lfLabel="Temperature"
-          lfValue={stringify(effectiveConfig.llm.temperature)}
-          onLf-textfield-event={textfield}
-          part={parts.temperature}
-          ref={assignRef(settings, "temperature")}
-        ></lf-textfield>
+          icon={themeGet.icon("temperature")}
+          id={LF_CHAT_IDS.options.temperature}
+          label="Temperature"
+          value={stringify(effectiveConfig.llm.temperature)}
+          onChange={(e, value) =>
+            textfield(e, LF_CHAT_IDS.options.temperature, value)
+          }
+          inputRef={assignRef(settings, "temperature")}
+        />
       );
     },
     //#endregion
@@ -586,23 +591,22 @@ export const prepSettings = (
       const effectiveConfig = getEffectiveConfig(adapter);
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.settings._, blocks.settings.textfield)}
-          data-cy={cyAttributes.input}
-          id={LF_CHAT_IDS.options.topP}
-          lfHtmlAttributes={{
+        <LfTextfieldFC
+          className={bemClass(blocks.settings._, blocks.settings.textfield)}
+          framework={get.framework()}
+          htmlAttributes={{
             max: 1,
             min: 0,
             step: 0.1,
             type: "number",
           }}
-          lfIcon={themeGet.icon("template")}
-          lfLabel="Top P"
-          lfValue={stringify(effectiveConfig.llm.topP)}
-          onLf-textfield-event={textfield}
-          part={parts.topP}
-          ref={assignRef(settings, "topP")}
-        ></lf-textfield>
+          icon={themeGet.icon("template")}
+          id={LF_CHAT_IDS.options.topP}
+          label="Top P"
+          value={stringify(effectiveConfig.llm.topP)}
+          onChange={(e, value) => textfield(e, LF_CHAT_IDS.options.topP, value)}
+          inputRef={assignRef(settings, "topP")}
+        />
       );
     },
     //#endregion

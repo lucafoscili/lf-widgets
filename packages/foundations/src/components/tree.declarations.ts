@@ -21,7 +21,6 @@ import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize } from "../framework/theme.declarations";
-import { LfTextfieldEventPayload } from "./textfield.declarations";
 import {
   LF_TREE_BLOCKS,
   LF_TREE_EVENTS,
@@ -169,7 +168,8 @@ export interface LfTreeAdapter
  */
 export interface LfTreeAdapterRefs extends LfComponentAdapterRefs {
   nodeElements: Record<string, HTMLElement | null>;
-  filterField: HTMLElement | null;
+  /** FC usage: input element from LfTextfieldFC */
+  filter: HTMLInputElement | HTMLTextAreaElement | null;
 }
 /**
  * Base getters extended with component-specific state reads.
@@ -336,7 +336,8 @@ export interface LfTreeAdapterHandlers extends LfComponentAdapterHandlers {
     pointerDown: (e: Event, node: LfDataNode) => void;
   };
   filter: {
-    input: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** FC-compatible filter input handler (event first per base type contract) */
+    input: (e: Event, value: string) => void;
   };
 }
 //#endregion
@@ -635,7 +636,8 @@ export interface LfTreeFCProps {
   /** Reference callbacks */
   refs?: {
     tree?: (el: HTMLDivElement | null) => void;
-    filterField?: (el: HTMLElement | null) => void;
+    /** FC usage: input element from LfTextfieldFC */
+    filter?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
     nodeElements?: Record<string, HTMLElement | null>;
   };
   /** Whether selection is enabled */

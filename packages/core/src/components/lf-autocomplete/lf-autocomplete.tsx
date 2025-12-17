@@ -365,7 +365,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
     this.inputValue = "";
     const { textfield } = this.#adapter.elements.refs;
     if (textfield) {
-      await textfield.setValue("");
+      textfield.value = "";
     }
   }
   /**
@@ -447,7 +447,7 @@ export class LfAutocomplete implements LfAutocompleteInterface {
     this.inputValue = value;
     const { textfield } = this.#adapter.elements.refs;
     if (textfield) {
-      await textfield.setValue(value);
+      textfield.value = value;
     }
   }
   /**

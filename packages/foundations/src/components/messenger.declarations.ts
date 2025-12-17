@@ -16,7 +16,6 @@ import {
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
 import { LfDataDataset, LfDataNode } from "../framework/data.declarations";
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import {
   LfChatElement,
   LfChatEventPayload,
@@ -34,7 +33,6 @@ import {
   LF_MESSENGER_PARTS,
 } from "./messenger.constants";
 import { LfTabbarElement, LfTabbarEventPayload } from "./tabbar.declarations";
-import { LfTextfieldElement } from "./textfield.declarations";
 
 //#region Class
 /**
@@ -149,36 +147,36 @@ export interface LfMessengerAdapterRefs extends LfComponentAdapterRefs {
   character: {
     avatar: HTMLImageElement;
     biography: LfCodeElement;
-    save: LfButtonElement;
+    save: HTMLButtonElement;
     statusIcon: LfImageElement;
   };
   chat: {
     chat: LfChatElement;
-    leftExpander: LfButtonElement;
-    rightExpander: LfButtonElement;
+    leftExpander: HTMLButtonElement;
+    rightExpander: HTMLButtonElement;
     tabbar: LfTabbarElement;
   };
   customization: {
     filters: LfChipElement;
     form: {
       [K in LfMessengerImageTypes]: {
-        add: LfButtonElement;
-        cancel: LfButtonElement;
-        confirm: LfButtonElement;
-        id: LfTextfieldElement;
-        title: LfTextfieldElement;
-        imageUrl: LfTextfieldElement;
-        description: LfTextfieldElement;
+        add: HTMLButtonElement;
+        cancel: HTMLButtonElement;
+        confirm: HTMLButtonElement;
+        id: HTMLInputElement | HTMLTextAreaElement;
+        title: HTMLInputElement | HTMLTextAreaElement;
+        imageUrl: HTMLInputElement | HTMLTextAreaElement;
+        description: HTMLInputElement | HTMLTextAreaElement;
       };
     };
     list: {
-      edit: LfButtonElement;
-      remove: LfButtonElement;
+      edit: HTMLButtonElement;
+      remove: HTMLButtonElement;
     };
   };
   options: {
-    back: LfButtonElement;
-    customize: LfButtonElement;
+    back: HTMLButtonElement;
+    customize: HTMLButtonElement;
   };
 }
 /**
@@ -186,11 +184,11 @@ export interface LfMessengerAdapterRefs extends LfComponentAdapterRefs {
  */
 export interface LfMessengerAdapterHandlers extends LfComponentAdapterHandlers {
   character: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    button: (e: MouseEvent) => Promise<void>;
     list: (e: CustomEvent<LfListEventPayload>) => Promise<void>;
   };
   chat: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    button: (e: MouseEvent, id: string) => Promise<void>;
     chat: (e: CustomEvent<LfChatEventPayload>) => Promise<void>;
     tabbar: (e: CustomEvent<LfTabbarEventPayload>) => Promise<void>;
   };
@@ -199,7 +197,7 @@ export interface LfMessengerAdapterHandlers extends LfComponentAdapterHandlers {
       T1 extends LfMessengerImageTypes,
       T2 extends LfMessengerBaseChildNode<LfMessengerUnionChildIds>,
     >(
-      e: CustomEvent<LfButtonEventPayload>,
+      e: MouseEvent,
       type: T1,
       action: "add" | "cancel" | "confirm" | "edit" | "delete",
       node: T2,
@@ -212,7 +210,7 @@ export interface LfMessengerAdapterHandlers extends LfComponentAdapterHandlers {
     ) => Promise<void>;
   };
   options: {
-    button: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    button: (e: MouseEvent, id: string) => Promise<void>;
   };
 }
 /**
@@ -724,10 +722,10 @@ export interface LfMessengerHistory {
  * Utility interface used by the `lf-messenger` component.
  */
 export interface LfMessengerImageEditComponents {
-  descriptionTextarea: LfTextfieldElement;
-  idTextfield: LfTextfieldElement;
-  titleTextarea: LfTextfieldElement;
-  imageUrlTextarea: LfTextfieldElement;
+  descriptionTextarea: HTMLInputElement | HTMLTextAreaElement | null;
+  idTextfield: HTMLInputElement | HTMLTextAreaElement | null;
+  titleTextarea: HTMLInputElement | HTMLTextAreaElement | null;
+  imageUrlTextarea: HTMLInputElement | HTMLTextAreaElement | null;
 }
 /**
  * Utility type used by the `lf-messenger` component.

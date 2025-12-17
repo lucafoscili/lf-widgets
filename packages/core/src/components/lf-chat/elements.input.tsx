@@ -4,6 +4,8 @@ import {
   LfChatAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { getEffectiveConfig } from "./helpers.config";
 
 export const prepInput = (
@@ -32,19 +34,18 @@ export const prepInput = (
         : "Attach an image (ensure the model supports image inputs).";
 
       return (
-        <lf-button
-          class={bemClass(blocks.input._, blocks.input.attachImage)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.input._, blocks.input.attachImage)}
+          framework={get.framework()}
+          icon={"--lf-icon-image"}
           id={LF_CHAT_IDS.input.attachImage}
-          lfIcon={"--lf-icon-image"}
-          lfStretchY={true}
-          lfStyling={hasAttachments ? "raised" : "flat"}
-          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
-          onLf-button-event={button}
-          part={parts.attachImage}
-          ref={assignRef(input, "attachImage")}
-          title={title}
-        ></lf-button>
+          disabled={Boolean(get.currentPrompt())}
+          onClick={() => button(LF_CHAT_IDS.input.attachImage)}
+          buttonRef={assignRef(input, "attachImage")}
+          styling={hasAttachments ? "raised" : "flat"}
+          uiState={get.currentPrompt() ? "disabled" : "primary"}
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion
@@ -71,19 +72,18 @@ export const prepInput = (
         : "Attach a file (ensure the model supports file inputs).";
 
       return (
-        <lf-button
-          class={bemClass(blocks.input._, blocks.input.attachFile)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.input._, blocks.input.attachFile)}
+          framework={get.framework()}
+          icon={"--lf-icon-attachment"}
           id={LF_CHAT_IDS.input.attachFile}
-          lfIcon={"--lf-icon-attachment"}
-          lfStretchY={true}
-          lfStyling={hasAttachments ? "raised" : "flat"}
-          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
-          onLf-button-event={button}
-          part={parts.attachFile}
-          ref={assignRef(input, "attachFile")}
-          title={title}
-        ></lf-button>
+          disabled={Boolean(get.currentPrompt())}
+          onClick={() => button(LF_CHAT_IDS.input.attachFile)}
+          buttonRef={assignRef(input, "attachFile")}
+          styling={hasAttachments ? "raised" : "flat"}
+          uiState={get.currentPrompt() ? "disabled" : "primary"}
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion
@@ -102,18 +102,16 @@ export const prepInput = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.input._, blocks.input.configuration)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.input._, blocks.input.configuration)}
+          framework={get.framework()}
+          icon="settings"
           id={LF_CHAT_IDS.input.configuration}
-          lfIcon="settings"
-          lfStretchY={true}
-          lfStyling="flat"
-          onLf-button-event={button}
-          part={parts.configuration}
-          ref={assignRef(input, "configuration")}
-          title="Open chat settings"
-        ></lf-button>
+          onClick={() => button(LF_CHAT_IDS.input.configuration)}
+          buttonRef={assignRef(input, "configuration")}
+          styling="flat"
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion
@@ -132,17 +130,15 @@ export const prepInput = (
       const { bemClass } = theme;
 
       return (
-        <lf-button
-          class={bemClass(blocks.input._, blocks.input.fullScreen)}
-          data-cy={cyAttributes.button}
+        <ButtonFC
+          className={bemClass(blocks.input._, blocks.input.fullScreen)}
+          framework={get.framework()}
+          icon="maximize"
           id={LF_CHAT_IDS.input.fullScreen}
-          lfIcon={"maximize"}
-          lfStyling="flat"
-          onLf-button-event={button}
-          part={parts.fullScreen}
-          ref={assignRef(input, "fullScreen")}
-          title="Toggle full screen mode"
-        ></lf-button>
+          onClick={() => button(LF_CHAT_IDS.input.fullScreen)}
+          buttonRef={assignRef(input, "fullScreen")}
+          styling="flat"
+        />
       );
     },
 
@@ -194,18 +190,18 @@ export const prepInput = (
       const { bemClass } = theme;
 
       return (
-        <lf-textfield
-          class={bemClass(blocks.input._, blocks.input.textarea)}
-          data-cy={cyAttributes.input}
+        <LfTextfieldFC
+          className={bemClass(blocks.input._, blocks.input.textarea)}
+          framework={get.framework()}
           id={LF_CHAT_IDS.input.textarea}
-          lfStretchX={true}
-          lfLabel="What's on your mind?"
-          lfStyling="textarea"
-          lfUiState={get.currentPrompt() ? "disabled" : "primary"}
-          onLf-textfield-event={textfield}
-          part={parts.prompt}
-          ref={assignRef(input, "textarea")}
-        ></lf-textfield>
+          label="What's on your mind?"
+          styling="textarea"
+          disabled={Boolean(get.currentPrompt())}
+          uiState={get.currentPrompt() ? "disabled" : "primary"}
+          onKeyDown={(e) => textfield(e)}
+          inputRef={assignRef(input, "textarea")}
+          style={{ width: "100%" }}
+        />
       );
     },
     //#endregion

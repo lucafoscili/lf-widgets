@@ -113,11 +113,9 @@ Type: `Promise<void>`
  - [lf-accordion](../lf-accordion)
  - [lf-article](../lf-article)
  - [lf-breadcrumbs](../lf-breadcrumbs)
- - [lf-canvas](../lf-canvas)
  - [lf-card](../lf-card)
  - [lf-carousel](../lf-carousel)
  - [lf-masonry](../lf-masonry)
- - [lf-photoframe](../lf-photoframe)
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
@@ -127,11 +125,9 @@ graph TD;
   lf-accordion --> lf-image
   lf-article --> lf-image
   lf-breadcrumbs --> lf-image
-  lf-canvas --> lf-image
   lf-card --> lf-image
   lf-carousel --> lf-image
   lf-masonry --> lf-image
-  lf-photoframe --> lf-image
   lf-shapeeditor --> lf-image
   lf-tree --> lf-image
   style lf-image fill:#f9f,stroke:#333,stroke-width:4px

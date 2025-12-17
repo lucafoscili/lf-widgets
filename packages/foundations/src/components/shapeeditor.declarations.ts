@@ -20,7 +20,6 @@ import { LfDataDataset, LfDataShapes } from "../framework/data.declarations";
 import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUIState } from "../framework/theme.declarations";
 import { LfAccordionEventPayload } from "./accordion.declarations";
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
 import { LfListElement, LfListEventPayload } from "./list.declarations";
 import {
   LfMasonryElement,
@@ -36,10 +35,6 @@ import {
 } from "./shapeeditor.constants";
 import { LfSnackbarElement } from "./snackbar.declarations";
 import { LfSpinnerElement } from "./spinner.declarations";
-import {
-  LfTextfieldElement,
-  LfTextfieldEventPayload,
-} from "./textfield.declarations";
 import {
   LfTreeElement,
   LfTreeEventPayload,
@@ -174,14 +169,14 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
       /** Navigation tree component */
       tree: LfTreeElement;
       /** Tree toggle button */
-      expander: LfButtonElement;
+      expander: HTMLButtonElement;
     };
     /** Jump sub-block refs */
     jump: {
       /** Directory path input */
-      textfield: LfTextfieldElement;
+      textfield: HTMLInputElement | HTMLTextAreaElement;
       /** Load button */
-      load: LfButtonElement;
+      load: HTMLButtonElement;
     };
     /** Masonry gallery component */
     masonry: LfMasonryElement;
@@ -203,17 +198,17 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
     /** Actions sub-block refs */
     actions: {
       /** Delete shape button */
-      delete: LfButtonElement;
+      delete: HTMLButtonElement;
       /** History toggle button */
-      badge: LfButtonElement;
+      badge: HTMLButtonElement;
       /** Clear history button */
-      clear: LfButtonElement;
+      clear: HTMLButtonElement;
       /** Redo button */
-      redo: LfButtonElement;
+      redo: HTMLButtonElement;
       /** Undo button */
-      undo: LfButtonElement;
+      undo: HTMLButtonElement;
       /** Commit/save button */
-      commit: LfButtonElement;
+      commit: HTMLButtonElement;
     };
     /** Progress bar component */
     progressbar: LfProgressbarElement;
@@ -233,9 +228,9 @@ export interface LfShapeeditorAdapterRefs extends LfComponentAdapterRefs {
       /** Control actions sub-block refs */
       controlActions: {
         /** Apply button */
-        apply: LfButtonElement;
+        apply: HTMLButtonElement;
         /** Reset button */
-        reset: LfButtonElement;
+        reset: HTMLButtonElement;
       };
     };
   };
@@ -248,14 +243,14 @@ export interface LfShapeeditorAdapterHandlers
   extends LfComponentAdapterHandlers {
   /** Navigation panel handlers */
   navigation: {
-    /** Explorer button handler (expander) */
-    expander: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
-    /** Jump button handler (load) */
-    load: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Explorer button handler (expander) - FC direct callback */
+    expander: (e: MouseEvent) => Promise<void>;
+    /** Jump button handler (load) - FC direct callback */
+    load: (e: MouseEvent) => Promise<void>;
     /** Masonry selection handler */
     masonry: (e: CustomEvent<LfMasonryEventPayload>) => void;
-    /** Textfield input handler */
-    textfield: (e: CustomEvent<LfTextfieldEventPayload>) => void;
+    /** Textfield input handler - FC direct callback with value */
+    textfield: (e: Event, value: string) => void;
     /** Tree navigation handler */
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
   };
@@ -268,8 +263,8 @@ export interface LfShapeeditorAdapterHandlers
   };
   /** Settings panel handlers */
   settings: {
-    /** Actions button handler */
-    actionsButton: (e: CustomEvent<LfButtonEventPayload>) => Promise<void>;
+    /** Actions button handler - FC direct callback with button ID */
+    actionsButton: (e: MouseEvent, buttonId: string) => Promise<void>;
     /** Settings tree handler */
     tree: (e: CustomEvent<LfTreeEventPayload>) => void;
     /** Accordion toggle handler */
@@ -284,10 +279,8 @@ export interface LfShapeeditorAdapterHandlers
       value: unknown,
       eventType: LfShapeeditorControlEventType,
     ) => void;
-    /** Control actions button handler */
-    controlActionsButton: (
-      e: CustomEvent<LfButtonEventPayload>,
-    ) => Promise<void>;
+    /** Control actions button handler - FC direct callback with button ID */
+    controlActionsButton: (e: MouseEvent, buttonId: string) => Promise<void>;
     /** Control-specific handlers by type */
     controls: {
       checkbox: (e: CustomEvent, controlId: string) => void;

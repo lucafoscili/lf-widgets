@@ -3,14 +3,15 @@ import type {
   LfDataColumn,
   LfDataNode,
   LfDataShapes,
+  LfIconType,
 } from "@lf-widgets/foundations";
 import {
   LF_THEME_ICONS,
-  LfTextfieldEventPayload,
   LfTreeAdapter,
   LfTreeAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { LfTextfieldFC } from "../lf-textfield/lf-textfield-fc";
 import { FIcon } from "../../utils/icon";
 import { LfShape } from "../../utils/shapes";
 import { TreeNode } from "./components.node";
@@ -20,29 +21,35 @@ export const createJsx = (
 ): LfTreeAdapterJsx => ({
   //#region filter
   filter: () => {
-    const { controller, handlers } = getAdapter();
+    const { controller, elements, handlers } = getAdapter();
     const { compInstance, framework } = controller.get;
-    const { theme } = framework();
-    const { bemClass, get } = theme;
+    const mgr = framework();
+    const { assignRef, theme } = mgr;
+    const { bemClass } = theme;
     const blocks = controller.get.blocks();
     const tree = blocks.tree;
+    const { refs } = elements;
 
     if (!compInstance().lfFilter) {
       return null;
     }
 
+    const iconSearch = theme.get.current().variables[
+      "--lf-icon-search"
+    ] as LfIconType;
+
     return (
-      <lf-textfield
-        class={bemClass(tree._, tree.filter)}
-        lfStretchX={true}
-        lfIcon={get.current().variables["--lf-icon-search"]}
-        lfLabel={"Search..."}
-        lfStyling="flat"
-        onLf-textfield-event={(e: CustomEvent<LfTextfieldEventPayload>) =>
-          handlers.filter.input(e)
-        }
-        ref={(el) => (getAdapter().elements.refs.filterField = el)}
-      ></lf-textfield>
+      <LfTextfieldFC
+        className={bemClass(tree._, tree.filter)}
+        framework={mgr}
+        icon={iconSearch}
+        inputRef={(el) => assignRef(refs, "filter")(el)}
+        label="Search..."
+        onInput={(value, e) => handlers.filter.input(e, value)}
+        stretchX={true}
+        styling="flat"
+        value=""
+      />
     );
   },
   //#endregion

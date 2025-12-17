@@ -5,6 +5,7 @@ import {
   LfMessengerAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 import { systemMessage } from "./helpers.utils";
 
 export const prepChat = (
@@ -61,15 +62,16 @@ export const prepChat = (
       const icon = isLeftCollapsed ? right : left;
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          framework={fw}
           id={LF_MESSENGER_IDS.messenger.chat.leftExpander}
-          lfIcon={icon}
-          lfStretchY={true}
-          onLf-button-event={button}
-          ref={assignRef(refs.chat, "leftExpander")}
-          title="Expand/collapse this section"
-        ></lf-button>
+          icon={icon}
+          onClick={(e) =>
+            button(e, LF_MESSENGER_IDS.messenger.chat.leftExpander)
+          }
+          buttonRef={assignRef(refs.chat, "leftExpander")}
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion
@@ -89,15 +91,16 @@ export const prepChat = (
       const icon = isRightCollapsed ? left : right;
 
       return (
-        <lf-button
-          data-cy={cyAttributes().button}
+        <ButtonFC
+          framework={fw}
           id={LF_MESSENGER_IDS.messenger.chat.rightExpander}
-          lfIcon={icon}
-          lfStretchY={true}
-          onLf-button-event={button}
-          ref={assignRef(refs.chat, "rightExpander")}
-          title="Expand/collapse this section"
-        ></lf-button>
+          icon={icon}
+          onClick={(e) =>
+            button(e, LF_MESSENGER_IDS.messenger.chat.rightExpander)
+          }
+          buttonRef={assignRef(refs.chat, "rightExpander")}
+          style={{ height: "100%" }}
+        />
       );
     },
     //#endregion

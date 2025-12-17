@@ -153,15 +153,15 @@ Type: `Promise<LfDebugLifecycleInfo>`
 
 A promise that resolves with the debug information object.
 
-### `getImage() => Promise<LfImageElement>`
+### `getImage() => Promise<HTMLImageElement>`
 
-Retrieves the HTMLLfImageElement from the canvas.
+Retrieves the HTMLImageElement from the canvas.
 
 #### Returns
 
-Type: `Promise<LfImageElement>`
+Type: `Promise<HTMLImageElement>`
 
-A promise that resolves with the HTMLLfImageElement instance
+A promise that resolves with the HTMLImageElement instance
 representing the image element in the canvas.
 
 ### `getProps() => Promise<LfCanvasPropsInterface>`
@@ -285,14 +285,9 @@ Type: `Promise<void>`
  - [lf-shapeeditor](../lf-shapeeditor)
  - [lf-tree](../lf-tree)
 
-### Depends on
-
-- [lf-image](../lf-image)
-
 ### Graph
 ```mermaid
 graph TD;
-  lf-canvas --> lf-image
   lf-accordion --> lf-canvas
   lf-article --> lf-canvas
   lf-breadcrumbs --> lf-canvas

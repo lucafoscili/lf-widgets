@@ -113,14 +113,22 @@ Type: `Promise<void>`
 ### Used by
 
  - [lf-autocomplete](../lf-autocomplete)
+ - [lf-carousel](../lf-carousel)
  - [lf-chat](../lf-chat)
+ - [lf-compare](../lf-compare)
+ - [lf-masonry](../lf-masonry)
+ - [lf-messenger](../lf-messenger)
  - [lf-shapeeditor](../lf-shapeeditor)
 
 ### Graph
 ```mermaid
 graph TD;
   lf-autocomplete --> lf-spinner
+  lf-carousel --> lf-spinner
   lf-chat --> lf-spinner
+  lf-compare --> lf-spinner
+  lf-masonry --> lf-spinner
+  lf-messenger --> lf-spinner
   lf-shapeeditor --> lf-spinner
   style lf-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```

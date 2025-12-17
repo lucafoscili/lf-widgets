@@ -4,6 +4,7 @@ import {
   LfMasonryAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 export const prepControls = (
   getAdapter: () => LfMasonryAdapter,
@@ -21,20 +22,21 @@ export const prepControls = (
       const { "--lf-icon-plus": plus } = get.current().variables;
 
       return (
-        <lf-button
-          class={bemClass(blocks().grid._, blocks().grid.addColumn)}
-          data-cy={cyAttributes().button}
-          data-lf={lfAttributes().fadeIn}
+        <ButtonFC
+          className={bemClass(blocks().grid._, blocks().grid.addColumn)}
+          dataCy={cyAttributes().button}
+          dataLf={lfAttributes().fadeIn}
+          framework={framework()}
+          icon={plus}
           id={LF_MASONRY_IDS.addColumn}
           key={LF_MASONRY_IDS.addColumn}
-          lfIcon={plus}
-          lfStyling={"floating"}
-          lfUiSize="xxsmall"
-          onLf-button-event={button}
+          onClick={(e) => button(e, LF_MASONRY_IDS.addColumn)}
           part={parts().addColumn}
-          ref={assignRef(refs, "addColumn")}
+          buttonRef={assignRef(refs, "addColumn")}
+          styling="floating"
           title="Click to add a column to the masonry."
-        ></lf-button>
+          uiSize="xxsmall"
+        />
       );
     },
     //#endregion
@@ -51,20 +53,21 @@ export const prepControls = (
       const { "--lf-icon-minus": minus } = get.current().variables;
 
       return (
-        <lf-button
-          class={bemClass(blocks().grid._, blocks().grid.removeColumn)}
-          data-cy={cyAttributes().button}
-          data-lf={lfAttributes().fadeIn}
+        <ButtonFC
+          className={bemClass(blocks().grid._, blocks().grid.removeColumn)}
+          dataCy={cyAttributes().button}
+          dataLf={lfAttributes().fadeIn}
+          framework={framework()}
+          icon={minus}
           id={LF_MASONRY_IDS.removeColumn}
           key={LF_MASONRY_IDS.removeColumn}
-          lfIcon={minus}
-          lfStyling={"floating"}
-          lfUiSize="xxsmall"
-          onLf-button-event={button}
+          onClick={(e) => button(e, LF_MASONRY_IDS.removeColumn)}
           part={parts().removeColumn}
-          ref={assignRef(refs, "removeColumn")}
+          buttonRef={assignRef(refs, "removeColumn")}
+          styling="floating"
           title="Click to remove a column from the masonry."
-        ></lf-button>
+          uiSize="xxsmall"
+        />
       );
     },
     //#endregion
@@ -82,23 +85,23 @@ export const prepControls = (
       const { layoutBoardSplit, viewportTall, viewportWide } = themeGet.icons();
 
       return (
-        <lf-button
-          class={bemClass(blocks().grid._, blocks().grid.changeViewe)}
-          data-cy={cyAttributes().button}
-          id={LF_MASONRY_IDS.masonry}
-          key={LF_MASONRY_IDS.masonry}
-          lfIcon={
+        <ButtonFC
+          className={bemClass(blocks().grid._, blocks().grid.changeViewe)}
+          dataCy={cyAttributes().button}
+          framework={framework()}
+          icon={
             isMasonry()
               ? viewportTall
               : isVertical()
                 ? viewportWide
                 : layoutBoardSplit
           }
-          lfStyling={"floating"}
-          lfUiSize="xsmall"
-          onLf-button-event={button}
+          id={LF_MASONRY_IDS.masonry}
+          key={LF_MASONRY_IDS.masonry}
+          onClick={(e) => button(e, LF_MASONRY_IDS.masonry)}
           part={parts().changeView}
-          ref={assignRef(refs, "changeView")}
+          buttonRef={assignRef(refs, "changeView")}
+          styling="floating"
           title={
             isMasonry()
               ? "Click to view the images arranged vertically."
@@ -106,7 +109,8 @@ export const prepControls = (
                 ? "Click to view the images arranged horizontally."
                 : "Click to view the images arranged in a masonry."
           }
-        ></lf-button>
+          uiSize="xsmall"
+        />
       );
     },
     //#endregion

@@ -16,7 +16,6 @@ import {
   redo,
   resetControls,
   save,
-  toggleButtonSpinner,
   undo,
 } from "./helpers.utils";
 import { LfShapeeditor } from "./lf-shapeeditor";
@@ -29,9 +28,7 @@ export const prepSettingsHandlers = (
 ): LfShapeeditorAdapterHandlers["settings"] => {
   return {
     //#region Actions button handler (delete, badge, clear, redo, undo, commit)
-    actionsButton: async (e) => {
-      const { comp, eventType, id } = e.detail;
-
+    actionsButton: async (e: MouseEvent, buttonId: string) => {
       const adapter = getAdapter();
       const { compInstance, currentShape, ids } = adapter.controller.get;
 
@@ -40,31 +37,27 @@ export const prepSettingsHandlers = (
 
       c.onLfEvent(e, "lf-event");
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case i.settings.actions.delete:
-              toggleButtonSpinner(comp, () => deleteShape(adapter));
-              break;
-            case i.settings.actions.badge:
-              // Toggle history column visibility in preview panel
-              adapter.controller.actions.history.toggle();
-              break;
-            case i.settings.actions.clear:
-              const index = currentShape().shape.index;
-              const cb = async () => clearHistory(adapter, index);
-              toggleButtonSpinner(comp, cb);
-              break;
-            case i.settings.actions.undo:
-              toggleButtonSpinner(comp, () => undo(adapter));
-              break;
-            case i.settings.actions.redo:
-              toggleButtonSpinner(comp, () => redo(adapter));
-              break;
-            case i.settings.actions.commit:
-              toggleButtonSpinner(comp, () => save(adapter));
-              break;
-          }
+      switch (buttonId) {
+        case i.settings.actions.delete:
+          await deleteShape(adapter);
+          break;
+        case i.settings.actions.badge:
+          // Toggle history column visibility in preview panel
+          adapter.controller.actions.history.toggle();
+          break;
+        case i.settings.actions.clear:
+          const index = currentShape().shape.index;
+          await clearHistory(adapter, index);
+          break;
+        case i.settings.actions.undo:
+          await undo(adapter);
+          break;
+        case i.settings.actions.redo:
+          await redo(adapter);
+          break;
+        case i.settings.actions.commit:
+          await save(adapter);
+          break;
       }
     },
     //#endregion
@@ -140,9 +133,7 @@ export const prepSettingsHandlers = (
     //#endregion
 
     //#region Control actions button handler (reset/apply)
-    controlActionsButton: async (e) => {
-      const { comp, eventType, id } = e.detail;
-
+    controlActionsButton: async (e: MouseEvent, buttonId: string) => {
       const adapter = getAdapter();
       const { compInstance, ids } = adapter.controller.get;
 
@@ -151,21 +142,14 @@ export const prepSettingsHandlers = (
 
       c.onLfEvent(e, "lf-event");
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case i.settings.controls.controlActions.apply:
-              toggleButtonSpinner(comp, async () => {
-                c.onLfEvent(e, "apply");
-              });
-              break;
-            case i.settings.controls.controlActions.reset:
-              toggleButtonSpinner(comp, async () => {
-                await resetControls(adapter);
-                c.onLfEvent(e, "reset");
-              });
-              break;
-          }
+      switch (buttonId) {
+        case i.settings.controls.controlActions.apply:
+          c.onLfEvent(null, "apply");
+          break;
+        case i.settings.controls.controlActions.reset:
+          await resetControls(adapter);
+          c.onLfEvent(null, "reset");
+          break;
       }
     },
     //#endregion

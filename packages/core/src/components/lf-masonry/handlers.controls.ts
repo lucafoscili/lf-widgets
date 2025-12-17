@@ -9,23 +9,18 @@ export const controlsHandlers = (
 ): LfMasonryAdapterHandlers => {
   return {
     //#region Button
-    button: (e) => {
-      const { eventType, id } = e.detail;
+    button: (_e: MouseEvent, id: string) => {
       const { actions } = getAdapter().controller;
 
-      switch (eventType) {
-        case "click":
-          switch (id) {
-            case LF_MASONRY_IDS.masonry:
-              actions.cycleView();
-              break;
-            case LF_MASONRY_IDS.removeColumn:
-              actions.removeColumn();
-              break;
-            case LF_MASONRY_IDS.addColumn:
-              actions.addColumn();
-              break;
-          }
+      switch (id) {
+        case LF_MASONRY_IDS.masonry:
+          actions.cycleView();
+          break;
+        case LF_MASONRY_IDS.removeColumn:
+          actions.removeColumn();
+          break;
+        case LF_MASONRY_IDS.addColumn:
+          actions.addColumn();
           break;
       }
     },

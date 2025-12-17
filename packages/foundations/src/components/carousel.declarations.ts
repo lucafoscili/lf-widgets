@@ -21,7 +21,7 @@ import {
   LfDataShapes,
   LfDataShapesMap,
 } from "../framework/data.declarations";
-import { LfButtonElement, LfButtonEventPayload } from "./button.declarations";
+
 import {
   LF_CAROUSEL_BLOCKS,
   LF_CAROUSEL_EVENTS,
@@ -95,15 +95,15 @@ export interface LfCarouselAdapterJsx extends LfComponentAdapterJsx {
  * Strongly typed DOM references captured by the component adapter.
  */
 export interface LfCarouselAdapterRefs extends LfComponentAdapterRefs {
-  back: LfButtonElement;
+  back: HTMLButtonElement;
   carousel: HTMLDivElement;
-  forward: LfButtonElement;
+  forward: HTMLButtonElement;
 }
 /**
  * Handler map consumed by the adapter to react to framework events.
  */
 export interface LfCarouselAdapterHandlers extends LfComponentAdapterHandlers {
-  button: (e: CustomEvent<LfButtonEventPayload>) => void;
+  button: (e: MouseEvent, id: string) => void;
 }
 /**
  * Read-only controller surface exposed by the adapter for integration code.

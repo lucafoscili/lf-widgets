@@ -110,12 +110,11 @@ describe("lf-autocomplete", () => {
       const page = await createPage(`<lf-autocomplete></lf-autocomplete>`);
       const spy = jest.fn();
       page.root.addEventListener("lf-autocomplete-event", spy);
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-      textfield.dispatchEvent(
-        new CustomEvent("lf-textfield-event", {
-          detail: { eventType: "input", inputValue: "test" },
-        }),
-      );
+      const input = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
+      input.value = "test";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
       await page.waitForChanges();
       expect(spy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -162,12 +161,11 @@ describe("lf-autocomplete", () => {
       const spy = jest.fn();
       page.root.addEventListener("lf-autocomplete-event", spy);
 
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-      textfield.dispatchEvent(
-        new CustomEvent("lf-textfield-event", {
-          detail: { eventType: "input", inputValue: "test" },
-        }),
-      );
+      const input = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
+      input.value = "test";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
       await page.waitForChanges();
 
       // Should emit input immediately
@@ -191,12 +189,11 @@ describe("lf-autocomplete", () => {
       const spy = jest.fn();
       page.root.addEventListener("lf-autocomplete-event", spy);
 
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-      textfield.dispatchEvent(
-        new CustomEvent("lf-textfield-event", {
-          detail: { eventType: "input", inputValue: "te" },
-        }),
-      );
+      const input = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
+      input.value = "te";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
       await page.waitForChanges();
 
       // Wait for potential debounce
@@ -217,12 +214,11 @@ describe("lf-autocomplete", () => {
       );
       const component = page.rootInstance as LfAutocomplete;
 
-      const textfield = page.root.shadowRoot.querySelector("lf-textfield");
-      (textfield as any).dispatchEvent(
-        new CustomEvent("lf-textfield-event", {
-          detail: { eventType: "input", inputValue: "te" },
-        }),
-      );
+      const input = page.root.shadowRoot.querySelector(
+        '[data-cy="input"]',
+      ) as HTMLInputElement;
+      input.value = "te";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
 
       await page.waitForChanges();
 

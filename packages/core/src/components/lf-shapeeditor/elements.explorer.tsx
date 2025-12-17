@@ -1,5 +1,6 @@
 import { IDS, LfShapeeditorAdapter } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
+import { ButtonFC } from "../lf-button/fc/button-fc";
 
 /**
  * Prepares the explorer sub-block JSX (tree + expander).
@@ -52,19 +53,16 @@ export const prepExplorer = (
         )}
 
         {/* Expander Button */}
-        <lf-button
-          class={bemClass(explorerBlock._, explorerBlock.expander)}
-          data-cy={cy.button}
+        <ButtonFC
+          className={bemClass(explorerBlock._, explorerBlock.expander)}
+          dataCy={cy.button}
+          framework={mgr}
+          icon={isOpen ? left : right}
           id={IDS.navigation.explorer.expander}
-          lfAriaLabel={
-            isOpen ? "Collapse navigation tree" : "Expand navigation tree"
-          }
-          lfIcon={isOpen ? left : right}
-          lfStretchY={true}
-          onLf-button-event={expander}
-          ref={assignRef(navigation.explorer, "expander")}
+          onClick={(e) => expander(e)}
+          buttonRef={assignRef(navigation.explorer, "expander")}
           title={isOpen ? "Collapse" : "Expand"}
-        ></lf-button>
+        />
       </div>
     );
   };

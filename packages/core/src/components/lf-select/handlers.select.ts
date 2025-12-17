@@ -17,7 +17,7 @@ export const prepSelectHandlers = (
         case "click":
           await controller.actions.setValue(node.id);
           controller.actions.list("close");
-          refs.textfield?.setFocus();
+          refs.textfield?.focus();
           break;
       }
 
@@ -28,7 +28,8 @@ export const prepSelectHandlers = (
     },
     //#endregion
 
-    //#region Textfield
+    //#region Textfield (WC event handler - deprecated, use FC handlers)
+    /** @deprecated Use textfieldClick, textfieldKeydown for FC usage */
     textfield: async (event) => {
       const { eventType } = event.detail || {};
       const { controller, dispatcher } = getAdapter();
@@ -47,6 +48,44 @@ export const prepSelectHandlers = (
 
       dispatcher.emit("lf-event", {
         originalEvent: event,
+      });
+    },
+    //#endregion
+
+    //#region Textfield FC handlers
+    /**
+     * FC-compatible click handler for textfield.
+     * Called directly by LfTextfieldFC's onClick callback.
+     */
+    textfieldClick: (event: MouseEvent) => {
+      const { controller, dispatcher } = getAdapter();
+      controller.actions.list();
+      dispatcher.emit("lf-event", {
+        originalEvent: event as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible keydown handler for textfield.
+     * Called directly by LfTextfieldFC's onKeyDown callback.
+     */
+    textfieldKeydown: async (event: KeyboardEvent) => {
+      const { controller, dispatcher } = getAdapter();
+      await keydownHandler(event, controller);
+      dispatcher.emit("lf-event", {
+        originalEvent: event as unknown as CustomEvent,
+      });
+    },
+
+    /**
+     * FC-compatible icon click handler for textfield.
+     * Called directly by LfTextfieldFC's onIconClick callback.
+     */
+    textfieldIconClick: (event: MouseEvent) => {
+      const { controller, dispatcher } = getAdapter();
+      controller.actions.list();
+      dispatcher.emit("lf-event", {
+        originalEvent: event as unknown as CustomEvent,
       });
     },
     //#endregion

@@ -2,7 +2,7 @@ import {
   LfShapeeditorAdapter,
   LfShapeeditorAdapterHandlers,
 } from "@lf-widgets/foundations";
-import { clearSelection, load, toggleButtonSpinner } from "./helpers.utils";
+import { clearSelection, load } from "./helpers.utils";
 import { LfShapeeditor } from "./lf-shapeeditor";
 
 /**
@@ -13,9 +13,7 @@ export const prepNavigationHandlers = (
 ): LfShapeeditorAdapterHandlers["navigation"] => {
   return {
     //#region Expander handler (toggle navigation tree)
-    expander: async (e) => {
-      const { eventType } = e.detail;
-
+    expander: async (e: MouseEvent) => {
       const adapter = getAdapter();
       const { controller } = adapter;
       const { get, actions } = controller;
@@ -25,29 +23,31 @@ export const prepNavigationHandlers = (
 
       c.onLfEvent(e, "lf-event");
 
-      switch (eventType) {
-        case "click":
-          actions.navigation.toggle();
-          break;
-      }
+      actions.navigation.toggle();
     },
     //#endregion
 
     //#region Load handler (load directory)
-    load: async (e) => {
-      const { comp, eventType } = e.detail;
-
+    load: async (e: MouseEvent) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
+      const { navigation } = adapter.elements.refs;
 
       const c = compInstance() as LfShapeeditor;
 
       c.onLfEvent(e, "lf-event");
 
-      switch (eventType) {
-        case "click":
-          toggleButtonSpinner(comp, () => load(adapter));
-          break;
+      // Use the native button element for spinner toggle
+      const buttonEl = navigation.jump.load;
+      if (buttonEl) {
+        buttonEl.setAttribute("data-loading", "true");
+        try {
+          await load(adapter);
+        } finally {
+          buttonEl.removeAttribute("data-loading");
+        }
+      } else {
+        await load(adapter);
       }
     },
     //#endregion
@@ -84,12 +84,14 @@ export const prepNavigationHandlers = (
     //#endregion
 
     //#region Textfield handler
-    textfield: (e) => {
+    textfield: (e: Event, value: string) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 
       const comp = compInstance() as LfShapeeditor;
 
+      // Store the value for the load handler to use
+      // The textfield value is accessed via the native input element ref
       comp.onLfEvent(e, "lf-event");
     },
     //#endregion

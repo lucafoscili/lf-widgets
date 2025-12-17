@@ -184,18 +184,13 @@ Type: `Promise<void>`
 graph TD;
   lf-accordion --> lf-accordion
   lf-button --> lf-list
-  lf-list --> lf-textfield
-  lf-canvas --> lf-image
   lf-card --> lf-accordion
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   lf-article --> lf-accordion
   lf-breadcrumbs --> lf-accordion
   lf-carousel --> lf-accordion

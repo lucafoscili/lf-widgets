@@ -35,7 +35,11 @@ export const prepAutocompleteActions = (
       if (!dropdown || !textfield) {
         return;
       }
-      const { width } = textfield.getBoundingClientRect();
+      // For FC-based textfield, get width from the parent container
+      const parent = textfield.closest(".lf-textfield");
+      const { width } = parent
+        ? parent.getBoundingClientRect()
+        : textfield.getBoundingClientRect();
       if (width > 0) {
         dropdown.style.minWidth = `${width}px`;
       }
@@ -74,7 +78,7 @@ export const prepAutocompleteActions = (
 
     const { textfield } = elements.refs;
     if (textfield) {
-      await textfield.setValue(value);
+      textfield.value = value;
     }
   },
 
@@ -92,11 +96,11 @@ export const prepAutocompleteActions = (
 
     const { textfield } = elements.refs;
     if (textfield) {
-      await textfield.setValue(comp.inputValue);
+      textfield.value = comp.inputValue;
     }
 
     adapter.controller.actions.list("close");
-    textfield?.setFocus();
+    textfield?.focus();
 
     dispatcher.emit("change", { node });
   },

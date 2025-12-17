@@ -139,9 +139,9 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [lf-button](../lf-button)
 - [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
 - [lf-chart](../lf-chart)
@@ -155,13 +155,14 @@ Type: `Promise<void>`
 - [lf-toggle](../lf-toggle)
 - [lf-typewriter](../lf-typewriter)
 - [lf-upload](../lf-upload)
+- [lf-spinner](../lf-spinner)
 
 ### Graph
 ```mermaid
 graph TD;
-  lf-carousel --> lf-button
   lf-carousel --> lf-accordion
   lf-carousel --> lf-badge
+  lf-carousel --> lf-button
   lf-carousel --> lf-canvas
   lf-carousel --> lf-card
   lf-carousel --> lf-chart
@@ -175,8 +176,7 @@ graph TD;
   lf-carousel --> lf-toggle
   lf-carousel --> lf-typewriter
   lf-carousel --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
+  lf-carousel --> lf-spinner
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -193,7 +193,7 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-canvas --> lf-image
+  lf-button --> lf-list
   lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -211,14 +211,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   style lf-carousel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

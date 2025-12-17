@@ -43,6 +43,21 @@ export const prepListHandlers = (
 
       dispatcher.emit("lf-event", { originalEvent: event, node: null });
     },
+
+    /**
+     * FC-compatible filter input handler.
+     * Called directly by LfTextfieldFC's onInput callback.
+     */
+    filterInput: (event: Event, value: string) => {
+      const { controller, dispatcher } = getAdapter();
+      const { set } = controller;
+
+      set.filter.debounce(value);
+      dispatcher.emit("lf-event", {
+        originalEvent: event as unknown as CustomEvent,
+        node: null,
+      });
+    },
     //#endregion
 
     //#region Node

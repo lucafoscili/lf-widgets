@@ -154,9 +154,10 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [lf-button](../lf-button)
+- [lf-spinner](../lf-spinner)
 - [lf-accordion](../lf-accordion)
 - [lf-badge](../lf-badge)
+- [lf-button](../lf-button)
 - [lf-canvas](../lf-canvas)
 - [lf-card](../lf-card)
 - [lf-chart](../lf-chart)
@@ -174,9 +175,10 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
-  lf-masonry --> lf-button
+  lf-masonry --> lf-spinner
   lf-masonry --> lf-accordion
   lf-masonry --> lf-badge
+  lf-masonry --> lf-button
   lf-masonry --> lf-canvas
   lf-masonry --> lf-card
   lf-masonry --> lf-chart
@@ -190,8 +192,6 @@ graph TD;
   lf-masonry --> lf-toggle
   lf-masonry --> lf-typewriter
   lf-masonry --> lf-upload
-  lf-button --> lf-list
-  lf-list --> lf-textfield
   lf-accordion --> lf-accordion
   lf-accordion --> lf-badge
   lf-accordion --> lf-button
@@ -208,7 +208,7 @@ graph TD;
   lf-accordion --> lf-toggle
   lf-accordion --> lf-typewriter
   lf-accordion --> lf-upload
-  lf-canvas --> lf-image
+  lf-button --> lf-list
   lf-card --> lf-accordion
   lf-card --> lf-badge
   lf-card --> lf-button
@@ -226,14 +226,11 @@ graph TD;
   lf-card --> lf-typewriter
   lf-card --> lf-upload
   lf-chat --> lf-chip
-  lf-chat --> lf-button
-  lf-chat --> lf-textfield
   lf-chat --> lf-spinner
   lf-chat --> lf-code
   lf-chat --> lf-progressbar
   lf-chat --> lf-checkbox
   lf-code --> lf-button
-  lf-photoframe --> lf-image
   lf-shapeeditor --> lf-masonry
   style lf-masonry fill:#f9f,stroke:#333,stroke-width:4px
 ```

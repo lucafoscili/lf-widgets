@@ -31,7 +31,6 @@ import {
   LF_SELECT_PARTS,
 } from "./select.constants";
 import {
-  LfTextfieldElement,
   LfTextfieldEventPayload,
   LfTextfieldInterface,
 } from "./textfield.declarations";
@@ -108,7 +107,8 @@ export interface LfSelectAdapter
 export interface LfSelectAdapterRefs extends LfComponentAdapterRefs {
   list: LfListElement | null;
   select: HTMLDivElement | null;
-  textfield: LfTextfieldElement | null;
+  /** Native input element from LfTextfieldFC */
+  textfield: HTMLInputElement | HTMLTextAreaElement | null;
 }
 /**
  * Factory helpers returning Stencil `VNode` fragments for the adapter.
@@ -123,7 +123,14 @@ export interface LfSelectAdapterJsx extends LfComponentAdapterJsx {
  */
 export interface LfSelectAdapterHandlers extends LfComponentAdapterHandlers {
   list: (event: LfEvent<LfListEventPayload>) => Promise<void>;
+  /** @deprecated Use textfieldClick, textfieldKeydown for FC usage */
   textfield: (event: LfEvent<LfTextfieldEventPayload>) => Promise<void>;
+  /** FC-compatible click handler for textfield */
+  textfieldClick: (event: MouseEvent) => void;
+  /** FC-compatible keydown handler for textfield */
+  textfieldKeydown: (event: KeyboardEvent) => Promise<void>;
+  /** FC-compatible icon click handler for textfield */
+  textfieldIconClick: (event: MouseEvent) => void;
 }
 /**
  * Base getters extended with component-specific state reads.
@@ -253,8 +260,12 @@ export interface LfSelectFCProps {
   listRef?: (el: LfListElement | null) => void;
   /** Callback fired on list item click */
   onListEvent?: (event: CustomEvent) => void;
-  /** Callback fired on textfield events */
-  onTextfieldEvent?: (event: CustomEvent) => void;
+  /** Callback fired on textfield click */
+  onTextfieldClick?: (event: MouseEvent) => void;
+  /** Callback fired on textfield keydown */
+  onTextfieldKeydown?: (event: KeyboardEvent) => void;
+  /** Callback fired on textfield icon click */
+  onTextfieldIconClick?: (event: MouseEvent) => void;
   /** Part attribute for external styling */
   part?: string;
   /** Currently selected index */
@@ -267,8 +278,8 @@ export interface LfSelectFCProps {
   style?: { [key: string]: string };
   /** Props to pass to the internal lf-textfield component */
   textfieldProps?: Partial<LfTextfieldInterface>;
-  /** Reference callback for the textfield element */
-  textfieldRef?: (el: LfTextfieldElement | null) => void;
+  /** Reference callback for the textfield input element */
+  textfieldRef?: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
   /**
    * UI size multiplier for the component.
    * Controls font-size scaling. Required for composed usage where
