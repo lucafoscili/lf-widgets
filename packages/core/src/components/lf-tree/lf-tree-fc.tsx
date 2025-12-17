@@ -277,8 +277,8 @@ export const LfTreeFC: FunctionalComponent<LfTreeFCProps> = ({
         inputRef={(el) => refs?.filter?.(el)}
         label="Search..."
         onInput={(value, e) => handlers?.filter?.input(e, value)}
-        stretchX={true}
         styling="flat"
+        style={{ width: "100%" }}
         value=""
       />
     );

@@ -7,6 +7,7 @@ import {
   LfComponentAdapterDispatcher,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import {
   HTMLStencilElement,
@@ -15,6 +16,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_CODE_BLOCKS,
@@ -48,14 +50,18 @@ export interface LfCodeElement
 /**
  * Adapter contract that wires `lf-code` into host integrations.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+ * v4.0.0 "Adapter as Core" Architecture:
+ * - controller.get: Base getters + state reads (value)
+ * - controller.set: State writes (value) → triggers onStateChange
  * - controller.computed: Derived values (formattedCode, shouldPreserveSpace)
  * - controller.actions: Complex operations (highlight, copyToClipboard, loadLanguage)
  * - elements: JSX factories + refs
  * - dispatcher: REQUIRED centralized event emission
  *
- * @see Section 5 of 4_0_0_REFACTORING.md
+ * State lives in adapter closure, not WC @State.
+ * WC has single @State _renderTick, incremented by onStateChange.
+ *
+ * @see Section 5 & 5.9 of 4_0_0_REFACTORING.md
  */
 export interface LfCodeAdapter
   extends LfComponentAdapter<
@@ -65,12 +71,13 @@ export interface LfCodeAdapter
     LfCodeAdapterJsx,
     LfCodeAdapterRefs,
     LfCodeAdapterControllerGetters,
-    never,
+    LfCodeAdapterControllerSetters,
     LfCodeAdapterControllerComputed,
     LfCodeAdapterControllerActions
   > {
   controller: {
     get: LfCodeAdapterControllerGetters;
+    set: LfCodeAdapterControllerSetters;
     computed: LfCodeAdapterControllerComputed;
     actions: LfCodeAdapterControllerActions;
   };
@@ -100,6 +107,9 @@ export interface LfCodeAdapterJsx extends LfComponentAdapterJsx {
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * In "Adapter as Core" pattern, state lives in the adapter, not the WC.
+ * Getters read from adapter's internal state variables.
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfCodeAdapterControllerGetters
@@ -108,7 +118,22 @@ export interface LfCodeAdapterControllerGetters
     typeof LF_CODE_BLOCKS,
     typeof LF_CODE_IDS,
     typeof LF_CODE_PARTS
-  > {}
+  > {
+  /** Read the current formatted value from adapter's internal state */
+  value: () => string;
+}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change and triggers onStateChange.
+ *
+ * In "Adapter as Core" pattern, setters mutate adapter's internal state
+ * and call the onStateChange callback to signal the WC to re-render.
+ */
+export interface LfCodeAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Set the formatted value and trigger re-render */
+  value: (v: string) => void;
+}
 /**
  * Computed values - derived values and predicates.
  * Pure functions that compute from current state without side effects.
@@ -184,5 +209,63 @@ export interface LfCodePropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: string;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the `LfCodeFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfCodeFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Reference callback for the code container element */
+  codeRef?: (el: HTMLDivElement | null) => void;
+  /** Whether to fade in the component on mount */
+  fadeIn?: boolean;
+  /** Formatted code content to display */
+  formattedCode: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Language of the code snippet */
+  language?: string;
+  /** Callback fired on copy button click */
+  onCopy?: (e: CustomEvent) => void;
+  /** Reference callback for the pre/body element */
+  preRef?: (el: HTMLPreElement | HTMLDivElement | null) => void;
+  /** Whether to preserve spaces (use pre tag) */
+  preserveSpace?: boolean;
+  /** Whether to show the copy button */
+  showCopy?: boolean;
+  /** Whether to show the header */
+  showHeader?: boolean;
+  /** Whether the header should be sticky */
+  stickyHeader?: boolean;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** Current code value (for clipboard copy) */
+  value?: string;
 }
 //#endregion

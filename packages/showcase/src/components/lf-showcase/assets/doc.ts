@@ -1158,12 +1158,12 @@ export const LF_DOC: LfShowcaseDoc = {
       },
       {
         name: "getImage",
-        docs: "Retrieves the HTMLLfImageElement from the canvas.",
+        docs: "Retrieves the HTMLImageElement from the canvas.",
         returns: {
-          type: "Promise<LfImageElement>",
-          docs: "A promise that resolves with the HTMLLfImageElement instance\nrepresenting the image element in the canvas.",
+          type: "Promise<HTMLImageElement>",
+          docs: "A promise that resolves with the HTMLImageElement instance\nrepresenting the image element in the canvas.",
         },
-        signature: "() => Promise<LfImageElement>",
+        signature: "() => Promise<HTMLImageElement>",
       },
       {
         name: "getProps",

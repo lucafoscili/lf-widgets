@@ -287,6 +287,10 @@ export type LfButtonType = (typeof LF_BUTTON_TYPES)[number];
 export interface LfButtonFCProps {
   /** Assigned class for custom styling */
   className?: string;
+  /** Cypress test attribute */
+  dataCy?: string;
+  /** LF data attribute for effects/state */
+  dataLf?: string;
   /** Whether the button is disabled */
   disabled?: boolean;
   /** Framework instance for theming utilities (required) */
@@ -295,6 +299,8 @@ export interface LfButtonFCProps {
   icon?: string;
   /** Unique identifier for the button */
   id?: string;
+  /** React-style key for list rendering */
+  key?: string;
   /** Button label text */
   label?: string;
   /** Callback fired on blur event */
@@ -309,6 +315,8 @@ export interface LfButtonFCProps {
   buttonRef?: (el: HTMLButtonElement | null) => void;
   /** Reference callback for the ripple element */
   rippleRef?: (el: HTMLElement | null) => void;
+  /** CSS ::part attribute for external styling */
+  part?: string;
   /** Whether to show ripple effect */
   showRipple?: boolean;
   /** Whether to show spinner (loading state) */
@@ -317,6 +325,8 @@ export interface LfButtonFCProps {
   style?: { [key: string]: string };
   /** Styling mode: flat, floating, icon, outlined, raised */
   styling?: LfButtonStyling;
+  /** Tooltip text / title attribute */
+  title?: string;
   /** Tooltip text */
   tooltip?: string;
   /** Whether to display the icon after the label */

@@ -20,8 +20,6 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { settings } = elements.refs;
       const { button } = handlers.settings;
       const { assignRef, theme } = get.framework();
@@ -88,7 +86,7 @@ export const prepSettings = (
             id={LF_CHAT_IDS.options.agentMaxIterations}
             label="Max Iterations"
             value={stringify(maxIterations)}
-            onChange={(e, value) =>
+            onChange={(value, e) =>
               textfield(e, LF_CHAT_IDS.options.agentMaxIterations, value)
             }
             inputRef={assignRef(settings, "agentMaxIterations")}
@@ -100,7 +98,7 @@ export const prepSettings = (
             label="Agent System Prompt Suffix"
             styling="textarea"
             value={systemPromptSuffix}
-            onChange={(e, value) =>
+            onChange={(value, e) =>
               textfield(e, LF_CHAT_IDS.options.agentSystemPromptSuffix, value)
             }
             inputRef={assignRef(settings, "agentSystemPromptSuffix")}
@@ -117,8 +115,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -138,7 +135,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.contextWindow}
           label="Context Window Size"
           value={stringify(effectiveConfig.llm.contextWindow)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.contextWindow, value)
           }
           inputRef={assignRef(settings, "contextWindow")}
@@ -154,8 +151,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, theme } = get.framework();
@@ -170,7 +166,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.endpointUrl}
           label="Endpoint URL"
           value={effectiveConfig.llm.endpointUrl}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.endpointUrl, value)
           }
           inputRef={assignRef(settings, "endpoint")}
@@ -185,8 +181,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { button } = handlers.settings;
       const { assignRef, theme } = get.framework();
@@ -214,8 +209,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -235,7 +229,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.frequencyPenalty}
           label="Frequency Penalty"
           value={stringify(effectiveConfig.llm.frequencyPenalty)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.frequencyPenalty, value)
           }
           inputRef={assignRef(settings, "frequencyPenalty")}
@@ -250,8 +244,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { button } = handlers.settings;
       const { assignRef, theme } = get.framework();
@@ -279,8 +272,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -300,7 +292,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.maxTokens}
           label="Max tokens count"
           value={stringify(effectiveConfig.llm.maxTokens)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.maxTokens, value)
           }
           inputRef={assignRef(settings, "maxTokens")}
@@ -316,8 +308,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -337,7 +328,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.polling}
           label="Polling interval"
           value={stringify(effectiveConfig.llm.pollingInterval)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.polling, value)
           }
           inputRef={assignRef(settings, "polling")}
@@ -353,8 +344,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -374,7 +364,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.presencePenalty}
           label="Presence penalty"
           value={stringify(effectiveConfig.llm.presencePenalty)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.presencePenalty, value)
           }
           inputRef={assignRef(settings, "presencePenalty")}
@@ -390,8 +380,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -410,7 +399,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.seed}
           label="Random Seed (-1 for random)"
           value={stringify(effectiveConfig.llm.seed)}
-          onChange={(e, value) => textfield(e, LF_CHAT_IDS.options.seed, value)}
+          onChange={(value, e) => textfield(e, LF_CHAT_IDS.options.seed, value)}
           inputRef={assignRef(settings, "seed")}
         />
       );
@@ -424,8 +413,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, theme } = get.framework();
@@ -440,7 +428,7 @@ export const prepSettings = (
           label="System prompt"
           styling="textarea"
           value={effectiveConfig.llm.systemPrompt}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.system, value)
           }
           inputRef={assignRef(settings, "system")}
@@ -456,8 +444,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -478,7 +465,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.temperature}
           label="Temperature"
           value={stringify(effectiveConfig.llm.temperature)}
-          onChange={(e, value) =>
+          onChange={(value, e) =>
             textfield(e, LF_CHAT_IDS.options.temperature, value)
           }
           inputRef={assignRef(settings, "temperature")}
@@ -581,8 +568,7 @@ export const prepSettings = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { settings } = elements.refs;
       const { textfield } = handlers.settings;
       const { assignRef, data, theme } = get.framework();
@@ -604,7 +590,7 @@ export const prepSettings = (
           id={LF_CHAT_IDS.options.topP}
           label="Top P"
           value={stringify(effectiveConfig.llm.topP)}
-          onChange={(e, value) => textfield(e, LF_CHAT_IDS.options.topP, value)}
+          onChange={(value, e) => textfield(e, LF_CHAT_IDS.options.topP, value)}
           inputRef={assignRef(settings, "topP")}
         />
       );

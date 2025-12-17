@@ -1,8 +1,14 @@
 /**
  * lf-checkbox Functional Components
  *
- * Per Section 5.9 "Mirroring Rule":
- * The FC receives the adapter and renders pure UI based on adapter state.
+ * Per Section 2 "Functional Components Architecture":
+ * The FC is stateless and receives props from the parent.
+ * All state is owned by the parent; the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md
  */
 
-export { CheckboxFC, CheckboxFCProps } from "./checkbox-fc";
+export { LfCheckboxFC } from "./checkbox-fc";
+
+// Re-export FC props type from foundations
+export type { LfCheckboxFCProps } from "@lf-widgets/foundations";

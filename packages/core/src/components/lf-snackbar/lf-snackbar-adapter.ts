@@ -13,13 +13,25 @@ import { prepSnackbarHandlers } from "./handlers.snackbar";
 /**
  * Creates the canonical adapter for lf-snackbar.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.computed: Derived predicates (hasAction, hasCloseIcon, hasIcon)
- * - controller.actions: Complex operations (close)
- * - elements: JSX factories + refs
- * - dispatcher: Centralized event emission (passed from component)
- * - handlers: Event callbacks
+ * "Adapter as Core" Architecture:
+ * - Adapter OWNS the runtime state (not the WC)
+ * - State is stored in closure variables
+ * - `controller.get.*` reads from closure state
+ * - `onStateChange` signals WC to increment its single `@State _renderTick`
+ * - WC becomes a thin shell: lifecycle + HTML attribute interface + single render trigger
+ *
+ * Benefits:
+ * - Predictable renders (explicit via onStateChange)
+ * - Testable (adapter can be tested without DOM)
+ * - Portable (adapter works with any renderer)
+ * - Batch-friendly (actions can make multiple changes before calling onStateChange once)
+ *
+ * @param getters - Base getters from createBaseGetters utility
+ * @param computed - Computed predicates
+ * @param actions - Action functions
+ * @param onStateChange - Callback to trigger WC re-render (increments _renderTick)
+ * @param getAdapter - Accessor function to get the current adapter instance
+ * @returns Complete adapter (without dispatcher - added by WC)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
@@ -28,6 +40,7 @@ export const createAdapter = (
   getters: LfSnackbarAdapterControllerGetters,
   computed: LfSnackbarAdapterControllerComputed,
   actions: LfSnackbarAdapterControllerActions,
+  _onStateChange: () => void,
   getAdapter: () => LfSnackbarAdapter,
 ): Omit<LfSnackbarAdapter, "dispatcher"> => {
   return {

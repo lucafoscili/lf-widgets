@@ -50,7 +50,7 @@ export const prepChat = (
     //#region Left expander
     leftExpander: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, config, framework } = controller.get;
+      const { config, framework } = controller.get;
       const { refs } = elements;
       const { button } = handlers.chat;
       const fw = framework();
@@ -79,7 +79,7 @@ export const prepChat = (
     //#region Right expander
     rightExpander: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { config, cyAttributes, framework } = controller.get;
+      const { config, framework } = controller.get;
       const { refs } = elements;
       const { button } = handlers.chat;
       const fw = framework();

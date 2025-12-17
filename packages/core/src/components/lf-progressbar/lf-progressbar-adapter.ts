@@ -1,7 +1,5 @@
 import {
   LfProgressbarAdapter,
-  LfProgressbarAdapterControllerActions,
-  LfProgressbarAdapterControllerComputed,
   LfProgressbarAdapterControllerGetters,
   LfProgressbarAdapterControllerSetters,
   LfProgressbarAdapterHandlers,
@@ -13,31 +11,58 @@ import { prepProgressbarJsx } from "./elements.progressbar";
 /**
  * Creates the canonical adapter for lf-progressbar.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.set: Simple setters (empty for display component)
- * - controller.computed: Derived predicates (empty for display component)
- * - controller.actions: Complex operations (empty for display component)
- * - elements: JSX factories + refs
- * - dispatcher: Centralized event emission (passed from component)
- * - handlers: Event callbacks (empty for display component)
+ * "Adapter as Core" Architecture:
+ * - Adapter OWNS the runtime state (not the WC)
+ * - State is stored in closure variables (if any needed)
+ * - `controller.get.*` reads from closure state or base getters
+ * - `controller.set.*` writes to closure state AND calls `onStateChange()`
+ * - `onStateChange` signals WC to increment its single `@State _renderTick`
+ * - WC becomes a thin shell: lifecycle + HTML attribute interface + single render trigger
+ *
+ * Note: progressbar is a display-only component, so there's no internal state.
+ * The onStateChange callback is provided for pattern consistency.
+ *
+ * Benefits:
+ * - Predictable renders (explicit via onStateChange)
+ * - Testable (adapter can be tested without DOM)
+ * - Portable (adapter works with any renderer)
+ *
+ * @param baseGetters - Base getters from createBaseGetters utility
+ * @param onStateChange - Callback to trigger WC re-render (increments _renderTick)
+ * @param getAdapter - Accessor function to get the current adapter instance
+ * @returns Complete adapter (without dispatcher - added by WC)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
-//#region Adapter
+//#region Adapter Factory
 export const createAdapter = (
-  getters: LfProgressbarAdapterControllerGetters,
-  setters: LfProgressbarAdapterControllerSetters,
-  computed: LfProgressbarAdapterControllerComputed,
-  actions: LfProgressbarAdapterControllerActions,
+  baseGetters: LfProgressbarAdapterControllerGetters,
+  _onStateChange: () => void,
   getAdapter: () => LfProgressbarAdapter,
 ): Omit<LfProgressbarAdapter, "dispatcher"> => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTERNAL STATE (none for display component)
+  // For display components, all state comes from WC props
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE GETTERS - Read from base getters (no additional state)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const getters: LfProgressbarAdapterControllerGetters = {
+    ...baseGetters,
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE SETTERS - Empty for display component
+  // ═══════════════════════════════════════════════════════════════════════════
+  const setters: LfProgressbarAdapterControllerSetters = {};
+
   return {
     controller: {
       get: getters,
       set: setters,
-      computed,
-      actions,
+      computed: createComputed(),
+      actions: createActions(),
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -46,6 +71,12 @@ export const createAdapter = (
     handlers: createHandlers(),
   };
 };
+//#endregion
+
+//#region Controller
+export const createComputed = () => ({});
+
+export const createActions = () => ({});
 //#endregion
 
 //#region Elements

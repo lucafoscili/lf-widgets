@@ -9,6 +9,7 @@ import {
   LfFrameworkInterface,
   LfHeaderAdapter,
   LfHeaderElement,
+  LfHeaderEvent,
   LfHeaderEventPayload,
   LfHeaderInterface,
   LfHeaderPropsInterface,
@@ -28,8 +29,6 @@ import {
 import { HeaderFC } from "./fc";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepHeaderActions } from "./actions.header";
-import { prepHeaderComputed } from "./computed.header";
 import { createAdapter } from "./lf-header-adapter";
 
 /**
@@ -64,6 +63,18 @@ export class LfHeader implements LfHeaderInterface {
   @Element() rootElement: LfHeaderElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
   //#endregion
 
@@ -86,6 +97,14 @@ export class LfHeader implements LfHeaderInterface {
   #p = LF_HEADER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
+
+  /**
+   * Callback to trigger re-render when adapter state changes.
+   * "Adapter as Core" Pattern: increments _renderTick to signal Stencil.
+   */
+  #onStateChange = () => {
+    this._renderTick++;
+  };
   //#endregion
 
   //#region Events
@@ -145,15 +164,46 @@ export class LfHeader implements LfHeaderInterface {
 
   //#region Private methods
   /**
-   * Initializes the adapter for the header component.
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
    *
-   * v4.0.0 Architecture:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.set: Empty for display-only component
-   * - controller.computed: Empty for display-only component
-   * - controller.actions: Empty for display-only component
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfHeaderEvent,
+      detail?: Partial<LfHeaderEventPayload>,
+    ) => {
+      this.#framework.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
+   *
+   * Structure:
+   * - controller.get: Base getters (blocks, compInstance, framework, etc.)
+   * - controller.set: State writes → triggers onStateChange
+   * - controller.computed: Derived predicates
+   * - controller.actions: Complex operations
    * - elements: JSX factories + refs
    * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
    *
    * @see Section 5 of 4_0_0_REFACTORING.md
    */
@@ -170,12 +220,8 @@ export class LfHeader implements LfHeaderInterface {
         ids: () => this.#ids,
         parts: () => this.#p,
       }),
-      // Setters - empty for display-only component
-      {},
-      // Computed - empty for display-only component
-      prepHeaderComputed(),
-      // Actions - empty for display-only component
-      prepHeaderActions(),
+      // onStateChange callback
+      this.#onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -183,17 +229,8 @@ export class LfHeader implements LfHeaderInterface {
     // Combine adapter parts with dispatcher
     this.#adapter = {
       ...adapterWithoutDispatcher,
-      dispatcher: {
-        emit: (eventType, detail) => {
-          this.lfEvent.emit({
-            comp: this,
-            eventType,
-            id: this.rootElement.id,
-            originalEvent: detail?.originalEvent,
-          });
-        },
-      },
-    } as LfHeaderAdapter;
+      dispatcher: this.#createDispatcher(),
+    };
   };
   //#endregion
 

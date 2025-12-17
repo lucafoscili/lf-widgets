@@ -31,8 +31,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepCodeActions } from "./actions.code";
-import { prepCodeComputed } from "./computed.code";
 import { createAdapter } from "./lf-code-adapter";
 
 /**
@@ -70,8 +68,28 @@ export class LfCode implements LfCodeInterface {
   @Element() rootElement: LfCodeElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value = "";
+
+  /**
+   * Bridge getter to satisfy LfCodeInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): string {
+    return this.#adapter?.controller.get.value() ?? "";
+  }
   //#endregion
 
   //#region Props
@@ -336,23 +354,37 @@ export class LfCode implements LfCodeInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.get: State reads (value) + base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (value) → triggers onStateChange
    * - controller.computed: Derived values (formattedCode, shouldPreserveSpace)
    * - controller.actions: Complex operations (highlight, copyToClipboard, loadLanguage)
    * - elements: JSX factories + refs
    * - dispatcher: Centralized event emission
    *
-   * @see Section 5 of 4_0_0_REFACTORING.md
+   * @see Section 5 & 5.9 of 4_0_0_REFACTORING.md
    */
   #initAdapter = () => {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value - empty string, will be computed on first render
+    const initialValue = "";
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility)
+      // Base getters (via utility) - does NOT include value getter
       createBaseGetters({
         blocks: () => this.#b,
         compInstance: () => this,
@@ -360,10 +392,10 @@ export class LfCode implements LfCodeInterface {
         ids: () => this.#ids,
         parts: () => this.#p,
       }),
-      // Computed - derived values (from dedicated file)
-      prepCodeComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepCodeActions(getAdapter),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -376,7 +408,14 @@ export class LfCode implements LfCodeInterface {
   };
   #updateValue() {
     const { formattedCode } = this.#adapter.controller.computed;
-    this.value = formattedCode();
+    const newValue = formattedCode();
+    const currentValue = this.#adapter.controller.get.value();
+    // Only update if value has changed to avoid infinite loops
+    if (currentValue !== newValue) {
+      // Directly update closure state without triggering onStateChange
+      // since we're already in a render cycle
+      this.#adapter.controller.set.value(newValue);
+    }
   }
   //#endregion
 

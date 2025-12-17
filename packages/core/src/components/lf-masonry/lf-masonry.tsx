@@ -1,6 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
   LF_MASONRY_BLOCKS,
   LF_MASONRY_CSS_VARS,
   LF_MASONRY_DEFAULT_COLUMNS,
@@ -37,9 +35,8 @@ import {
   State,
   Watch,
 } from "@stencil/core";
+import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { createActions } from "./actions.masonry";
-import { createComputed } from "./computed.masonry";
 import { createAdapter } from "./lf-masonry-adapter";
 import { LfMasonryFC } from "./lf-masonry-fc";
 
@@ -76,10 +73,36 @@ export class LfMasonry implements LfMasonryInterface {
   @Element() rootElement: LfMasonryElement;
 
   //#region States
+  /**
+   * This is the ONLY @State in the component (besides debugInfo). It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() selectedShape: LfMasonrySelectedShape = {};
-  @State() shapes: LfDataShapesMap = {};
-  @State() viewportWidth: number;
+
+  /**
+   * Bridge getter for selectedShape to satisfy LfMasonryInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.selectedShape() internally
+   */
+  get selectedShape(): LfMasonrySelectedShape {
+    return this.#adapter?.controller.get.selectedShape() ?? {};
+  }
+
+  /**
+   * Bridge getter for shapes to satisfy LfMasonryInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.shapes() internally
+   */
+  get shapes(): LfDataShapesMap {
+    return this.#adapter?.controller.get.shapes() ?? {};
+  }
   //#endregion
 
   //#region Props
@@ -197,9 +220,7 @@ export class LfMasonry implements LfMasonryInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_MASONRY_BLOCKS;
-  #cy = CY_ATTRIBUTES;
   #ids = LF_MASONRY_IDS;
-  #lf = LF_ATTRIBUTES;
   #p = LF_MASONRY_PARTS;
   #s = LF_STYLE_ID;
   #v = LF_MASONRY_CSS_VARS;
@@ -228,7 +249,10 @@ export class LfMasonry implements LfMasonryInterface {
     eventType: LfMasonryEvent,
     refKey?: string,
   ): void {
-    const { lfSelectable, lfShape, selectedShape, shapes } = this;
+    const { lfSelectable, lfShape } = this;
+    const { get, set } = this.#adapter.controller;
+    const selectedShape = get.selectedShape();
+    const shapes = get.shapes();
 
     let shouldUpdateState = false;
     const state: LfMasonrySelectedShape = {};
@@ -247,7 +271,7 @@ export class LfMasonry implements LfMasonryInterface {
     }
 
     if (shouldUpdateState) {
-      this.selectedShape = state;
+      set.selectedShape(state);
     }
 
     this.lfEvent.emit({
@@ -255,7 +279,7 @@ export class LfMasonry implements LfMasonryInterface {
       eventType,
       id: this.rootElement.id,
       originalEvent: e,
-      selectedShape: this.selectedShape,
+      selectedShape: get.selectedShape(),
     });
   }
   //#endregion
@@ -291,7 +315,8 @@ export class LfMasonry implements LfMasonryInterface {
     const { data, debug } = this.#framework;
 
     try {
-      this.shapes = data.cell.shapes.getAll(this.lfDataset);
+      const shapes = data.cell.shapes.getAll(this.lfDataset);
+      this.#adapter.controller.set.shapes(shapes);
     } catch (error) {
       debug.logs.new(this, "Error updating shapes: " + error, "error");
     }
@@ -329,7 +354,7 @@ export class LfMasonry implements LfMasonryInterface {
    */
   @Method()
   async getSelectedShape(): Promise<LfMasonrySelectedShape> {
-    return this.selectedShape;
+    return this.#adapter.controller.get.selectedShape();
   }
   /**
    * Redecorates the shapes, updating potential new values.
@@ -351,16 +376,18 @@ export class LfMasonry implements LfMasonryInterface {
   @Method()
   async setSelectedShape(index: number): Promise<void> {
     const { debug } = this.#framework;
+    const { get, set } = this.#adapter.controller;
 
-    const shape = this.shapes?.[this.lfShape]?.[index];
+    const shapes = get.shapes();
+    const shape = shapes?.[this.lfShape]?.[index];
     if (shape) {
       const newState: LfMasonrySelectedShape = {
         index,
         shape,
       };
-      this.selectedShape = newState;
+      set.selectedShape(newState);
     } else {
-      this.selectedShape = {};
+      set.selectedShape({});
       debug.logs.new(this, `Couldn't set shape with index: ${index}`);
     }
     this.updateShapes();
@@ -379,80 +406,97 @@ export class LfMasonry implements LfMasonryInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Creates the dispatcher for centralized event emission.
+   * All component events route through this dispatcher.
+   * @see Section 5.5 of 4_0_0_REFACTORING.md
+   */
+  #createDispatcher = () => ({
+    emit: (
+      eventType: LfMasonryEvent,
+      detail?: Partial<LfMasonryEventPayload>,
+    ) => {
+      this.#framework?.debug?.logs.new(
+        this,
+        `Event: ${eventType}`,
+        "informational",
+      );
+
+      const selectedShape = this.#adapter.controller.get.selectedShape();
+      this.lfEvent.emit({
+        comp: this,
+        eventType,
+        id: this.rootElement.id,
+        originalEvent: detail?.originalEvent,
+        selectedShape: detail?.selectedShape ?? selectedShape,
+      });
+    },
+  });
+  /**
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * Structure:
+   * - controller.get: Base getters + state getters from closure
+   * - controller.set: State setters that write to closure + trigger render
+   * - controller.computed: Derived predicates (pure functions)
+   * - controller.actions: Complex operations (select, clearSelection, etc.)
+   * - elements: JSX factories + refs
+   * - dispatcher: Centralized event emission
+   * - handlers: Event callbacks
+   *
+   * State lives in adapter closure, WC is thin shell:
+   * - onStateChange callback increments _renderTick to trigger re-render
+   *
+   * @see Section 5 of 4_0_0_REFACTORING.md
+   */
   #initAdapter = () => {
-    // GET: Pure state reads (ALL must be functions)
-    const getters = {
-      // Base getters (v4.0.0 - ALL must be functions)
+    // Adapter accessor - shared by all factories
+    const getAdapter = () => this.#adapter;
+
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Base getters via utility (excludes state getters)
+    const baseGetters = createBaseGetters({
       blocks: () => this.#b,
       compInstance: () => this,
-      cyAttributes: () => this.#cy,
       framework: () => this.#framework,
       ids: () => this.#ids,
-      lfAttributes: () => this.#lf,
       parts: () => this.#p,
-      // Component-specific getters
+    });
+
+    // Extended base getters with component-specific non-state getters
+    const extendedBaseGetters = {
+      ...baseGetters,
       currentColumns: () => this.#currentColumns,
-      selectedIndex: () => this.selectedShape?.index,
-      selectedShape: () => this.selectedShape,
-      shapes: () => this.shapes,
       view: () => this.lfView,
     };
 
-    // SET: Simple single-value assignments
-    const setters = {
-      selectedIndex: (index: number | undefined) => {
-        if (index !== undefined) {
-          const shape = this.shapes?.[this.lfShape]?.[index];
-          this.selectedShape = shape ? { index, shape } : {};
-        } else {
-          this.selectedShape = {};
-        }
-      },
-      selectedShape: (shape: LfMasonrySelectedShape) => {
-        this.selectedShape = shape;
-      },
-      view: (view: LfMasonryView) => {
-        this.lfView = view;
-      },
+    // Initial state
+    const initialState = {
+      selectedShape: {},
+      shapes: {},
+      viewportWidth: window.innerWidth,
     };
 
-    // COMPUTED: Derived values and predicates (pure functions)
-    const computed = createComputed(getters);
-
-    // ACTIONS: Multi-step operations
-    const actions = createActions(() => this.#adapter);
-
-    const adapterParts = createAdapter(
-      getters,
-      setters,
-      computed,
-      actions,
-      () => this.#adapter,
+    const adapterWithoutDispatcher = createAdapter(
+      extendedBaseGetters,
+      initialState,
+      onStateChange,
+      getAdapter,
     );
 
-    // Add dispatcher for centralized event emission (v4.0.0)
+    // Combine adapter parts with dispatcher
     this.#adapter = {
-      ...adapterParts,
-      dispatcher: {
-        emit: (eventType, detail) => {
-          this.#framework?.debug?.logs.new(
-            this,
-            `Event: ${eventType}`,
-            "informational",
-          );
-          this.lfEvent.emit({
-            comp: this,
-            eventType,
-            id: this.rootElement.id,
-            originalEvent: detail?.originalEvent,
-            selectedShape: detail?.selectedShape ?? this.selectedShape,
-          });
-        },
-      },
+      ...adapterWithoutDispatcher,
+      dispatcher: this.#createDispatcher(),
     };
   };
   #hasShapes = () => {
-    return !!this.shapes?.[this.lfShape];
+    const shapes = this.#adapter?.controller.get.shapes() ?? {};
+    return !!shapes?.[this.lfShape];
   };
   #isMasonry = () => {
     return this.lfView === "main";
@@ -467,7 +511,9 @@ export class LfMasonry implements LfMasonryInterface {
     return breakpoints.every((val, i, arr) => i === 0 || arr[i - 1] < val);
   };
   #calculateColumnCount() {
-    const { lfColumns, viewportWidth, shapes, lfShape } = this;
+    const { lfColumns, lfShape } = this;
+    const viewportWidth = this.#adapter?.controller.get.viewportWidth() ?? 0;
+    const shapes = this.#adapter?.controller.get.shapes() ?? {};
 
     if (!this.#hasShapes()) {
       return 1;
@@ -500,7 +546,7 @@ export class LfMasonry implements LfMasonryInterface {
     return 1;
   }
   #handleResize = this.#debounce(() => {
-    this.viewportWidth = window.innerWidth;
+    this.#adapter.controller.set.viewportWidth(window.innerWidth);
   }, 200);
   //#endregion
 
@@ -517,7 +563,8 @@ export class LfMasonry implements LfMasonryInterface {
   }
   componentDidLoad() {
     window.addEventListener("resize", this.#handleResize);
-    this.viewportWidth = window.innerWidth; // re-render expected
+    // Set initial viewport width via adapter
+    this.#adapter.controller.set.viewportWidth(window.innerWidth);
 
     const { info } = this.#framework.debug;
 
@@ -544,8 +591,11 @@ export class LfMasonry implements LfMasonryInterface {
   }
   render() {
     const { setLfStyle } = this.#framework.theme;
+    const { get } = this.#adapter.controller;
 
     const { lfStyle } = this;
+    const selectedShape = get.selectedShape();
+    const shapes = get.shapes();
 
     const style = {
       [this.#v.columns]: String(this.#currentColumns),
@@ -578,9 +628,9 @@ export class LfMasonry implements LfMasonryInterface {
               this.onLfEvent(e, "lf-event", refKey);
             }}
             selectable={this.lfSelectable}
-            selectedShape={this.selectedShape}
+            selectedShape={selectedShape}
             shape={this.lfShape}
-            shapes={this.shapes}
+            shapes={shapes}
             view={this.lfView}
           />
         </div>

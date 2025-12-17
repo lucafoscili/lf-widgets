@@ -1,17 +1,14 @@
 import {
   COVER_ICONS,
-  CY_ATTRIBUTES,
   IMAGE_TYPE_IDS,
   LF_ATTRIBUTES,
   LF_MESSENGER_BLOCKS,
   LF_MESSENGER_CLEAN_UI,
-  LF_MESSENGER_IDS,
   LF_MESSENGER_PARTS,
   LF_MESSENGER_PROPS,
   LF_STYLE_ID,
   LF_THEME_ICONS,
   LF_WRAPPER_ID,
-  LfChatStatus,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfIconType,
@@ -19,11 +16,9 @@ import {
   LfMessengerBaseChildNode,
   LfMessengerCharacterNode,
   LfMessengerChat,
-  LfMessengerChildIds,
   LfMessengerConfig,
   LfMessengerCovers,
   LfMessengerDataset,
-  LfMessengerEditingStatus,
   LfMessengerElement,
   LfMessengerEvent,
   LfMessengerEventPayload,
@@ -33,6 +28,7 @@ import {
   LfMessengerInterface,
   LfMessengerPanels,
   LfMessengerPropsInterface,
+  LfMessengerUI,
   LfMessengerUnionChildIds,
   OPTION_TYPE_IDS,
 } from "@lf-widgets/foundations";
@@ -59,7 +55,7 @@ import {
   extractPropsFromChatCell,
   hasNodes,
 } from "./helpers.utils";
-import { createAdapter } from "./lf-messenger-adapter";
+import { createAdapter, LfMessengerAdapterState } from "./lf-messenger-adapter";
 
 /**
  * Represents a messenger component that displays a chat interface with characters and messages.
@@ -94,24 +90,149 @@ export class LfMessenger implements LfMessengerInterface {
   @Element() rootElement: LfMessengerElement;
 
   //#region States
+  /**
+   * Debug information for component lifecycle.
+   */
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() chat: LfMessengerChat = {};
-  @State() connectionStatus: LfChatStatus = "offline";
-  @State() covers: LfMessengerCovers = {};
-  @State() currentCharacter: LfMessengerCharacterNode;
-  @State()
-  formStatusMap: LfMessengerEditingStatus<LfMessengerImageTypes> =
-    IMAGE_TYPE_IDS.reduce((acc, type) => {
-      acc[type] = null;
-      return acc;
-    }, {} as LfMessengerEditingStatus<LfMessengerImageTypes>);
-  @State() history: LfMessengerHistory = {};
-  @State()
-  hoveredCustomizationOption: LfMessengerBaseChildNode<
-    LfMessengerChildIds<LfMessengerUnionChildIds>
-  >;
-  @State() saveInProgress = false;
-  @State() ui = LF_MESSENGER_CLEAN_UI();
+  /**
+   * Render trigger for adapter state changes.
+   * Incremented by onStateChange callback to trigger re-renders.
+   */
+  @State() private _renderTick = 0;
+  //#endregion
+
+  //#region Bridge getters/setters for public API compatibility
+  /**
+   * Gets the chat state from the adapter - returns the full chat map keyed by character ID.
+   */
+  get chat(): LfMessengerChat {
+    return this.#state?.chat || {};
+  }
+  /**
+   * Sets the chat state through the adapter (for test compatibility).
+   */
+  set chat(value: LfMessengerChat) {
+    if (this.#state) {
+      this.#state.chat = value;
+      this.#onStateChange();
+    }
+  }
+  /**
+   * Gets the connection status from the adapter.
+   */
+  get connectionStatus() {
+    return this.#adapter?.controller.get.status.connection() || "offline";
+  }
+  /**
+   * Sets the connection status through the adapter (for test compatibility).
+   */
+  set connectionStatus(value) {
+    if (this.#adapter) {
+      this.#adapter.controller.set.status.connection(value);
+    }
+  }
+  /**
+   * Gets the covers state from the adapter.
+   */
+  get covers(): LfMessengerCovers {
+    return this.#state?.covers || {};
+  }
+  /**
+   * Sets the covers state through the adapter (for test compatibility).
+   */
+  set covers(value: LfMessengerCovers) {
+    if (this.#state) {
+      this.#state.covers = value;
+      this.#onStateChange();
+    }
+  }
+  /**
+   * Gets the current character from the adapter.
+   */
+  get currentCharacter(): LfMessengerCharacterNode {
+    return this.#adapter?.controller.get.character.current();
+  }
+  /**
+   * Sets the current character through the adapter (for test compatibility).
+   */
+  set currentCharacter(value: LfMessengerCharacterNode) {
+    if (this.#adapter) {
+      this.#adapter.controller.set.character.current(value);
+    }
+  }
+  /**
+   * Gets the form status map from the adapter.
+   */
+  get formStatusMap() {
+    return this.#adapter?.controller.get.status.formStatus();
+  }
+  /**
+   * Sets the form status map through the adapter (for test compatibility).
+   */
+  set formStatusMap(value) {
+    if (this.#state) {
+      this.#state.formStatusMap = value;
+      this.#onStateChange();
+    }
+  }
+  /**
+   * Gets the history state from the adapter.
+   */
+  get history(): LfMessengerHistory {
+    return this.#adapter?.controller.get.history() || {};
+  }
+  /**
+   * Sets the history state through the adapter (for test compatibility).
+   */
+  set history(value: LfMessengerHistory) {
+    if (this.#state) {
+      this.#state.history = value;
+      this.#onStateChange();
+    }
+  }
+  /**
+   * Gets the hovered customization option from the adapter.
+   */
+  get hoveredCustomizationOption() {
+    return this.#adapter?.controller.get.status.hoveredCustomizationOption();
+  }
+  /**
+   * Sets the hovered customization option through the adapter (for test compatibility).
+   */
+  set hoveredCustomizationOption(value) {
+    if (this.#adapter) {
+      this.#adapter.controller.set.status.hoveredCustomizationOption(value);
+    }
+  }
+  /**
+   * Gets the save in progress status from the adapter.
+   */
+  get saveInProgress(): boolean {
+    return this.#adapter?.controller.get.status.save.inProgress() || false;
+  }
+  /**
+   * Sets the save in progress status through the adapter (for test compatibility).
+   */
+  set saveInProgress(value: boolean) {
+    if (this.#adapter) {
+      this.#adapter.controller.set.status.save.inProgress(value);
+    }
+  }
+  /**
+   * Gets the UI state from the adapter.
+   */
+  get ui(): LfMessengerUI {
+    return this.#adapter?.controller.get.ui() || LF_MESSENGER_CLEAN_UI();
+  }
+  /**
+   * Sets the UI state through the adapter (for test compatibility).
+   */
+  set ui(value: LfMessengerUI) {
+    if (this.#state) {
+      this.#state.ui = value;
+      this.#onStateChange();
+    }
+  }
   //#endregion
 
   //#region Props
@@ -172,13 +293,18 @@ export class LfMessenger implements LfMessengerInterface {
   //#region Internal variables
   #framework: LfFrameworkInterface;
   #b = LF_MESSENGER_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #ids = LF_MESSENGER_IDS;
   #lf = LF_ATTRIBUTES;
   #p = LF_MESSENGER_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #adapter: LfMessengerAdapter;
+  #state: LfMessengerAdapterState;
+  /**
+   * Callback to trigger re-render when adapter state changes.
+   */
+  #onStateChange = () => {
+    this._renderTick++;
+  };
   //#endregion
 
   //#region Events
@@ -195,11 +321,11 @@ export class LfMessenger implements LfMessengerInterface {
   })
   lfEvent: EventEmitter<LfMessengerEventPayload>;
   onLfEvent(e: Event | CustomEvent, eventType: LfMessengerEvent) {
-    const { currentCharacter, rootElement, ui } = this;
+    const { rootElement } = this;
 
     const config: LfMessengerConfig = {
-      currentCharacter: currentCharacter?.id,
-      ui,
+      currentCharacter: this.currentCharacter?.id,
+      ui: this.ui,
     };
     this.lfEvent.emit({
       comp: this,
@@ -271,9 +397,12 @@ export class LfMessenger implements LfMessengerInterface {
    */
   @Method()
   async reset(): Promise<void> {
-    this.covers = {};
-    this.currentCharacter = null;
-    this.history = {};
+    // Reset state through adapter
+    if (this.#state) {
+      this.#state.covers = {};
+      this.#state.currentCharacter = null;
+      this.#state.history = {};
+    }
 
     this.#initialize();
   }
@@ -314,70 +443,50 @@ export class LfMessenger implements LfMessengerInterface {
     }
   };
   #initAdapter = () => {
-    const adapterParts = createAdapter(
-      // GET: Pure state reads (ALL must be functions)
-      {
-        // Base getters (v4.0.0 - ALL must be functions)
-        blocks: () => this.#b.messenger,
-        compInstance: () => this,
-        cyAttributes: () => this.#cy,
-        framework: () => this.#framework,
-        ids: () => this.#ids.messenger,
-        lfAttributes: () => this.#lf,
-        parts: () => this.#p.messenger,
-        // Component-specific getters (populated in createGetters)
-        character: null,
-        config: null,
-        data: null,
-        history: null,
-        image: null,
-        status: null,
-        ui: null,
-      },
-      // SET: Simple single-value assignments (populated in createSetters)
-      {
-        character: null,
-        data: null,
-        image: null,
-        status: null,
-        ui: null,
-      },
-      // COMPUTED: Derived values and predicates (pure functions)
-      prepMessengerComputed(() => this.#adapter),
-      // ACTIONS: Multi-step operations
-      prepMessengerActions(() => this.#adapter),
+    // Create adapter with closure state
+    this.#adapter = createAdapter(
+      () => this,
+      () => this.#framework,
+      this.#onStateChange,
+    );
+
+    // Store reference to state for direct access in reset/init
+    this.#state = (this.#adapter.controller.get as any).__state;
+
+    // Add computed and actions
+    this.#adapter.controller.computed = prepMessengerComputed(
+      () => this.#adapter,
+    );
+    this.#adapter.controller.actions = prepMessengerActions(
       () => this.#adapter,
     );
 
     // Add dispatcher for centralized event emission (v4.0.0)
-    this.#adapter = {
-      ...adapterParts,
-      dispatcher: {
-        emit: (eventType, detail) => {
-          this.#framework?.debug?.logs.new(
-            this,
-            `Event: ${eventType}`,
-            "informational",
-          );
+    this.#adapter.dispatcher = {
+      emit: (eventType, detail) => {
+        this.#framework?.debug?.logs.new(
+          this,
+          `Event: ${eventType}`,
+          "informational",
+        );
 
-          const config: LfMessengerConfig = {
-            currentCharacter: this.currentCharacter?.id,
-            ui: this.ui,
-          };
+        const config: LfMessengerConfig = {
+          currentCharacter: this.currentCharacter?.id,
+          ui: this.ui,
+        };
 
-          this.lfEvent.emit({
-            comp: this,
-            eventType,
-            id: this.rootElement.id,
-            originalEvent: detail?.originalEvent,
-            config,
-          });
-        },
+        this.lfEvent.emit({
+          comp: this,
+          eventType,
+          id: this.rootElement.id,
+          originalEvent: detail?.originalEvent,
+          config,
+        });
       },
     };
   };
   #initCharacter = (character: LfMessengerCharacterNode) => {
-    const { get } = this.#adapter.controller;
+    const { get, set } = this.#adapter.controller;
 
     const covers: LfMessengerCovers = {
       [character.id]: IMAGE_TYPE_IDS.reduce(
@@ -391,19 +500,32 @@ export class LfMessenger implements LfMessengerInterface {
     };
 
     const chat = character.children?.find((n) => n.id === "chat");
-    this.chat[character.id] = {};
+
+    // Initialize chat state for this character
+    set.character.chat({}, character);
 
     const chatCell = chat?.cells?.lfChat;
+    const charChat = get.character.chat(character) || {};
     if (chatCell) {
-      extractPropsFromChatCell(chatCell, this.chat[character.id]);
+      extractPropsFromChatCell(chatCell, charChat);
+      set.character.chat(charChat, character);
     }
 
     const history = chatCell?.lfValue || chatCell?.value || [];
-    this.history[character.id] = JSON.stringify(history);
-    Object.assign(this.covers, covers);
+    set.character.history(JSON.stringify(history), character);
+
+    // Merge covers into state
+    const currentCovers = this.#adapter.controller.get.status.formStatus()
+      ? this.covers
+      : {};
+    Object.assign(currentCovers, covers);
+    if (this.#state) {
+      this.#state.covers = { ...this.#state.covers, ...covers };
+    }
   };
   #initConfig = () => {
     const { byId } = this.#adapter.controller.get.character;
+    const { set } = this.#adapter.controller;
     const { lfValue } = this;
 
     const currentCharacter = lfValue.currentCharacter;
@@ -411,28 +533,38 @@ export class LfMessenger implements LfMessengerInterface {
     const panels = lfValue.ui?.panels || LF_MESSENGER_CLEAN_UI().panels;
 
     if (currentCharacter) {
-      this.currentCharacter = byId(currentCharacter);
+      set.character.current(byId(currentCharacter));
     }
 
+    // Update filters through adapter
+    const currentUi = this.#adapter.controller.get.ui();
+    const newFilters = { ...currentUi.filters };
     for (const key in filters) {
       if (Object.prototype.hasOwnProperty.call(filters, key)) {
         const k = key as keyof LfMessengerFilters;
-        const filter = filters[k];
-        this.ui.filters[k] = filter;
+        newFilters[k] = filters[k];
       }
     }
-    for (const key in panels) {
-      if (Object.prototype.hasOwnProperty.call(panels, key)) {
-        const k = key as keyof LfMessengerPanels;
-        const panel = panels[k];
-        this.ui.panels[k] = panel;
+    set.ui.filters(newFilters);
+
+    // Update panels through state
+    if (this.#state) {
+      const newPanels = { ...this.#state.ui.panels };
+      for (const key in panels) {
+        if (Object.prototype.hasOwnProperty.call(panels, key)) {
+          const k = key as keyof LfMessengerPanels;
+          newPanels[k] = panels[k];
+        }
       }
+      this.#state.ui = { ...this.#state.ui, panels: newPanels };
     }
   };
   #save = async () => {
     const { get, set } = this.#adapter.controller;
     const { save } = this.#adapter.elements.refs.character;
-    const { covers, history, lfDataset } = this;
+    const { lfDataset } = this;
+    const covers = this.covers;
+    const history = this.history;
 
     requestAnimationFrame(() => set.status.save.inProgress(true));
 
@@ -464,7 +596,7 @@ export class LfMessenger implements LfMessengerInterface {
 
       const saveCovers = () => {
         IMAGE_TYPE_IDS.forEach((type) => {
-          const root = this.#adapter.controller.get.image.root(type);
+          const root = this.#adapter.controller.get.image.root(type, character);
 
           if (covers[id] && root) {
             root.value = covers[id][type];
@@ -485,7 +617,18 @@ export class LfMessenger implements LfMessengerInterface {
               this.#framework.theme.get.current().variables;
 
             set.status.save.inProgress(false);
-            save.setMessage("Saved!", icon);
+
+            // Temporarily show "Saved!" message on button
+            if (save) {
+              const originalLabel = save.textContent;
+              const originalIcon = save.dataset.icon;
+              save.textContent = "Saved!";
+              save.dataset.icon = icon;
+              setTimeout(() => {
+                save.textContent = originalLabel;
+                save.dataset.icon = originalIcon || "";
+              }, 1000);
+            }
           }),
         800,
       );
@@ -637,7 +780,9 @@ export class LfMessenger implements LfMessengerInterface {
     const { byType, coverIndex, title } = controller.get.image;
     const { edit, remove } = elements.jsx.customization.list;
     const { image } = handlers.customization;
-    const { formStatusMap, hoveredCustomizationOption, ui } = this;
+    const formStatusMap = this.formStatusMap;
+    const hoveredCustomizationOption = this.hoveredCustomizationOption;
+    const ui = this.ui;
     const { filters } = ui;
 
     return (
@@ -654,10 +799,12 @@ export class LfMessenger implements LfMessengerInterface {
                 onClick={(e) => image(e, node, j)}
                 onPointerEnter={() => {
                   if (activeIndex !== j) {
-                    this.hoveredCustomizationOption = node;
+                    controller.set.status.hoveredCustomizationOption(node);
                   }
                 }}
-                onPointerLeave={() => (this.hoveredCustomizationOption = null)}
+                onPointerLeave={() =>
+                  controller.set.status.hoveredCustomizationOption(null)
+                }
               >
                 <img
                   alt={title(node)}
@@ -697,7 +844,7 @@ export class LfMessenger implements LfMessengerInterface {
       const { options } = this.#b.messenger;
       const { image } = this.#adapter.controller.get;
       const { asCover } = image;
-      const { ui } = this;
+      const ui = this.ui;
 
       const { value, node, title } = asCover(opt);
       const isEnabled = ui.options[opt];
@@ -725,8 +872,7 @@ export class LfMessenger implements LfMessengerInterface {
                   active: !isEnabled,
                 })}
                 onClick={() => {
-                  ui.options[opt] = !isEnabled;
-                  this.refresh();
+                  this.#adapter.controller.set.ui.options(!isEnabled, opt);
                 }}
               >
                 <FIcon

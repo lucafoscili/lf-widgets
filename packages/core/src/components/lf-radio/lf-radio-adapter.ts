@@ -1,45 +1,80 @@
 import {
   LfRadioAdapter,
-  LfRadioAdapterControllerActions,
-  LfRadioAdapterControllerComputed,
   LfRadioAdapterControllerGetters,
   LfRadioAdapterControllerSetters,
   LfRadioAdapterHandlers,
   LfRadioAdapterJsx,
   LfRadioAdapterRefs,
 } from "@lf-widgets/foundations";
-
+import { prepRadioActions } from "./actions.radio";
+import { prepRadioComputed } from "./computed.radio";
 import { prepRadio } from "./elements.radio";
 import { prepRadioHandlers } from "./handlers.radio";
 
 /**
  * Creates the canonical adapter for lf-radio.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.set: Simple setters (updateDataset)
- * - controller.computed: Derived predicates (isDisabled, hasNodes, isHorizontal, etc.)
- * - controller.actions: Complex operations (select, clear, focusNext, focusPrevious)
- * - elements: JSX factories + refs
- * - dispatcher: Centralized event emission (passed from component)
- * - handlers: Event callbacks
+ * "Adapter as Core" Architecture:
+ * - Adapter OWNS the runtime state (not the WC)
+ * - State is stored in closure variables (e.g., `_value`)
+ * - `controller.get.*` reads from closure state
+ * - `controller.set.*` writes to closure state AND calls `onStateChange()`
+ * - `onStateChange` signals WC to increment its single `@State _renderTick`
+ * - WC becomes a thin shell: lifecycle + HTML attribute interface + single render trigger
+ *
+ * Benefits:
+ * - Predictable renders (explicit via onStateChange)
+ * - Testable (adapter can be tested without DOM)
+ * - Portable (adapter works with any renderer)
+ * - Batch-friendly (actions can make multiple changes before calling onStateChange once)
+ *
+ * @param baseGetters - Base getters from createBaseGetters utility
+ * @param initialValue - Initial selected node ID
+ * @param onStateChange - Callback to trigger WC re-render (increments _renderTick)
+ * @param getAdapter - Accessor function to get the current adapter instance
+ * @returns Complete adapter (without dispatcher - added by WC)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
-//#region Adapter
+//#region Adapter Factory
 export const createAdapter = (
-  getters: LfRadioAdapterControllerGetters,
-  setters: LfRadioAdapterControllerSetters,
-  computed: LfRadioAdapterControllerComputed,
-  actions: LfRadioAdapterControllerActions,
+  baseGetters: Omit<LfRadioAdapterControllerGetters, "value">,
+  initialValue: string | undefined,
+  onStateChange: () => void,
   getAdapter: () => LfRadioAdapter,
 ): Omit<LfRadioAdapter, "dispatcher"> => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTERNAL STATE (replaces @State in WC)
+  // This closure variable IS the single source of truth for selected radio value
+  // ═══════════════════════════════════════════════════════════════════════════
+  let _value: string | undefined = initialValue;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE GETTERS - Read from closure
+  // ═══════════════════════════════════════════════════════════════════════════
+  const getters: LfRadioAdapterControllerGetters = {
+    ...baseGetters,
+    value: () => _value,
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE SETTERS - Write to closure + trigger render
+  // ═══════════════════════════════════════════════════════════════════════════
+  const setters: LfRadioAdapterControllerSetters = {
+    value: (nodeId: string | undefined) => {
+      if (_value !== nodeId) {
+        _value = nodeId;
+        onStateChange(); // Signal WC to re-render
+      }
+    },
+  };
+
   return {
     controller: {
       get: getters,
-      set: createSetters(setters),
-      computed,
-      actions,
+      set: setters,
+      computed: createComputed(getAdapter),
+      actions: createActions(getAdapter),
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -51,12 +86,12 @@ export const createAdapter = (
 //#endregion
 
 //#region Controller
-export const createSetters = (
-  setters: LfRadioAdapterControllerSetters,
-): LfRadioAdapterControllerSetters => {
-  return {
-    ...setters,
-  };
+export const createComputed = (getAdapter: () => LfRadioAdapter) => {
+  return prepRadioComputed(getAdapter);
+};
+
+export const createActions = (getAdapter: () => LfRadioAdapter) => {
+  return prepRadioActions(getAdapter);
 };
 //#endregion
 

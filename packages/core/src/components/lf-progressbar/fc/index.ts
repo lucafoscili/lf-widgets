@@ -3,7 +3,18 @@
  *
  * Per Section 5.9 "Mirroring Rule":
  * Each elements file maps to a corresponding FC that composes the JSX functions.
- * These FCs receive the adapter and render pure UI based on adapter state.
+ * These FCs receive props and render pure UI.
+ *
+ * Note: LfProgressbarFC is designed for standalone usage (receives framework directly)
+ * rather than adapter-based usage. This allows composition in other components
+ * without requiring an adapter.
  */
 
-export { ProgressbarFC, ProgressbarFCProps } from "./progressbar-fc";
+export {
+  LfProgressbarFC,
+  ProgressbarFC,
+  ProgressbarFCProps,
+} from "./progressbar-fc";
+
+// Re-export types from foundations for convenience
+export type { LfProgressbarFCProps } from "@lf-widgets/foundations";

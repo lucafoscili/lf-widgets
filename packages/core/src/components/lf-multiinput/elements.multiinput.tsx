@@ -61,7 +61,6 @@ export const prepMultiInputJsx = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const framework = get.framework();
       const compInstance = get.compInstance();
 

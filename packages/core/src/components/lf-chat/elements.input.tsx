@@ -1,5 +1,6 @@
 import {
   LF_CHAT_IDS,
+  LF_CHAT_PARTS,
   LfChatAdapter,
   LfChatAdapterJsx,
 } from "@lf-widgets/foundations";
@@ -20,18 +21,10 @@ export const prepInput = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       const hasAttachments = get.currentAttachments().length > 0;
-      const title = hasAttachments
-        ? get
-            .currentAttachments()
-            .map((att) => att.name)
-            .join(", ")
-        : "Attach an image (ensure the model supports image inputs).";
 
       return (
         <ButtonFC
@@ -40,7 +33,7 @@ export const prepInput = (
           icon={"--lf-icon-image"}
           id={LF_CHAT_IDS.input.attachImage}
           disabled={Boolean(get.currentPrompt())}
-          onClick={() => button(LF_CHAT_IDS.input.attachImage)}
+          onClick={(e) => button(e, LF_CHAT_IDS.input.attachImage)}
           buttonRef={assignRef(input, "attachImage")}
           styling={hasAttachments ? "raised" : "flat"}
           uiState={get.currentPrompt() ? "disabled" : "primary"}
@@ -58,18 +51,10 @@ export const prepInput = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
       const hasAttachments = get.currentAttachments().length > 0;
-      const title = hasAttachments
-        ? get
-            .currentAttachments()
-            .map((att) => att.name)
-            .join(", ")
-        : "Attach a file (ensure the model supports file inputs).";
 
       return (
         <ButtonFC
@@ -78,7 +63,7 @@ export const prepInput = (
           icon={"--lf-icon-attachment"}
           id={LF_CHAT_IDS.input.attachFile}
           disabled={Boolean(get.currentPrompt())}
-          onClick={() => button(LF_CHAT_IDS.input.attachFile)}
+          onClick={(e) => button(e, LF_CHAT_IDS.input.attachFile)}
           buttonRef={assignRef(input, "attachFile")}
           styling={hasAttachments ? "raised" : "flat"}
           uiState={get.currentPrompt() ? "disabled" : "primary"}
@@ -96,8 +81,6 @@ export const prepInput = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -107,7 +90,7 @@ export const prepInput = (
           framework={get.framework()}
           icon="settings"
           id={LF_CHAT_IDS.input.configuration}
-          onClick={() => button(LF_CHAT_IDS.input.configuration)}
+          onClick={(e) => button(e, LF_CHAT_IDS.input.configuration)}
           buttonRef={assignRef(input, "configuration")}
           styling="flat"
           style={{ height: "100%" }}
@@ -124,8 +107,6 @@ export const prepInput = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -135,7 +116,7 @@ export const prepInput = (
           framework={get.framework()}
           icon="maximize"
           id={LF_CHAT_IDS.input.fullScreen}
-          onClick={() => button(LF_CHAT_IDS.input.fullScreen)}
+          onClick={(e) => button(e, LF_CHAT_IDS.input.fullScreen)}
           buttonRef={assignRef(input, "fullScreen")}
           styling="flat"
         />
@@ -150,7 +131,6 @@ export const prepInput = (
       const { input } = elements.refs;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const effectiveConfig = getEffectiveConfig(adapter);
       const lfContextWindow = effectiveConfig.llm.contextWindow;
       const { assignRef, theme } = get.framework();
@@ -168,7 +148,7 @@ export const prepInput = (
           lfLabel="Context window"
           lfUiSize="xsmall"
           lfValue={percentage}
-          part={parts.progressbar}
+          part={LF_CHAT_PARTS.progressbar}
           ref={assignRef(input, "progressbar")}
           title={title}
         ></lf-progressbar>
@@ -184,8 +164,6 @@ export const prepInput = (
       const { textfield } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -201,6 +179,7 @@ export const prepInput = (
           onKeyDown={(e) => textfield(e)}
           inputRef={assignRef(input, "textarea")}
           style={{ width: "100%" }}
+          value=""
         />
       );
     },

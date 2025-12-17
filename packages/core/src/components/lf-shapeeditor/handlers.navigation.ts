@@ -84,7 +84,7 @@ export const prepNavigationHandlers = (
     //#endregion
 
     //#region Textfield handler
-    textfield: (e: Event, value: string) => {
+    textfield: (e: Event, _value: string) => {
       const adapter = getAdapter();
       const { compInstance } = adapter.controller.get;
 

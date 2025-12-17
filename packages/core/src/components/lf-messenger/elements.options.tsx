@@ -13,7 +13,7 @@ export const prepOptions = (
     //#region Back
     back: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, framework } = controller.get;
+      const { framework } = controller.get;
       const fw = framework();
       const { assignRef, theme } = fw;
       const { options } = elements.refs;
@@ -38,7 +38,7 @@ export const prepOptions = (
     //#region Customization
     customize: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, framework } = controller.get;
+      const { framework } = controller.get;
       const fw = framework();
       const { assignRef, theme } = fw;
       const { options } = elements.refs;

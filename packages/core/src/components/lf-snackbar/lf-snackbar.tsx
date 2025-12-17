@@ -37,7 +37,6 @@ import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
 import { prepSnackbarActions } from "./actions.snackbar";
 import { prepSnackbarComputed } from "./computed.snackbar";
-import { SnackbarFC } from "./fc";
 import { createAdapter } from "./lf-snackbar-adapter";
 
 /**
@@ -70,6 +69,18 @@ export class LfSnackbar implements LfSnackbarInterface {
   @Element() rootElement: LfSnackbarElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
   //#endregion
 
@@ -313,7 +324,12 @@ export class LfSnackbar implements LfSnackbarInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
    * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
@@ -328,6 +344,11 @@ export class LfSnackbar implements LfSnackbarInterface {
   #initAdapter = () => {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
+
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
 
     const adapterWithoutDispatcher = createAdapter(
       // Getters - base getters (via utility)
@@ -344,6 +365,8 @@ export class LfSnackbar implements LfSnackbarInterface {
       prepSnackbarComputed(getAdapter),
       // Actions - complex multi-step operations (from dedicated file)
       prepSnackbarActions(getAdapter),
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -400,6 +423,7 @@ export class LfSnackbar implements LfSnackbarInterface {
     const { setLfStyle } = theme;
 
     const { lfDuration, lfStyle } = this;
+    const { snackbar } = this.#adapter.elements.jsx;
 
     return (
       <Host>
@@ -411,7 +435,7 @@ export class LfSnackbar implements LfSnackbarInterface {
         ${(lfStyle && setLfStyle(this)) || ""}`}
         </style>
         <div id={this.#w} data-lf={this.#lf.fadeIn}>
-          <SnackbarFC adapter={this.#adapter} />
+          {snackbar()}
         </div>
       </Host>
     );

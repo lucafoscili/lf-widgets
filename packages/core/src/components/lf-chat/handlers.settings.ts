@@ -34,7 +34,7 @@ export const prepSettingsHandlers = (
 ): LfChatAdapterHandlers["settings"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, id: string) => {
+    button: async (_e: MouseEvent, id: string) => {
       const { get, set } = getAdapter().controller;
       const comp = get.compInstance() as LfChat;
 
@@ -105,7 +105,7 @@ export const prepSettingsHandlers = (
     //#endregion
 
     //#region Textfield
-    textfield: (e: Event, id: string, value: string) => {
+    textfield: (_e: Event, id: string, value: string) => {
       const { get } = getAdapter().controller;
       const comp = get.compInstance() as LfChat;
 

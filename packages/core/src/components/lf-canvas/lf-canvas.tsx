@@ -1,9 +1,4 @@
 import {
-  CY_ATTRIBUTES,
-  LF_ATTRIBUTES,
-  LF_CANVAS_BLOCKS,
-  LF_CANVAS_IDS,
-  LF_CANVAS_PARTS,
   LF_CANVAS_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
@@ -81,11 +76,47 @@ export class LfCanvas implements LfCanvasInterface {
   @Element() rootElement: LfCanvasElement;
 
   //#region States
-  @State() boxing: LfCanvasBoxing = null;
+  /**
+   * Reactive trigger for adapter state changes.
+   * Adapter closure owns actual state; this just triggers re-renders.
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() isPainting = false;
-  @State() orientation: LfCanvasOrientation = null;
-  @State() points: LfCanvasPoints = [];
+  //#endregion
+
+  //#region Adapter state change callback
+  #onStateChange = () => this._renderTick++;
+  //#endregion
+
+  //#region Bridge getters for interface compatibility
+  /**
+   * Current boxing mode state.
+   * Bridge getter that reads from adapter closure.
+   */
+  get boxing(): LfCanvasBoxing {
+    return this.#adapter?.controller.get.boxing() ?? null;
+  }
+  /**
+   * Whether currently painting on the canvas.
+   * Bridge getter that reads from adapter closure.
+   */
+  get isPainting(): boolean {
+    return this.#adapter?.controller.get.isPainting() ?? false;
+  }
+  /**
+   * Current image orientation.
+   * Bridge getter that reads from adapter closure.
+   */
+  get orientation(): LfCanvasOrientation {
+    return this.#adapter?.controller.get.orientation() ?? null;
+  }
+  /**
+   * Current stroke points array.
+   * Bridge getter that reads from adapter closure.
+   */
+  get points(): LfCanvasPoints {
+    return this.#adapter?.controller.get.points() ?? [];
+  }
   //#endregion
 
   //#region Props
@@ -224,11 +255,6 @@ export class LfCanvas implements LfCanvasInterface {
 
   //#region Internal variables
   #framework: LfFrameworkInterface;
-  #b = LF_CANVAS_BLOCKS;
-  #cy = CY_ATTRIBUTES;
-  #ids = LF_CANVAS_IDS;
-  #lfAttr = LF_ATTRIBUTES;
-  #p = LF_CANVAS_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
   #adapter: LfCanvasAdapter;
@@ -509,7 +535,7 @@ export class LfCanvas implements LfCanvasInterface {
       ? parent.getBoundingClientRect().height
       : this.#container.getBoundingClientRect().height;
 
-    const img = await image.getImage();
+    const img = image;
     const imgOri = calcOrientation(img);
     set.orientation(imgOri);
 
@@ -666,35 +692,19 @@ export class LfCanvas implements LfCanvasInterface {
    * Creates the adapter that manages component state and provides helper methods
    * for canvas operations, coordinate calculations, and drawing.
    *
-   * v4.0.0 Architecture:
-   * - controller.get: Pure state reads (ALL must be functions `() => T`)
-   * - controller.set: Simple single-value assignments
+   * v4.0.0 "Adapter as Core" Architecture:
+   * - State lives in adapter closure, WC becomes thin shell
+   * - controller.get: Pure state reads from closure (ALL must be functions `() => T`)
+   * - controller.set: Write to closure + trigger onStateChange
    * - controller.computed: Derived values, predicates (pure functions)
    * - controller.actions: Multi-step operations (clear, finalize, etc.)
    * - dispatcher: Centralized event emission (inline)
    */
   #initAdapter = () => {
     const adapterParts = createAdapter(
-      {
-        blocks: () => this.#b.canvas,
-        boxing: () => this.boxing,
-        compInstance: () => this,
-        cyAttributes: () => this.#cy,
-        framework: () => this.#framework,
-        ids: () => this.#ids.canvas,
-        isPainting: () => this.isPainting,
-        lfAttributes: () => this.#lfAttr,
-        orientation: () => this.orientation,
-        parts: () => this.#p,
-        points: () => this.points,
-      },
-      {
-        boxing: (value) => (this.boxing = value),
-        isPainting: (value) => (this.isPainting = value),
-        orientation: (value) => (this.orientation = value),
-        points: (value) => (this.points = value),
-      },
-      () => this.#adapter,
+      () => this,
+      () => this.#framework,
+      this.#onStateChange,
     );
 
     // Create full adapter with inline dispatcher

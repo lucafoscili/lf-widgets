@@ -10,7 +10,7 @@ export const prepChatHandlers = (
 ): LfMessengerAdapterHandlers["chat"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, id: string) => {
+    button: async (_e: MouseEvent, id: string) => {
       const { controller, elements } = getAdapter();
       const { get, set } = controller;
       const { refs } = elements;

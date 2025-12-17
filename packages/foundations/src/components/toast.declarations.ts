@@ -16,6 +16,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LfThemeIcon,
   LfThemeUISize,
@@ -206,4 +207,48 @@ export type LfToastCloseCallback = (
   e: PointerEvent,
   ...args: any[]
 ) => any;
+
+/**
+ * Props interface for the `LfToastFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfToastFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Callback invoked when the toast is closed */
+  closeCallback?: () => void;
+  /** Icon shown in the close button */
+  closeIcon?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Leading icon displayed in the toast */
+  icon?: string;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Message content displayed in the toast */
+  message?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Timer duration in milliseconds for auto-close (shows progress bar) */
+  timer?: number;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+}
 //#endregion

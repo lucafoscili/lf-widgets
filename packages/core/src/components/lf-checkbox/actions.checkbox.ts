@@ -11,6 +11,9 @@ import {
  * - Trigger re-renders
  * - Batch multiple state changes
  *
+ * "Adapter as Core" Pattern:
+ * - Uses adapter's setter which writes to closure and calls onStateChange
+ *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Actions object
  *
@@ -26,15 +29,15 @@ export const prepCheckboxActions = (
    */
   toggle: () => {
     const { controller } = getAdapter();
-    const { compInstance } = controller.get;
+    const { get, set } = controller;
     const { isDisabled } = controller.computed;
-    const comp = compInstance();
+    const currentValue = get.value();
 
     if (!isDisabled()) {
-      if (comp.value === "indeterminate" || comp.value === "off") {
-        comp.value = "on";
+      if (currentValue === "indeterminate" || currentValue === "off") {
+        set.value("on");
       } else {
-        comp.value = "off";
+        set.value("off");
       }
     }
   },

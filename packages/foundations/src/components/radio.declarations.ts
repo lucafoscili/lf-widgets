@@ -20,6 +20,7 @@ import { LfEventPayload } from "../foundations/events.declarations";
 import {
   LfDataDataset,
   LfDataNode,
+  LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "../framework/index";
@@ -206,13 +207,20 @@ export interface LfRadioAdapterControllerGetters
     typeof LF_RADIO_BLOCKS,
     typeof LF_RADIO_IDS,
     typeof LF_RADIO_PARTS
-  > {}
+  > {
+  /** Gets the currently selected node ID (from adapter closure state) */
+  value: () => string | undefined;
+}
 /**
  * Simple single-value setters.
  * Each setter performs exactly ONE state change.
+ * "Adapter as Core" pattern: setters write to closure state and call onStateChange.
  */
 export interface LfRadioAdapterControllerSetters
-  extends LfComponentAdapterSetters {}
+  extends LfComponentAdapterSetters {
+  /** Sets the currently selected node ID (writes to adapter closure state) */
+  value: (nodeId: string | undefined) => void;
+}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
@@ -334,4 +342,35 @@ export interface LfRadioPropsInterface {
  * Union of orientation tokens listed in `LF_RADIO_ORIENTATIONS`.
  */
 export type LfRadioOrientation = (typeof LF_RADIO_ORIENTATIONS)[number];
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the pure presentational LfRadioFC.
+ *
+ * This component is stateless and receives all data via props.
+ * It renders pure JSX without any adapter access.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfRadioFCProps {
+  /** Block class names for BEM styling */
+  blocks: typeof LF_RADIO_BLOCKS;
+  /** Computed predicates from adapter */
+  computed: LfRadioAdapterControllerComputed;
+  /** Framework instance for theming utilities */
+  framework: LfFrameworkInterface;
+  /** Event handlers from adapter */
+  handlers: LfRadioAdapterHandlers;
+  /** LF attributes for state theming */
+  lfAttributes: Record<string, string>;
+  /** Data nodes representing radio options */
+  nodes: LfDataNode[];
+  /** Part names for shadow parts */
+  parts: typeof LF_RADIO_PARTS;
+  /** Refs object for element references */
+  refs: LfRadioAdapterRefs;
+  /** UI state for theming */
+  uiState: LfThemeUIState;
+}
 //#endregion

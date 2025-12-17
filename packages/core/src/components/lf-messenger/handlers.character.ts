@@ -1,5 +1,4 @@
 import {
-  LfListEventPayload,
   LfMessengerAdapter,
   LfMessengerAdapterHandlers,
 } from "@lf-widgets/foundations";
@@ -10,7 +9,7 @@ export const prepCharacterHandlers = (
 ): LfMessengerAdapterHandlers["character"] => {
   return {
     //#region Button
-    button: async () => {
+    button: async (_e: MouseEvent) => {
       const { controller } = getAdapter();
       const { get, set } = controller;
       const { inProgress } = get.status.save;

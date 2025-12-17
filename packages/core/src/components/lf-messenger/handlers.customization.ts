@@ -5,19 +5,18 @@ import {
   LfMessengerFilters,
 } from "@lf-widgets/foundations";
 import { createNode } from "./helpers.utils";
-import { LfMessenger } from "./lf-messenger";
 
 export const prepCustomizationHandlers = (
   getAdapter: () => LfMessengerAdapter,
 ): LfMessengerAdapterHandlers["customization"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, type, action, node = null) => {
+    button: async (_e: MouseEvent, type, action, node = null) => {
       const adapter = getAdapter();
       const { get, set } = adapter.controller;
       const { compInstance } = get;
 
-      const comp = compInstance() as LfMessenger;
+      const comp = compInstance();
 
       switch (action) {
         case "add":
@@ -51,8 +50,7 @@ export const prepCustomizationHandlers = (
       const { comp, eventType, selectedNodes } = e.detail;
 
       const { get, set } = getAdapter().controller;
-      const { compInstance } = get;
-      const { filters } = (compInstance() as LfMessenger).ui;
+      const { filters } = get.ui();
 
       switch (eventType) {
         case "click":

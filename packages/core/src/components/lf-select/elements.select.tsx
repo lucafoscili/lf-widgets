@@ -1,6 +1,5 @@
 import {
   LF_THEME_ICONS,
-  LfIconType,
   LfSelectAdapter,
   LfSelectAdapterJsx,
 } from "@lf-widgets/foundations";
@@ -65,10 +64,9 @@ export const prepSelectJsx = (
     textfield: () => {
       const { controller, elements, handlers } = getAdapter();
       const { refs } = elements;
-      const { blocks, compInstance, framework, parts, selectedNode } =
-        controller.get;
+      const { blocks, compInstance, framework, selectedNode } = controller.get;
       const mgr = framework();
-      const { assignRef, sanitizeProps, theme } = mgr;
+      const { assignRef, theme } = mgr;
       const { bemClass } = theme;
       const { textfieldClick, textfieldKeydown, textfieldIconClick } = handlers;
       const comp = compInstance();
@@ -78,12 +76,6 @@ export const prepSelectJsx = (
       const icon = textfieldProps.lfIcon;
       const label = textfieldProps.lfLabel;
       const styling = textfieldProps.lfStyling || "flat";
-
-      // Get dropdown icon from theme
-      const { variables } = theme.get.current();
-      const trailingIconAction = variables[
-        LF_THEME_ICONS.dropdown
-      ] as LfIconType;
 
       return (
         <LfTextfieldFC

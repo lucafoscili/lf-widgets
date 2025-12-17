@@ -9,7 +9,7 @@ export const prepOptionsHandlers = (
 ): LfMessengerAdapterHandlers["options"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, id: string) => {
+    button: async (_e: MouseEvent, id: string) => {
       const { customization } = getAdapter().controller.set.ui;
 
       switch (id) {

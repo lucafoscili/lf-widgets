@@ -58,7 +58,9 @@ describe("lf-radio component", () => {
   it("initializes with selected item when lfValue is set", async () => {
     const page = await createPage(`<lf-radio></lf-radio>`);
     page.rootInstance.lfDataset = testDataset;
-    page.rootInstance.value = "option2"; // Set the internal state directly
+    // Use selectItem method instead of directly setting value
+    // This is the "Adapter as Core" pattern where value is owned by the adapter closure
+    await page.root.selectItem("option2");
     await page.waitForChanges();
     // Trigger refresh to ensure watch method runs
     await page.rootInstance.refresh();

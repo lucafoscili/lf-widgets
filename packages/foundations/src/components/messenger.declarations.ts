@@ -40,7 +40,28 @@ import { LfTabbarElement, LfTabbarEventPayload } from "./tabbar.declarations";
  */
 export interface LfMessengerInterface
   extends LfComponent<"LfMessenger">,
-    LfMessengerPropsInterface {}
+    LfMessengerPropsInterface {
+  /**
+   * Removes a specific child node from the messenger's image structure.
+   * @param node - The child node to be removed from the messenger tree
+   * @param type - The type of image messenger structure to modify
+   * @returns A Promise that resolves when the deletion is complete
+   */
+  deleteOption: (
+    node: LfMessengerBaseChildNode<LfMessengerUnionChildIds>,
+    type: LfMessengerImageTypes,
+  ) => Promise<void>;
+  /**
+   * Resets the messenger component to its initial state.
+   * @returns A promise that resolves when the reset is complete
+   */
+  reset: () => Promise<void>;
+  /**
+   * Asynchronously saves the current messenger state.
+   * @returns A Promise that resolves when the save operation is complete.
+   */
+  save: () => Promise<void>;
+}
 /**
  * DOM element type for the custom element registered as `lf-messenger`.
  */

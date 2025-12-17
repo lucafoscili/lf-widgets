@@ -139,7 +139,9 @@ export const prepCanvasHandlers = (
           // Recalculate boxing now that image dimensions are available
           await (compInstance() as LfCanvas).resizeCanvas();
         }
-        dispatcher.emit("lf-event", { originalEvent: e });
+        dispatcher.emit("lf-event", {
+          originalEvent: e as Event & CustomEvent,
+        });
       },
     },
     //#endregion

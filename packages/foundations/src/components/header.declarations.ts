@@ -15,6 +15,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import {
   LF_HEADER_BLOCKS,
   LF_HEADER_EVENTS,
@@ -161,5 +162,32 @@ export interface LfHeaderEventPayload
  */
 export interface LfHeaderPropsInterface {
   lfStyle?: string;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props for the LfHeaderFC functional component.
+ *
+ * This is a stateless functional component that renders a header container.
+ * All state is managed by the parent component; the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfHeaderFCProps {
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Icon to display in the header */
+  icon?: string;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Text label displayed in the header */
+  label?: string;
+  /** Reference callback for the container element */
+  ref?: (el: HTMLElement | null) => void;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
 }
 //#endregion

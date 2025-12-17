@@ -31,8 +31,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepProgressbarActions } from "./actions.progressbar";
-import { prepProgressbarComputed } from "./computed.progressbar";
 import { ProgressbarFC } from "./fc";
 import { createAdapter } from "./lf-progressbar-adapter";
 
@@ -66,6 +64,16 @@ export class LfProgressbar implements LfProgressbarInterface {
   @Element() rootElement: LfProgressbarElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * For display components like progressbar, there's no internal state,
+   * but we keep this pattern for consistency.
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
   //#endregion
 
@@ -287,11 +295,19 @@ export class LfProgressbar implements LfProgressbarInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
+   *
+   * Note: progressbar is a display component, so no internal state.
+   * The onStateChange callback is provided for pattern consistency.
    *
    * Structure:
    * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.set: Simple setters (empty for display component)
+   * - controller.set: State writes (empty for display component)
    * - controller.computed: Derived predicates (empty for display component)
    * - controller.actions: Complex operations (empty for display component)
    * - elements: JSX factories + refs
@@ -304,23 +320,22 @@ export class LfProgressbar implements LfProgressbarInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility)
-      {
-        ...createBaseGetters({
-          blocks: () => this.#b,
-          compInstance: () => this,
-          framework: () => this.#framework,
-          ids: () => this.#ids,
-          parts: () => this.#p,
-        }),
-      },
-      // Setters - empty for display component
-      {},
-      // Computed - empty for display component
-      prepProgressbarComputed(),
-      // Actions - empty for display component
-      prepProgressbarActions(),
+      // Base getters (via utility)
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );

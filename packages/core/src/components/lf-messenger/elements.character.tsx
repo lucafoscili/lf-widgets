@@ -59,7 +59,7 @@ export const prepCharacter = (
     //#region Save
     save: () => {
       const { controller, elements, handlers } = getAdapter();
-      const { cyAttributes, framework, status, blocks } = controller.get;
+      const { framework, status, blocks } = controller.get;
       const { character } = elements.refs;
       const { button } = handlers.character;
       const { inProgress } = status.save;
@@ -79,7 +79,7 @@ export const prepCharacter = (
           label={"Save"}
           showSpinner={isSaving}
           styling="flat"
-          onClick={() => button()}
+          onClick={(e) => button(e)}
           buttonRef={assignRef(character, "save")}
           style={{ height: "100%" }}
         />

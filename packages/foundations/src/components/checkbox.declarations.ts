@@ -17,6 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_CHECKBOX_BLOCKS,
@@ -29,6 +30,10 @@ import {
 //#region Class
 /**
  * Primary interface implemented by the `lf-checkbox` component. It merges the shared component contract with the component-specific props.
+ *
+ * In "Adapter as Core" pattern:
+ * - WC implements this interface but delegates state to adapter
+ * - `value` and `setValue` are bridge methods to adapter's internal state
  */
 export interface LfCheckboxInterface
   extends LfComponent<"LfCheckbox">,
@@ -42,6 +47,7 @@ export interface LfCheckboxInterface
   };
   /**
    * Internal runtime state mirrored by the component implementation.
+   * @deprecated In "Adapter as Core" pattern, use adapter.controller.get.value() instead
    */
   value: LfCheckboxState;
   getValue: () => Promise<LfCheckboxState>;
@@ -136,6 +142,9 @@ export interface LfCheckboxAdapterHandlers extends LfComponentAdapterHandlers {
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * "Adapter as Core" Pattern:
+ * - `value` is read from adapter's closure (not WC state)
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfCheckboxAdapterControllerGetters
@@ -144,14 +153,24 @@ export interface LfCheckboxAdapterControllerGetters
     typeof LF_CHECKBOX_BLOCKS,
     typeof LF_CHECKBOX_IDS,
     typeof LF_CHECKBOX_PARTS
-  > {}
+  > {
+  /** Current checkbox state (from adapter's closure) */
+  value: () => LfCheckboxState;
+}
 
 /**
  * Simple single-value setters.
- * Checkbox has no complex setters - state changes happen via actions.
+ *
+ * "Adapter as Core" Pattern:
+ * - `value` setter writes to closure and calls `onStateChange()`
+ *
+ * @see Section 5.4 of 4_0_0_REFACTORING.md
  */
 export interface LfCheckboxAdapterControllerSetters
-  extends LfComponentAdapterSetters {}
+  extends LfComponentAdapterSetters {
+  /** Set checkbox state (writes to closure, triggers re-render) */
+  value: (state: LfCheckboxState) => void;
+}
 
 /**
  * Computed values - derived predicates and builders.
@@ -245,5 +264,71 @@ export interface LfCheckboxPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: boolean | null;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the `LfCheckboxFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfCheckboxFCProps {
+  /** Accessible label for the checkbox control */
+  ariaLabel?: string;
+  /** Whether the checkbox is checked (true = on, false = off) */
+  checked?: boolean;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Whether the checkbox is disabled */
+  disabled?: boolean;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether the checkbox is in indeterminate state */
+  indeterminate?: boolean;
+  /** Reference callback for the input element */
+  inputRef?: (el: HTMLInputElement | null) => void;
+  /** Text label displayed alongside the checkbox */
+  label?: string;
+  /** Reference callback for the label element */
+  labelRef?: (el: HTMLLabelElement | null) => void;
+  /** When true, displays the label before the checkbox */
+  leadingLabel?: boolean;
+  /** Callback fired on blur event */
+  onBlur?: (e: FocusEvent) => void;
+  /** Callback fired on change event (value toggled) */
+  onChange?: (checked: boolean, indeterminate: boolean, e: Event) => void;
+  /** Callback fired on focus event */
+  onFocus?: (e: FocusEvent) => void;
+  /** Callback fired on label click */
+  onLabelClick?: (e: MouseEvent) => void;
+  /** Callback fired on pointer down (for ripple effects) */
+  onPointerDown?: (e: PointerEvent) => void;
+  /** CSS part attribute for external styling */
+  part?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /** Reference callback for the surface element (ripple container) */
+  surfaceRef?: (el: HTMLDivElement | null) => void;
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling. Required for composed usage where
+   * CSS inheritance from :host doesn't work (e.g., portaled content).
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme. Required for composed usage where
+   * CSS cascade doesn't work (e.g., portaled content).
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
 }
 //#endregion

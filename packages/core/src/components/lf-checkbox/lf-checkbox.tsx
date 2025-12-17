@@ -31,9 +31,7 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepCheckboxActions } from "./actions.checkbox";
-import { prepCheckboxComputed } from "./computed.checkbox";
-import { CheckboxFC } from "./fc";
+import { LfCheckboxFC } from "./fc";
 import { createAdapter } from "./lf-checkbox-adapter";
 
 /**
@@ -66,8 +64,19 @@ export class LfCheckbox implements LfCheckboxInterface {
   @Element() rootElement: LfCheckboxElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value: LfCheckboxState = "off";
   //#endregion
 
   //#region Props
@@ -147,6 +156,15 @@ export class LfCheckbox implements LfCheckboxInterface {
   #p = LF_CHECKBOX_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
+
+  /**
+   * Bridge getter to satisfy LfCheckboxInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): LfCheckboxState {
+    return this.#adapter?.controller.get.value() ?? "off";
+  }
   //#endregion
 
   //#region Events
@@ -193,7 +211,7 @@ export class LfCheckbox implements LfCheckboxInterface {
    */
   @Method()
   async getValue(): Promise<LfCheckboxState> {
-    return this.value;
+    return this.#adapter.controller.get.value();
   }
 
   /**
@@ -210,13 +228,12 @@ export class LfCheckbox implements LfCheckboxInterface {
    */
   @Method()
   async setValue(value: LfCheckboxState | boolean): Promise<void> {
-    if (value === true || value === "on") {
-      this.value = "on";
-    } else if (value === false || value === "off") {
-      this.value = "off";
-    } else {
-      this.value = "indeterminate";
+    if (typeof value === "boolean") {
+      value = value ? "on" : "off";
+    } else if (value === null) {
+      value = "indeterminate";
     }
+    this.#adapter.controller.set.value(value);
   }
 
   /**
@@ -225,13 +242,15 @@ export class LfCheckbox implements LfCheckboxInterface {
    */
   @Method()
   async unmount(ms: number = 0): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.#adapter.dispatcher.emit("unmount");
-        this.rootElement.remove();
-        resolve();
-      }, ms);
-    });
+    setTimeout(() => {
+      const value = this.#adapter.controller.get.value();
+      this.#adapter.dispatcher.emit("unmount", {
+        value,
+        valueAsBoolean: value === "on",
+        isIndeterminate: value === "indeterminate",
+      });
+      this.rootElement.remove();
+    }, ms);
   }
   //#endregion
 
@@ -239,6 +258,9 @@ export class LfCheckbox implements LfCheckboxInterface {
   /**
    * Creates the dispatcher for centralized event emission.
    * All component events route through this dispatcher.
+   *
+   * Note: Reads value from adapter state, not WC state.
+   *
    * @see Section 5.5 of 4_0_0_REFACTORING.md
    */
   #createDispatcher = () => ({
@@ -252,24 +274,30 @@ export class LfCheckbox implements LfCheckboxInterface {
         "informational",
       );
 
+      const value = this.#adapter.controller.get.value();
       this.lfEvent.emit({
         comp: this,
         eventType,
         id: this.rootElement.id,
         originalEvent: detail?.originalEvent,
-        value: this.value,
-        valueAsBoolean: this.value === "on",
-        isIndeterminate: this.value === "indeterminate",
+        value,
+        valueAsBoolean: value === "on",
+        isIndeterminate: value === "indeterminate",
       });
     },
   });
 
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.set: Simple setters (none for checkbox)
+   * - controller.get: State reads (value) + base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (value) → triggers onStateChange
    * - controller.computed: Derived predicates (isChecked, isDisabled, isIndeterminate)
    * - controller.actions: Complex operations (toggle)
    * - elements: JSX factories + refs
@@ -282,23 +310,34 @@ export class LfCheckbox implements LfCheckboxInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value from prop
+    let initialValue: LfCheckboxState;
+    if (this.lfValue === true) {
+      initialValue = "on";
+    } else if (this.lfValue === null) {
+      initialValue = "indeterminate";
+    } else {
+      initialValue = "off";
+    }
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility) + component-specific state reads
-      {
-        ...createBaseGetters({
-          blocks: () => this.#b,
-          compInstance: () => this,
-          framework: () => this.#framework,
-          ids: () => this.#ids,
-          parts: () => this.#p,
-        }),
-      },
-      // Setters - simple single-value assignments (none for checkbox)
-      {},
-      // Computed - derived predicates (from dedicated file)
-      prepCheckboxComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepCheckboxActions(getAdapter),
+      // Base getters (via utility) - does NOT include value getter
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -321,14 +360,7 @@ export class LfCheckbox implements LfCheckboxInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-
-    if (this.lfValue) {
-      this.value = "on";
-    } else if (this.lfValue === null) {
-      this.value = "indeterminate";
-    } else {
-      this.value = "off";
-    }
+    // Note: Initial value is now set in createAdapter via initialValue parameter
   }
 
   componentDidLoad() {
@@ -341,7 +373,12 @@ export class LfCheckbox implements LfCheckboxInterface {
     }
 
     // Emit ready event via dispatcher
-    this.#adapter.dispatcher.emit("ready");
+    const value = this.#adapter.controller.get.value();
+    this.#adapter.dispatcher.emit("ready", {
+      value,
+      valueAsBoolean: value === "on",
+      isIndeterminate: value === "indeterminate",
+    });
     debug.info.update(this, "did-load");
   }
 
@@ -359,13 +396,61 @@ export class LfCheckbox implements LfCheckboxInterface {
 
   render() {
     const { theme } = this.#framework;
-    const { lfStyle } = this;
+
+    const {
+      lfAriaLabel,
+      lfLabel,
+      lfLeadingLabel,
+      lfStyle,
+      lfUiSize,
+      lfUiState,
+    } = this;
+    const { computed } = this.#adapter.controller;
+    const { refs } = this.#adapter.elements;
+
+    const checked = computed.isChecked();
+    const disabled = computed.isDisabled();
+    const indeterminate = computed.isIndeterminate();
 
     return (
       <Host>
         {lfStyle && <style id={this.#s}>{theme.setLfStyle(this)}</style>}
         <div id={this.#w}>
-          <CheckboxFC adapter={this.#adapter} />
+          <LfCheckboxFC
+            ariaLabel={lfAriaLabel}
+            checked={checked}
+            disabled={disabled}
+            framework={this.#framework}
+            indeterminate={indeterminate}
+            inputRef={(el) => {
+              if (refs) refs.input = el;
+            }}
+            label={lfLabel}
+            labelRef={(el) => {
+              if (refs) refs.label = el;
+            }}
+            leadingLabel={lfLeadingLabel}
+            onBlur={(e) =>
+              this.#adapter.dispatcher.emit("blur", { originalEvent: e })
+            }
+            onChange={(newChecked, _newIndeterminate, e) => {
+              // Toggle the value via adapter
+              const newValue: LfCheckboxState = newChecked ? "on" : "off";
+              this.#adapter.controller.set.value(newValue);
+              this.#adapter.dispatcher.emit("change", { originalEvent: e });
+            }}
+            onFocus={(e) =>
+              this.#adapter.dispatcher.emit("focus", { originalEvent: e })
+            }
+            onPointerDown={(e) =>
+              this.#adapter.dispatcher.emit("pointerdown", { originalEvent: e })
+            }
+            surfaceRef={(el) => {
+              if (refs) refs.surface = el;
+            }}
+            uiSize={lfUiSize}
+            uiState={lfUiState}
+          />
         </div>
       </Host>
     );
@@ -373,14 +458,11 @@ export class LfCheckbox implements LfCheckboxInterface {
 
   disconnectedCallback() {
     const { effects, theme } = this.#framework ?? {};
+    const { surface } = this.#adapter?.elements.refs ?? {};
 
-    if (this.#adapter) {
-      const { surface } = this.#adapter.elements.refs;
-
-      const hasThemeRipple = theme?.get.current().hasEffect("ripple");
-      if (effects && this.lfRipple && hasThemeRipple && surface) {
-        effects.unregister.ripple(surface);
-      }
+    const hasThemeRipple = theme?.get.current().hasEffect("ripple");
+    if (effects && this.lfRipple && hasThemeRipple && surface) {
+      effects.unregister.ripple(surface);
     }
 
     theme?.unregister(this);

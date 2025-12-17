@@ -7,51 +7,42 @@ import {
   LfMessengerPanelsValue,
   LfMessengerUnionChildIds,
 } from "@lf-widgets/foundations";
-import { LfMessenger } from "./lf-messenger";
+import { LfMessengerAdapterState } from "./lf-messenger-adapter";
 
 //#region Getters
 export const prepUiGetters = (
-  getAdapter: () => LfMessengerAdapter,
+  _getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
 ): LfMessengerAdapterControllerGetters["ui"] => {
-  return () => {
-    const compInstance = getAdapter().controller.get.compInstance();
-    return (compInstance as LfMessenger).ui;
-  };
+  return () => state.ui;
 };
 //#endregion
 
 //#region Setters
 export const prepUiSetters = (
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
+  onStateChange: () => void,
 ): LfMessengerAdapterControllerSetters["ui"] => {
   return {
     customization: (value) => {
-      const compInstance = getAdapter().controller.get.compInstance();
-
-      const c = compInstance as LfMessenger;
-
-      c.ui.customizationView = value;
-      c.refresh();
+      state.ui = { ...state.ui, customizationView: value };
+      onStateChange();
     },
     filters: (filters) => {
-      const compInstance = getAdapter().controller.get.compInstance();
-
-      const c = compInstance as LfMessenger;
-
-      c.ui.filters = filters;
-      c.refresh();
+      state.ui = { ...state.ui, filters };
+      onStateChange();
     },
     options: (value, type) => {
-      const compInstance = getAdapter().controller.get.compInstance();
-
-      const c = compInstance as LfMessenger;
-
-      c.ui.options[type] = value;
-      c.refresh();
+      state.ui = {
+        ...state.ui,
+        options: { ...state.ui.options, [type]: value },
+      };
+      onStateChange();
     },
-    panel: (panel, value?) => setPanel(getAdapter, panel, value),
+    panel: (panel, value?) => setPanel(state, onStateChange, panel, value),
     setFormState: async (value, type, node = null) =>
-      setFormState(getAdapter, value, type, node),
+      setFormState(getAdapter, state, onStateChange, value, type, node),
   };
 };
 //#endregion
@@ -59,45 +50,51 @@ export const prepUiSetters = (
 //#region Helpers
 const setFormState = async <T extends LfMessengerUnionChildIds>(
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
+  onStateChange: () => void,
   value: boolean,
   type: LfMessengerImageTypes,
   node?: LfMessengerBaseChildNode<T>,
 ) => {
   const adapter = getAdapter();
-  const { controller } = adapter;
-  const compInstance = controller.get.compInstance();
-  const { image } = controller.get;
-  const { formStatusMap, ui } = compInstance as LfMessenger;
+  const { image } = adapter.controller.get;
 
-  ui.form[type] = value;
+  const newForm = { ...state.ui.form, [type]: value };
+  state.ui = { ...state.ui, form: newForm };
 
   if (!value) {
-    formStatusMap[type] = null;
+    state.formStatusMap = { ...state.formStatusMap, [type]: null };
   } else {
-    formStatusMap[type] = node?.id ?? image.newId(type);
+    state.formStatusMap = {
+      ...state.formStatusMap,
+      [type]: node?.id ?? image.newId(type),
+    };
   }
 
-  await compInstance.refresh();
+  onStateChange();
 };
 const setPanel = (
-  getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
+  onStateChange: () => void,
   panel: LfMessengerPanelsValue,
   value?: boolean,
 ) => {
-  const adapter = getAdapter();
-  const compInstance = adapter.controller.get.compInstance();
-  const { panels } = (compInstance as LfMessenger).ui;
+  const newPanels = { ...state.ui.panels };
 
   switch (panel) {
     case "left":
-      panels.isLeftCollapsed = value ?? !panels.isLeftCollapsed;
+      newPanels.isLeftCollapsed = value ?? !newPanels.isLeftCollapsed;
       break;
     case "right":
-      panels.isRightCollapsed = value ?? !panels.isRightCollapsed;
+      newPanels.isRightCollapsed = value ?? !newPanels.isRightCollapsed;
       break;
   }
 
-  compInstance.refresh();
-  return value;
+  state.ui = { ...state.ui, panels: newPanels };
+  onStateChange();
+
+  return panel === "left"
+    ? newPanels.isLeftCollapsed
+    : newPanels.isRightCollapsed;
 };
 //#endregion

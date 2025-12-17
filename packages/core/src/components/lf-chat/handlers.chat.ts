@@ -15,12 +15,12 @@ export const prepChatHandlers = (
 ): LfChatAdapterHandlers["chat"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, id: string) => {
+    button: async (_e: MouseEvent, id: string) => {
       const adapter = getAdapter();
       const { controller, elements } = adapter;
       const { get, set } = controller;
       const { refs } = elements;
-      const { chat, input } = refs;
+      const { input } = refs;
       const { llm } = get.framework();
       const comp = get.compInstance() as LfChat;
 
@@ -119,7 +119,26 @@ export const prepChatHandlers = (
 
         // STT
         case LF_CHAT_IDS.chat.stt: {
-          llm.speechToText(input.textarea, chat.stt);
+          // Create shims to adapt native elements to WC interfaces
+          const textareaShim = {
+            setValue: async (value: string) => {
+              if (input.textarea) {
+                input.textarea.value = value;
+              }
+            },
+            setFocus: async () => {
+              input.textarea?.focus();
+            },
+          } as unknown as import("@lf-widgets/foundations").LfTextfieldElement;
+          const buttonShim = {
+            get lfShowSpinner() {
+              return false;
+            },
+            set lfShowSpinner(_val: boolean) {
+              // Button FC doesn't have spinner - ignore
+            },
+          } as unknown as import("@lf-widgets/foundations").LfButtonElement;
+          llm.speechToText(textareaShim, buttonShim);
           break;
         }
       }

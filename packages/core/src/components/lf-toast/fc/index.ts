@@ -7,3 +7,6 @@
  */
 
 export { ToastFC, ToastFCProps } from "./toast-fc";
+
+// Re-export standalone FC from parent directory
+export { LfToastFC } from "../lf-toast-fc";

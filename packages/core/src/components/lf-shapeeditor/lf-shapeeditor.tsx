@@ -7,25 +7,21 @@ import {
   LF_SHAPEEDITOR_PROPS,
   LF_STYLE_ID,
   LF_WRAPPER_ID,
-  LfDataCell,
   LfDataDataset,
   LfDataShapes,
   LfDebugLifecycleInfo,
   LfFrameworkInterface,
   LfMasonrySelectedShape,
   LfShapeeditorAdapter,
+  LfShapeeditorAdapterDispatcher,
   LfShapeeditorAdapterRefs,
-  LfShapeeditorBehavior,
-  LfShapeeditorCommitTrigger,
   LfShapeeditorConfigDsl,
   LfShapeeditorConfigSettings,
-  LfShapeeditorControlConfig,
   LfShapeeditorElement,
   LfShapeeditorEvent,
   LfShapeeditorEventPayload,
   LfShapeeditorHistory,
   LfShapeeditorInterface,
-  LfShapeeditorLayout,
   LfShapeeditorLoadCallback,
   LfShapeeditorNavigation,
   LfShapeeditorProgressbarState,
@@ -55,7 +51,10 @@ import {
   resetControls,
   updateCellProps,
 } from "./helpers.utils";
-import { createAdapter } from "./lf-shapeeditor-adapter";
+import {
+  createAdapter,
+  LfShapeeditorInitialState,
+} from "./lf-shapeeditor-adapter";
 
 /**
  * A universal 3-panel interactive explorer that transforms any LfShape type
@@ -95,110 +94,170 @@ export class LfShapeeditor implements LfShapeeditorInterface {
 
   //#region States
   /**
+   * Single render-tick state per "Adapter as Core" pattern (v4.0.0 Section 5.9).
+   * All component state lives in adapter closure; this just triggers re-renders.
+   */
+  @State() _renderTick = 0;
+  /**
    * Debug information state property created through LfFramework debug utility.
    * Used to store and manage debug-related information for the component.
    * @remarks This state property is initialized using the debug.info.create() method from the framework instance.
    */
   @State() debugInfo: LfDebugLifecycleInfo;
-  /**
-   * The currently selected shape in the masonry layout.
-   * Represents the dimensions and position of the selected item.
-   * @internal
-   * @type {LfMasonrySelectedShape}
-   */
-  @State() currentShape: LfMasonrySelectedShape = {};
-  /**
-   * History state of the shapeeditor component.
-   * Tracks the navigation history of viewed shapes.
-   * @property {LfShapeeditorHistory} history - An object storing the viewing history information
-   */
-  @State() history: LfShapeeditorHistory = {};
-  /**
-   * The current index position in the shape history navigation.
-   * Used to track and manage navigation through previously viewed shapes.
-   * @remarks When null, indicates no history navigation is active
-   */
-  @State() historyIndex: number = null;
-  /**
-   * Tracks whether the navigation tree panel is currently expanded.
-   */
-  @State() isNavigationTreeOpen = false;
-  /**
-   * Represents the loading state of the shapeeditor.
-   * When true, displays a loading spinner while the shape is being loaded.
-   */
-  @State() isSpinnerActive = false;
-  /**
-   * Declarative control definitions driving the configuration panel.
-   */
-  @State() configControls: LfShapeeditorControlConfig[] = [];
-  /**
-   * Optional layout describing how controls are grouped.
-   */
-  @State() configLayout: LfShapeeditorLayout;
-  /**
-   * Current settings values derived from the active controls.
-   */
-  @State() configSettings: LfShapeeditorConfigSettings = {};
-  /**
-   * IDs of expanded accordion groups in the settings panel.
-   */
-  @State() expandedSettingsGroups: string[] = [];
-  /**
-   * Temporary preview value that overrides the current snapshot when set.
-   * Used for live preview during control interactions without creating history entries.
-   */
-  @State() previewValue: string | null = null;
-  /**
-   * State for the absolute-positioned progress bar.
-   */
-  @State() progressbarState: LfShapeeditorProgressbarState = {
-    uiState: "info",
-    value: 0,
-    visible: false,
-  };
-  /**
-   * Tracks whether the history popup is open.
-   */
-  @State() isHistoryPopupOpen = false;
-  /**
-   * State for the inline snackbar notification.
-   */
-  @State() snackbarState: LfShapeeditorSnackbarState = {
-    message: "",
-    uiState: "info",
-    visible: false,
-  };
-  /**
-   * Counter incremented on reset to force control re-creation.
-   * Used as part of control keys to ensure they re-render with new values.
-   */
-  @State() resetKey = 0;
-  /**
-   * Behavioral classification for the current DSL configuration.
-   * @internal
-   */
-  @State() configBehavior: LfShapeeditorBehavior;
-  /**
-   * Commit trigger specification for "configure" behaviors.
-   * @internal
-   */
-  @State() configCommitTrigger: LfShapeeditorCommitTrigger;
-  /**
-   * Whether to display the Apply button based on DSL configuration.
-   * @internal
-   */
-  @State() configShowApplyButton: boolean;
-  /**
-   * Whether to display the Reset button based on DSL configuration.
-   * @internal
-   */
-  @State() configShowResetButton: boolean = true;
-  /**
-   * Whether live preview is enabled for the current DSL configuration.
-   * @internal
-   */
-  @State() configEnablePreview: boolean;
+  //#endregion
+
+  //#region State Accessors (delegate to adapter closure)
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get currentShape(): LfMasonrySelectedShape {
+    return this.#adapter?.controller.get.currentShape()?.shape ?? {};
+  }
+  set currentShape(value: LfMasonrySelectedShape) {
+    this.#adapter?.controller.set.currentShape(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get history(): LfShapeeditorHistory {
+    return this.#adapter?.controller.get.history.full() ?? {};
+  }
+  set history(_value: LfShapeeditorHistory) {
+    // History is managed via actions, not direct setter
+    console.warn(
+      "history should be managed via adapter.controller.actions.history",
+    );
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get historyIndex(): number | null {
+    return this.#adapter?.controller.get.history.index() ?? null;
+  }
+  set historyIndex(value: number | null) {
+    if (value !== null) {
+      this.#adapter?.controller.set.history.index(value);
+    }
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get isNavigationTreeOpen(): boolean {
+    return this.#adapter?.controller.get.navigation.isTreeOpen() ?? false;
+  }
+  set isNavigationTreeOpen(value: boolean) {
+    this.#adapter?.controller.set.navigation.isTreeOpen(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get isSpinnerActive(): boolean {
+    return this.#adapter?.controller.get.spinnerStatus() ?? false;
+  }
+  set isSpinnerActive(value: boolean) {
+    this.#adapter?.controller.set.spinnerStatus(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configControls() {
+    return this.#adapter?.controller.get.config.controls() ?? [];
+  }
+  set configControls(value) {
+    this.#adapter?.controller.set.config.controls(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configLayout() {
+    return this.#adapter?.controller.get.config.layout();
+  }
+  set configLayout(value) {
+    this.#adapter?.controller.set.config.layout(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configSettings(): LfShapeeditorConfigSettings {
+    return this.#adapter?.controller.get.config.settings() ?? {};
+  }
+  set configSettings(value: LfShapeeditorConfigSettings) {
+    this.#adapter?.controller.set.config.settings(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get expandedSettingsGroups(): string[] {
+    return this.#adapter?.controller.get.config.expandedGroups() ?? [];
+  }
+  set expandedSettingsGroups(value: string[]) {
+    this.#adapter?.controller.set.config.expandedGroups(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get previewValue(): string | null {
+    return this.#adapter?.controller.get.previewValue() ?? null;
+  }
+  set previewValue(value: string | null) {
+    this.#adapter?.controller.set.previewValue(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get progressbarState(): LfShapeeditorProgressbarState {
+    return (
+      this.#adapter?.controller.get.progressbar() ?? {
+        uiState: "info",
+        value: 0,
+        visible: false,
+      }
+    );
+  }
+  set progressbarState(value: LfShapeeditorProgressbarState) {
+    this.#adapter?.controller.set.progressbar(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get isHistoryPopupOpen(): boolean {
+    return this.#adapter?.controller.get.history.isPopupOpen() ?? false;
+  }
+  set isHistoryPopupOpen(value: boolean) {
+    this.#adapter?.controller.set.history.isPopupOpen(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get snackbarState(): LfShapeeditorSnackbarState {
+    return (
+      this.#adapter?.controller.get.snackbar() ?? {
+        message: "",
+        uiState: "info",
+        visible: false,
+      }
+    );
+  }
+  set snackbarState(value: LfShapeeditorSnackbarState) {
+    this.#adapter?.controller.set.snackbar(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get resetKey(): number {
+    return this.#adapter?.controller.get.resetKey() ?? 0;
+  }
+  set resetKey(_value: number) {
+    // resetKey is managed via actions.incrementResetKey
+    this.#adapter?.controller.actions.incrementResetKey();
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configBehavior() {
+    return this.#adapter?.controller.get.config.behavior();
+  }
+  set configBehavior(value) {
+    this.#adapter?.controller.set.config.behavior(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configCommitTrigger() {
+    return this.#adapter?.controller.get.config.commitTrigger();
+  }
+  set configCommitTrigger(value) {
+    this.#adapter?.controller.set.config.commitTrigger(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configShowApplyButton() {
+    return this.#adapter?.controller.get.config.showApplyButton();
+  }
+  set configShowApplyButton(value) {
+    this.#adapter?.controller.set.config.showApplyButton(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configShowResetButton(): boolean {
+    return this.#adapter?.controller.get.config.showResetButton() ?? true;
+  }
+  set configShowResetButton(value: boolean) {
+    this.#adapter?.controller.set.config.showResetButton(value);
+  }
+  /** @internal - State is owned by adapter, exposed for testing/debugging */
+  get configEnablePreview() {
+    return this.#adapter?.controller.get.config.enablePreview();
+  }
+  set configEnablePreview(value) {
+    this.#adapter?.controller.set.config.enablePreview(value);
+  }
   //#endregion
 
   //#region Props
@@ -531,201 +590,89 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   //#endregion
 
   //#region Private methods
+  /**
+   * Initialize adapter using "Adapter as Core" pattern (v4.0.0 Section 5.9).
+   * State lives in adapter closure; WC is a thin shell with single `_renderTick`.
+   */
   #initAdapter = () => {
-    const adapterParts = createAdapter(
-      // GET: Pure state reads (ALL must be functions)
-      {
-        // Base getters (v4.0.0 - ALL must be functions)
-        blocks: () => this.#b,
-        compInstance: () => this,
-        cyAttributes: () => this.#cy,
-        framework: () => this.#framework,
-        ids: () => this.#ids,
-        lfAttributes: () => this.#lf,
-        parts: () => this.#p,
-        // Component-specific getters
-        config: {
-          behavior: () => this.configBehavior,
-          commitTrigger: () => this.configCommitTrigger,
-          controls: () => this.configControls,
-          enablePreview: () => this.configEnablePreview,
-          expandedGroups: () => this.expandedSettingsGroups,
-          layout: () => this.configLayout,
-          settings: () => this.configSettings,
-          showApplyButton: () => this.configShowApplyButton,
-          showResetButton: () => this.configShowResetButton,
-        },
-        currentShape: () => this.#getSelectedShapeValue(this.currentShape),
-        history: {
-          current: () => this.history[this.currentShape.index],
-          full: () => this.history,
-          index: () => this.historyIndex,
-          isPopupOpen: () => this.isHistoryPopupOpen,
-        },
-        navigation: {
-          isTreeOpen: () => this.isNavigationTreeOpen,
-        },
-        previewValue: () => this.previewValue,
-        progressbar: () => this.progressbarState,
-        resetKey: () => this.resetKey,
-        snackbar: () => this.snackbarState,
-        spinnerStatus: () => this.isSpinnerActive,
-      },
-      // SET: Simple single-value assignments
-      {
-        config: {
-          behavior: (behavior?: LfShapeeditorBehavior) => {
-            this.configBehavior = behavior;
-          },
-          commitTrigger: (trigger?: LfShapeeditorCommitTrigger) => {
-            this.configCommitTrigger = trigger;
-          },
-          controls: (controls: LfShapeeditorControlConfig[]) => {
-            this.configControls = controls || [];
-          },
-          enablePreview: (enable?: boolean) => {
-            this.configEnablePreview = enable;
-          },
-          expandedGroups: (groups: string[]) => {
-            this.expandedSettingsGroups = groups || [];
-          },
-          layout: (layout?: LfShapeeditorLayout) => {
-            this.configLayout = layout;
-          },
-          settings: (settings: LfShapeeditorConfigSettings) => {
-            this.configSettings = { ...(settings || {}) };
-          },
-          showApplyButton: (show?: boolean) => {
-            this.configShowApplyButton = show;
-          },
-          showResetButton: (show?: boolean) => {
-            this.configShowResetButton = show;
-          },
-        },
-        currentShape: (node: LfMasonrySelectedShape) =>
-          (this.currentShape = node),
-        history: {
-          index: (index: number) => (this.historyIndex = index),
-          isPopupOpen: (open: boolean) => (this.isHistoryPopupOpen = open),
-        },
-        navigation: {
-          isTreeOpen: (open: boolean) => {
-            this.isNavigationTreeOpen = open;
-          },
-        },
-        previewValue: (value: string | null) => {
-          this.previewValue = value;
-        },
-        progressbar: (state: Partial<LfShapeeditorProgressbarState>) => {
-          this.progressbarState = { ...this.progressbarState, ...state };
-        },
-        snackbar: (state: Partial<LfShapeeditorSnackbarState>) => {
-          this.snackbarState = { ...this.snackbarState, ...state };
-        },
-      },
-      // COMPUTED: Derived values and predicates (pure functions)
-      {
-        history: {
-          currentSnapshot: () => {
-            if (this.historyIndex === null) {
-              return null;
-            }
+    // Base getters - read from WC instance (non-state values)
+    const baseGetters = {
+      blocks: () => this.#b,
+      compInstance: () => this,
+      cyAttributes: () => this.#cy,
+      framework: () => this.#framework,
+      ids: () => this.#ids,
+      lfAttributes: () => this.#lf,
+      parts: () => this.#p,
+    };
 
-            const snapshot =
-              this.history[this.currentShape.index][this.historyIndex];
+    // Parse DSL from node first to get initial config values
+    const { data } = this.#framework;
+    const { find } = data.node;
+    const nodeWithDsl = find(this.lfValue, (n) =>
+      Boolean((n as any).cells && "lfCode" in (n as any).cells),
+    );
+    const dsl = parseConfigDslFromNode(nodeWithDsl as any);
 
-            return this.#getSelectedShapeValue(snapshot);
-          },
-        },
-        navigation: {
-          hasNav: () => Boolean(this.lfNavigation?.treeProps?.lfDataset),
-        },
-      },
-      // ACTIONS: Multi-step operations
-      {
-        history: {
-          new: (selectedShape: LfMasonrySelectedShape, isSnapshot = false) => {
-            const historyByIndex = this.history?.[selectedShape.index] || [];
+    // Initial state for closure variables
+    const initialState: LfShapeeditorInitialState = {
+      currentShape: {},
+      history: {},
+      historyIndex: null,
+      isNavigationTreeOpen: Boolean(this.lfNavigation?.treeProps?.lfDataset),
+      isSpinnerActive: false,
+      configControls: dsl?.controls || [],
+      configLayout: dsl?.layout,
+      configSettings: dsl?.defaultSettings || {},
+      expandedSettingsGroups: [],
+      previewValue: null,
+      progressbarState: { uiState: "info", value: 0, visible: false },
+      isHistoryPopupOpen: false,
+      snackbarState: { message: "", uiState: "info", visible: false },
+      resetKey: 0,
+      configBehavior: dsl?.behavior,
+      configCommitTrigger: dsl?.commitTrigger,
+      configShowApplyButton: dsl?.showApplyButton,
+      configShowResetButton: dsl?.showResetButton ?? true,
+      configEnablePreview: dsl?.enablePreview,
+    };
 
-            if (this.historyIndex < historyByIndex.length - 1) {
-              historyByIndex.splice(this.historyIndex + 1);
-            }
+    // State change callback - increments _renderTick to trigger re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
 
-            if (historyByIndex?.length && !isSnapshot) {
-              historyByIndex[0] = selectedShape;
-              return;
-            }
-
-            historyByIndex.push(selectedShape);
-            this.history[selectedShape.index] = historyByIndex;
-            this.historyIndex = historyByIndex.length - 1;
-          },
-          pop: (index?: number) => {
-            if (index !== null && index !== undefined) {
-              this.history[index] = [this.history[index][0]];
-              if (this.historyIndex === 0) {
-                this.refresh();
-              } else {
-                this.historyIndex = 0;
-              }
-            } else {
-              this.history = {};
-              this.historyIndex = null;
-            }
-          },
-          toggle: () => {
-            this.isHistoryPopupOpen = !this.isHistoryPopupOpen;
-          },
-        },
-        navigation: {
-          toggle: () => {
-            this.isNavigationTreeOpen = !this.isNavigationTreeOpen;
-          },
-        },
-        incrementResetKey: () => {
-          this.resetKey++;
-        },
-      },
+    // Create adapter without dispatcher first (circular reference)
+    const adapterWithoutDispatcher = createAdapter(
+      baseGetters,
+      initialState,
+      onStateChange,
       () => this.#adapter,
     );
 
-    // Add dispatcher for centralized event emission (v4.0.0)
-    this.#adapter = {
-      ...adapterParts,
-      dispatcher: {
-        emit: (eventType, detail) => {
-          this.#framework?.debug?.logs.new(
-            this,
-            `Event: ${eventType}`,
-            "informational",
-          );
-          this.lfEvent.emit({
-            comp: this,
-            eventType,
-            id: this.rootElement.id,
-            originalEvent: detail?.originalEvent,
-          });
-        },
+    // Create inline dispatcher per v4.0.0 Section 5.5
+    const dispatcher: LfShapeeditorAdapterDispatcher = {
+      emit: (eventType, detail) => {
+        this.#framework?.debug?.logs.new(
+          this,
+          `Event: ${eventType}`,
+          "informational",
+        );
+        this.lfEvent.emit({
+          comp: this,
+          eventType,
+          id: this.rootElement.id,
+          originalEvent: detail?.originalEvent,
+        });
       },
     };
+
+    // Combine into final adapter
+    this.#adapter = {
+      ...adapterWithoutDispatcher,
+      dispatcher,
+    } as LfShapeeditorAdapter;
   };
-  #getSelectedShapeValue(selectedShape: LfMasonrySelectedShape) {
-    const { data } = this.#framework;
-    const { cell } = data;
-    const { stringify } = cell;
-
-    if (selectedShape.index !== undefined) {
-      const value =
-        selectedShape.shape.value ||
-        (selectedShape.shape as Partial<LfDataCell<"image">>).lfValue;
-      return {
-        shape: selectedShape,
-        value: stringify(value),
-      };
-    }
-
-    return null;
-  }
   //#endregion
 
   //#region Lifecycle hooks
@@ -737,28 +684,7 @@ export class LfShapeeditor implements LfShapeeditorInterface {
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
     this.#initAdapter();
-    if (this.#adapter.controller.computed.navigation.hasNav()) {
-      this.isNavigationTreeOpen = true;
-    }
-
-    // Initialise configuration DSL from the first matching node in lfValue, if present.
-    const { data } = this.#framework;
-    const { find } = data.node;
-    const nodeWithDsl = find(this.lfValue, (n) =>
-      Boolean((n as any).cells && "lfCode" in (n as any).cells),
-    );
-    const dsl = parseConfigDslFromNode(nodeWithDsl as any);
-    if (dsl) {
-      this.configControls = dsl.controls || [];
-      this.configLayout = dsl.layout;
-      this.configSettings = dsl.defaultSettings || {};
-      // Behavioral metadata
-      this.configBehavior = dsl.behavior;
-      this.configCommitTrigger = dsl.commitTrigger;
-      this.configShowApplyButton = dsl.showApplyButton;
-      this.configShowResetButton = dsl.showResetButton ?? true;
-      this.configEnablePreview = dsl.enablePreview;
-    }
+    // DSL initialization is now handled inside #initAdapter
   }
   componentDidLoad() {
     const { info } = this.#framework.debug;

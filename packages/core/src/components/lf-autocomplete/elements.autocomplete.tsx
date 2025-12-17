@@ -96,7 +96,6 @@ export const prepAutocompleteJsx = (
       const comp = compInstance();
 
       const blocks = LF_AUTOCOMPLETE_BLOCKS;
-      const parts = LF_AUTOCOMPLETE_PARTS;
 
       const textfieldProps = comp.lfTextfieldProps || {};
       const htmlAttrs = textfieldProps?.lfHtmlAttributes || {};

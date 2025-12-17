@@ -139,6 +139,8 @@ export interface LfMasonryAdapterControllerGetters
   shapes: () => LfDataShapesMap;
   /** Current view type */
   view: () => LfMasonryView;
+  /** Current viewport width */
+  viewportWidth: () => number;
 }
 /**
  * Simple single-value assignments exposed by the adapter.
@@ -151,8 +153,12 @@ export interface LfMasonryAdapterControllerSetters
   selectedIndex: (index: number | undefined) => void;
   /** Set selected shape state */
   selectedShape: (shape: LfMasonrySelectedShape) => void;
+  /** Set shapes map */
+  shapes: (shapes: LfDataShapesMap) => void;
   /** Set current view */
   view: (view: LfMasonryView) => void;
+  /** Set viewport width */
+  viewportWidth: (width: number) => void;
 }
 /**
  * Derived values and predicates computed from state.

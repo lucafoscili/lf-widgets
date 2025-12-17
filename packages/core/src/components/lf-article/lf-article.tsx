@@ -30,8 +30,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepArticleActions } from "./actions.article";
-import { prepArticleComputed } from "./computed.article";
 import { createAdapter } from "./lf-article-adapter";
 
 /**
@@ -71,6 +69,18 @@ export class LfArticle implements LfArticleInterface {
   @Element() rootElement: LfArticleElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
   //#endregion
 
@@ -226,11 +236,16 @@ export class LfArticle implements LfArticleInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.set: Simple setters (none for this component)
+   * - controller.get: State reads + base getters (blocks, compInstance, framework, etc.)
+   * - controller.set: State writes → triggers onStateChange
    * - controller.computed: Derived predicates (hasNodes)
    * - controller.actions: Complex operations (none for this component)
    * - elements: JSX factories + refs
@@ -243,8 +258,13 @@ export class LfArticle implements LfArticleInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility)
+      // Base getters (via utility)
       createBaseGetters({
         blocks: () => this.#b,
         compInstance: () => this,
@@ -252,12 +272,8 @@ export class LfArticle implements LfArticleInterface {
         ids: () => this.#ids,
         parts: () => this.#p,
       }),
-      // Setters - none for this component
-      {},
-      // Computed - derived predicates (from dedicated file)
-      prepArticleComputed(getAdapter),
-      // Actions - none for this component
-      prepArticleActions(getAdapter),
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );

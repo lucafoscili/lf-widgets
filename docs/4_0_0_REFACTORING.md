@@ -1,15 +1,18 @@
 # LF Widgets v4.0.0 Architectural Refactoring Proposal
 
 > **Status**: PHASE 0 + PHASE 1 (Adapter-Everywhere) COMPLETE ✅  
-> **Status**: PHASE 2 (Functional Components) IN PROGRESS 🚧  
+> **Status**: PHASE 2 (Functional Components) COMPLETE ✅  
 > **Status**: SECTION 5.9 (Adapter as Core) COMPLETE ✅  
+> **Status**: PHASE 2.5 (FC Embedding) COMPLETE ✅  
 > **Branch**: Already has 200+ files edited  
 > **Timeline**: Phase 0+1 (Adapter Architecture) completed December 2024  
 > **Timeline**: Section 5.9 (Adapter as Core for all FC components) completed December 16, 2025  
+> **Timeline**: Phase 2.5 (FC Embedding across 12 consumer components) completed December 17, 2025  
 > **Philosophy**: "This might be the last chance for an architectural overhaul"
 >
 > **🎉 MILESTONE**: All 39 components now have v4.0.0 compliant adapters!
 > **🎉 MILESTONE**: All 6 FC components now use "Adapter as Core" pattern!
+> **🎉 MILESTONE**: 12 consumer components now embed FCs instead of WCs!
 >
 > - 1689/1689 unit tests passing
 > - Full build passing
@@ -17,6 +20,7 @@
 > **🏆 GOLDEN STANDARD**: `lf-chat` is the reference implementation for complex FC components with "Adapter as Core" pattern.
 > **🥈 SILVER STANDARD**: `lf-button` is the reference for simple components.
 > **🌟 FC REFERENCE (Simple)**: `lf-toggle` is the canonical "Adapter as Core" implementation for simple components.
+> **🔧 EMBEDDING REFERENCE**: `lf-list` demonstrates LfTextfieldFC embedding in a consumer component.
 > **📦 LEGACY GOLDEN**: `lf-shapeeditor` remains reference for pre-FC complex components.
 
 ---
@@ -879,14 +883,105 @@ font-size: calc(var(--lf-button-font-size, 0.775em) * var(--lf-fc-ui-size, 1));
 
 Start with these components (good FC candidates):
 
-1. **lf-slider** - Stateless, just value + callbacks
-2. **lf-toggle** - Binary state, simple
-3. **lf-textfield** - Most commonly composed
-4. **lf-button** - Simple, high usage in compositions
-5. **lf-badge** - Pure display, no state
+1. **lf-slider** ✅ - Stateless, just value + callbacks
+2. **lf-toggle** ✅ - Binary state, simple
+3. **lf-textfield** ✅ - Most commonly composed
+4. **lf-button** ✅ - Simple, high usage in compositions
+5. **lf-badge** ✅ - Pure display, no state
+6. **lf-image** ✅ - Display component, used in compositions
 
 **Complexity**: High  
 **Priority**: P1 (Architectural, Major Performance Impact)
+**Status**: COMPLETE ✅ (All 6 FC components converted)
+
+### 2.12 Phase 2.5: FC Embedding (Consumer Components)
+
+> **Status**: COMPLETE ✅ (December 17, 2025)
+> **Reference Implementation**: `lf-list` (LfTextfieldFC embedding)
+> **12 consumer components migrated**
+
+After creating the base FC components (slider, toggle, textfield, button, badge, image), the next step was embedding these FCs into consumer components that previously used child WCs.
+
+#### 2.12.1 What is FC Embedding?
+
+When a parent WC previously rendered child WCs:
+
+```tsx
+// ❌ Old pattern: Child WC inside parent WC
+<lf-textfield
+  lfIcon="search"
+  onLf-textfield-event={(e) => handleTextfield(e)}
+  ref={(el) => (refs.textfield = el)}
+/>
+```
+
+We now embed the FC directly:
+
+```tsx
+// ✅ New pattern: FC embedded in parent
+<LfTextfieldFC
+  framework={framework}
+  icon="search"
+  value={currentValue}
+  onInput={(value, e) => handleInput(e, value)}
+  inputRef={(el) => (refs.textfield = el)}
+/>
+```
+
+#### 2.12.2 Consumer Components Migrated
+
+| Consumer | FC Embedded | WC Replaced | Notes |
+|----------|-------------|-------------|-------|
+| lf-list | LfTextfieldFC | `<lf-textfield>` | Reference implementation |
+| lf-tree | LfTextfieldFC | `<lf-textfield>` | Filter input |
+| lf-select | LfTextfieldFC | `<lf-textfield>` | Search input |
+| lf-autocomplete | LfTextfieldFC | `<lf-textfield>` | Search input |
+| lf-multiinput | LfTextfieldFC | `<lf-textfield>` | Tag input |
+| lf-chat | LfTextfieldFC + ButtonFC | `<lf-textfield>` + `<lf-button>` | Chat input + actions |
+| lf-messenger | LfTextfieldFC + ButtonFC | `<lf-textfield>` + `<lf-button>` | Chat + customization |
+| lf-shapeeditor | LfTextfieldFC + ButtonFC | `<lf-textfield>` + `<lf-button>` | Path input + actions |
+| lf-masonry | ButtonFC | `<lf-button>` | Navigation |
+| lf-carousel | ButtonFC | `<lf-button>` | Navigation |
+| lf-compare | ButtonFC | `<lf-button>` | Navigation |
+| lf-photoframe | LfImageFC | `<lf-image>` | Overlay icon |
+| lf-canvas | LfImageFC | `<lf-image>` | Canvas background |
+
+#### 2.12.3 Key Migration Patterns
+
+**Prop Names**: WC props use `lf` prefix; FC props use camelCase:
+
+| WC Prop | FC Prop |
+|---------|---------|
+| `lfIcon` | `icon` |
+| `lfLabel` | `label` |
+| `lfStyling` | `styling` |
+| `class` | `className` |
+
+**Handler Signatures**: FC callbacks must match `LfComponentAdapterHandler` (event first):
+
+```typescript
+// FC callback: (value, event)
+// Handler signature: (event, value) - event FIRST!
+onInput={(value, e) => handlers.textfieldInput(e, value)}  // Swap params!
+```
+
+**Ref Types**: WC refs → native element refs:
+
+```typescript
+// Before: LfTextfieldElement
+// After: HTMLInputElement | HTMLTextAreaElement
+```
+
+#### 2.12.4 Benefits Realized
+
+| Metric | Before (WC children) | After (FC embedded) |
+|--------|---------------------|---------------------|
+| Shadow DOMs in lf-chat | 5+ | 1 |
+| Event roundtrips | CustomEvent dispatch/listen | Direct callback |
+| Ref access | `await ref.getValue()` | `ref.value` |
+| State sync | Bidirectional (prop + event) | Unidirectional (callback) |
+
+**See**: WC_FC_MIGRATION_GUIDE.md Section 4 for detailed migration steps.
 
 ---
 

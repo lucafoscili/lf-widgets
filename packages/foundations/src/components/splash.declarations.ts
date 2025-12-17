@@ -1,11 +1,14 @@
 import {
   LfComponentAdapter,
+  LfComponentAdapterActions,
   LfComponentAdapterBaseGetters,
+  LfComponentAdapterComputed,
   LfComponentAdapterDispatchDetail,
   LfComponentAdapterDispatcher,
   LfComponentAdapterHandlers,
   LfComponentAdapterJsx,
   LfComponentAdapterRefs,
+  LfComponentAdapterSetters,
 } from "../foundations/adapter.declarations";
 import {
   HTMLStencilElement,
@@ -26,6 +29,10 @@ import {
 //#region Class
 /**
  * Primary interface implemented by the `lf-splash` component. It merges the shared component contract with the component-specific props.
+ *
+ * In "Adapter as Core" pattern:
+ * - WC implements this interface but delegates state to adapter
+ * - `state` is a bridge getter to adapter's internal state
  */
 export interface LfSplashInterface
   extends LfComponent<"LfSplash">,
@@ -39,6 +46,7 @@ export interface LfSplashInterface
   };
   /**
    * Internal runtime state mirrored by the component implementation.
+   * @deprecated In "Adapter as Core" pattern, use adapter.controller.get.state() instead
    */
   state: LfSplashStates;
 }
@@ -70,10 +78,14 @@ export interface LfSplashAdapter
     LfSplashAdapterHandlers,
     LfSplashAdapterJsx,
     LfSplashAdapterRefs,
-    LfSplashAdapterControllerGetters
+    LfSplashAdapterControllerGetters,
+    LfSplashAdapterControllerSetters,
+    LfSplashAdapterControllerComputed,
+    LfSplashAdapterControllerActions
   > {
   controller: {
     get: LfSplashAdapterControllerGetters;
+    set: LfSplashAdapterControllerSetters;
     computed: LfSplashAdapterControllerComputed;
     actions: LfSplashAdapterControllerActions;
   };
@@ -109,6 +121,9 @@ export interface LfSplashAdapterHandlers extends LfComponentAdapterHandlers {}
  * Base getters extended with component-specific state reads.
  * ALL values MUST be functions `() => T` per v4.0.0 Section 5.2.
  *
+ * In "Adapter as Core" pattern, state lives in the adapter, not the WC.
+ * Getters read from adapter's internal closure variables.
+ *
  * @see Section 5.1 of 4_0_0_REFACTORING.md
  */
 export interface LfSplashAdapterControllerGetters
@@ -117,15 +132,30 @@ export interface LfSplashAdapterControllerGetters
     typeof LF_SPLASH_BLOCKS,
     typeof LF_SPLASH_IDS,
     typeof LF_SPLASH_PARTS
-  > {}
+  > {
+  /** Read the current splash state from adapter's internal state */
+  state: () => LfSplashStates;
+}
+/**
+ * Simple single-value setters.
+ * Each setter performs exactly ONE state change and triggers onStateChange.
+ *
+ * In "Adapter as Core" pattern, setters mutate adapter's internal state
+ * and call the onStateChange callback to signal the WC to re-render.
+ */
+export interface LfSplashAdapterControllerSetters
+  extends LfComponentAdapterSetters {
+  /** Set the splash state and trigger re-render */
+  state: (state: LfSplashStates) => void;
+}
 /**
  * Computed values - derived predicates and builders.
  * Pure functions that compute from current state without side effects.
  *
  * @see Section 5.4 of 4_0_0_REFACTORING.md
  */
-export interface LfSplashAdapterControllerComputed {
-  [key: string]: ((...args: unknown[]) => unknown) | undefined;
+export interface LfSplashAdapterControllerComputed
+  extends LfComponentAdapterComputed {
   /** Whether the splash is in unmounting state */
   isUnmounting: () => boolean;
 }
@@ -135,11 +165,10 @@ export interface LfSplashAdapterControllerComputed {
  *
  * @see Section 5.4 of 4_0_0_REFACTORING.md
  */
-export interface LfSplashAdapterControllerActions {
-  [key: string]:
-    | ((...args: unknown[]) => void | Promise<void>)
-    | LfSplashAdapterControllerActions
-    | undefined;
+export interface LfSplashAdapterControllerActions
+  extends LfComponentAdapterActions {
+  /** Initiates unmount sequence with delay */
+  unmount: (ms?: number) => void;
 }
 /**
  * Dispatcher for centralized event emission.

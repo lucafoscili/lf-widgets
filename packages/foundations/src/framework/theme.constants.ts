@@ -198,6 +198,7 @@ export const LF_THEME_ATTRIBUTE = {
 //#region Modifiers
 export const LF_THEME_MODIFIERS = [
   "active",
+  "animated",
   "assistant",
   "bottom",
   "checked",
@@ -231,6 +232,7 @@ export const LF_THEME_MODIFIERS = [
   "horizontal",
   "icon",
   "indeterminate",
+  "inline",
   "input",
   "large",
   "leading",

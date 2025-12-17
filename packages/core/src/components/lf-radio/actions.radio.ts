@@ -12,6 +12,11 @@ import {
  * - Trigger re-renders
  * - Batch multiple state changes
  *
+ * "Adapter as Core" Pattern:
+ * - Reads value from adapter closure via `controller.get.value()`
+ * - Writes value via `controller.set.value()` (triggers onStateChange)
+ * - NOT via `compInstance().value` (which is now a bridge getter)
+ *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Actions object
  *
@@ -45,16 +50,16 @@ export const prepRadioActions = (
       }
     }
 
-    comp.value = nodeId;
+    // Write to adapter closure state via setter
+    adapter.controller.set.value(nodeId);
   },
 
   /**
    * Clears the current selection.
-   * Sets value to undefined.
+   * Sets value to undefined via adapter setter.
    */
   clear: () => {
-    const { compInstance } = getAdapter().controller.get;
-    compInstance().value = undefined;
+    getAdapter().controller.set.value(undefined);
   },
 
   /**
@@ -63,7 +68,7 @@ export const prepRadioActions = (
    */
   focusNext: () => {
     const adapter = getAdapter();
-    const { compInstance } = adapter.controller.get;
+    const { compInstance, value } = adapter.controller.get;
     const comp = compInstance();
     const nodes = comp.lfDataset?.nodes;
 
@@ -71,8 +76,9 @@ export const prepRadioActions = (
       return;
     }
 
-    const currentIndex = comp.value
-      ? nodes.findIndex((n: LfDataNode) => n.id === comp.value)
+    const currentValue = value();
+    const currentIndex = currentValue
+      ? nodes.findIndex((n: LfDataNode) => n.id === currentValue)
       : -1;
 
     const nextIndex =
@@ -80,7 +86,7 @@ export const prepRadioActions = (
     const nextNode = nodes[nextIndex];
 
     if (nextNode && !nextNode.isDisabled) {
-      comp.value = nextNode.id;
+      adapter.controller.set.value(nextNode.id);
       const inputEl = adapter.elements.refs.inputs.get(nextNode.id);
       inputEl?.focus();
     }
@@ -92,7 +98,7 @@ export const prepRadioActions = (
    */
   focusPrevious: () => {
     const adapter = getAdapter();
-    const { compInstance } = adapter.controller.get;
+    const { compInstance, value } = adapter.controller.get;
     const comp = compInstance();
     const nodes = comp.lfDataset?.nodes;
 
@@ -100,8 +106,9 @@ export const prepRadioActions = (
       return;
     }
 
-    const currentIndex = comp.value
-      ? nodes.findIndex((n: LfDataNode) => n.id === comp.value)
+    const currentValue = value();
+    const currentIndex = currentValue
+      ? nodes.findIndex((n: LfDataNode) => n.id === currentValue)
       : -1;
 
     const prevIndex =
@@ -111,7 +118,7 @@ export const prepRadioActions = (
     const prevNode = nodes[prevIndex];
 
     if (prevNode && !prevNode.isDisabled) {
-      comp.value = prevNode.id;
+      adapter.controller.set.value(prevNode.id);
       const inputEl = adapter.elements.refs.inputs.get(prevNode.id);
       inputEl?.focus();
     }
@@ -123,11 +130,10 @@ export const prepRadioActions = (
    */
   updateDataset: (dataset) => {
     const adapter = getAdapter();
-    const { compInstance } = adapter.controller.get;
-    const { selectedId } = adapter.controller.computed;
+    const { compInstance, value } = adapter.controller.get;
     const comp = compInstance();
 
-    const currentSelectedId = selectedId();
+    const currentSelectedId = value();
     comp.lfDataset = dataset;
 
     if (currentSelectedId) {

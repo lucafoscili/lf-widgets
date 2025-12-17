@@ -4,40 +4,14 @@ import {
   LfRadioAdapterControllerComputed,
   LfRadioAdapterHandlers,
   LfRadioAdapterRefs,
-  LfThemeUIState,
+  LfRadioFCProps,
   LF_RADIO_BLOCKS,
   LF_RADIO_PARTS,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h, VNode } from "@stencil/core";
 
-//#region Props
-/**
- * Props interface for the pure presentational LfRadioFC.
- *
- * This component is stateless and receives all data via props.
- * It renders pure JSX without any adapter access.
- */
-export interface LfRadioFCProps {
-  /** Block class names for BEM styling */
-  blocks: typeof LF_RADIO_BLOCKS;
-  /** Computed predicates from adapter */
-  computed: LfRadioAdapterControllerComputed;
-  /** Framework instance for theming utilities */
-  framework: LfFrameworkInterface;
-  /** Event handlers from adapter */
-  handlers: LfRadioAdapterHandlers;
-  /** LF attributes for state theming */
-  lfAttributes: Record<string, string>;
-  /** Data nodes representing radio options */
-  nodes: LfDataNode[];
-  /** Part names for shadow parts */
-  parts: typeof LF_RADIO_PARTS;
-  /** Refs object for element references */
-  refs: LfRadioAdapterRefs;
-  /** UI state for theming */
-  uiState: LfThemeUIState;
-}
-//#endregion
+// Props interface is now defined in @lf-widgets/foundations (LfRadioFCProps)
+// See: packages/foundations/src/components/radio.declarations.ts
 
 /**
  * LfRadioFC - Pure Presentational Functional Component for Radio

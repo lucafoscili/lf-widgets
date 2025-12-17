@@ -1,11 +1,6 @@
-import {
-  LF_TOAST_CSS_VARIABLES,
-  LfIconType,
-  LfToastAdapter,
-  LfToastAdapterJsx,
-} from "@lf-widgets/foundations";
-import { h, VNode } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { LfToastAdapter, LfToastAdapterJsx } from "@lf-widgets/foundations";
+import { h } from "@stencil/core";
+import { LfToastFC } from "./lf-toast-fc";
 
 /**
  * Prepares JSX factory functions for the toast component.
@@ -24,95 +19,28 @@ export const prepToastJsx = (
     //#region Toast
     toast: () => {
       const adapter = getAdapter();
-      const { controller, elements } = adapter;
-      const { blocks, compInstance, framework, lfAttributes } = controller.get;
-      const { hasCloseIcon, hasIcon, hasTimer } = controller.computed;
+      const { controller, handlers } = adapter;
+      const { compInstance, framework } = controller.get;
 
       const comp = compInstance();
       const mgr = framework();
-      const b = blocks();
-      const lf = lfAttributes();
 
-      const { lfMessage, lfTimer, lfUiState } = comp;
-
-      const { assignRef, theme } = mgr;
-      const { bemClass } = theme;
-      const { refs } = elements;
-
-      const v = LF_TOAST_CSS_VARIABLES;
+      const { lfCloseIcon, lfIcon, lfMessage, lfTimer, lfUiSize, lfUiState } =
+        comp;
 
       return (
-        <div
-          class={bemClass(b.toast._)}
-          data-lf={lf[lfUiState]}
-          ref={assignRef(refs, "toast")}
-          style={hasTimer() ? { [v.timer]: `${lfTimer}ms` } : undefined}
-        >
-          <div
-            class={bemClass(b.toast._, b.toast.accent, {
-              temporary: hasTimer(),
-            })}
-          ></div>
-          <div
-            class={bemClass(b.toast._, b.toast.messageWrapper, {
-              full: hasIcon() && hasCloseIcon(),
-              "has-actions": hasCloseIcon(),
-              "has-icon": hasIcon(),
-            })}
-          >
-            {hasIcon() && prepIcon(adapter, false)}
-            {lfMessage && (
-              <div
-                class={bemClass(b.toast._, b.toast.message)}
-                ref={assignRef(refs, "message")}
-              >
-                {lfMessage}
-              </div>
-            )}
-            {hasCloseIcon() && prepIcon(adapter, true)}
-          </div>
-        </div>
+        <LfToastFC
+          closeCallback={() => handlers.closeButton(null)}
+          closeIcon={lfCloseIcon as string}
+          framework={mgr}
+          icon={lfIcon as string}
+          message={lfMessage}
+          timer={lfTimer}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion
   };
 };
-
-//#region Helpers
-/**
- * Prepares the icon VNode for the toast.
- * @param adapter - The toast adapter instance
- * @param isClose - Whether this is the close icon
- * @returns The icon VNode
- */
-const prepIcon = (adapter: LfToastAdapter, isClose: boolean): VNode => {
-  const { controller, elements, handlers } = adapter;
-  const { blocks, compInstance, framework, parts } = controller.get;
-
-  const comp = compInstance();
-  const mgr = framework();
-  const b = blocks();
-  const p = parts();
-
-  const { lfCloseIcon, lfIcon } = comp;
-  const icon = isClose ? lfCloseIcon : lfIcon;
-
-  const { assignRef, theme } = mgr;
-  const { bemClass } = theme;
-  const { refs } = elements;
-
-  return (
-    <div
-      class={bemClass(b.toast._, b.toast.icon, {
-        "has-actions": isClose,
-      })}
-      onPointerDown={isClose ? handlers.closeButton : null}
-      part={isClose ? p.closeButton : p.icon}
-      ref={isClose ? assignRef(refs, "closeButton") : assignRef(refs, "icon")}
-      tabIndex={isClose ? 0 : undefined}
-    >
-      <FIcon framework={mgr} icon={icon as LfIconType} />
-    </div>
-  );
-};
-//#endregion

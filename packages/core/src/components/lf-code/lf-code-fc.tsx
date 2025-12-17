@@ -3,69 +3,12 @@ import {
   LF_ATTRIBUTES,
   LF_CODE_BLOCKS,
   LF_CODE_PARTS,
+  LfCodeFCProps,
   LfFrameworkInterface,
   LfThemeUISize,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
 import { FunctionalComponent, h, VNode } from "@stencil/core";
-
-//#region Props
-/**
- * Props interface for the LfCodeFC functional component.
- *
- * This interface removes the `lf*` prefix convention used by Web Components
- * and uses direct prop names instead. All state is owned by the parent;
- * the FC is purely presentational.
- *
- * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
- */
-export interface LfCodeFCProps {
-  /** Assigned class for custom styling */
-  className?: string;
-  /** Reference callback for the code container element */
-  codeRef?: (el: HTMLDivElement | null) => void;
-  /** Whether to fade in the component on mount */
-  fadeIn?: boolean;
-  /** Formatted code content to display */
-  formattedCode: string;
-  /** Framework instance for theming utilities (required) */
-  framework: LfFrameworkInterface;
-  /** Unique identifier for the component */
-  id?: string;
-  /** Language of the code snippet */
-  language?: string;
-  /** Callback fired on copy button click */
-  onCopy?: (e: CustomEvent) => void;
-  /** Reference callback for the pre/body element */
-  preRef?: (el: HTMLPreElement | HTMLDivElement | null) => void;
-  /** Whether to preserve spaces (use pre tag) */
-  preserveSpace?: boolean;
-  /** Whether to show the copy button */
-  showCopy?: boolean;
-  /** Whether to show the header */
-  showHeader?: boolean;
-  /** Whether the header should be sticky */
-  stickyHeader?: boolean;
-  /** Custom CSS styles to apply (object format for Stencil JSX) */
-  style?: { [key: string]: string };
-  /**
-   * UI size multiplier for the component.
-   * Controls font-size scaling. Required for composed usage where
-   * CSS inheritance from :host doesn't work (e.g., portaled content).
-   * @default "medium"
-   */
-  uiSize?: LfThemeUISize;
-  /**
-   * UI state for theming (primary, success, warning, danger, etc.).
-   * Controls color scheme. Required for composed usage where
-   * CSS cascade doesn't work (e.g., portaled content).
-   * @default "primary"
-   */
-  uiState?: LfThemeUIState;
-  /** Current code value (for clipboard copy) */
-  value?: string;
-}
-//#endregion
 
 /**
  * LfCodeFC - Functional Component for Code

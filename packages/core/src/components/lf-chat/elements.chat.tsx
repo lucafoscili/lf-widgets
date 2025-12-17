@@ -66,8 +66,6 @@ export const prepChat = (
       const { chat } = elements.refs;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -96,8 +94,7 @@ export const prepChat = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -123,8 +120,7 @@ export const prepChat = (
       const { chat } = elements.refs;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -197,8 +193,7 @@ export const prepChat = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -224,8 +219,7 @@ export const prepChat = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 
@@ -278,8 +272,7 @@ export const prepChat = (
       const { button } = handlers.chat;
 
       const blocks = get.blocks();
-      const cyAttributes = get.cyAttributes();
-      const parts = get.parts();
+
       const { assignRef, theme } = get.framework();
       const { bemClass } = theme;
 

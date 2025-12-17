@@ -9,6 +9,10 @@ import {
  * Computed values are pure functions that derive state without side effects.
  * They're used in JSX/handlers to make rendering decisions.
  *
+ * "Adapter as Core" Pattern:
+ * - Reads value from adapter closure via `controller.get.value()`
+ * - NOT from `compInstance().value` (which is now a bridge getter)
+ *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
  *
@@ -65,17 +69,17 @@ export const prepRadioComputed = (
 
   /**
    * Gets the currently selected node ID.
+   * Reads from adapter closure state via getter.
    */
   selectedId: () => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().value;
+    return getAdapter().controller.get.value();
   },
 
   /**
    * Returns a function that checks if a specific node is selected.
+   * Reads from adapter closure state via getter.
    */
   isSelected: (nodeId: string) => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().value === nodeId;
+    return getAdapter().controller.get.value() === nodeId;
   },
 });

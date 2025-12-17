@@ -1,44 +1,86 @@
 import {
   LfCheckboxAdapter,
-  LfCheckboxAdapterControllerActions,
-  LfCheckboxAdapterControllerComputed,
   LfCheckboxAdapterControllerGetters,
   LfCheckboxAdapterControllerSetters,
   LfCheckboxAdapterHandlers,
   LfCheckboxAdapterJsx,
   LfCheckboxAdapterRefs,
+  LfCheckboxState,
 } from "@lf-widgets/foundations";
+import { prepCheckboxActions } from "./actions.checkbox";
+import { prepCheckboxComputed } from "./computed.checkbox";
 import { prepCheckboxElements } from "./elements.checkbox";
 import { prepCheckboxHandlers } from "./handlers.checkbox";
 
 /**
  * Creates the canonical adapter for lf-checkbox.
  *
- * v4.0.0 Architecture:
- * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
- * - controller.set: Simple setters (none for checkbox)
- * - controller.computed: Derived predicates (isChecked, isDisabled, isIndeterminate)
- * - controller.actions: Complex operations (toggle)
- * - elements: JSX factories + refs
- * - dispatcher: Centralized event emission (passed from component)
- * - handlers: Event callbacks
+ * "Adapter as Core" Architecture:
+ * - Adapter OWNS the runtime state (not the WC)
+ * - State is stored in closure variables (e.g., `_value`)
+ * - `controller.get.*` reads from closure state
+ * - `controller.set.*` writes to closure state AND calls `onStateChange()`
+ * - `onStateChange` signals WC to increment its single `@State _renderTick`
+ * - WC becomes a thin shell: lifecycle + HTML attribute interface + single render trigger
+ *
+ * Benefits:
+ * - Predictable renders (explicit via onStateChange)
+ * - Testable (adapter can be tested without DOM)
+ * - Portable (adapter works with any renderer)
+ * - Batch-friendly (actions can make multiple changes before calling onStateChange once)
+ *
+ * @param baseGetters - Base getters from createBaseGetters utility
+ * @param initialValue - Initial checkbox state
+ * @param onStateChange - Callback to trigger WC re-render (increments _renderTick)
+ * @param getAdapter - Accessor function to get the current adapter instance
+ * @returns Complete adapter (without dispatcher - added by WC)
  *
  * @see Section 5 of 4_0_0_REFACTORING.md
  */
-//#region Adapter
+//#region Adapter Factory
 export const createAdapter = (
-  getters: LfCheckboxAdapterControllerGetters,
-  setters: LfCheckboxAdapterControllerSetters,
-  computed: LfCheckboxAdapterControllerComputed,
-  actions: LfCheckboxAdapterControllerActions,
+  baseGetters: Omit<LfCheckboxAdapterControllerGetters, "value">,
+  initialValue: LfCheckboxState,
+  onStateChange: () => void,
   getAdapter: () => LfCheckboxAdapter,
 ): Omit<LfCheckboxAdapter, "dispatcher"> => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INTERNAL STATE (replaces @State in WC)
+  // This closure variable IS the single source of truth for checkbox state
+  // ═══════════════════════════════════════════════════════════════════════════
+  let _value: LfCheckboxState = initialValue;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE GETTERS - Read from closure
+  // ═══════════════════════════════════════════════════════════════════════════
+  const getters: LfCheckboxAdapterControllerGetters = {
+    ...baseGetters,
+    value: () => _value,
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE SETTERS - Write to closure + trigger render
+  // ═══════════════════════════════════════════════════════════════════════════
+  const setters: LfCheckboxAdapterControllerSetters = {
+    value: (state: LfCheckboxState) => {
+      const comp = baseGetters.compInstance();
+      const isDisabled = comp.lfUiState === "disabled";
+      const isValid =
+        state === "on" || state === "off" || state === "indeterminate";
+
+      if (!isDisabled && isValid && _value !== state) {
+        _value = state;
+        onStateChange(); // Signal WC to re-render
+      }
+    },
+  };
+
   return {
     controller: {
       get: getters,
       set: setters,
-      computed,
-      actions,
+      computed: createComputed(getAdapter),
+      actions: createActions(getAdapter),
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -46,6 +88,16 @@ export const createAdapter = (
     },
     handlers: createHandlers(getAdapter),
   };
+};
+//#endregion
+
+//#region Controller
+export const createComputed = (getAdapter: () => LfCheckboxAdapter) => {
+  return prepCheckboxComputed(getAdapter);
+};
+
+export const createActions = (getAdapter: () => LfCheckboxAdapter) => {
+  return prepCheckboxActions(getAdapter);
 };
 //#endregion
 

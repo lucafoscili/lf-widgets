@@ -1,10 +1,9 @@
 import {
-  LfIconType,
   LfSnackbarAdapter,
   LfSnackbarAdapterJsx,
 } from "@lf-widgets/foundations";
 import { h, VNode } from "@stencil/core";
-import { FIcon } from "../../utils/icon";
+import { LfSnackbarFC } from "./fc";
 
 /**
  * Prepares JSX factory functions for the snackbar component.
@@ -12,116 +11,54 @@ import { FIcon } from "../../utils/icon";
  * v4.0.0 Architecture:
  * - Uses `controller.get` for base getters (blocks, compInstance, framework, etc.)
  * - Uses `controller.computed` for derived predicates (hasAction, hasCloseIcon, hasIcon)
- * - Routes all events through dispatcher via handlers
+ * - Uses `handlers` for event callbacks
+ * - Routes all events through dispatcher
+ * - Wraps `LfSnackbarFC` functional component for actual rendering
  *
- * @see Section 5 of 4_0_0_REFACTORING.md
+ * @see Section 2 & 5 of 4_0_0_REFACTORING.md
  */
 export const prepSnackbarJsx = (
   getAdapter: () => LfSnackbarAdapter,
 ): LfSnackbarAdapterJsx => {
   return {
     //#region Snackbar
-    snackbar: () => {
+    snackbar: (): VNode => {
       const adapter = getAdapter();
-      const { controller, elements, handlers } = adapter;
-      const { blocks, compInstance, framework, lfAttributes, parts } =
-        controller.get;
+      const { controller, handlers } = adapter;
+      const { compInstance, framework } = controller.get;
       const { hasAction, hasCloseIcon, hasIcon } = controller.computed;
 
       const comp = compInstance();
       const mgr = framework();
-      const b = blocks();
-      const p = parts();
-      const lf = lfAttributes();
 
-      const { lfAction, lfCloseIcon, lfIcon, lfMessage, lfUiState } = comp;
-
-      const { assignRef, theme } = mgr;
-      const { bemClass } = theme;
-      const { refs } = elements;
+      const {
+        lfAction,
+        lfCloseIcon,
+        lfIcon,
+        lfMessage,
+        lfPosition,
+        lfUiSize,
+        lfUiState,
+      } = comp;
 
       return (
-        <div
-          class={bemClass(b.snackbar._)}
-          data-lf={lf[lfUiState]}
-          ref={assignRef(refs, "snackbar")}
-        >
-          <div
-            class={bemClass(b.snackbar._, b.snackbar.content, {
-              "has-icon": hasIcon(),
-            })}
-            ref={assignRef(refs, "content")}
-          >
-            {hasIcon() && (
-              <div
-                class={bemClass(b.snackbar._, b.snackbar.icon, {
-                  main: lfUiState === "primary",
-                })}
-                part={p.icon}
-                ref={assignRef(refs, "icon")}
-              >
-                <FIcon framework={mgr} icon={lfIcon} />
-              </div>
-            )}
-            {lfMessage && (
-              <div
-                class={bemClass(b.snackbar._, b.snackbar.message)}
-                part={p.message}
-                ref={assignRef(refs, "message")}
-              >
-                {lfMessage}
-              </div>
-            )}
-          </div>
-          {(hasAction() || hasCloseIcon()) && (
-            <div class={bemClass(b.snackbar._, b.snackbar.actions)}>
-              {hasAction() && (
-                <button
-                  class={bemClass(b.snackbar._, b.snackbar.actionButton)}
-                  onPointerDown={handlers.action}
-                  part={p.actionButton}
-                  ref={assignRef(refs, "actionButton")}
-                  type="button"
-                >
-                  {lfAction}
-                </button>
-              )}
-              {hasCloseIcon() && prepCloseButton(adapter, lfCloseIcon)}
-            </div>
-          )}
-        </div>
+        <LfSnackbarFC
+          action={lfAction}
+          closeIcon={lfCloseIcon}
+          framework={mgr}
+          hasAction={hasAction()}
+          hasCloseIcon={hasCloseIcon()}
+          hasIcon={hasIcon()}
+          icon={lfIcon}
+          message={lfMessage}
+          onAction={(e) => handlers.action(e)}
+          onClose={(e) => handlers.close(e)}
+          position={lfPosition}
+          uiSize={lfUiSize}
+          uiState={lfUiState}
+        />
       );
     },
     //#endregion
   };
-};
-
-/**
- * Prepares the close button icon element.
- */
-const prepCloseButton = (
-  adapter: LfSnackbarAdapter,
-  icon: LfIconType | null,
-): VNode => {
-  const { controller, elements, handlers } = adapter;
-  const { blocks, framework, parts } = controller.get;
-
-  const mgr = framework();
-  const b = blocks();
-  const p = parts();
-  const { refs } = elements;
-  const { assignRef, theme } = mgr;
-  const { bemClass } = theme;
-
-  return (
-    <div
-      class={bemClass(b.snackbar._, b.snackbar.closeButton)}
-      onPointerDown={handlers.close}
-      part={p.closeButton}
-      ref={assignRef(refs, "closeButton")}
-      tabIndex={0}
-    >
-      <FIcon framework={mgr} icon={icon} />
-    </div>
-  );
 };

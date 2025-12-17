@@ -17,27 +17,27 @@ import {
   TIMEFRAME_COVER,
 } from "@lf-widgets/foundations";
 import { defaultToCurrentCharacter } from "./helpers.utils";
-import { LfMessenger } from "./lf-messenger";
+import { LfMessengerAdapterState } from "./lf-messenger-adapter";
 
 //#region Getters
 export const prepImageGetters = (
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
 ): LfMessengerAdapterControllerGetters["image"] => {
   return {
-    asCover: (type, character?) => getAsCover(getAdapter, type, character),
-    byType: (type, character?) => getByType(getAdapter, type, character),
+    asCover: (type, character?) =>
+      getAsCover(getAdapter, state, type, character),
+    byType: (type, character?) => getByType(getAdapter, state, type, character),
     coverIndex: (type, character?) => {
       const adapter = getAdapter();
-      const compInstance = adapter.controller.get.compInstance();
-      const { covers } = compInstance as LfMessenger;
-      const { id } = defaultToCurrentCharacter(adapter, character);
+      const { id } = defaultToCurrentCharacter(adapter, state, character);
 
-      return covers[id][type];
+      return state.covers[id]?.[type] ?? 0;
     },
     newId: (type) => getNewId(getAdapter, type),
     root: (type, character?) => {
       const adapter = getAdapter();
-      const { children } = defaultToCurrentCharacter(adapter, character);
+      const { children } = defaultToCurrentCharacter(adapter, state, character);
 
       const node = children.find((n) => n.id === type);
 
@@ -61,6 +61,8 @@ export const prepImageGetters = (
 //#region Setters
 export const prepImageSetters = (
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
+  onStateChange: () => void,
 ): LfMessengerAdapterControllerSetters["image"] => {
   return {
     cover: (
@@ -69,13 +71,13 @@ export const prepImageSetters = (
       character?: LfMessengerCharacterNode,
     ) => {
       const adapter = getAdapter();
-      const compInstance = adapter.controller.get.compInstance();
-      const { id } = defaultToCurrentCharacter(getAdapter(), character);
+      const { id } = defaultToCurrentCharacter(adapter, state, character);
 
-      const c = compInstance as LfMessenger;
-
-      c.covers[id][type] = value;
-      c.refresh();
+      state.covers = {
+        ...state.covers,
+        [id]: { ...state.covers[id], [type]: value },
+      };
+      onStateChange();
     },
   };
 };
@@ -100,18 +102,17 @@ const pickFallBackCover = (type: LfMessengerImageTypes) => {
 };
 const getAsCover = (
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
   type: LfMessengerImageTypes,
   character: LfMessengerCharacterNode,
 ) => {
   const adapter = getAdapter();
-  const compInstance = adapter.controller.get.compInstance();
   const { image } = adapter.controller.get;
-  const { children, id } = defaultToCurrentCharacter(adapter, character);
-  const { covers } = compInstance as LfMessenger;
+  const { children, id } = defaultToCurrentCharacter(adapter, state, character);
 
   try {
     const root = children.find((n) => n.id === type);
-    const index = covers[id][type];
+    const index = state.covers[id]?.[type] ?? 0;
     const node = root.children[index];
 
     if (!node?.cells?.lfImage?.value) {
@@ -133,10 +134,15 @@ const getAsCover = (
 };
 const getByType = (
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
   type: LfMessengerImageTypes,
   character: LfMessengerCharacterNode,
 ) => {
-  const { children } = defaultToCurrentCharacter(getAdapter(), character);
+  const { children } = defaultToCurrentCharacter(
+    getAdapter(),
+    state,
+    character,
+  );
 
   const node = children.find((child) => child.id === type);
 

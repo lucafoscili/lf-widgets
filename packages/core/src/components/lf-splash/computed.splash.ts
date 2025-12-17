@@ -9,6 +9,9 @@ import {
  * Computed values are pure functions that derive state without side effects.
  * They're used in JSX/handlers to make rendering decisions.
  *
+ * In "Adapter as Core" pattern, computed reads from adapter's internal state
+ * via controller.get.state(), NOT from compInstance().state.
+ *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
  *
@@ -22,7 +25,7 @@ export const prepSplashComputed = (
    * Used to control animation and label display.
    */
   isUnmounting: () => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().state === "unmounting";
+    // Read from adapter's closure state, not WC state
+    return getAdapter().controller.get.state() === "unmounting";
   },
 });

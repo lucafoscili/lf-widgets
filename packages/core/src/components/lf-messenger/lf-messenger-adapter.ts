@@ -1,12 +1,30 @@
 import {
+  CY_ATTRIBUTES,
+  IMAGE_TYPE_IDS,
+  LF_ATTRIBUTES,
+  LF_MESSENGER_BLOCKS,
+  LF_MESSENGER_CLEAN_UI,
+  LF_MESSENGER_IDS,
+  LF_MESSENGER_PARTS,
+  LfChatStatus,
+  LfFrameworkInterface,
   LfMessengerAdapter,
-  LfMessengerAdapterControllerActions,
-  LfMessengerAdapterControllerComputed,
   LfMessengerAdapterControllerGetters,
   LfMessengerAdapterControllerSetters,
   LfMessengerAdapterHandlers,
   LfMessengerAdapterJsx,
   LfMessengerAdapterRefs,
+  LfMessengerBaseChildNode,
+  LfMessengerCharacterNode,
+  LfMessengerChat,
+  LfMessengerChildIds,
+  LfMessengerCovers,
+  LfMessengerEditingStatus,
+  LfMessengerHistory,
+  LfMessengerImageTypes,
+  LfMessengerInterface,
+  LfMessengerUI,
+  LfMessengerUnionChildIds,
 } from "@lf-widgets/foundations";
 import {
   prepCharacterGetters,
@@ -23,14 +41,35 @@ import { prepChatHandlers } from "./handlers.chat";
 import { prepCustomizationHandlers } from "./handlers.customization";
 import { prepOptionsHandlers } from "./handlers.options";
 import { updateDataset } from "./helpers.utils";
-import { LfMessenger } from "./lf-messenger";
+
+//#region State Interface
+/**
+ * State container interface for the messenger adapter.
+ * All state lives in the adapter closure.
+ */
+export interface LfMessengerAdapterState {
+  chat: LfMessengerChat;
+  connectionStatus: LfChatStatus;
+  covers: LfMessengerCovers;
+  currentCharacter: LfMessengerCharacterNode;
+  hoveredCustomizationOption: LfMessengerBaseChildNode<
+    LfMessengerChildIds<LfMessengerUnionChildIds>
+  >;
+  history: LfMessengerHistory;
+  formStatusMap: LfMessengerEditingStatus<LfMessengerImageTypes>;
+  saveInProgress: boolean;
+  ui: LfMessengerUI;
+}
+//#endregion
 
 /**
  * Creates the canonical adapter for lf-messenger.
  *
- * v4.0.0 Architecture:
- * - controller.get: Pure state reads (ALL must be functions `() => T`)
- * - controller.set: Simple single-value assignments
+ * v4.0.0 "Adapter as Core" Architecture:
+ * - ALL state lives in adapter closure (except debugInfo)
+ * - WC becomes thin shell with _renderTick trigger
+ * - controller.get: Pure state reads from closure
+ * - controller.set: Simple single-value assignments with onStateChange()
  * - controller.computed: Derived values, predicates (pure functions)
  * - controller.actions: Multi-step operations (toggles, batch changes)
  * - elements: JSX factories + refs
@@ -41,18 +80,72 @@ import { LfMessenger } from "./lf-messenger";
  */
 //#region Adapter
 export const createAdapter = (
-  getters: LfMessengerAdapterControllerGetters,
-  setters: LfMessengerAdapterControllerSetters,
-  computed: LfMessengerAdapterControllerComputed,
-  actions: LfMessengerAdapterControllerActions,
-  getAdapter: () => LfMessengerAdapter,
-): Omit<LfMessengerAdapter, "dispatcher"> => {
-  return {
+  getComp: () => LfMessengerInterface,
+  getFramework: () => LfFrameworkInterface,
+  onStateChange: () => void,
+): LfMessengerAdapter => {
+  //#region Closure State
+  const state: LfMessengerAdapterState = {
+    chat: {},
+    connectionStatus: "offline",
+    covers: {},
+    currentCharacter: undefined,
+    hoveredCustomizationOption: null,
+    history: {},
+    formStatusMap: IMAGE_TYPE_IDS.reduce((acc, type) => {
+      acc[type] = null;
+      return acc;
+    }, {} as LfMessengerEditingStatus<LfMessengerImageTypes>),
+    saveInProgress: false,
+    ui: LF_MESSENGER_CLEAN_UI(),
+  };
+  //#endregion
+
+  //#region Adapter Reference
+  let adapter: LfMessengerAdapter;
+  const getAdapter = () => adapter;
+  //#endregion
+
+  //#region Base Getters
+  const baseGetters: LfMessengerAdapterControllerGetters = {
+    blocks: () => LF_MESSENGER_BLOCKS.messenger,
+    compInstance: getComp,
+    cyAttributes: () => CY_ATTRIBUTES,
+    framework: getFramework,
+    ids: () => LF_MESSENGER_IDS.messenger,
+    lfAttributes: () => LF_ATTRIBUTES,
+    parts: () => LF_MESSENGER_PARTS.messenger,
+    // These are populated in createGetters
+    character: null,
+    config: null,
+    data: null,
+    history: null,
+    image: null,
+    status: null,
+    ui: null,
+  };
+  //#endregion
+
+  //#region Base Setters
+  const baseSetters: LfMessengerAdapterControllerSetters = {
+    character: null,
+    data: null,
+    image: null,
+    status: null,
+    ui: null,
+  };
+  //#endregion
+
+  //#region Build Adapter
+  adapter = {
     controller: {
-      get: createGetters(getters, getAdapter),
-      set: createSetters(setters, getAdapter),
-      computed,
-      actions,
+      get: createGetters(baseGetters, getAdapter, state),
+      set: createSetters(baseSetters, getAdapter, state, onStateChange),
+      computed: null, // Set by component after adapter creation
+      actions: null, // Set by component after adapter creation
+    },
+    dispatcher: {
+      emit: () => {}, // Placeholder - will be set by component
     },
     elements: {
       jsx: createJsx(getAdapter),
@@ -60,6 +153,9 @@ export const createAdapter = (
     },
     handlers: createHandlers(getAdapter),
   };
+  //#endregion
+
+  return adapter;
 };
 
 //#endregion
@@ -68,81 +164,69 @@ export const createAdapter = (
 export const createGetters = (
   getters: LfMessengerAdapterControllerGetters,
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
 ): LfMessengerAdapterControllerGetters => {
-  return {
+  const result = {
     ...getters,
-    character: prepCharacterGetters(getAdapter),
-    image: prepImageGetters(getAdapter),
+    character: prepCharacterGetters(getAdapter, state),
+    image: prepImageGetters(getAdapter, state),
     config: () => {
-      const compInstance = getAdapter().controller.get.compInstance();
-      const { currentCharacter, ui } = compInstance as LfMessenger;
-
       return {
-        currentCharacter: currentCharacter?.id,
-        ui,
+        currentCharacter: state.currentCharacter?.id,
+        ui: state.ui,
       };
     },
     data: () => {
       const compInstance = getAdapter().controller.get.compInstance();
       return compInstance.lfDataset;
     },
-    history: () => {
-      const compInstance = getAdapter().controller.get.compInstance();
-      return (compInstance as LfMessenger).history;
-    },
+    history: () => state.history,
     status: {
-      connection: () => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        return (compInstance as LfMessenger).connectionStatus;
-      },
-      formStatus: () => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        return (compInstance as LfMessenger).formStatusMap;
-      },
-      hoveredCustomizationOption: () => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        return (compInstance as LfMessenger).hoveredCustomizationOption;
-      },
+      connection: () => state.connectionStatus,
+      formStatus: () => state.formStatusMap,
+      hoveredCustomizationOption: () => state.hoveredCustomizationOption,
       save: {
-        inProgress: () => {
-          const compInstance = getAdapter().controller.get.compInstance();
-          return (compInstance as LfMessenger).saveInProgress;
-        },
+        inProgress: () => state.saveInProgress,
       },
     },
-    ui: prepUiGetters(getAdapter),
+    ui: prepUiGetters(getAdapter, state),
   };
+  // Expose state for direct access in component
+  (result as any).__state = state;
+  return result;
 };
 export const createSetters = (
   setters: LfMessengerAdapterControllerSetters,
   getAdapter: () => LfMessengerAdapter,
+  state: LfMessengerAdapterState,
+  onStateChange: () => void,
 ): LfMessengerAdapterControllerSetters => {
   return {
     ...setters,
-    character: prepCharacterSetters(getAdapter),
-    image: prepImageSetters(getAdapter),
+    character: prepCharacterSetters(getAdapter, state, onStateChange),
+    image: prepImageSetters(getAdapter, state, onStateChange),
     data: () => updateDataset(getAdapter()),
     status: {
       connection: (status) => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        (compInstance as LfMessenger).connectionStatus = status;
+        state.connectionStatus = status;
+        onStateChange();
       },
       editing: (type, id) => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        (compInstance as LfMessenger).formStatusMap[type] = id;
+        state.formStatusMap = { ...state.formStatusMap, [type]: id };
+        onStateChange();
       },
       hoveredCustomizationOption: (node) => {
-        const compInstance = getAdapter().controller.get.compInstance();
-        (compInstance as LfMessenger).hoveredCustomizationOption = node;
+        state.hoveredCustomizationOption = node;
+        onStateChange();
       },
       save: {
         inProgress: (value) => {
-          const compInstance = getAdapter().controller.get.compInstance();
-          (compInstance as LfMessenger).saveInProgress = value;
+          state.saveInProgress = value;
+          onStateChange();
         },
       },
     },
-    ui: prepUiSetters(getAdapter),
+    ui: prepUiSetters(getAdapter, state, onStateChange),
   };
 };
 //#endregion

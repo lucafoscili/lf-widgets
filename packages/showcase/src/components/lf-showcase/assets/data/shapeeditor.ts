@@ -908,7 +908,7 @@ export const getShapeeditorFixtures = (
     const components = await shapeeditor.getComponents();
     const textfield = components?.navigation?.jump?.textfield;
     if (textfield) {
-      textfield.setValue(node.id);
+      textfield.value = node.id;
     }
 
     // Show feedback

@@ -29,8 +29,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepSplashActions } from "./actions.splash";
-import { prepSplashComputed } from "./computed.splash";
 import { createAdapter } from "./lf-splash-adapter";
 
 /**
@@ -63,16 +61,18 @@ export class LfSplash implements LfSplashInterface {
 
   //#region States
   /**
-   * Debug information state property created through LfFramework debug utility.
-   * Used to store and manage debug-related information for the splash component.
-   * @remarks This state property is initialized using the debug.info.create() method from the framework instance.
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
    */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  /**
-   * The status of the component.
-   * @default ""
-   */
-  @State() state: LfSplashStates = "initializing";
   //#endregion
 
   //#region Props
@@ -102,6 +102,15 @@ export class LfSplash implements LfSplashInterface {
   #p = LF_SPLASH_PARTS;
   #s = LF_STYLE_ID;
   #w = LF_WRAPPER_ID;
+
+  /**
+   * Bridge getter to satisfy LfSplashInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.state() internally
+   */
+  get state(): LfSplashStates {
+    return this.#adapter?.controller.get.state() ?? "initializing";
+  }
   //#endregion
 
   //#region Events
@@ -157,13 +166,7 @@ export class LfSplash implements LfSplashInterface {
    */
   @Method()
   async unmount(ms: number = 575): Promise<void> {
-    setTimeout(() => {
-      this.state = "unmounting";
-      setTimeout(() => {
-        this.#adapter.dispatcher.emit("unmount");
-        this.rootElement.remove();
-      }, 300);
-    }, ms);
+    this.#adapter.controller.actions.unmount(ms);
   }
   //#endregion
 
@@ -193,15 +196,21 @@ export class LfSplash implements LfSplashInterface {
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
+   * - controller.get: State reads (state) + base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (state) → triggers onStateChange
    * - controller.computed: Derived predicates (isUnmounting)
-   * - controller.actions: Complex operations (none for this simple component)
+   * - controller.actions: Complex operations (unmount)
    * - elements: JSX factories + refs
    * - dispatcher: Centralized event emission
-   * - handlers: Event callbacks (none for this simple component)
+   * - handlers: Event callbacks (none for this component)
    *
    * @see Section 5 of 4_0_0_REFACTORING.md
    */
@@ -209,8 +218,16 @@ export class LfSplash implements LfSplashInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial state
+    const initialState: LfSplashStates = "initializing";
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility)
+      // Base getters (via utility) - does NOT include state getter
       createBaseGetters({
         blocks: () => this.#b,
         compInstance: () => this,
@@ -218,10 +235,10 @@ export class LfSplash implements LfSplashInterface {
         ids: () => this.#ids,
         parts: () => this.#p,
       }),
-      // Computed - derived predicates (from dedicated file)
-      prepSplashComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepSplashActions(getAdapter),
+      // Initial state value
+      initialState,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );

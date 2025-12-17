@@ -32,14 +32,14 @@ export const prepJump = (
         {/* Directory Textfield */}
         <LfTextfieldFC
           className={bemClass(jumpBlock._, jumpBlock.textfield)}
-          dataCy={cy.input}
           framework={mgr}
           icon="folder"
           id={IDS.navigation.jump.textfield}
           inputRef={assignRef(navigation.jump, "textfield")}
           label="Directory"
-          onInput={(e, val) => textfield(e, val)}
+          onInput={(val, e) => textfield(e, val)}
           styling="flat"
+          value=""
         />
 
         {/* Load Button */}

@@ -60,7 +60,9 @@
 // All FC components have been migrated to the unified system above.
 // These legacy files are kept temporarily for reference and backward compat.
 @use "./mixins/fcomponents";
+@use "./mixins/fc-article";
 @use "./mixins/fc-form-field";
+@use "./mixins/fc-header";
 @use "./mixins/fc-states"; // DEPRECATED: Use ./mixins/states instead
 // @use "./mixins/fc-badge";       // MIGRATED to ./mixins/components/badge
 // @use "./mixins/fc-button";      // MIGRATED to ./mixins/components/button

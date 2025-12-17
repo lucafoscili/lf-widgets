@@ -2613,6 +2613,46 @@ export const GLOBAL_STYLES = {
   ".toggle--with-icons .toggle__native-control:checked ~ .toggle__track::after": {
     "opacity": "0"
   },
+  ".article": {
+    "background-color": "rgba(var(--lf-article-color-surface, var(--lf-fc-color-surface, var(--lf-color-surface))), var(--lf-article-background-alpha, var(--lf-ui-alpha-glass, 0.375)))",
+    "border-color": "rgb(var(--lf-article-color-border, var(--lf-fc-color-border, var(--lf-color-border))))",
+    "color": "rgb(var(--lf-article-color-on-surface, var(--lf-fc-color-on-surface, var(--lf-color-on-surface))))",
+    "font-size": "calc(var(--lf-article-font-size, var(--lf-font-size)) * var(--lf-fc-ui-size, var(--lf-ui-size, 1)))",
+    "margin": "var(--lf-article-margin, auto)",
+    "max-width": "var(--lf-article-max-width, 1200px)",
+    "padding": "var(--lf-article-padding, 2.5em)"
+  },
+  ".section": {
+    "display": "block"
+  },
+  ".paragraph": {
+    "display": "block"
+  },
+  ".content": {
+    "display": "block"
+  },
+  ".content__body": {
+    "font-family": "var(--lf-article-font-family-body, var(--lf-font-family-primary))",
+    "font-size": "var(--lf-article-font-size-body, var(--lf-font-size))",
+    "line-height": "1.6"
+  },
+  ".empty-data": {
+    "align-items": "center",
+    "display": "flex",
+    "height": "100%",
+    "justify-content": "center",
+    "width": "100%"
+  },
+  ".empty-data__text": {
+    "color": "rgb(var(--lf-article-color-on-surface, var(--lf-fc-color-on-surface, var(--lf-color-on-surface))))",
+    "font-family": "var(--lf-font-family-primary)",
+    "font-size": "var(--lf-font-size)",
+    "opacity": "0.7"
+  },
+  "[data-component=LfCode]": {
+    "margin": "1.75em auto",
+    "max-width": "max-content"
+  },
   ".form-field__label": {
     "min-width": "var(--lf-form-label-min-width, max-content)",
     "overflow": "hidden",
@@ -2644,6 +2684,33 @@ export const GLOBAL_STYLES = {
   ".form-field--large": {
     "font-size": "var(--lf-form-font-size-large, 1.125em)",
     "padding": "var(--lf-form-padding-large, 2.5em 0.625em)"
+  },
+  ".header": {
+    "align-items": "center",
+    "box-sizing": "border-box",
+    "display": "flex",
+    "height": "100%",
+    "width": "100%"
+  },
+  ".header__section": {
+    "align-items": "center",
+    "box-sizing": "border-box",
+    "display": "flex",
+    "flex": "1",
+    "gap": "0.5em",
+    "height": "100%",
+    "justify-content": "var(--lf-header-justify, space-between)",
+    "padding": "var(--lf-header-padding, 0.5em 0.75em)",
+    "width": "100%"
+  },
+  ".header__icon": {
+    "display": "flex",
+    "align-items": "center",
+    "justify-content": "center"
+  },
+  ".header__label": {
+    "display": "flex",
+    "align-items": "center"
   },
   "*::-webkit-scrollbar": {
     "width": "9px"

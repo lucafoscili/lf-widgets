@@ -2,7 +2,7 @@ import { LfHeaderPropsInterface } from "./header.declarations";
 
 //#region Blocks
 export const LF_HEADER_BLOCKS = {
-  header: { _: "header", section: "section" },
+  header: { _: "header", icon: "icon", label: "label", section: "section" },
 } as const;
 //#endregion
 

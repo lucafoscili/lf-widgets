@@ -35,8 +35,6 @@ import {
 } from "@stencil/core";
 import { createBaseGetters } from "../../utils/adapter";
 import { awaitFramework } from "../../utils/setup";
-import { prepRadioActions } from "./actions.radio";
-import { prepRadioComputed } from "./computed.radio";
 import { createAdapter } from "./lf-radio-adapter";
 
 /**
@@ -75,8 +73,28 @@ export class LfRadio implements LfRadioInterface {
   @Element() rootElement: LfRadioElement;
 
   //#region States
+  /**
+   * "Adapter as Core" Pattern:
+   * This is the ONLY @State in the component. It's a simple counter that gets
+   * incremented by the adapter's onStateChange callback to trigger re-renders.
+   *
+   * All actual component state lives in the adapter's closure variables.
+   * This approach gives us:
+   * - Predictable renders (only when adapter explicitly requests)
+   * - Batch-friendly updates (adapter can make multiple changes before triggering render)
+   * - Testable state logic (adapter can be tested without DOM)
+   */
+  @State() private _renderTick = 0;
   @State() debugInfo: LfDebugLifecycleInfo;
-  @State() value: string | undefined;
+
+  /**
+   * Bridge getter to satisfy LfRadioInterface.
+   * Actual state lives in adapter - this just exposes it.
+   * @deprecated Use adapter.controller.get.value() internally
+   */
+  get value(): string | undefined {
+    return this.#adapter?.controller.get.value();
+  }
   //#endregion
 
   //#region Props
@@ -312,6 +330,9 @@ export class LfRadio implements LfRadioInterface {
   /**
    * Creates the dispatcher for centralized event emission.
    * All component events route through this dispatcher.
+   *
+   * Note: Reads value from adapter state, not WC state.
+   *
    * @see Section 5.5 of 4_0_0_REFACTORING.md
    */
   #createDispatcher = () => ({
@@ -322,6 +343,7 @@ export class LfRadio implements LfRadioInterface {
         "informational",
       );
 
+      const value = this.#adapter.controller.get.value();
       this.lfEvent.emit({
         comp: this,
         eventType,
@@ -329,16 +351,21 @@ export class LfRadio implements LfRadioInterface {
         originalEvent: detail?.originalEvent,
         node: detail?.node ?? null,
         previousValue: detail?.previousValue ?? null,
-        value: this.value ?? null,
+        value: value ?? null,
       });
     },
   });
   /**
-   * Initializes the adapter with v4.0.0 architecture.
+   * Initializes the adapter with "Adapter as Core" architecture.
+   *
+   * "Adapter as Core" Pattern:
+   * - Adapter OWNS the runtime state (via closure variables)
+   * - onStateChange callback increments _renderTick to trigger re-render
+   * - WC is a thin shell: lifecycle + HTML interface + single render trigger
    *
    * Structure:
-   * - controller.get: Base getters (blocks, compInstance, cyAttributes, framework, ids, lfAttributes, parts)
-   * - controller.set: Simple setters (updateDataset)
+   * - controller.get: State reads (value) + base getters (blocks, compInstance, etc.)
+   * - controller.set: State writes (value) → triggers onStateChange
    * - controller.computed: Derived predicates (isDisabled, hasNodes, isHorizontal, etc.)
    * - controller.actions: Complex operations (select, clear, focusNext, focusPrevious)
    * - elements: JSX factories + refs
@@ -351,23 +378,27 @@ export class LfRadio implements LfRadioInterface {
     // Adapter accessor - shared by all factories
     const getAdapter = () => this.#adapter;
 
+    // onStateChange callback - increments _renderTick to trigger Stencil re-render
+    const onStateChange = () => {
+      this._renderTick++;
+    };
+
+    // Initial value from prop
+    const initialValue: string | undefined = this.lfValue;
+
     const adapterWithoutDispatcher = createAdapter(
-      // Getters - base getters (via utility) + component-specific state reads
-      {
-        ...createBaseGetters({
-          blocks: () => this.#b,
-          compInstance: () => this,
-          framework: () => this.#framework,
-          ids: () => this.#ids,
-          parts: () => this.#p,
-        }),
-      },
-      // Setters - simple single-value assignments (empty, updateDataset moved to actions)
-      {},
-      // Computed - derived predicates (from dedicated file)
-      prepRadioComputed(getAdapter),
-      // Actions - complex multi-step operations (from dedicated file)
-      prepRadioActions(getAdapter),
+      // Base getters (via utility) - does NOT include value getter
+      createBaseGetters({
+        blocks: () => this.#b,
+        compInstance: () => this,
+        framework: () => this.#framework,
+        ids: () => this.#ids,
+        parts: () => this.#p,
+      }),
+      // Initial state value
+      initialValue,
+      // onStateChange callback
+      onStateChange,
       // Adapter accessor
       getAdapter,
     );
@@ -388,12 +419,8 @@ export class LfRadio implements LfRadioInterface {
   }
   async componentWillLoad() {
     this.#framework = await awaitFramework(this);
-
-    if (this.lfValue) {
-      this.value = this.lfValue;
-    }
-
     this.#initAdapter();
+    // Note: Initial value is now set in createAdapter via initialValue parameter
   }
   componentDidLoad() {
     const { debug, effects, theme } = this.#framework;

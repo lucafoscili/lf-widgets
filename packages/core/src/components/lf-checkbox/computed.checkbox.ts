@@ -9,6 +9,9 @@ import {
  * Computed values are pure functions that derive state without side effects.
  * They're used in JSX/handlers to make rendering decisions.
  *
+ * "Adapter as Core" Pattern:
+ * - Reads from adapter's value getter (closure state), not WC state
+ *
  * @param getAdapter - Accessor function to get the current adapter instance
  * @returns Computed predicates object
  *
@@ -22,8 +25,8 @@ export const prepCheckboxComputed = (
    * Controls the checked attribute and aria-checked state.
    */
   isChecked: () => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().value === "on";
+    const { value } = getAdapter().controller.get;
+    return value() === "on";
   },
 
   /**
@@ -40,7 +43,7 @@ export const prepCheckboxComputed = (
    * Controls the indeterminate attribute and mixed aria-checked.
    */
   isIndeterminate: () => {
-    const { compInstance } = getAdapter().controller.get;
-    return compInstance().value === "indeterminate";
+    const { value } = getAdapter().controller.get;
+    return value() === "indeterminate";
   },
 });

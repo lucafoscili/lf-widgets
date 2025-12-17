@@ -3,7 +3,6 @@ import {
   LfChatAdapter,
   LfChatAdapterJsx,
   LfChipElement,
-  LfLLMChoiceMessage,
 } from "@lf-widgets/foundations";
 import { h } from "@stencil/core";
 import { ButtonFC } from "../lf-button/fc/button-fc";
@@ -18,7 +17,6 @@ export const prepToolbar = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
       const { assignRef, theme } = get.framework();
@@ -47,7 +45,6 @@ export const prepToolbar = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
       const { assignRef, theme } = get.framework();
@@ -77,7 +74,6 @@ export const prepToolbar = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
       const { assignRef, theme } = get.framework();
@@ -107,7 +103,6 @@ export const prepToolbar = (
       const { get } = controller;
 
       const blocks = get.blocks();
-      const parts = get.parts();
       const { toolbar } = elements.refs;
       const { button } = handlers.toolbar;
       const { assignRef, theme } = get.framework();

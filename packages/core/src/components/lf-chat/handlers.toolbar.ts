@@ -19,7 +19,7 @@ export const prepToolbarHandlers = (
 ): LfChatAdapterHandlers["toolbar"] => {
   return {
     //#region Button
-    button: async (e: MouseEvent, id: string, m: LfLLMChoiceMessage) => {
+    button: async (_e: MouseEvent, id: string, m: LfLLMChoiceMessage) => {
       switch (id) {
         // Copy Content
         case LF_CHAT_IDS.toolbar.copyContent:

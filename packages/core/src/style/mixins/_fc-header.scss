@@ -1,0 +1,71 @@
+// =============================================================================
+// FC-HEADER - Functional Component Header Styles
+// =============================================================================
+// Header-specific styles for the LfHeaderFC functional component.
+//
+// Key differences from WC styles:
+// - No :host selector (FC has no shadow DOM)
+// - All selectors are plain classes (BEM)
+// - Uses --lf-header-* CSS custom properties for theming
+//
+// Usage:
+//   <LfHeaderFC framework={framework} ... />
+//   Styles are auto-applied via adopted stylesheets
+//
+// IMPORTANT: @prop JSDoc comments are REQUIRED for documentation generation.
+// They populate the component README with CSS custom property documentation.
+// When migrating WC styles to FC, always preserve these comments!
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Header Core
+// -----------------------------------------------------------------------------
+.header {
+  & {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Section (main content area with slot)
+  // ---------------------------------------------------------------------------
+  &__section {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1;
+    gap: 0.5em;
+    height: 100%;
+    /**
+     * @prop --lf-header-justify: Sets the justify-content for the header section.
+     *       Defaults to => space-between
+     */
+    justify-content: var(--lf-header-justify, space-between);
+    /**
+     * @prop --lf-header-padding: Sets the padding for the header section.
+     *       Defaults to => 0.5em 0.75em
+     */
+    padding: var(--lf-header-padding, 0.5em 0.75em);
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon
+  // ---------------------------------------------------------------------------
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label
+  // ---------------------------------------------------------------------------
+  &__label {
+    display: flex;
+    align-items: center;
+  }
+}

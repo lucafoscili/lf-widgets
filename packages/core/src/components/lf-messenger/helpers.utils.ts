@@ -14,7 +14,7 @@ import {
   LfMessengerUnionChildIds,
   LfThemeUIState,
 } from "@lf-widgets/foundations";
-import { LfMessenger } from "./lf-messenger";
+import { LfMessengerAdapterState } from "./lf-messenger-adapter";
 
 /**
  * Extracts chat-related properties from a chat cell and assigns them to a target object.
@@ -88,18 +88,18 @@ export const createNode = async <
 
 //#region defaultToCurrentCharacter
 /**
- * Returns the provided character if it exists, otherwise returns the current character from the adapter's controller.
+ * Returns the provided character if it exists, otherwise returns the current character from the adapter state.
  * @param adapter - The messenger adapter instance containing the controller
+ * @param state - The adapter state containing currentCharacter
  * @param character - The character node to check
- * @returns The provided character if it exists, otherwise the current character
+ * @returns The provided character if it exists, otherwise the current character from state
  */
 export const defaultToCurrentCharacter = (
-  adapter: LfMessengerAdapter,
+  _adapter: LfMessengerAdapter,
+  state: LfMessengerAdapterState,
   character: LfMessengerCharacterNode,
 ) => {
-  const { currentCharacter } =
-    adapter.controller.get.compInstance() as LfMessenger;
-  return character ?? currentCharacter;
+  return character ?? state.currentCharacter;
 };
 //#endregion
 
@@ -218,10 +218,10 @@ export const statusIconOptions = (status: LfChatStatus) => {
  */
 export const systemMessage = (adapter: LfMessengerAdapter) => {
   const getDynamicPrompts = () => {
-    const { character, compInstance, image } = adapter.controller.get;
+    const { character, image, ui } = adapter.controller.get;
     const { biography } = character;
     const { asCover } = image;
-    const { options: isEnabled } = (compInstance() as LfMessenger).ui;
+    const { options: isEnabled } = ui();
 
     const location = asCover("locations").node;
     const outfit = asCover("outfits").node;
@@ -288,6 +288,6 @@ export const updateDataset = (adapter: LfMessengerAdapter) => {
   const { controller } = adapter;
   const { compInstance } = controller.get;
 
-  (compInstance() as LfMessenger).save();
+  compInstance().save();
 };
 //#endregion

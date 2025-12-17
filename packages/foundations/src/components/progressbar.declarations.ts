@@ -17,6 +17,7 @@ import {
   VNode,
 } from "../foundations/components.declarations";
 import { LfEventPayload } from "../foundations/events.declarations";
+import { LfFrameworkInterface } from "../framework/framework.declarations";
 import { LfThemeUISize, LfThemeUIState } from "../framework/theme.declarations";
 import {
   LF_PROGRESSBAR_BLOCKS,
@@ -188,5 +189,51 @@ export interface LfProgressbarPropsInterface {
   lfUiSize?: LfThemeUISize;
   lfUiState?: LfThemeUIState;
   lfValue?: number;
+}
+//#endregion
+
+//#region FC Props
+/**
+ * Props interface for the `LfProgressbarFC` functional component.
+ *
+ * This interface removes the `lf*` prefix convention used by Web Components
+ * and uses direct prop names instead. All state is owned by the parent;
+ * the FC is purely presentational.
+ *
+ * @see Section 2 of 4_0_0_REFACTORING.md (Functional Components Architecture)
+ */
+export interface LfProgressbarFCProps {
+  /** Whether the progress bar should display animated stripes */
+  animated?: boolean;
+  /** Displays the label in the middle of the progress bar */
+  centeredLabel?: boolean;
+  /** Assigned class for custom styling */
+  className?: string;
+  /** Framework instance for theming utilities (required) */
+  framework: LfFrameworkInterface;
+  /** Specifies an icon to replace the label */
+  icon?: string;
+  /** Unique identifier for the component */
+  id?: string;
+  /** Whether to render the radial (circular) variant */
+  isRadial?: boolean;
+  /** Specifies text for the bar's label */
+  label?: string;
+  /** Custom CSS styles to apply (object format for Stencil JSX) */
+  style?: { [key: string]: string };
+  /**
+   * UI size multiplier for the component.
+   * Controls font-size scaling.
+   * @default "medium"
+   */
+  uiSize?: LfThemeUISize;
+  /**
+   * UI state for theming (primary, success, warning, danger, etc.).
+   * Controls color scheme.
+   * @default "primary"
+   */
+  uiState?: LfThemeUIState;
+  /** The current value (0-100) the progress bar must display */
+  value?: number;
 }
 //#endregion
